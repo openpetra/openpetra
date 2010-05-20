@@ -118,6 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.cmbSelectStatement = new Ict.Common.Controls.TCmbAutoComplete();
             this.tchSelectStatement = new System.Windows.Forms.ToolStripControlHost(cmbSelectStatement);
+            this.tbbDeleteStatement = new System.Windows.Forms.ToolStripButton();
             this.tbbSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbbSaveMatches = new System.Windows.Forms.ToolStripButton();
             this.tbbCreateGiftBatch = new System.Windows.Forms.ToolStripButton();
@@ -634,6 +635,13 @@ namespace Ict.Petra.Client.MFinance.Gui
             this.tchSelectStatement.Name = "tchSelectStatement";
             this.tchSelectStatement.AutoSize = true;
             //
+            // tbbDeleteStatement
+            //
+            this.tbbDeleteStatement.Name = "tbbDeleteStatement";
+            this.tbbDeleteStatement.AutoSize = true;
+            this.tbbDeleteStatement.Click += new System.EventHandler(this.DeleteStatement);
+            this.tbbDeleteStatement.Text = "Delete Statement";
+            //
             // tbbSeparator1
             //
             this.tbbSeparator1.Name = "tbbSeparator1";
@@ -670,6 +678,7 @@ namespace Ict.Petra.Client.MFinance.Gui
                            tbbImportNewStatement,
                         tbbSeparator0,
                         tchSelectStatement,
+                        tbbDeleteStatement,
                         tbbSeparator1,
                         tbbSaveMatches,
                         tbbCreateGiftBatch,
@@ -867,6 +876,7 @@ namespace Ict.Petra.Client.MFinance.Gui
         private System.Windows.Forms.ToolStripSeparator tbbSeparator0;
         private Ict.Common.Controls.TCmbAutoComplete cmbSelectStatement;
         private System.Windows.Forms.ToolStripControlHost tchSelectStatement;
+        private System.Windows.Forms.ToolStripButton tbbDeleteStatement;
         private System.Windows.Forms.ToolStripSeparator tbbSeparator1;
         private System.Windows.Forms.ToolStripButton tbbSaveMatches;
         private System.Windows.Forms.ToolStripButton tbbCreateGiftBatch;

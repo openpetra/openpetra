@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -132,13 +132,45 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// drop a bank statement and all its transactions
+        /// </summary>
+        /// <param name="AEpStatementKey"></param>
+        /// <returns></returns>
+        static public bool DropBankStatement(Int32 AEpStatementKey)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            BankImportTDS MainDS = new BankImportTDS();
+
+            AEpStatementAccess.LoadByPrimaryKey(MainDS, AEpStatementKey, Transaction);
+            AEpTransactionAccess.LoadViaAEpStatement(MainDS, AEpStatementKey, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
+            {
+                stmtRow.Delete();
+            }
+
+            foreach (AEpTransactionRow transactionRow in MainDS.AEpTransaction.Rows)
+            {
+                transactionRow.Delete();
+            }
+
+            TVerificationResultCollection VerificationResult;
+            BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+            return !VerificationResult.HasCriticalError();
+        }
+
+        /// <summary>
         /// match text should uniquely identify a gift from a certain donor with a certain purpose;
         /// use account name, description, and amount;
         /// remove umlaut and spaces, because the banks sometimes play around with them
         /// </summary>
-        private static string CalculateMatchText(AEpTransactionRow tr)
+        private static string CalculateMatchText(string ABankAccount, AEpTransactionRow tr)
         {
-            string matchtext = tr.AccountName + tr.Description;
+            string matchtext = ABankAccount + tr.AccountName + tr.Description;
 
             matchtext += tr.TransactionAmount;
 
@@ -199,8 +231,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
+                    // get the name of the directory, without the path
+                    string directoryName = Path.GetDirectoryName(ResultDataset.AEpStatement[0].Filename).Replace("\\", "/");
+
+                    if (directoryName.IndexOf("/") != -1)
+                    {
+                        directoryName = directoryName.Substring(directoryName.LastIndexOf("/") + 1);
+                    }
+
                     // find a match with the same match text, or create a new one
-                    row.MatchText = CalculateMatchText(row);
+                    if (row.IsMatchTextNull() || (row.MatchText.Length == 0))
+                    {
+                        row.MatchText = CalculateMatchText(directoryName, row);
+                    }
 
                     AEpMatchTable tempTable = new AEpMatchTable();
                     AEpMatchRow tempRow = tempTable.NewRowTyped(false);

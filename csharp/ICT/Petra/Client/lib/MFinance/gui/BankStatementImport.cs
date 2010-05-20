@@ -82,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui
       this.lblGLCostCentre.Text = Catalog.GetString("Cost Centre:");
       this.tbbImportNewStatement.Text = Catalog.GetString("&Import new statement");
       this.tbbSeparator0.Text = Catalog.GetString("Separator");
+      this.tbbDeleteStatement.Text = Catalog.GetString("Delete Statement");
       this.tbbSeparator1.Text = Catalog.GetString("Separator");
       this.tbbSaveMatches.Text = Catalog.GetString("Save Matches");
       this.tbbCreateGiftBatch.Text = Catalog.GetString("Create Gift Batch");
@@ -185,6 +186,10 @@ namespace Ict.Petra.Client.MFinance.Gui
         {
             tbbImportNewStatement.Enabled = e.Enabled;
             mniImportNewStatement.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeleteStatement")
+        {
+            tbbDeleteStatement.Enabled = e.Enabled;
         }
         if (e.ActionName == "actSaveMatches")
         {

@@ -55,10 +55,15 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(GLBatchTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -200,13 +205,17 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AGeneralLedgerMaster != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (AGeneralLedgerMasterRow origRow in AInspectDS.AGeneralLedgerMaster.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMaster, SubmitChangesTransaction,
@@ -218,11 +227,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
+                        if (AInspectDS.AGeneralLedgerMasterPeriod != null)
                         {
-                            if (otherRow.GlmSequence < 0)
+                            foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                             {
-                                otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                                {
+                                    otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                }
                             }
                         }
                     }
@@ -265,10 +277,15 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(GLSetupTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -715,13 +732,17 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.ABudget != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (ABudgetRow origRow in AInspectDS.ABudget.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.BudgetSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.BudgetSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.ABudget, SubmitChangesTransaction,
@@ -733,11 +754,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (ABudgetPeriodRow otherRow in AInspectDS.ABudgetPeriod.Rows)
+                        if (AInspectDS.ABudgetPeriod != null)
                         {
-                            if (otherRow.BudgetSequence < 0)
+                            foreach (ABudgetPeriodRow otherRow in AInspectDS.ABudgetPeriod.Rows)
                             {
-                                otherRow.BudgetSequence = AInspectDS.ABudget[OldSequenceValuesRow[otherRow.BudgetSequence]].BudgetSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BudgetSequence < 0)
+                                {
+                                    otherRow.BudgetSequence = AInspectDS.ABudget[OldSequenceValuesRow[otherRow.BudgetSequence]].BudgetSequence;
+                                }
                             }
                         }
                     }
@@ -782,13 +806,17 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AGeneralLedgerMaster != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (AGeneralLedgerMasterRow origRow in AInspectDS.AGeneralLedgerMaster.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.GlmSequence, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMaster, SubmitChangesTransaction,
@@ -800,11 +828,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
+                        if (AInspectDS.AGeneralLedgerMasterPeriod != null)
                         {
-                            if (otherRow.GlmSequence < 0)
+                            foreach (AGeneralLedgerMasterPeriodRow otherRow in AInspectDS.AGeneralLedgerMasterPeriod.Rows)
                             {
-                                otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.GlmSequence < 0)
+                                {
+                                    otherRow.GlmSequence = AInspectDS.AGeneralLedgerMaster[OldSequenceValuesRow[otherRow.GlmSequence]].GlmSequence;
+                                }
                             }
                         }
                     }
@@ -857,13 +888,17 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PLocationRow origRow in AInspectDS.PLocation.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
@@ -875,11 +910,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if (otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }

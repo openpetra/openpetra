@@ -45,8 +45,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         private PPartnerTable TablePPartner;
         private PPartnerTypeTable TablePPartnerType;
         private PSubscriptionTable TablePSubscription;
-        private PartnerEditTDSPPartnerLocationTable TablePPartnerLocation;
         private PLocationTable TablePLocation;
+        private PartnerEditTDSPPartnerLocationTable TablePPartnerLocation;
         private PartnerEditTDSPPersonTable TablePPerson;
         private PartnerEditTDSPFamilyTable TablePFamily;
         private PUnitTable TablePUnit;
@@ -118,20 +118,20 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// auto generated
-        public PartnerEditTDSPPartnerLocationTable PPartnerLocation
-        {
-            get
-            {
-                return this.TablePPartnerLocation;
-            }
-        }
-
-        /// auto generated
         public PLocationTable PLocation
         {
             get
             {
                 return this.TablePLocation;
+            }
+        }
+
+        /// auto generated
+        public PartnerEditTDSPPartnerLocationTable PPartnerLocation
+        {
+            get
+            {
+                return this.TablePPartnerLocation;
             }
         }
 
@@ -363,8 +363,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PPartnerTable("PPartner"));
             this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
             this.Tables.Add(new PSubscriptionTable("PSubscription"));
-            this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
             this.Tables.Add(new PLocationTable("PLocation"));
+            this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
             this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
             this.Tables.Add(new PartnerEditTDSPFamilyTable("PFamily"));
             this.Tables.Add(new PUnitTable("PUnit"));
@@ -406,13 +406,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.Tables.Add(new PSubscriptionTable("PSubscription"));
             }
-            if ((ds.Tables.IndexOf("PPartnerLocation") != -1))
-            {
-                this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
-            }
             if ((ds.Tables.IndexOf("PLocation") != -1))
             {
                 this.Tables.Add(new PLocationTable("PLocation"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerLocation") != -1))
+            {
+                this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
             }
             if ((ds.Tables.IndexOf("PPerson") != -1))
             {
@@ -529,13 +529,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.TablePSubscription.InitVars();
             }
-            if ((this.TablePPartnerLocation != null))
-            {
-                this.TablePPartnerLocation.InitVars();
-            }
             if ((this.TablePLocation != null))
             {
                 this.TablePLocation.InitVars();
+            }
+            if ((this.TablePPartnerLocation != null))
+            {
+                this.TablePPartnerLocation.InitVars();
             }
             if ((this.TablePPerson != null))
             {
@@ -642,8 +642,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TablePPartner = ((PPartnerTable)(this.Tables["PPartner"]));
             this.TablePPartnerType = ((PPartnerTypeTable)(this.Tables["PPartnerType"]));
             this.TablePSubscription = ((PSubscriptionTable)(this.Tables["PSubscription"]));
-            this.TablePPartnerLocation = ((PartnerEditTDSPPartnerLocationTable)(this.Tables["PPartnerLocation"]));
             this.TablePLocation = ((PLocationTable)(this.Tables["PLocation"]));
+            this.TablePPartnerLocation = ((PartnerEditTDSPPartnerLocationTable)(this.Tables["PPartnerLocation"]));
             this.TablePPerson = ((PartnerEditTDSPPersonTable)(this.Tables["PPerson"]));
             this.TablePFamily = ((PartnerEditTDSPFamilyTable)(this.Tables["PFamily"]));
             this.TablePUnit = ((PUnitTable)(this.Tables["PUnit"]));

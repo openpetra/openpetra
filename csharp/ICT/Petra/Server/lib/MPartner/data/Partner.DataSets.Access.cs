@@ -52,10 +52,15 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerEditTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -242,6 +247,15 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 }
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
@@ -251,15 +265,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 }
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PSubscription, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
@@ -309,21 +314,17 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
-                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
-                            out AVerificationResult,
-                            UserInfo.GUserInfo.UserID))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PLocationRow origRow in AInspectDS.PLocation.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
@@ -335,14 +336,25 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if (otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerLocation, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
@@ -392,13 +404,17 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PBankingDetails != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PBankingDetailsRow origRow in AInspectDS.PBankingDetails.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
@@ -410,11 +426,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerBankingDetailsRow otherRow in AInspectDS.PPartnerBankingDetails.Rows)
+                        if (AInspectDS.PPartnerBankingDetails != null)
                         {
-                            if (otherRow.BankingDetailsKey < 0)
+                            foreach (PPartnerBankingDetailsRow otherRow in AInspectDS.PPartnerBankingDetails.Rows)
                             {
-                                otherRow.BankingDetailsKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankingDetailsKey]].BankingDetailsKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.BankingDetailsKey < 0)
+                                {
+                                    otherRow.BankingDetailsKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankingDetailsKey]].BankingDetailsKey;
+                                }
                             }
                         }
                     }
@@ -451,13 +470,17 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PFoundationProposal != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PFoundationProposalRow origRow in AInspectDS.PFoundationProposal.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.FoundationProposalKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.FoundationProposalKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PFoundationProposal, SubmitChangesTransaction,
@@ -469,11 +492,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PFoundationProposalDetailRow otherRow in AInspectDS.PFoundationProposalDetail.Rows)
+                        if (AInspectDS.PFoundationProposalDetail != null)
                         {
-                            if (otherRow.FoundationProposalKey < 0)
+                            foreach (PFoundationProposalDetailRow otherRow in AInspectDS.PFoundationProposalDetail.Rows)
                             {
-                                otherRow.FoundationProposalKey = AInspectDS.PFoundationProposal[OldSequenceValuesRow[otherRow.FoundationProposalKey]].FoundationProposalKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.FoundationProposalKey < 0)
+                                {
+                                    otherRow.FoundationProposalKey = AInspectDS.PFoundationProposal[OldSequenceValuesRow[otherRow.FoundationProposalKey]].FoundationProposalKey;
+                                }
                             }
                         }
                     }
@@ -518,13 +544,17 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PPartnerContact != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PPartnerContactRow origRow in AInspectDS.PPartnerContact.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.ContactId, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.ContactId, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PPartnerContact, SubmitChangesTransaction,
@@ -536,11 +566,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerReminderRow otherRow in AInspectDS.PPartnerReminder.Rows)
+                        if (AInspectDS.PPartnerReminder != null)
                         {
-                            if (!otherRow.IsContactIdNull() && otherRow.ContactId < 0)
+                            foreach (PPartnerReminderRow otherRow in AInspectDS.PPartnerReminder.Rows)
                             {
-                                otherRow.ContactId = AInspectDS.PPartnerContact[OldSequenceValuesRow[otherRow.ContactId]].ContactId;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsContactIdNull() && otherRow.ContactId < 0)
+                                {
+                                    otherRow.ContactId = AInspectDS.PPartnerContact[OldSequenceValuesRow[otherRow.ContactId]].ContactId;
+                                }
                             }
                         }
                     }
@@ -591,10 +624,15 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerAddressAggregateTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -646,10 +684,15 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(PartnerInfoTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -690,13 +733,17 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PLocation != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PLocationRow origRow in AInspectDS.PLocation.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.LocationKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PLocation, SubmitChangesTransaction,
@@ -708,11 +755,14 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     }
                     else
                     {
-                        foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
+                        if (AInspectDS.PPartnerLocation != null)
                         {
-                            if (otherRow.LocationKey < 0)
+                            foreach (PPartnerLocationRow otherRow in AInspectDS.PPartnerLocation.Rows)
                             {
-                                otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.LocationKey < 0)
+                                {
+                                    otherRow.LocationKey = AInspectDS.PLocation[OldSequenceValuesRow[otherRow.LocationKey]].LocationKey;
+                                }
                             }
                         }
                     }

@@ -52,10 +52,15 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(GiftBatchTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -192,10 +197,15 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(BankImportTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -271,13 +281,17 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PBankingDetails != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (PBankingDetailsRow origRow in AInspectDS.PBankingDetails.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.BankingDetailsKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.PBankingDetails, SubmitChangesTransaction,
@@ -289,22 +303,29 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
+                        if (AInspectDS.AEpStatement != null)
                         {
-                            if (!otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
+                            foreach (AEpStatementRow otherRow in AInspectDS.AEpStatement.Rows)
                             {
-                                otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsBankAccountKeyNull() && otherRow.BankAccountKey < 0)
+                                {
+                                    otherRow.BankAccountKey = AInspectDS.PBankingDetails[OldSequenceValuesRow[otherRow.BankAccountKey]].BankingDetailsKey;
+                                }
                             }
                         }
                     }
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AEpStatement != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (AEpStatementRow origRow in AInspectDS.AEpStatement.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.StatementKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.StatementKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpStatement, SubmitChangesTransaction,
@@ -316,11 +337,14 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        if (AInspectDS.AEpTransaction != null)
                         {
-                            if (otherRow.StatementKey < 0)
+                            foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                             {
-                                otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && otherRow.StatementKey < 0)
+                                {
+                                    otherRow.StatementKey = AInspectDS.AEpStatement[OldSequenceValuesRow[otherRow.StatementKey]].StatementKey;
+                                }
                             }
                         }
                     }
@@ -333,13 +357,17 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.AEpMatch != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
                     Int32 rowIndex = 0;
                     foreach (AEpMatchRow origRow in AInspectDS.AEpMatch.Rows)
                     {
-                        OldSequenceValuesRow.Add(origRow.EpMatchKey, rowIndex);
+                        if (origRow.RowState != DataRowState.Deleted)
+                        {
+                            OldSequenceValuesRow.Add(origRow.EpMatchKey, rowIndex);
+                        }
+
                         rowIndex++;
                     }
                     if (!TTypedDataAccess.SubmitChanges(AInspectDS.AEpMatch, SubmitChangesTransaction,
@@ -351,11 +379,14 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
                     }
                     else
                     {
-                        foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
+                        if (AInspectDS.AEpTransaction != null)
                         {
-                            if (!otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
+                            foreach (AEpTransactionRow otherRow in AInspectDS.AEpTransaction.Rows)
                             {
-                                otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
+                                if ((otherRow.RowState != DataRowState.Deleted) && !otherRow.IsEpMatchKeyNull() && otherRow.EpMatchKey < 0)
+                                {
+                                    otherRow.EpMatchKey = AInspectDS.AEpMatch[OldSequenceValuesRow[otherRow.EpMatchKey]].EpMatchKey;
+                                }
                             }
                         }
                     }
@@ -406,10 +437,15 @@ namespace Ict.Petra.Server.MFinance.Gift.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(NewDonorTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {

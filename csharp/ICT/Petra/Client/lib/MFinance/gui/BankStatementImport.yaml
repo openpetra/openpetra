@@ -10,6 +10,8 @@ RootNode:
         actImportNewStatement:
             Label: &Import new statement
             ActionClick: ImportNewStatement
+        actDeleteStatement:
+            ActionClick: DeleteStatement
         actAddGiftDetail:
             Label: &Add
             ActionClick: AddGiftDetail
@@ -96,6 +98,7 @@ RootNode:
         tbbImportNewStatement:
         tbbSeparator:
         cmbSelectStatement: {Width=250}
+        tbbDeleteStatement:
         tbbSeparator:
         tbbSaveMatches:
         tbbCreateGiftBatch:

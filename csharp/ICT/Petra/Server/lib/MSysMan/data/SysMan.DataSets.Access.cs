@@ -48,10 +48,15 @@ namespace Ict.Petra.Server.MSysMan.Data.Access
         /// auto generated
         static public TSubmitChangesResult SubmitChanges(MaintainUsersTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AVerificationResult = new TVerificationResultCollection();
 
             try
             {

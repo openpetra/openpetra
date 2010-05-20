@@ -7,11 +7,11 @@
         <Table sqltable="p_partner"/>
         <Table sqltable="p_partner_type"/>
         <Table sqltable="p_subscription"/>     
+        <Table sqltable="p_location"/>
         <Table sqltable="p_partner_location">
           <CustomField name="BestAddress" type="bool"/>  
           <CustomField name="Icon" type="Int32"/>
         </Table>
-        <Table sqltable="p_location"/>
         <Table sqltable="p_person">
           <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
         </Table>

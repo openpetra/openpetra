@@ -32,10 +32,15 @@ public class {#DATASETNAME}Access
 /// auto generated
 static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out TVerificationResultCollection AVerificationResult)
 {
+    AVerificationResult = new TVerificationResultCollection();
+
+    if (AInspectDS == null)
+    {
+        return TSubmitChangesResult.scrOK;
+    }
+
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-    AVerificationResult = new TVerificationResultCollection();
 
     try
     {
@@ -78,13 +83,17 @@ if (SubmissionResult == TSubmitChangesResult.scrOK
 }
 {#ENDIFN UPDATESEQUENCEINOTHERTABLES}
 {#IFDEF UPDATESEQUENCEINOTHERTABLES}
-if (SubmissionResult == TSubmitChangesResult.scrOK)
+if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLENAME} != null)
 {
     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
     Int32 rowIndex = 0;
     foreach ({#TABLEROWTYPE} origRow in AInspectDS.{#TABLEVARIABLENAME}.Rows)
     {
-        OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
+        if (origRow.RowState != DataRowState.Deleted)
+        {
+            OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
+        }
+
         rowIndex++;
     }
     if (!TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
@@ -102,10 +111,13 @@ if (SubmissionResult == TSubmitChangesResult.scrOK)
 {#ENDIF UPDATESEQUENCEINOTHERTABLES}
 
 {##UPDATESEQUENCEINOTHERTABLES}
-foreach ({#REFERENCINGTABLEROWTYPE} otherRow in AInspectDS.{#REFERENCINGTABLENAME}.Rows)
+if (AInspectDS.{#REFERENCINGTABLENAME} != null)
 {
-    if ({#TESTFORNULL}otherRow.{#REFCOLUMNNAME} < 0)
+    foreach ({#REFERENCINGTABLEROWTYPE} otherRow in AInspectDS.{#REFERENCINGTABLENAME}.Rows)
     {
-        otherRow.{#REFCOLUMNNAME} = AInspectDS.{#TABLEVARIABLENAME}[OldSequenceValuesRow[otherRow.{#REFCOLUMNNAME}]].{#SEQUENCEDCOLUMNNAME};
+        if ((otherRow.RowState != DataRowState.Deleted) && {#TESTFORNULL}otherRow.{#REFCOLUMNNAME} < 0)
+        {
+            otherRow.{#REFCOLUMNNAME} = AInspectDS.{#TABLEVARIABLENAME}[OldSequenceValuesRow[otherRow.{#REFCOLUMNNAME}]].{#SEQUENCEDCOLUMNNAME};
+        }
     }
 }

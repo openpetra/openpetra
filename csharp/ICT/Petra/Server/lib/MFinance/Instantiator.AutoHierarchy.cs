@@ -1898,6 +1898,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
+        public bool DropBankStatement(Int32 AEpStatementKey)
+        {
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.DropBankStatement(AEpStatementKey);
+        }
+
+        /// generated method from connector
         public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
                                                                     Int32 ALedgerNumber)
         {
