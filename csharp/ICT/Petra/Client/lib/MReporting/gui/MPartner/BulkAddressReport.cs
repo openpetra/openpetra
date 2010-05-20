@@ -207,7 +207,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 	
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Copies", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Subscription", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Address", 10.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 3.0));
