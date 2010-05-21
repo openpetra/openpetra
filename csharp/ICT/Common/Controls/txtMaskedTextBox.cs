@@ -303,7 +303,7 @@ namespace Ict.Common.Controls
             String tmp;
 
             tmp = this.Mask;
-            
+
             if (tmp != null)
             {
                 tmp = tmp.Replace("#", this.PlaceHolder).Replace("&", this.PlaceHolder).Replace("!", this.PlaceHolder);
@@ -321,8 +321,8 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected override void OnKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
-            if ((this.ControlMode == TMaskedTextBoxMode.NormalTextBox) ||
-                (this.ControlMode == TMaskedTextBoxMode.Extract))
+            if ((this.ControlMode == TMaskedTextBoxMode.NormalTextBox)
+                || (this.ControlMode == TMaskedTextBoxMode.Extract))
             {
                 // just be a textbox!
                 e.Handled = false;
@@ -392,8 +392,8 @@ namespace Ict.Common.Controls
 
             HadEnough = false;
 
-            if ((this.ControlMode == TMaskedTextBoxMode.NormalTextBox) ||
-                (this.ControlMode == TMaskedTextBoxMode.Extract))
+            if ((this.ControlMode == TMaskedTextBoxMode.NormalTextBox)
+                || (this.ControlMode == TMaskedTextBoxMode.Extract))
             {
                 // just be a textbox!
                 e.Handled = false;

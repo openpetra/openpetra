@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
   /// auto generated user control
   public partial class TFrmUC_PartnerSelection: UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
-    private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
+    private TFrmPetraReportingUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
 
@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     }
 
     /// helper object for the whole screen
-    public Ict.Petra.Client.CommonForms.TFrmPetraUtils PetraUtilsObject
+    public TFrmPetraReportingUtils PetraUtilsObject
     {
         set
         {

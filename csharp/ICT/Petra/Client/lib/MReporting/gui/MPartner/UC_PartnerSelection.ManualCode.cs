@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
@@ -87,6 +88,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             ACalculator.AddParameter("param_extract", txtExtract.Text);
             ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
             ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
+
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && rbtCurrentStaff.Checked
+                && (!dtpCurrentStaff.ValidDate(false)))
+            {
+                TVerificationResult VerificationMessage = new TVerificationResult(
+                    "Enter a valid date.", "Wrong date!", TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+            }
+
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && rbtPartner.Checked
+                && (txtPartnerKey.Text == "0000000000"))
+            {
+                TVerificationResult VerificationMessage = new TVerificationResult(
+                    "Enter a valid Partner Key.", "No Partner Key entered!", TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+            }
+
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && rbtExtract.Checked
+                && (txtExtract.Text == ""))
+            {
+                TVerificationResult VerificationMessage = new TVerificationResult(
+                    "Enter a extract name.", "No extract name entered!", TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+            }
         }
 
         /// <summary>
@@ -102,7 +130,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             txtPartnerKey.Text = AParameters.Get("param_partnerkey").ToString();
             txtExtract.Text = AParameters.Get("param_extract").ToString();
-            dtpCurrentStaff.Date = AParameters.Get("param_currentstaffdate").ToDate();
+
+            if (AParameters.Exists("param_currenstaffdate"))
+            {
+                dtpCurrentStaff.Date = AParameters.Get("param_currentstaffdate").ToDate();
+            }
+            else
+            {
+                dtpCurrentStaff.Date = DateTime.Today;
+            }
         }
 
         /// <summary>
