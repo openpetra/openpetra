@@ -73,7 +73,7 @@ RootNode:
             Name: City
             Parameter: 2.5
         Para13:
-            Name: PostCode
+            Name: Post Code
             Parameter: 2.0
         Para14:
             Name: Telephone
@@ -93,4 +93,7 @@ RootNode:
         Para19:
             Name: Address Type
             Parameter: 2.5
+        Para20:
+            Name: Address Flag
+            Parameter: 3.0
         

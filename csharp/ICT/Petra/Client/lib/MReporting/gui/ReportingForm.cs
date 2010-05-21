@@ -801,6 +801,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((IFrmReporting) this.FTheForm).SetControls(AParameters);
         }
 
+        public virtual void AddVerificationResult(TVerificationResult AVerificationResult)
+        {
+            FVerificationResults.Add(AVerificationResult);
+        }
+
         #endregion
 
         #region Column Functions and Calculations

@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportSupportingChurches = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportValidBankAccount = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPublicationStatisticalReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportBulkAddressReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniNewPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniNewPartnerAssistant = new System.Windows.Forms.ToolStripMenuItem();
@@ -256,6 +257,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportPublicationStatisticalReport.Click += new System.EventHandler(this.OpenScreenReportPublicationStatisticalReport);
             this.mniReportPublicationStatisticalReport.Text = "Publication &Statistical Report";
             //
+            // mniReportBulkAddressReport
+            //
+            this.mniReportBulkAddressReport.Name = "mniReportBulkAddressReport";
+            this.mniReportBulkAddressReport.AutoSize = true;
+            this.mniReportBulkAddressReport.Click += new System.EventHandler(this.OpenScreenReportBulkAddressReport);
+            this.mniReportBulkAddressReport.Text = "&Bulk Address Report";
+            //
             // mniReports
             //
             this.mniReports.Name = "mniReports";
@@ -266,7 +274,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniReportBriefFoundation,
                         mniReportSupportingChurches,
                         mniReportValidBankAccount,
-                        mniReportPublicationStatisticalReport});
+                        mniReportPublicationStatisticalReport,
+                        mniReportBulkAddressReport});
             this.mniReports.Text = "&Reports...";
             //
             // mniSeparator3
@@ -636,6 +645,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniReportSupportingChurches;
         private System.Windows.Forms.ToolStripMenuItem mniReportValidBankAccount;
         private System.Windows.Forms.ToolStripMenuItem mniReportPublicationStatisticalReport;
+        private System.Windows.Forms.ToolStripMenuItem mniReportBulkAddressReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartner;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartnerAssistant;

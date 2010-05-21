@@ -259,8 +259,8 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
-			<caption><value text="PostCode"></value></caption>
+		<calculation align="left" id="Post Code" returns="text" returnsFormat="text">
+			<caption><value text="Post Code"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="PostalCode"></value>

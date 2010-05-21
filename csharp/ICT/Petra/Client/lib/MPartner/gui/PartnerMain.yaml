@@ -31,7 +31,7 @@ RootNode:
                mniReportSupportingChurches: {Label=Supporting &Churches Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSupportingChurchesReport)
                mniReportValidBankAccount: {Label=&Valid Bank Account Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmValidBankAccountReport)
                mniReportPublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport)
-               
+               mniReportBulkAddressReport: {Label=&Bulk Address Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBulkAddressReport)
            mniSeparator: {Label=-}
            mniNewPartner: {Label=New &Partner...}
            mniNewPartnerAssistant: 

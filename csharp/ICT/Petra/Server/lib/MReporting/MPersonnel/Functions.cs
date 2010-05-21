@@ -100,27 +100,27 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             strSql = "SELECT PUB_s_system_defaults.s_default_value_c " + "FROM PUB_s_system_defaults " +
                      "WHERE PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
-           
+
             tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
-			
+
             if (tab.Rows.Count > 0)
             {
-				String SiteKeyString = Convert.ToString(tab.Rows[0]["s_default_value_c"]);
-				try
-				{
-					SiteKey = Convert.ToInt64(SiteKeyString);
-				}
-				catch (Exception e)
-				{
-					SiteKey = -1;
-				}
+                String SiteKeyString = Convert.ToString(tab.Rows[0]["s_default_value_c"]);
+                try
+                {
+                    SiteKey = Convert.ToInt64(SiteKeyString);
+                }
+                catch (Exception e)
+                {
+                    SiteKey = -1;
+                }
             }
-            
+
             PartnerTable = PPartnerAccess.LoadByPrimaryKey(SiteKey, situation.GetDatabaseConnection().Transaction);
-            
+
             if (PartnerTable.Rows.Count > 0)
             {
-            	ReturnValue = (String)PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()];
+                ReturnValue = (String)PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()];
             }
 
             return ReturnValue;

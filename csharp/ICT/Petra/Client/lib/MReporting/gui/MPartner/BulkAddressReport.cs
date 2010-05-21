@@ -216,13 +216,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("County", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 2.5));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("PostCode", 2.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Post Code", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Url", 2.5));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Type", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Flag", 3.0));
 	
       ucoPartnerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());

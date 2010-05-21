@@ -129,7 +129,7 @@
 		</query>
 	</calculation> <!-- Select Partners -->
 	
-	<calculation id="MakeAddress" returns="PartnerAddress" returnsFormat="text">
+	<calculation id="MakeAddress" returns="automatic" returnsFormat="text">
 		<query>
 			<queryDetail>
 				<value text="NO-SQL"/>
@@ -138,21 +138,20 @@
 				<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
 				<value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
 				<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+				<value function="assign(AddressFlag, valid address)"/>
 			</queryDetail>
 		
-			<!-- Add the address flag: * expired ^ not yet current # no post to this address -->
-			<!-- TODO: Check if the asignment of the address flags is correct -->
 			<queryDetail condition="eq({SendMail}, false)">
 				<value text="NO-SQL"/>
-				<value function="assign(ShortName, concatenateww({ShortName}, #, 2))"/>
+				<value function="assign(AddressFlag, no post to this address)"/>
 			</queryDetail>
 			<queryDetail condition="eq({Icon}, 2)">
 				<value text="NO-SQL"/>
-				<value function="assign(ShortName, concatenateww({ShortName}, ^, 2))"/>
+				<value function="assign(AddressFlag, not yet current)"/>
 			</queryDetail>
 			<queryDetail condition="eq({Icon}, 3)">
 				<value text="NO-SQL"/>
-				<value function="assign(ShortName, concatenateww({ShortName}, *, 2))"/>
+				<value function="assign(AddressFlag, expired)"/>
 			</queryDetail>
 			
 		</query>
@@ -239,8 +238,8 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
-		<caption><value text="PostCode"></value></caption>
+	<calculation align="left" id="Post Code" returns="text" returnsFormat="text">
+		<caption><value text="Post Code"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="PostalCode"></value>
@@ -363,11 +362,11 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="Send Mail" returns="text" returnsFormat="text">
-			<caption><value text="Send Mail"></value></caption>
+		<calculation align="left" id="Address Flag" returns="text" returnsFormat="text">
+			<caption><value text="Address Flag"></value></caption>
 			<query>
 				<queryDetail>
-					<value variable="SendMail"></value>
+					<value variable="AddressFlag"></value>
 				</queryDetail>
 			</query>
 		</calculation>
@@ -435,9 +434,9 @@
 				<field whichfield="column 2" pos="3.2cm" width="1cm">
 					<value variable="NumberOfAddresses"/>
 				</field>
-				<field whichfield="column 3" pos="4.5cm" width="10cm">
+				<!--field whichfield="column 3" pos="4.5cm" width="10cm">
 					<value text="Address Flags:  * expired,   ^ not yet current,  # no post to this address"/>
-				</field>
+				</field-->
 			</footer>
 		</level>
 		
