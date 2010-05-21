@@ -1,9 +1,8 @@
-/* auto generated with nant generateWinforms from MainForm.yaml and template windowBrowsePrint
- *
- * DO NOT edit manually, DO NOT edit with the designer
- * use a user control if you need to modify the screen content
- *
- *///
+// auto generated with nant generateWinforms from MainForm.yaml and template windowBrowsePrint
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -26,7 +25,6 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -52,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
   public partial class TFrmMainForm: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
-    private NewDonorTDS FMainDS;
+    private Ict.Petra.Shared.MFinance.Gift.Data.NewDonorTDS FMainDS;
 
     /// constructor
     public TFrmMainForm(IntPtr AParentFormHandle) : base()
@@ -84,14 +82,14 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
       #endregion
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
-      FMainDS = new NewDonorTDS();
+      FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.NewDonorTDS();
       InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Donor", FMainDS.AGift.ColumnDonorKey);
       grdDetails.AddTextColumn("DonorShortName", FMainDS.AGift.ColumnDonorShortName);
       grdDetails.AddTextColumn("Recipient", FMainDS.AGift.ColumnRecipientDescription);
-      grdDetails.AddTextColumn("Subscription Start", FMainDS.AGift.ColumnDateOfSubscriptionStart);
-      grdDetails.AddTextColumn("Date Gift", FMainDS.AGift.ColumnDateOfFirstGift);
+      grdDetails.AddDateColumn("Subscription Start", FMainDS.AGift.ColumnDateOfSubscriptionStart);
+      grdDetails.AddDateColumn("Date Gift", FMainDS.AGift.ColumnDateOfFirstGift);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -152,12 +150,13 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
     }
 
     /// return the selected row index
-    private Int32 GetRowIndex(AGiftRow row)
+    private Int32 GetRowIndex(NewDonorTDSAGiftRow row)
     {
-    	if (row == null)
-    	{
-    		return 1;
-    	}
+        if (row == null)
+        {
+            return 1;
+        }
+
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
@@ -180,19 +179,19 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
     }
 
     /// return the selected row
-    private AGiftRow GetSelectedRow()
+    private NewDonorTDSAGiftRow GetSelectedRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (AGiftRow)SelectedGridRow[0].Row;
+            return (NewDonorTDSAGiftRow)SelectedGridRow[0].Row;
         }
 
         return null;
     }
 
-    private void ShowData(AGiftRow ARow)
+    private void ShowData(NewDonorTDSAGiftRow ARow)
     {
         if (ARow != null)
         {
@@ -334,7 +333,6 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
         dlg.Document = FGfxPrinter.Document;
         dlg.AllowCurrentPage = true;
         dlg.AllowSomePages = true;
-        dlg.PrinterSettings.PrintRange = PrintRange.AllPages;
 
         if (dlg.ShowDialog() == DialogResult.OK)
         {

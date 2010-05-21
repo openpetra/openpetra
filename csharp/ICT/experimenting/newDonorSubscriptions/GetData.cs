@@ -101,11 +101,19 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             // drop all previous gifts, keep only the most recent one
             NewDonorTDSAGiftRow previousRow = null;
 
-            foreach (NewDonorTDSAGiftRow row in AMainDS.AGift.Rows)
+            Int32 rowCounter = 0;
+
+            while (rowCounter < AMainDS.AGift.Rows.Count)
             {
+                NewDonorTDSAGiftRow row = AMainDS.AGift[rowCounter];
+
                 if ((previousRow != null) && (previousRow.DonorKey == row.DonorKey))
                 {
-                    previousRow.Delete();
+                    AMainDS.AGift.Rows.Remove(previousRow);
+                }
+                else
+                {
+                    rowCounter++;
                 }
 
                 previousRow = row;
@@ -134,9 +142,17 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
         {
             string LedgerCountryCode = TAppSettingsManager.GetValueStatic("Local.CountryCode");
 
-            foreach (DataRow partnerRow in APartnerTable.Rows)
+            Int32 rowCounter = 0;
+
+            while (rowCounter < APartnerTable.Rows.Count)
             {
-                if (partnerRow[APartnerKeyColumn] != DBNull.Value)
+                DataRow partnerRow = APartnerTable.Rows[rowCounter];
+
+                if (partnerRow[APartnerKeyColumn] == DBNull.Value)
+                {
+                    APartnerTable.Rows.Remove(partnerRow);
+                }
+                else
                 {
                     PLocationTable Address;
                     string CountryNameLocal;
@@ -147,12 +163,16 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                         // drop all recipients outside of the country. they will receive a PDF anyways
                         if (!Address[0].IsCountryCodeNull() && (Address[0].CountryCode != LedgerCountryCode))
                         {
-                            partnerRow.Delete();
+                            APartnerTable.Rows.Remove(partnerRow);
+                            continue;
                         }
                     }
 
                     BestAddressTDSLocationRow row = AResultTable.NewRowTyped();
                     AResultTable.Rows.Add(row);
+
+                    // dummy location key to satisfy primary key uniqueness constraint
+                    row.LocationKey = -1 * AResultTable.Rows.Count;
 
                     if (emailAddress.Length > 0)
                     {
@@ -208,6 +228,8 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                     {
                         row.City = Address[0].City;
                     }
+
+                    rowCounter++;
                 }
             }
         }
@@ -292,6 +314,10 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             {
                 return "Sehr geehrte " + title + " " + Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname);
             }
+            else if (title.Length == 0)
+            {
+                return "Sehr geehrte Damen und Herren";
+            }
             else
             {
                 return "Sehr geehrte(r) " + title + " " + Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname);
@@ -316,11 +342,14 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
 
             reader.Close();
 
+            Int32 CurrentAddressCounter = 0;
+
             foreach (NewDonorTDSAGiftRow row in AMainDS.AGift.Rows)
             {
-                string donorName = row["DonorShortName"].ToString();
+                string donorName = row.DonorShortName;
+                BestAddressTDSLocationRow addressRow = AMainDS.BestAddress[CurrentAddressCounter];
 
-                if (Convert.ToBoolean(row["ValidAddress"]) == false)
+                if (addressRow.ValidAddress == false)
                 {
                     continue;
                 }
@@ -329,24 +358,24 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
 
                 msg =
                     msg.Replace("#RECIPIENTNAME",
-                        Calculations.FormatShortName(row["RecipientDescription"].ToString(), eShortNameFormat.eReverseWithoutTitle));
+                        Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eReverseWithoutTitle));
                 msg = msg.Replace("#TITLE", Calculations.FormatShortName(donorName, eShortNameFormat.eOnlyTitle));
                 msg = msg.Replace("#NAME", Calculations.FormatShortName(donorName, eShortNameFormat.eReverseWithoutTitle));
                 msg = msg.Replace("#FORMALGREETING", FormalGreeting(donorName));
-                msg = msg.Replace("#STREETNAME", GetStringOrEmpty(row["StreetName"]));
-                msg = msg.Replace("#LOCATION", GetStringOrEmpty(row["Locality"]));
-                msg = msg.Replace("#ADDRESS3", GetStringOrEmpty(row["Address3"]));
-                msg = msg.Replace("#BUILDING1", GetStringOrEmpty(row["Building1"]));
-                msg = msg.Replace("#BUILDING2", GetStringOrEmpty(row["Building2"]));
-                msg = msg.Replace("#CITY", GetStringOrEmpty(row["City"]));
-                msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(row["PostalCode"]));
+                msg = msg.Replace("#STREETNAME", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnStreetNameId]));
+                msg = msg.Replace("#LOCATION", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnLocalityId]));
+                msg = msg.Replace("#ADDRESS3", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnAddress3Id]));
+                msg = msg.Replace("#BUILDING1", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnBuilding1Id]));
+                msg = msg.Replace("#BUILDING2", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnBuilding2Id]));
+                msg = msg.Replace("#CITY", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnCityId]));
+                msg = msg.Replace("#POSTALCODE", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnPostalCodeId]));
                 msg = msg.Replace("#DATE", DateTime.Now.ToString("d. MMMM yyyy"));
 
                 // according to German Post, there is no country code in front of the post code
                 // if country code is same for the address of the recipient and this office, then COUNTRYNAME is cleared
-                if (GetStringOrEmpty(row["CountryCode"]) != LedgerCountryCode)
+                if (GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnCountryCodeId]) != LedgerCountryCode)
                 {
-                    msg = msg.Replace("#COUNTRYNAME", GetStringOrEmpty(row["CountryName"]));
+                    msg = msg.Replace("#COUNTRYNAME", GetStringOrEmpty(addressRow[BestAddressTDSLocationTable.ColumnCountryNameId]));
                 }
                 else
                 {
@@ -354,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                 }
 
                 // TODO: projects have names as well. different way to determine project gifts? motivation detail?
-                if ((row["MotivationGroupCode"].ToString().ToUpper() == "GIFT") && (row["MotivationDetailCode"].ToString().ToUpper() == "SUPPORT"))
+                if ((row.MotivationGroupCode.ToUpper() == "GIFT") && (row.MotivationDetailCode.ToUpper() == "SUPPORT"))
                 {
                     msg = TPrinterHtml.RemoveDivWithClass(msg, "donationForProject");
                 }
@@ -364,6 +393,8 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                 }
 
                 Letters.Add(msg);
+
+                CurrentAddressCounter++;
             }
 
             return Letters;

@@ -48,8 +48,8 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                 MessageBox.Show(exp.Message, Catalog.GetString("Error connecting to Petra 2.x"));
             }
 
-            dtpStartDate.Value = DateTime.Now.AddMonths(-1);
-            dtpEndDate.Value = DateTime.Now;
+            dtpStartDate.Date = DateTime.Now.AddMonths(-1);
+            dtpEndDate.Date = DateTime.Now;
         }
 
         private void FilterChanged(System.Object sender, EventArgs e)
@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
         {
             FMainDS.AGift.Rows.Clear();
 
-            TGetData.GetNewDonorSubscriptions(ref FMainDS, dtpStartDate.Value, dtpEndDate.Value, true);
+            TGetData.GetNewDonorSubscriptions(ref FMainDS, dtpStartDate.Date.Value, dtpEndDate.Date.Value, true);
 
             // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
             grdDetails.Columns.Clear();
@@ -71,8 +71,6 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             grdDetails.AddTextColumn("Date Gift", FMainDS.AGift.ColumnDateOfFirstGift);
 
             FMainDS.AGift.DefaultView.Sort = NewDonorTDSAGiftTable.GetDonorShortNameDBName();
-
-            FMainDS.AGift.DefaultView.RowFilter = "ValidAddress = true";
 
             FMainDS.AGift.DefaultView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGift.DefaultView);

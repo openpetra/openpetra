@@ -1,9 +1,8 @@
-/* auto generated with nant generateWinforms from MainForm.yaml
- *
- * DO NOT edit manually, DO NOT edit with the designer
- * use a user control if you need to modify the screen content
- *
- *///
+// auto generated with nant generateWinforms from MainForm.yaml
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -26,7 +25,6 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 using System;
 using System.Windows.Forms;
 using Mono.Unix;
@@ -55,6 +53,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -71,9 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlParameters = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.dtpStartDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpStartDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblStartDate = new System.Windows.Forms.Label();
-            this.dtpEndDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpEndDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblEndDate = new System.Windows.Forms.Label();
             this.sptResult = new System.Windows.Forms.SplitContainer();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
@@ -146,7 +145,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             //
             this.dtpStartDate.Location = new System.Drawing.Point(2,2);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpStartDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblStartDate
             //
@@ -155,12 +154,14 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             this.lblStartDate.AutoSize = true;
             this.lblStartDate.Text = "Start Date:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpEndDate
             //
             this.dtpEndDate.Location = new System.Drawing.Point(2,2);
             this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(150, 28);
+            this.dtpEndDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblEndDate
             //
@@ -169,6 +170,8 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             this.lblEndDate.AutoSize = true;
             this.lblEndDate.Text = "End Date:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEndDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -378,15 +381,18 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             //
             // TFrmMainForm
             //
+            this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+
             this.ClientSize = new System.Drawing.Size(754, 623);
-            // this.rpsForm.SetRestoreLocation(this, false);  for the moment false, to avoid problems with size
+
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
             this.Name = "TFrmMainForm";
             this.Text = "Subscriptions for new Donors";
 
@@ -409,16 +415,18 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             this.pnlParameters.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
+
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlParameters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.DateTimePicker dtpStartDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpStartDate;
         private System.Windows.Forms.Label lblStartDate;
-        private System.Windows.Forms.DateTimePicker dtpEndDate;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpEndDate;
         private System.Windows.Forms.Label lblEndDate;
         private System.Windows.Forms.SplitContainer sptResult;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

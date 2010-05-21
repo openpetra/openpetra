@@ -686,7 +686,8 @@ namespace Ict.Petra.Shared.MPartner
             }
             else if (AFormat == eShortNameFormat.eOnlyTitle)
             {
-                if (names.Count > 0)
+                // organisations&churches have no title, therefore we need to check if there are more than 2 names
+                if (names.Count > 2)
                 {
                     return names[names.Count - 1];
                 }
