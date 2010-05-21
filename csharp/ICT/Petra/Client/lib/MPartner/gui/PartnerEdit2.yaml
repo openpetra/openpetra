@@ -53,9 +53,9 @@ RootNode:
         actViewUpperScreenPartExpanded: {Label=&Expanded, ActionClick=ViewUpperScreenPartExpanded}
         actViewUpperScreenPartCollapsed: {Label=&Collapsed, ActionClick=ViewUpperScreenPartExpanded}
 
-        actViewPartnerData: {Label=&Partner Data, ActionClick=ViewPartnerData, Image: partner_toolbar.ico}
-        actViewPersonnelData: {Label=P&ersonnel Data, ActionClick=ViewPersonnelData, Image: personel_toolbar.ico}
-        actViewFinanceData: {Label=&Finance Data, ActionClick=ViewFinanceData, Image: accounts_toolbar.ico}        
+        actViewPartnerData: {Label=&Partner Data, ActionClick=ViewPartnerData, Image: partner_toolbar.gif}
+        actViewPersonnelData: {Label=P&ersonnel Data, ActionClick=ViewPersonnelData, Image: personel_toolbar.gif}
+        actViewFinanceData: {Label=&Finance Data, ActionClick=ViewFinanceData, Image: accounts_toolbar.gif}
         
         actHelpVideoTutorial: {Label=&Video Tutorial for Partner Edit Screen..., ActionClick=HelpVideoTutorial, Image: VideoTutorial.ico}        
         

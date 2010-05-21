@@ -124,6 +124,9 @@ namespace Ict.Petra.Shared.MPartner
         public const String LOCATIONTYPE_HOME = "HOME";
 
         /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_PARTNERKEY = "PartnerKey";
+
+        /// <summary>Partner Import Column Name</summary>
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
         /// <summary>Partner Import Column Name</summary>
