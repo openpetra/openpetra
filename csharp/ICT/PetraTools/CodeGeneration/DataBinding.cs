@@ -90,7 +90,7 @@ namespace Ict.Tools.CodeGeneration
                 TTable table;
                 string tablename;
 
-                if (tableNode.Name == "Table")
+                if (tableNode.Name == "Table" && TXMLParser.HasAttribute(tableNode, "sqltable"))
                 {
                     tablename = TTable.NiceTableName(tableNode.Attributes["sqltable"].Value);
                     table = FPetraXMLStore.GetTable(tablename);
@@ -100,6 +100,14 @@ namespace Ict.Tools.CodeGeneration
                     {
                         table.strDotNetName = datasetName + tablename;
                     }
+                }
+                else if (tableNode.Name == "Table" && TXMLParser.HasAttribute(tableNode, "customtable"))
+                {
+                    table = new TTable();
+                    tablename = tableNode.Attributes["customtable"].Value;
+                    table.strName = tablename;
+                    table.strDotNetName = tablename;
+                    table.strVariableNameInDataset = TXMLParser.HasAttribute(tableNode, "name") ? tableNode.Attributes["name"].Value : tablename;
                 }
                 else
                 {
