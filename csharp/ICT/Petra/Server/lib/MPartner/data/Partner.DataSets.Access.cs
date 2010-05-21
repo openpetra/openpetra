@@ -818,4 +818,64 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
     public class PartnerFindTDSAccess
     {
     }
+     /// auto generated
+    [Serializable()]
+    public class BestAddressTDSAccess
+    {
+
+        /// auto generated
+        static public TSubmitChangesResult SubmitChanges(BestAddressTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrOK;
+            }
+
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                SubmissionResult = TSubmitChangesResult.scrOK;
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.Location, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.Location, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID, "seq_location_number", "p_location_key_i"))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("exception during saving dataset BestAddressTDS:" + e.Message);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw new Exception(e.ToString() + " " + e.Message);
+            }
+
+            return SubmissionResult;
+        }
+    }
 }

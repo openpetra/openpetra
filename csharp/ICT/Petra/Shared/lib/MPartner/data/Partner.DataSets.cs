@@ -12071,4 +12071,438 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnLocationKey);
         }
     }
+
+     /// auto generated
+    [Serializable()]
+    public class BestAddressTDS : TTypedDataSet
+    {
+
+        private BestAddressTDSLocationTable TableLocation;
+
+        /// auto generated
+        public BestAddressTDS() :
+                base("BestAddressTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public BestAddressTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public BestAddressTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public BestAddressTDSLocationTable Location
+        {
+            get
+            {
+                return this.TableLocation;
+            }
+        }
+
+        /// auto generated
+        public new virtual BestAddressTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((BestAddressTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new BestAddressTDSLocationTable("Location"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("Location") != -1))
+            {
+                this.Tables.Add(new BestAddressTDSLocationTable("Location"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TableLocation != null))
+            {
+                this.TableLocation.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "BestAddressTDS";
+            this.TableLocation = ((BestAddressTDSLocationTable)(this.Tables["Location"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+        }
+    }
+
+    /// Address and other data related to that address.
+    [Serializable()]
+    public class BestAddressTDSLocationTable : PLocationTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 40;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnEmailAddressId = 23;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnValidAddressId = 24;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryNameId = 25;
+
+        /// constructor
+        public BestAddressTDSLocationTable() :
+                base("Location")
+        {
+        }
+
+        /// constructor
+        public BestAddressTDSLocationTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public BestAddressTDSLocationTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnEmailAddress;
+        ///
+        public DataColumn ColumnValidAddress;
+        ///
+        public DataColumn ColumnCountryName;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_site_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_location_key_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_building_1_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_building_2_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_street_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_locality_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_suburb_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_city_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_county_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_postal_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_country_code_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_address_3_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_latitude_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_longitude_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_km_x_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_km_y_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_geo_accuracy_i", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("p_restricted_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("ValidAddress", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("CountryName", typeof(string)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnSiteKey = this.Columns["p_site_key_n"];
+            this.ColumnLocationKey = this.Columns["p_location_key_i"];
+            this.ColumnBuilding1 = this.Columns["p_building_1_c"];
+            this.ColumnBuilding2 = this.Columns["p_building_2_c"];
+            this.ColumnStreetName = this.Columns["p_street_name_c"];
+            this.ColumnLocality = this.Columns["p_locality_c"];
+            this.ColumnSuburb = this.Columns["p_suburb_c"];
+            this.ColumnCity = this.Columns["p_city_c"];
+            this.ColumnCounty = this.Columns["p_county_c"];
+            this.ColumnPostalCode = this.Columns["p_postal_code_c"];
+            this.ColumnCountryCode = this.Columns["p_country_code_c"];
+            this.ColumnAddress3 = this.Columns["p_address_3_c"];
+            this.ColumnGeoLatitude = this.Columns["p_geo_latitude_n"];
+            this.ColumnGeoLongitude = this.Columns["p_geo_longitude_n"];
+            this.ColumnGeoKmX = this.Columns["p_geo_km_x_i"];
+            this.ColumnGeoKmY = this.Columns["p_geo_km_y_i"];
+            this.ColumnGeoAccuracy = this.Columns["p_geo_accuracy_i"];
+            this.ColumnRestricted = this.Columns["p_restricted_l"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnEmailAddress = this.Columns["p_email_address_c"];
+            this.ColumnValidAddress = this.Columns["ValidAddress"];
+            this.ColumnCountryName = this.Columns["CountryName"];
+            this.PrimaryKey = new System.Data.DataColumn[2] {
+                    ColumnSiteKey,ColumnLocationKey};
+        }
+
+        /// Access a typed row by index
+        public new BestAddressTDSLocationRow this[int i]
+        {
+            get
+            {
+                return ((BestAddressTDSLocationRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new BestAddressTDSLocationRow NewRowTyped(bool AWithDefaultValues)
+        {
+            BestAddressTDSLocationRow ret = ((BestAddressTDSLocationRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new BestAddressTDSLocationRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new BestAddressTDSLocationRow(builder);
+        }
+
+        /// get typed set of changes
+        public new BestAddressTDSLocationTable GetChangesTyped()
+        {
+            return ((BestAddressTDSLocationTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "Location";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "p_location";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetEmailAddressDBName()
+        {
+            return "p_email_address_c";
+        }
+
+        /// get character length for column
+        public static short GetEmailAddressLength()
+        {
+            return 120;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetValidAddressDBName()
+        {
+            return "ValidAddress";
+        }
+
+        /// get character length for column
+        public static short GetValidAddressLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetCountryNameDBName()
+        {
+            return "CountryName";
+        }
+
+        /// get character length for column
+        public static short GetCountryNameLength()
+        {
+            return -1;
+        }
+
+    }
+
+    /// Address and other data related to that address.
+    [Serializable()]
+    public class BestAddressTDSLocationRow : PLocationRow
+    {
+        private BestAddressTDSLocationTable myTable;
+
+        /// Constructor
+        public BestAddressTDSLocationRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((BestAddressTDSLocationTable)(this.Table));
+        }
+
+        ///
+        public String EmailAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnEmailAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnEmailAddress)
+                            || (((String)(this[this.myTable.ColumnEmailAddress])) != value)))
+                {
+                    this[this.myTable.ColumnEmailAddress] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean ValidAddress
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnValidAddress.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnValidAddress)
+                            || (((Boolean)(this[this.myTable.ColumnValidAddress])) != value)))
+                {
+                    this[this.myTable.ColumnValidAddress] = value;
+                }
+            }
+        }
+
+        ///
+        public string CountryName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnCountryName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((string)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnCountryName)
+                            || (((string)(this[this.myTable.ColumnCountryName])) != value)))
+                {
+                    this[this.myTable.ColumnCountryName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this[this.myTable.ColumnSiteKey.Ordinal] = 0;
+            this[this.myTable.ColumnLocationKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnBuilding1);
+            this.SetNull(this.myTable.ColumnBuilding2);
+            this.SetNull(this.myTable.ColumnStreetName);
+            this.SetNull(this.myTable.ColumnLocality);
+            this.SetNull(this.myTable.ColumnSuburb);
+            this.SetNull(this.myTable.ColumnCity);
+            this.SetNull(this.myTable.ColumnCounty);
+            this.SetNull(this.myTable.ColumnPostalCode);
+            this.SetNull(this.myTable.ColumnCountryCode);
+            this.SetNull(this.myTable.ColumnAddress3);
+            this.SetNull(this.myTable.ColumnGeoLatitude);
+            this.SetNull(this.myTable.ColumnGeoLongitude);
+            this.SetNull(this.myTable.ColumnGeoKmX);
+            this.SetNull(this.myTable.ColumnGeoKmY);
+            this[this.myTable.ColumnGeoAccuracy.Ordinal] = -1;
+            this[this.myTable.ColumnRestricted.Ordinal] = false;
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnEmailAddress);
+            this.SetNull(this.myTable.ColumnValidAddress);
+            this.SetNull(this.myTable.ColumnCountryName);
+        }
+
+        /// test for NULL value
+        public bool IsEmailAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// assign NULL value
+        public void SetEmailAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnEmailAddress);
+        }
+
+        /// test for NULL value
+        public bool IsValidAddressNull()
+        {
+            return this.IsNull(this.myTable.ColumnValidAddress);
+        }
+
+        /// assign NULL value
+        public void SetValidAddressNull()
+        {
+            this.SetNull(this.myTable.ColumnValidAddress);
+        }
+
+        /// test for NULL value
+        public bool IsCountryNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnCountryName);
+        }
+
+        /// assign NULL value
+        public void SetCountryNameNull()
+        {
+            this.SetNull(this.myTable.ColumnCountryName);
+        }
+    }
 }

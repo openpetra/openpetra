@@ -2263,6 +2263,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
     {
 
         private NewDonorTDSAGiftTable TableAGift;
+        private BestAddressTDSLocationTable TableBestAddress;
 
         /// auto generated
         public NewDonorTDS() :
@@ -2292,6 +2293,15 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// auto generated
+        public BestAddressTDSLocationTable BestAddress
+        {
+            get
+            {
+                return this.TableBestAddress;
+            }
+        }
+
+        /// auto generated
         public new virtual NewDonorTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((NewDonorTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -2301,6 +2311,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         protected override void InitTables()
         {
             this.Tables.Add(new NewDonorTDSAGiftTable("AGift"));
+            this.Tables.Add(new BestAddressTDSLocationTable("BestAddress"));
         }
 
         /// auto generated
@@ -2309,6 +2320,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             if ((ds.Tables.IndexOf("AGift") != -1))
             {
                 this.Tables.Add(new NewDonorTDSAGiftTable("AGift"));
+            }
+            if ((ds.Tables.IndexOf("BestAddress") != -1))
+            {
+                this.Tables.Add(new BestAddressTDSLocationTable("BestAddress"));
             }
         }
 
@@ -2321,6 +2336,10 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             {
                 this.TableAGift.InitVars();
             }
+            if ((this.TableBestAddress != null))
+            {
+                this.TableBestAddress.InitVars();
+            }
         }
 
         /// auto generated
@@ -2328,6 +2347,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         {
             this.DataSetName = "NewDonorTDS";
             this.TableAGift = ((NewDonorTDSAGiftTable)(this.Tables["AGift"]));
+            this.TableBestAddress = ((BestAddressTDSLocationTable)(this.Tables["BestAddress"]));
         }
 
         /// auto generated

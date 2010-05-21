@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             db.EstablishDBConnection(dbtype,
                 settings.GetValue("Server.ODBC_DSN"),
                 "",
+                "",
                 settings.GetValue("odbc.username"),
                 settings.GetValue("odbc.password"),
                 "");
@@ -78,7 +79,10 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
         /// <summary>
         /// return a table with the details of people that have a new subscriptions because they donated
         /// </summary>
-        public static void GetNewDonorSubscriptions(ref NewDonorTDS AMainDS, DateTime ASubscriptionStartFrom, DateTime ASubscriptionStartUntil)
+        public static void GetNewDonorSubscriptions(ref NewDonorTDS AMainDS,
+            DateTime ASubscriptionStartFrom,
+            DateTime ASubscriptionStartUntil,
+            bool ADropForeignAddresses)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
@@ -94,6 +98,19 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
+            // drop all previous gifts, keep only the most recent one
+            NewDonorTDSAGiftRow previousRow = null;
+
+            foreach (NewDonorTDSAGiftRow row in AMainDS.AGift.Rows)
+            {
+                if ((previousRow != null) && (previousRow.DonorKey == row.DonorKey))
+                {
+                    previousRow.Delete();
+                }
+
+                previousRow = row;
+            }
+
             // get recipient description
             foreach (NewDonorTDSAGiftRow row in AMainDS.AGift.Rows)
             {
@@ -104,43 +121,45 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
             }
 
             // best address for each partner
-            AddPostalAddress(AMainDS.AGift, AGiftTable.GetDonorKeyDBName());
+            AddPostalAddress(AMainDS.AGift, AMainDS.AGift.ColumnDonorKey, AMainDS.BestAddress, ADropForeignAddresses);
         }
 
         /// <summary>
         /// get the postal address of the partners and add to the table
         /// </summary>
-        private static void AddPostalAddress(DataTable ResultTable, string PartnerKeyColumnName)
+        private static void AddPostalAddress(DataTable APartnerTable,
+            DataColumn APartnerKeyColumn,
+            BestAddressTDSLocationTable AResultTable,
+            bool AIgnoreForeignAddresses)
         {
-            if (!ResultTable.Columns.Contains("Email"))
-            {
-                ResultTable.Columns.Add("Email", typeof(string));
-                ResultTable.Columns.Add("ValidAddress", typeof(bool));
-                ResultTable.Columns.Add("Locality", typeof(string));
-                ResultTable.Columns.Add("StreetName", typeof(string));
-                ResultTable.Columns.Add("Building1", typeof(string));
-                ResultTable.Columns.Add("Building2", typeof(string));
-                ResultTable.Columns.Add("Address3", typeof(string));
-                ResultTable.Columns.Add("CountryCode", typeof(string));
-                ResultTable.Columns.Add("CountryName", typeof(string));
-                ResultTable.Columns.Add("PostalCode", typeof(string));
-                ResultTable.Columns.Add("City", typeof(string));
-            }
+            string LedgerCountryCode = TAppSettingsManager.GetValueStatic("Local.CountryCode");
 
-            foreach (DataRow row in ResultTable.Rows)
+            foreach (DataRow partnerRow in APartnerTable.Rows)
             {
-                if (row[PartnerKeyColumnName] != DBNull.Value)
+                if (partnerRow[APartnerKeyColumn] != DBNull.Value)
                 {
                     PLocationTable Address;
                     string CountryNameLocal;
-                    string emailAddress = GetBestEmailAddress(Convert.ToInt64(row[PartnerKeyColumnName]), out Address, out CountryNameLocal);
+                    string emailAddress = GetBestEmailAddress(Convert.ToInt64(partnerRow[APartnerKeyColumn]), out Address, out CountryNameLocal);
+
+                    if (AIgnoreForeignAddresses)
+                    {
+                        // drop all recipients outside of the country. they will receive a PDF anyways
+                        if (!Address[0].IsCountryCodeNull() && (Address[0].CountryCode != LedgerCountryCode))
+                        {
+                            partnerRow.Delete();
+                        }
+                    }
+
+                    BestAddressTDSLocationRow row = AResultTable.NewRowTyped();
+                    AResultTable.Rows.Add(row);
 
                     if (emailAddress.Length > 0)
                     {
-                        row["Email"] = emailAddress;
+                        row.EmailAddress = emailAddress;
                     }
 
-                    row["ValidAddress"] = (Address != null);
+                    row.ValidAddress = (Address != null);
 
                     if (Address == null)
                     {
@@ -150,44 +169,44 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
 
                     if (!Address[0].IsLocalityNull())
                     {
-                        row["Locality"] = Address[0].Locality;
+                        row.Locality = Address[0].Locality;
                     }
 
                     if (!Address[0].IsStreetNameNull())
                     {
-                        row["StreetName"] = Address[0].StreetName;
+                        row.StreetName = Address[0].StreetName;
                     }
 
                     if (!Address[0].IsBuilding1Null())
                     {
-                        row["Building1"] = Address[0].Building1;
+                        row.Building1 = Address[0].Building1;
                     }
 
                     if (!Address[0].IsBuilding2Null())
                     {
-                        row["Building2"] = Address[0].Building2;
+                        row.Building2 = Address[0].Building2;
                     }
 
                     if (!Address[0].IsAddress3Null())
                     {
-                        row["Address3"] = Address[0].Address3;
+                        row.Address3 = Address[0].Address3;
                     }
 
                     if (!Address[0].IsCountryCodeNull())
                     {
-                        row["CountryCode"] = Address[0].CountryCode;
+                        row.CountryCode = Address[0].CountryCode;
                     }
 
-                    row["CountryName"] = CountryNameLocal;
+                    row.CountryName = CountryNameLocal;
 
                     if (!Address[0].IsPostalCodeNull())
                     {
-                        row["PostalCode"] = Address[0].PostalCode;
+                        row.PostalCode = Address[0].PostalCode;
                     }
 
                     if (!Address[0].IsCityNull())
                     {
-                        row["City"] = Address[0].City;
+                        row.City = Address[0].City;
                     }
                 }
             }

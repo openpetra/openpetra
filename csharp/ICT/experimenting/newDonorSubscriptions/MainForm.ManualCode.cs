@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
         {
             FMainDS.AGift.Rows.Clear();
 
-            TGetData.GetNewDonorSubscriptions(ref FMainDS, dtpStartDate.Value, dtpEndDate.Value);
+            TGetData.GetNewDonorSubscriptions(ref FMainDS, dtpStartDate.Value, dtpEndDate.Value, true);
 
             // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
             grdDetails.Columns.Clear();

@@ -219,7 +219,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                     while (curChild != null)
                     {
-                        if (curChild.Name.ToLower() == "table")
+                        if ((curChild.Name.ToLower() == "table") && TXMLParser.HasAttribute(curChild, "sqltable"))
                         {
                             bool OverloadTable = false;
                             string tabletype = TTable.NiceTableName(TXMLParser.GetAttribute(curChild, "sqltable"));
@@ -298,6 +298,28 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             }
 
                             tables.Add(table.tableorig, table);
+
+                            AddTableToDataset(tabletype, variablename,
+                                snippetDataset);
+                        }
+                        else if ((curChild.Name.ToLower() == "table") && TXMLParser.HasAttribute(curChild, "customtable"))
+                        {
+                            // this refers to a custom table of another dataset, eg. BestAddressTDSLocation
+                            // for the moment, such a table cannot have additional fields
+                            if (curChild.HasChildNodes)
+                            {
+                                throw new Exception(
+                                    String.Format(
+                                        "CreateTypedDataSets(): At the moment, a custom table referenced from another dataset cannot have additional fields. Dataset: {0}, Table: {1}",
+                                        datasetname,
+                                        TXMLParser.HasAttribute(curChild, "customtable")));
+                            }
+
+                            // customtable has to contain the name of the dataset, eg. BestAddressTDSLocation
+                            string tabletype = TXMLParser.GetAttribute(curChild, "customtable");
+                            string variablename = (TXMLParser.HasAttribute(curChild, "name") ?
+                                                   TXMLParser.GetAttribute(curChild, "name") :
+                                                   tabletype);
 
                             AddTableToDataset(tabletype, variablename,
                                 snippetDataset);

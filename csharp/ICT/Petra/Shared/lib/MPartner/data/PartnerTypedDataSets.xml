@@ -255,4 +255,11 @@
         </CustomTable>
     </DataSet>
 
+    <DataSet name="BestAddressTDS">
+        <Table sqltable="p_location" name="Location">
+            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+            <CustomField name="ValidAddress" type="Boolean"/>
+            <CustomField name="CountryName" type="string"/>
+        </Table>
+    </DataSet>
 </PetraDataSets>

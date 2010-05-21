@@ -60,6 +60,7 @@
             <CustomField name="MotivationGroupCode" type="string"/>
             <CustomField name="MotivationDetailCode" type="string"/>
         </Table>
+        <Table customtable="BestAddressTDSLocation" name="BestAddress"/>
     </DataSet>
     
     <DataSet name="DonorHistoryTDS">

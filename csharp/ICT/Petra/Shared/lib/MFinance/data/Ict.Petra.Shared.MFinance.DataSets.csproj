@@ -59,6 +59,10 @@
     <Compile Include="Finance.GL.DataSets.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataSets.csproj">
+      <Project>{422514A8-712E-4A39-8CEC-AB76F6B6B68E}</Project>
+      <Name>Ict.Petra.Shared.MPartner.DataSets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataTables.csproj">
       <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
