@@ -187,7 +187,7 @@
 						PUB.p_person, PUB.p_partner, PUB_p_partner_type
 					WHERE
 							PUB.p_person.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_om_field_key_n
+						AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
 						AND PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
 						AND (
 							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
@@ -204,7 +204,7 @@
 						PUB.p_family, PUB.p_partner, PUB_p_partner_type
 					WHERE
 							PUB.p_family.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_om_field_key_n
+						AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
 						AND PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
 						AND (
 							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'

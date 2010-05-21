@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from BriefAddressReport.yaml
+// auto generated with nant generateWinforms from BulkAddressReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmBriefAddressReport: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmBulkAddressReport: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmBriefAddressReport(IntPtr AParentFormHandle) : base()
+    public TFrmBulkAddressReport(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -66,11 +66,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
+      this.rbtPartnerName.Text = Catalog.GetString("Partner Name");
+      this.rbtPartnerKey.Text = Catalog.GetString("Partner Key");
+      this.rbtCopies.Text = Catalog.GetString("Copies");
+      this.rbtSubscription.Text = Catalog.GetString("Subscription");
+      this.rgrSorting.Text = Catalog.GetString("Address Details");
       this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.rbtBestAddress.Text = Catalog.GetString("Get best address for partner");
-      this.rbtAllAddresses.Text = Catalog.GetString("Get all addresses for partner");
-      this.rgrAddressDetails.Text = Catalog.GetString("Address Details");
-      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -98,14 +99,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Brief Address Report");
+      this.Text = Catalog.GetString("Bulk Address Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Partner\\\\partneraddressreport.xml";
-      FPetraUtilsObject.FReportName = "Partner Addresses";
-      FPetraUtilsObject.FCurrentReport = "Partner Addresses";
+      FPetraUtilsObject.FXMLFiles = "Partner\\\\bulkaddressreport.xml";
+      FPetraUtilsObject.FReportName = "Bulk Address";
+      FPetraUtilsObject.FCurrentReport = "Bulk Address";
 	  FPetraUtilsObject.FSettingsDirectory = "Partner";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -116,13 +117,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.SetAvailableFunctions();
 
       ucoPartnerSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 	
 	  ucoPartnerSelection.PetraUtilsObject = FPetraUtilsObject;
 	  ucoPartnerSelection.InitUserControl();
-	  ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-	  ucoReportSorting.InitUserControl();
 	  ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
 	  ucoReportColumns.InitUserControl();
 	
@@ -162,14 +160,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
-      if (rbtBestAddress.Checked)
+      if (rbtPartnerName.Checked)
       {
-        ACalc.AddParameter("param_addressdetail", "GetBestAddressForPartner");
+        ACalc.AddParameter("param_order_by_name", "PartnerName");
       }
-      if (rbtAllAddresses.Checked)
+      if (rbtPartnerKey.Checked)
       {
-        ACalc.AddParameter("param_addressdetail", "GetAllAddressesForPartner");
+        ACalc.AddParameter("param_order_by_name", "PartnerKey");
+      }
+      if (rbtCopies.Checked)
+      {
+        ACalc.AddParameter("param_order_by_name", "Copies");
+      }
+      if (rbtSubscription.Checked)
+      {
+        ACalc.AddParameter("param_order_by_name", "Subscription");
       }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
@@ -183,9 +188,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
 
       ucoPartnerSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
-      rbtBestAddress.Checked = AParameters.Get("param_addressdetail").ToString() == "GetBestAddressForPartner";
-      rbtAllAddresses.Checked = AParameters.Get("param_addressdetail").ToString() == "GetAllAddressesForPartner";
+      rbtPartnerName.Checked = AParameters.Get("param_order_by_name").ToString() == "PartnerName";
+      rbtPartnerKey.Checked = AParameters.Get("param_order_by_name").ToString() == "PartnerKey";
+      rbtCopies.Checked = AParameters.Get("param_order_by_name").ToString() == "Copies";
+      rbtSubscription.Checked = AParameters.Get("param_order_by_name").ToString() == "Subscription";
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -199,32 +205,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
 	
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Type", 2.5));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.3));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid from", 1.8));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid to", 1.8));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 1.5));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("County", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 4.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Field", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("First Address Line", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Location Key", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 1.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Copies", 2.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Subscription", 3.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Street Name", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("First Address Line", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Third Address Line", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 2.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("County", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 2.5));
 	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Post Code", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Send Mail", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("SiteKey", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Street Name", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.3));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Third Address Line", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("URL", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Url", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Type", 2.5));
+	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Flag", 3.0));
 	
       ucoPartnerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }

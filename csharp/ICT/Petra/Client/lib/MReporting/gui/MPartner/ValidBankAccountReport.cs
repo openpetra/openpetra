@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Brief Address Report");
+      this.Text = Catalog.GetString("Valid Bank Account Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);

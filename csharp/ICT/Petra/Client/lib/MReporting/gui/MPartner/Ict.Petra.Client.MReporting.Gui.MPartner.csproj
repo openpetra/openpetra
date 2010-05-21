@@ -105,6 +105,10 @@
     <Compile Include="BriefFoundationReport.ManualCode.cs">
       <DependentUpon>BriefFoundationReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="BulkAddressReport.cs" />
+    <Compile Include="BulkAddressReport.Designer.cs">
+      <DependentUpon>BulkAddressReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerByCity.cs" />
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
@@ -136,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BriefFoundationReport.resx">
       <DependentUpon>BriefFoundationReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BulkAddressReport.resx">
+      <DependentUpon>BulkAddressReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>

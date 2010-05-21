@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.txtExtract.Size = new System.Drawing.Size(370, 28);
             this.txtExtract.ASpecialSetting = true;
             this.txtExtract.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtExtract.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtExtract.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Extract;
             this.txtExtract.PartnerClass = "";
             this.txtExtract.MaxLength = 32767;
             this.txtExtract.Tag = "CustomDisableAlthoughInvisible";

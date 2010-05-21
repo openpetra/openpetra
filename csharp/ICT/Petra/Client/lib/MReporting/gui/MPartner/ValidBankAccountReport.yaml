@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: PartnerReportingForm.yaml
     FormType: report
-    FormTitle: Brief Address Report
+    FormTitle: Valid Bank Account Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
         XMLFILES: [Partner\\\\validbankaccountreport.xml]

@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ValidBankAccountReport.yaml
+// auto generated with nant generateWinforms from BulkAddressReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
-    partial class TFrmValidBankAccountReport
+    partial class TFrmBulkAddressReport
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,13 +64,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmValidBankAccountReport));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmBulkAddressReport));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection();
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
-            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rgrSorting = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtPartnerName = new System.Windows.Forms.RadioButton();
+            this.rbtPartnerKey = new System.Windows.Forms.RadioButton();
+            this.rbtCopies = new System.Windows.Forms.RadioButton();
+            this.rbtSubscription = new System.Windows.Forms.RadioButton();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -109,6 +115,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
             this.tpgReportSorting.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.rgrSorting.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -134,12 +143,72 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
             this.tpgReportSorting.Name = "tpgReportSorting";
             this.tpgReportSorting.AutoSize = true;
-            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
             //
-            // ucoReportSorting
+            // tableLayoutPanel1
             //
-            this.ucoReportSorting.Name = "ucoReportSorting";
-            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tpgReportSorting.Controls.Add(this.tableLayoutPanel1);
+            //
+            // rgrSorting
+            //
+            this.rgrSorting.Location = new System.Drawing.Point(2,2);
+            this.rgrSorting.Name = "rgrSorting";
+            this.rgrSorting.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.rgrSorting.Controls.Add(this.tableLayoutPanel2);
+            //
+            // rbtPartnerName
+            //
+            this.rbtPartnerName.Location = new System.Drawing.Point(2,2);
+            this.rbtPartnerName.Name = "rbtPartnerName";
+            this.rbtPartnerName.AutoSize = true;
+            this.rbtPartnerName.Text = "Partner Name";
+            this.rbtPartnerName.Checked = true;
+            //
+            // rbtPartnerKey
+            //
+            this.rbtPartnerKey.Location = new System.Drawing.Point(2,2);
+            this.rbtPartnerKey.Name = "rbtPartnerKey";
+            this.rbtPartnerKey.AutoSize = true;
+            this.rbtPartnerKey.Text = "Partner Key";
+            //
+            // rbtCopies
+            //
+            this.rbtCopies.Location = new System.Drawing.Point(2,2);
+            this.rbtCopies.Name = "rbtCopies";
+            this.rbtCopies.AutoSize = true;
+            this.rbtCopies.Text = "Copies";
+            //
+            // rbtSubscription
+            //
+            this.rbtSubscription.Location = new System.Drawing.Point(2,2);
+            this.rbtSubscription.Name = "rbtSubscription";
+            this.rbtSubscription.AutoSize = true;
+            this.rbtSubscription.Text = "Subscription";
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.rbtPartnerName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtPartnerKey, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.rbtCopies, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.rbtSubscription, 0, 3);
+            this.rgrSorting.Text = "Address Details";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rgrSorting, 0, 0);
             this.tpgReportSorting.Text = "Sorting";
             this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -420,7 +489,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmValidBankAccountReport
+            // TFrmBulkAddressReport
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -434,8 +503,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmValidBankAccountReport";
-            this.Text = "Valid Bank Account Report";
+            this.Name = "TFrmBulkAddressReport";
+            this.Text = "Bulk Address Report";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -447,6 +516,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.rgrSorting.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
@@ -459,7 +531,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection ucoPartnerSelection;
         private System.Windows.Forms.TabPage tpgReportSorting;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.GroupBox rgrSorting;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.RadioButton rbtPartnerName;
+        private System.Windows.Forms.RadioButton rbtPartnerKey;
+        private System.Windows.Forms.RadioButton rbtCopies;
+        private System.Windows.Forms.RadioButton rbtSubscription;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

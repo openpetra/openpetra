@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniReportSupportingChurches.Text = Catalog.GetString("Supporting &Churches Report");
       this.mniReportValidBankAccount.Text = Catalog.GetString("&Valid Bank Account Report");
       this.mniReportPublicationStatisticalReport.Text = Catalog.GetString("Publication &Statistical Report");
+      this.mniReportBulkAddressReport.Text = Catalog.GetString("&Bulk Address Report");
       this.mniReports.Text = Catalog.GetString("&Reports...");
       this.mniNewPartner.Text = Catalog.GetString("New &Partner...");
       this.mniNewPerson.Text = Catalog.GetString("Add &Person");
@@ -296,6 +297,13 @@ namespace Ict.Petra.Client.MPartner.Gui
     protected void OpenScreenReportPublicationStatisticalReport(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPublicationStatisticalReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportBulkAddressReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBulkAddressReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBulkAddressReport(this.Handle);
         frm.Show();
     }
 
