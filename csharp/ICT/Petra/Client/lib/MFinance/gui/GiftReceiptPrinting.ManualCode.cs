@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FGfxPrinter = new TGfxPrinter(printDocument);
+            FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
             try
             {
                 TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,

@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.NewDonorSubscriptions
                 }
 
                 string letterTemplateFilename = TAppSettingsManager.GetValueStatic("LetterTemplate.File");
-                FGfxPrinter = new TGfxPrinter(printDocument);
+                FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
                 try
                 {
                     TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,

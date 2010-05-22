@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (FPrinterInstalled)
             {
                 this.tabPreview.SelectedTab = tbpPreview;
-                FGfxPrinter = new TGfxPrinter(this.PrintDocument);
+                FGfxPrinter = new TGfxPrinter(this.PrintDocument, TGfxPrinter.ePrinterBehaviour.eReport);
                 this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
                 this.PrintPreviewControl.Document = FGfxPrinter.Document;
                 this.PrintPreviewControl.Zoom = 1; // show 100% by default

@@ -42,6 +42,20 @@ namespace Ict.Common.Printing
     {
         private System.Drawing.Printing.PrintDocument FDocument;
 
+        /// we have some different behaviour when printing the columns of a report and when printing a form letter
+        public enum ePrinterBehaviour
+        {
+            /// printing the columns of a report, we can make text fit
+            eReport,
+            /// printing a form letter, we need to print everything, comma is not a whitespace
+            eFormLetter
+        };
+
+        /// <summary>
+        /// we have some different behaviour when printing the columns of a report (can make text fit) and when printing a form letter
+        /// </summary>
+        public ePrinterBehaviour FPrinterBehaviour = ePrinterBehaviour.eReport;
+
         /// printing should be started at this position for each line
         public float FPageXPos;
 
@@ -88,9 +102,10 @@ namespace Ict.Common.Printing
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TGfxPrinter(System.Drawing.Printing.PrintDocument ADocument) : base()
+        public TGfxPrinter(System.Drawing.Printing.PrintDocument ADocument, ePrinterBehaviour APrinterBehaviour) : base()
         {
             FDocument = ADocument;
+            FPrinterBehaviour = APrinterBehaviour;
             FSmallPrintFont = new System.Drawing.Font("Arial", 6);
             FDefaultFont = new System.Drawing.Font("Arial", 8);
             FDefaultBoldFont = new System.Drawing.Font("Arial", 8, FontStyle.Bold);
@@ -264,7 +279,12 @@ namespace Ict.Common.Printing
             {
                 StringFormat f = GetStringFormat(AAlign);
                 f.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
-                ATxt = GetFittedText(ATxt, AFont, rect.Width);
+
+                if (FPrinterBehaviour == ePrinterBehaviour.eReport)
+                {
+                    ATxt = GetFittedText(ATxt, AFont, rect.Width);
+                }
+
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, f);
             }
 
@@ -350,9 +370,18 @@ namespace Ict.Common.Printing
             string buffer = ATxt;
             string fittingText = "";
 
+            // whitespace setting for ePrinterBehaviour.eReport
             char[] whitespace = new char[] {
-                ' ', '\t', '\r', '\n', '-', ','
+                ' ', '\t', '\r', '\n'
             };
+
+            if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
+            {
+                whitespace = new char[] {
+                    ' ', '\t', '\r', '\n', '-', ','
+                };
+            }
+
             string previousWhitespaces = "";
             Int32 result = 0;
 
@@ -430,9 +459,17 @@ namespace Ict.Common.Printing
         {
             while (ATxt.Length > 0)
             {
-                // TODO check this code
-                //Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
-                Int32 length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
+                Int32 length = -1;
+
+                if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
+                {
+                    length = GetTextLengthThatWillFit(ATxt, AFont, AXPos + AWidth - CurrentXPos);
+                }
+                else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
+                {
+                    // TODO check this code
+                    length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
+                }
 
                 if (FCurrentState.FNoWrap)
                 {
@@ -449,9 +486,15 @@ namespace Ict.Common.Printing
                         FBiggestLastUsedFont = GetFont(AFont);
                     }
 
-                    // TODO check this code
-                    //PrintString(toPrint, AFont, CurrentXPos, AWidth, AAlign);
-                    PrintString(toPrint, AFont, AXPos, AWidth, AAlign); //FCurrentXPos);
+                    if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
+                    {
+                        PrintString(toPrint, AFont, CurrentXPos, AWidth, AAlign);
+                    }
+                    else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
+                    {
+                        // TODO check this code
+                        PrintString(toPrint, AFont, AXPos, AWidth, AAlign);
+                    }
 
                     if (AAlign == eAlignment.eRight)
                     {
@@ -473,8 +516,12 @@ namespace Ict.Common.Printing
                 }
             }
 
-            // TODO: Check this code
-            CurrentXPos = 0;
+            if (FPrinterBehaviour == ePrinterBehaviour.eReport)
+            {
+                // TODO: Check this code
+                CurrentXPos = 0;
+            }
+
             return true;
         }
 
