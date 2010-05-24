@@ -378,7 +378,7 @@ namespace Ict.Common.Printing
             {
                 // whitespace setting for ePrinterBehaviour.eReport
                 whitespace = new char[] {
-                    ' ', '\t', '\r', '\n', '-', ','
+                    ' ', '\t', '\r', '\n', '-'
                 };
             }
 
