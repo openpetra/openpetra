@@ -370,19 +370,20 @@ namespace Ict.Common.Printing
             string buffer = ATxt;
             string fittingText = "";
 
-            // whitespace setting for ePrinterBehaviour.eReport
             char[] whitespace = new char[] {
                 ' ', '\t', '\r', '\n'
             };
 
-            if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
+            if (FPrinterBehaviour == ePrinterBehaviour.eReport)
             {
+                // whitespace setting for ePrinterBehaviour.eReport
                 whitespace = new char[] {
                     ' ', '\t', '\r', '\n', '-', ','
                 };
             }
 
             string previousWhitespaces = "";
+            string nextWhitespaces = "";
             Int32 result = 0;
 
             while (GetWidthString(fittingText, AFont) < AWidth)
@@ -399,7 +400,7 @@ namespace Ict.Common.Printing
                 if (indexWhitespace > -1)
                 {
                     string nextWord = buffer.Substring(0, indexWhitespace);
-                    fittingText += previousWhitespaces + nextWord;
+                    fittingText += previousWhitespaces + nextWhitespaces + nextWord;
 
                     // sometimes there are forced whitespaces (eg &nbsp;, already replaced by spaces etc)
                     // consider them as a word
@@ -408,7 +409,7 @@ namespace Ict.Common.Printing
                     while (indexWhitespace < buffer.Length - 1 && buffer.Substring(indexWhitespace + 1).IndexOfAny(whitespace) == 0)
                     {
                         indexWhitespace++;
-                        previousWhitespaces += buffer[indexWhitespace];
+                        nextWhitespaces += buffer[indexWhitespace];
                     }
 
                     buffer = buffer.Substring(indexWhitespace + 1);
@@ -467,7 +468,6 @@ namespace Ict.Common.Printing
                 }
                 else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
-                    // TODO check this code
                     length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
                 }
 
@@ -492,7 +492,6 @@ namespace Ict.Common.Printing
                     }
                     else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                     {
-                        // TODO check this code
                         PrintString(toPrint, AFont, AXPos, AWidth, AAlign);
                     }
 
@@ -518,7 +517,6 @@ namespace Ict.Common.Printing
 
             if (FPrinterBehaviour == ePrinterBehaviour.eReport)
             {
-                // TODO: Check this code
                 CurrentXPos = 0;
             }
 
