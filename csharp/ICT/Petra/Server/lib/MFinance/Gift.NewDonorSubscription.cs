@@ -135,8 +135,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static List <string>PrepareNewDonorLetters(ref NewDonorTDS AMainDS, string AHTMLTemplate)
         {
             // get the local country code
-            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            string LocalCountryCode = ledgerTable[0].CountryCode;
+//            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber);
+//            string LocalCountryCode = ledgerTable[0].CountryCode;
+			string LocalCountryCode = "TODO";
 
         	List <string>Letters = new List <string>();
 
@@ -191,8 +192,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 Letters.Add(msg);
-
-                CurrentAddressCounter++;
             }
 
             return Letters;
