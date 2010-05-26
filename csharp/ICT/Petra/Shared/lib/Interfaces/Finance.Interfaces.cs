@@ -439,6 +439,16 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     DateTime ADateCorrection,
                                     bool AWithReceipt);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
+                                             DateTime ASubscriptionStartFrom,
+                                             DateTime ASubscriptionStartUntil,
+                                             string AExtractName,
+                                             bool ADropForeignAddresses);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        List <string> PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
+                                             string AHTMLTemplate,
+                                             string ALedgerCountryCode);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                         DateTime AStartDate,
                                         DateTime AEndDate,

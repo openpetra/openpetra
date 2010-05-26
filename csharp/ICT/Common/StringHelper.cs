@@ -1859,5 +1859,11 @@ namespace Ict.Common
 //#endif
             return ReturnValue;
         }
+
+        /// check if the needle occurs in s, ignoring case sensitivity
+        static public Boolean ContainsI(string s, string needle)
+        {
+            return s.IndexOf(needle, StringComparison.OrdinalIgnoreCase) > -1;
+        }
     }
 }

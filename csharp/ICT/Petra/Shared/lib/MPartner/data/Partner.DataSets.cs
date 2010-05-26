@@ -12158,11 +12158,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// TableId for Ict.Common.Data generic functions
         public new static short TableId = 40;
         /// used for generic TTypedDataTable functions
-        public static short ColumnEmailAddressId = 23;
+        public static short ColumnPartnerKeyId = 23;
         /// used for generic TTypedDataTable functions
-        public static short ColumnValidAddressId = 24;
+        public static short ColumnEmailAddressId = 24;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCountryNameId = 25;
+        public static short ColumnValidAddressId = 25;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnCountryNameId = 26;
 
         /// constructor
         public BestAddressTDSLocationTable() :
@@ -12182,6 +12184,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         {
         }
 
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public DataColumn ColumnPartnerKey;
         ///
         public DataColumn ColumnEmailAddress;
         ///
@@ -12215,6 +12219,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("ValidAddress", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("CountryName", typeof(string)));
@@ -12246,6 +12251,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
             this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
             this.ColumnEmailAddress = this.Columns["p_email_address_c"];
             this.ColumnValidAddress = this.Columns["ValidAddress"];
             this.ColumnCountryName = this.Columns["CountryName"];
@@ -12310,6 +12316,18 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// get the name of the field in the database for this column
+        public static string GetPartnerKeyDBName()
+        {
+            return "p_partner_key_n";
+        }
+
+        /// get character length for column
+        public static short GetPartnerKeyLength()
+        {
+            return 10;
+        }
+
+        /// get the name of the field in the database for this column
         public static string GetEmailAddressDBName()
         {
             return "p_email_address_c";
@@ -12358,6 +12376,32 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 base(rb)
         {
             this.myTable = ((BestAddressTDSLocationTable)(this.Table));
+        }
+
+        /// This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        public Int64 PartnerKey
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnPartnerKey.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnPartnerKey)
+                            || (((Int64)(this[this.myTable.ColumnPartnerKey])) != value)))
+                {
+                    this[this.myTable.ColumnPartnerKey] = value;
+                }
+            }
         }
 
         ///
@@ -12464,9 +12508,22 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnDateModified);
             this.SetNull(this.myTable.ColumnModifiedBy);
             this.SetNull(this.myTable.ColumnModificationId);
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnEmailAddress);
             this.SetNull(this.myTable.ColumnValidAddress);
             this.SetNull(this.myTable.ColumnCountryName);
+        }
+
+        /// test for NULL value
+        public bool IsPartnerKeyNull()
+        {
+            return this.IsNull(this.myTable.ColumnPartnerKey);
+        }
+
+        /// assign NULL value
+        public void SetPartnerKeyNull()
+        {
+            this.SetNull(this.myTable.ColumnPartnerKey);
         }
 
         /// test for NULL value

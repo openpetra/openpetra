@@ -2248,6 +2248,23 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
+                                                    DateTime ASubscriptionStartFrom,
+                                                    DateTime ASubscriptionStartUntil,
+                                                    string AExtractName,
+                                                    bool ADropForeignAddresses)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.GetNewDonorSubscriptions(APublicationCode, ASubscriptionStartFrom, ASubscriptionStartUntil, AExtractName, ADropForeignAddresses);
+        }
+
+        /// generated method from connector
+        public List <string> PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
+                                                    string AHTMLTemplate)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.PrepareNewDonorLetters(ref AMainDS, AHTMLTemplate);
+        }
+
+        /// generated method from connector
         public string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                                DateTime AStartDate,
                                                DateTime AEndDate,

@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
@@ -161,8 +162,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             PLocationTable Location;
             string CountryName;
+            string EmailAddress;
 
-            if (!GetBestAddress(ADonorKey, out Location, out CountryName, ATransaction))
+            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, out EmailAddress, ATransaction))
             {
                 return "";
             }
@@ -235,49 +237,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
-        }
-
-        private static bool GetBestAddress(Int64 APartnerKey, out PLocationTable AAddress, out string ACountryNameLocal, TDBTransaction ATransaction)
-        {
-            AAddress = null;
-            ACountryNameLocal = "";
-
-            DataSet PartnerLocationsDS = new DataSet();
-
-            PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
-            PartnerLocationsDS.Tables.Add(new PCountryTable());
-            DataTable PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
-            PCountryTable CountryTable = (PCountryTable)PartnerLocationsDS.Tables[PCountryTable.GetTableName()];
-            CountryTable.DefaultView.Sort = PCountryTable.GetCountryCodeDBName();
-
-            // add special column BestAddress and Icon
-            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
-            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
-
-            // find all locations of the partner, put it into a dataset
-            PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, ATransaction);
-
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
-            Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
-
-            foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
-            {
-                // find the row with BestAddress = 1
-                if (Convert.ToInt32(row["BestAddress"]) == 1)
-                {
-                    // we also want the post address, need to load the p_location table:
-                    AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ATransaction);
-
-                    if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
-                    {
-                        CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
-                    }
-
-                    ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
-                }
-            }
-
-            return AAddress != null;
         }
     }
 }

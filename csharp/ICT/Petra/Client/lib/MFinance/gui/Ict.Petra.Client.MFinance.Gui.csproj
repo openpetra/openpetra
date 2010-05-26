@@ -218,6 +218,13 @@
     <Compile Include="GiftMotivationSetup.ManualCode.cs">
       <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftNewDonorLetter.cs" />
+    <Compile Include="GiftNewDonorLetter.Designer.cs">
+      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftNewDonorLetter.ManualCode.cs">
+      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="GiftReceiptPrinting.cs" />
     <Compile Include="GiftReceiptPrinting.Designer.cs">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
@@ -339,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GiftMotivationSetup.resx">
       <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftNewDonorLetter.resx">
+      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GiftReceiptPrinting.resx">
       <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>

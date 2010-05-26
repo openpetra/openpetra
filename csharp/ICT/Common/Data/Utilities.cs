@@ -370,5 +370,18 @@ namespace Ict.Common.Data
                 }
             }
         }
+
+        /// delete the destination table, copy all rows from the source table;
+        /// we assume both tables have the same columns, same type.
+        /// this is needed for datasets, when the table is readonly and cannot be assigned directly
+        public static void CopyTo(DataTable ASrc, DataTable ADest)
+        {
+            ADest.Rows.Clear();
+
+            foreach (DataRow r in ASrc.Rows)
+            {
+                ADest.ImportRow(r);
+            }
+        }
     }
 }
