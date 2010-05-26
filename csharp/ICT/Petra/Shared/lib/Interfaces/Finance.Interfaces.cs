@@ -446,8 +446,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                              bool ADropForeignAddresses);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         List <string> PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
-                                             string AHTMLTemplate,
-                                             string ALedgerCountryCode);
+                                             string AHTMLTemplate);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                         DateTime AStartDate,
