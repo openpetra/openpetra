@@ -867,6 +867,11 @@
     </target>
     <target name="setupStandalone">
         <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseVersion}</echo>
+        <property name="DBUpdate.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/patches/${script::CalculateStandaloneDBUpdateFileName(ReleaseID)}"/>
+        <if test="${not file::exists(DBUpdate.file)}">
+            <echo message="${DBUpdate.file}"/>
+            <fail message="We are missing the db upgrade file for sqlite standalone databases." />
+        </if>
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
         <call target="setupTemplate"/>
     </target>
