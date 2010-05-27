@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 {
                     SiteKey = Convert.ToInt64(SiteKeyString);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     SiteKey = -1;
                 }

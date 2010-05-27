@@ -32,11 +32,15 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MPartner
 {
@@ -110,7 +114,7 @@ namespace Ict.Petra.Server.MPartner
         {
             BestAddressTDSLocationTable ResultTable = new BestAddressTDSLocationTable();
 
-            string LedgerCountryCode = TAppSettingsManager.GetValueStatic("Local.CountryCode");
+            string LocalCountryCode = TAddressTools.GetLocalCountryCode(ATransaction);
 
             foreach (DataRow partnerRow in APartnerTable.Rows)
             {
@@ -125,7 +129,7 @@ namespace Ict.Petra.Server.MPartner
                     if (AIgnoreForeignAddresses)
                     {
                         // ignore all recipients outside of the country. they will receive a PDF anyways
-                        if (!Address[0].IsCountryCodeNull() && (Address[0].CountryCode != LedgerCountryCode))
+                        if (!Address[0].IsCountryCodeNull() && (Address[0].CountryCode != LocalCountryCode))
                         {
                             continue;
                         }
@@ -196,6 +200,41 @@ namespace Ict.Petra.Server.MPartner
             }
 
             return ResultTable;
+        }
+
+        /// <summary>
+        /// return the country code for this installation of OpenPetra.
+        /// using the SiteKey to determine the country
+        /// </summary>
+        public static string GetLocalCountryCode(TDBTransaction ATransaction)
+        {
+            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", ATransaction);
+
+            if (systemDefaults.Rows.Count == 1)
+            {
+                Int64 SiteKey = Int64.Parse(systemDefaults[0].DefaultValue);
+                ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(SiteKey / 1000000), ATransaction);
+
+                if (ledgerTable.Rows.Count == 1)
+                {
+                    return ledgerTable[0].CountryCode;
+                }
+            }
+            else
+            {
+                ALedgerTable ledgerTable = ALedgerAccess.LoadAll(ATransaction);
+
+                if (ledgerTable.Rows.Count > 0)
+                {
+                    TLogging.Log(
+                        "TAddressTools.GetLocalCountryCode: Cannot find the SiteKey in s_system_defaults table. Using the country code of the first ledger: "
+                        + ledgerTable[0].CountryCode);
+                    return ledgerTable[0].CountryCode;
+                }
+            }
+
+            // no sitekey, therefore return invalid country code
+            return "99";
         }
     }
 }

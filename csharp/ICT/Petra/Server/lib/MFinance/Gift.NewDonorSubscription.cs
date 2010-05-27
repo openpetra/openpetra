@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-            string stmt = TDataBase.ReadSqlFile("GetDonorsWithSubscriptionStartInDateRange.sql");
+            string stmt = TDataBase.ReadSqlFile("Gift.NewDonorSubscription.sql");
 
             OdbcParameter parameter;
 
@@ -111,8 +111,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // best address for each partner
-            DataUtilities.CopyTo(MainDS.BestAddress,
-                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, transaction));
+            DataUtilities.CopyTo(
+                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, transaction),
+                MainDS.BestAddress);
+
+            // remove all invalid addresses
+            rowCounter = 0;
+
+            while (rowCounter < MainDS.BestAddress.Rows.Count)
+            {
+                BestAddressTDSLocationRow row = MainDS.BestAddress[rowCounter];
+
+                if (!row.ValidAddress)
+                {
+                    MainDS.BestAddress.Rows.Remove(row);
+                }
+                else
+                {
+                    rowCounter++;
+                }
+            }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -134,12 +152,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         public static List <string>PrepareNewDonorLetters(ref NewDonorTDS AMainDS, string AHTMLTemplate)
         {
-            // get the local country code
-//            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber);
-//            string LocalCountryCode = ledgerTable[0].CountryCode;
-			string LocalCountryCode = "TODO";
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
-        	List <string>Letters = new List <string>();
+            // get the local country code
+            string LocalCountryCode = TAddressTools.GetLocalCountryCode(transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            List <string>Letters = new List <string>();
 
             foreach (BestAddressTDSLocationRow addressRow in AMainDS.BestAddress.Rows)
             {
@@ -150,7 +170,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 AMainDS.AGift.DefaultView.RowFilter = NewDonorTDSAGiftTable.GetDonorKeyDBName() + " = '" + addressRow.PartnerKey.ToString() + "'";
                 NewDonorTDSAGiftRow row = (NewDonorTDSAGiftRow)AMainDS.AGift.DefaultView[0].Row;
-                	
+
                 string donorName = row.DonorShortName;
 
                 string msg = AHTMLTemplate;

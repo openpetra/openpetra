@@ -32,4 +32,4 @@ AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transactio
 AND PUB_a_gift_detail.a_detail_number_i = 1
 AND PUB_a_gift_detail.p_recipient_key_n = RecipientPartner.p_partner_key_n
 AND PUB_a_gift_batch.a_batch_status_c <> 'Cancelled'
-ORDER BY PUB_p_partner.p_partner_short_name_c
+ORDER BY PUB_p_partner.p_partner_short_name_c, PUB_a_gift_batch.a_gl_effective_date_d ASC

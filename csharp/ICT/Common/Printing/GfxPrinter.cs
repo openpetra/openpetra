@@ -643,6 +643,11 @@ namespace Ict.Common.Printing
             float AWidthPercentage,
             float AHeightPercentage)
         {
+            if (!System.IO.File.Exists(APath))
+            {
+                throw new Exception("TGfxPrinter.DrawBitmap: cannot find image file " + APath);
+            }
+
             Bitmap img = new System.Drawing.Bitmap(APath);
             float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
             float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;

@@ -66,8 +66,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // get the local country code
-            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            string LocalCountryCode = ledgerTable[0].CountryCode;
+            string LocalCountryCode = TAddressTools.GetLocalCountryCode(Transaction);
 
             // first get all donors in the given date range
             string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");

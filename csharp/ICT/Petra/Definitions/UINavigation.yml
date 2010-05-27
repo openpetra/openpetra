@@ -45,6 +45,7 @@ OpenPetra:
                         ImportGiftsFromBankStatement: {Description: Matching donors and recipients, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
+                        PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=Gift.TFrmGiftNewDonorLetter}
                         MotivationDetailSetup: {Description: "Create motivation details, towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
                     AP: {Label=Accounts Payable}
                         AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}

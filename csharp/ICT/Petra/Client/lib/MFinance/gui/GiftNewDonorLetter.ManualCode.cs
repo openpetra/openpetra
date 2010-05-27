@@ -58,13 +58,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtExtract.Text,
                 true);
 
+            if (FMainDS.BestAddress.Rows.Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("There are no letters with valid addresses for your current parameters"),
+                    Catalog.GetString("Nothing to print"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
             // TODO: for some reason, the columns' initialisation in the constructor does not have any effect; need to do here again???
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Donor", FMainDS.AGift.ColumnDonorKey);
             grdDetails.AddTextColumn("DonorShortName", FMainDS.AGift.ColumnDonorShortName);
             grdDetails.AddTextColumn("Recipient", FMainDS.AGift.ColumnRecipientDescription);
-            grdDetails.AddTextColumn("Subscription Start", FMainDS.AGift.ColumnDateOfSubscriptionStart);
-            grdDetails.AddTextColumn("Date Gift", FMainDS.AGift.ColumnDateOfFirstGift);
+            grdDetails.AddDateColumn("Subscription Start", FMainDS.AGift.ColumnDateOfSubscriptionStart);
+            grdDetails.AddDateColumn("Date Gift", FMainDS.AGift.ColumnDateOfFirstGift);
 
             FMainDS.AGift.DefaultView.Sort = NewDonorTDSAGiftTable.GetDonorShortNameDBName();
 
@@ -126,23 +135,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (AllLetters.Length > 0)
                 {
                     AllLetters += "</html>";
-                }
 
-                FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-                try
-                {
-                    TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
-                        System.IO.Path.GetDirectoryName(letterTemplateFilename),
-                        FGfxPrinter);
-                    FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-                    this.ppvLetters.InvalidatePreview();
-                    this.ppvLetters.Document = FGfxPrinter.Document;
-                    this.ppvLetters.Zoom = 1;
-                    FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
+                    FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+                    try
+                    {
+                        TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
+                            System.IO.Path.GetDirectoryName(letterTemplateFilename),
+                            FGfxPrinter);
+                        FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+                        this.ppvLetters.InvalidatePreview();
+                        this.ppvLetters.Document = FGfxPrinter.Document;
+                        this.ppvLetters.Zoom = 1;
+                        FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
                 }
             }
         }
