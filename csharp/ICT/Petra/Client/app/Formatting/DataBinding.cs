@@ -301,11 +301,15 @@ namespace Ict.Petra.Client.App.Formatting
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
+#else
+            catch (Exception)
+            {
 #endif
+
                 TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
             }
 

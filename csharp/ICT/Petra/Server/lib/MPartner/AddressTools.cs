@@ -228,7 +228,8 @@ namespace Ict.Petra.Server.MPartner
                 {
                     TLogging.Log(
                         "TAddressTools.GetLocalCountryCode: Cannot find the SiteKey in s_system_defaults table. Using the country code of the first ledger: "
-                        + ledgerTable[0].CountryCode);
+                        +
+                        ledgerTable[0].CountryCode);
                     return ledgerTable[0].CountryCode;
                 }
             }
