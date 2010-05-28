@@ -41,6 +41,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MPartner
 {
@@ -208,12 +209,9 @@ namespace Ict.Petra.Server.MPartner
         /// </summary>
         public static string GetLocalCountryCode(TDBTransaction ATransaction)
         {
-            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", ATransaction);
-
-            if (systemDefaults.Rows.Count == 1)
+            if (DomainManager.GSiteKey > 0)
             {
-                Int64 SiteKey = Int64.Parse(systemDefaults[0].DefaultValue);
-                ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(SiteKey / 1000000), ATransaction);
+                ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(DomainManager.GSiteKey / 1000000), ATransaction);
 
                 if (ledgerTable.Rows.Count == 1)
                 {
