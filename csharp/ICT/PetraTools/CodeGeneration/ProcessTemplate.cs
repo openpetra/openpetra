@@ -685,5 +685,27 @@ namespace Ict.Tools.CodeGeneration
 
             return false;
         }
+
+        /// <summary>
+        /// return the snippet as a string, instead of writing to file
+        /// </summary>
+        public string FinishWriting(Boolean ACheckTemplateCompletion)
+        {
+            ReplaceCodelets();
+            FTemplateCode = RemoveUndefinedIFDEFs(FTemplateCode);
+            FTemplateCode = ActivateUndefinedIFNDEFs(FTemplateCode);
+            FTemplateCode = BeautifyCode(FTemplateCode);
+
+            // just one line break at the end
+            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' }) + Environment.NewLine;
+
+            if (!ACheckTemplateCompletion || CheckTemplateCompletion(FTemplateCode))
+            {
+                return FTemplateCode;
+            }
+
+            // an exception is thrown anyways by CheckTemplateCompletion
+            return "";
+        }
     }
 }

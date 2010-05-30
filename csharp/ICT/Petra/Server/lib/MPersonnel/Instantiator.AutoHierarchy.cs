@@ -44,6 +44,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person;
 using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance;
@@ -91,7 +92,6 @@ using Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors;
 //using Ict.Petra.Server.MPersonnel.Units.DataElements.Cacheable;
 //using Ict.Petra.Server.MPersonnel.Units.DataElements.UIConnectors;
 
-
 #region ManualCode
 using Ict.Petra.Server.MCommon.UIConnectors;
 #endregion ManualCode
@@ -119,7 +119,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
 
 #endif
         }
-
 
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMPersonnel
@@ -161,7 +160,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                 RandomString = RandomString + rndbytes[rndbytespos].ToString();
             }
 
-
             RemotingTime = DateTime.Now;
             RemotedObject = new TMPersonnel();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
@@ -180,9 +178,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             return FRemotingURL;
         }
 
-
     }
-
 
     /// <summary>
     /// REMOTEABLE CLASS. MPersonnel Namespace (highest level).
@@ -209,7 +205,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -252,16 +247,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMPersonnel object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'Person' subnamespace contains further subnamespaces.</summary>
         public IPersonNamespace Person
         {
@@ -286,12 +279,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                     FPersonSubNamespace = new TPersonNamespace();
                 }
 
-
                 return FPersonSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'TableMaintenance' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceNamespace TableMaintenance
@@ -317,12 +308,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                     FTableMaintenanceSubNamespace = new TTableMaintenanceNamespace();
                 }
 
-
                 return FTableMaintenanceSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'Units' subnamespace contains further subnamespaces.</summary>
         public IUnitsNamespace Units
@@ -348,19 +337,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                     FUnitsSubNamespace = new TUnitsNamespace();
                 }
 
-
                 return FUnitsSubNamespace;
             }
 
         }
-
-
     }
 }
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonNamespace : MarshalByRefObject, IPersonNamespace
     {
@@ -382,7 +367,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -425,16 +409,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PersonDataElements' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsNamespace DataElements
         {
@@ -454,17 +436,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
                 if (FPersonDataElementsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TDataElementsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Person.Instantiator.DataElements') should be automatically contructable.
                     FPersonDataElementsSubNamespace = new TPersonDataElementsNamespace();
                 }
 
-
-                return (IPersonDataElementsNamespace)FPersonDataElementsSubNamespace;
+                return FPersonDataElementsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PersonShepherds' subnamespace contains further subnamespaces.</summary>
         public IPersonShepherdsNamespace Shepherds
@@ -485,25 +465,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
                 if (FPersonShepherdsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TShepherdsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonShepherdsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Person.Instantiator.Shepherds') should be automatically contructable.
                     FPersonShepherdsSubNamespace = new TPersonShepherdsNamespace();
                 }
 
-
-                return (IPersonShepherdsNamespace)FPersonShepherdsSubNamespace;
+                return FPersonShepherdsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsNamespace : MarshalByRefObject, IPersonDataElementsNamespace
     {
@@ -526,7 +501,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -569,16 +543,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PersonDataElementsApplications' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsNamespace Applications
         {
@@ -598,17 +570,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 if (FPersonDataElementsApplicationsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TApplicationsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.Applications') should be automatically contructable.
                     FPersonDataElementsApplicationsSubNamespace = new TPersonDataElementsApplicationsNamespace();
                 }
 
-
-                return (IPersonDataElementsApplicationsNamespace)FPersonDataElementsApplicationsSubNamespace;
+                return FPersonDataElementsApplicationsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PersonDataElementsCacheable' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsCacheableNamespace Cacheable
@@ -629,17 +599,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 if (FPersonDataElementsCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.Cacheable') should be automatically contructable.
                     FPersonDataElementsCacheableSubNamespace = new TPersonDataElementsCacheableNamespace();
                 }
 
-
-                return (IPersonDataElementsCacheableNamespace)FPersonDataElementsCacheableSubNamespace;
+                return FPersonDataElementsCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PersonDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsUIConnectorsNamespace UIConnectors
@@ -660,25 +628,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 if (FPersonDataElementsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.UIConnectors') should be automatically contructable.
                     FPersonDataElementsUIConnectorsSubNamespace = new TPersonDataElementsUIConnectorsNamespace();
                 }
 
-
-                return (IPersonDataElementsUIConnectorsNamespace)FPersonDataElementsUIConnectorsSubNamespace;
+                return FPersonDataElementsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsNamespace : MarshalByRefObject, IPersonDataElementsApplicationsNamespace
     {
@@ -700,7 +663,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -743,16 +705,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsApplicationsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PersonDataElementsApplicationsCacheable' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsCacheableNamespace Cacheable
         {
@@ -772,17 +732,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                 if (FPersonDataElementsApplicationsCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElementsApplications.Instantiator.Cacheable') should be automatically contructable.
                     FPersonDataElementsApplicationsCacheableSubNamespace = new TPersonDataElementsApplicationsCacheableNamespace();
                 }
 
-
-                return (IPersonDataElementsApplicationsCacheableNamespace)FPersonDataElementsApplicationsCacheableSubNamespace;
+                return FPersonDataElementsApplicationsCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PersonDataElementsApplicationsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsUIConnectorsNamespace UIConnectors
@@ -803,25 +761,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                 if (FPersonDataElementsApplicationsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElementsApplications.Instantiator.UIConnectors') should be automatically contructable.
                     FPersonDataElementsApplicationsUIConnectorsSubNamespace = new TPersonDataElementsApplicationsUIConnectorsNamespace();
                 }
 
-
-                return (IPersonDataElementsApplicationsUIConnectorsNamespace)FPersonDataElementsApplicationsUIConnectorsSubNamespace;
+                return FPersonDataElementsApplicationsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsCacheableNamespace : MarshalByRefObject, IPersonDataElementsApplicationsCacheableNamespace
     {
@@ -841,7 +794,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -884,14 +836,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsApplicationsCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable)
@@ -902,14 +851,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             return null;
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsUIConnectorsNamespace : MarshalByRefObject, IPersonDataElementsApplicationsUIConnectorsNamespace
     {
@@ -929,7 +875,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -972,18 +917,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsApplicationsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                           System.Int64 APartnerKey,
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                            System.Int32 AApplicationKey,
                                                                                                                                            System.Int64 ARegistrationOffice,
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
@@ -996,10 +937,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             }
 
 #endif
-            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, 
-               AApplicationKey, 
-               ARegistrationOffice, 
+            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
+               AApplicationKey,
+               ARegistrationOffice,
                AOfficeSpecificDataLabelUse);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -1017,14 +959,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 #endif
             return ReturnValue;
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsCacheableNamespace : MarshalByRefObject, IPersonDataElementsCacheableNamespace
     {
@@ -1044,7 +983,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1087,14 +1025,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable)
@@ -1105,14 +1040,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             return null;
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsUIConnectorsNamespace : MarshalByRefObject, IPersonDataElementsUIConnectorsNamespace
     {
@@ -1132,7 +1064,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1175,18 +1106,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonDataElementsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                           System.Int64 APartnerKey,
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                            out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
@@ -1198,6 +1125,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 
 #endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -1215,14 +1143,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 #endif
             return ReturnValue;
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonShepherdsNamespace : MarshalByRefObject, IPersonShepherdsNamespace
     {
@@ -1243,7 +1168,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1286,16 +1210,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonShepherdsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PersonShepherdsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPersonShepherdsUIConnectorsNamespace UIConnectors
         {
@@ -1315,25 +1237,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
                 if (FPersonShepherdsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPersonShepherdsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PersonShepherds.Instantiator.UIConnectors') should be automatically contructable.
                     FPersonShepherdsUIConnectorsSubNamespace = new TPersonShepherdsUIConnectorsNamespace();
                 }
 
-
-                return (IPersonShepherdsUIConnectorsNamespace)FPersonShepherdsUIConnectorsSubNamespace;
+                return FPersonShepherdsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPersonShepherdsUIConnectorsNamespace : MarshalByRefObject, IPersonShepherdsUIConnectorsNamespace
     {
@@ -1353,7 +1270,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1396,22 +1312,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPersonShepherdsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 {
-
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceNamespace : MarshalByRefObject, ITableMaintenanceNamespace
     {
@@ -1432,7 +1343,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1475,16 +1385,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
         {
@@ -1504,25 +1412,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
                 if (FTableMaintenanceUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TTableMaintenanceUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.TableMaintenance.Instantiator.UIConnectors') should be automatically contructable.
                     FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespace();
                 }
 
-
-                return (ITableMaintenanceUIConnectorsNamespace)FTableMaintenanceUIConnectorsSubNamespace;
+                return FTableMaintenanceUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceUIConnectorsNamespace : MarshalByRefObject, ITableMaintenanceUIConnectorsNamespace
     {
@@ -1542,7 +1445,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1585,22 +1487,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TTableMaintenanceUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 {
-
     /// <summary>auto generated class </summary>
     public class TUnitsNamespace : MarshalByRefObject, IUnitsNamespace
     {
@@ -1621,7 +1518,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1664,16 +1560,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TUnitsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'UnitsDataElements' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsNamespace DataElements
         {
@@ -1693,25 +1587,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
                 if (FUnitsDataElementsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TDataElementsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TUnitsDataElementsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Units.Instantiator.DataElements') should be automatically contructable.
                     FUnitsDataElementsSubNamespace = new TUnitsDataElementsNamespace();
                 }
 
-
-                return (IUnitsDataElementsNamespace)FUnitsDataElementsSubNamespace;
+                return FUnitsDataElementsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 {
-
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsNamespace : MarshalByRefObject, IUnitsDataElementsNamespace
     {
@@ -1733,7 +1622,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1776,16 +1664,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TUnitsDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'UnitsDataElementsCacheable' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsCacheableNamespace Cacheable
         {
@@ -1805,17 +1691,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
                 if (FUnitsDataElementsCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TUnitsDataElementsCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.UnitsDataElements.Instantiator.Cacheable') should be automatically contructable.
                     FUnitsDataElementsCacheableSubNamespace = new TUnitsDataElementsCacheableNamespace();
                 }
 
-
-                return (IUnitsDataElementsCacheableNamespace)FUnitsDataElementsCacheableSubNamespace;
+                return FUnitsDataElementsCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'UnitsDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsUIConnectorsNamespace UIConnectors
@@ -1836,25 +1720,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
                 if (FUnitsDataElementsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TUnitsDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.UnitsDataElements.Instantiator.UIConnectors') should be automatically contructable.
                     FUnitsDataElementsUIConnectorsSubNamespace = new TUnitsDataElementsUIConnectorsNamespace();
                 }
 
-
-                return (IUnitsDataElementsUIConnectorsNamespace)FUnitsDataElementsUIConnectorsSubNamespace;
+                return FUnitsDataElementsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsCacheableNamespace : MarshalByRefObject, IUnitsDataElementsCacheableNamespace
     {
@@ -1874,7 +1753,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1917,14 +1795,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TUnitsDataElementsCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable)
@@ -1935,14 +1810,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
             return null;
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsUIConnectorsNamespace : MarshalByRefObject, IUnitsDataElementsUIConnectorsNamespace
     {
@@ -1962,7 +1834,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnecto
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2005,14 +1876,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnecto
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TUnitsDataElementsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
     }
 }

@@ -44,8 +44,8 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MFinDev;
 
+using Ict.Petra.Shared.Interfaces.MFinDev;
 
 namespace Ict.Petra.Server.MFinDev.Instantiator
 {
@@ -71,7 +71,6 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
 
 #endif
         }
-
 
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMFinDev
@@ -113,7 +112,6 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
                 RandomString = RandomString + rndbytes[rndbytespos].ToString();
             }
 
-
             RemotingTime = DateTime.Now;
             RemotedObject = new TMFinDev();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
@@ -132,9 +130,7 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
             return FRemotingURL;
         }
 
-
     }
-
 
     /// <summary>
     /// REMOTEABLE CLASS. MFinDev Namespace (highest level).
@@ -158,7 +154,6 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -201,14 +196,12 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMFinDev object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
+

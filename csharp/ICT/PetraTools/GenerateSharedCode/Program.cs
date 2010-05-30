@@ -36,7 +36,7 @@ namespace GenerateSharedCode
 class Program
 {
     private static String sampleCall =
-        "GenerateSharedCode -xmlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.xml -outputdir:..\\..\\..\\Petra\\";
+        "GenerateSharedCode -xmlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.xml -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
 
     public static void Main(string[] args)
     {
@@ -91,7 +91,7 @@ class Program
             CreateInterfaces interfaces = new CreateInterfaces();
             interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", XmlFileName);
             CreateInstantiators instantiators = new CreateInstantiators();
-            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", XmlFileName);
+            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", XmlFileName, cmd.GetOptValue("TemplateDir"));
 
             //		  TestAnalysis("U:/delphi.net/ICT.Patch228/Petra/Server/_bin/Debug/Ict.Petra.Server.MPartner.Instantiator.dll",
             //		                "Ict.Petra.Server.MPartner.Instantiator.Partner.TPartnerUIConnectorsNamespace");
