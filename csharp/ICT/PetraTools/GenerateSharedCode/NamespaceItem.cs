@@ -26,24 +26,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using System.IO;
+using System.Xml;
 using Ict.Tools.CodeGeneration;
+using Ict.Common.IO;
 
 namespace NamespaceHierarchy
 {
 /// <summary>
 /// to be parsed from xml file
 /// </summary>
-public class SubNamespace
+public class TNamespace
 {
     string name;
     string description;
-    string group;
-    string module;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public SubNamespace()
+    public TNamespace()
     {
     }
 
@@ -51,7 +51,7 @@ public class SubNamespace
     /// constructor
     /// </summary>
     /// <param name="name"></param>
-    public SubNamespace(string name)
+    public TNamespace(string name)
     {
         this.name = name;
     }
@@ -61,14 +61,10 @@ public class SubNamespace
     /// </summary>
     /// <param name="AName"></param>
     /// <param name="ADescription"></param>
-    /// <param name="AGroup"></param>
-    /// <param name="AModule"></param>
-    public SubNamespace(string AName, string ADescription, string AGroup, string AModule)
+    public TNamespace(string AName, string ADescription)
     {
         this.name = AName;
         this.description = ADescription;
-        this.group = AGroup;
-        this.module = AModule;
     }
 
     /// <summary>
@@ -102,94 +98,45 @@ public class SubNamespace
     }
 
     /// <summary>
-    /// part of which group
-    /// </summary>
-    public string Group
-    {
-        get
-        {
-            return group;
-        }
-        set
-        {
-            group = value;
-        }
-    }
-
-    /// <summary>
-    /// part of which module
-    /// </summary>
-    public string Module
-    {
-        get
-        {
-            return module;
-        }
-        set
-        {
-            module = value;
-        }
-    }
-
-    /// <summary>
     /// the children of this namespace
     /// </summary>
-    public List <SubNamespace>Children = new List <SubNamespace>();
+    public List <TNamespace>Children = new List <TNamespace>();
 
     /// <summary>
-    /// parse the namespaces from a file
+    /// parse the namespaces from an XmlDocument
     /// </summary>
-    /// <param name="filename"></param>
-    /// <returns></returns>
-    public static List <TopNamespace>ReadFromFile(string filename)
+    public static List <TNamespace>ReadFromFile(XmlDocument ADoc)
     {
-        if (!File.Exists(filename))
+        List <TNamespace>items = new List <TNamespace>();
+        XmlNode NamespaceHierarchyNode = ADoc.DocumentElement.FirstChild;
+
+        if (NamespaceHierarchyNode.Name != "NamespaceHierarchy")
         {
-            new Exception("file not found");
+            throw new Exception("cannot find root node NamespaceHierarchy");
         }
 
-        FileStream fs = new FileStream(filename, FileMode.Open);
-
-        XmlSerializer x = new XmlSerializer(typeof(List <TopNamespace> ));
-
-        List <TopNamespace>items = null;
-
-        try
+        foreach (XmlNode child in NamespaceHierarchyNode.ChildNodes)
         {
-            items = (List <TopNamespace> )x.Deserialize(fs);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-        finally
-        {
-            fs.Close();
+            items.Add(TNamespace.Serialize(child));
         }
 
         return items;
     }
-}
 
-/// <summary>
-/// top namespace
-/// </summary>
-public class TopNamespace
-{
-    /// <summary>
-    /// name of namespace
-    /// </summary>
-    public string Name = "";
+    private static TNamespace Serialize(XmlNode ANode)
+    {
+        TNamespace newNameSpace = new TNamespace();
 
-    /// <summary>
-    /// description
-    /// </summary>
-    public string Description = "";
+        newNameSpace.Name = TYml2Xml.GetElementName(ANode);
+        newNameSpace.Description = TXMLParser.GetAttribute(ANode, "description");
 
-    /// <summary>
-    /// the children of this namespace
-    /// </summary>
-    public List <SubNamespace>SubNamespaces = new List <SubNamespace>();
+        foreach (XmlNode child in ANode.ChildNodes)
+        {
+            newNameSpace.Children.Add(Serialize(child));
+        }
+
+        return newNameSpace;
+    }
 
     private static String FindModuleName = "";
 
@@ -199,10 +146,10 @@ public class TopNamespace
     /// <param name="AList"></param>
     /// <param name="AModule"></param>
     /// <returns></returns>
-    public static Int32 FindModuleIndex(List <TopNamespace>AList, String AModule)
+    public static Int32 FindModuleIndex(List <TNamespace>AList, String AModule)
     {
         FindModuleName = AModule;
-        return AList.FindIndex(TopNamespace.FindModule);
+        return AList.FindIndex(TNamespace.FindModule);
     }
 
     /// <summary>
@@ -210,7 +157,7 @@ public class TopNamespace
     /// </summary>
     /// <param name="AModule"></param>
     /// <returns></returns>
-    public static bool FindModule(TopNamespace AModule)
+    public static bool FindModule(TNamespace AModule)
     {
         if (AModule.Name == FindModuleName)      //FindModuleName
         {
@@ -239,8 +186,8 @@ public class CommonNamespace
     public static void WriteUsingNamespace(AutoGenerationWriter tw,
         String ParentNamespace,
         String ParentInterfaceName,
-        SubNamespace sn,
-        List <SubNamespace>children)
+        TNamespace sn,
+        List <TNamespace>children)
     {
         // don't automatically write the end points.
         if (children.Count == 0)
@@ -248,7 +195,7 @@ public class CommonNamespace
             return;
         }
 
-        foreach (SubNamespace child in children)
+        foreach (TNamespace child in children)
         {
             //        if (child.Children.Count > 0)
             {

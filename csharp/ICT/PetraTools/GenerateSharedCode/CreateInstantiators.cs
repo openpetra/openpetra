@@ -319,7 +319,7 @@ class CreateInstantiators : AutoGenerationWriter
         String Classname,
         String Namespace,
         Boolean HighestLevel,
-        List <SubNamespace>children)
+        List <TNamespace>children)
     {
         ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
 
@@ -341,7 +341,7 @@ class CreateInstantiators : AutoGenerationWriter
 
         remotableClassSnippet.SetCodelet("SUBNAMESPACEDEFINITIONS", "");
 
-        foreach (SubNamespace sn in children)
+        foreach (TNamespace sn in children)
         {
             if (HighestLevel)
             {
@@ -372,7 +372,7 @@ class CreateInstantiators : AutoGenerationWriter
             remotableClassSnippet.SetCodelet("SUBMODULENAMESPACES", "true");
         }
 
-        foreach (SubNamespace sn in children)
+        foreach (TNamespace sn in children)
         {
             ProcessTemplate subNamespaceSnippet = ATemplate.GetSnippet("SUBNAMESPACE");
 
@@ -395,7 +395,7 @@ class CreateInstantiators : AutoGenerationWriter
         return remotableClassSnippet;
     }
 
-    private ProcessTemplate WriteNamespace(ProcessTemplate ATemplate, String NamespaceName, String ClassName, SubNamespace sn)
+    private ProcessTemplate WriteNamespace(ProcessTemplate ATemplate, String NamespaceName, String ClassName, TNamespace sn)
     {
         ProcessTemplate namespaceTemplate = ATemplate.GetSnippet("NAMESPACE");
 
@@ -409,7 +409,7 @@ class CreateInstantiators : AutoGenerationWriter
 
         namespaceTemplate.SetCodelet("SUBNAMESPACES1", "");
 
-        foreach (SubNamespace sn2 in sn.Children)
+        foreach (TNamespace sn2 in sn.Children)
         {
             namespaceTemplate.InsertSnippet("SUBNAMESPACES1", WriteNamespace(ATemplate, NamespaceName + "." + sn2.Name, ClassName + sn2.Name, sn2));
         }
@@ -417,7 +417,7 @@ class CreateInstantiators : AutoGenerationWriter
         return namespaceTemplate;
     }
 
-    private void CreateAutoHierarchy(TopNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
@@ -448,32 +448,32 @@ class CreateInstantiators : AutoGenerationWriter
 
         WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + ';');
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn, sn.Children);
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Server.M" + tn.Name + "." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
@@ -490,11 +490,11 @@ class CreateInstantiators : AutoGenerationWriter
                 "TM" + tn.Name,
                 "M" + tn.Name,
                 true,
-                tn.SubNamespaces));
+                tn.Children));
 
         topLevelNamespaceSnippet.SetCodelet("SUBNAMESPACES", "");
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             topLevelNamespaceSnippet.InsertSnippet("SUBNAMESPACES",
                 WriteNamespace(Template, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn));
@@ -507,13 +507,13 @@ class CreateInstantiators : AutoGenerationWriter
     }
 
     private List <CSParser>CSFiles = null;
-    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         // get the appropriate cs file
         CSFiles = new List <CSParser>();
         CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces/Ict.Petra.Shared.Interfaces.csproj", ref CSFiles);
 
-        foreach (TopNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces)
         {
             // for testing:
 //        if (tn.Name != "Reporting") continue;
