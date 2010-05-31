@@ -572,18 +572,18 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MSysMan.Data -outputFilename:SysMan.DataSets -StartTableId:5700 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
     
-    <target name="generateORM" depends="compilePetraTools,generateORMTables,generateORMAccess,generateORMDatasets" description="Generate the typed datastore.">
+    <target name="generateORM" depends="generateORMTables,generateORMAccess,generateORMDatasets" description="Generate the typed datastore.">
     </target>
     
-    <target name="generateGlue" depends="compilePetraTools" description="Generate the glue between client and server, ie. interfaces and instantiators">
+    <target name="generateGlue" description="Generate the glue between client and server, ie. interfaces and instantiators">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
     </target>
 
-    <target name="generateGTK" depends="compilePetraTools" description="Generate GTK User Interface">
+    <target name="generateGTK" description="Generate GTK User Interface">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateGTK.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/MaintainUsers.yaml -petraxml:${PetraXML.file} -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/gtk"/>
     </target>
 
-    <target name="generateWinforms" depends="compilePetraTools" description="Generate Winforms User Interface">
+    <target name="generateWinforms" description="Generate Winforms User Interface">
         <!-- todo: go through all yaml files that have FormType different from abstract -->
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
