@@ -625,14 +625,32 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
     /// <summary>auto generated</summary>
     public interface IPartnerWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        bool AddContact(List <Int64> APartnerKeys,
+                        DateTime AContactDate,
+                        string AMethodOfContact,
+                        string AComment,
+                        string AModuleID,
+                        string AMailingCode,
+                        out TVerificationResultCollection AVerificationResults);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        PPartnerContactTable FindContacts(string AContactor,
+                                          DateTime? AContactDate,
+                                          string ACommentContains,
+                                          string AMethodOfContact,
+                                          string AModuleID,
+                                          string AMailingCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        bool DeleteContacts(PPartnerContactTable APartnerContacts,
+                            out TVerificationResultCollection AVerificationResults);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
                                          bool AWithAddressDetails,
                                          bool AWithSubscriptions,
                                          bool AWithRelationships);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         bool SavePartner(PartnerEditTDS AMainDS,
                          out TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>

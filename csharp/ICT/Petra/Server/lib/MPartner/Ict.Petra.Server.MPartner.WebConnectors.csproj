@@ -72,6 +72,9 @@
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.UserInfo">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
@@ -81,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddressTools.WebConnector.cs" />
+    <Compile Include="Contacts.cs" />
     <Compile Include="ImportExport.cs" />
     <Compile Include="SimplePartnerEdit.cs" />
     <Compile Include="SimplePartnerFind.cs" />

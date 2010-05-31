@@ -14,7 +14,7 @@
     Actions:
         actGenerateLetters: {Label=&Generate Letters, ActionClick=GenerateLetters}
         actCreateExtract: {ActionClick=CreateExtract}
-        actAddContactHistory:
+        actAddContactHistory: {ActionClick=AddContactHistory}
     Controls:
         pnlContent:
             Dock: Fill

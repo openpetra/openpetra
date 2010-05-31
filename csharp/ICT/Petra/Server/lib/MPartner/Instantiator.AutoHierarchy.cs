@@ -124,6 +124,7 @@ using System.Collections.Specialized;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
@@ -2691,6 +2692,36 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public bool AddContact(List <Int64>APartnerKeys,
+                               DateTime AContactDate,
+                               string AMethodOfContact,
+                               string AComment,
+                               string AModuleID,
+                               string AMailingCode,
+                               out TVerificationResultCollection AVerificationResults)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.AddContact(APartnerKeys, AContactDate, AMethodOfContact, AComment, AModuleID, AMailingCode, out AVerificationResults);
+        }
+
+        /// generated method from connector
+        public PPartnerContactTable FindContacts(string AContactor,
+                                                 DateTime? AContactDate,
+                                                 string ACommentContains,
+                                                 string AMethodOfContact,
+                                                 string AModuleID,
+                                                 string AMailingCode)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.FindContacts(AContactor, AContactDate, ACommentContains, AMethodOfContact, AModuleID, AMailingCode);
+        }
+
+        /// generated method from connector
+        public bool DeleteContacts(PPartnerContactTable APartnerContacts,
+                                   out TVerificationResultCollection AVerificationResults)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.DeleteContacts(APartnerContacts, out AVerificationResults);
         }
 
         /// generated method from connector

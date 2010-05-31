@@ -344,6 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.tbbAddContactHistory.Name = "tbbAddContactHistory";
             this.tbbAddContactHistory.AutoSize = true;
+            this.tbbAddContactHistory.Click += new System.EventHandler(this.AddContactHistory);
             this.tbbAddContactHistory.Text = "Add Contact History";
             //
             // tbrMain

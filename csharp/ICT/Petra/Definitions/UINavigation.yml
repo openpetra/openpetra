@@ -28,6 +28,8 @@ OpenPetra:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
                         AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
+                    Contacts:
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts}
                     MaintainPartner:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
                     Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
@@ -77,6 +79,8 @@ OpenPetra:
                         ChangeAddress:
                         MergePartners:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
+                    Contacts:
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts}
                 Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}

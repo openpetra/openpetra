@@ -31,10 +31,14 @@ using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Printing;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -170,6 +174,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             newExtract.BestAddress = FMainDS.BestAddress;
             newExtract.IncludeNonValidAddresses = false;
             newExtract.ShowDialog();
+        }
+
+        private void AddContactHistory(object ASender, EventArgs AEv)
+        {
+            List <Int64>partnerKeys = new List <long>();
+
+            foreach (BestAddressTDSLocationRow row in FMainDS.BestAddress.Rows)
+            {
+                if (row.ValidAddress)
+                {
+                    partnerKeys.Add(row.PartnerKey);
+                }
+            }
+
+            TVerificationResultCollection VerificationResult;
+
+            // No Mailing code, because this is a form letter
+            if (!TRemote.MPartner.Partner.WebConnectors.AddContact(partnerKeys,
+                    DateTime.Today,
+                    MPartnerConstants.METHOD_CONTACT_FORMLETTER,
+                    Catalog.GetString("Letter for new donors announcing subscription to magazine"),
+                    SharedConstants.PETRAMODULE_FINANCE1,
+                    "",
+                    out VerificationResult))
+            {
+                MessageBox.Show(Catalog.GetString("There was a problem setting the contact for the partners"),
+                    Catalog.GetString("Failure"));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("The partner contacts have been updated successfully!"),
+                    Catalog.GetString("Success"));
+            }
         }
     }
 }
