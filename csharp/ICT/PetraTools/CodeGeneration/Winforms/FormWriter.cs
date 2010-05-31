@@ -423,15 +423,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // if we don't have a .gif file, create it
             if (!AImageFileName.EndsWith(".gif") && (AImageOrIcon == "Bitmap"))
             {
-                // Icon.ToBitmap: The transparent areas of the icon are lost when it is converted to a bitmap, 
-                // and the transparent color of the resulting bitmap is set to RGB(13,11,12). 
+                // Icon.ToBitmap: The transparent areas of the icon are lost when it is converted to a bitmap,
+                // and the transparent color of the resulting bitmap is set to RGB(13,11,12).
                 Bitmap iconBitmap = (new Icon(AImageFileName)).ToBitmap();
 
                 // http://bytes.com/topic/c-sharp/answers/551890-transparent-gif-using-bitmap-save
                 // it seems that MakeTransparent does not work, and the workarounds to modify the palette and copy the bitmap
                 // data are really a mess. Therefore manually convert the ico file with The Gimp to gif, and transparency works fine!
                 //iconBitmap.MakeTransparent(Color.FromArgb(0,13,11,12));
-                
+
                 int DotIndex = AImageFileName.LastIndexOf('.');
 
                 if (DotIndex > 0)
