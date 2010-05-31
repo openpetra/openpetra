@@ -337,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.tbbCreateExtract.Name = "tbbCreateExtract";
             this.tbbCreateExtract.AutoSize = true;
+            this.tbbCreateExtract.Click += new System.EventHandler(this.CreateExtract);
             this.tbbCreateExtract.Text = "Create Extract";
             //
             // tbbAddContactHistory

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2010 by OM International
 //
@@ -102,13 +102,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (!MExtractMasterAccess.SubmitChanges(NewExtractMasterDT, WriteTransaction, out AVerificationResults))
                     {
                         // something went wrong
-                        DBAccess.GDBAccessObj.RollbackTransaction();
                         ReturnValue = false;
                     }
                     else
                     {
                         // Get the Extract Id
-                        DBAccess.GDBAccessObj.CommitTransaction();
                         TemplateRow = (MExtractMasterRow)NewExtractMasterDT.Rows[0];
                         ANewExtractId = TemplateRow.ExtractId;
                         ReturnValue = true;
@@ -123,7 +121,6 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #if DEBUGMODE
             catch (Exception e)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
                 ReturnValue = false;
 
                 if (TSrvSetting.DL >= 8)
@@ -136,10 +133,18 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #else
             catch (Exception)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
                 ReturnValue = false;
             }
 #endif
+
+            if (ReturnValue && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return ReturnValue;
         }
@@ -605,6 +610,91 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 // Invalid PartnerKey -> return false;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// create an extract from a list of best addresses
+        /// </summary>
+        /// <param name="AExtractName">Name of the Extract to be created.</param>
+        /// <param name="AExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="AExtractAlreadyExists">True if there is already an extract with
+        /// the given name, otherwise false.</param>
+        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
+        /// succeded, otherwise filled with 1..n TVerificationResult objects
+        /// (can also contain DB call exceptions).</param>
+        /// <param name="ABestAddressTable"></param>
+        /// <param name="AIncludeNonValidAddresses">you might want to include invalid addresses if an email was sent</param>
+        /// <returns>True if the new Extract was created, otherwise false.</returns>
+        public static bool CreateExtractFromBestAddressTable(
+            String AExtractName,
+            String AExtractDescription,
+            out Int32 ANewExtractId,
+            out Boolean AExtractAlreadyExists,
+            out TVerificationResultCollection AVerificationResults,
+            BestAddressTDSLocationTable ABestAddressTable,
+            bool AIncludeNonValidAddresses)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            ANewExtractId = -1;
+
+            bool ResultValue = CreateNewExtract(AExtractName,
+                AExtractDescription,
+                out ANewExtractId,
+                out AExtractAlreadyExists,
+                out AVerificationResults);
+
+            if (ResultValue)
+            {
+                MExtractTable ExtractTable = new MExtractTable();
+
+                foreach (BestAddressTDSLocationRow row in ABestAddressTable.Rows)
+                {
+                    if (AIncludeNonValidAddresses || row.ValidAddress)
+                    {
+                        MExtractRow NewRow = ExtractTable.NewRowTyped(false);
+                        NewRow.ExtractId = ANewExtractId;
+                        NewRow.PartnerKey = row.PartnerKey;
+                        NewRow.SiteKey = row.SiteKey;
+                        NewRow.LocationKey = row.LocationKey;
+                        ExtractTable.Rows.Add(NewRow);
+                    }
+                }
+
+                if (ExtractTable.Rows.Count > 0)
+                {
+                    try
+                    {
+                        MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
+                        ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
+
+                        if (MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction, out AVerificationResults))
+                        {
+                            ResultValue = MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction, out AVerificationResults);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        ResultValue = false;
+                    }
+                }
+            }
+
+            if (ResultValue && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ResultValue;
         }
     }
 }

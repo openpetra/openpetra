@@ -13,7 +13,7 @@
     WindowHeight: 623
     Actions:
         actGenerateLetters: {Label=&Generate Letters, ActionClick=GenerateLetters}
-        actCreateExtract:
+        actCreateExtract: {ActionClick=CreateExtract}
         actAddContactHistory:
     Controls:
         pnlContent:

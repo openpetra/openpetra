@@ -31,6 +31,7 @@ using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Printing;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -160,6 +161,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FNumberOfPages = FGfxPrinter.NumberOfPages;
             RefreshPagePosition();
+        }
+
+        private void CreateExtract(object ASender, EventArgs AEv)
+        {
+            TFrmCreateExtract newExtract = new TFrmCreateExtract();
+
+            newExtract.BestAddress = FMainDS.BestAddress;
+            newExtract.IncludeNonValidAddresses = false;
+            newExtract.ShowDialog();
         }
     }
 }

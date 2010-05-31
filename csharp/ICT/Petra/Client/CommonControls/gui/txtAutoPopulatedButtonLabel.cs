@@ -1326,19 +1326,15 @@ namespace Ict.Petra.Client.CommonControls
                         case TListTableEnum.Extract:
                             #region TListTableEnum.Extract
 
-                            String mExtractName;
-
-                            // call Progress from here
-
-//TODO				            mCmdMPartner.OpenExtractFindScreen(this.ParentForm, out mExtractName);
-                            mExtractName = "TODO";
-
-                            // I can only return the Extractname
+//TODO
+#if TODO
+                            string mExtractName;
+                            mCmdMPartner.OpenExtractFindScreen(this.ParentForm, out mExtractName);
 
                             // set the label...
                             TxtAutoPopulated_SetLabel(mExtractName, out LabelStringOut);
                             TextBoxStringOut = mExtractName;
-
+#endif
                             // End TListTableEnum.Extract:
                             #endregion
                             break;

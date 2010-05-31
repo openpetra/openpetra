@@ -54,10 +54,12 @@ using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions;
 using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
@@ -76,10 +78,12 @@ using Ict.Petra.Server.MPartner.Instantiator.PartnerMerge;
 using Ict.Petra.Server.MPartner.Instantiator.Subscriptions;
 using Ict.Petra.Server.MPartner.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors;
+using Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable;
 using Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors;
+using Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors;
@@ -98,10 +102,12 @@ using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Subscriptions;
 //using Ict.Petra.Server.MPartner.TableMaintenance;
 using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
+//using Ict.Petra.Server.MPartner.Extracts.WebConnectors;
 //using Ict.Petra.Server.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MPartner.Mailing.Cacheable;
 //using Ict.Petra.Server.MPartner.Mailing.UIConnectors;
+using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
 //using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
@@ -500,6 +506,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
         private DateTime FStartTime;
 #endif
         private TExtractsUIConnectorsNamespace FExtractsUIConnectorsSubNamespace;
+        private TExtractsWebConnectorsNamespace FExtractsWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TExtractsNamespace()
@@ -591,6 +598,35 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
             }
 
         }
+
+        /// <summary>The 'ExtractsWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IExtractsWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Extracts.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Extracts.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FExtractsWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TExtractsWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Extracts.Instantiator.WebConnectors') should be automatically contructable.
+                    FExtractsWebConnectorsSubNamespace = new TExtractsWebConnectorsNamespace();
+                }
+
+                return FExtractsWebConnectorsSubNamespace;
+            }
+
+        }
     }
 }
 
@@ -674,6 +710,78 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
         {
             return new TPartnerNewExtractUIConnector();
         }
+    }
+}
+
+namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TExtractsWebConnectorsNamespace : MarshalByRefObject, IExtractsWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TExtractsWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TExtractsWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TExtractsWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
     }
 }
 
@@ -976,6 +1084,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 #endif
         private TMailingCacheableNamespace FMailingCacheableSubNamespace;
         private TMailingUIConnectorsNamespace FMailingUIConnectorsSubNamespace;
+        private TMailingWebConnectorsNamespace FMailingWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMailingNamespace()
@@ -1093,6 +1202,35 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 }
 
                 return FMailingUIConnectorsSubNamespace;
+            }
+
+        }
+
+        /// <summary>The 'MailingWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IMailingWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Mailing.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Mailing.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FMailingWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TMailingWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.WebConnectors') should be automatically contructable.
+                    FMailingWebConnectorsSubNamespace = new TMailingWebConnectorsNamespace();
+                }
+
+                return FMailingWebConnectorsSubNamespace;
             }
 
         }
@@ -1340,6 +1478,106 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
             return null; // make sure that the TMailingUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+    }
+}
+
+namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TMailingWebConnectorsNamespace : MarshalByRefObject, IMailingWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TMailingWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TMailingWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TMailingWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public bool GetBestAddress(Int64 APartnerKey,
+                                   out PLocationTable AAddress,
+                                   out string ACountryNameLocal,
+                                   out string AEmailAddress)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out ACountryNameLocal, out AEmailAddress);
+        }
+
+        /// generated method from connector
+        public BestAddressTDSLocationTable AddPostalAddress(ref DataTable APartnerTable,
+                                                            DataColumn APartnerKeyColumn,
+                                                            bool AIgnoreForeignAddresses)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.AddPostalAddress(ref APartnerTable, APartnerKeyColumn, AIgnoreForeignAddresses);
+        }
+
+        /// generated method from connector
+        public bool CreateExtractFromBestAddressTable(String AExtractName,
+                                                      String AExtractDescription,
+                                                      out Int32 ANewExtractId,
+                                                      out Boolean AExtractAlreadyExists,
+                                                      out TVerificationResultCollection AVerificationResults,
+                                                      BestAddressTDSLocationTable ABestAddressTable,
+                                                      bool AIncludeNonValidAddresses)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.CreateExtractFromBestAddressTable(AExtractName, AExtractDescription, out ANewExtractId, out AExtractAlreadyExists, out AVerificationResults, ABestAddressTable, AIncludeNonValidAddresses);
+        }
     }
 }
 

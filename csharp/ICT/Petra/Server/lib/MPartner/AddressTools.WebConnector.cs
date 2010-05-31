@@ -31,8 +31,9 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Extracts;
 
-namespace Ict.Petra.Server.MPartner.Address.WebConnectors
+namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
 {
     ///<summary>
     /// useful functions for the address of a partner
@@ -43,10 +44,12 @@ namespace Ict.Petra.Server.MPartner.Address.WebConnectors
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
             out string ACountryNameLocal,
-            out string AEmailAddress,
-            TDBTransaction ATransaction)
+            out string AEmailAddress)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
             bool ResultValue = false;
 
             try
@@ -63,7 +66,10 @@ namespace Ict.Petra.Server.MPartner.Address.WebConnectors
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
             return ResultValue;
         }
@@ -76,7 +82,9 @@ namespace Ict.Petra.Server.MPartner.Address.WebConnectors
             DataColumn APartnerKeyColumn,
             bool AIgnoreForeignAddresses)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             BestAddressTDSLocationTable ResultTable = null;
 
             try
@@ -92,10 +100,47 @@ namespace Ict.Petra.Server.MPartner.Address.WebConnectors
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return ResultTable;
+        }
+
+        /// <summary>
+        /// create an extract from a list of best addresses
+        /// </summary>
+        /// <param name="AExtractName">Name of the Extract to be created.</param>
+        /// <param name="AExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="AExtractAlreadyExists">True if there is already an extract with
+        /// the given name, otherwise false.</param>
+        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
+        /// succeded, otherwise filled with 1..n TVerificationResult objects
+        /// (can also contain DB call exceptions).</param>
+        /// <param name="ABestAddressTable"></param>
+        /// <param name="AIncludeNonValidAddresses">you might want to include invalid addresses if an email was sent</param>
+        /// <returns>True if the new Extract was created, otherwise false.</returns>
+        public static bool CreateExtractFromBestAddressTable(
+            String AExtractName,
+            String AExtractDescription,
+            out Int32 ANewExtractId,
+            out Boolean AExtractAlreadyExists,
+            out TVerificationResultCollection AVerificationResults,
+            BestAddressTDSLocationTable ABestAddressTable,
+            bool AIncludeNonValidAddresses)
+        {
+            return TExtractsHandling.CreateExtractFromBestAddressTable(
+                AExtractName,
+                AExtractDescription,
+                out ANewExtractId,
+                out AExtractAlreadyExists,
+                out AVerificationResults,
+                ABestAddressTable,
+                AIncludeNonValidAddresses);
         }
     }
 }
