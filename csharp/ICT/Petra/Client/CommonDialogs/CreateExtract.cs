@@ -98,6 +98,10 @@ namespace Ict.Petra.Client.CommonDialogs
                     MessageBox.Show(Catalog.GetString("The extract was not created"), Catalog.GetString("Failure"));
                 }
             }
+            else
+            {
+                this.DialogResult = DialogResult.OK;
+            }
         }
     }
 }

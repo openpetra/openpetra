@@ -140,9 +140,6 @@ namespace Ict.Petra.Server.MPartner
                     row.PartnerKey = PartnerKey;
                     ResultTable.Rows.Add(row);
 
-                    // dummy location key to satisfy primary key uniqueness constraint
-                    row.LocationKey = -1 * ResultTable.Rows.Count;
-
                     if (EmailAddress.Length > 0)
                     {
                         row.EmailAddress = EmailAddress;
@@ -155,6 +152,8 @@ namespace Ict.Petra.Server.MPartner
                         // no best address; only report if emailAddress is empty as well???
                         continue;
                     }
+
+                    row.LocationKey = Address[0].LocationKey;
 
                     if (!Address[0].IsLocalityNull())
                     {

@@ -12255,8 +12255,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnEmailAddress = this.Columns["p_email_address_c"];
             this.ColumnValidAddress = this.Columns["ValidAddress"];
             this.ColumnCountryName = this.Columns["CountryName"];
-            this.PrimaryKey = new System.Data.DataColumn[2] {
-                    ColumnSiteKey,ColumnLocationKey};
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
         }
 
         /// Access a typed row by index
