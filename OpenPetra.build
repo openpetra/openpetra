@@ -576,7 +576,7 @@
     </target>
     
     <target name="generateGlue" description="Generate the glue between client and server, ie. interfaces and instantiators">
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-xmlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.xml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
     </target>
 
     <target name="generateGTK" description="Generate GTK User Interface">
