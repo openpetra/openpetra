@@ -801,6 +801,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((IFrmReporting) this.FTheForm).SetControls(AParameters);
         }
 
+        /// add a verification result
         public virtual void AddVerificationResult(TVerificationResult AVerificationResult)
         {
             FVerificationResults.Add(AVerificationResult);
