@@ -44,6 +44,12 @@ OpenPetra:
                 #Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                    PartnerAddress: {Label=Brief &Address Report, ActionOpenScreen=TFrmBriefAddressReport)
+                    BriefFoundation: {Label=Brief &Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
+                    SupportingChurches: {Label=Supporting &Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)
+                    ValidBankAccount: {Label=&Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport)
+                    PublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
+                    BulkAddressReport: {Label=&Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
             #MoreFunctions:
                 #SetupPartnerModule:
@@ -130,15 +136,17 @@ OpenPetra:
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+        Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+            Main:
+                Safety:
+                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Users:
                 Functions:
-                    #CreateNewUser: {ActionClick=TSysManMain.CreateUser}
                     MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
                     #DeleteUser:
                     #ModifyUserPermissions:
                     #ImportUserPermissions:
-                    SetPassword: {ActionClick=TSysManMain.SetUserPassword}
             Finance:
                 LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
