@@ -6,9 +6,9 @@ RootNode:
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
     Actions:
-        actGenerateReport: {Label=&Generate, Tooltip=Generate the report, Image=Go.ico, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
+        actGenerateReport: {Label=&Generate, Tooltip=Generate the report, Image=Go.gif, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
         actSaveSettingsAs: {Label=Save Settings &As..., Image=SaveAs.ico, ActionClick=FPetraUtilsObject.MI_SaveSettingsAs_Click}
-        actSaveSettings: {Label=&Save Settings, Image=Save.ico, ActionClick=FPetraUtilsObject.MI_SaveSettings_Click}
+        actSaveSettings: {Label=&Save Settings, Image=Save.gif, ActionClick=FPetraUtilsObject.MI_SaveSettings_Click}
         actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
         actLoadSettings: {Label=RecentSettings, ActionClick=FPetraUtilsObject.MI_LoadSettings_Click}
         actMaintainSettings: {Label=&Maintain Settings..., ActionClick=FPetraUtilsObject.MI_MaintainSettings_Click}
