@@ -7,6 +7,7 @@
         manuals30 containing the release notes, 
         bin30 with just the server binaries,
         db30 with the demo sqlite database,
+        demo30 with some sample files,
         reports30,
         sql30 with the sql scripts,
         etc30 with the 2 config files;
@@ -21,6 +22,7 @@
         <mkdir dir="${setupDir}/bin30"/>
         <mkdir dir="${setupDir}/bin30/locale/"/>
         <mkdir dir="${setupDir}/db30"/>
+        <mkdir dir="${setupDir}/demo30"/>
         <mkdir dir="${setupDir}/log30"/>
         <mkdir dir="${setupDir}/etc30"/>
         <mkdir dir="${setupDir}/reports30"/>
@@ -88,6 +90,12 @@
             <fileset basedir="${OpenPetraRoot.dir}/XmlReports/">
                 <include name="*.dtd" />
                 <include name="**/*.xml" />
+            </fileset>
+        </copy>
+
+        <copy todir="${setupDir}/demo30">
+            <fileset basedir="${OpenPetraRoot.dir}/demodata/">
+                <include name="**/*.*" />
             </fileset>
         </copy>
 
