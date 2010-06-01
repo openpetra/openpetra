@@ -759,6 +759,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
+            FTemplate.AddToCodelet("CANCLOSEMANUAL", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
@@ -790,6 +791,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))
             {
                 FTemplate.AddToCodelet("EXITMANUALCODE", "ExitManualCode();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("CanCloseManual"))
+            {
+                FTemplate.AddToCodelet("CANCLOSEMANUAL", " && CanCloseManual()");
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))

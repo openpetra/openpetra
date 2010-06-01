@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public bool CanClose()
     {
-        return FPetraUtilsObject.CanClose();
+        return FPetraUtilsObject.CanClose() && CanCloseManual();
     }
 
     /// auto generated
