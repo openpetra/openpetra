@@ -8,9 +8,10 @@ RootNode:
     FormType: edit
     Template: windowEdit
     Actions:
-        actNewUser:
+        actNewUser: {ActionClick=NewUser}
         actRetire:
-        actSetPassword:
+        actSetPassword: {ActionClick=SetPassword}
+        cndChangePermissions:
     Controls:
         pnlContent:
             Controls: [pnlDetailGrid, pnlDetails]
@@ -38,3 +39,8 @@ RootNode:
         txtDetailFirstName:
         txtDetailLastName:
         clbUserGroup:
+            Label: This User can access
+            ColSpan: 3
+            Width: 500
+            Height: 250
+            #Enabled: cndChangePermissions

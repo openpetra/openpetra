@@ -158,6 +158,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.btnNewUser.Location = new System.Drawing.Point(2,2);
             this.btnNewUser.Name = "btnNewUser";
             this.btnNewUser.AutoSize = true;
+            this.btnNewUser.Click += new System.EventHandler(this.NewUser);
             this.btnNewUser.Text = "New User";
             //
             // btnRetire
@@ -172,6 +173,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.btnSetPassword.Location = new System.Drawing.Point(2,2);
             this.btnSetPassword.Name = "btnSetPassword";
             this.btnSetPassword.AutoSize = true;
+            this.btnSetPassword.Click += new System.EventHandler(this.SetPassword);
             this.btnSetPassword.Text = "Set Password";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -248,7 +250,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             //
             this.clbUserGroup.Location = new System.Drawing.Point(2,2);
             this.clbUserGroup.Name = "clbUserGroup";
-            this.clbUserGroup.Size = new System.Drawing.Size(150, 100);
+            this.clbUserGroup.Size = new System.Drawing.Size(500, 250);
             this.clbUserGroup.FixedRows = 0;
             //
             // lblUserGroup
@@ -256,7 +258,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.lblUserGroup.Location = new System.Drawing.Point(2,2);
             this.lblUserGroup.Name = "lblUserGroup";
             this.lblUserGroup.AutoSize = true;
-            this.lblUserGroup.Text = "User Group:";
+            this.lblUserGroup.Text = "This User can access:";
             this.lblUserGroup.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblUserGroup.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblUserGroup.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -274,6 +276,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.tableLayoutPanel2.Controls.Add(this.lblUserGroup, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailUserId, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailFirstName, 1, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.clbUserGroup, 3);
             this.tableLayoutPanel2.Controls.Add(this.clbUserGroup, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailLastName, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailLastName, 3, 1);

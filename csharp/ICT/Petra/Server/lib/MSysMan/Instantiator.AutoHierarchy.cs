@@ -1283,6 +1283,20 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
+        public bool GetAuthenticationFunctionality(out bool ACanCreateUser,
+                                                   out bool ACanChangePassword,
+                                                   out bool ACanChangePermissions)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
+        }
+
+        /// generated method from connector
+        public MaintainUsersTDS LoadUsersAndModulePermissions()
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.LoadUsersAndModulePermissions();
+        }
+
+        /// generated method from connector
         public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
                                               out TVerificationResultCollection AVerificationResult)
         {

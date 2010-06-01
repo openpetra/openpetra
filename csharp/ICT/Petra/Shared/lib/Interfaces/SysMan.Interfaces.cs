@@ -237,6 +237,12 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
                         string APassword,
                         string AModulePermissions);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool GetAuthenticationFunctionality(out bool ACanCreateUser,
+                                            out bool ACanChangePassword,
+                                            out bool ACanChangePermissions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        MaintainUsersTDS LoadUsersAndModulePermissions();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
                                        out TVerificationResultCollection AVerificationResult);
     }
