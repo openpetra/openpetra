@@ -75,37 +75,35 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnSelectFile = new System.Windows.Forms.Button();
             this.pnlImportRecord = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtCurrentRecordStatus = new System.Windows.Forms.TextBox();
+            this.lblCurrentRecordStatus = new System.Windows.Forms.Label();
             this.grdParsedValues = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlActions = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtExplanation = new System.Windows.Forms.TextBox();
             this.lblExplanation = new System.Windows.Forms.Label();
+            this.lblTakeAction = new System.Windows.Forms.Label();
             this.btnSkip = new System.Windows.Forms.Button();
             this.btnCreateNewFamilyAndPerson = new System.Windows.Forms.Button();
+            this.btnUseSelectedPerson = new System.Windows.Forms.Button();
+            this.btnCreateNewPersonForSelectedFamily = new System.Windows.Forms.Button();
+            this.btnCreateNewFamily = new System.Windows.Forms.Button();
+            this.btnUseSelectedFamily = new System.Windows.Forms.Button();
+            this.btnFindOtherPerson = new System.Windows.Forms.Button();
             this.btnFindOtherFamily = new System.Windows.Forms.Button();
             this.chkReplaceAddress = new System.Windows.Forms.CheckBox();
             this.grdMatchingRecords = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
-            this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbStartImport = new System.Windows.Forms.ToolStripButton();
             this.tbbCancelImport = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniFilePrint = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniEdit = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniEditUndoCurrentField = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniEditUndoScreen = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniEditFind = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -197,6 +195,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel3.AutoSize = true;
             this.pnlImportRecord.Controls.Add(this.tableLayoutPanel3);
             //
+            // txtCurrentRecordStatus
+            //
+            this.txtCurrentRecordStatus.Location = new System.Drawing.Point(2,2);
+            this.txtCurrentRecordStatus.Name = "txtCurrentRecordStatus";
+            this.txtCurrentRecordStatus.Size = new System.Drawing.Size(500, 28);
+            this.txtCurrentRecordStatus.ReadOnly = true;
+            this.txtCurrentRecordStatus.TabStop = false;
+            //
+            // lblCurrentRecordStatus
+            //
+            this.lblCurrentRecordStatus.Location = new System.Drawing.Point(2,2);
+            this.lblCurrentRecordStatus.Name = "lblCurrentRecordStatus";
+            this.lblCurrentRecordStatus.AutoSize = true;
+            this.lblCurrentRecordStatus.Text = "Current Import File Record Status:";
+            this.lblCurrentRecordStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrentRecordStatus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentRecordStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
             // grdParsedValues
             //
             this.grdParsedValues.Location = new System.Drawing.Point(2,2);
@@ -223,6 +239,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtExplanation.Size = new System.Drawing.Size(150, 28);
             this.txtExplanation.ReadOnly = true;
             this.txtExplanation.TabStop = false;
+            this.txtExplanation.Multiline = true;
             //
             // lblExplanation
             //
@@ -234,54 +251,122 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblExplanation.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblExplanation.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // lblTakeAction
+            //
+            this.lblTakeAction.Location = new System.Drawing.Point(2,2);
+            this.lblTakeAction.Name = "lblTakeAction";
+            this.lblTakeAction.AutoSize = true;
+            this.lblTakeAction.Text = "Take Action:";
+            this.lblTakeAction.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
             // btnSkip
             //
             this.btnSkip.Location = new System.Drawing.Point(2,2);
             this.btnSkip.Name = "btnSkip";
             this.btnSkip.AutoSize = true;
             this.btnSkip.Click += new System.EventHandler(this.SkipRecord);
-            this.btnSkip.Text = "Skip";
+            this.btnSkip.Text = "Skip Record";
             //
             // btnCreateNewFamilyAndPerson
             //
             this.btnCreateNewFamilyAndPerson.Location = new System.Drawing.Point(2,2);
             this.btnCreateNewFamilyAndPerson.Name = "btnCreateNewFamilyAndPerson";
+            this.btnCreateNewFamilyAndPerson.Enabled = false;
             this.btnCreateNewFamilyAndPerson.AutoSize = true;
-            this.btnCreateNewFamilyAndPerson.Click += new System.EventHandler(this.CreateNewFamilyAndPerson);
-            this.btnCreateNewFamilyAndPerson.Text = "Create New Family And Person";
+            this.btnCreateNewFamilyAndPerson.Text = "Create new Family and Person";
+            //
+            // btnUseSelectedPerson
+            //
+            this.btnUseSelectedPerson.Location = new System.Drawing.Point(2,2);
+            this.btnUseSelectedPerson.Name = "btnUseSelectedPerson";
+            this.btnUseSelectedPerson.Enabled = false;
+            this.btnUseSelectedPerson.AutoSize = true;
+            this.btnUseSelectedPerson.Text = "Use selected Person in list below";
+            //
+            // btnCreateNewPersonForSelectedFamily
+            //
+            this.btnCreateNewPersonForSelectedFamily.Location = new System.Drawing.Point(2,2);
+            this.btnCreateNewPersonForSelectedFamily.Name = "btnCreateNewPersonForSelectedFamily";
+            this.btnCreateNewPersonForSelectedFamily.Enabled = false;
+            this.btnCreateNewPersonForSelectedFamily.AutoSize = true;
+            this.btnCreateNewPersonForSelectedFamily.Text = "Add as new Person to selected Family in list below";
+            //
+            // btnCreateNewFamily
+            //
+            this.btnCreateNewFamily.Location = new System.Drawing.Point(2,2);
+            this.btnCreateNewFamily.Name = "btnCreateNewFamily";
+            this.btnCreateNewFamily.AutoSize = true;
+            this.btnCreateNewFamily.Click += new System.EventHandler(this.CreateNewFamily);
+            this.btnCreateNewFamily.Text = "Create new Family Record only";
+            //
+            // btnUseSelectedFamily
+            //
+            this.btnUseSelectedFamily.Location = new System.Drawing.Point(2,2);
+            this.btnUseSelectedFamily.Name = "btnUseSelectedFamily";
+            this.btnUseSelectedFamily.Enabled = false;
+            this.btnUseSelectedFamily.AutoSize = true;
+            this.btnUseSelectedFamily.Text = "Use selected Family in list below";
+            //
+            // btnFindOtherPerson
+            //
+            this.btnFindOtherPerson.Location = new System.Drawing.Point(2,2);
+            this.btnFindOtherPerson.Name = "btnFindOtherPerson";
+            this.btnFindOtherPerson.Enabled = false;
+            this.btnFindOtherPerson.AutoSize = true;
+            this.btnFindOtherPerson.Text = "Find other Person to use for this Record...";
             //
             // btnFindOtherFamily
             //
             this.btnFindOtherFamily.Location = new System.Drawing.Point(2,2);
             this.btnFindOtherFamily.Name = "btnFindOtherFamily";
+            this.btnFindOtherFamily.Enabled = false;
             this.btnFindOtherFamily.AutoSize = true;
-            this.btnFindOtherFamily.Text = "Find Other Family";
+            this.btnFindOtherFamily.Text = "Find other Family to add this Person to...";
             //
             // chkReplaceAddress
             //
             this.chkReplaceAddress.Location = new System.Drawing.Point(2,2);
             this.chkReplaceAddress.Name = "chkReplaceAddress";
+            this.chkReplaceAddress.Enabled = false;
             this.chkReplaceAddress.AutoSize = true;
-            this.chkReplaceAddress.Text = "Replace Address";
+            this.chkReplaceAddress.Text = "Replace current address in list below with imported one";
             this.chkReplaceAddress.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 5;
+            this.tableLayoutPanel4.RowCount = 11;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.Controls.Add(this.lblExplanation, 0, 0);
+            this.tableLayoutPanel4.SetColumnSpan(this.lblTakeAction, 2);
+            this.tableLayoutPanel4.Controls.Add(this.lblTakeAction, 0, 1);
             this.tableLayoutPanel4.SetColumnSpan(this.btnSkip, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnSkip, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.btnSkip, 0, 2);
             this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewFamilyAndPerson, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewFamilyAndPerson, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewFamilyAndPerson, 0, 3);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnUseSelectedPerson, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnUseSelectedPerson, 0, 4);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewPersonForSelectedFamily, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewPersonForSelectedFamily, 0, 5);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewFamily, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewFamily, 0, 6);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnUseSelectedFamily, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnUseSelectedFamily, 0, 7);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnFindOtherPerson, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnFindOtherPerson, 0, 8);
             this.tableLayoutPanel4.SetColumnSpan(this.btnFindOtherFamily, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnFindOtherFamily, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.btnFindOtherFamily, 0, 9);
             this.tableLayoutPanel4.SetColumnSpan(this.chkReplaceAddress, 2);
-            this.tableLayoutPanel4.Controls.Add(this.chkReplaceAddress, 0, 4);
+            this.tableLayoutPanel4.Controls.Add(this.chkReplaceAddress, 0, 10);
             this.tableLayoutPanel4.Controls.Add(this.txtExplanation, 1, 0);
             //
             // grdMatchingRecords
@@ -289,16 +374,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdMatchingRecords.Location = new System.Drawing.Point(2,2);
             this.grdMatchingRecords.Name = "grdMatchingRecords";
             this.grdMatchingRecords.Size = new System.Drawing.Size(600, 100);
-            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 3;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.grdParsedValues, 0, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.grdMatchingRecords, 2);
-            this.tableLayoutPanel3.Controls.Add(this.grdMatchingRecords, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.pnlActions, 1, 0);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.lblCurrentRecordStatus, 0, 0);
+            this.tableLayoutPanel3.SetColumnSpan(this.grdParsedValues, 2);
+            this.tableLayoutPanel3.Controls.Add(this.grdParsedValues, 0, 1);
+            this.tableLayoutPanel3.SetColumnSpan(this.grdMatchingRecords, 3);
+            this.tableLayoutPanel3.Controls.Add(this.grdMatchingRecords, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.txtCurrentRecordStatus, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.pnlActions, 2, 1);
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
@@ -306,15 +396,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.pnlImportSettings, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.pnlImportRecord, 0, 1);
-            //
-            // tbbSave
-            //
-            this.tbbSave.Name = "tbbSave";
-            this.tbbSave.AutoSize = true;
-            this.tbbSave.Click += new System.EventHandler(this.FileSave);
-            this.tbbSave.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbSave.Glyph"));
-            this.tbbSave.ToolTipText = "Saves changed data";
-            this.tbbSave.Text = "&Save";
             //
             // tbbStartImport
             //
@@ -336,36 +417,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           tbbSave,
-                        tbbStartImport,
+                           tbbStartImport,
                         tbbCancelImport});
-            //
-            // mniFileSave
-            //
-            this.mniFileSave.Name = "mniFileSave";
-            this.mniFileSave.AutoSize = true;
-            this.mniFileSave.Click += new System.EventHandler(this.FileSave);
-            this.mniFileSave.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileSave.Glyph"));
-            this.mniFileSave.ToolTipText = "Saves changed data";
-            this.mniFileSave.Text = "&Save";
-            //
-            // mniSeparator0
-            //
-            this.mniSeparator0.Name = "mniSeparator0";
-            this.mniSeparator0.AutoSize = true;
-            this.mniSeparator0.Text = "-";
-            //
-            // mniFilePrint
-            //
-            this.mniFilePrint.Name = "mniFilePrint";
-            this.mniFilePrint.AutoSize = true;
-            this.mniFilePrint.Text = "&Print...";
-            //
-            // mniSeparator1
-            //
-            this.mniSeparator1.Name = "mniSeparator1";
-            this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = "-";
             //
             // mniClose
             //
@@ -381,47 +434,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniFile.Name = "mniFile";
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniFileSave,
-                        mniSeparator0,
-                        mniFilePrint,
-                        mniSeparator1,
-                        mniClose});
+                           mniClose});
             this.mniFile.Text = "&File";
-            //
-            // mniEditUndoCurrentField
-            //
-            this.mniEditUndoCurrentField.Name = "mniEditUndoCurrentField";
-            this.mniEditUndoCurrentField.AutoSize = true;
-            this.mniEditUndoCurrentField.Text = "Undo &Current Field";
-            //
-            // mniEditUndoScreen
-            //
-            this.mniEditUndoScreen.Name = "mniEditUndoScreen";
-            this.mniEditUndoScreen.AutoSize = true;
-            this.mniEditUndoScreen.Text = "&Undo Screen";
-            //
-            // mniSeparator2
-            //
-            this.mniSeparator2.Name = "mniSeparator2";
-            this.mniSeparator2.AutoSize = true;
-            this.mniSeparator2.Text = "-";
-            //
-            // mniEditFind
-            //
-            this.mniEditFind.Name = "mniEditFind";
-            this.mniEditFind.AutoSize = true;
-            this.mniEditFind.Text = "&Find...";
-            //
-            // mniEdit
-            //
-            this.mniEdit.Name = "mniEdit";
-            this.mniEdit.AutoSize = true;
-            this.mniEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniEditUndoCurrentField,
-                        mniEditUndoScreen,
-                        mniSeparator2,
-                        mniEditFind});
-            this.mniEdit.Text = "&Edit";
             //
             // mniHelpPetraHelp
             //
@@ -429,11 +443,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator3
+            // mniSeparator0
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator0.Name = "mniSeparator0";
+            this.mniSeparator0.AutoSize = true;
+            this.mniSeparator0.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -441,11 +455,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator4
+            // mniSeparator1
             //
-            this.mniSeparator4.Name = "mniSeparator4";
-            this.mniSeparator4.AutoSize = true;
-            this.mniSeparator4.Text = "-";
+            this.mniSeparator1.Name = "mniSeparator1";
+            this.mniSeparator1.AutoSize = true;
+            this.mniSeparator1.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -465,9 +479,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator3,
+                        mniSeparator0,
                         mniHelpBugReport,
-                        mniSeparator4,
+                        mniSeparator1,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -479,7 +493,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
-                        mniEdit,
                         mniHelp});
             //
             // stbMain
@@ -494,7 +507,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(700, 500);
+            this.ClientSize = new System.Drawing.Size(770, 500);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -537,37 +550,35 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.Panel pnlImportRecord;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TextBox txtCurrentRecordStatus;
+        private System.Windows.Forms.Label lblCurrentRecordStatus;
         private Ict.Common.Controls.TSgrdDataGridPaged grdParsedValues;
         private System.Windows.Forms.Panel pnlActions;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtExplanation;
         private System.Windows.Forms.Label lblExplanation;
+        private System.Windows.Forms.Label lblTakeAction;
         private System.Windows.Forms.Button btnSkip;
         private System.Windows.Forms.Button btnCreateNewFamilyAndPerson;
+        private System.Windows.Forms.Button btnUseSelectedPerson;
+        private System.Windows.Forms.Button btnCreateNewPersonForSelectedFamily;
+        private System.Windows.Forms.Button btnCreateNewFamily;
+        private System.Windows.Forms.Button btnUseSelectedFamily;
+        private System.Windows.Forms.Button btnFindOtherPerson;
         private System.Windows.Forms.Button btnFindOtherFamily;
         private System.Windows.Forms.CheckBox chkReplaceAddress;
         private Ict.Common.Controls.TSgrdDataGridPaged grdMatchingRecords;
         private System.Windows.Forms.ToolStrip tbrMain;
-        private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbStartImport;
         private System.Windows.Forms.ToolStripButton tbbCancelImport;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
-        private System.Windows.Forms.ToolStripMenuItem mniFileSave;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
-        private System.Windows.Forms.ToolStripMenuItem mniFilePrint;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
-        private System.Windows.Forms.ToolStripMenuItem mniEdit;
-        private System.Windows.Forms.ToolStripMenuItem mniEditUndoCurrentField;
-        private System.Windows.Forms.ToolStripMenuItem mniEditUndoScreen;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem mniEditFind;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
         private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator4;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

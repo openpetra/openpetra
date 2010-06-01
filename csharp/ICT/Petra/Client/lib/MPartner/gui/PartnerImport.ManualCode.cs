@@ -63,6 +63,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         XmlNode FCurrentPartnerNode = null;
+        Int32 FCurrentNumberOfRecord = 0;
+        Int32 FTotalNumberOfRecords = 0;
         private void OpenFile(System.Object sender, EventArgs e)
         {
             if (!FPetraUtilsObject.IsEnabled("actStartImport"))
@@ -101,6 +103,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             this.FPetraUtilsObject.EnableAction("actStartImport", false);
+            this.FPetraUtilsObject.EnableAction("actCancelImport", true);
+
+            FCurrentNumberOfRecord = 1;
+            FTotalNumberOfRecords = FCurrentPartnerNode.ParentNode.ChildNodes.Count;
 
             FCurrentPartnerNode = SkipImportedPartners(FCurrentPartnerNode);
 
@@ -113,6 +119,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentPartnerNode == null)
             {
+                // have we finished importing?
+                if (FCurrentNumberOfRecord > 0)
+                {
+                    txtCurrentRecordStatus.Text =
+                        String.Format(Catalog.GetString("{0} Records processed - Import finished"),
+                            FTotalNumberOfRecords);
+                    pnlActions.Enabled = false;
+                    this.FPetraUtilsObject.EnableAction("actStartImport", true);
+                    this.FPetraUtilsObject.EnableAction("actCancelImport", false);
+                }
+
                 grdParsedValues.DataSource = null;
                 grdMatchingRecords.DataSource = null;
                 pnlImportRecord.Enabled = false;
@@ -133,6 +150,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     valuePair["Value"] = attr.Value;
                     ValuePairs.Rows.Add(valuePair);
                 }
+
+                txtCurrentRecordStatus.Text =
+                    String.Format(Catalog.GetString("Processing record {0} of {1}"),
+                        FCurrentNumberOfRecord,
+                        FTotalNumberOfRecords);
             }
 
             grdParsedValues.Columns.Clear();
@@ -160,11 +182,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FCurrentPartnerNode = null;
             this.FPetraUtilsObject.EnableAction("actStartImport", true);
+            this.FPetraUtilsObject.EnableAction("actCancelImport", false);
         }
 
         private XmlNode SkipImportedPartners(XmlNode ACurrentNode)
         {
             // TODO check for import settings, which partners to skip etc
+            // TODO: CurrentNumberOfRecord and TotalRecords different?
 
             return ACurrentNode;
         }
@@ -175,13 +199,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentPartnerNode = FCurrentPartnerNode.NextSibling;
 
+                FCurrentNumberOfRecord++;
+
                 FCurrentPartnerNode = SkipImportedPartners(FCurrentPartnerNode);
             }
 
             DisplayCurrentRecord();
         }
 
-        private void CreateNewFamilyAndPerson(Object sender, EventArgs e)
+        private void CreateNewFamily(Object sender, EventArgs e)
         {
             if (FCurrentPartnerNode == null)
             {
@@ -204,9 +230,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-
-            // Reload the partner find with the new data, and also the grid with the partner key etc
-            DisplayCurrentRecord();
+            else
+            {
+                // new record has been created, now load the next record
+                SkipRecord(null, null);
+            }
         }
     }
 }

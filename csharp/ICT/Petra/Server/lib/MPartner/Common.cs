@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (AFieldPartnerKey == -1)
             {
-                AFieldPartnerKey = DomainManager.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
+                AFieldPartnerKey = DomainManager.GSiteKey;
             }
 
             PPartnerLedgerTable PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);

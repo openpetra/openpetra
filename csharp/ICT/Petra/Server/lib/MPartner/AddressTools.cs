@@ -217,19 +217,6 @@ namespace Ict.Petra.Server.MPartner
                     return ledgerTable[0].CountryCode;
                 }
             }
-            else
-            {
-                ALedgerTable ledgerTable = ALedgerAccess.LoadAll(ATransaction);
-
-                if (ledgerTable.Rows.Count > 0)
-                {
-                    TLogging.Log(
-                        "TAddressTools.GetLocalCountryCode: Cannot find the SiteKey in s_system_defaults table. Using the country code of the first ledger: "
-                        +
-                        ledgerTable[0].CountryCode);
-                    return ledgerTable[0].CountryCode;
-                }
-            }
 
             // no sitekey, therefore return invalid country code
             return "99";

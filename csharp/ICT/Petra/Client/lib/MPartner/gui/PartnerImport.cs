@@ -45,9 +45,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated: Import Partners
-  public partial class TFrmPartnerImport: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmPartnerImport: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
-    private TFrmPetraEditUtils FPetraUtilsObject;
+    private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
 
     /// constructor
     public TFrmPartnerImport(IntPtr AParentFormHandle) : base()
@@ -61,25 +61,23 @@ namespace Ict.Petra.Client.MPartner.Gui
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblFilename.Text = Catalog.GetString("Filename:");
       this.btnSelectFile.Text = Catalog.GetString("Select File");
+      this.lblCurrentRecordStatus.Text = Catalog.GetString("Current Import File Record Status:");
       this.lblExplanation.Text = Catalog.GetString("Explanation:");
-      this.btnSkip.Text = Catalog.GetString("Skip");
-      this.btnCreateNewFamilyAndPerson.Text = Catalog.GetString("Create New Family And Person");
-      this.btnFindOtherFamily.Text = Catalog.GetString("Find Other Family");
-      this.chkReplaceAddress.Text = Catalog.GetString("Replace Address");
-      this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
-      this.tbbSave.Text = Catalog.GetString("&Save");
+      this.lblTakeAction.Text = Catalog.GetString("Take Action:");
+      this.btnSkip.Text = Catalog.GetString("Skip Record");
+      this.btnCreateNewFamilyAndPerson.Text = Catalog.GetString("Create new Family and Person");
+      this.btnUseSelectedPerson.Text = Catalog.GetString("Use selected Person in list below");
+      this.btnCreateNewPersonForSelectedFamily.Text = Catalog.GetString("Add as new Person to selected Family in list below");
+      this.btnCreateNewFamily.Text = Catalog.GetString("Create new Family Record only");
+      this.btnUseSelectedFamily.Text = Catalog.GetString("Use selected Family in list below");
+      this.btnFindOtherPerson.Text = Catalog.GetString("Find other Person to use for this Record...");
+      this.btnFindOtherFamily.Text = Catalog.GetString("Find other Family to add this Person to...");
+      this.chkReplaceAddress.Text = Catalog.GetString("Replace current address in list below with imported one");
       this.tbbStartImport.Text = Catalog.GetString("Start Import");
       this.tbbCancelImport.Text = Catalog.GetString("Cancel Import");
-      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
-      this.mniFileSave.Text = Catalog.GetString("&Save");
-      this.mniFilePrint.Text = Catalog.GetString("&Print...");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
-      this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
-      this.mniEditFind.Text = Catalog.GetString("&Find...");
-      this.mniEdit.Text = Catalog.GetString("&Edit");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
@@ -89,13 +87,15 @@ namespace Ict.Petra.Client.MPartner.Gui
       #endregion
 
       this.txtFilename.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCurrentRecordStatus.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtExplanation.Font = TAppSettingsManager.GetDefaultBoldFont();
 
-      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
       InitializeManualCode();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
+      tbbCancelImport.Enabled = false;
 
     }
 
@@ -166,14 +166,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             btnSkip.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actCreateNewFamilyAndPerson")
+        if (e.ActionName == "actCreateNewFamily")
         {
-            btnCreateNewFamilyAndPerson.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actSave")
-        {
-            tbbSave.Enabled = e.Enabled;
-            mniFileSave.Enabled = e.Enabled;
+            btnCreateNewFamily.Enabled = e.Enabled;
         }
         if (e.ActionName == "actStartImport")
         {
@@ -187,10 +182,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             mniClose.Enabled = e.Enabled;
         }
-        mniFilePrint.Enabled = false;
-        mniEditUndoCurrentField.Enabled = false;
-        mniEditUndoScreen.Enabled = false;
-        mniEditFind.Enabled = false;
         mniHelpPetraHelp.Enabled = false;
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
