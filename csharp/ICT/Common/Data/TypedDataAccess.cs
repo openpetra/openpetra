@@ -2043,7 +2043,12 @@ namespace Ict.Common.Data
                     {
                         if (ASequenceField.Length > 0)
                         {
-                            TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                            // only insert next sequence value if the field has negative value.
+                            // this is needed when creating location 0 for a new site/ledger
+                            if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
+                            {
+                                TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                            }
                         }
 
                         TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);

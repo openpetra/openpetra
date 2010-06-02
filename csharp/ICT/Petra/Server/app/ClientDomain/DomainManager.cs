@@ -424,7 +424,9 @@ namespace Ict.Petra.Server.App.ClientDomain
 
             if (DomainManager.GSiteKey <= 0)
             {
-                throw new Exception("cannot start server: there is no SiteKey or SiteKey23 record in s_system_defaults");
+                // this can happen either with a legacy Petra 2.x database or with a fresh OpenPetra database without any ledger yet
+                Console.WriteLine("there is no SiteKey or SiteKeyPetra2 record in s_system_defaults");
+                DomainManager.GSiteKey = 99000000;
             }
 
 #if DEBUGMODE

@@ -616,6 +616,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             accountHierarchyRow.RootAccountCode = ALedgerNumber.ToString();
             AMainDS.AAccountHierarchy.Rows.Add(accountHierarchyRow);
 
+            AAccountRow accountRow = AMainDS.AAccount.NewRowTyped();
+            accountRow.LedgerNumber = ALedgerNumber;
+            accountRow.AccountCode = ALedgerNumber.ToString();
+            AMainDS.AAccount.Rows.Add(accountRow);
+
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
             StringCollection ImportedAccountNames = new StringCollection();
@@ -861,7 +866,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 validLedgerNumberRow.LedgerNumber = ALedgerNumber;
 
                 // TODO can we assume that ledger 4 is used for international clearing?
-                validLedgerNumberRow.IltProcessingCentre = 4000000;
+                // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
+                // validLedgerNumberRow.IltProcessingCentre = 4000000;
+
                 validLedgerNumberRow.CostCentreCode = (ALedgerNumber * 100).ToString();
                 MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
             }
