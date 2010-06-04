@@ -1,5 +1,5 @@
 // Auto generated with nant generateGlue
-// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 //
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -44,6 +44,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
@@ -51,7 +52,6 @@ using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
 using Ict.Petra.Server.MCommon.Instantiator.DataReader;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MCommon.DataReader;
-
 
 #region ManualCode
 using Ict.Petra.Shared.MCommon;
@@ -84,7 +84,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 
 #endif
         }
-
 
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMCommon
@@ -126,7 +125,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                 RandomString = RandomString + rndbytes[rndbytespos].ToString();
             }
 
-
             RemotingTime = DateTime.Now;
             RemotedObject = new TMCommon();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
@@ -145,9 +143,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             return FRemotingURL;
         }
 
-
     }
-
 
     /// <summary>
     /// REMOTEABLE CLASS. MCommon Namespace (highest level).
@@ -173,7 +169,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -216,16 +211,14 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMCommon object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
         {
@@ -250,12 +243,10 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                     FUIConnectorsSubNamespace = new TUIConnectorsNamespace();
                 }
 
-
                 return FUIConnectorsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'DataReader' subnamespace contains further subnamespaces.</summary>
         public IDataReaderNamespace DataReader
@@ -281,19 +272,15 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                     FDataReaderSubNamespace = new TDataReaderNamespace();
                 }
 
-
                 return FDataReaderSubNamespace;
             }
 
         }
-
-
     }
 }
 
 namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TUIConnectorsNamespace : MarshalByRefObject, IUIConnectorsNamespace
     {
@@ -313,7 +300,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -356,14 +342,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
@@ -386,6 +369,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -428,10 +412,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             }
 
 #endif
-            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, 
-               AApplicationKey, 
-               ARegistrationOffice, 
+            TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
+               AApplicationKey,
+               ARegistrationOffice,
                AOfficeSpecificDataLabelUse);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -468,6 +453,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #endif
             TFieldOfServiceUIConnector ReturnValue = new TFieldOfServiceUIConnector(APartnerKey);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -485,14 +471,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 #endif
             return ReturnValue;
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 {
-
     /// <summary>auto generated class </summary>
     public class TDataReaderNamespace : MarshalByRefObject, IDataReaderNamespace
     {
@@ -512,7 +495,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -555,14 +537,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TDataReaderNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public bool GetData(string ATablename,
@@ -583,7 +562,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
             return TCommonDataReader.SaveData(ATablename, ref ASubmitTable, out AVerificationResult);
             #endregion ManualCode
         }
-
     }
 }
 

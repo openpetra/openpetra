@@ -21,47 +21,6 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        MyPetra: {Icon=petraico-small.ico, Label=My Petra}
-            Demo:
-                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui}
-                    NewPartner:
-                        AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
-                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
-                        AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
-                    MaintainPartner:
-                        FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
-                    Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
-                        PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
-                    ImportExport: {Label=Import and Export}
-                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners, Label=Simple Import, Description="Import Partners, only useful for initial database setup"}
-                        ComplexImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Sophisticated Import, Description=Import Partners without overwriting}
-                        ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners}
-                Ledger: {Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
-                    GL: 
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
-                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
-                    Gift:
-                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, ActionOpenScreen=TFrmBankStatementImport}
-                        GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
-                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
-                        MotivationDetailSetup: {Description: "Create motivation details, towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
-                    AP: {Label=Accounts Payable}
-                        AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
-                    Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
-                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
-                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                        BalanceSheet: {ActionOpenScreen=TFrmBalanceSheet}
-                    Setup:
-                        SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
-                        SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
-                Database: {Namespace=Ict.Petra.Client.MSysMan.Gui}
-                    ImportExport:
-                        ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                        ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
-            Favourites:
-            CustomGroup:
-
         Partner: {Label=Pa&rtner, Icon=partner_small.ico}
             # Module
             Main:
@@ -73,110 +32,128 @@ OpenPetra:
                         AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
                     MaintainPartner:
-                        ChangeAddress:
-                        MergePartners:
+                        #ChangeAddress:
+                        #MergePartners:
                         FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
-                Extracts:
+                    Contacts:
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts}
+                    ImportExport: {Label=Import and Export}
+                        ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
+                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners, Label=Import from YAML, Description="Import Partners, only useful for initial database setup"}
+                        ImportPartnersFromCSV: {ActionOpenScreen=TFrmPartnerImport, Label=Import from CSV, Description=Import Partners without overwriting}
+                #Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
-                MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
-            MoreFunctions:
-                SetupPartnerModule:
-        # Department
+                    PartnerAddress: {Label=Brief &Address Report, ActionOpenScreen=TFrmBriefAddressReport)
+                    BriefFoundation: {Label=Brief &Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
+                    SupportingChurches: {Label=Supporting &Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)
+                    ValidBankAccount: {Label=&Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport)
+                    PublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
+                    BulkAddressReport: {Label=&Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
+                #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
+            #MoreFunctions:
+                #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
-            # Module
-            GeneralLedger:
-                # Sub Module
-                Setup:
-                    # Task Group
-                    Accounts:
-                        # Tasks (parse from c# file, or even dll?)
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
-                        AddPostingAccount:
-                        AddForeignCurrencyAccount:
-                        AddSummarisationAccount:
-                        EditAccount:
-                        DeleteAccount:
-                        RenameAccount:
-                        ImportChartOfAccounts:
-                    CostCentres:
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
-                        AddCostCentre:
-                        EditCostCentre:
-                        DeleteCostCentre:
-                        RenameCostCentre:
-                        LinkCostCentreToPartner:
-                    Other:
-                        LedgerSetupShepherd:
-                        SetupCalendar:
-                        ChangeNumberOfForwardingPeriods:
-                Transactions:
-                    SearchBoxes: [Transaction, Batch]
-                    General:
-                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
-                        EnterTransactions:
-                        ImportTransactions:
-                        EditExistingTransactions:
-                        EditTransactionsInPreviouslyUsedBatch:
-                        PostBatch:
-                        FindTransaction:
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
-                    AccountDetail:
-                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
-                    BalanceSheet:
-                        BalanceSheet: {ActionOpenScreen=TFrmBalanceSheet}
-                        CurrentPeriod:
-                        EndOfLastYear:
-                        SpecifyParameters:
-                        RepeatLastReport:
-                        MyFancyBalanceSheetWithCoolGraph:
-                    IncomeExpense:
-                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                PeriodEnd:
-                YearEnd:
-                ICHProcessing:
             GiftProcessing:
                 SearchBoxes: [Donor, Recipient]
-                GiftEntry:
-                    EnteringGifts: {Description: Just a prototype at the moment, ActionOpenScreen=TFrmBankStatementImport}
-                    GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
-                    AddGifts:
-                    ImportGifts:
-                    EditExistingGifts:
-                    EditLastUnpostedGiftBatch:
-                    PostGiftBatch:
-                GiftReceipting:
-                    PrintSingleReceipt:
-                    PrintAnnualReceipt:
+                Main:
+                    GiftEntry:
+                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, ActionOpenScreen=TFrmBankStatementImport}
+                        GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
+                        #AddGifts:
+                        #ImportGifts:
+                        #EditExistingGifts:
+                        #EditLastUnpostedGiftBatch:
+                        #PostGiftBatch:
+                    GiftReceipting:
+                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
+                        #PrintSingleReceipt:
+                    FormLetters:
+                        PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=Gift.TFrmGiftNewDonorLetter}
+                    Setup:
+                        MotivationDetailSetup: {Description: "Create motivation details, towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
             AccountsPayable:
                 Main:
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
-            Budgets:
-            ICH:
-            Reports:
+            GeneralLedger:
+                Main:
+                    SearchBoxes: [Transaction, Batch]
+                    General:
+                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, ActionOpenScreen=TFrmBankStatementImport}
+                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
+                        #EnterTransactions:
+                        #ImportTransactions:
+                        #EditExistingTransactions:
+                        #EditTransactionsInPreviouslyUsedBatch:
+                        #PostBatch:
+                        #FindTransaction:
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
+                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
+                        BalanceSheet: {ActionOpenScreen=TFrmBalanceSheet}
+                            #CurrentPeriod:
+                            #EndOfLastYear:
+                            #SpecifyParameters:
+                            #RepeatLastReport:
+                            #MyFancyBalanceSheetWithCoolGraph:
+                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
+                    #PeriodEnd:
+                    #YearEnd:
+                    #ICHProcessing:
+                    Setup:
+                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
+                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
+                        #Accounts:
+                            #AddPostingAccount:
+                            #AddForeignCurrencyAccount:
+                            #AddSummarisationAccount:
+                            #EditAccount:
+                            #DeleteAccount:
+                            #RenameAccount:
+                            #ImportChartOfAccounts:
+                        #CostCentres:
+                            #AddCostCentre:
+                            #EditCostCentre:
+                            #DeleteCostCentre:
+                            #RenameCostCentre:
+                            #LinkCostCentreToPartner:
+                        #Other:
+                            #LedgerSetupShepherd:
+                            #SetupCalendar:
+                            #ChangeNumberOfForwardingPeriods:
+            #Budgets:
+            #ICH:
+            #Reports:
             FinanceModuleSetup:
+                Main:
+                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
+                    SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+            
         Personnel: {Icon=personel_small.ico}
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+        Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+            Main:
+                Safety:
+                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+            Users:
+                Functions:
+                    MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
+                    #DeleteUser:
+                    #ModifyUserPermissions:
+                    #ImportUserPermissions:
             Finance:
                 LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                    DeleteLedger:
-                ExchangeRates:
-                    ManageCurrencies:
-                    ManageExchangeRates:
-            Users:
-                Functions:
-                    CreateNewUser: {ActionClick=TSysManMain.CreateUser}
-                    DeleteUser:
-                    ModifyUserPermissions:
-                    ImportUserPermissions:
-                    SetPassword: {ActionClick=TSysManMain.SetUserPassword}
+                    #DeleteLedger:
+                ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui}
+                    SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}

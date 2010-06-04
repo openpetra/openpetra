@@ -45,87 +45,15 @@ namespace GenerateSharedCode
 /// </summary>
 class CreateInstantiators : AutoGenerationWriter
 {
-    private void WriteLoaderClass(String module)
+    private ProcessTemplate WriteLoaderClass(ProcessTemplate ATemplate, String module)
     {
-        WriteLine("/// <summary>");
-        WriteLine("/// LOADER CLASS. Creates and dynamically exposes an instance of the remoteable");
-        WriteLine("/// class to make it callable remotely from the Client.");
-        WriteLine("/// </summary>");
-        WriteLine("public class TM" + module + "NamespaceLoader : TConfigurableMBRObject");
-        WriteLine("{");
-        Indent();
-        WriteLine("/// <summary>URL at which the remoted object can be reached</summary>");
-        WriteLine("private String FRemotingURL;");
-        WriteLine("/// <summary>holds reference to the TM" + module + " object</summary>");
-        WriteLine("private ObjRef FRemotedObject;");
-        WriteLine();
-        WriteLine("/// <summary>Constructor</summary>");
-        StartBlock("public TM" + module + "NamespaceLoader()");
-        WriteLine("#if DEBUGMODE");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(this.GetType().FullName + \" created in application domain: \" + Thread.GetDomain().FriendlyName);");
-        EndBlock();
-        WriteLine("#endif");
-        EndBlock();
+        ProcessTemplate loaderClassSnippet = ATemplate.GetSnippet("LOADERCLASS");
 
-        WriteLine();
-        WriteLine("/// <summary>");
-        WriteLine("/// Creates and dynamically exposes an instance of the remoteable TM" + module + "");
-        WriteLine("/// class to make it callable remotely from the Client.");
-        WriteLine("///");
-        WriteLine("/// @comment This function gets called from TRemoteLoader.LoadPetraModuleAssembly.");
-        WriteLine("/// This call is done late-bound through .NET Reflection!");
-        WriteLine("///");
-        WriteLine("/// WARNING: If the name of this function or its parameters should change, this");
-        WriteLine("/// needs to be reflected in the call to this function in");
-        WriteLine("/// TRemoteLoader.LoadPetraModuleAssembly!!!");
-        WriteLine("///");
-        WriteLine("/// </summary>");
-        WriteLine("/// <returns>The URL at which the remoted object can be reached.</returns>");
-
-        StartBlock("public String GetRemotingURL()");
-        WriteLine("TM" + module + " RemotedObject;");
-        WriteLine("DateTime RemotingTime;");
-        WriteLine("String RemoteAtURI;");
-        WriteLine("String RandomString;");
-        WriteLine("System.Security.Cryptography.RNGCryptoServiceProvider rnd;");
-        WriteLine("Byte rndbytespos;");
-        WriteLine("Byte[] rndbytes = new Byte[5];");
-        WriteLine();
-        WriteLine("#if DEBUGMODE");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(\"TM" + module + "NamespaceLoader.GetRemotingURL in AppDomain: \" + Thread.GetDomain().FriendlyName);");
-        EndBlock();
-        WriteLine("#endif");
-        WriteLine();
-        WriteLine("RandomString = \"\";");
-        WriteLine("rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();");
-        WriteLine("rnd.GetBytes(rndbytes);");
-        WriteLine();
-        StartBlock("for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)");
-        WriteLine("RandomString = RandomString + rndbytes[rndbytespos].ToString();");
-        EndBlock();
-        WriteLine();
-        WriteLine("RemotingTime = DateTime.Now;");
-        WriteLine("RemotedObject = new TM" + module + "();");
-        WriteLine("RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +");
-        WriteLine("              (RemotingTime.Second).ToString() + '_' + RandomString.ToString();");
-        WriteLine("FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IM" + module + "Namespace));");
-        WriteLine("FRemotingURL = RemoteAtURI; // FRemotedObject.URI;");
-        WriteLine();
-        WriteLine("#if DEBUGMODE");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(\"TM" + module + ".URI: \" + FRemotedObject.URI);");
-        EndBlock();
-        WriteLine("#endif");
-        WriteLine();
-        WriteLine("return FRemotingURL;");
-        EndBlock();
-        WriteLine();
-        EndBlock();
+        loaderClassSnippet.SetCodelet("MODULE", module);
+        return loaderClassSnippet;
     }
 
-    private void CreateInstanceOfConnector(InterfaceMethodNode m, string ATypeConnector)
+    private ProcessTemplate CreateInstanceOfConnector(ProcessTemplate ATemplate, InterfaceMethodNode m, string ATypeConnector)
     {
         bool outHasBeenFound = false;
         bool firstParameter;
@@ -157,20 +85,20 @@ class CreateInstantiators : AutoGenerationWriter
             }
 
             createObject += ");";
-            WriteLine(createObject);
+
+            ProcessTemplate snippet = new ProcessTemplate();
+            snippet.FTemplateCode = createObject;
+            return snippet;
         }
         else
         {
+            ProcessTemplate snippet = ATemplate.GetSnippet("CALLPROCEDUREWITHGETDATA");
+
             // the first parameters are for the constructor
             // then the out parameter is for the dataset,
             // and all the following parameters are for GetData
 
-            WriteLine("#if DEBUGMODE");
-            StartBlock("if (TSrvSetting.DL >= 9)");
-            WriteLine("Console.WriteLine(this.GetType().FullName + \": Creating " +
-                "T" + CSParser.GetName(m.Names) + ATypeConnector + "...\");");
-            EndBlock();
-            WriteLine("#endif");
+            snippet.SetCodelet("CONNECTORTYPE", CSParser.GetName(m.Names) + ATypeConnector);
 
             String createObject = "T" + CSParser.GetName(m.Names) + ATypeConnector + " ReturnValue = new T" + CSParser.GetName(m.Names) +
                                   ATypeConnector + "(";
@@ -188,14 +116,7 @@ class CreateInstantiators : AutoGenerationWriter
                 parameters.Add(p.Name);
             }
 
-            WriteLineMethodCall(createObject, parameters);
-
-            WriteLine("#if DEBUGMODE");
-            StartBlock("if (TSrvSetting.DL >= 9)");
-            WriteLine("Console.WriteLine(this.GetType().FullName + \": Calling " +
-                "T" + CSParser.GetName(m.Names) + ATypeConnector + ".GetData...\");");
-            EndBlock();
-            WriteLine("#endif");
+            snippet.SetCodelet("CALLPROCEDUREINTERNAL", WriteLineMethodCallToString(createObject, parameters));
 
             // find the out parameter, and use the following parameters as parameters for GetData
             String getData = "";
@@ -223,20 +144,12 @@ class CreateInstantiators : AutoGenerationWriter
             }
 
             getData += ");";
-            WriteLine(getData);
-
-            WriteLine("#if DEBUGMODE");
-            StartBlock("if (TSrvSetting.DL >= 9)");
-            WriteLine("Console.WriteLine(this.GetType().FullName + \": Calling " +
-                "T" + CSParser.GetName(m.Names) + ATypeConnector + ".GetData finished.\");");
-            EndBlock();
-            WriteLine("#endif");
-
-            WriteLine("return ReturnValue;");
+            snippet.SetCodelet("GETDATA", getData);
+            return snippet;
         }
     }
 
-    private void ImplementInterface(String AFullNamespace, String AInterfaceName)
+    private ProcessTemplate ImplementInterface(ProcessTemplate ATemplate, String AFullNamespace, String AInterfaceName)
     {
         // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
         // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
@@ -247,8 +160,11 @@ class CreateInstantiators : AutoGenerationWriter
 
         if (t == null)
         {
-            return;
+            return new ProcessTemplate();
         }
+
+        ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
+        interfacesSnippet.SetCodelet("METHOD", "");
 
         foreach (InterfaceMethodNode m in CSParser.GetMethods(t))
         {
@@ -272,8 +188,6 @@ class CreateInstantiators : AutoGenerationWriter
                 returnType = "void";
             }
 
-            WriteLine("/// generated method from interface");
-
             int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
             String formattedMethod = "public " + returnType + " " + MethodName + "(";
 
@@ -286,17 +200,18 @@ class CreateInstantiators : AutoGenerationWriter
 
             formattedMethod += ")";
 
-            StartBlock(formattedMethod);
+            ProcessTemplate ProcedureSnippet = ATemplate.GetSnippet("GENERATEDMETHODFROMINTERFACE");
+            ProcedureSnippet.SetCodelet("PROCEDUREHEADER", formattedMethod);
 
             // TODO: there is a manual exception for TReportingUIConnectorsNamespace: better do a generic way
             if (AInterfaceName.EndsWith("UIConnectorsNamespace")
                 && (AInterfaceName != "IReportingUIConnectorsNamespace"))
             {
-                CreateInstanceOfConnector(m, "UIConnector");
+                ProcedureSnippet.InsertSnippet("CALLPROCEDURE", CreateInstanceOfConnector(ATemplate, m, "UIConnector"));
             }
             else if (AInterfaceName.EndsWith("LogicConnectorsNamespace"))
             {
-                CreateInstanceOfConnector(m, "LogicConnector");
+                ProcedureSnippet.InsertSnippet("CALLPROCEDURE", CreateInstanceOfConnector(ATemplate, m, "LogicConnector"));
             }
             else if (AInterfaceName.EndsWith("WebConnectorsNamespace"))
             {
@@ -309,11 +224,19 @@ class CreateInstantiators : AutoGenerationWriter
             //     || AInterfaceName.EndsWith("ServerLookupsNamespace")
             //    || AInterfaceName.EndsWith("CacheableNamespace")
 
-            EndBlock();
+            // might be implemented with manual code
+            if (!ProcedureSnippet.FCodelets.Contains("CALLPROCEDURE"))
+            {
+                ProcedureSnippet.SetCodelet("CALLPROCEDURE", "");
+            }
+
+            interfacesSnippet.InsertSnippet("METHOD", ProcedureSnippet);
         }
+
+        return interfacesSnippet;
     }
 
-    void ImplementStaticCallConnector(string AFullNamespace)
+    ProcessTemplate ImplementStaticCallConnector(ProcessTemplate ATemplate, string AFullNamespace)
     {
         // e.g. FullNamespace: Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         // e.g. ConnectorNamespace: Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
@@ -324,6 +247,9 @@ class CreateInstantiators : AutoGenerationWriter
         CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
             module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
             ref CSFiles);
+
+        ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
+        interfacesSnippet.SetCodelet("METHOD", "");
 
         List <ClassNode>ConnectorClasses = CSParser.GetClassesInNamespace(CSFiles, ConnectorNamespace);
 
@@ -344,8 +270,6 @@ class CreateInstantiators : AutoGenerationWriter
                 {
                     continue;
                 }
-
-                WriteLine("/// generated method from connector");
 
                 int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
                 String formattedMethod = "public " + returnType + " " + MethodName + "(";
@@ -375,26 +299,36 @@ class CreateInstantiators : AutoGenerationWriter
 
                 formattedMethod += ")";
 
-                StartBlock(formattedMethod);
+                ProcessTemplate ProcedureSnippet = ATemplate.GetSnippet("GENERATEDMETHODFROMCONNECTOR");
+                ProcedureSnippet.SetCodelet("PROCEDUREHEADER", formattedMethod);
 
                 // eg: return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
-                WriteLine("return " + ConnectorNamespace + "." +
+                ProcedureSnippet.SetCodelet("CALLPROCEDURE", "return " + ConnectorNamespace + "." +
                     CSParser.GetName(connectorClass.Name) + "." +
                     MethodName + "(" + actualParameters + ");");
 
-                EndBlock();
+                interfacesSnippet.InsertSnippet("METHOD", ProcedureSnippet);
             }
         }
+
+        return interfacesSnippet;
     }
 
-    private void WriteRemotableClass(String FullNamespace, String Classname, String Namespace, Boolean HighestLevel, List <SubNamespace>children)
+    private ProcessTemplate WriteRemotableClass(ProcessTemplate ATemplate,
+        String FullNamespace,
+        String Classname,
+        String Namespace,
+        Boolean HighestLevel,
+        List <TNamespace>children)
     {
+        ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
+
         if (HighestLevel)
         {
-            WriteLine("/// <summary>");
-            WriteLine("/// " + "REMOTEABLE CLASS. " + Namespace + " Namespace (highest level).");
-            WriteLine("/// </summary>");
+            remotableClassSnippet.SetCodelet("HIGHESTLEVEL", "true");
         }
+
+        remotableClassSnippet.SetCodelet("NAMESPACE", Namespace);
 
         String LocalClassname = Classname;
 
@@ -403,190 +337,96 @@ class CreateInstantiators : AutoGenerationWriter
             LocalClassname = "T" + Classname + "Namespace";
         }
 
-        WriteLine("/// <summary>auto generated class </summary>");
-        WriteLine("public class " + LocalClassname + " : MarshalByRefObject, I" + Namespace + "Namespace");
-        WriteLine("{");
-        Indent();
-        WriteLine("#if DEBUGMODE");
-        WriteLine("private DateTime FStartTime;");
-        WriteLine("#endif");
+        remotableClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
 
-        foreach (SubNamespace sn in children)
+        remotableClassSnippet.SetCodelet("SUBNAMESPACEDEFINITIONS", "");
+
+        foreach (TNamespace sn in children)
         {
             if (HighestLevel)
             {
-                WriteLine("private T" + sn.Name + "Namespace F" + sn.Name + "SubNamespace;");
+                remotableClassSnippet.AddToCodelet("SUBNAMESPACEDEFINITIONS",
+                    "private T" + sn.Name + "Namespace F" + sn.Name + "SubNamespace;" + Environment.NewLine);
             }
             else
             {
-                WriteLine("private T" + Namespace + sn.Name + "Namespace F" + Namespace + sn.Name + "SubNamespace;");
+                remotableClassSnippet.AddToCodelet("SUBNAMESPACEDEFINITIONS",
+                    "private T" + Namespace + sn.Name + "Namespace F" + Namespace + sn.Name + "SubNamespace;" + Environment.NewLine);
             }
         }
-
-        WriteLine();
-        WriteLine("/// <summary>Constructor</summary>");
-        StartBlock("public " + LocalClassname + "()");
-        WriteLine("#if DEBUGMODE");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(this.GetType().FullName + \" created: Instance hash is \" + this.GetHashCode().ToString());");
-        EndBlock();
-        WriteLine("FStartTime = DateTime.Now;");
-        WriteLine("#endif");
-        EndBlock();
-        WriteLine();
-        WriteLine("// NOTE AutoGeneration: This destructor is only needed for debugging...");
-        WriteLine("#if DEBUGMODE");
-        WriteLine("/// <summary>Destructor</summary>");
-        StartBlock("~" + LocalClassname + "()");
-        WriteLine("#if DEBUGMODELONGRUNNINGFINALIZERS");
-        WriteLine("const Int32 MAX_ITERATIONS = 100000;");
-        WriteLine("System.Int32 LoopCounter;");
-        WriteLine("object MyObject;");
-        WriteLine("object MyObject2;");
-        WriteLine("#endif");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(this.GetType().FullName + \": Getting collected after \" + (new TimeSpan(");
-        WriteLine("                                                                                DateTime.Now.Ticks -");
-        WriteLine("                                                                                FStartTime.Ticks)).ToString() + \" seconds.\");");
-        EndBlock();
-        WriteLine("#if DEBUGMODELONGRUNNINGFINALIZERS");
-        WriteLine("MyObject = new object();");
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(this.GetType().FullName + \": Now performing some longer-running stuff...\");");
-        EndBlock();
-        StartBlock("for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)");
-        WriteLine("MyObject2 = new object();");
-        WriteLine("GC.KeepAlive(MyObject);");
-        EndBlock();
-        StartBlock("if (TSrvSetting.DL >= 9)");
-        WriteLine("Console.WriteLine(this.GetType().FullName + \": FINALIZER has run.\");");
-        EndBlock();
-        WriteLine("#endif");
-        EndBlock();
-        WriteLine("#endif");
-        WriteLine();
-        WriteLine();
-        WriteLine();
-        WriteLine("/// NOTE AutoGeneration: This function is all-important!!!");
-        StartBlock("public override object InitializeLifetimeService()");
-        WriteLine("return null; // make sure that the " + LocalClassname + " object exists until this AppDomain is unloaded!");
-        EndBlock();
-        WriteLine();
 
         if (children.Count == 0)
         {
             if (Namespace.EndsWith("WebConnectors"))
             {
-                ImplementStaticCallConnector(FullNamespace);
+                remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", ImplementStaticCallConnector(ATemplate, FullNamespace));
             }
             else
             {
-                ImplementInterface(FullNamespace, "I" + Namespace + "Namespace");
+                remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS",
+                    ImplementInterface(ATemplate, FullNamespace, "I" + Namespace + "Namespace"));
             }
         }
         else
         {
-            WriteLine(
-                "// NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)");
+            remotableClassSnippet.SetCodelet("SUBMODULENAMESPACES", "true");
         }
 
-        foreach (SubNamespace sn in children)
+        foreach (TNamespace sn in children)
         {
-            if (HighestLevel)
-            {
-                WriteLine("/// <summary>The '" + sn.Name + "' subnamespace contains further subnamespaces.</summary>");
-                StartBlock("public I" + sn.Name + "Namespace " + sn.Name + "");
-            }
-            else
-            {
-                WriteLine("/// <summary>The '" + Namespace + sn.Name + "' subnamespace contains further subnamespaces.</summary>");
-                StartBlock("public I" + Namespace + sn.Name + "Namespace " + sn.Name + "");
-            }
-
-            StartBlock("get");
-            WriteLine("//");
-            WriteLine("// Creates or passes a reference to an instantiator of sub-namespaces that");
-            WriteLine("// reside in the '" + Namespace + "." + sn.Name + "' sub-namespace.");
-            WriteLine("// A call to this function is done everytime a Client uses an object of this");
-            WriteLine("// sub-namespace - this is fully transparent to the Client.");
-            WriteLine("//");
-            WriteLine("// @return A reference to an instantiator of sub-namespaces that reside in");
-            WriteLine("//         the '" + Namespace + "." + sn.Name + "' sub-namespace");
-            WriteLine("//");
-            WriteLine();
-            WriteLine("// accessing T" + sn.Name + "Namespace the first time? > instantiate the object");
+            ProcessTemplate subNamespaceSnippet = ATemplate.GetSnippet("SUBNAMESPACE");
 
             if (HighestLevel)
             {
-                StartBlock("if (F" + sn.Name + "SubNamespace == null)");
+                subNamespaceSnippet.SetCodelet("NAMESPACENAME", sn.Name);
+                subNamespaceSnippet.SetCodelet("OBJECTNAME", sn.Name);
             }
             else
             {
-                StartBlock("if (F" + Namespace + sn.Name + "SubNamespace == null)");
+                subNamespaceSnippet.SetCodelet("NAMESPACENAME", Namespace + sn.Name);
+                subNamespaceSnippet.SetCodelet("OBJECTNAME", sn.Name);
             }
 
-            WriteLine("// NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!");
-            WriteLine("//      * for the Generator: the name of this Type ('T" + sn.Name + "Namespace') needs to come out of the XML definition,");
-            WriteLine(
-                "//      * The Namespace where it resides in ('Ict.Petra.Server." + Namespace + ".Instantiator." + sn.Name +
-                "') should be automatically contructable.");
+            subNamespaceSnippet.SetCodelet("NAMESPACE", Namespace);
 
-            if (HighestLevel)
-            {
-                WriteLine("F" + sn.Name + "SubNamespace = new T" + sn.Name + "Namespace();");
-            }
-            else
-            {
-                WriteLine("F" + Namespace + sn.Name + "SubNamespace = new T" + Namespace + sn.Name + "Namespace();");
-            }
-
-            EndBlock();
-            WriteLine();
-
-            if (HighestLevel)
-            {
-                WriteLine("return F" + sn.Name + "SubNamespace;");
-            }
-            else
-            {
-                WriteLine("return (I" + Namespace + sn.Name + "Namespace)F" + Namespace + sn.Name + "SubNamespace;");
-            }
-
-            EndBlock();
-            EndBlock();
-            WriteLine();
+            remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", subNamespaceSnippet);
         }
 
-        DeIndent();
-        WriteLine("}");
+        return remotableClassSnippet;
     }
 
-    private void WriteNamespace(String NamespaceName, String ClassName, SubNamespace sn)
+    private ProcessTemplate WriteNamespace(ProcessTemplate ATemplate, String NamespaceName, String ClassName, TNamespace sn)
     {
-        WriteLine();
-        StartBlock("namespace " + NamespaceName);
+        ProcessTemplate namespaceTemplate = ATemplate.GetSnippet("NAMESPACE");
 
-        WriteLine();
-        WriteRemotableClass(NamespaceName,
-            ClassName,
-            ClassName,
-            false,
-            sn.Children);
+        namespaceTemplate.SetCodelet("NAMESPACENAME", NamespaceName);
 
-        EndBlock();
+        namespaceTemplate.InsertSnippet("REMOTABLECLASS", WriteRemotableClass(ATemplate, NamespaceName,
+                ClassName,
+                ClassName,
+                false,
+                sn.Children));
 
-        foreach (SubNamespace sn2 in sn.Children)
+        namespaceTemplate.SetCodelet("SUBNAMESPACES1", "");
+
+        foreach (TNamespace sn2 in sn.Children)
         {
-            WriteNamespace(NamespaceName + "." + sn2.Name, ClassName + sn2.Name, sn2);
+            namespaceTemplate.InsertSnippet("SUBNAMESPACES1", WriteNamespace(ATemplate, NamespaceName + "." + sn2.Name, ClassName + sn2.Name, sn2));
         }
+
+        return namespaceTemplate;
     }
 
-    private void CreateAutoHierarchy(TopNamespace tn, String AOutputPath, String AXmlFileName)
+    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
 
         Console.WriteLine("working on " + OutputFile);
+
+        ProcessTemplate Template = new ProcessTemplate(ATemplateDir + Path.DirectorySeparatorChar +
+            "ClientServerGlue" + Path.DirectorySeparatorChar +
+            "Instantiator.cs");
 
         OpenFile(OutputFile);
         WriteLine("// Auto generated with nant generateGlue");
@@ -594,106 +434,90 @@ class CreateInstantiators : AutoGenerationWriter
         WriteLine("//");
 
         // load default header with license and copyright
-        string templateDir = TAppSettingsManager.GetValueStatic("TemplateDir");
-        StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
+        StreamReader sr = new StreamReader(ATemplateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
         string fileheader = sr.ReadToEnd();
         sr.Close();
         fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
         WriteLine(fileheader);
 
-        WriteLine("//");
-        WriteLine("// Contains a remotable class that instantiates an Object which gives access to");
-        WriteLine("// the MPartner Namespace (from the Client's perspective).");
-        WriteLine("//");
-        WriteLine("// The purpose of the remotable class is to present other classes which are");
-        WriteLine("// Instantiators for sub-namespaces to the Client. The instantiation of the");
-        WriteLine("// sub-namespace objects is completely transparent to the Client!");
-        WriteLine("// The remotable class itself gets instantiated and dynamically remoted by the");
-        WriteLine("// loader class, which in turn gets called when the Client Domain is set up.");
-        WriteLine("//");
-        WriteLine();
-        WriteLine("using System;");
+        ProcessTemplate headerSnippet = Template.GetSnippet("HEADER");
+
+        WriteLine(headerSnippet.FinishWriting(true));
+
         SynchronizeLines();
-        WriteLine("using System.Collections;");
-        WriteLine("using System.Collections.Generic;");
-        WriteLine("using System.Data;");
-        WriteLine("using System.Threading;");
-        WriteLine("using System.Runtime.Remoting;");
-        WriteLine("using System.Security.Cryptography;");
-        WriteLine("using Ict.Common;");
-        WriteLine("using Ict.Petra.Shared;");
 
         WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + ';');
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn, sn.Children);
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Server.M" + tn.Name + "." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
 
         WriteLine();
 
-        //InsertManualLines(true);
+        ProcessTemplate topLevelNamespaceSnippet = Template.GetSnippet("TOPLEVELNAMESPACE");
+        topLevelNamespaceSnippet.SetCodelet("TOPLEVELMODULE", tn.Name);
+        topLevelNamespaceSnippet.InsertSnippet("LOADERCLASS", WriteLoaderClass(Template, tn.Name));
+        topLevelNamespaceSnippet.InsertSnippet("REMOTABLECLASS",
+            WriteRemotableClass(
+                Template,
+                "Ict.Petra.Server.M" + tn.Name + ".Instantiator",
+                "TM" + tn.Name,
+                "M" + tn.Name,
+                true,
+                tn.Children));
 
-        WriteLine();
-        WriteLine("namespace Ict.Petra.Server.M" + tn.Name + ".Instantiator");
-        WriteLine("{");
-        Indent();
-        WriteLoaderClass(tn.Name);
-        WriteLine();
-        WriteRemotableClass("Ict.Petra.Server.M" + tn.Name + ".Instantiator",
-            "TM" + tn.Name,
-            "M" + tn.Name,
-            true,
-            tn.SubNamespaces);
+        topLevelNamespaceSnippet.SetCodelet("SUBNAMESPACES", "");
 
-        DeIndent();
-        WriteLine("}");
-
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
-            WriteNamespace("Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn);
+            topLevelNamespaceSnippet.InsertSnippet("SUBNAMESPACES",
+                WriteNamespace(Template, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn));
         }
+
+        // need to use WriteLine to keep all the manual code!
+        WriteLine(topLevelNamespaceSnippet.FinishWriting(true));
 
         Close();
     }
 
     private List <CSParser>CSFiles = null;
-    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
+    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         // get the appropriate cs file
         CSFiles = new List <CSParser>();
         CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces/Ict.Petra.Shared.Interfaces.csproj", ref CSFiles);
 
-        foreach (TopNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces)
         {
             // for testing:
 //        if (tn.Name != "Reporting") continue;
-            CreateAutoHierarchy(tn, AOutputPath, AXmlFileName);
+            CreateAutoHierarchy(tn, AOutputPath, AXmlFileName, ATemplateDir);
         }
     }
 }

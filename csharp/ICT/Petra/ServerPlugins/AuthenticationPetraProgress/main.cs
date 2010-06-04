@@ -116,5 +116,15 @@ namespace Plugin.AuthenticationPetraProgress
         {
             return false;
         }
+
+        /// <summary>
+        /// which functionality is implemented by this dll
+        /// </summary>
+        public void GetAuthenticationFunctionality(out bool ACanCreateUser, out bool ACanChangePassword, out bool ACanChangePermissions)
+        {
+            ACanCreateUser = false;
+            ACanChangePassword = true;
+            ACanChangePermissions = false;
+        }
     }
 }

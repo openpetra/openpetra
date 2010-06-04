@@ -294,6 +294,17 @@
     {
         ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*Mono.*dll</HintPath>", "");
         ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*ICSharpCode.*dll</HintPath>", "");
+
+        //hide warnings: 
+        // warning CS0169:  The private method / property / etc is never used
+        // warning CS0219:  The variable xyz is assigned but its value is never used
+        // warning CS0414:  The private field xyz is assigned but its value is never used
+        // warning CS0067:  The event xyz is never used
+        // it seems you need to change the file /usr/lib/mono/2.0/Microsoft.CSharp.targets as well, it should read:  DisabledWarnings="$(NoWarn)"
+        // see also http://lists.ximian.com/archives/public/mono-patches/2009-December/163612.html
+        ReplaceInFile(filename, 
+                      "<TreatWarningsAsErrors>false</TreatWarningsAsErrors>", 
+                      "<TreatWarningsAsErrors>false</TreatWarningsAsErrors><NoWarn>0169,0219,0414,0067</NoWarn>");
         return true;
     }
 
@@ -398,6 +409,17 @@
         return true;
     }
     ]]>
+
+    [Function("CalculateStandaloneDBUpdateFileName")]
+    public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
+    {
+        string[] numbers = ReleaseID.Split(new char[]{'.', '-'});
+
+        // TODO: at the moment it only works for smaller patches
+        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                            numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
+                            numbers[0], numbers[1], Convert.ToInt16(numbers[2]));
+    }
         </code>
     </script>    
     <script language="C#">

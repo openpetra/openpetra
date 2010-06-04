@@ -128,6 +128,13 @@ namespace Ict.Tools.CodeGeneration
                 return;
             }
 
+            // special treatment of empty lines
+            if (line.Trim().Length == 0)
+            {
+                WriteLine();
+                return;
+            }
+
             line = line.Replace("\t", "    ");
             String formattedLine = "";
 
@@ -258,7 +265,7 @@ namespace Ict.Tools.CodeGeneration
                 }
             }
 
-            if (line.Trim().StartsWith("//"))
+            if (line.Trim().StartsWith("//") && (indent != 0))
             {
                 line = line.Trim();
             }
@@ -298,6 +305,18 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="AParameters"></param>
         public void WriteLineMethodCall(string ALine, StringCollection AParameters)
         {
+            WriteLine(WriteLineMethodCallToString(ALine, AParameters));
+        }
+
+        /// <summary>
+        /// this will write a method call according to our uncrustify settings.
+        /// if the line is longer than the maximum characters per line, then the parameters will be in the new line;
+        /// </summary>
+        /// <param name="ALine"></param>
+        /// <param name="AParameters"></param>
+        public string WriteLineMethodCallToString(string ALine, StringCollection AParameters)
+        {
+            string Result = String.Empty;
             int countLength = CurrentIndentCharacters + ALine.Length;
 
             foreach (string param in AParameters)
@@ -320,7 +339,7 @@ namespace Ict.Tools.CodeGeneration
                     if (!first)
                     {
                         ALine += ", ";
-                        WriteLine(ALine);
+                        Result += ALine + Environment.NewLine;
                         ALine = "   ";
                     }
 
@@ -329,7 +348,7 @@ namespace Ict.Tools.CodeGeneration
                 }
 
                 ALine += ");";
-                WriteLine(ALine);
+                Result += ALine + Environment.NewLine;
             }
             else
             {
@@ -347,8 +366,10 @@ namespace Ict.Tools.CodeGeneration
                 }
 
                 ALine += ");";
-                WriteLine(ALine);
+                Result += ALine + Environment.NewLine;
             }
+
+            return Result;
         }
 
         public void WriteComment(string AComment)
@@ -426,8 +447,8 @@ namespace Ict.Tools.CodeGeneration
         {
             if (!firstParameter)
             {
-                WriteLine(MethodDeclaration + ",");
-                MethodDeclaration = new String(' ', align);
+                MethodDeclaration += "," + Environment.NewLine;
+                MethodDeclaration += new String(' ', align);
             }
 
             firstParameter = false;
@@ -445,12 +466,6 @@ namespace Ict.Tools.CodeGeneration
             }
 
             StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + AParamName;
-
-            if ((StrParameter.Length + MethodDeclaration.Length > CODE_LENGTH_UNCRUSTIFY) && (MethodDeclaration.Trim().Length > 0))
-            {
-                WriteLine(MethodDeclaration);
-                MethodDeclaration = new String(' ', align);
-            }
 
             MethodDeclaration += StrParameter;
         }

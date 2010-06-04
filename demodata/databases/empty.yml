@@ -1,0 +1,962 @@
+﻿RootNodeInternal:
+    MSysMan:
+        SUserTable:
+            Row1:{UserId=DEMO, PasswordHash=21C261CD0E72E70B6BE92663CBC349D60B96EF38, PasswordSalt="LT+dGRUc5IZ47hFvrHH+AKEWhHl8rn1F8X/mnm9lRIM=", PasswordNeedsChange=True, FailedLogins=0, Retired=False, LastLoginTime=43359, LastLoginDate="2010-04-08 12:02:39", LanguageCode=99, CanModify=True, RecordDelete=False, DefaultLedgerNumber=0, FailedLoginTime=0, DateCreated=2010-04-07, DateModified="2010-04-08 12:02:39", ModifiedBy=DEMO, ModificationId=0000000000000000000000000000000000000000000000000000000000000000000001;00000000000000000000000000000000000000000000000000000000000000000002b1}
+            Row2:{UserId=SYSADMIN, PasswordNeedsChange=True, FailedLogins=0, Retired=True, LastLoginTime=0, LanguageCode=99, CanModify=True, RecordDelete=False, DefaultLedgerNumber=0, FailedLoginTime=0, DateCreated=2010-04-07}
+        SFormTable:
+        SFileTable:
+            Row1:{FileName=, DateCreated=2010-04-07}
+        SGroupTable:
+        SUserGroupTable:
+        SModuleTable:
+            Row1:{ModuleId=CONFERENCE, ModuleName=Conference Module, DateCreated=0200-05-14, CreatedBy=SYSADMIN}
+            Row2:{ModuleId=DEVADMIN, ModuleName=Development Administrative Access, DateCreated=0200-03-16, CreatedBy=SYSADMIN}
+            Row3:{ModuleId=DEVUSER, ModuleName=Development User, DateCreated=0200-08-11, CreatedBy=SYSADMIN}
+            Row4:{ModuleId=FINANCE-1, ModuleName=Finance - Basic User, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row5:{ModuleId=FINANCE-2, ModuleName=Finance - Intermediate User, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row6:{ModuleId=FINANCE-3, ModuleName=Finance - Advanced User, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row7:{ModuleId=FIN-EX-RATE, ModuleName=Finance Exchange Rates, DateCreated=0200-08-11, CreatedBy=SYSADMIN}
+            Row9:{ModuleId=PERSONNEL, ModuleName=Personnel Module, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row10:{ModuleId=PTNRADMIN, ModuleName=Partner Administrative Access, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row11:{ModuleId=PTNRUSER, ModuleName=Partner User Level Access, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+            Row12:{ModuleId=SYSMAN, ModuleName=System manager, DateCreated=0199-01-01, CreatedBy=SYSADMIN, DateModified=0199-05-14, ModifiedBy=SYSADMIN}
+        SValidOutputFormTable:
+        SModuleFileTable:
+        SGroupModuleAccessPermissionTable:
+        SGroupTableAccessPermissionTable:
+        SUserModuleAccessPermissionTable:
+            Row1:{UserId=DEMO, ModuleId=FINANCE-1, CanAccess=True, DateCreated=2010-04-07}
+            Row3:{UserId=DEMO, ModuleId=PTNRUSER, CanAccess=True, DateCreated=2010-04-07}
+        SUserTableAccessPermissionTable:
+            Row1:{UserId=DEMO, TableName=p_bank, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row2:{UserId=DEMO, TableName=p_church, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row3:{UserId=DEMO, TableName=p_family, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row4:{UserId=DEMO, TableName=p_location, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row5:{UserId=DEMO, TableName=p_organisation, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row6:{UserId=DEMO, TableName=p_partner, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row7:{UserId=DEMO, TableName=p_partner_location, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row8:{UserId=DEMO, TableName=p_partner_type, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row9:{UserId=DEMO, TableName=p_person, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row10:{UserId=DEMO, TableName=p_unit, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+            Row11:{UserId=DEMO, TableName=p_venue, CanCreate=True, CanModify=True, CanDelete=True, CanInquire=True, DateCreated=2010-04-07}
+        SLanguageSpecificTable:
+        SLoginTable:
+        SLogonMessageTable:
+            Row1:{LanguageCode=EN, LogonMessage=Welcome to the Petra Demo database!, CreatedBy=SYSADMIN}
+        SPatchLogTable:
+        SReportsToArchiveTable:
+        SReportFileTable:
+        SReportOptionsTable:
+        SSelectedOutputDestinationTable:
+        SSystemStatusTable:
+            Row1:{UserId=SYSADMIN, SystemDisabledTime=0, SystemAvailableTime=0, SystemLoginStatus=True, DateCreated=2010-04-07}
+        SSystemStatusLogTable:
+        SUserDefaultsTable:
+        SSystemDefaultsTable:
+            Row1:{DefaultCode=CurrentDatabaseVersion, DefaultDescription="the currently installed release number, set by installer/patchtool", DefaultValue=0.0.15.0, DateCreated=2010-04-07}
+            Row2:{DefaultCode=LocalisedCountyLabel, DefaultDescription=LocalisedCountyLabel, DefaultValue=County/St&ate, DateCreated=2010-04-07}
+        SBatchJobTable:
+        SErrorMessageTable:
+        SErrorLogTable:
+        SGroupFunctionTable:
+        SFunctionTable:
+        SJobGroupTable:
+        SGroupPartnerSetTable:
+        SGroupGiftTable:
+        SGroupMotivationTable:
+        SGroupPartnerContactTable:
+        SGroupPartnerReminderTable:
+        SGroupLocationTable:
+        SGroupPartnerLocationTable:
+        SGroupDataLabelTable:
+        SGroupLedgerTable:
+        SGroupCostCentreTable:
+        SGroupExtractTable:
+        SChangeEventTable:
+        SLabelTable:
+        SWorkflowDefinitionTable:
+        SWorkflowUserTable:
+        SWorkflowGroupTable:
+        SWorkflowStepTable:
+        SFunctionRelationshipTable:
+        SWorkflowInstanceTable:
+        SWorkflowInstanceStepTable:
+        SVolumeTable:
+        SDefaultFileVolumeTable:
+        SVolumePartnerGroupTable:
+        SVolumePartnerGroupPartnerTable:
+        SGroupFileInfoTable:
+    MCommon:
+        PLanguageTable:
+            Row1:{LanguageCode=99, LanguageDescription=Other language, CongressLanguage=False, Deletable=False}
+            Row2:{LanguageCode=AF, LanguageDescription=Afrikaans, CongressLanguage=False, Deletable=False}
+            Row3:{LanguageCode=AR, LanguageDescription=Arabic, CongressLanguage=True, Deletable=False}
+            Row4:{LanguageCode=BG, LanguageDescription=Bulgarian, CongressLanguage=False, Deletable=False}
+            Row5:{LanguageCode=BN, LanguageDescription=Bengali, CongressLanguage=False, Deletable=False}
+            Row6:{LanguageCode=CAN, LanguageDescription=Cantonese, CongressLanguage=False, Deletable=False}
+            Row7:{LanguageCode=CRE, LanguageDescription=Creole, CongressLanguage=False, Deletable=False}
+            Row8:{LanguageCode=CS, LanguageDescription=Czech, CongressLanguage=True, Deletable=False}
+            Row9:{LanguageCode=CY, LanguageDescription=Welsh, CongressLanguage=False, Deletable=False}
+            Row10:{LanguageCode=DA, LanguageDescription=Danish, CongressLanguage=True, Deletable=False}
+            Row11:{LanguageCode=DAR, LanguageDescription=Dari, CongressLanguage=False, Deletable=False}
+            Row12:{LanguageCode=DE, LanguageDescription=German, CongressLanguage=True, Deletable=False}
+            Row13:{LanguageCode=EL, LanguageDescription=Greek, CongressLanguage=False, Deletable=False}
+            Row14:{LanguageCode=EN, LanguageDescription=English, CongressLanguage=True, Deletable=False}
+            Row15:{LanguageCode=ES, LanguageDescription=Spanish, CongressLanguage=True, Deletable=False}
+            Row16:{LanguageCode=FA, LanguageDescription="Persian, Farsi", CongressLanguage=False, Deletable=False}
+            Row17:{LanguageCode=FI, LanguageDescription=Finnish, CongressLanguage=True, Deletable=False}
+            Row18:{LanguageCode=FO, LanguageDescription=Faroese, CongressLanguage=False, Deletable=False}
+            Row19:{LanguageCode=FR, LanguageDescription=French, CongressLanguage=True, Deletable=False}
+            Row20:{LanguageCode=GA, LanguageDescription=Irish, CongressLanguage=False, Deletable=False}
+            Row21:{LanguageCode=GD, LanguageDescription=Gaelic, CongressLanguage=False, Deletable=False}
+            Row22:{LanguageCode=HI, LanguageDescription=Hindi, CongressLanguage=False, Deletable=False}
+            Row23:{LanguageCode=HR, LanguageDescription=Croatian, CongressLanguage=False, Deletable=False}
+            Row24:{LanguageCode=HU, LanguageDescription=Hungarian, CongressLanguage=True, Deletable=False}
+            Row25:{LanguageCode=IN, LanguageDescription=Indonesian, CongressLanguage=False, Deletable=False}
+            Row26:{LanguageCode=IT, LanguageDescription=Italian, CongressLanguage=True, Deletable=False}
+            Row27:{LanguageCode=IW, LanguageDescription=Hebrew, CongressLanguage=False, Deletable=False}
+            Row28:{LanguageCode=JA, LanguageDescription=Japanese, CongressLanguage=False, Deletable=False}
+            Row29:{LanguageCode=KM, LanguageDescription=Khmer, CongressLanguage=False, Deletable=False, DateCreated=0200-03-16}
+            Row30:{LanguageCode=KO, LanguageDescription=Korean, CongressLanguage=True, Deletable=False}
+            Row31:{LanguageCode=MAN, LanguageDescription=Mandarin, CongressLanguage=False, Deletable=False}
+            Row32:{LanguageCode=MS, LanguageDescription=Malay, CongressLanguage=False, Deletable=False}
+            Row33:{LanguageCode=NE, LanguageDescription=Nepali, CongressLanguage=False, Deletable=False}
+            Row34:{LanguageCode=NL, LanguageDescription="Dutch, Flemish", CongressLanguage=True, Deletable=False}
+            Row35:{LanguageCode=NO, LanguageDescription=Norwegian, CongressLanguage=True, Deletable=False}
+            Row36:{LanguageCode=PA, LanguageDescription=Punjabi, CongressLanguage=False, Deletable=False}
+            Row37:{LanguageCode=PL, LanguageDescription=Polish, CongressLanguage=False, Deletable=False}
+            Row38:{LanguageCode=PT, LanguageDescription=Portuguese, CongressLanguage=False, Deletable=False}
+            Row39:{LanguageCode=RO, LanguageDescription=Romanian, CongressLanguage=False, Deletable=False}
+            Row40:{LanguageCode=RU, LanguageDescription=Russian, CongressLanguage=False, Deletable=False}
+            Row41:{LanguageCode=SK, LanguageDescription=Slovak, CongressLanguage=False, Deletable=False}
+            Row42:{LanguageCode=SR, LanguageDescription=Serbian, CongressLanguage=False, Deletable=False}
+            Row43:{LanguageCode=SV, LanguageDescription=Swedish, CongressLanguage=True, Deletable=False}
+            Row44:{LanguageCode=TG, LanguageDescription=Tajik, CongressLanguage=False, Deletable=False}
+            Row45:{LanguageCode=TH, LanguageDescription=Thai, CongressLanguage=False, Deletable=False}
+            Row46:{LanguageCode=TL, LanguageDescription=Tagalog (Philipines), CongressLanguage=False, Deletable=False}
+            Row47:{LanguageCode=TO, LanguageDescription=Tonga, CongressLanguage=False, Deletable=False}
+            Row48:{LanguageCode=TR, LanguageDescription=Turkish, CongressLanguage=False, Deletable=False}
+            Row49:{LanguageCode=UG, LanguageDescription=Uighur, CongressLanguage=False, Deletable=False}
+            Row50:{LanguageCode=UK, LanguageDescription=Ukrainian, CongressLanguage=True, Deletable=False}
+            Row51:{LanguageCode=UR, LanguageDescription=Urdu, CongressLanguage=False, Deletable=False}
+            Row52:{LanguageCode=UZ, LanguageDescription=Uzbek, CongressLanguage=False, Deletable=False}
+            Row53:{LanguageCode=VI, LanguageDescription=Vietnamese, CongressLanguage=False, Deletable=False}
+            Row54:{LanguageCode=YI, LanguageDescription=Yiddish, CongressLanguage=False, Deletable=False}
+            Row55:{LanguageCode=YU, LanguageDescription=Yugoslavian, CongressLanguage=False, Deletable=False}
+        AFrequencyTable:
+            Row1:{FrequencyCode=Annual, FrequencyDescription=Every Year, NumberOfYears=1, NumberOfMonths=0, NumberOfDays=0, NumberOfHours=0, NumberOfMinutes=0}
+            Row2:{FrequencyCode=Bi-Monthly, FrequencyDescription=Every Two Months, NumberOfYears=0, NumberOfMonths=2, NumberOfDays=0, NumberOfHours=0, NumberOfMinutes=0}
+            Row3:{FrequencyCode=Daily, FrequencyDescription=Every Day, NumberOfYears=0, NumberOfMonths=0, NumberOfDays=1, NumberOfHours=0, NumberOfMinutes=0}
+            Row4:{FrequencyCode=Monthly, FrequencyDescription=Every Month, NumberOfYears=0, NumberOfMonths=1, NumberOfDays=0, NumberOfHours=0, NumberOfMinutes=0}
+            Row5:{FrequencyCode=Quarterly, FrequencyDescription=Every Three Months, NumberOfYears=0, NumberOfMonths=3, NumberOfDays=0, NumberOfHours=0, NumberOfMinutes=0}
+            Row6:{FrequencyCode=Semi-Annual, FrequencyDescription=Every Six Months, NumberOfYears=0, NumberOfMonths=6, NumberOfDays=0, NumberOfHours=0, NumberOfMinutes=0}
+            Row7:{FrequencyCode=Weekly, FrequencyDescription=Every Week, NumberOfYears=0, NumberOfMonths=0, NumberOfDays=7, NumberOfHours=0, NumberOfMinutes=0}
+        PInternationalPostalTypeTable:
+            Row1:{InternatPostalTypeCode=#LOCAL, Description=Local, Deletable=False}
+            Row2:{InternatPostalTypeCode=88, Description=Unallocated, Deletable=False}
+            Row3:{InternatPostalTypeCode=99, Description=Not known, Deletable=False}
+            Row4:{InternatPostalTypeCode=AFR, Description=Africa, Deletable=False}
+            Row5:{InternatPostalTypeCode=AUS, Description=Australasia & Pacific Islands, Deletable=False}
+            Row6:{InternatPostalTypeCode=EA, Description=East Asia, Deletable=False}
+            Row7:{InternatPostalTypeCode=EC, Description=European Union, Deletable=False}
+            Row8:{InternatPostalTypeCode=EUR, Description=Europe (non European Union), Deletable=False}
+            Row9:{InternatPostalTypeCode=LAM, Description=Latin America, Deletable=False}
+            Row10:{InternatPostalTypeCode=ME, Description=Middle East, Deletable=False}
+            Row11:{InternatPostalTypeCode=NAMC, Description=North America & Caribbean, Deletable=False}
+            Row12:{InternatPostalTypeCode=SWACA, Description="South, West and Central Asia", Deletable=False}
+            Row13:{InternatPostalTypeCode=Z1, Description=Zone 1, Deletable=False}
+            Row14:{InternatPostalTypeCode=Z2, Description=Zone 2, Deletable=False}
+        PCountryTable:
+            Row1:{CountryCode=99, CountryName=BAD COUNTRY CODE, NationalityName=BAD COUNTRY CODE, InternatTelephoneCode=0, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=BAD COUNTRY CODE}
+            Row2:{CountryCode=AD, CountryName=ANDORRA, NationalityName=ANDORRA, InternatTelephoneCode=376, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=ANDORRA}
+            Row3:{CountryCode=AE, CountryName=UNITED ARAB EMIRATES, NationalityName=UNITED ARAB EMIRATES, InternatTelephoneCode=971, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=UNITED ARAB EMIRATES}
+            Row4:{CountryCode=AF, CountryName=AFGHANISTAN, NationalityName=AFGHANISTAN, InternatTelephoneCode=93, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=4.5, TimeZoneMaximum=4.5, Deletable=False, AddressOrder=0, CountryNameLocal=AFGHANISTAN}
+            Row5:{CountryCode=AG, CountryName=ANTIGUA AND BARBUDA, NationalityName=ANTIGUA AND BARBUDA, InternatTelephoneCode=1268, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=ANTIGUA AND BARBUDA}
+            Row6:{CountryCode=AI, CountryName=ANGUILLA, NationalityName=ANGUILLA, InternatTelephoneCode=1264, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=ANGUILLA}
+            Row7:{CountryCode=AL, CountryName=ALBANIA, NationalityName=ALBANIA, InternatTelephoneCode=355, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=ALBANIA}
+            Row8:{CountryCode=AM, CountryName=ARMENIA, NationalityName=ARMENIA, InternatTelephoneCode=374, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=ARMENIA}
+            Row9:{CountryCode=AN, CountryName=NETHERLANDS ANTILLES, NationalityName=NETHERLANDS ANTILLES, InternatTelephoneCode=599, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=NETHERLANDS ANTILLES}
+            Row10:{CountryCode=AO, CountryName=ANGOLA, NationalityName=ANGOLA, InternatTelephoneCode=244, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=ANGOLA}
+            Row11:{CountryCode=AQ, CountryName=ANTARCTICA, NationalityName=ANTARCTICA, InternatTelephoneCode=672, InternatPostalTypeCode=88, InternatAccessCode=XX, TimeZoneMinimum=4.5, TimeZoneMaximum=10, Deletable=False, AddressOrder=0, CountryNameLocal=ANTARCTICA}
+            Row12:{CountryCode=AR, CountryName=ARGENTINA, NationalityName=ARGENTINA, InternatTelephoneCode=54, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-3, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=ARGENTINA}
+            Row13:{CountryCode=AS, CountryName=AMERICAN SAMOA, NationalityName=AMERICAN SAMOA, InternatTelephoneCode=684, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=-11, TimeZoneMaximum=-11, Deletable=False, AddressOrder=0, CountryNameLocal=AMERICAN SAMOA}
+            Row14:{CountryCode=AT, CountryName=AUSTRIA, NationalityName=AUSTRIA, InternatTelephoneCode=43, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=AUSTRIA}
+            Row15:{CountryCode=AU, CountryName=AUSTRALIA, NationalityName=AUSTRALIA, InternatTelephoneCode=61, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=10, Deletable=False, AddressOrder=0, CountryNameLocal=AUSTRALIA}
+            Row16:{CountryCode=AW, CountryName=ARUBA, NationalityName=ARUBA, InternatTelephoneCode=297, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=ARUBA}
+            Row17:{CountryCode=AZ, CountryName=AZERBAIJAN, NationalityName=AZERBAIJAN, InternatTelephoneCode=994, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=5, TimeZoneMaximum=5, Deletable=False, AddressOrder=0, CountryNameLocal=AZERBAIJAN}
+            Row18:{CountryCode=BA, CountryName=BOSNIA-HERCEGOVINA, NationalityName=BOSNIA-HERCEGOVINA, InternatTelephoneCode=387, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=BOSNIA-HERCEGOVINA}
+            Row19:{CountryCode=BB, CountryName=BARBADOS, NationalityName=BARBADOS, InternatTelephoneCode=1246, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=BARBADOS}
+            Row20:{CountryCode=BD, CountryName=BANGLADESH, NationalityName=BANGLADESH, InternatTelephoneCode=880, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=6, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=BANGLADESH}
+            Row21:{CountryCode=BE, CountryName=BELGIUM, NationalityName=BELGIUM, InternatTelephoneCode=32, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=BELGIUM}
+            Row22:{CountryCode=BF, CountryName=BURKINA FASO, NationalityName=BURKINA FASO, InternatTelephoneCode=226, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=BURKINA FASO}
+            Row23:{CountryCode=BG, CountryName=BULGARIA, NationalityName=BULGARIA, InternatTelephoneCode=359, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=BULGARIA}
+            Row24:{CountryCode=BH, CountryName=BAHRAIN, NationalityName=BAHRAIN, InternatTelephoneCode=973, InternatPostalTypeCode=ME, InternatAccessCode=0, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=BAHRAIN}
+            Row25:{CountryCode=BI, CountryName=BURUNDI, NationalityName=BURUNDI, InternatTelephoneCode=257, InternatPostalTypeCode=AFR, InternatAccessCode=90, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=BURUNDI}
+            Row26:{CountryCode=BJ, CountryName=BENIN, NationalityName=BENIN, InternatTelephoneCode=229, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=BENIN}
+            Row27:{CountryCode=BM, CountryName=BERMUDA, NationalityName=BERMUDA, InternatTelephoneCode=1441, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=BERMUDA}
+            Row28:{CountryCode=BN, CountryName=BRUNEI DARUSSALAM, NationalityName=BRUNEI DARUSSALAM, InternatTelephoneCode=673, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=BRUNEI DARUSSALAM}
+            Row29:{CountryCode=BO, CountryName=BOLIVIA, NationalityName=BOLIVIA, InternatTelephoneCode=591, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=BOLIVIA}
+            Row30:{CountryCode=BR, CountryName=BRAZIL, NationalityName=BRAZIL, InternatTelephoneCode=55, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-3, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=BRAZIL}
+            Row31:{CountryCode=BS, CountryName=BAHAMAS, NationalityName=BAHAMAS, InternatTelephoneCode=1242, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=BAHAMAS}
+            Row32:{CountryCode=BT, CountryName=BHUTAN, NationalityName=BHUTAN, InternatTelephoneCode=975, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=6, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=BHUTAN}
+            Row33:{CountryCode=BW, CountryName=BOTSWANA, NationalityName=BOTSWANA, InternatTelephoneCode=267, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=BOTSWANA}
+            Row34:{CountryCode=BY, CountryName=BELARUS, NationalityName=BELARUS, InternatTelephoneCode=375, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=BELARUS}
+            Row35:{CountryCode=BZ, CountryName=BELIZE, NationalityName=BELIZE, InternatTelephoneCode=501, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=BELIZE}
+            Row36:{CountryCode=CA, CountryName=CANADA, NationalityName=CANADA, InternatTelephoneCode=1, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-9, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=CANADA}
+            Row37:{CountryCode=CD, CountryName="CONGO, THE DEMOCRATIC REPUBLIC OF THE", NationalityName="CONGO, THE DEMOCRATIC REPUBLIC OF THE", InternatTelephoneCode=243, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal="CONGO, THE DEMOCRATIC REPUBLIC OF THE"}
+            Row38:{CountryCode=CF, CountryName=CENTRAL AFRICAN REPUBLIC, NationalityName=CENTRAL AFRICAN REPUBLIC, InternatTelephoneCode=236, InternatPostalTypeCode=AFR, InternatAccessCode=19, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=CENTRAL AFRICAN REPUBLIC}
+            Row39:{CountryCode=CG, CountryName=CONGO, NationalityName=CONGO, InternatTelephoneCode=242, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=CONGO}
+            Row40:{CountryCode=CH, CountryName=SWITZERLAND, NationalityName=SWITZERLAND, InternatTelephoneCode=41, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SWITZERLAND}
+            Row41:{CountryCode=CI, CountryName=COTE D'IVOIRE, NationalityName=COTE D'IVOIRE, InternatTelephoneCode=225, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=COTE D'IVOIRE}
+            Row42:{CountryCode=CK, CountryName=COOK ISLANDS, NationalityName=COOK ISLANDS, InternatTelephoneCode=682, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=-10, TimeZoneMaximum=-10, Deletable=False, AddressOrder=0, CountryNameLocal=COOK ISLANDS}
+            Row43:{CountryCode=CL, CountryName=CHILE, NationalityName=CHILE, InternatTelephoneCode=56, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=CHILE}
+            Row44:{CountryCode=CM, CountryName=CAMEROON, NationalityName=CAMEROON, InternatTelephoneCode=237, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=CAMEROON}
+            Row45:{CountryCode=CN, CountryName=CHINA, NationalityName=CHINA, InternatTelephoneCode=86, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=CHINA}
+            Row46:{CountryCode=CO, CountryName=COLOMBIA, NationalityName=COLOMBIA, InternatTelephoneCode=57, InternatPostalTypeCode=LAM, InternatAccessCode=90, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=COLOMBIA}
+            Row47:{CountryCode=CR, CountryName=COSTA RICA, NationalityName=COSTA RICA, InternatTelephoneCode=506, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=COSTA RICA}
+            Row48:{CountryCode=CU, CountryName=CUBA, NationalityName=CUBA, InternatTelephoneCode=53, InternatPostalTypeCode=NAMC, InternatAccessCode=119, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=CUBA}
+            Row49:{CountryCode=CV, CountryName=CAPE VERDE, NationalityName=CAPE VERDE, InternatTelephoneCode=238, InternatPostalTypeCode=EUR, InternatAccessCode=0, TimeZoneMinimum=-1, TimeZoneMaximum=-1, Deletable=False, AddressOrder=1, CountryNameLocal=CAPE VERDE}
+            Row50:{CountryCode=CY, CountryName=CYPRUS, NationalityName=CYPRUS, InternatTelephoneCode=357, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=CYPRUS}
+            Row51:{CountryCode=CZ, CountryName=CZECH REPUBLIC, NationalityName=CZECH REPUBLIC, InternatTelephoneCode=420, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=CZECH REPUBLIC}
+            Row52:{CountryCode=DE, CountryName=GERMANY, NationalityName=GERMANY, InternatTelephoneCode=49, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=GERMANY}
+            Row53:{CountryCode=DJ, CountryName=DJIBOUTI, NationalityName=DJIBOUTI, InternatTelephoneCode=253, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=DJIBOUTI}
+            Row54:{CountryCode=DK, CountryName=DENMARK, NationalityName=DENMARK, InternatTelephoneCode=45, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=DENMARK}
+            Row55:{CountryCode=DM, CountryName=DOMINICA, NationalityName=DOMINICA, InternatTelephoneCode=1767, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=DOMINICA}
+            Row56:{CountryCode=DO, CountryName=DOMINICAN REPUBLIC, NationalityName=DOMINICAN REPUBLIC, InternatTelephoneCode=1809, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=DOMINICAN REPUBLIC}
+            Row57:{CountryCode=DU, CountryName=DUBAI, NationalityName=DUBAI, InternatTelephoneCode=0, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=DUBAI}
+            Row58:{CountryCode=DZ, CountryName=ALGERIA, NationalityName=ALGERIA, InternatTelephoneCode=213, InternatPostalTypeCode=AFR, InternatAccessCode=00~, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=ALGERIA}
+            Row59:{CountryCode=EC, CountryName=ECUADOR, NationalityName=ECUADOR, InternatTelephoneCode=593, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=ECUADOR}
+            Row60:{CountryCode=EE, CountryName=ESTONIA, NationalityName=ESTONIA, InternatTelephoneCode=372, InternatPostalTypeCode=EUR, InternatAccessCode=8~00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=ESTONIA}
+            Row61:{CountryCode=EG, CountryName=EGYPT, NationalityName=EGYPT, InternatTelephoneCode=20, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=EGYPT}
+            Row62:{CountryCode=ER, CountryName=ERITREA, NationalityName=ERITREA, InternatTelephoneCode=291, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=ERITREA}
+            Row63:{CountryCode=ES, CountryName=SPAIN, NationalityName=SPAIN, InternatTelephoneCode=34, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SPAIN}
+            Row64:{CountryCode=ET, CountryName=ETHIOPIA, NationalityName=ETHIOPIA, InternatTelephoneCode=251, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=ETHIOPIA}
+            Row65:{CountryCode=FI, CountryName=FINLAND, NationalityName=FINLAND, InternatTelephoneCode=358, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=FINLAND}
+            Row66:{CountryCode=FJ, CountryName=FIJI, NationalityName=FIJI, InternatTelephoneCode=679, InternatPostalTypeCode=AUS, InternatAccessCode=05, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=FIJI}
+            Row67:{CountryCode=FK, CountryName=FALKLAND ISLANDS (MALVINAS), NationalityName=FALKLAND ISLANDS (MALVINAS), InternatTelephoneCode=500, InternatPostalTypeCode=LAM, InternatAccessCode=0, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=FALKLAND ISLANDS (MALVINAS)}
+            Row68:{CountryCode=FM, CountryName=MICRONESIA (FEDERATE STATES OF), NationalityName=MICRONESIA (FEDERATE STATES OF), InternatTelephoneCode=691, InternatPostalTypeCode=AUS, InternatAccessCode=011, TimeZoneMinimum=10, TimeZoneMaximum=11, Deletable=False, AddressOrder=0, CountryNameLocal=MICRONESIA (FEDERATE STATES OF)}
+            Row69:{CountryCode=FO, CountryName=FAROE ISLANDS, NationalityName=FAROE ISLANDS, InternatTelephoneCode=298, InternatPostalTypeCode=EC, InternatAccessCode=009, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=1, CountryNameLocal=FAROE ISLANDS}
+            Row70:{CountryCode=FR, CountryName=FRANCE, NationalityName=FRANCE, InternatTelephoneCode=33, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=FRANCE}
+            Row71:{CountryCode=GA, CountryName=GABON, NationalityName=GABON, InternatTelephoneCode=241, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=GABON}
+            Row72:{CountryCode=GB, CountryName=UNITED KINGDOM, NationalityName=UNITED KINGDOM, InternatTelephoneCode=44, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=UNITED KINGDOM}
+            Row73:{CountryCode=GD, CountryName=GRENADA, NationalityName=GRENADA, InternatTelephoneCode=1473, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=GRENADA}
+            Row74:{CountryCode=GE, CountryName=GEORGIA, NationalityName=GEORGIA, InternatTelephoneCode=995, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=GEORGIA}
+            Row75:{CountryCode=GF, CountryName=FRENCH GUIANA, NationalityName=FRENCH GUIANA, InternatTelephoneCode=594, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-3, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=FRENCH GUIANA}
+            Row76:{CountryCode=GH, CountryName=GHANA, NationalityName=GHANA, InternatTelephoneCode=233, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=GHANA}
+            Row77:{CountryCode=GI, CountryName=GIBRALTAR, NationalityName=GIBRALTAR, InternatTelephoneCode=350, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=GIBRALTAR}
+            Row78:{CountryCode=GL, CountryName=GREENLAND, NationalityName=GREENLAND, InternatTelephoneCode=299, InternatPostalTypeCode=EUR, InternatAccessCode=009, TimeZoneMinimum=-4, TimeZoneMaximum=-1, Deletable=False, AddressOrder=0, CountryNameLocal=GREENLAND}
+            Row79:{CountryCode=GM, CountryName=GAMBIA, NationalityName=GAMBIA, InternatTelephoneCode=220, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=GAMBIA}
+            Row80:{CountryCode=GN, CountryName=GUINEA, NationalityName=GUINEA, InternatTelephoneCode=224, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=GUINEA}
+            Row81:{CountryCode=GP, CountryName=GUADELOUPE, NationalityName=GUADELOUPE, InternatTelephoneCode=590, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=GUADELOUPE}
+            Row82:{CountryCode=GQ, CountryName=EQUATORIAL GUINEA, NationalityName=EQUATORIAL GUINEA, InternatTelephoneCode=240, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=EQUATORIAL GUINEA}
+            Row83:{CountryCode=GR, CountryName=GREECE, NationalityName=GREECE, InternatTelephoneCode=30, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=GREECE}
+            Row84:{CountryCode=GT, CountryName=GUATEMALA, NationalityName=GUATEMALA, InternatTelephoneCode=502, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=GUATEMALA}
+            Row85:{CountryCode=GW, CountryName=GUINEA-BISSAU, NationalityName=GUINEA-BISSAU, InternatTelephoneCode=245, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=GUINEA-BISSAU}
+            Row86:{CountryCode=GY, CountryName=GUYANA, NationalityName=GUYANA, InternatTelephoneCode=592, InternatPostalTypeCode=NAMC, InternatAccessCode=001, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=GUYANA}
+            Row87:{CountryCode=GZ, CountryName=GUERNSEY (GB), NationalityName=GUERNSEY (GB), InternatTelephoneCode=44, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=GUERNSEY (GB)}
+            Row88:{CountryCode=HK, CountryName=HONG KONG, NationalityName=HONG KONG, InternatTelephoneCode=852, InternatPostalTypeCode=EA, InternatAccessCode=001, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=HONG KONG}
+            Row89:{CountryCode=HN, CountryName=HONDURAS, NationalityName=HONDURAS, InternatTelephoneCode=504, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=HONDURAS}
+            Row90:{CountryCode=HR, CountryName=CROATIA, NationalityName=CROATIA, InternatTelephoneCode=385, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=Hrvatska}
+            Row91:{CountryCode=HT, CountryName=HAITI, NationalityName=HAITI, InternatTelephoneCode=509, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=HAITI}
+            Row92:{CountryCode=HU, CountryName=HUNGARY, NationalityName=HUNGARY, InternatTelephoneCode=36, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=HUNGARY}
+            Row93:{CountryCode=ID, CountryName=INDONESIA, NationalityName=INDONESIA, InternatTelephoneCode=62, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=7, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=INDONESIA}
+            Row94:{CountryCode=IE, CountryName=IRELAND, NationalityName=IRELAND, InternatTelephoneCode=353, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=IRELAND}
+            Row95:{CountryCode=IL, CountryName=ISRAEL, NationalityName=ISRAEL, InternatTelephoneCode=972, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=ISRAEL}
+            Row96:{CountryCode=IN, CountryName=INDIA, NationalityName=INDIA, InternatTelephoneCode=91, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=5.5, TimeZoneMaximum=5.5, Deletable=False, AddressOrder=0, CountryNameLocal=INDIA}
+            Row97:{CountryCode=IQ, CountryName=IRAQ, NationalityName=IRAQ, InternatTelephoneCode=964, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=IRAQ}
+            Row98:{CountryCode=IR, CountryName=IRAN (ISLAMIC REPUBLIC OF), NationalityName=IRAN (ISLAMIC REPUBLIC OF), InternatTelephoneCode=98, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=3.5, TimeZoneMaximum=3.5, Deletable=False, AddressOrder=0, CountryNameLocal=IRAN (ISLAMIC REPUBLIC OF)}
+            Row99:{CountryCode=IS, CountryName=ICELAND, NationalityName=ICELAND, InternatTelephoneCode=354, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=1, CountryNameLocal=ICELAND}
+            Row100:{CountryCode=IT, CountryName=ITALY, NationalityName=ITALY, InternatTelephoneCode=39, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=ITALY}
+            Row101:{CountryCode=JM, CountryName=JAMAICA, NationalityName=JAMAICA, InternatTelephoneCode=1876, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=JAMAICA}
+            Row102:{CountryCode=JO, CountryName=JORDAN, NationalityName=JORDAN, InternatTelephoneCode=962, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=JORDAN}
+            Row103:{CountryCode=JP, CountryName=JAPAN, NationalityName=JAPAN, InternatTelephoneCode=81, InternatPostalTypeCode=EA, InternatAccessCode=001, TimeZoneMinimum=9, TimeZoneMaximum=9, Deletable=False, AddressOrder=0, CountryNameLocal=JAPAN}
+            Row104:{CountryCode=JY, CountryName=JERSEY (GB), NationalityName=JERSEY (GB), InternatTelephoneCode=44, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=JERSEY (GB)}
+            Row105:{CountryCode=KE, CountryName=KENYA, NationalityName=KENYA, InternatTelephoneCode=254, InternatPostalTypeCode=AFR, InternatAccessCode=000, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=KENYA}
+            Row106:{CountryCode=KG, CountryName=KYRGYZSTAN, NationalityName=KYRGYZSTAN, InternatTelephoneCode=996, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=6, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=KYRGYZSTAN}
+            Row107:{CountryCode=KH, CountryName=CAMBODIA, NationalityName=CAMBODIA, InternatTelephoneCode=855, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=7, TimeZoneMaximum=7, Deletable=False, AddressOrder=0, CountryNameLocal=CAMBODIA}
+            Row108:{CountryCode=KI, CountryName=KIRIBATI, NationalityName=KIRIBATI, InternatTelephoneCode=686, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=KIRIBATI}
+            Row109:{CountryCode=KM, CountryName=COMOROS, NationalityName=COMOROS, InternatTelephoneCode=269, InternatPostalTypeCode=EA, InternatAccessCode=10, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=COMOROS}
+            Row110:{CountryCode=KN, CountryName=SAINT KITTS AND NEVIS, NationalityName=SAINT KITTS AND NEVIS, InternatTelephoneCode=1869, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=SAINT KITTS AND NEVIS}
+            Row111:{CountryCode=KP, CountryName="KOREA, NORTH (PEOPLE'S REPUBLIC)", NationalityName="KOREA, NORTH (PEOPLE'S REPUBLIC)", InternatTelephoneCode=850, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=9, TimeZoneMaximum=9, Deletable=False, AddressOrder=0, CountryNameLocal="KOREA, NORTH (PEOPLE'S REPUBLIC)"}
+            Row112:{CountryCode=KR, CountryName="KOREA, SOUTH (REPUBLIC OF)", NationalityName="KOREA, SOUTH (REPUBLIC OF)", InternatTelephoneCode=82, InternatPostalTypeCode=EA, InternatAccessCode=001, TimeZoneMinimum=9, TimeZoneMaximum=9, Deletable=False, AddressOrder=0, CountryNameLocal="KOREA, SOUTH (REPUBLIC OF)"}
+            Row113:{CountryCode=KW, CountryName=KUWAIT, NationalityName=KUWAIT, InternatTelephoneCode=965, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=KUWAIT}
+            Row114:{CountryCode=KY, CountryName=CAYMAN ISLANDS, NationalityName=CAYMAN ISLANDS, InternatTelephoneCode=1345, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=CAYMAN ISLANDS}
+            Row115:{CountryCode=KZ, CountryName=KAZAKHSTAN, NationalityName=KAZAKHSTAN, InternatTelephoneCode=7, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=5, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=KAZAKHSTAN}
+            Row116:{CountryCode=LA, CountryName=LAO PEOPLE'S DEMOCRATIC REPUBLIC, NationalityName=LAO PEOPLE'S DEMOCRATIC REPUBLIC, InternatTelephoneCode=856, InternatPostalTypeCode=EA, InternatAccessCode=14, TimeZoneMinimum=7, TimeZoneMaximum=7, Deletable=False, AddressOrder=0, CountryNameLocal=LAO PEOPLE'S DEMOCRATIC REPUBLIC}
+            Row117:{CountryCode=LB, CountryName=LEBANON, NationalityName=LEBANON, InternatTelephoneCode=961, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=LEBANON}
+            Row118:{CountryCode=LC, CountryName=SAINT LUCIA, NationalityName=SAINT LUCIA, InternatTelephoneCode=1758, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=SAINT LUCIA}
+            Row119:{CountryCode=LI, CountryName=LIECHTENSTEIN, NationalityName=LIECHTENSTEIN, InternatTelephoneCode=423, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=LIECHTENSTEIN}
+            Row120:{CountryCode=LK, CountryName=SRI LANKA, NationalityName=SRI LANKA, InternatTelephoneCode=94, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=6, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=SRI LANKA}
+            Row121:{CountryCode=LR, CountryName=LIBERIA, NationalityName=LIBERIA, InternatTelephoneCode=231, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=LIBERIA}
+            Row122:{CountryCode=LS, CountryName=LESOTHO, NationalityName=LESOTHO, InternatTelephoneCode=266, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=LESOTHO}
+            Row123:{CountryCode=LT, CountryName=LITHUANIA, NationalityName=LITHUANIA, InternatTelephoneCode=370, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=LITHUANIA}
+            Row124:{CountryCode=LU, CountryName=LUXEMBOURG, NationalityName=LUXEMBOURG, InternatTelephoneCode=352, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=LUXEMBOURG}
+            Row125:{CountryCode=LV, CountryName=LATVIA, NationalityName=LATVIA, InternatTelephoneCode=371, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=LATVIA}
+            Row126:{CountryCode=LY, CountryName=LIBYAN ARAB JAMAHIRIYA, NationalityName=LIBYAN ARAB JAMAHIRIYA, InternatTelephoneCode=218, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=LIBYAN ARAB JAMAHIRIYA}
+            Row127:{CountryCode=MA, CountryName=MOROCCO, NationalityName=MOROCCO, InternatTelephoneCode=212, InternatPostalTypeCode=AFR, InternatAccessCode=00~, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=MOROCCO}
+            Row128:{CountryCode=MC, CountryName=MONACO, NationalityName=MONACO, InternatTelephoneCode=377, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=MONACO}
+            Row129:{CountryCode=MD, CountryName=MOLDOVA (REPUBLIC OF), NationalityName=MOLDOVA (REPUBLIC OF), InternatTelephoneCode=373, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=MOLDOVA (REPUBLIC OF)}
+            Row130:{CountryCode=ME, CountryName=MONTENEGRO (REPUBLIC OF), NationalityName=MONTENEGRO (REPUBLIC OF), InternatTelephoneCode=382, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=MONTENEGRO (REPUBLIC OF)}
+            Row131:{CountryCode=MG, CountryName=MADAGASCAR, NationalityName=MADAGASCAR, InternatTelephoneCode=261, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=MADAGASCAR}
+            Row132:{CountryCode=MH, CountryName=MARSHALL ISLANDS, NationalityName=MARSHALL ISLANDS, InternatTelephoneCode=692, InternatPostalTypeCode=AUS, InternatAccessCode=011, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=MARSHALL ISLANDS}
+            Row133:{CountryCode=MK, CountryName="MACEDONIA, FORMER YUGOSLAVIA", NationalityName="MACEDONIA, FORMER YUGOSLAVIA", InternatTelephoneCode=389, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal="MACEDONIA, FORMER YUGOSLAVIA"}
+            Row134:{CountryCode=ML, CountryName=MALI, NationalityName=MALI, InternatTelephoneCode=223, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=MALI}
+            Row135:{CountryCode=MM, CountryName=MYANMAR (BURMA), NationalityName=MYANMAR (BURMA), InternatTelephoneCode=95, InternatPostalTypeCode=EA, InternatAccessCode=0, TimeZoneMinimum=6.5, TimeZoneMaximum=6.5, Deletable=False, AddressOrder=0, CountryNameLocal=MYANMAR (BURMA)}
+            Row136:{CountryCode=MN, CountryName=MONGOLIA, NationalityName=MONGOLIA, InternatTelephoneCode=976, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=MONGOLIA}
+            Row137:{CountryCode=MO, CountryName=MACAU, NationalityName=MACAU, InternatTelephoneCode=853, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=MACAU}
+            Row138:{CountryCode=MP, CountryName=NORTHERN MARIANA ISLANDS, NationalityName=NORTHERN MARIANA ISLANDS, InternatTelephoneCode=1670, InternatPostalTypeCode=EA, InternatAccessCode=011, TimeZoneMinimum=10, TimeZoneMaximum=10, Deletable=False, AddressOrder=0, CountryNameLocal=NORTHERN MARIANA ISLANDS}
+            Row139:{CountryCode=MQ, CountryName=MARTINIQUE, NationalityName=MARTINIQUE, InternatTelephoneCode=963, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=MARTINIQUE}
+            Row140:{CountryCode=MR, CountryName=MAURITANIA, NationalityName=MAURITANIA, InternatTelephoneCode=222, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=MAURITANIA}
+            Row141:{CountryCode=MS, CountryName=MONTSERRAT, NationalityName=MONTSERRAT, InternatTelephoneCode=1664, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=MONTSERRAT}
+            Row142:{CountryCode=MT, CountryName=MALTA, NationalityName=MALTA, InternatTelephoneCode=356, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=MALTA}
+            Row143:{CountryCode=MU, CountryName=MAURITIUS, NationalityName=MAURITIUS, InternatTelephoneCode=230, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=MAURITIUS}
+            Row144:{CountryCode=MV, CountryName=MALDIVES, NationalityName=MALDIVES, InternatTelephoneCode=960, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=5, TimeZoneMaximum=5, Deletable=False, AddressOrder=0, CountryNameLocal=MALDIVES}
+            Row145:{CountryCode=MW, CountryName=MALAWI, NationalityName=MALAWI, InternatTelephoneCode=265, InternatPostalTypeCode=AFR, InternatAccessCode=101, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=MALAWI}
+            Row146:{CountryCode=MX, CountryName=MEXICO, NationalityName=MEXICO, InternatTelephoneCode=52, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-7, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=MEXICO}
+            Row147:{CountryCode=MY, CountryName=MALAYSIA, NationalityName=MALAYSIA, InternatTelephoneCode=60, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=MALAYSIA}
+            Row148:{CountryCode=MZ, CountryName=MOZAMBIQUE, NationalityName=MOZAMBIQUE, InternatTelephoneCode=258, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=MOZAMBIQUE}
+            Row149:{CountryCode=NA, CountryName=NAMIBIA, NationalityName=NAMIBIA, InternatTelephoneCode=264, InternatPostalTypeCode=AFR, InternatAccessCode=09, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=NAMIBIA}
+            Row150:{CountryCode=NC, CountryName=NEW CALEDONIA, NationalityName=NEW CALEDONIA, InternatTelephoneCode=687, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=11, TimeZoneMaximum=11, Deletable=False, AddressOrder=0, CountryNameLocal=NEW CALEDONIA}
+            Row151:{CountryCode=NE, CountryName=NIGER, NationalityName=NIGER, InternatTelephoneCode=227, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=NIGER}
+            Row152:{CountryCode=NF, CountryName=NORFOLK ISLAND, NationalityName=NORFOLK ISLAND, InternatTelephoneCode=672, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=11.5, TimeZoneMaximum=11.5, Deletable=False, AddressOrder=0, CountryNameLocal=NORFOLK ISLAND}
+            Row153:{CountryCode=NG, CountryName=NIGERIA, NationalityName=NIGERIA, InternatTelephoneCode=234, InternatPostalTypeCode=AFR, InternatAccessCode=009, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=NIGERIA}
+            Row154:{CountryCode=NI, CountryName=NICARAGUA, NationalityName=NICARAGUA, InternatTelephoneCode=505, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=NICARAGUA}
+            Row155:{CountryCode=NL, CountryName=NETHERLANDS, NationalityName=NETHERLANDS, InternatTelephoneCode=31, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=NETHERLANDS}
+            Row156:{CountryCode=NO, CountryName=NORWAY, NationalityName=NORWAY, InternatTelephoneCode=47, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=NORWAY}
+            Row157:{CountryCode=NP, CountryName=NEPAL, NationalityName=NEPAL, InternatTelephoneCode=977, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=5.75, TimeZoneMaximum=5.75, Deletable=False, AddressOrder=0, CountryNameLocal=NEPAL}
+            Row158:{CountryCode=NR, CountryName=NAURU, NationalityName=NAURU, InternatTelephoneCode=674, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=NAURU}
+            Row159:{CountryCode=NU, CountryName=NIUE, NationalityName=NIUE, InternatTelephoneCode=683, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=-11, TimeZoneMaximum=-11, Deletable=False, AddressOrder=0, CountryNameLocal=NIUE}
+            Row160:{CountryCode=NZ, CountryName=NEW ZEALAND, NationalityName=NEW ZEALAND, InternatTelephoneCode=64, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=NEW ZEALAND}
+            Row161:{CountryCode=OM, CountryName=OMAN, NationalityName=OMAN, InternatTelephoneCode=968, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=OMAN}
+            Row162:{CountryCode=PA, CountryName=PANAMA, NationalityName=PANAMA, InternatTelephoneCode=507, InternatPostalTypeCode=LAM, InternatAccessCode=0, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=PANAMA}
+            Row163:{CountryCode=PE, CountryName=PERU, NationalityName=PERU, InternatTelephoneCode=51, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=PERU}
+            Row164:{CountryCode=PF, CountryName=FRENCH POLYNESIA, NationalityName=FRENCH POLYNESIA, InternatTelephoneCode=689, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=-10, TimeZoneMaximum=-10, Deletable=False, AddressOrder=0, CountryNameLocal=FRENCH POLYNESIA}
+            Row165:{CountryCode=PG, CountryName=PAPUA NEW GUINEA, NationalityName=PAPUA NEW GUINEA, InternatTelephoneCode=675, InternatPostalTypeCode=EA, InternatAccessCode=05, TimeZoneMinimum=10, TimeZoneMaximum=10, Deletable=False, AddressOrder=0, CountryNameLocal=PAPUA NEW GUINEA}
+            Row166:{CountryCode=PH, CountryName=PHILIPPINES, NationalityName=PHILIPPINES, InternatTelephoneCode=63, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=PHILIPPINES}
+            Row167:{CountryCode=PK, CountryName=PAKISTAN, NationalityName=PAKISTAN, InternatTelephoneCode=92, InternatPostalTypeCode=SWACA, InternatAccessCode=00, TimeZoneMinimum=5, TimeZoneMaximum=5, Deletable=False, AddressOrder=0, CountryNameLocal=PAKISTAN}
+            Row168:{CountryCode=PL, CountryName=POLAND, NationalityName=POLAND, InternatTelephoneCode=48, InternatPostalTypeCode=EUR, InternatAccessCode=0~0, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=POLAND}
+            Row169:{CountryCode=PR, CountryName=PUERTO RICO, NationalityName=PUERTO RICO, InternatTelephoneCode=1787, InternatPostalTypeCode=NAMC, InternatAccessCode=1, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=PUERTO RICO}
+            Row170:{CountryCode=PT, CountryName=PORTUGAL, NationalityName=PORTUGAL, InternatTelephoneCode=351, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=1, CountryNameLocal=PORTUGAL}
+            Row171:{CountryCode=PW, CountryName=PALAU, NationalityName=PALAU, InternatTelephoneCode=680, InternatPostalTypeCode=AUS, InternatAccessCode=011, TimeZoneMinimum=9, TimeZoneMaximum=9, Deletable=False, AddressOrder=0, CountryNameLocal=PALAU}
+            Row172:{CountryCode=PY, CountryName=PARAGUAY, NationalityName=PARAGUAY, InternatTelephoneCode=595, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=PARAGUAY}
+            Row173:{CountryCode=QA, CountryName=QATAR, NationalityName=QATAR, InternatTelephoneCode=974, InternatPostalTypeCode=ME, InternatAccessCode=0, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=QATAR}
+            Row174:{CountryCode=RE, CountryName=REUNION, NationalityName=REUNION, InternatTelephoneCode=262, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=REUNION}
+            Row175:{CountryCode=RO, CountryName=ROMANIA, NationalityName=ROMANIA, InternatTelephoneCode=40, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=ROMANIA}
+            Row176:{CountryCode=RS, CountryName=SERBIA (REPUBLIC OF), NationalityName=SERBIA (REPUBLIC OF), InternatTelephoneCode=381, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=SERBIA (REPUBLIC OF)}
+            Row177:{CountryCode=RU, CountryName=RUSSIAN FEDERATION, NationalityName=RUSSIAN FEDERATION, InternatTelephoneCode=7, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=2, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=RUSSIAN FEDERATION}
+            Row178:{CountryCode=RW, CountryName=RWANDA, NationalityName=RWANDA, InternatTelephoneCode=250, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=RWANDA}
+            Row179:{CountryCode=SA, CountryName=SAUDI ARABIA, NationalityName=SAUDI ARABIA, InternatTelephoneCode=966, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=SAUDI ARABIA}
+            Row180:{CountryCode=SB, CountryName=SOLOMON ISLANDS, NationalityName=SOLOMON ISLANDS, InternatTelephoneCode=677, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=11, TimeZoneMaximum=11, Deletable=False, AddressOrder=0, CountryNameLocal=SOLOMON ISLANDS}
+            Row181:{CountryCode=SC, CountryName=SEYCHELLES, NationalityName=SEYCHELLES, InternatTelephoneCode=248, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=4, TimeZoneMaximum=4, Deletable=False, AddressOrder=0, CountryNameLocal=SEYCHELLES}
+            Row182:{CountryCode=SD, CountryName=SUDAN, NationalityName=SUDAN, InternatTelephoneCode=249, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=SUDAN}
+            Row183:{CountryCode=SE, CountryName=SWEDEN, NationalityName=SWEDEN, InternatTelephoneCode=46, InternatPostalTypeCode=EC, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SWEDEN}
+            Row184:{CountryCode=SG, CountryName=SINGAPORE, NationalityName=SINGAPORE, InternatTelephoneCode=65, InternatPostalTypeCode=EA, InternatAccessCode=001, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=SINGAPORE}
+            Row185:{CountryCode=SI, CountryName=SLOVENIA, NationalityName=SLOVENIA, InternatTelephoneCode=386, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SLOVENIA}
+            Row186:{CountryCode=SK, CountryName=SLOVAKIA (SLOVAK REPUBLIC), NationalityName=SLOVAKIA (SLOVAK REPUBLIC), InternatTelephoneCode=421, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SLOVAKIA (SLOVAK REPUBLIC)}
+            Row187:{CountryCode=SL, CountryName=SIERRA LEONE, NationalityName=SIERRA LEONE, InternatTelephoneCode=232, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=SIERRA LEONE}
+            Row188:{CountryCode=SM, CountryName=SAN MARINO, NationalityName=SAN MARINO, InternatTelephoneCode=378, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=SAN MARINO}
+            Row189:{CountryCode=SN, CountryName=SENEGAL, NationalityName=SENEGAL, InternatTelephoneCode=221, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=SENEGAL}
+            Row190:{CountryCode=SO, CountryName=SOMALIA, NationalityName=SOMALIA, InternatTelephoneCode=252, InternatPostalTypeCode=AFR, InternatAccessCode=19, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=SOMALIA}
+            Row191:{CountryCode=SR, CountryName=SURINAM(E), NationalityName=SURINAM(E), InternatTelephoneCode=597, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=-3, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=SURINAM(E)}
+            Row192:{CountryCode=ST, CountryName=SAO TOME AND PRINCIPE, NationalityName=SAO TOME AND PRINCIPE, InternatTelephoneCode=239, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=SAO TOME AND PRINCIPE}
+            Row193:{CountryCode=SV, CountryName=EL SALVADOR, NationalityName=EL SALVADOR, InternatTelephoneCode=503, InternatPostalTypeCode=LAM, InternatAccessCode=0, TimeZoneMinimum=-6, TimeZoneMaximum=-6, Deletable=False, AddressOrder=0, CountryNameLocal=EL SALVADOR}
+            Row194:{CountryCode=SY, CountryName=SYRIAN ARAB REPUBLIC, NationalityName=SYRIAN ARAB REPUBLIC, InternatTelephoneCode=963, InternatPostalTypeCode=ME, InternatAccessCode=XX, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=SYRIAN ARAB REPUBLIC}
+            Row195:{CountryCode=SZ, CountryName=SWAZILAND, NationalityName=SWAZILAND, InternatTelephoneCode=268, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=SWAZILAND}
+            Row196:{CountryCode=TC, CountryName=TURKS AND CAICOS ISLANDS, NationalityName=TURKS AND CAICOS ISLANDS, InternatTelephoneCode=1649, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-5, TimeZoneMaximum=-5, Deletable=False, AddressOrder=0, CountryNameLocal=TURKS AND CAICOS ISLANDS}
+            Row197:{CountryCode=TD, CountryName=CHAD, NationalityName=CHAD, InternatTelephoneCode=235, InternatPostalTypeCode=AFR, InternatAccessCode=15, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=CHAD}
+            Row198:{CountryCode=TG, CountryName=TOGO, NationalityName=TOGO, InternatTelephoneCode=228, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=0, TimeZoneMaximum=0, Deletable=False, AddressOrder=0, CountryNameLocal=TOGO}
+            Row199:{CountryCode=TH, CountryName=THAILAND, NationalityName=THAILAND, InternatTelephoneCode=66, InternatPostalTypeCode=EA, InternatAccessCode=001, TimeZoneMinimum=7, TimeZoneMaximum=7, Deletable=False, AddressOrder=0, CountryNameLocal=THAILAND}
+            Row200:{CountryCode=TJ, CountryName=TAJIKSTAN, NationalityName=TAJIKSTAN, InternatTelephoneCode=992, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=5, TimeZoneMaximum=5, Deletable=False, AddressOrder=0, CountryNameLocal=TAJIKSTAN}
+            Row201:{CountryCode=TM, CountryName=TURKMENISTAN, NationalityName=TURKMENISTAN, InternatTelephoneCode=993, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=5, TimeZoneMaximum=5, Deletable=False, AddressOrder=0, CountryNameLocal=TURKMENISTAN}
+            Row202:{CountryCode=TN, CountryName=TUNISIA, NationalityName=TUNISIA, InternatTelephoneCode=216, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=0, CountryNameLocal=TUNISIA}
+            Row203:{CountryCode=TO, CountryName=TONGA, NationalityName=TONGA, InternatTelephoneCode=676, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=13, TimeZoneMaximum=13, Deletable=False, AddressOrder=0, CountryNameLocal=TONGA}
+            Row204:{CountryCode=TR, CountryName=TURKEY, NationalityName=TURKEY, InternatTelephoneCode=90, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=1, CountryNameLocal=TURKEY}
+            Row205:{CountryCode=TT, CountryName=TRINIDAD AND TOBAGO, NationalityName=TRINIDAD AND TOBAGO, InternatTelephoneCode=1868, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=TRINIDAD AND TOBAGO}
+            Row206:{CountryCode=TV, CountryName=TUVALU, NationalityName=TUVALU, InternatTelephoneCode=688, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=12, TimeZoneMaximum=12, Deletable=False, AddressOrder=0, CountryNameLocal=TUVALU}
+            Row207:{CountryCode=TW, CountryName=TAIWAN, NationalityName=TAIWAN, InternatTelephoneCode=886, InternatPostalTypeCode=EA, InternatAccessCode=002, TimeZoneMinimum=8, TimeZoneMaximum=8, Deletable=False, AddressOrder=0, CountryNameLocal=TAIWAN}
+            Row208:{CountryCode=TZ, CountryName=TANZANIA (UNITED REPUBLIC OF), NationalityName=TANZANIA (UNITED REPUBLIC OF), InternatTelephoneCode=255, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=TANZANIA (UNITED REPUBLIC OF)}
+            Row209:{CountryCode=UA, CountryName=UKRAINE, NationalityName=UKRAINE, InternatTelephoneCode=380, InternatPostalTypeCode=EUR, InternatAccessCode=8~10, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=UKRAINE}
+            Row210:{CountryCode=UG, CountryName=UGANDA, NationalityName=UGANDA, InternatTelephoneCode=256, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=UGANDA}
+            Row211:{CountryCode=US, CountryName=UNITED STATES OF AMERICA, NationalityName=UNITED STATES OF AMERICA, InternatTelephoneCode=1, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-8, TimeZoneMaximum=-5, Deletable=False, AddressOrder=2, CountryNameLocal=UNITED STATES OF AMERICA}
+            Row212:{CountryCode=UY, CountryName=URUGUAY, NationalityName=URUGUAY, InternatTelephoneCode=598, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-3, TimeZoneMaximum=-3, Deletable=False, AddressOrder=0, CountryNameLocal=URUGUAY}
+            Row213:{CountryCode=UZ, CountryName=UZBEKISTAN, NationalityName=UZBEKISTAN, InternatTelephoneCode=998, InternatPostalTypeCode=SWACA, InternatAccessCode=8~10, TimeZoneMinimum=5, TimeZoneMaximum=6, Deletable=False, AddressOrder=0, CountryNameLocal=UZBEKISTAN}
+            Row214:{CountryCode=VA, CountryName=VATICAN CITY STATE (HOLY SEE), NationalityName=VATICAN CITY STATE (HOLY SEE), InternatTelephoneCode=39, InternatPostalTypeCode=EUR, InternatAccessCode=00, TimeZoneMinimum=1, TimeZoneMaximum=1, Deletable=False, AddressOrder=1, CountryNameLocal=VATICAN CITY STATE (HOLY SEE)}
+            Row215:{CountryCode=VC, CountryName=SAINT VINCENT AND THE GRENADINES, NationalityName=SAINT VINCENT AND THE GRENADINES, InternatTelephoneCode=1784, InternatPostalTypeCode=NAMC, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=SAINT VINCENT AND THE GRENADINES}
+            Row216:{CountryCode=VE, CountryName=VENEZUELA, NationalityName=VENEZUELA, InternatTelephoneCode=58, InternatPostalTypeCode=LAM, InternatAccessCode=00, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=VENEZUELA}
+            Row217:{CountryCode=VG, CountryName=VIRGIN ISLANDS (BRITISH), NationalityName=VIRGIN ISLANDS (BRITISH), InternatTelephoneCode=1284, InternatPostalTypeCode=AUS, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=VIRGIN ISLANDS (BRITISH)}
+            Row218:{CountryCode=VI, CountryName=VIRGIN ISLANDS (US), NationalityName=VIRGIN ISLANDS (US), InternatTelephoneCode=1340, InternatPostalTypeCode=AUS, InternatAccessCode=011, TimeZoneMinimum=-4, TimeZoneMaximum=-4, Deletable=False, AddressOrder=0, CountryNameLocal=VIRGIN ISLANDS (US)}
+            Row219:{CountryCode=VN, CountryName=VIETNAM, NationalityName=VIETNAM, InternatTelephoneCode=84, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=7, TimeZoneMaximum=7, Deletable=False, AddressOrder=0, CountryNameLocal=VIETNAM}
+            Row220:{CountryCode=VU, CountryName=VANUATU, NationalityName=VANUATU, InternatTelephoneCode=678, InternatPostalTypeCode=AUS, InternatAccessCode=00, TimeZoneMinimum=11, TimeZoneMaximum=11, Deletable=False, AddressOrder=0, CountryNameLocal=VANUATU}
+            Row221:{CountryCode=WS, CountryName=SAMOA, NationalityName=SAMOA, InternatTelephoneCode=685, InternatPostalTypeCode=AUS, InternatAccessCode=0, TimeZoneMinimum=-11, TimeZoneMaximum=-11, Deletable=False, AddressOrder=0, CountryNameLocal=SAMOA}
+            Row222:{CountryCode=YE, CountryName=YEMEN, NationalityName=YEMEN, InternatTelephoneCode=967, InternatPostalTypeCode=ME, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=YEMEN}
+            Row223:{CountryCode=YT, CountryName=MAYOTTE, NationalityName=MAYOTTE, InternatTelephoneCode=269, InternatPostalTypeCode=EA, InternatAccessCode=00, TimeZoneMinimum=3, TimeZoneMaximum=3, Deletable=False, AddressOrder=0, CountryNameLocal=MAYOTTE}
+            Row224:{CountryCode=ZA, CountryName=SOUTH AFRICA, NationalityName=SOUTH AFRICA, InternatTelephoneCode=27, InternatPostalTypeCode=AFR, InternatAccessCode=09, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=SOUTH AFRICA}
+            Row225:{CountryCode=ZM, CountryName=ZAMBIA, NationalityName=ZAMBIA, InternatTelephoneCode=260, InternatPostalTypeCode=AFR, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=ZAMBIA}
+            Row226:{CountryCode=ZW, CountryName=ZIMBABWE, NationalityName=ZIMBABWE, InternatTelephoneCode=263, InternatPostalTypeCode=NAMC, InternatAccessCode=00, TimeZoneMinimum=2, TimeZoneMaximum=2, Deletable=False, AddressOrder=0, CountryNameLocal=ZIMBABWE}
+        ACurrencyTable:
+            Row1:{CurrencyCode=ALL, CurrencyName=Albanian Lek, CurrencySymbol=ALL, CountryCode=AL, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row2:{CurrencyCode=ARS, CurrencyName=Argentenian Peso, CurrencySymbol=ARS, CountryCode=AR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row3:{CurrencyCode=ATS, CurrencyName=Austrian Schilling, CurrencySymbol=ATS, CountryCode=AT, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row4:{CurrencyCode=AUD, CurrencyName=Australian Dollar, CurrencySymbol=AUD, CountryCode=AU, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row5:{CurrencyCode=BAM, CurrencyName=Convertible Marka, CurrencySymbol=BAM, CountryCode=BA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row6:{CurrencyCode=BDT, CurrencyName=Bangladeshi Taka, CurrencySymbol=BDT, CountryCode=BD, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row7:{CurrencyCode=BEF, CurrencyName=Belgian Franc, CurrencySymbol=BEF, CountryCode=BE, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=True}
+            Row8:{CurrencyCode=BGL, CurrencyName=Bulgarian Lev, CurrencySymbol=BGL, CountryCode=BG, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row9:{CurrencyCode=BRL, CurrencyName=Brazilian Real, CurrencySymbol=BRL, CountryCode=BR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row10:{CurrencyCode=CAD, CurrencyName=Canadian Dollar, CurrencySymbol=CA$, CountryCode=CA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row11:{CurrencyCode=CHF, CurrencyName=Swiss Franc, CurrencySymbol=CHF, CountryCode=CH, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row12:{CurrencyCode=CLP, CurrencyName=Chilean Peso, CurrencySymbol=CLP, CountryCode=CL, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row13:{CurrencyCode=CNY, CurrencyName=Chinese Yuan Renminbi, CurrencySymbol=CNY, CountryCode=CN, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row14:{CurrencyCode=CRC, CurrencyName=Costa Rican Colon, CurrencySymbol=CRC, CountryCode=CR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row15:{CurrencyCode=CYP, CurrencyName=Cyprus Pound, CurrencySymbol=CYP, CountryCode=CY, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row16:{CurrencyCode=CZK, CurrencyName=Czech Koruna, CurrencySymbol=CZK, CountryCode=CZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row17:{CurrencyCode=DEM, CurrencyName=Deutsche Mark, CurrencySymbol=DM , CountryCode=DE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row18:{CurrencyCode=DKK, CurrencyName=Danish Krone, CurrencySymbol=DKK, CountryCode=DK, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row19:{CurrencyCode=DZD, CurrencyName=Algerian Dinar, CurrencySymbol=DZD, CountryCode=DZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row20:{CurrencyCode=EEK, CurrencyName=Estonian Kroon, CurrencySymbol=EEK, CountryCode=EE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row21:{CurrencyCode=EGP, CurrencyName=Egyptian Pound, CurrencySymbol=EGP, CountryCode=EG, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row22:{CurrencyCode=ESP, CurrencyName=Spanish Peseta, CurrencySymbol=ESP, CountryCode=ES, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=True}
+            Row23:{CurrencyCode=EUR, CurrencyName=European Monetary Unit, CurrencySymbol=EUR, CountryCode=99, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row24:{CurrencyCode=FIM, CurrencyName=Finnish Markka, CurrencySymbol=FIM, CountryCode=FI, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row25:{CurrencyCode=FRF, CurrencyName=French Franc, CurrencySymbol=FFR, CountryCode=FR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row26:{CurrencyCode=GBP, CurrencyName=Pound Sterling, CurrencySymbol=GBP, CountryCode=GB, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row27:{CurrencyCode=GRD, CurrencyName=Greek Drachma, CurrencySymbol=GRD, CountryCode=GR, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row28:{CurrencyCode=GTQ, CurrencyName=Guatemalan Quetzal, CurrencySymbol=GTQ, CountryCode=GT, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row29:{CurrencyCode=HKD, CurrencyName=Kong Kong Dollar, CurrencySymbol=HK$, CountryCode=HK, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row30:{CurrencyCode=HRK, CurrencyName=Croatian Kuna, CurrencySymbol=HRK, CountryCode=HR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row31:{CurrencyCode=HUF, CurrencyName=Hungarian Forint, CurrencySymbol=HUF, CountryCode=HU, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row32:{CurrencyCode=IDR, CurrencyName=Indonesian Rupiah, CurrencySymbol=IDR, CountryCode=ID, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row33:{CurrencyCode=IEP, CurrencyName=Irish Punt, CurrencySymbol=IEP, CountryCode=IE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row34:{CurrencyCode=ILS, CurrencyName=Israeli New Shekel, CurrencySymbol=ILS, CountryCode=IL, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row35:{CurrencyCode=INR, CurrencyName=Indian Rupee, CurrencySymbol=INR, CountryCode=IN, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row36:{CurrencyCode=ITL, CurrencyName=Italian Lira, CurrencySymbol=ITL, CountryCode=IT, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=True}
+            Row37:{CurrencyCode=JOD, CurrencyName=Jordanian Dinar, CurrencySymbol=JOD, CountryCode=JO, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row38:{CurrencyCode=JPY, CurrencyName=Japanese Yen, CurrencySymbol=Y  , CountryCode=JP, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row39:{CurrencyCode=KES, CurrencyName=Kenyan Shilling, CurrencySymbol=KES, CountryCode=KE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row40:{CurrencyCode=KRW, CurrencyName=South Korean Won, CurrencySymbol=KRW, CountryCode=KR, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row41:{CurrencyCode=KWD, CurrencyName=Kuwaiti Dinar, CurrencySymbol=KWD, CountryCode=KW, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row42:{CurrencyCode=KZT, CurrencyName=Kazakhstan Tenge, CurrencySymbol=KZT, CountryCode=KZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row43:{CurrencyCode=LBP, CurrencyName=Lebanese Pound, CurrencySymbol=LBP, CountryCode=LB, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row44:{CurrencyCode=LUF, CurrencyName=Luxembourg Franc, CurrencySymbol=LUF, CountryCode=LU, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=True}
+            Row45:{CurrencyCode=MAD, CurrencyName=Moroccan Dirham, CurrencySymbol=MAD, CountryCode=MA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row46:{CurrencyCode=MDL, CurrencyName=Moldovan Leu, CurrencySymbol=MDL, CountryCode=MD, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row47:{CurrencyCode=MMK, CurrencyName=Myanmar Kyat, CurrencySymbol=MMK, CountryCode=MM, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row48:{CurrencyCode=MNT, CurrencyName=Mongolian Tugrik, CurrencySymbol=MNT, CountryCode=MN, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row49:{CurrencyCode=MTL, CurrencyName=Maltese Lira, CurrencySymbol=MTL, CountryCode=MT, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row50:{CurrencyCode=MXP, CurrencyName=Mexican Nuevo Peso, CurrencySymbol=MXN, CountryCode=MX, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row51:{CurrencyCode=MYR, CurrencyName=Malaysian Ringgit, CurrencySymbol=MYR, CountryCode=MY, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row52:{CurrencyCode=MZM, CurrencyName=Mozambique Metical, CurrencySymbol=MZM, CountryCode=MZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row53:{CurrencyCode=MZN, CurrencyName=New Mozambican Metical, CurrencySymbol=MZN, CountryCode=MZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row54:{CurrencyCode=NLG, CurrencyName=Dutch Guilder, CurrencySymbol=NLG, CountryCode=NL, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=True}
+            Row55:{CurrencyCode=NOK, CurrencyName=Norwegian Krone, CurrencySymbol=NOK, CountryCode=NO, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row56:{CurrencyCode=NPR, CurrencyName=Nepalese Rupee, CurrencySymbol=NPR, CountryCode=NP, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row57:{CurrencyCode=NZD, CurrencyName=New Zealand Dollar, CurrencySymbol=NZ$, CountryCode=NZ, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row58:{CurrencyCode=PEN, CurrencyName=Peruvian Neuvo Sol, CurrencySymbol=PES, CountryCode=PE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row59:{CurrencyCode=PGK, CurrencyName=Papua New Guinea Kina, CurrencySymbol=PGK, CountryCode=PG, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row60:{CurrencyCode=PHP, CurrencyName=Philippine Peso, CurrencySymbol=PHP, CountryCode=PH, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row61:{CurrencyCode=PKR, CurrencyName=Pakistani Rupee, CurrencySymbol=PKR, CountryCode=PK, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row62:{CurrencyCode=PLZ, CurrencyName=Polish Zloty, CurrencySymbol=PLZ, CountryCode=PL, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row63:{CurrencyCode=PTE, CurrencyName=Portuguese Escudo, CurrencySymbol=PTE, CountryCode=PT, DisplayFormat="->>>>,>>>,>>>,>>9.9", InEmu=True}
+            Row64:{CurrencyCode=PYG, CurrencyName=Paraguayan Guarani, CurrencySymbol=PYG, CountryCode=PY, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row65:{CurrencyCode=ROL, CurrencyName=Romanian Leu, CurrencySymbol=ROL, CountryCode=RO, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row66:{CurrencyCode=RON, CurrencyName=Romanian New Lei, CurrencySymbol=RON, CountryCode=RO, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row67:{CurrencyCode=RUR, CurrencyName=Russian Ruble, CurrencySymbol=RUR, CountryCode=RU, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row68:{CurrencyCode=SCR, CurrencyName=Seychelles Rupee, CurrencySymbol=SCR, CountryCode=SC, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row69:{CurrencyCode=SDD, CurrencyName=Sudanese Dinar, CurrencySymbol=SDD, CountryCode=SD, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row70:{CurrencyCode=SEK, CurrencyName=Swedish Krona, CurrencySymbol=SEK, CountryCode=SE, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row71:{CurrencyCode=SGD, CurrencyName=Singapore Dollar, CurrencySymbol=SG$, CountryCode=SG, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row72:{CurrencyCode=SKK, CurrencyName=Slovakian Koruna, CurrencySymbol=SKK, CountryCode=SK, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row73:{CurrencyCode=SYP, CurrencyName=Syrian Pound, CurrencySymbol=SYP, CountryCode=SY, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row74:{CurrencyCode=THB, CurrencyName=Thai Baht, CurrencySymbol=THB, CountryCode=TH, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row75:{CurrencyCode=TND, CurrencyName=Tunisian Dinar, CurrencySymbol=TND, CountryCode=TN, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row76:{CurrencyCode=TRL, CurrencyName=Turkish Lira, CurrencySymbol=TRL, CountryCode=TR, DisplayFormat="->>,>>>,>>>,>>>,>>9", InEmu=False}
+            Row77:{CurrencyCode=TWD, CurrencyName=Taiwan Dollar, CurrencySymbol=TW$, CountryCode=TW, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row78:{CurrencyCode=UAH, CurrencyName=Ukrainian Hryvna, CurrencySymbol=UAH, CountryCode=UA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row79:{CurrencyCode=UAK, CurrencyName=Ukraine Karbovanet, CurrencySymbol=UAK, CountryCode=UA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row80:{CurrencyCode=USD, CurrencyName=United States Dollar, CurrencySymbol=US$, CountryCode=US, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row81:{CurrencyCode=UYP, CurrencyName=Uruguayan Peso, CurrencySymbol=UYU, CountryCode=UY, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row82:{CurrencyCode=YTL, CurrencyName=New Turkish Lira, CurrencySymbol=YTL, CountryCode=TR, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row83:{CurrencyCode=ZAR, CurrencyName=South African Rand, CurrencySymbol=ZAR, CountryCode=ZA, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+            Row84:{CurrencyCode=ZWD, CurrencyName=Zimbabwe Dollar, CurrencySymbol=ZW$, CountryCode=ZW, DisplayFormat="->>>,>>>,>>>,>>9.99", InEmu=False}
+    MPartnerPartner:
+        PPartnerStatusTable:
+            Row1:{StatusCode=ACTIVE, PartnerStatusDescription=Active Partner, PartnerIsActive=True, IncludePartnerOnReport=True, Deletable=False}
+            Row2:{StatusCode=DIED, PartnerStatusDescription=Partner has died, PartnerIsActive=True, IncludePartnerOnReport=False, Deletable=False}
+            Row3:{StatusCode=INACTIVE, PartnerStatusDescription=Inactive partner, PartnerIsActive=True, IncludePartnerOnReport=False, Deletable=False}
+            Row4:{StatusCode=MERGED, PartnerStatusDescription=Partner record has been merged into another, PartnerIsActive=True, IncludePartnerOnReport=False, Deletable=False}
+        PAcquisitionTable:
+            Row1:{AcquisitionCode=ACCOUNTS, AcquisitionDescription=Entered in by the Accounts Department, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row2:{AcquisitionCode=APL, AcquisitionDescription=Normal recruit applying through our organisation, ValidAcquisition=True, Deletable=False, RecruitingEffort=True}
+            Row3:{AcquisitionCode=BOOKING, AcquisitionDescription=This partner has booked with us for a term of service., ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row4:{AcquisitionCode=CHURCH, AcquisitionDescription=Church of Worker, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row5:{AcquisitionCode=INQUIRY, AcquisitionDescription=This partner is new to the system and requests info., ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row6:{AcquisitionCode=LOAD, AcquisitionDescription=Loaded in a patch, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row7:{AcquisitionCode=MAILROOM, AcquisitionDescription=Entered by the Mailroom Department, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row8:{AcquisitionCode=PARTNER, AcquisitionDescription=Partner sought out our organisation without solicitation, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row9:{AcquisitionCode=PERS-OFF, AcquisitionDescription=Partner entered by Personnel staff, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row10:{AcquisitionCode=POSTCARD, AcquisitionDescription=A postal response card was received, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row11:{AcquisitionCode=RECRUITS, AcquisitionDescription=Recruiting department entered this partner, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row12:{AcquisitionCode=REPLY, AcquisitionDescription=Partner sent in a reply form from a publication., ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row13:{AcquisitionCode=SETUP, AcquisitionDescription=Petra System Setup, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row14:{AcquisitionCode=STAFF, AcquisitionDescription=Present Worker applying through this office, ValidAcquisition=True, Deletable=False, RecruitingEffort=True}
+            Row15:{AcquisitionCode=SUPPORTR, AcquisitionDescription=Supporter of Worker, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+            Row16:{AcquisitionCode=UNKNOWN, AcquisitionDescription=Acquisition not known, ValidAcquisition=False, Deletable=False, RecruitingEffort=False}
+            Row17:{AcquisitionCode=UNT-LOAD, AcquisitionDescription=Uploaded for annual events/congresses, ValidAcquisition=True, Deletable=False, RecruitingEffort=False}
+        PAddresseeTypeTable:
+            Row1:{AddresseeTypeCode=1-FEMALE, Description=Single Female, Deletable=False}
+            Row2:{AddresseeTypeCode=1-MALE, Description=Single Male, Deletable=False}
+            Row3:{AddresseeTypeCode=CHURCH, Description=Church, Deletable=False}
+            Row4:{AddresseeTypeCode=COUPLE, Description=Couple (no children), Deletable=False}
+            Row5:{AddresseeTypeCode=DEFAULT, Description=Default addressee type, Deletable=False}
+            Row6:{AddresseeTypeCode=FAMILY, Description=Family, Deletable=False}
+            Row7:{AddresseeTypeCode=ORGANISA, Description=Organisation, Deletable=False}
+            Row8:{AddresseeTypeCode=VENUE, Description=Venue, Deletable=False}
+        PTitleTable:
+        PPartnerClassesTable:
+            Row1:{PartnerClass=BANK}
+            Row2:{PartnerClass=CHURCH}
+            Row3:{PartnerClass=FAMILY}
+            Row4:{PartnerClass=ORGANISATION}
+            Row5:{PartnerClass=PERSON}
+            Row6:{PartnerClass=UNIT}
+            Row7:{PartnerClass=VENUE}
+        PPartnerTable:
+            Row1:{PartnerKey=0, AddresseeTypeCode=DEFAULT, PartnerShortName=INVALID PARTNER, LanguageCode=99, StatusChange=2010-04-07, DeletedPartner=False, ReceiptEachGift=True, EmailGiftStatement=False, AnonymousDonor=False, NoSolicitations=False, ChildIndicator=False, Restricted=0, DateCreated=2010-04-07}
+        PRecentPartnersTable:
+        PPartnerGraphicTable:
+        PLocationTable:
+            Row1:{SiteKey=0, LocationKey=0, StreetName=No valid address on file, CountryCode=99, GeoLatitude=0, GeoLongitude=0, GeoKmX=0, GeoKmY=0, GeoAccuracy=-1, Restricted=False, DateCreated=0199-01-01, CreatedBy=SYSADMIN}
+        PLocationTypeTable:
+            Row1:{Code=BUSINESS, Description=Business / Office, Deletable=False, Assignable=True}
+            Row2:{Code=CHURCH, Description=Church, Deletable=False, Assignable=True}
+            Row3:{Code=COLL-UNI, Description=College or University, Deletable=False, Assignable=True}
+            Row4:{Code=FIELD, Description=Field, Deletable=False, Assignable=True}
+            Row5:{Code=HOLIDAY, Description=Holiday, Deletable=False, Assignable=True}
+            Row6:{Code=HOME, Description=Home address, Deletable=False, Assignable=True}
+            Row7:{Code=MOBILE, Description=Mobile, Deletable=False, Assignable=True}
+            Row8:{Code=OTHER, Description=Other, Deletable=False, Assignable=True}
+            Row9:{Code=PASTOR, Description=Pastor / Minister, Deletable=False, Assignable=True}
+            Row10:{Code=SECRETARY, Description=Secretary (Esp Churches), Deletable=False, Assignable=True}
+            Row11:{Code=TEMPORARY, Description=Temporary address, Deletable=False, Assignable=True}
+            Row12:{Code=TREASURER, Description=Treasurer (Esp Churches), Deletable=False, Assignable=True}
+            Row13:{Code=UNKNOWN, Description=Unknown, Deletable=False, Assignable=True, DateCreated=0200-03-16}
+        PPartnerLocationTable:
+        PPartnerAttributeTypeTable:
+        PPartnerAttributeTable:
+        UUnitTypeTable:
+        PUnitTable:
+        UmUnitStructureTable:
+        PFamilyTable:
+        PtMaritalStatusTable:
+            Row1:{Code=C, Description="Child (under 18 years, with family)", AssignableFlag=True, DeletableFlag=False}
+            Row2:{Code=D, Description=Divorced, AssignableFlag=True, DeletableFlag=False}
+            Row3:{Code=E, Description=Engaged to be married, AssignableFlag=True, DeletableFlag=False}
+            Row4:{Code=H, Description=Serious Relationship, AssignableFlag=True, DeletableFlag=False}
+            Row5:{Code=M, Description=Married, AssignableFlag=True, DeletableFlag=False}
+            Row6:{Code=N, Description=Never married (single), AssignableFlag=True, DeletableFlag=False}
+            Row7:{Code=R, Description=Remarried, AssignableFlag=True, DeletableFlag=False}
+            Row8:{Code=S, Description=Separated, AssignableFlag=True, DeletableFlag=False}
+            Row9:{Code=U, Description=Unknown, AssignableFlag=True, DeletableFlag=False}
+            Row10:{Code=W, Description=Widowed, AssignableFlag=True, DeletableFlag=False}
+        POccupationTable:
+        PPersonTable:
+        PDenominationTable:
+        PChurchTable:
+        PBusinessTable:
+            Row1:{BusinessCode=AFF, BusinessDescription="Agriculture, forestry and fishing", Deletable=False}
+            Row2:{BusinessCode=BANKING, BusinessDescription="Banking, financial services", Deletable=False}
+            Row3:{BusinessCode=COMMS, BusinessDescription="Communications - telephone, fax, email", Deletable=False}
+            Row4:{BusinessCode=COMPUTER, BusinessDescription=Computer Manufacturer, Deletable=False}
+            Row5:{BusinessCode=CONSTRUC, BusinessDescription=Construction, Deletable=False}
+            Row6:{BusinessCode=EDUCATN, BusinessDescription="Schools, Colleges etc", Deletable=False}
+            Row7:{BusinessCode=ENGINEER, BusinessDescription="Engineering - metal goods, vehicles, electronics etc", Deletable=False}
+            Row8:{BusinessCode=GOV, BusinessDescription=Government (Local or National), Deletable=False}
+            Row9:{BusinessCode=HEALTH, BusinessDescription="Doctors, hospitals", Deletable=False}
+            Row10:{BusinessCode=HOTEL, BusinessDescription="Hotels, guest houses etc", Deletable=False}
+            Row11:{BusinessCode=INSURANC, BusinessDescription=Insurance industry, Deletable=False}
+            Row12:{BusinessCode=MANUFACT, BusinessDescription=Other manufacturing indutries, Deletable=False}
+            Row13:{BusinessCode=MINE, BusinessDescription="Mining, chemicals, metals and minerals", Deletable=False}
+            Row14:{BusinessCode=MISSION, BusinessDescription=Missionary Organisation, Deletable=False}
+            Row15:{BusinessCode=OTHER, BusinessDescription=Anything not otherwise represented, Deletable=False}
+            Row16:{BusinessCode=P-CHURCH, BusinessDescription=Para-Church Organisation, Deletable=False}
+            Row17:{BusinessCode=PRINTER, BusinessDescription=Printer, Deletable=False}
+            Row18:{BusinessCode=RETAIL, BusinessDescription=Shops and stores, Deletable=False}
+            Row19:{BusinessCode=SHIPPER, BusinessDescription=Post Office/Overnight/2-4 Class Shipping, Deletable=False}
+            Row20:{BusinessCode=SUPPLIER, BusinessDescription=Office/Business/Miscellaneous supplies, Deletable=False}
+            Row21:{BusinessCode=TRANSPRT, BusinessDescription="Transport operators, Distribution", Deletable=False}
+            Row22:{BusinessCode=UNKNOWN, BusinessDescription=Unknown, Deletable=False}
+            Row23:{BusinessCode=UTILITY, BusinessDescription=Energy and Water Supply, Deletable=False}
+            Row24:{BusinessCode=WHITEGDS, BusinessDescription=Electrical Consumer products, Deletable=False}
+        POrganisationTable:
+        PBankTable:
+        PVenueTable:
+        PBankingTypeTable:
+        PBankingDetailsTable:
+        PPartnerBankingDetailsTable:
+        PBankingDetailsUsageTypeTable:
+        PBankingDetailsUsageTable:
+        PTypeTable:
+            Row7:{TypeCode=APPLIED, TypeDescription=An Applicant, ValidType=True, TypeDeletable=False}
+            Row8:{TypeCode=APPLIED-NN, TypeDescription=A non-national Applicant, ValidType=True, TypeDeletable=False}
+            Row9:{TypeCode=ASSOC, TypeDescription=Associate Member of our organisation, ValidType=True, TypeDeletable=False}
+            Row11:{TypeCode=BANK, TypeDescription=Bank, ValidType=True, TypeDeletable=False}
+            Row12:{TypeCode=BOARD, TypeDescription=Board member, ValidType=True, TypeDeletable=False}
+            Row13:{TypeCode=BOOKSHOP, TypeDescription=Bookshop or place selling books, ValidType=True, TypeDeletable=False}
+            Row15:{TypeCode=CANCEL-APL, TypeDescription=An Applicant who cancelled, ValidType=True, TypeDeletable=False}
+            Row16:{TypeCode=CHARITY, TypeDescription=Charity (non profit organization), ValidType=True, TypeDeletable=False}
+            Row17:{TypeCode=CHURCH, TypeDescription=Church, ValidType=True, TypeDeletable=False}
+            Row18:{TypeCode=CHURCH-STAFF, TypeDescription=Church of a Worker, ValidType=True, TypeDeletable=False}
+            Row19:{TypeCode=CORP, TypeDescription="Company, Corporation or Business", ValidType=True, TypeDeletable=False}
+            Row20:{TypeCode=COSTCENTRE, TypeDescription=Partner is linked to a cost centre, ValidType=True, TypeDeletable=False}
+            Row21:{TypeCode=CREDITOR, TypeDescription=Creditor in the Petra Accounts Subsystem, ValidType=True, TypeDeletable=False}
+            Row22:{TypeCode=DEBTOR, TypeDescription=Debtor in the Petra Accounts Subsystem, ValidType=True, TypeDeletable=False}
+            Row23:{TypeCode=ESTATE, TypeDescription=Estate of a deceased Partner, ValidType=True, TypeDeletable=False}
+            Row24:{TypeCode=EX-POTENT, TypeDescription=Potential applicant but did not apply, ValidType=True, TypeDeletable=False}
+            Row25:{TypeCode=EX-STAFF, TypeDescription=Formerly a long-term member of us, ValidType=True, TypeDeletable=False}
+            Row26:{TypeCode=EX-STAFF-NN, TypeDescription="A non-national, previously a long-termer with us", ValidType=True, TypeDeletable=False}
+            Row27:{TypeCode=EX-STAFF-ST, TypeDescription=Attended a short term campaign, ValidType=True, TypeDeletable=False}
+            Row28:{TypeCode=EX-STAFF-YP, TypeDescription=Formerly a year programme member of us, ValidType=True, TypeDeletable=False}
+            Row29:{TypeCode=EX-VOLUNT, TypeDescription=Previously a volunteer worker or helper, ValidType=True, TypeDeletable=False}
+            Row30:{TypeCode=F/L, TypeDescription=Field Leader, ValidType=True, TypeDeletable=False}
+            Row31:{TypeCode=FIELD, TypeDescription=A Field within our organisation, ValidType=True, TypeDeletable=False}
+            Row32:{TypeCode=FOUNDATION, TypeDescription=A Foundation, ValidType=True, TypeDeletable=False}
+            Row33:{TypeCode=FUND, TypeDescription=Fund, ValidType=True, TypeDeletable=False}
+            Row34:{TypeCode=GROUP, TypeDescription=Group of people, ValidType=True, TypeDeletable=False}
+            Row35:{TypeCode=HOST, TypeDescription="This partner hosts/mc's meetings, conventions, etc.", ValidType=True, TypeDeletable=False}
+            Row36:{TypeCode=LEDGER, TypeDescription=General Ledger Number, ValidType=True, TypeDeletable=False}
+            Row37:{TypeCode=NEAR-RELAT, TypeDescription=Nearest Relative (of a Worker), ValidType=True, TypeDeletable=False}
+            Row38:{TypeCode=OFFICE, TypeDescription="One of our offices, teams or similar", ValidType=True, TypeDeletable=False}
+            Row39:{TypeCode=ORG, TypeDescription=Unclassified Organisation, ValidType=True, TypeDeletable=False}
+            Row40:{TypeCode=PARENT, TypeDescription=Parent of a Worker, ValidType=True, TypeDeletable=False}
+            Row41:{TypeCode=PASTOR, TypeDescription=The Pastor of a Church, ValidType=True, TypeDeletable=False}
+            Row42:{TypeCode=POTENT, TypeDescription=Potential Applicant, ValidType=True, TypeDeletable=False}
+            Row43:{TypeCode=REFERENCE, TypeDescription=A Reference for another partner, ValidType=True, TypeDeletable=False}
+            Row44:{TypeCode=RE-JOINER, TypeDescription=An Ex-Worker rejoining us, ValidType=True, TypeDeletable=False}
+            Row45:{TypeCode=SCH-BIBLE, TypeDescription=Bible School/College, ValidType=True, TypeDeletable=False}
+            Row46:{TypeCode=SCHOOL, TypeDescription=A School, ValidType=True, TypeDeletable=False}
+            Row47:{TypeCode=STAFF, TypeDescription=Member of one of our Fields or Offices, ValidType=True, TypeDeletable=False}
+            Row48:{TypeCode=STAFF-GS, TypeDescription=Worker on Technical Service, ValidType=True, TypeDeletable=False}
+            Row49:{TypeCode=STAFF-KID, TypeDescription=Child of a worker, ValidType=True, TypeDeletable=False}
+            Row50:{TypeCode=STAFF-LT, TypeDescription=Long Termer, ValidType=True, TypeDeletable=False}
+            Row51:{TypeCode=STAFF-NN, TypeDescription=A Non National Worker, ValidType=True, TypeDeletable=False}
+            Row52:{TypeCode=STAFF-PROV, TypeDescription=Provisional Worker, ValidType=True, TypeDeletable=False}
+            Row53:{TypeCode=STAFF-ST, TypeDescription=Worker on shortterm program, ValidType=True, TypeDeletable=False}
+            Row54:{TypeCode=STAFF-YP, TypeDescription=Worker on the year program, ValidType=True, TypeDeletable=False}
+            Row55:{TypeCode=SUPPLIER, TypeDescription=Supplier of Goods or Services (used by AP), ValidType=True, TypeDeletable=False}
+            Row56:{TypeCode=SUPPORTER, TypeDescription=Supports our work, ValidType=True, TypeDeletable=False}
+            Row58:{TypeCode=TRUST, TypeDescription=A Trustee, ValidType=True, TypeDeletable=False}
+            Row59:{TypeCode=VENDOR, TypeDescription=Supplier of Goods or services to us, ValidType=True, TypeDeletable=False}
+            Row60:{TypeCode=VOLUNTEER, TypeDescription=Short term or untrained worker or helper., ValidType=True, TypeDeletable=False}
+        PTypeCategoryTable:
+        PPartnerTypeTable:
+        PRelationCategoryTable:
+        PRelationTable:
+        PPartnerRelationshipTable:
+        PReportsTable:
+        PPartnerLedgerTable:
+        PDataLabelTable:
+        PDataLabelUseTable:
+        PDataLabelValuePartnerTable:
+        PDataLabelLookupCategoryTable:
+        PDataLabelLookupTable:
+        PTaxTable:
+        PInterestCategoryTable:
+        PInterestTable:
+        PPartnerInterestTable:
+        PPartnerMergeTable:
+        PReminderCategoryTable:
+        PPartnerReminderTable:
+        PPartnerFieldOfServiceTable:
+        PPartnerShortCodeTable:
+        PProcessTable:
+        PStateTable:
+        PActionTable:
+        PPartnerStateTable:
+        PPartnerActionTable:
+        PFirstContactTable:
+        PPartnerSetTable:
+        PPartnerSetPartnerTable:
+        PPartnerCommentTable:
+        PProposalSubmissionTypeTable:
+        PFoundationTable:
+        PFoundationProposalStatusTable:
+        PFoundationProposalTable:
+        PFoundationProposalDetailTable:
+        PFoundationDeadlineTable:
+        PFileInfoTable:
+        PPartnerFileTable:
+        PmPersonFileTable:
+        PPartnerContactFileTable:
+    MPartnerMailroom:
+        MExtractMasterTable:
+        MExtractTable:
+        MExtractTypeTable:
+        MExtractParameterTable:
+        PMailingTable:
+        PAddressLayoutCodeTable:
+        PAddressLayoutTable:
+        PAddressElementTable:
+        PAddressLineTable:
+        PAddresseeTitleOverrideTable:
+        PCustomisedGreetingTable:
+        PFormalityTable:
+        PFormLetterBodyTable:
+        PFormLetterDesignTable:
+        PFormLetterInsertTable:
+        PLabelTable:
+        PMergeFormTable:
+        PMergeFieldTable:
+        PPostcodeRangeTable:
+        PPostcodeRegionTable:
+        PPublicationTable:
+            Row1:{PublicationCode=ANNUALREPORT, NumberOfIssues=0, NumberOfReminders=0, PublicationDescription=We send this annual report to all supporters, ValidPublication=False, FrequencyCode=Annual}
+            Row2:{PublicationCode=NEWSUPDATES, NumberOfIssues=0, NumberOfReminders=0, PublicationDescription=Send out updates via letter or email, ValidPublication=False, FrequencyCode=Quarterly}
+        PPublicationCostTable:
+        PReasonSubscriptionGivenTable:
+            Row1:{Code=DONATION, Description=Partner donated money to us.}
+            Row2:{Code=FREE, Description=Free Subscription}
+            Row3:{Code=PAID, Description=Subscription fee paid}
+        PReasonSubscriptionCancelledTable:
+            Row1:{Code=BAD-ADDR, Description=The mailing was returned due to partner no longer being at that address}
+            Row2:{Code=COMPLETE, Description=The subscription has ended}
+            Row3:{Code=DIED, Description=The Partner has died}
+            Row4:{Code=DISCONT, Description=Publication no longer produced}
+            Row5:{Code=OFFICE, Description=The Office has discontinued the subscription}
+            Row6:{Code=OTHER, Description=Unknown}
+            Row7:{Code=REQUEST, Description=Partner requested to discontinue subscription.}
+        PSubscriptionTable:
+        PContactAttributeTable:
+        PContactAttributeDetailTable:
+        PMethodOfContactTable:
+        PPartnerContactTable:
+        PPartnerContactAttributeTable:
+    MFinanceAccount:
+        AEpAccountTable:
+        AEpStatementTable:
+        AEpMatchTable:
+        AEpTransactionTable:
+        ASubSystemTable:
+            Row1:{SubSystemCode=AP, SubSystemName=Accounts Payable, SetupSubSystemProcess=, SubSystemToCall=}
+            Row2:{SubSystemCode=GL, SubSystemName=General Ledger, SetupSubSystemProcess=, SubSystemToCall=}
+            Row3:{SubSystemCode=GR, SubSystemName=Gift Receipting, SetupSubSystemProcess=, SubSystemToCall=}
+        ALedgerTable:
+        ALedgerInitFlagTable:
+        ABudgetTypeTable:
+            Row1:{BudgetTypeCode=Adhoc, BudgetTypeDescription=Adhoc, BudgetProcessToCall=}
+            Row2:{BudgetTypeCode=Inf. n, BudgetTypeDescription=Inflate after n periods, BudgetProcessToCall=}
+            Row3:{BudgetTypeCode=Inf.Base, BudgetTypeDescription=Inflate off base, BudgetProcessToCall=}
+            Row4:{BudgetTypeCode=Same, BudgetTypeDescription=Same each period, BudgetProcessToCall=}
+            Row5:{BudgetTypeCode=Split, BudgetTypeDescription=Split total, BudgetProcessToCall=}
+        AAccountTable:
+        AAccountPropertyCodeTable:
+            Row1:{PropertyCode=Bank Account, DateCreated=2009-06-15}
+            Row2:{PropertyCode=CARRYFORWARDCC, Description="Used to specify that a particular equity account should be used to carry forward the specified Cost Centre. The property value associated with it includes both the Cost Centre and also some text (SAMECC or STANDARDCC) to indicate whether the equity should be carried forward into the same CC or rolled up to the standard CC. (eg. 10TEAPIC,SAMECC)", DateCreated=2009-06-15}
+        AAccountPropertyTable:
+        AAccountHierarchyTable:
+        AAccountHierarchyDetailTable:
+        ACostCentreTypesTable:
+        ACostCentreTable:
+        AValidLedgerNumberTable:
+        ABudgetRevisionTable:
+        ABudgetTable:
+        ABudgetPeriodTable:
+        AAccountingPeriodTable:
+        AAccountingSystemParameterTable:
+        AAnalysisStoreTableTable:
+        AAnalysisTypeTable:
+        AAnalysisAttributeTable:
+        ACorporateExchangeRateTable:
+        ADailyExchangeRateTable:
+        PEmailTable:
+        AEmailDestinationTable:
+        AFeesPayableTable:
+        AFeesReceivableTable:
+        AFormTable:
+        AFormElementTypeTable:
+        AFormElementTable:
+        AFreeformAnalysisTable:
+        AGeneralLedgerMasterTable:
+        AGeneralLedgerMasterPeriodTable:
+        AIchStewardshipTable:
+        AMethodOfGivingTable:
+        ATransactionTypeTable:
+        APreviousYearBatchTable:
+        APreviousYearJournalTable:
+        APreviousYearTransactionTable:
+        APrevYearTransAnalAttribTable:
+        APrevYearCorpExRateTable:
+        AThisYearOldBatchTable:
+        AThisYearOldJournalTable:
+        AThisYearOldTransactionTable:
+        AThisyearoldTransAnalAttribTable:
+        ARecurringBatchTable:
+        ARecurringJournalTable:
+        ARecurringTransactionTable:
+        ARecurringTransAnalAttribTable:
+        ABatchTable:
+        AJournalTable:
+        ATransactionTable:
+        ATransAnalAttribTable:
+        ASuspenseAccountTable:
+        ASpecialTransTypeTable:
+        ASystemInterfaceTable:
+        ACurrencyLanguageTable:
+        AKeyFocusAreaTable:
+    MFinanceGift:
+        AMethodOfPaymentTable:
+        AMotivationGroupTable:
+        AMotivationDetailTable:
+        AMotivationDetailFeeTable:
+        AProcessedFeeTable:
+        ARecurringGiftBatchTable:
+        ARecurringGiftTable:
+        ARecurringGiftDetailTable:
+        AGiftBatchTable:
+        AGiftTable:
+        AGiftDetailTable:
+    MFinanceAP:
+        AApSupplierTable:
+        AApDocumentTable:
+        ACrdtNoteInvoiceLinkTable:
+        AApDocumentDetailTable:
+        AApPaymentTable:
+        AApDocumentPaymentTable:
+        AEpPaymentTable:
+        AEpDocumentPaymentTable:
+        AApAnalAttribTable:
+    MFinanceAR:
+        ATaxTypeTable:
+        ATaxTableTable:
+        AArCategoryTable:
+        AArArticleTable:
+        AArArticlePriceTable:
+        AArDiscountTable:
+        AArDiscountPerCategoryTable:
+        AArDefaultDiscountTable:
+        AArInvoiceTable:
+        AArInvoiceDetailTable:
+        AArInvoiceDiscountTable:
+        AArInvoiceDetailDiscountTable:
+    MPersonnelPersonnel:
+        PtApplicantStatusTable:
+        PtApplicationTypeTable:
+        PtContactTable:
+        PmGeneralApplicationTable:
+        PmApplicationStatusHistoryTable:
+        PtSpecialApplicantTable:
+        PtLeadershipRatingTable:
+        PtArrivalPointTable:
+        PtXyzTbdPreferenceLevelTable:
+        PtCongressCodeTable:
+        PtPartyTypeTable:
+        PtTravelTypeTable:
+        PmShortTermApplicationTable:
+        PmYearProgramApplicationTable:
+        PtAppFormTypesTable:
+        PmApplicationFormsTable:
+        PmDocumentCategoryTable:
+        PmDocumentTypeTable:
+        PmDocumentTable:
+        PtPassportTypeTable:
+        PmPassportDetailsTable:
+        PmLongTermSupportFiguresTable:
+        PtLanguageLevelTable:
+        PmPersonLanguageTable:
+        PtValuableItemTable:
+        PmOwnershipTable:
+        PmPastExperienceTable:
+        PtAbilityAreaTable:
+        PtAbilityLevelTable:
+        PmPersonAbilityTable:
+        PtQualificationAreaTable:
+        PtQualificationLevelTable:
+        PmPersonQualificationTable:
+        PtSkillCategoryTable:
+        PtSkillLevelTable:
+        PmPersonSkillTable:
+        PmFormalEducationTable:
+        PtDriverStatusTable:
+        PtPersonalDataLabelsTable:
+        PmPersonalDataTable:
+        PtOfficeSpecificDataLabelsTable:
+        PmPersOfficeSpecificDataTable:
+        PDataLabelValueApplicationTable:
+        PmInterviewTable:
+        PmPersonEvaluationTable:
+        PtVisionAreaTable:
+        PtVisionLevelTable:
+        PmPersonVisionTable:
+        PmSpecialNeedTable:
+        PmStaffDataTable:
+        PmCommitmentStatusTable:
+        PmPersonCommitmentStatusTable:
+        PtReportsTable:
+        PmJobAssignmentTable:
+        PmDocumentFileTable:
+        PmApplicationFileTable:
+        PmApplicationFormsFileTable:
+    MPersonnelUnits:
+        PtPositionTable:
+        UmJobTable:
+        UmJobRequirementTable:
+        UmJobLanguageTable:
+        UmJobQualificationTable:
+        UmJobVisionTable:
+        PtAssignmentTypeTable:
+        PtLeavingCodeTable:
+        UmUnitAbilityTable:
+        UmUnitLanguageTable:
+        UmUnitVisionTable:
+        UmUnitCostTable:
+        UmUnitEvaluationTable:
+    MConference:
+        PcConferenceTable:
+        PcCostTypeTable:
+        PcConferenceOptionTypeTable:
+        PcConferenceOptionTable:
+        PcDiscountCriteriaTable:
+        PcDiscountTable:
+        PcAttendeeTable:
+        PcConferenceCostTable:
+        PcExtraCostTable:
+        PcEarlyLateTable:
+        PcGroupTable:
+        PcSupplementTable:
+        PcConferenceVenueTable:
+    MHospitality:
+        PcBuildingTable:
+        PcRoomTable:
+        PcRoomAllocTable:
+        PcRoomAttributeTypeTable:
+        PcRoomAttributeTable:
+        PhRoomBookingTable:
+        PhBookingTable:
+    Sequences:
+        SeqApplication:{value=1}
+        SeqContact:{value=1}
+        SeqExtractNumber:{value=1}
+        SeqLocationNumber:{value=1}
+        SeqPeEvaluationNumber:{value=1}
+        SeqReportNumber:{value=1}
+        SeqGeneralLedgerMaster:{value=1}
+        SeqBudget:{value=1}
+        SeqBankDetails:{value=1}
+        SeqDocument:{value=1}
+        SeqPastExperience:{value=1}
+        SeqStaffData:{value=1}
+        SeqJob:{value=1}
+        SeqJobAssignment:{value=1}
+        SeqDataLabel:{value=1}
+        SeqFoundationProposal:{value=1}
+        SeqProposalDetail:{value=1}
+        SeqFormLetterInsert:{value=1}
+        SeqModification1:{value=690}
+        SeqModification2:{value=1}
+        SeqWorkflow:{value=1}
+        SeqFileInfo:{value=1}
+        SeqPersonSkill:{value=1}
+        SeqBooking:{value=1}
+        SeqRoomAlloc:{value=1}
+        SeqArInvoice:{value=1}
+        SeqMatchNumber:{value=36}
+        SeqStatementNumber:{value=2}

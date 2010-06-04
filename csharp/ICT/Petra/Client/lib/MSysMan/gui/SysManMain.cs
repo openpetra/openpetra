@@ -84,71 +84,30 @@ namespace Ict.Petra.Client.MSysMan.Gui
         }
 
         /// <summary>
-        /// change the password of a user
+        /// change the password of the current user
         /// </summary>
         public static void SetUserPassword(IntPtr AParentFormHandle)
         {
+            string username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
+
+            // TODO: use old password as well, to make sure the password is changed by its owner
+            // TODO: enter new password twice to be sure it is correct
             PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Change the password of a user"),
-                Catalog.GetString("Please enter the user name:"),
-                "", false);
+                Catalog.GetString("Change your password"),
+                Catalog.GetString("Please enter the new password:"),
+                "", true);
 
             if (input.ShowDialog() == DialogResult.OK)
             {
-                string username = input.GetAnswer();
-                input = new PetraInputBox(
-                    Catalog.GetString("Change the password of a user"),
-                    Catalog.GetString("Please enter the new password:"),
-                    "", true);
+                string password = input.GetAnswer();
 
-                if (input.ShowDialog() == DialogResult.OK)
+                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
                 {
-                    string password = input.GetAnswer();
-
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
-                    }
-                    else
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
-                    }
+                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
                 }
-            }
-        }
-
-        /// <summary>
-        /// create a user. this is a temporary function. should be replaced by a fully functional user and permission management screen.
-        /// assigns permissions to all modules at the moment.
-        /// </summary>
-        public static void CreateUser(IntPtr AParentFormHandle)
-        {
-            PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Create a new user"),
-                Catalog.GetString("Please enter the user name:"),
-                "", false);
-
-            if (input.ShowDialog() == DialogResult.OK)
-            {
-                string username = input.GetAnswer();
-                input = new PetraInputBox(
-                    Catalog.GetString("Set the password of a user"),
-                    Catalog.GetString("Please enter the new password:"),
-                    "", true);
-
-                if (input.ShowDialog() == DialogResult.OK)
+                else
                 {
-                    string password = input.GetAnswer();
-
-                    // TODO: select module permissions
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.CreateUser(username, password, "TODO: ALLMODULES"))
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("User {0} has been created successfully."), username));
-                    }
-                    else
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem creating the user {0}"), username));
-                    }
+                    MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
                 }
             }
         }

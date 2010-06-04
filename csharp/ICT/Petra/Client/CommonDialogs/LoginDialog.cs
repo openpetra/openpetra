@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.CommonDialogs
         private static bool FPreviouslyShown = false;
 
         /// <summary>todoComment</summary>
-        public const String PETRA_LOGIN_FORMTITLE = "Petra Login";
+        public const String PETRA_LOGIN_FORMTITLE = "OpenPetra Login";
 
         /// <summary>todoComment</summary>
         public const String StrConnectionNotYetEst = "Please try again, \r\nthe connection has not" + " been established yet";

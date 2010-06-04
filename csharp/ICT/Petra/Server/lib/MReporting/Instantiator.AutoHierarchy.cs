@@ -1,5 +1,5 @@
 // Auto generated with nant generateGlue
-// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 //
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -44,11 +44,11 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
 using Ict.Petra.Server.MReporting.Instantiator.LogicConnectors;
 using Ict.Petra.Server.MReporting.LogicConnectors;
-
 
 namespace Ict.Petra.Server.MReporting.Instantiator
 {
@@ -74,7 +74,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
 
 #endif
         }
-
 
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMReporting
@@ -116,7 +115,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
                 RandomString = RandomString + rndbytes[rndbytespos].ToString();
             }
 
-
             RemotingTime = DateTime.Now;
             RemotedObject = new TMReporting();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
@@ -135,9 +133,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             return FRemotingURL;
         }
 
-
     }
-
 
     /// <summary>
     /// REMOTEABLE CLASS. MReporting Namespace (highest level).
@@ -162,7 +158,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -205,16 +200,14 @@ namespace Ict.Petra.Server.MReporting.Instantiator
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMReporting object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'LogicConnectors' subnamespace contains further subnamespaces.</summary>
         public ILogicConnectorsNamespace LogicConnectors
         {
@@ -239,19 +232,15 @@ namespace Ict.Petra.Server.MReporting.Instantiator
                     FLogicConnectorsSubNamespace = new TLogicConnectorsNamespace();
                 }
 
-
                 return FLogicConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
 namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TLogicConnectorsNamespace : MarshalByRefObject, ILogicConnectorsNamespace
     {
@@ -271,7 +260,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -314,21 +302,17 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TLogicConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         /// generated method from interface
         public IReportGeneratorLogicConnector ReportGenerator()
         {
             return new TReportGeneratorLogicConnector();
         }
-
     }
 }
 

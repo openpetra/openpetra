@@ -45,6 +45,28 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
     /// </summary>
     public class TMaintenanceWebConnector
     {
+        private static IUserAuthentication FUserAuthenticationClass = null;
+
+        private static IUserAuthentication LoadAuthAssembly(string AUserAuthenticationMethod)
+        {
+            if (FUserAuthenticationClass == null)
+            {
+                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
+                // the dll has to be in the normal application directory
+                string Namespace = AUserAuthenticationMethod;
+                string NameOfDll = Namespace + ".dll";
+                string NameOfClass = Namespace + ".TUserAuthentication";
+
+                // dynamic loading of dll
+                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
+                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
+
+                FUserAuthenticationClass = (IUserAuthentication)Activator.CreateInstance(CustomClass);
+            }
+
+            return FUserAuthenticationClass;
+        }
+
         /// <summary>
         /// set the password of an existing user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll
@@ -74,17 +96,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
-                // the dll has to be in the normal application directory
-                string Namespace = UserAuthenticationMethod;
-                string NameOfDll = Namespace + ".dll";
-                string NameOfClass = Namespace + ".TUserAuthentication";
-
-                // dynamic loading of dll
-                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
-
-                IUserAuthentication auth = (IUserAuthentication)Activator.CreateInstance(CustomClass);
+                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
 
                 return auth.SetPassword(AUsername, APassword);
             }
@@ -118,17 +130,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
-                // the dll has to be in the normal application directory
-                string Namespace = UserAuthenticationMethod;
-                string NameOfDll = Namespace + ".dll";
-                string NameOfClass = Namespace + ".TUserAuthentication";
-
-                // dynamic loading of dll
-                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
-
-                IUserAuthentication auth = (IUserAuthentication)Activator.CreateInstance(CustomClass);
+                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
 
                 if (!auth.CreateUser(AUsername, APassword))
                 {
@@ -141,65 +143,75 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 TVerificationResultCollection VerificationResult;
 
-                if (!SUserAccess.SubmitChanges(userTable, Transaction, out VerificationResult))
+                try
                 {
+                    if (!SUserAccess.SubmitChanges(userTable, Transaction, out VerificationResult))
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+
+                    // TODO: set permissions. for the moment, create all permissions
+                    List <string>modules = new List <string>();
+                    modules.Add("PTNRUSER");
+                    modules.Add("FINANCE-1");
+                    modules.Add("SYSMAN");
+
+                    ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
+
+                    foreach (ALedgerRow ledger in theLedgers.Rows)
+                    {
+                        modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
+                    }
+
+                    SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
+
+                    foreach (string module in modules)
+                    {
+                        SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
+                        moduleAccessPermissionRow.UserId = newUser.UserId;
+                        moduleAccessPermissionRow.ModuleId = module;
+                        moduleAccessPermissionRow.CanAccess = true;
+                        moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
+                    }
+
+                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out VerificationResult))
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+
+                    // TODO: table permissions should be set by the module list
+                    string[] tables = new string[] {
+                        "p_bank", "p_church", "p_family", "p_location",
+                        "p_organisation", "p_partner", "p_partner_location",
+                        "p_partner_type", "p_person", "p_unit", "p_venue"
+                    };
+                    SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
+
+                    foreach (string table in tables)
+                    {
+                        SUserTableAccessPermissionRow tableAccessPermissionRow = tableAccessPermissionTable.NewRowTyped();
+                        tableAccessPermissionRow.UserId = newUser.UserId;
+                        tableAccessPermissionRow.TableName = table;
+                        tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
+                    }
+
+                    if (!SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction, out VerificationResult))
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     return false;
                 }
-
-                // TODO: set permissions. for the moment, create all permissions
-                List <string>modules = new List <string>();
-                modules.Add("PTNRUSER");
-                modules.Add("FINANCE-1");
-                modules.Add("SYSMAN");
-
-                ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
-
-                foreach (ALedgerRow ledger in theLedgers.Rows)
-                {
-                    modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
-                }
-
-                SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
-
-                foreach (string module in modules)
-                {
-                    SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
-                    moduleAccessPermissionRow.UserId = newUser.UserId;
-                    moduleAccessPermissionRow.ModuleId = module;
-                    moduleAccessPermissionRow.CanAccess = true;
-                    moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-                }
-
-                if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out VerificationResult))
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-
-                // TODO: table permissions should be set by the module list
-                string[] tables = new string[] {
-                    "p_bank", "p_church", "p_family", "p_location",
-                    "p_organisation", "p_partner", "p_partner_location",
-                    "p_partner_type", "p_person", "p_unit", "p_venue"
-                };
-                SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
-
-                foreach (string table in tables)
-                {
-                    SUserTableAccessPermissionRow tableAccessPermissionRow = tableAccessPermissionTable.NewRowTyped();
-                    tableAccessPermissionRow.UserId = newUser.UserId;
-                    tableAccessPermissionRow.TableName = table;
-                    tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
-                }
-
-                if (!SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction, out VerificationResult))
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-
-                DBAccess.GDBAccessObj.CommitTransaction();
 
                 return true;
             }
@@ -208,12 +220,112 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// check the implementation of the authentication mechanism and which functionality is implemented for OpenPetra
+        /// </summary>
+        /// <returns></returns>
+        public static bool GetAuthenticationFunctionality(out bool ACanCreateUser, out bool ACanChangePassword, out bool ACanChangePermissions)
+        {
+            ACanCreateUser = true;
+            ACanChangePassword = true;
+            ACanChangePermissions = true;
+
+            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser");
+
+            if (UserAuthenticationMethod != "OpenPetraDBSUser")
+            {
+                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+
+                auth.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// load all users in the database and their permissions
+        /// </summary>
+        /// <returns></returns>
+        public static MaintainUsersTDS LoadUsersAndModulePermissions()
+        {
+            MaintainUsersTDS ReturnValue = null;
+
+            Boolean NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                ReturnValue = new MaintainUsersTDS();
+                SUserAccess.LoadAll(ReturnValue, Transaction);
+                SUserModuleAccessPermissionAccess.LoadAll(ReturnValue, Transaction);
+                SModuleAccess.LoadAll(ReturnValue, Transaction);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                ReturnValue = null;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            return TSubmitChangesResult.scrError;
+
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+
+            bool CanCreateUser;
+            bool CanChangePassword;
+            bool CanChangePermissions;
+            GetAuthenticationFunctionality(out CanCreateUser, out CanChangePassword, out CanChangePermissions);
+
+            // make sure users are not deleted or added if this is not possible
+            if (!CanCreateUser && (ASubmitDS.SUser != null))
+            {
+                Int32 Counter = 0;
+
+                while (Counter < ASubmitDS.SUser.Rows.Count)
+                {
+                    if (ASubmitDS.SUser.Rows[Counter].RowState != DataRowState.Modified)
+                    {
+                        ASubmitDS.SUser.Rows.RemoveAt(Counter);
+                    }
+                    else
+                    {
+                        Counter++;
+                    }
+                }
+            }
+
+            if (!CanChangePermissions && (ASubmitDS.SUserModuleAccessPermission != null))
+            {
+                ASubmitDS.SUserModuleAccessPermission.Clear();
+            }
+
+            // TODO: if user module access permissions have changed, automatically update the table access permissions?
+
+            try
+            {
+                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS, out AVerificationResult);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                ReturnValue = TSubmitChangesResult.scrError;
+            }
+
+            return ReturnValue;
         }
     }
 }

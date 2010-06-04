@@ -424,7 +424,7 @@ namespace Ict.Petra.Client.CommonForms
          */
         public virtual void TFrmPetra_Closing(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!CanClose())
+            if (!CanClose() || !FTheForm.CanClose())
             {
                 // MessageBox.Show('TFrmPetra.TFrmPetra_Closing: e.Cancel := true');
                 e.Cancel = true;

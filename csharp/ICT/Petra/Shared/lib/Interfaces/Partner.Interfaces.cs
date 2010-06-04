@@ -1,4 +1,4 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 // and the Server c# files (eg. UIConnector implementations)
 // Do not change this file manually.
 //
@@ -49,10 +49,12 @@ using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions;
 using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
@@ -126,6 +128,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Extracts
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IExtractsWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -170,6 +178,16 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors
                               out TVerificationResultCollection AVerificationResults);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Extracts.UIConnectors.TPartnerNewExtractUIConnector)</summary>
         void DeleteExtractAgain();
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IExtractsWebConnectorsNamespace : IInterface
+    {
     }
 
 }
@@ -239,6 +257,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IMailingWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -268,6 +292,33 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.UIConnectors
     /// <summary>auto generated</summary>
     public interface IMailingUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IMailingWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
+        bool GetBestAddress(Int64 APartnerKey,
+                            out PLocationTable AAddress,
+                            out string ACountryNameLocal,
+                            out string AEmailAddress);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
+        BestAddressTDSLocationTable AddPostalAddress(ref DataTable APartnerTable,
+                                                     DataColumn APartnerKeyColumn,
+                                                     bool AIgnoreForeignAddresses);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
+        bool CreateExtractFromBestAddressTable(String AExtractName,
+                                               String AExtractDescription,
+                                               out Int32 ANewExtractId,
+                                               out Boolean AExtractAlreadyExists,
+                                               out TVerificationResultCollection AVerificationResults,
+                                               BestAddressTDSLocationTable ABestAddressTable,
+                                               bool AIncludeNonValidAddresses);
     }
 
 }
@@ -574,14 +625,32 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
     /// <summary>auto generated</summary>
     public interface IPartnerWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        bool AddContact(List <Int64> APartnerKeys,
+                        DateTime AContactDate,
+                        string AMethodOfContact,
+                        string AComment,
+                        string AModuleID,
+                        string AMailingCode,
+                        out TVerificationResultCollection AVerificationResults);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        PPartnerContactTable FindContacts(string AContactor,
+                                          DateTime? AContactDate,
+                                          string ACommentContains,
+                                          string AMethodOfContact,
+                                          string AModuleID,
+                                          string AMailingCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
+        bool DeleteContacts(PPartnerContactTable APartnerContacts,
+                            out TVerificationResultCollection AVerificationResults);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
                                          bool AWithAddressDetails,
                                          bool AWithSubscriptions,
                                          bool AWithRelationships);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
         bool SavePartner(PartnerEditTDS AMainDS,
                          out TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>

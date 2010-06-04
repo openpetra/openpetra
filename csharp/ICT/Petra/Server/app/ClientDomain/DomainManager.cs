@@ -413,6 +413,22 @@ namespace Ict.Petra.Server.App.ClientDomain
             UserInfo.GUserInfo = AUserInfo;
             DomainManager.GSystemDefaultsCache = ASystemDefaultsCacheRef;
             DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
+
+            if (DomainManager.GSiteKey <= 0)
+            {
+                // this is for connecting to legacy database format
+                // we cannot add SiteKey to SystemDefaults, because Petra 2.3 would have a conflict since it adds it on startup already to the in-memory defaults, but not to the database
+                // see also https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=114
+                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default("SiteKeyPetra2");
+            }
+
+            if (DomainManager.GSiteKey <= 0)
+            {
+                // this can happen either with a legacy Petra 2.x database or with a fresh OpenPetra database without any ledger yet
+                Console.WriteLine("there is no SiteKey or SiteKeyPetra2 record in s_system_defaults");
+                DomainManager.GSiteKey = 99000000;
+            }
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 4)
             {

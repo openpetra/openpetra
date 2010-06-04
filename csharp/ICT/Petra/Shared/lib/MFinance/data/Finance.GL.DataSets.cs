@@ -698,13 +698,12 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private AAccountingSystemParameterTable TableAAccountingSystemParameter;
         private AAccountingPeriodTable TableAAccountingPeriod;
         private ASystemInterfaceTable TableASystemInterface;
-        private ATransactionTypeTable TableATransactionType;
-        private AValidLedgerNumberTable TableAValidLedgerNumber;
         private GLSetupTDSAAccountTable TableAAccount;
         private AAccountHierarchyTable TableAAccountHierarchy;
         private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
         private AAccountPropertyTable TableAAccountProperty;
         private AAccountPropertyCodeTable TableAAccountPropertyCode;
+        private ATransactionTypeTable TableATransactionType;
         private AAnalysisAttributeTable TableAAnalysisAttribute;
         private AAnalysisStoreTableTable TableAAnalysisStoreTable;
         private AAnalysisTypeTable TableAAnalysisType;
@@ -715,6 +714,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private ABudgetTypeTable TableABudgetType;
         private ACostCentreTypesTable TableACostCentreTypes;
         private ACostCentreTable TableACostCentre;
+        private AValidLedgerNumberTable TableAValidLedgerNumber;
         private AGeneralLedgerMasterTable TableAGeneralLedgerMaster;
         private AGeneralLedgerMasterPeriodTable TableAGeneralLedgerMasterPeriod;
         private AMotivationGroupTable TableAMotivationGroup;
@@ -800,24 +800,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
-        public ATransactionTypeTable ATransactionType
-        {
-            get
-            {
-                return this.TableATransactionType;
-            }
-        }
-
-        /// auto generated
-        public AValidLedgerNumberTable AValidLedgerNumber
-        {
-            get
-            {
-                return this.TableAValidLedgerNumber;
-            }
-        }
-
-        /// auto generated
         public GLSetupTDSAAccountTable AAccount
         {
             get
@@ -859,6 +841,15 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             get
             {
                 return this.TableAAccountPropertyCode;
+            }
+        }
+
+        /// auto generated
+        public ATransactionTypeTable ATransactionType
+        {
+            get
+            {
+                return this.TableATransactionType;
             }
         }
 
@@ -949,6 +940,15 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             get
             {
                 return this.TableACostCentre;
+            }
+        }
+
+        /// auto generated
+        public AValidLedgerNumberTable AValidLedgerNumber
+        {
+            get
+            {
+                return this.TableAValidLedgerNumber;
             }
         }
 
@@ -1066,13 +1066,12 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new AAccountingSystemParameterTable("AAccountingSystemParameter"));
             this.Tables.Add(new AAccountingPeriodTable("AAccountingPeriod"));
             this.Tables.Add(new ASystemInterfaceTable("ASystemInterface"));
-            this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
-            this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
             this.Tables.Add(new GLSetupTDSAAccountTable("AAccount"));
             this.Tables.Add(new AAccountHierarchyTable("AAccountHierarchy"));
             this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
             this.Tables.Add(new AAccountPropertyTable("AAccountProperty"));
             this.Tables.Add(new AAccountPropertyCodeTable("AAccountPropertyCode"));
+            this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
             this.Tables.Add(new AAnalysisAttributeTable("AAnalysisAttribute"));
             this.Tables.Add(new AAnalysisStoreTableTable("AAnalysisStoreTable"));
             this.Tables.Add(new AAnalysisTypeTable("AAnalysisType"));
@@ -1083,6 +1082,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new ABudgetTypeTable("ABudgetType"));
             this.Tables.Add(new ACostCentreTypesTable("ACostCentreTypes"));
             this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
             this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
             this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
             this.Tables.Add(new AMotivationGroupTable("AMotivationGroup"));
@@ -1123,14 +1123,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.Tables.Add(new ASystemInterfaceTable("ASystemInterface"));
             }
-            if ((ds.Tables.IndexOf("ATransactionType") != -1))
-            {
-                this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
-            }
-            if ((ds.Tables.IndexOf("AValidLedgerNumber") != -1))
-            {
-                this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
-            }
             if ((ds.Tables.IndexOf("AAccount") != -1))
             {
                 this.Tables.Add(new GLSetupTDSAAccountTable("AAccount"));
@@ -1150,6 +1142,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((ds.Tables.IndexOf("AAccountPropertyCode") != -1))
             {
                 this.Tables.Add(new AAccountPropertyCodeTable("AAccountPropertyCode"));
+            }
+            if ((ds.Tables.IndexOf("ATransactionType") != -1))
+            {
+                this.Tables.Add(new ATransactionTypeTable("ATransactionType"));
             }
             if ((ds.Tables.IndexOf("AAnalysisAttribute") != -1))
             {
@@ -1190,6 +1186,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((ds.Tables.IndexOf("ACostCentre") != -1))
             {
                 this.Tables.Add(new ACostCentreTable("ACostCentre"));
+            }
+            if ((ds.Tables.IndexOf("AValidLedgerNumber") != -1))
+            {
+                this.Tables.Add(new AValidLedgerNumberTable("AValidLedgerNumber"));
             }
             if ((ds.Tables.IndexOf("AGeneralLedgerMaster") != -1))
             {
@@ -1266,14 +1266,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.TableASystemInterface.InitVars();
             }
-            if ((this.TableATransactionType != null))
-            {
-                this.TableATransactionType.InitVars();
-            }
-            if ((this.TableAValidLedgerNumber != null))
-            {
-                this.TableAValidLedgerNumber.InitVars();
-            }
             if ((this.TableAAccount != null))
             {
                 this.TableAAccount.InitVars();
@@ -1293,6 +1285,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((this.TableAAccountPropertyCode != null))
             {
                 this.TableAAccountPropertyCode.InitVars();
+            }
+            if ((this.TableATransactionType != null))
+            {
+                this.TableATransactionType.InitVars();
             }
             if ((this.TableAAnalysisAttribute != null))
             {
@@ -1333,6 +1329,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((this.TableACostCentre != null))
             {
                 this.TableACostCentre.InitVars();
+            }
+            if ((this.TableAValidLedgerNumber != null))
+            {
+                this.TableAValidLedgerNumber.InitVars();
             }
             if ((this.TableAGeneralLedgerMaster != null))
             {
@@ -1390,13 +1390,12 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableAAccountingSystemParameter = ((AAccountingSystemParameterTable)(this.Tables["AAccountingSystemParameter"]));
             this.TableAAccountingPeriod = ((AAccountingPeriodTable)(this.Tables["AAccountingPeriod"]));
             this.TableASystemInterface = ((ASystemInterfaceTable)(this.Tables["ASystemInterface"]));
-            this.TableATransactionType = ((ATransactionTypeTable)(this.Tables["ATransactionType"]));
-            this.TableAValidLedgerNumber = ((AValidLedgerNumberTable)(this.Tables["AValidLedgerNumber"]));
             this.TableAAccount = ((GLSetupTDSAAccountTable)(this.Tables["AAccount"]));
             this.TableAAccountHierarchy = ((AAccountHierarchyTable)(this.Tables["AAccountHierarchy"]));
             this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
             this.TableAAccountProperty = ((AAccountPropertyTable)(this.Tables["AAccountProperty"]));
             this.TableAAccountPropertyCode = ((AAccountPropertyCodeTable)(this.Tables["AAccountPropertyCode"]));
+            this.TableATransactionType = ((ATransactionTypeTable)(this.Tables["ATransactionType"]));
             this.TableAAnalysisAttribute = ((AAnalysisAttributeTable)(this.Tables["AAnalysisAttribute"]));
             this.TableAAnalysisStoreTable = ((AAnalysisStoreTableTable)(this.Tables["AAnalysisStoreTable"]));
             this.TableAAnalysisType = ((AAnalysisTypeTable)(this.Tables["AAnalysisType"]));
@@ -1407,6 +1406,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableABudgetType = ((ABudgetTypeTable)(this.Tables["ABudgetType"]));
             this.TableACostCentreTypes = ((ACostCentreTypesTable)(this.Tables["ACostCentreTypes"]));
             this.TableACostCentre = ((ACostCentreTable)(this.Tables["ACostCentre"]));
+            this.TableAValidLedgerNumber = ((AValidLedgerNumberTable)(this.Tables["AValidLedgerNumber"]));
             this.TableAGeneralLedgerMaster = ((AGeneralLedgerMasterTable)(this.Tables["AGeneralLedgerMaster"]));
             this.TableAGeneralLedgerMasterPeriod = ((AGeneralLedgerMasterPeriodTable)(this.Tables["AGeneralLedgerMasterPeriod"]));
             this.TableAMotivationGroup = ((AMotivationGroupTable)(this.Tables["AMotivationGroup"]));

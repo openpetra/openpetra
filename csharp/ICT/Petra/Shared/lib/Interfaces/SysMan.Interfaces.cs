@@ -1,4 +1,4 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 // and the Server c# files (eg. UIConnector implementations)
 // Do not change this file manually.
 //
@@ -236,6 +236,12 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         bool CreateUser(string AUsername,
                         string APassword,
                         string AModulePermissions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool GetAuthenticationFunctionality(out bool ACanCreateUser,
+                                            out bool ACanChangePassword,
+                                            out bool ACanChangePermissions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        MaintainUsersTDS LoadUsersAndModulePermissions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
                                        out TVerificationResultCollection AVerificationResult);

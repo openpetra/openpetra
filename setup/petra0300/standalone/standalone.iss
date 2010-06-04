@@ -24,8 +24,8 @@ Name: {app}/db30
 Name: {app}/reports30
 Name: {app}/resources30
 Name: {app}/sql30
-Name: {userappdata}/OpenPetra.org/tmp30
-Name: {userappdata}/OpenPetra.org/reports30
+Name: {app}/demo30
+
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
@@ -58,6 +58,8 @@ Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerC
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
 Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
+Source: patches\*.sql; DestDir: {app}/db30
+Source: ..\..\..\demodata\*.*; DestDir: {app}/demo30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30

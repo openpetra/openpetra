@@ -59,12 +59,9 @@ namespace Ict.Petra.Client.App.PetraClient
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.tbbMenuSwitch.Text = Catalog.GetString("Classic Navigation");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
       this.mniClose.Text = Catalog.GetString("&Close");
       this.mniFile.Text = Catalog.GetString("&File");
-      this.mniMenuSwitch.Text = Catalog.GetString("Classic Navigation");
-      this.mniView.Text = Catalog.GetString("View");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
@@ -130,7 +127,7 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public bool CanClose()
     {
-        return FPetraUtilsObject.CanClose();
+        return FPetraUtilsObject.CanClose() && CanCloseManual();
     }
 
     /// auto generated
@@ -145,11 +142,6 @@ namespace Ict.Petra.Client.App.PetraClient
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actMenuSwitch")
-        {
-            tbbMenuSwitch.Enabled = e.Enabled;
-            mniMenuSwitch.Enabled = e.Enabled;
-        }
         if (e.ActionName == "actClose")
         {
             mniClose.Enabled = e.Enabled;

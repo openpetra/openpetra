@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Collections.Specialized;
+using Mono.Unix;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -733,6 +734,48 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             return "";
+        }
+
+        /// format a formal greeting for the given partner short name. this formal greeting can be used in a letter
+        public static string FormalGreeting(string APartnerShortName)
+        {
+            // TODO: use formal greetings p_formality from database, etc
+            string title = Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlyTitle);
+
+            if ((StringHelper.ContainsI(title, Catalog.GetString("Mr"))
+                 && StringHelper.ContainsI(title, Catalog.GetString("Mrs")))
+                || StringHelper.ContainsI(title, Catalog.GetString("Family")))
+            {
+                return String.Format(Catalog.GetString("Dear {0} {1}{#PLURAL}").Replace("{#PLURAL}", ""),
+                    title,
+                    Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
+            }
+            else if (StringHelper.ContainsI(title, Catalog.GetString("Mr")))
+            {
+                return String.Format(Catalog.GetString("Dear {0} {1}{#MALE}").Replace("{#MALE}", ""),
+                    title,
+                    Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
+            }
+            else if (StringHelper.ContainsI(title, Catalog.GetString("Mrs"))
+                     || StringHelper.ContainsI(title, Catalog.GetString("Ms"))
+                     || StringHelper.ContainsI(title, Catalog.GetString("Miss")))
+            {
+                return String.Format(Catalog.GetString("Dear {0} {1}{#FEMALE}").Replace("{#FEMALE}", ""),
+                    title,
+                    Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
+            }
+            else if (title.Length == 0)
+            {
+                // for organisations
+                return Catalog.GetString("Dear Sir or Madam");
+            }
+            else
+            {
+                // unrecognised title
+                return String.Format(Catalog.GetString("Dear {0}{1}{#NOGENDER}").Replace("{#NOGENDER}", ""),
+                    title,
+                    Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
+            }
         }
     }
 }

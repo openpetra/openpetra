@@ -539,6 +539,7 @@ namespace Ict.Petra.Server.App.Main
                     "");
 
                 string DBPatchVersion = "0.0.9-0";
+                bool oldLegacyDB = false;
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
                 try
@@ -552,6 +553,7 @@ namespace Ict.Petra.Server.App.Main
                 catch (Exception)
                 {
                     // this can happen when connecting to an old Petra 2.x database
+                    oldLegacyDB = true;
                 }
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -562,41 +564,16 @@ namespace Ict.Petra.Server.App.Main
                 {
                     // this is a developer version; database patching has to be done manually
                 }
-                else
+                else if (!oldLegacyDB)
                 {
                     if (dbversion.Compare(serverExeInfo) < 0)
                     {
-                        // dbversion is old
-                        // TODO: try to run a database patch
-                        // for the moment: rename the sqlite database, and use again the clean demo db
+                        // for a proper server, the patchtool should have already updated the database
+
+                        // for standalone versions, we update the database on the fly when starting the server
                         if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
                         {
-                            DBAccess.GDBAccessObj.CloseDBConnection();
-                            string dbfile = TSrvSetting.PostgreSQLServer;
-
-                            if (dbfile.Contains("{userappdata}"))
-                            {
-                                dbfile = dbfile.Replace("{userappdata}",
-                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-                            }
-
-                            int counter = 1;
-
-                            while (File.Exists(dbfile + "." + counter.ToString() + ".bak"))
-                            {
-                                counter++;
-                            }
-
-                            File.Move(dbfile, dbfile + "." + counter.ToString() + ".bak");
-
-                            // now connect again
-                            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                                TSrvSetting.PostgreSQLServer,
-                                TSrvSetting.PostgreSQLServerPort,
-                                TSrvSetting.PostgreSQLDatabaseName,
-                                TSrvSetting.DBUsername,
-                                TSrvSetting.DBPassword,
-                                "");
+                            UpdateSQLiteDatabase(dbversion, serverExeInfo);
                         }
                         else
                         {
@@ -613,6 +590,77 @@ namespace Ict.Petra.Server.App.Main
             }
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+        }
+
+        /// <summary>
+        /// For standalone installations, we update the SQLite database on the fly
+        /// </summary>
+        private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
+        {
+            TAppSettingsManager settings = new TAppSettingsManager();
+            string dbpatchfilePath = Path.GetDirectoryName(settings.GetValue("Server.BaseDatabase"));
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            ADBVersion.FilePrivatePart = 0;
+            AExeVersion.FilePrivatePart = 0;
+
+            try
+            {
+                // run all available patches. for each release there could be a patch file
+                string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
+
+                bool foundUpdate = true;
+
+                // run through all sql files until we have no matching update files anymore
+                while (foundUpdate)
+                {
+                    foundUpdate = false;
+
+                    foreach (string sqlFile in sqlFiles)
+                    {
+                        if (ADBVersion.PatchApplies(sqlFile))
+                        {
+                            foundUpdate = true;
+                            StreamReader sr = new StreamReader(sqlFile);
+
+                            while (!sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine().Trim();
+
+                                if (!line.StartsWith("--"))
+                                {
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
+                                }
+                            }
+
+                            sr.Close();
+                            ADBVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
+                        }
+                    }
+                }
+
+                if (ADBVersion.Compare(AExeVersion) == 0)
+                {
+                    // if patches have been applied successfully, update the database version
+                    string newVersionSql =
+                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
+                            AExeVersion.ToStringDotsHyphen());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception("Cannot connect to old database, there are some missing sql patch files");
+                }
+            }
+            catch (Exception e)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw e;
+            }
         }
 
         /// <summary>

@@ -63,6 +63,33 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Subscription Reasons Ended</summary>
         public const String SUBSCRIPTIONS_REASON_ENDED_BADADDR = "BAD-ADDR";
 
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_EMAIL = "EMAIL";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_FAX = "FAX";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_FORMLETTER = "FLETTER";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_LETTER = "LETTER";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_MAILING = "MAILING";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_PERSON = "PERSON";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_PHONE = "PHONE";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_RESPONSE = "RESPONSE";
+
+        /// <summary>Method of Contact</summary>
+        public const String METHOD_CONTACT_VISIT = "VISIT";
+
         /// <summary>Partner Types (Special Types)</summary>
         public const String PARTNERTYPE_EX_WORKER = "EX-WORKER";
 

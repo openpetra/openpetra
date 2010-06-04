@@ -29,6 +29,7 @@ using System.IO;
 using System.Reflection;
 using NamespaceHierarchy;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 
 namespace GenerateSharedCode
@@ -36,17 +37,17 @@ namespace GenerateSharedCode
 class Program
 {
     private static String sampleCall =
-        "GenerateSharedCode -xmlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.xml -outputdir:..\\..\\..\\Petra\\";
+        "GenerateSharedCode -ymlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.yml -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
 
     public static void Main(string[] args)
     {
         TCmdOpts cmd = new TCmdOpts();
 
-        String XmlFileName, OutputDir;
+        String YmlFileName, OutputDir;
 
-        if (cmd.IsFlagSet("xmlfile"))
+        if (cmd.IsFlagSet("ymlfile"))
         {
-            XmlFileName = cmd.GetOptValue("xmlfile");
+            YmlFileName = cmd.GetOptValue("ymlfile");
         }
         else
         {
@@ -74,24 +75,36 @@ class Program
             return;
         }
 
-        List <TopNamespace>namespaces;
+        List <TNamespace>namespaces;
 
-        // Preferred approach in .NET 2.0:
-        // ->  returns a Strongly Typed List of Type 'TopNamespace'.
-        namespaces = SubNamespace.ReadFromFile(XmlFileName);
-
-        if (namespaces.Count < 1)
+        try
         {
-            Console.WriteLine("problems with reading " + XmlFileName);
+            TYml2Xml ymlParser = new TYml2Xml(YmlFileName);
+            XmlDocument xmlDoc = ymlParser.ParseYML2XML();
+
+            // Preferred approach in .NET 2.0:
+            // ->  returns a Strongly Typed List of Type 'TNamespace'.
+            namespaces = TNamespace.ReadFromFile(xmlDoc);
+
+            if (namespaces.Count < 1)
+            {
+                Console.WriteLine("problems with reading " + YmlFileName);
+                return;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
             return;
         }
 
         try
         {
             CreateInterfaces interfaces = new CreateInterfaces();
-            interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", XmlFileName);
+            interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", YmlFileName);
             CreateInstantiators instantiators = new CreateInstantiators();
-            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", XmlFileName);
+            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", YmlFileName, cmd.GetOptValue("TemplateDir"));
 
             //		  TestAnalysis("U:/delphi.net/ICT.Patch228/Petra/Server/_bin/Debug/Ict.Petra.Server.MPartner.Instantiator.dll",
             //		                "Ict.Petra.Server.MPartner.Instantiator.Partner.TPartnerUIConnectorsNamespace");

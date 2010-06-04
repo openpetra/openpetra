@@ -424,16 +424,16 @@ public class CreateInterfaces : AutoGenerationWriter
     void WriteInterface(String ParentNamespace,
         String ParentInterfaceName,
         string AInterfaceName,
-        TopNamespace tn,
-        SubNamespace sn,
-        List <SubNamespace>children,
+        TNamespace tn,
+        TNamespace sn,
+        List <TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface " + AInterfaceName + " : IInterface");
 
-        foreach (SubNamespace child in children)
+        foreach (TNamespace child in children)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + ParentInterfaceName + child.Name + "Namespace " + child.Name);
@@ -537,9 +537,9 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <param name="ACSFiles"></param>
     private void WriteNamespace(String ParentNamespace,
         String ParentInterfaceName,
-        TopNamespace tn,
-        SubNamespace sn,
-        List <SubNamespace>children,
+        TNamespace tn,
+        TNamespace sn,
+        List <TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
@@ -566,7 +566,7 @@ public class CreateInterfaces : AutoGenerationWriter
 
         EndBlock();
 
-        foreach (SubNamespace child in children)
+        foreach (TNamespace child in children)
         {
             WriteNamespace(ParentNamespace + "." + child.Name,
                 ParentInterfaceName + child.Name,
@@ -581,14 +581,14 @@ public class CreateInterfaces : AutoGenerationWriter
     //other interfaces, e.g. IPartnerUIConnectorsPartnerEdit
     // we don't know the interfaces that are implemented, so need to look for the base classes
     // we need to know all the source files that are part of the UIConnector dll
-    private void WriteNamespaces(TopNamespace tn, SortedList AInterfaceNames, List <CSParser>ACSFiles)
+    private void WriteNamespaces(TNamespace tn, SortedList AInterfaceNames, List <CSParser>ACSFiles)
     {
         // top level namespace
         StartBlock("namespace " + "Ict.Petra.Shared.Interfaces.M" + tn.Name);
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface IM" + tn.Name + "Namespace : IInterface");
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + sn.Name + "Namespace " + sn.Name);
@@ -600,7 +600,7 @@ public class CreateInterfaces : AutoGenerationWriter
         EndBlock();
 
         // parse Instantiator source code
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             string currentNamespaceOneLevelUp = "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name;
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
@@ -613,7 +613,7 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <param name="tn"></param>
     /// <param name="AOutputPath"></param>
     /// <param name="AXmlFileName"></param>
-    private void WriteInterfaces(TopNamespace tn, String AOutputPath, String AXmlFileName)
+    private void WriteInterfaces(TNamespace tn, String AOutputPath, String AXmlFileName)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + tn.Name + ".Interfaces.cs";
 
@@ -643,12 +643,12 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("using Ict.Common.Verification;");
         SynchronizeLines();
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
         }
 
-        foreach (SubNamespace sn in tn.SubNamespaces)
+        foreach (TNamespace sn in tn.Children)
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
@@ -685,9 +685,9 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <param name="ANamespaces"></param>
     /// <param name="AOutputPath"></param>
     /// <param name="AXmlFileName"></param>
-    public void CreateFiles(List <TopNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
+    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
     {
-        foreach (TopNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces)
         {
             // for testing
 //        if (tn.Name != "SysMan") continue;

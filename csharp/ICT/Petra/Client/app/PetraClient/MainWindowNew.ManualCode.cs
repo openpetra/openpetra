@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Specialized;
 using System.Xml;
 using System.Windows.Forms;
 using Mono.Unix;
@@ -196,6 +197,14 @@ namespace Ict.Petra.Client.App.PetraClient
 
             this.Hide();
             TFrmMainWindow.MainForm.Show();
+        }
+
+        private bool CanCloseManual()
+        {
+            StringCollection NonClosableForms;
+            string FirstNonClosableFormKey;
+
+            return TFormsList.GFormsList.CanCloseAll(out NonClosableForms, out FirstNonClosableFormKey);
         }
     }
 }

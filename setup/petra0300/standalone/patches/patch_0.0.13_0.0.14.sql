@@ -1,0 +1,1 @@
+-- updates for standalone SQLite database for OpenPetra

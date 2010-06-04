@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{C68F7EC9-BE30-4F11-869A-2C9E5A758880}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -84,6 +84,9 @@
     <Reference Include="Ict.Petra.Shared.MPartner">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
@@ -104,6 +107,7 @@
     <Compile Include="AP.EditTransaction.cs" />
     <Compile Include="BankImport.cs" />
     <Compile Include="Gift.Adjustment.cs" />
+    <Compile Include="Gift.NewDonorSubscription.cs" />
     <Compile Include="Gift.Receipting.cs" />
     <Compile Include="Gift.Setup.cs" />
     <Compile Include="Gift.Transactions.cs" />

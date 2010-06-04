@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -116,6 +116,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.MPartner.Gui.AssemblyInfo.cs" />
+    <Compile Include="PartnerContacts.cs" />
+    <Compile Include="PartnerContacts.Designer.cs">
+      <DependentUpon>PartnerContacts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerContacts.ManualCode.cs">
+      <DependentUpon>PartnerContacts.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerEdit.cs" />
     <Compile Include="PartnerEdit.Designer.cs">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
@@ -234,6 +241,9 @@
     <Compile Include="UC_PartnerTypes.Designer.cs">
       <DependentUpon>UC_PartnerTypes.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="PartnerContacts.resx">
+      <DependentUpon>PartnerContacts.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerEdit.resx">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
     </EmbeddedResource>

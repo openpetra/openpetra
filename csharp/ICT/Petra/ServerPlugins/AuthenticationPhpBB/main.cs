@@ -103,5 +103,15 @@ namespace Plugin.AuthenticationPhpBB
             // TODO check if user exists. careful: password is probably not valid, since the sysadmin does not know it
             return true;
         }
+
+        /// <summary>
+        /// which functionality is implemented by this dll
+        /// </summary>
+        public void GetAuthenticationFunctionality(out bool ACanCreateUser, out bool ACanChangePassword, out bool ACanChangePermissions)
+        {
+            ACanCreateUser = true;
+            ACanChangePassword = false;
+            ACanChangePermissions = true;
+        }
     }
 }

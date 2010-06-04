@@ -454,6 +454,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Visible", "false");
             }
 
+            if (ctrl.HasAttribute("Enabled")
+                && (ctrl.GetAttribute("Enabled").ToLower() == "false"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Enabled", "false");
+            }
+            else if ((ctrl.GetAction() != null) && (TYml2Xml.GetAttribute(ctrl.GetAction().actionNode, "InitiallyEnabled").ToLower() == "false"))
+            {
+                string ActionEnabling = ctrl.controlName + ".Enabled = false;" + Environment.NewLine;
+                writer.Template.AddToCodelet("INITACTIONSTATE", ActionEnabling);
+            }
+
             if (ctrl.HasAttribute("TabStop")
                 && (ctrl.GetAttribute("TabStop").ToLower() == "false"))
             {

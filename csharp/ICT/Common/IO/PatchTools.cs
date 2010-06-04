@@ -72,9 +72,23 @@ namespace Ict.Common.IO
             FileMinorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
             ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
             pos = ARPMStyleVersion.IndexOf('-');
-            FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            FilePrivatePart = System.Convert.ToUInt16(ARPMStyleVersion);
+
+            if (pos == -1)
+            {
+                pos = ARPMStyleVersion.IndexOf('.');
+            }
+
+            if (pos == -1)
+            {
+                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion);
+                FilePrivatePart = 0;
+            }
+            else
+            {
+                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
+                ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
+                FilePrivatePart = System.Convert.ToUInt16(ARPMStyleVersion);
+            }
         }
 
         /// <summary>
@@ -175,6 +189,15 @@ namespace Ict.Common.IO
         public override String ToString()
         {
             return FileMajorPart.ToString() + '.' + FileMinorPart.ToString() + '.' + FileBuildPart.ToString() + '.' + FilePrivatePart.ToString();
+        }
+
+        /// <summary>
+        /// print file version to string, with hyphen as last separator
+        /// </summary>
+        /// <returns></returns>
+        public String ToStringDotsHyphen()
+        {
+            return FileMajorPart.ToString() + '.' + FileMinorPart.ToString() + '.' + FileBuildPart.ToString() + '-' + FilePrivatePart.ToString();
         }
 
         /// <summary>

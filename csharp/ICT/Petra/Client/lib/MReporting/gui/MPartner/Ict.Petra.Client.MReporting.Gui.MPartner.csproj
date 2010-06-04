@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{67EAEC89-7919-4CE5-819C-97AF6B618232}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,7 +48,7 @@
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
-      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>

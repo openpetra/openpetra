@@ -83,6 +83,18 @@ public class TServer
             // end;
             // $ENDIF
 
+            // seems not to work to load culture from config file etc
+            // need to set environment variable before starting PetraClient?
+            // ie if you want to force english: set LANGUAGE=en; PetraClient.exe -C:[..]PetraClient.exe.config
+            // see also http://www.mail-archive.com/mono-devel-list@lists.ximian.com/msg16275.html
+            // CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("de");
+            // Thread.CurrentThread.CurrentCulture = culture;
+            // Thread.CurrentThread.CurrentUICulture = culture;
+            // Environment.SetEnvironmentVariable ("LANGUAGE", "de");
+            Catalog.Init("i18n", "./locale");
+
+            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+
             TheServerManager = new TServerManager();
 
             // Ensure Logging and an 'ordered cooperative shutdown' in case of an Unhandled Exception

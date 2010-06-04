@@ -15,20 +15,28 @@
 ### END INIT INFO
 
 CruiseControlPath=/home/timop/CruiseControl.NET
+RunAsUser=timop
 
 . /lib/lsb/init-functions
 
 start() {
     log_daemon_msg "Starting CruiseControl"
 
-    su timop -c "cd $CruiseControlPath/Server; mono ccnet.exe" &
-    su timop -c "cd $CruiseControlPath/WebDashboard; xsp --address 192.168.1.1 --nonstop" &
+    if [[ "`whoami`" = "$RunAsUser" ]]
+    then
+        sh -c "cd $CruiseControlPath/Server; mono ccnet.exe" &
+        sh -c "cd $CruiseControlPath/WebDashboard; xsp --address 192.168.1.1 --nonstop" &
+    else
+        su $RunAsUser -c "cd $CruiseControlPath/Server; mono ccnet.exe" &
+        su $RunAsUser -c "cd $CruiseControlPath/WebDashboard; xsp --address 192.168.1.1 --nonstop" &
+    fi
     status=0
     log_end_msg $status
 }
 
 stop() {
-    killall -9 mono    
+    killall mono
+    rm -Rf /tmp/*
 }
 
 case "$1" in
@@ -42,8 +50,19 @@ case "$1" in
         stop
         start
         ;;
+    restart-delayed)
+        sh -c "sleep 60s; $0 restart" &
+        ;;
+    check-restart)
+        # this should be called by cron job every 10 minutes
+        # */10 * * * *  /etc/init.d/cruisecontrol check-restart
+        if [ -f /tmp/restartccnet ]
+        then
+          sh -c "sleep 60s; $0 restart" &
+        fi
+        ;;
     *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Usage: $0 {start|stop|restart|restart-delayed}"
         exit 1
         ;;
 esac

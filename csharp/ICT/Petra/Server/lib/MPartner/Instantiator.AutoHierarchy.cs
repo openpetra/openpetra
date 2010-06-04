@@ -1,5 +1,5 @@
 // Auto generated with nant generateGlue
-// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.xml
+// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 //
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -44,6 +44,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport;
@@ -53,10 +54,12 @@ using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions;
 using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
@@ -75,10 +78,12 @@ using Ict.Petra.Server.MPartner.Instantiator.PartnerMerge;
 using Ict.Petra.Server.MPartner.Instantiator.Subscriptions;
 using Ict.Petra.Server.MPartner.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors;
+using Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable;
 using Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors;
+using Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements;
 using Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors;
@@ -97,10 +102,12 @@ using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Subscriptions;
 //using Ict.Petra.Server.MPartner.TableMaintenance;
 using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
+//using Ict.Petra.Server.MPartner.Extracts.WebConnectors;
 //using Ict.Petra.Server.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MPartner.Mailing.Cacheable;
 //using Ict.Petra.Server.MPartner.Mailing.UIConnectors;
+using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
 //using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
@@ -112,12 +119,12 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.Subscriptions.UIConnectors;
 //using Ict.Petra.Server.MPartner.TableMaintenance.UIConnectors;
 
-
 #region ManualCode
 using System.Collections.Specialized;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
@@ -146,7 +153,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
 
 #endif
         }
-
 
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMPartner
@@ -188,7 +194,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 RandomString = RandomString + rndbytes[rndbytespos].ToString();
             }
 
-
             RemotingTime = DateTime.Now;
             RemotedObject = new TMPartner();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
@@ -207,9 +212,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             return FRemotingURL;
         }
 
-
     }
-
 
     /// <summary>
     /// REMOTEABLE CLASS. MPartner Namespace (highest level).
@@ -240,7 +243,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -283,16 +285,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMPartner object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'Extracts' subnamespace contains further subnamespaces.</summary>
         public IExtractsNamespace Extracts
         {
@@ -317,12 +317,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FExtractsSubNamespace = new TExtractsNamespace();
                 }
 
-
                 return FExtractsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
         public IImportExportNamespace ImportExport
@@ -348,12 +346,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FImportExportSubNamespace = new TImportExportNamespace();
                 }
 
-
                 return FImportExportSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'Mailing' subnamespace contains further subnamespaces.</summary>
         public IMailingNamespace Mailing
@@ -379,12 +375,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FMailingSubNamespace = new TMailingNamespace();
                 }
 
-
                 return FMailingSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'Partner' subnamespace contains further subnamespaces.</summary>
         public IPartnerNamespace Partner
@@ -410,12 +404,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FPartnerSubNamespace = new TPartnerNamespace();
                 }
 
-
                 return FPartnerSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PartnerMerge' subnamespace contains further subnamespaces.</summary>
         public IPartnerMergeNamespace PartnerMerge
@@ -441,12 +433,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FPartnerMergeSubNamespace = new TPartnerMergeNamespace();
                 }
 
-
                 return FPartnerMergeSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'Subscriptions' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsNamespace Subscriptions
@@ -472,12 +462,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FSubscriptionsSubNamespace = new TSubscriptionsNamespace();
                 }
 
-
                 return FSubscriptionsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'TableMaintenance' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceNamespace TableMaintenance
@@ -503,19 +491,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                     FTableMaintenanceSubNamespace = new TTableMaintenanceNamespace();
                 }
 
-
                 return FTableMaintenanceSubNamespace;
             }
 
         }
-
-
     }
 }
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 {
-
     /// <summary>auto generated class </summary>
     public class TExtractsNamespace : MarshalByRefObject, IExtractsNamespace
     {
@@ -523,6 +507,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
         private DateTime FStartTime;
 #endif
         private TExtractsUIConnectorsNamespace FExtractsUIConnectorsSubNamespace;
+        private TExtractsWebConnectorsNamespace FExtractsWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TExtractsNamespace()
@@ -536,7 +521,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -579,16 +563,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TExtractsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'ExtractsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IExtractsUIConnectorsNamespace UIConnectors
         {
@@ -608,25 +590,49 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
                 if (FExtractsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TExtractsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Extracts.Instantiator.UIConnectors') should be automatically contructable.
                     FExtractsUIConnectorsSubNamespace = new TExtractsUIConnectorsNamespace();
                 }
 
-
-                return (IExtractsUIConnectorsNamespace)FExtractsUIConnectorsSubNamespace;
+                return FExtractsUIConnectorsSubNamespace;
             }
 
         }
 
+        /// <summary>The 'ExtractsWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IExtractsWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Extracts.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Extracts.WebConnectors' sub-namespace
+                //
 
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FExtractsWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TExtractsWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Extracts.Instantiator.WebConnectors') should be automatically contructable.
+                    FExtractsWebConnectorsSubNamespace = new TExtractsWebConnectorsNamespace();
+                }
+
+                return FExtractsWebConnectorsSubNamespace;
+            }
+
+        }
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TExtractsUIConnectorsNamespace : MarshalByRefObject, IExtractsUIConnectorsNamespace
     {
@@ -646,7 +652,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -689,14 +694,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TExtractsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public IPartnerUIConnectorsExtractsAddSubscriptions ExtractsAddSubscriptions(System.Int32 AExtractID)
@@ -709,14 +711,83 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
         {
             return new TPartnerNewExtractUIConnector();
         }
+    }
+}
+
+namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TExtractsWebConnectorsNamespace : MarshalByRefObject, IExtractsWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TExtractsWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TExtractsWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TExtractsWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
 
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 {
-
     /// <summary>auto generated class </summary>
     public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
     {
@@ -738,7 +809,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -781,16 +851,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'ImportExportUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportUIConnectorsNamespace UIConnectors
         {
@@ -810,17 +878,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
                 if (FImportExportUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TImportExportUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.UIConnectors') should be automatically contructable.
                     FImportExportUIConnectorsSubNamespace = new TImportExportUIConnectorsNamespace();
                 }
 
-
-                return (IImportExportUIConnectorsNamespace)FImportExportUIConnectorsSubNamespace;
+                return FImportExportUIConnectorsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
@@ -841,25 +907,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
                 if (FImportExportWebConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TImportExportWebConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.WebConnectors') should be automatically contructable.
                     FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespace();
                 }
 
-
-                return (IImportExportWebConnectorsNamespace)FImportExportWebConnectorsSubNamespace;
+                return FImportExportWebConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TImportExportUIConnectorsNamespace : MarshalByRefObject, IImportExportUIConnectorsNamespace
     {
@@ -879,7 +940,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -922,22 +982,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TImportExportUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
     {
@@ -957,7 +1012,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1000,14 +1054,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TImportExportWebConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from connector
         public bool ImportPartners(string AXmlPartnerData,
@@ -1021,14 +1072,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         {
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartners();
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 {
-
     /// <summary>auto generated class </summary>
     public class TMailingNamespace : MarshalByRefObject, IMailingNamespace
     {
@@ -1037,6 +1085,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 #endif
         private TMailingCacheableNamespace FMailingCacheableSubNamespace;
         private TMailingUIConnectorsNamespace FMailingUIConnectorsSubNamespace;
+        private TMailingWebConnectorsNamespace FMailingWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMailingNamespace()
@@ -1050,7 +1099,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1093,16 +1141,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMailingNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'MailingCacheable' subnamespace contains further subnamespaces.</summary>
         public IMailingCacheableNamespace Cacheable
         {
@@ -1122,17 +1168,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 if (FMailingCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TMailingCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.Cacheable') should be automatically contructable.
                     FMailingCacheableSubNamespace = new TMailingCacheableNamespace();
                 }
 
-
-                return (IMailingCacheableNamespace)FMailingCacheableSubNamespace;
+                return FMailingCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'MailingUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IMailingUIConnectorsNamespace UIConnectors
@@ -1153,25 +1197,49 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 if (FMailingUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TMailingUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.UIConnectors') should be automatically contructable.
                     FMailingUIConnectorsSubNamespace = new TMailingUIConnectorsNamespace();
                 }
 
-
-                return (IMailingUIConnectorsNamespace)FMailingUIConnectorsSubNamespace;
+                return FMailingUIConnectorsSubNamespace;
             }
 
         }
 
+        /// <summary>The 'MailingWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IMailingWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Mailing.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Mailing.WebConnectors' sub-namespace
+                //
 
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FMailingWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TMailingWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.WebConnectors') should be automatically contructable.
+                    FMailingWebConnectorsSubNamespace = new TMailingWebConnectorsNamespace();
+                }
+
+                return FMailingWebConnectorsSubNamespace;
+            }
+
+        }
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TMailingCacheableNamespace : MarshalByRefObject, IMailingCacheableNamespace
     {
@@ -1199,7 +1267,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             FCachePopulator = new Ict.Petra.Server.MPartner.Mailing.TPartnerCacheable();
             #endregion ManualCode
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1242,14 +1309,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMailingCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         #region ManualCode
 
@@ -1343,14 +1407,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TMailingUIConnectorsNamespace : MarshalByRefObject, IMailingUIConnectorsNamespace
     {
@@ -1370,7 +1431,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1413,22 +1473,117 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TMailingUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
+namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TMailingWebConnectorsNamespace : MarshalByRefObject, IMailingWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TMailingWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TMailingWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TMailingWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public bool GetBestAddress(Int64 APartnerKey,
+                                   out PLocationTable AAddress,
+                                   out string ACountryNameLocal,
+                                   out string AEmailAddress)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out ACountryNameLocal, out AEmailAddress);
+        }
+
+        /// generated method from connector
+        public BestAddressTDSLocationTable AddPostalAddress(ref DataTable APartnerTable,
+                                                            DataColumn APartnerKeyColumn,
+                                                            bool AIgnoreForeignAddresses)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.AddPostalAddress(ref APartnerTable, APartnerKeyColumn, AIgnoreForeignAddresses);
+        }
+
+        /// generated method from connector
+        public bool CreateExtractFromBestAddressTable(String AExtractName,
+                                                      String AExtractDescription,
+                                                      out Int32 ANewExtractId,
+                                                      out Boolean AExtractAlreadyExists,
+                                                      out TVerificationResultCollection AVerificationResults,
+                                                      BestAddressTDSLocationTable ABestAddressTable,
+                                                      bool AIncludeNonValidAddresses)
+        {
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.CreateExtractFromBestAddressTable(AExtractName, AExtractDescription, out ANewExtractId, out AExtractAlreadyExists, out AVerificationResults, ABestAddressTable, AIncludeNonValidAddresses);
+        }
+    }
+}
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerNamespace : MarshalByRefObject, IPartnerNamespace
     {
@@ -1453,7 +1608,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1496,16 +1650,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PartnerCacheable' subnamespace contains further subnamespaces.</summary>
         public IPartnerCacheableNamespace Cacheable
         {
@@ -1525,17 +1677,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 if (FPartnerCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.Cacheable') should be automatically contructable.
                     FPartnerCacheableSubNamespace = new TPartnerCacheableNamespace();
                 }
 
-
-                return (IPartnerCacheableNamespace)FPartnerCacheableSubNamespace;
+                return FPartnerCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PartnerDataElements' subnamespace contains further subnamespaces.</summary>
         public IPartnerDataElementsNamespace DataElements
@@ -1556,17 +1706,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 if (FPartnerDataElementsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TDataElementsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerDataElementsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.DataElements') should be automatically contructable.
                     FPartnerDataElementsSubNamespace = new TPartnerDataElementsNamespace();
                 }
 
-
-                return (IPartnerDataElementsNamespace)FPartnerDataElementsSubNamespace;
+                return FPartnerDataElementsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PartnerServerLookups' subnamespace contains further subnamespaces.</summary>
         public IPartnerServerLookupsNamespace ServerLookups
@@ -1587,17 +1735,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 if (FPartnerServerLookupsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TServerLookupsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerServerLookupsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.ServerLookups') should be automatically contructable.
                     FPartnerServerLookupsSubNamespace = new TPartnerServerLookupsNamespace();
                 }
 
-
-                return (IPartnerServerLookupsNamespace)FPartnerServerLookupsSubNamespace;
+                return FPartnerServerLookupsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PartnerUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerUIConnectorsNamespace UIConnectors
@@ -1618,17 +1764,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 if (FPartnerUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.UIConnectors') should be automatically contructable.
                     FPartnerUIConnectorsSubNamespace = new TPartnerUIConnectorsNamespace();
                 }
 
-
-                return (IPartnerUIConnectorsNamespace)FPartnerUIConnectorsSubNamespace;
+                return FPartnerUIConnectorsSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'PartnerWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerWebConnectorsNamespace WebConnectors
@@ -1649,25 +1793,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 if (FPartnerWebConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerWebConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.WebConnectors') should be automatically contructable.
                     FPartnerWebConnectorsSubNamespace = new TPartnerWebConnectorsNamespace();
                 }
 
-
-                return (IPartnerWebConnectorsNamespace)FPartnerWebConnectorsSubNamespace;
+                return FPartnerWebConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerCacheableNamespace : MarshalByRefObject, IPartnerCacheableNamespace
     {
@@ -1695,7 +1834,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
             FCachePopulator = new Ict.Petra.Server.MPartner.Partner.TPartnerCacheable();
             #endregion ManualCode
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1738,14 +1876,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         #region ManualCode
 
@@ -1878,14 +2013,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerDataElementsNamespace : MarshalByRefObject, IPartnerDataElementsNamespace
     {
@@ -1906,7 +2038,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -1949,16 +2080,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PartnerDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerDataElementsUIConnectorsNamespace UIConnectors
         {
@@ -1978,25 +2107,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
                 if (FPartnerDataElementsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PartnerDataElements.Instantiator.UIConnectors') should be automatically contructable.
                     FPartnerDataElementsUIConnectorsSubNamespace = new TPartnerDataElementsUIConnectorsNamespace();
                 }
 
-
-                return (IPartnerDataElementsUIConnectorsNamespace)FPartnerDataElementsUIConnectorsSubNamespace;
+                return FPartnerDataElementsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerDataElementsUIConnectorsNamespace : MarshalByRefObject, IPartnerDataElementsUIConnectorsNamespace
     {
@@ -2016,7 +2140,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2059,18 +2182,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerDataElementsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         /// generated method from interface
-        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(
-                                                                                                                                           System.Int64 APartnerKey,
+        public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                            out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
@@ -2082,6 +2201,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 
 #endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2099,14 +2219,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 #endif
             return ReturnValue;
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerServerLookupsNamespace : MarshalByRefObject, IPartnerServerLookupsNamespace
     {
@@ -2126,7 +2243,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2169,14 +2285,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerServerLookupsNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public Boolean GetPartnerShortName(Int64 APartnerKey,
@@ -2306,14 +2419,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
             return TPartnerServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerUIConnectorsNamespace : MarshalByRefObject, IPartnerUIConnectorsNamespace
     {
@@ -2333,7 +2443,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2376,14 +2485,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
         /// generated method from interface
         public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey)
@@ -2405,6 +2511,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 #endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2447,6 +2554,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 #endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey, ASiteKey, ALocationKey);
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2484,6 +2592,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 #endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector();
+
 #if DEBUGMODE
             if (TSrvSetting.DL >= 9)
             {
@@ -2513,14 +2622,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
         {
             return new TPartnerLocationFindUIConnector(ACriteriaData);
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerWebConnectorsNamespace : MarshalByRefObject, IPartnerWebConnectorsNamespace
     {
@@ -2540,7 +2646,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2583,14 +2688,41 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerWebConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+        /// generated method from connector
+        public bool AddContact(List <Int64>APartnerKeys,
+                               DateTime AContactDate,
+                               string AMethodOfContact,
+                               string AComment,
+                               string AModuleID,
+                               string AMailingCode,
+                               out TVerificationResultCollection AVerificationResults)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.AddContact(APartnerKeys, AContactDate, AMethodOfContact, AComment, AModuleID, AMailingCode, out AVerificationResults);
+        }
+
+        /// generated method from connector
+        public PPartnerContactTable FindContacts(string AContactor,
+                                                 DateTime? AContactDate,
+                                                 string ACommentContains,
+                                                 string AMethodOfContact,
+                                                 string AModuleID,
+                                                 string AMailingCode)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.FindContacts(AContactor, AContactDate, ACommentContains, AMethodOfContact, AModuleID, AMailingCode);
+        }
+
+        /// generated method from connector
+        public bool DeleteContacts(PPartnerContactTable APartnerContacts,
+                                   out TVerificationResultCollection AVerificationResults)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.DeleteContacts(APartnerContacts, out AVerificationResults);
+        }
 
         /// generated method from connector
         public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
@@ -2622,14 +2754,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerMergeNamespace : MarshalByRefObject, IPartnerMergeNamespace
     {
@@ -2650,7 +2779,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2693,16 +2821,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerMergeNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'PartnerMergeUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerMergeUIConnectorsNamespace UIConnectors
         {
@@ -2722,25 +2848,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
                 if (FPartnerMergeUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TPartnerMergeUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.PartnerMerge.Instantiator.UIConnectors') should be automatically contructable.
                     FPartnerMergeUIConnectorsSubNamespace = new TPartnerMergeUIConnectorsNamespace();
                 }
 
-
-                return (IPartnerMergeUIConnectorsNamespace)FPartnerMergeUIConnectorsSubNamespace;
+                return FPartnerMergeUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TPartnerMergeUIConnectorsNamespace : MarshalByRefObject, IPartnerMergeUIConnectorsNamespace
     {
@@ -2760,7 +2881,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2803,22 +2923,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TPartnerMergeUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 {
-
     /// <summary>auto generated class </summary>
     public class TSubscriptionsNamespace : MarshalByRefObject, ISubscriptionsNamespace
     {
@@ -2840,7 +2955,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -2883,16 +2997,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TSubscriptionsNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'SubscriptionsCacheable' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsCacheableNamespace Cacheable
         {
@@ -2912,17 +3024,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
                 if (FSubscriptionsCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TSubscriptionsCacheableNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Subscriptions.Instantiator.Cacheable') should be automatically contructable.
                     FSubscriptionsCacheableSubNamespace = new TSubscriptionsCacheableNamespace();
                 }
 
-
-                return (ISubscriptionsCacheableNamespace)FSubscriptionsCacheableSubNamespace;
+                return FSubscriptionsCacheableSubNamespace;
             }
 
         }
-
 
         /// <summary>The 'SubscriptionsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsUIConnectorsNamespace UIConnectors
@@ -2943,25 +3053,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
                 if (FSubscriptionsUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TSubscriptionsUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.Subscriptions.Instantiator.UIConnectors') should be automatically contructable.
                     FSubscriptionsUIConnectorsSubNamespace = new TSubscriptionsUIConnectorsNamespace();
                 }
 
-
-                return (ISubscriptionsUIConnectorsNamespace)FSubscriptionsUIConnectorsSubNamespace;
+                return FSubscriptionsUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 {
-
     /// <summary>auto generated class </summary>
     public class TSubscriptionsCacheableNamespace : MarshalByRefObject, ISubscriptionsCacheableNamespace
     {
@@ -2989,7 +3094,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
             FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -3032,14 +3136,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TSubscriptionsCacheableNamespace object exists until this AppDomain is unloaded!
         }
-
 
         #region ManualCode
 
@@ -3130,14 +3231,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TSubscriptionsUIConnectorsNamespace : MarshalByRefObject, ISubscriptionsUIConnectorsNamespace
     {
@@ -3157,7 +3255,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -3200,22 +3297,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TSubscriptionsUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 {
-
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceNamespace : MarshalByRefObject, ITableMaintenanceNamespace
     {
@@ -3236,7 +3328,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -3279,16 +3370,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
         {
@@ -3308,25 +3397,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
                 if (FTableMaintenanceUIConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
+                    //      * for the Generator: the name of this Type ('TTableMaintenanceUIConnectorsNamespace') needs to come out of the XML definition,
                     //      * The Namespace where it resides in ('Ict.Petra.Server.TableMaintenance.Instantiator.UIConnectors') should be automatically contructable.
                     FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespace();
                 }
 
-
-                return (ITableMaintenanceUIConnectorsNamespace)FTableMaintenanceUIConnectorsSubNamespace;
+                return FTableMaintenanceUIConnectorsSubNamespace;
             }
 
         }
-
-
     }
 }
 
-
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 {
-
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceUIConnectorsNamespace : MarshalByRefObject, ITableMaintenanceUIConnectorsNamespace
     {
@@ -3346,7 +3430,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
             FStartTime = DateTime.Now;
 #endif
         }
-
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
@@ -3389,14 +3472,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 
 #endif
 
-
-
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TTableMaintenanceUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
-
 
     }
 }

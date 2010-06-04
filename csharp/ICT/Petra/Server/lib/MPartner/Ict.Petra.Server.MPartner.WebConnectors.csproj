@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B7E0E43A-F197-46C0-9F5E-260FFDF2C877}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,6 +72,9 @@
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.UserInfo">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
@@ -80,6 +83,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressTools.WebConnector.cs" />
+    <Compile Include="Contacts.cs" />
     <Compile Include="ImportExport.cs" />
     <Compile Include="SimplePartnerEdit.cs" />
     <Compile Include="SimplePartnerFind.cs" />

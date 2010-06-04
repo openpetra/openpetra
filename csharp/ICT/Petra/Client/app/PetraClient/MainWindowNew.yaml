@@ -12,7 +12,7 @@ RootNode:
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
-        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
+        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.gif}
     Controls:
         pnlContent:
             Controls: [dsbContent, lstFolders]
@@ -27,8 +27,8 @@ RootNode:
             Label: &File
             Order: AlwaysFirst
             mniClose: {Order=AlwaysLast}
-        mniView:
-            mniMenuSwitch:
+        #mniView:
+            #mniMenuSwitch:
         mniHelp: 
             Label: &Help
             Order: AlwaysLast
@@ -39,5 +39,5 @@ RootNode:
             mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
             mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
     Toolbar:
-        tbbMenuSwitch: {Order=AlwaysLast}
+        #tbbMenuSwitch: {Order=AlwaysLast}
     

@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
       this.lblDetailUserId.Text = Catalog.GetString("User Id:");
       this.lblDetailFirstName.Text = Catalog.GetString("First Name:");
       this.lblDetailLastName.Text = Catalog.GetString("Last Name:");
-      this.lblUserGroup.Text = Catalog.GetString("User Group:");
+      this.lblUserGroup.Text = Catalog.GetString("This User can access:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -98,6 +98,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
       FPetraUtilsObject.SetStatusBarText(txtDetailFirstName, Catalog.GetString("Enter the Personal Name"));
       FPetraUtilsObject.SetStatusBarText(txtDetailLastName, Catalog.GetString("Enter the Family Name"));
       FMainDS = new Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS();
+      InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("User ID", FMainDS.SUser.ColumnUserId);
       grdDetails.AddTextColumn("Personal Name", FMainDS.SUser.ColumnFirstName);
@@ -217,6 +218,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             txtDetailLastName.Text = ARow.LastName;
         }
+        ShowDetailsManual(ARow);
     }
 
     private SUserRow FPreviouslySelectedDetailRow = null;
@@ -254,6 +256,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 ARow.LastName = txtDetailLastName.Text;
             }
+            GetDetailDataFromControlsManual(ARow);
         }
     }
 
