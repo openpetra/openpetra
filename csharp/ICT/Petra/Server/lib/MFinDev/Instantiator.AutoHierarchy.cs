@@ -44,6 +44,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
 using Ict.Petra.Shared.Interfaces.MFinDev;
 

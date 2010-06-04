@@ -66,6 +66,10 @@
     <Compile Include="Instantiator.AutoHierarchy.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MReporting.LogicConnectors.csproj">
       <Project>{2D87F665-5D74-40C3-A5AF-C766D1C0A409}</Project>
       <Name>Ict.Petra.Server.MReporting.LogicConnectors</Name>

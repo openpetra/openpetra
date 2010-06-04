@@ -23,6 +23,8 @@
 //
 using System;
 using System.Collections;
+using System.Reflection;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
@@ -122,5 +124,146 @@ namespace Ict.Petra.Server.App.Core.Security
             }
             return ReturnValue;
         }
+
+        /// <summary>
+        /// recursively check the expression
+        /// </summary>
+        /// <param name="AModuleExpression">is in uppercase</param>
+        /// <returns>true if the user has access permissions</returns>
+        static private bool CheckUserModulePermissions(string AModuleExpression)
+        {
+            if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
+            {
+                // find the closing bracket
+                int openingBracketPos = AModuleExpression.IndexOf('(');
+                int closingBracketPos = AModuleExpression.IndexOf(')');
+
+                if (closingBracketPos < 0)
+                {
+                    throw new ArgumentException("missing closing bracket");
+                }
+
+                string modulesList = AModuleExpression.Substring(openingBracketPos + 1, closingBracketPos - openingBracketPos);
+                string[] modules = modulesList.Split(new char[] { ',' });
+                bool oneTrue = false;
+
+                foreach (string module in modules)
+                {
+                    if (!UserInfo.GUserInfo.IsInModule(module))
+                    {
+                        if (AModuleExpression.StartsWith("AND("))
+                        {
+                            throw new EvaluateException(String.Format(
+                                    Catalog.GetString("No access for user {0} to module {1}"),
+                                    UserInfo.GUserInfo.UserID, module));
+                        }
+                    }
+                    else
+                    {
+                        oneTrue = true;
+                    }
+                }
+
+                if (AModuleExpression.StartsWith("OR(") && !oneTrue)
+                {
+                    throw new EvaluateException(String.Format(
+                            Catalog.GetString("No access for user {0} to either of the modules {1}"),
+                            UserInfo.GUserInfo.UserID, modulesList));
+                }
+
+                return true;
+            }
+            else
+            {
+                // just a single module name
+                string ModuleName = AModuleExpression;
+
+                // find the closing bracket if there is one
+                int closingBracketPos = AModuleExpression.IndexOf(')');
+
+                if (closingBracketPos > -1)
+                {
+                    ModuleName = AModuleExpression.Substring(0, closingBracketPos);
+                }
+
+                if (ModuleName.Contains(","))
+                {
+                    throw new ArgumentException("There is a Comma in the wrong place");
+                }
+
+                if (!UserInfo.GUserInfo.IsInModule(ModuleName))
+                {
+                    throw new EvaluateException(String.Format(
+                            Catalog.GetString("No access for user {0} to module {1}"),
+                            UserInfo.GUserInfo.UserID, ModuleName));
+                }
+
+                return true;
+            }
+        }
+
+        /// throws an exception if the current user does not have enough permission to access the method;
+        /// this uses a custom attribute associated with the method of the connector
+        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName)
+        {
+            MethodInfo method = AConnectorType.GetMethod(AMethodName);
+
+            System.Object[] attributes = method.GetCustomAttributes(typeof(RequireModulePermissionAttribute), false);
+
+            if ((attributes != null) && (attributes.Length > 0))
+            {
+                RequireModulePermissionAttribute requiredModules = (RequireModulePermissionAttribute)attributes[0];
+
+                string moduleExpression = requiredModules.RequiredModulesExpression.ToUpper();
+
+                try
+                {
+                    bool hasPermission = CheckUserModulePermissions(moduleExpression);
+                }
+                catch (EvaluateException evException)
+                {
+                    string msg = String.Format(Catalog.GetString("Module access permission was violated for method {0} in Connector class {1}: {2}"),
+                        AMethodName, AConnectorType, evException.Message);
+                    TLogging.Log(msg);
+                    throw new ApplicationException(msg);
+                }
+                catch (ArgumentException argException)
+                {
+                    throw new ApplicationException("Problem with ModulePermissions, " +
+                        argException.Message + ": '" +
+                        moduleExpression + "' for " +
+                        AConnectorType.ToString() + "." +
+                        AMethodName + "()");
+                }
+
+                return true;
+            }
+
+            // TODO: resolve module permission from namespace?
+
+            throw new ApplicationException(
+                "Missing definition of access permission for method " + AMethodName + " in Connector class " + AConnectorType);
+        }
+    }
+
+    /// <summary>
+    /// attribute for annotation of server functions. Instantiator will check access permissions
+    /// </summary>
+    public class RequireModulePermissionAttribute : System.Attribute
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ARequiredModulesExpression">this is a logical expression, eg. OR(MSYSMAN,AND(PTNRADMIN,DEVADMIN))</param>
+        public RequireModulePermissionAttribute(string ARequiredModulesExpression)
+        {
+            RequiredModulesExpression = ARequiredModulesExpression;
+        }
+
+        /// <summary>
+        /// list of modules for which the user needs to have access permissions.
+        /// this is a logical expression, eg. OR(MSYSMAN,AND(PTNRADMIN,DEVADMIN))
+        /// </summary>
+        public readonly string RequiredModulesExpression;
     }
 }

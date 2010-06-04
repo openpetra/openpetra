@@ -192,7 +192,14 @@ namespace Ict.Common
         /// <returns>void</returns>
         public static void Log(string Text)
         {
-            Log(Text, TLoggingType.ToLogfile | TLoggingType.ToConsole);
+            if (ULogWriter != null)
+            {
+                Log(Text, TLoggingType.ToLogfile | TLoggingType.ToConsole);
+            }
+            else
+            {
+                Log(Text, TLoggingType.ToConsole);
+            }
         }
 
         /// <summary>
@@ -253,7 +260,7 @@ namespace Ict.Common
                 {
                     // I found it was better to write the actual logging message, even if the logwriter
                     // is not setup up correctly
-                    new TLogging("..\\tmp23\\log\\temp.log");
+                    new TLogging("temp.log");
                     TLogWriter.Log(Text);
 
                     if (TLogging.Context.Length != 0)

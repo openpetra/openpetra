@@ -78,7 +78,6 @@
     <Compile Include="GroupManager.cs" />
     <Compile Include="LoginLog.cs" />
     <Compile Include="LogonMessage.cs" />
-    <Compile Include="ModuleAccessManager.cs" />
     <Compile Include="ServerLookups.cs" />
     <Compile Include="SystemDefaults.cs" />
     <Compile Include="TableAccessPermissionManager.cs" />

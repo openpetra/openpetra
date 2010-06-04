@@ -105,6 +105,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// <summary>
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
+        [RequireModulePermission("SYSMAN")]
         public static bool CreateUser(string AUsername, string APassword, string AModulePermissions)
         {
             // TODO: check permissions. is the current user allowed to create other users?
@@ -155,7 +156,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     List <string>modules = new List <string>();
                     modules.Add("PTNRUSER");
                     modules.Add("FINANCE-1");
-                    modules.Add("SYSMAN");
 
                     ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
 
