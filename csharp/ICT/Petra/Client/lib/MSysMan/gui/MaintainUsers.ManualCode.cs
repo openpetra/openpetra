@@ -238,6 +238,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
                 {
+                    LoadUsers();
                     MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
                 }
                 else
