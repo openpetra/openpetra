@@ -27,6 +27,8 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -82,6 +84,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PContactAttributeTable.GetTableDBName())
+                {
+                	tempTable = PContactAttributeAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {

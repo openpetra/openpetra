@@ -41,6 +41,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
       <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
@@ -113,6 +119,13 @@
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
     </Compile>
+    <Compile Include="PartnerContactReport.cs" />
+    <Compile Include="PartnerContactReport.Designer.cs">
+      <DependentUpon>PartnerContactReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerContactReport.ManualCode.cs">
+      <DependentUpon>PartnerContactReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PublicationStatisticalReport.cs" />
     <Compile Include="PublicationStatisticalReport.Designer.cs">
       <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
@@ -146,6 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PartnerContactReport.resx">
+      <DependentUpon>PartnerContactReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PublicationStatisticalReport.resx">
       <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
