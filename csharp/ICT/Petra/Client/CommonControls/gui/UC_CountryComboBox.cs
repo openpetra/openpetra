@@ -56,17 +56,24 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
 
-        /// <summary>todoComment</summary>
-        public System.Object SelectedValue
+        /// <summary>the selected country code</summary>
+        public string SelectedValue
         {
             get
             {
-                return cmbCountry.cmbCombobox.SelectedValue;
+                return cmbCountry.cmbCombobox.GetSelectedString();
             }
 
             set
             {
-                cmbCountry.cmbCombobox.SelectedValue = value;
+                if ((value != null) && (value.Length > 0))
+                {
+                    cmbCountry.cmbCombobox.SetSelectedString(value);
+                }
+                else
+                {
+                    cmbCountry.cmbCombobox.SelectedIndex = -1;
+                }
             }
         }
 

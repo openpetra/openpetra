@@ -41,6 +41,33 @@ using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
+    /// <summary>Delegate declaration</summary>
+    public delegate PLocationRow TDelegateGetLocationRowOfCurrentlySelectedAddress();
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
+    public delegate bool TDelegateIsNewPartner(PartnerEditTDS AInspectDataSet);
+
+    /// just temporary until TUCPartnerSubscriptions are included properly
+    public class TUCPartnerSubscriptions
+    {
+    }
+
+    /// <summary>
+    /// temporary class until PartnerInterests are implemented properly
+    /// </summary>
+    public class TUCPartnerInterests
+    {
+    }
+
+    /// <summary>
+    /// temporary class until FamilyMembers are implemented properly
+    /// </summary>
+    public class TUC_FamilyMembers
+    {
+    }
+
     public partial class TUC_PartnerEdit_PartnerTabSet2
     {
         #region TODO ResourceStrings
@@ -271,12 +298,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls()
         {
-            TUC_PartnerDetails_Family2 UCPartnerDetailsFamily;
-
-            UCPartnerDetailsFamily = (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
-
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
+                TUC_PartnerDetails_Family2 UCPartnerDetailsFamily =
+                    (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
                 UCPartnerDetailsFamily.GetDataFromControls2();
             }
         }

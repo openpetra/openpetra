@@ -36,12 +36,12 @@
             Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
             ControlsOrientation: horizontal
         rbtQuarter:
-            Controls: [txtQuarter]
+            Controls: [txtQuarter, cmbPeriodYearQuarter]
             ControlsOrientation: horizontal
         txtStartPeriod: {Label=from, ParameterName=param_start_period_i, Width=30}
         txtEndPeriod: {Label=to, ParameterName=param_end_period_i, Width=30}
         cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
-#        cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
+        cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         txtQuarter: {Label=Quarter, ParameterName=param_quarter, Width=30}
         chkYearToDate: {Label=YTD, ParameterName=param_ytd, Help=Should we calculate from the start of the year?}
         cmbDepth: {Label=Depth, ParameterName=param_depth}

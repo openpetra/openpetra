@@ -71,6 +71,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.lblEndPeriod.Text = Catalog.GetString("to:");
       this.lblPeriodYear.Text = Catalog.GetString("Year:");
       this.rbtQuarter.Text = Catalog.GetString("Quarter");
+      this.lblQuarter.Text = Catalog.GetString("Quarter:");
+      this.lblPeriodYearQuarter.Text = Catalog.GetString("Year:");
       this.rgrPeriod.Text = Catalog.GetString("Period");
       this.chkYearToDate.Text = Catalog.GetString("YTD");
       this.cmbDepth.Text = Catalog.GetString("standard");
@@ -115,7 +117,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       FPetraUtilsObject.FXMLFiles = "FinancialDevelopment/FDIncomeByFund.xml,common.xml";
       FPetraUtilsObject.FReportName = "FDIncomeByFund";
       FPetraUtilsObject.FCurrentReport = "FDIncomeByFund";
-	  FPetraUtilsObject.FSettingsDirectory = "FinancialDevelopment";
+      FPetraUtilsObject.FSettingsDirectory = "FinancialDevelopment";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
@@ -126,9 +128,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
       rbtPeriodRangeCheckedChanged(null, null);
       rbtQuarterCheckedChanged(null, null);
-	
-	
-	  FPetraUtilsObject.LoadDefaultSettings();
+
+      FPetraUtilsObject.LoadDefaultSettings();
     }
 
     void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
@@ -141,6 +142,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     void rbtQuarterCheckedChanged(object sender, System.EventArgs e)
     {
       txtQuarter.Enabled = rbtQuarter.Checked;
+      cmbPeriodYearQuarter.Enabled = rbtQuarter.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -175,25 +177,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
-      ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
-      ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
       if (rbtPeriodRange.Checked)
       {
-        ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
+          ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
+
+          ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
+          ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
+          ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
       }
       if (rbtQuarter.Checked)
       {
-        ACalc.AddParameter("param_rgrPeriod", "Quarter");
+          ACalc.AddParameter("param_rgrPeriod", "Quarter");
+
+          ACalc.AddParameter("param_quarter", this.txtQuarter.Text);
+          ACalc.AddParameter("param_year_i", this.cmbPeriodYearQuarter.GetSelectedString());
       }
       ACalc.AddParameter("param_ytd", this.chkYearToDate.Checked);
       if (this.cmbDepth.SelectedItem != null)
       {
-        ACalc.AddParameter("param_depth", this.cmbDepth.SelectedItem.ToString());
+          ACalc.AddParameter("param_depth", this.cmbDepth.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_depth", "");
+          ACalc.AddParameter("param_depth", "");
       }
       ReadControlsManual(ACalc, AReportAction);
 
@@ -206,11 +212,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetControls(TParameterList AParameters)
     {
 
-      txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-      txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-      cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
+      if (rbtPeriodRange.Checked)
+      {
+
+          txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
+          txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
+          cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
+      }
       rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
+      if (rbtQuarter.Checked)
+      {
+
+          txtQuarter.Text = AParameters.Get("param_quarter").ToString();
+          cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
+      }
       chkYearToDate.Checked = AParameters.Get("param_ytd").ToBool();
       cmbDepth.SelectedValue = AParameters.Get("param_depth").ToString();
     }
@@ -224,8 +240,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
-	
-	
 
     }
 #endregion
@@ -266,26 +280,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// <summary>
     /// initialisation
     /// </summary>
-	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
+    /// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// Checks / Unchecks the menu item "Wrap Columns"
     /// </summary>
-	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
-	public void CheckWrapColumnMenuItem(bool ACheck)
+    /// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+    public void CheckWrapColumnMenuItem(bool ACheck)
     {
-    	this.mniWrapColumn.Checked = ACheck;
+        this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
-	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
+    /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -304,7 +318,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
-	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -327,9 +341,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
-	/// <param name="AIndex"></param>
-	/// <param name="mniItem"></param>
-	/// <param name="tbbItem"></param>
+    /// <param name="AIndex"></param>
+    /// <param name="mniItem"></param>
+    /// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)

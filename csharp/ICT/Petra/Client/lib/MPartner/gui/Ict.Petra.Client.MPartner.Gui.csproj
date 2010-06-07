@@ -130,13 +130,6 @@
     <Compile Include="PartnerEdit.ManualCode.cs">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
     </Compile>
-    <Compile Include="PartnerEdit2.cs" />
-    <Compile Include="PartnerEdit2.Designer.cs">
-      <DependentUpon>PartnerEdit2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PartnerEdit2.ManualCode.cs">
-      <DependentUpon>PartnerEdit2.cs</DependentUpon>
-    </Compile>
     <Compile Include="PartnerFind.cs" />
     <Compile Include="PartnerFind.Designer.cs">
       <DependentUpon>PartnerFind.cs</DependentUpon>
@@ -166,23 +159,28 @@
     <Compile Include="PartnerNewDialog.Designer.cs">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="PartnerTypeSetup.cs" />
+    <Compile Include="PartnerTypeSetup.Designer.cs">
+      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerTypeSetup.ManualCode.cs">
+      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Threading.cs" />
     <Compile Include="Types.cs" />
-    <Compile Include="UC_PartnerDetailsPerson.cs" />
-    <Compile Include="UC_PartnerDetailsPerson.Designer.cs">
-      <DependentUpon>UC_PartnerDetailsPerson.cs</DependentUpon>
+    <Compile Include="UC_PartnerDetails_Family.cs" />
+    <Compile Include="UC_PartnerDetails_Family.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
     </Compile>
-    <Compile Include="UC_PartnerDetails_Family2.cs" />
-    <Compile Include="UC_PartnerDetails_Family2.Designer.cs">
-      <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
+    <Compile Include="UC_PartnerDetails_Family.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
     </Compile>
-    <Compile Include="UC_PartnerDetails_Family2.ManualCode.cs" />
-    <Compile Include="UC_PartnerDetails_Person2.ManualCode.cs">
-      <DependentUpon>UC_PartnerDetails_Person2.cs</DependentUpon>
+    <Compile Include="UC_PartnerDetails_Person.cs" />
+    <Compile Include="UC_PartnerDetails_Person.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
     </Compile>
-    <Compile Include="UC_PartnerDetails_Person2.cs" />
-    <Compile Include="UC_PartnerDetails_Person2.Designer.cs">
-      <DependentUpon>UC_PartnerDetails_Person2.cs</DependentUpon>
+    <Compile Include="UC_PartnerDetails_Person.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerEdit_CollapsiblePart.cs" />
     <Compile Include="UC_PartnerEdit_CollapsiblePart.Designer.cs">
@@ -199,12 +197,8 @@
     <Compile Include="UC_PartnerEdit_PartnerTabSet.Designer.cs">
       <DependentUpon>UC_PartnerEdit_PartnerTabSet.cs</DependentUpon>
     </Compile>
-    <Compile Include="UC_PartnerEdit_PartnerTabSet2.cs" />
-    <Compile Include="UC_PartnerEdit_PartnerTabSet2.Designer.cs">
-      <DependentUpon>UC_PartnerEdit_PartnerTabSet2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_PartnerEdit_PartnerTabSet2.ManualCode.cs">
-      <DependentUpon>UC_PartnerEdit_PartnerTabSet2.cs</DependentUpon>
+    <Compile Include="UC_PartnerEdit_PartnerTabSet.ManualCode.cs">
+      <DependentUpon>UC_PartnerEdit_PartnerTabSet.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerEdit_TopPart.cs" />
     <Compile Include="UC_PartnerEdit_TopPart.Designer.cs">
@@ -247,9 +241,6 @@
     <EmbeddedResource Include="PartnerEdit.resx">
       <DependentUpon>PartnerEdit.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PartnerEdit2.resx">
-      <DependentUpon>PartnerEdit2.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PartnerFind.resx">
       <DependentUpon>PartnerFind.cs</DependentUpon>
     </EmbeddedResource>
@@ -265,14 +256,14 @@
     <EmbeddedResource Include="PartnerNewDialog.resx">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UC_PartnerDetailsPerson.resx">
-      <DependentUpon>UC_PartnerDetailsPerson.cs</DependentUpon>
+    <EmbeddedResource Include="PartnerTypeSetup.resx">
+      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UC_PartnerDetails_Family2.resx">
-      <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
+    <EmbeddedResource Include="UC_PartnerDetails_Family.resx">
+      <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UC_PartnerDetails_Person2.resx">
-      <DependentUpon>UC_PartnerDetails_Person2.cs</DependentUpon>
+    <EmbeddedResource Include="UC_PartnerDetails_Person.resx">
+      <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerEdit_CollapsiblePart.resx">
       <DependentUpon>UC_PartnerEdit_CollapsiblePart.cs</DependentUpon>
@@ -282,9 +273,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerEdit_PartnerTabSet.resx">
       <DependentUpon>UC_PartnerEdit_PartnerTabSet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_PartnerEdit_PartnerTabSet2.resx">
-      <DependentUpon>UC_PartnerEdit_PartnerTabSet2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerEdit_TopPart.resx">
       <DependentUpon>UC_PartnerEdit_TopPart.cs</DependentUpon>

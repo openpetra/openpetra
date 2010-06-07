@@ -52,12 +52,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return result;
         }
-    }
-    public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
-    {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+
+        public static void GenerateReadSetControls(IFormWriter writer, XmlNode curNode, ProcessTemplate ATargetTemplate, string ATemplateControlType)
         {
             string controlName = curNode.Name;
+
+            // check if this control is already part of an optional group of controls depending on a radiobutton
+            TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
+
+            if (ctrl.GetAttribute("DependsOnRadioButton") == "true")
+            {
+                return;
+            }
 
             string paramName = ReportControls.GetParameterName(curNode);
 
@@ -66,54 +72,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".GetSelectedString());" +
-                Environment.NewLine);
+            ProcessTemplate snippetReadControls = writer.Template.GetSnippet(ATemplateControlType + "READCONTROLS");
+            snippetReadControls.SetCodelet("CONTROLNAME", controlName);
+            snippetReadControls.SetCodelet("PARAMNAME", paramName);
+            ATargetTemplate.InsertSnippet("READCONTROLS", snippetReadControls);
 
-            if (TXMLParser.HasAttribute(curNode, "OnChangeDataType"))
-            {
-                string datatype = TXMLParser.GetAttribute(curNode, "OnChangeDataType");
-                writer.Template.AddToCodelet("SETCONTROLS",
-                    StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" +
-                    "AParameters.Get(\"" + paramName + "\").To" +
-                    datatype + "());" +
-                    Environment.NewLine);
-            }
-            else
-            {
-                writer.Template.AddToCodelet("SETCONTROLS",
-                    controlName + ".SetSelectedString(" +
-                    "AParameters.Get(\"" + paramName + "\").ToString());" +
-                    Environment.NewLine);
-            }
+            ProcessTemplate snippetWriteControls = writer.Template.GetSnippet(ATemplateControlType + "SETCONTROLS");
+            snippetWriteControls.SetCodelet("CONTROLNAME", controlName);
+            snippetWriteControls.SetCodelet("PARAMNAME", paramName);
+            ATargetTemplate.InsertSnippet("SETCONTROLS", snippetWriteControls);
+        }
+    }
+    public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
+    {
+        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        {
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCMBAUTOPOPULATED");
         }
     }
     public class ComboBoxReportGenerator : ComboBoxGenerator
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "if (this." + controlName + ".SelectedItem != null) " + Environment.NewLine +
-                "{" + Environment.NewLine +
-                "  ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".SelectedItem.ToString()); " + Environment.NewLine +
-                "}" + Environment.NewLine +
-                "else" + Environment.NewLine +
-                "{" + Environment.NewLine +
-                "  ACalc.AddParameter(\"" + paramName + "\", \"\");" + Environment.NewLine +
-                "}" + Environment.NewLine);
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".SelectedValue = " +
-                "AParameters.Get(\"" + paramName + "\").ToString();" +
-                Environment.NewLine);
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "COMBOBOX");
         }
     }
 
@@ -121,68 +102,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Checked);" +
-                Environment.NewLine);
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".Checked = " +
-                "AParameters.Get(\"" + paramName + "\").ToBool();" +
-                Environment.NewLine);
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "CHECKBOX");
         }
     }
-#if TODO
-    public class TtxtAutoPopulatedButtonLabelReportGenerator : TtxtAutoPopulatedButtonLabelGenerator
-    {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
-        {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Text);" +
-                Environment.NewLine);
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".Text = " +
-                "AParameters.Get(\"" + paramName + "\").ToString();" +
-                Environment.NewLine);
-        }
-    }
-#endif
     public class TextBoxReportGenerator : TextBoxGenerator
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Text);" +
-                Environment.NewLine);
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".Text = " +
-                "AParameters.Get(\"" + paramName + "\").ToString();" +
-                Environment.NewLine);
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TEXTBOX");
         }
     }
 
@@ -190,22 +117,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".GetCheckedStringList());" +
-                Environment.NewLine);
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".SetCheckedStringList(" +
-                "AParameters.Get(\"" + paramName + "\").ToString());" +
-                Environment.NewLine);
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCLBVERSATILE");
         }
     }
 
@@ -213,27 +125,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
         {
-            string controlName = curNode.Name;
-
-            string paramName = ReportControls.GetParameterName(curNode);
-
-            if (paramName == null)
-            {
-                return;
-            }
-
-            writer.Template.AddToCodelet("READCONTROLS",
-                "ACalc.AddParameter(\"" + paramName + "\", this." + controlName + ".Date);" +
-                Environment.NewLine);
-
-            string NewCode = "DateTime " + controlName + "Date = AParameters.Get(\"" + paramName + "\").ToDate();" + Environment.NewLine +
-                             "if ((" + controlName + "Date <= " + "DateTime.MinValue)" + Environment.NewLine +
-                             "    || (" + controlName + "Date >= " + "DateTime.MaxValue))" + Environment.NewLine +
-                             "{" + Environment.NewLine +
-                             "    " + controlName + "Date = DateTime.Now;" + Environment.NewLine +
-                             "}" + Environment.NewLine +
-                             controlName + ".Date = " + controlName + "Date;" + Environment.NewLine;
-            writer.Template.AddToCodelet("SETCONTROLS", NewCode);
+            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TTXTPETRADATE");
         }
     }
 
@@ -301,15 +193,69 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     continue;
                 }
 
-                writer.Template.AddToCodelet("READCONTROLS",
-                    "if (" + rbtName + ".Checked) " + Environment.NewLine +
-                    "{" + Environment.NewLine +
-                    "  ACalc.AddParameter(\"" + paramName + "\", \"" + rbtValue + "\");" + Environment.NewLine +
-                    "}" + Environment.NewLine);
-                writer.Template.AddToCodelet("SETCONTROLS",
-                    rbtName + ".Checked = " +
-                    "AParameters.Get(\"" + paramName + "\").ToString() == \"" + rbtValue + "\";" +
-                    Environment.NewLine);
+                ProcessTemplate RadioButtonReadControlsSnippet = writer.Template.GetSnippet("RADIOBUTTONREADCONTROLS");
+                RadioButtonReadControlsSnippet.SetCodelet("RBTNAME", rbtName);
+                RadioButtonReadControlsSnippet.SetCodelet("PARAMNAME", paramName);
+                RadioButtonReadControlsSnippet.SetCodelet("RBTVALUE", rbtValue);
+                RadioButtonReadControlsSnippet.SetCodelet("READCONTROLS", "");
+
+                XmlNode childControls = TXMLParser.GetChild(rbtCtrl.xmlNode, "Controls");
+
+                // only assign variables that make sense
+                if (childControls != null)
+                {
+                    StringCollection childControlNames = TYml2Xml.GetElements(childControls);
+
+                    foreach (string childName in childControlNames)
+                    {
+                        TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
+                        IControlGenerator generator = writer.FindControlGenerator(childCtrl);
+
+                        // make sure we ignore Button etc
+                        if (generator.GetType().ToString().EndsWith("ReportGenerator"))
+                        {
+                            childCtrl.SetAttribute("DependsOnRadioButton", "");
+                            ReportControls.GenerateReadSetControls(writer,
+                                childCtrl.xmlNode,
+                                RadioButtonReadControlsSnippet,
+                                generator.TemplateSnippetName);
+                            childCtrl.SetAttribute("DependsOnRadioButton", "true");
+                        }
+                    }
+                }
+
+                writer.Template.InsertSnippet("READCONTROLS", RadioButtonReadControlsSnippet);
+
+                ProcessTemplate RadioButtonSetControlsSnippet = writer.Template.GetSnippet("RADIOBUTTONSETCONTROLS");
+                RadioButtonSetControlsSnippet.SetCodelet("RBTNAME", rbtName);
+                RadioButtonSetControlsSnippet.SetCodelet("PARAMNAME", paramName);
+                RadioButtonSetControlsSnippet.SetCodelet("RBTVALUE", rbtValue);
+                RadioButtonSetControlsSnippet.SetCodelet("SETCONTROLS", "");
+
+                // only assign variables that make sense
+                if (childControls != null)
+                {
+                    StringCollection childControlNames = TYml2Xml.GetElements(childControls);
+
+                    foreach (string childName in childControlNames)
+                    {
+                        TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
+                        IControlGenerator generator = writer.FindControlGenerator(childCtrl);
+
+                        // make sure we ignore Button etc
+                        if (generator.GetType().ToString().EndsWith("ReportGenerator"))
+                        {
+                            childCtrl.SetAttribute("DependsOnRadioButton", "");
+                            ReportControls.GenerateReadSetControls(writer,
+                                childCtrl.xmlNode,
+                                RadioButtonSetControlsSnippet,
+                                generator.TemplateSnippetName);
+                            childCtrl.SetAttribute("DependsOnRadioButton", "true");
+                        }
+                    }
+                }
+
+                writer.Template.InsertSnippet("SETCONTROLS", RadioButtonSetControlsSnippet);
             }
         }
     }

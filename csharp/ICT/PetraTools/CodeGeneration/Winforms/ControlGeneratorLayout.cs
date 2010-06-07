@@ -512,7 +512,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public void CreateCode(IFormWriter writer, TControlDef ctrl)
         {
             XmlNode curNode = ctrl.xmlNode;
-            IControlGenerator ctrlGenerator = writer.FindControlGenerator(curNode);
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
 
             string controlName = ctrl.controlName;
 
@@ -604,6 +604,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (string ChildControlName in childControls)
                     {
                         TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
+                        ChildControl.SetAttribute("DependsOnRadioButton", "true");
                         TlpGenerator.CreateCode(writer, ChildControl);
                     }
 
@@ -622,7 +623,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // we don't need to add another table layout for just one other control
                     TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
+                    ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
+                    IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
                     ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
                     ChildGenerator.SetControlProperties(writer, ChildCtrl);
                 }

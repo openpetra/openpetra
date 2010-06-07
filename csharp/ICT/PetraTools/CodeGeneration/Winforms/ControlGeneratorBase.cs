@@ -44,6 +44,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
         public bool FHasReadOnlyProperty = false;
         public bool FAddControlToContainer = true;
+        public string FTemplateSnippetName = "";
         public bool FRequiresChildren = false;
         public Int32 FDefaultWidth = 150;
         public Int32 FDefaultHeight = 28;
@@ -51,15 +52,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public static TCodeStorage FCodeStorage;
 
         public TControlGenerator(string APrefix, System.Type AControlType)
+            : this(APrefix, AControlType.ToString())
         {
-            FPrefix = APrefix;
-            FControlType = AControlType.ToString();
         }
 
         public TControlGenerator(string APrefix, string AControlType)
         {
             FPrefix = APrefix;
             FControlType = AControlType;
+            FTemplateSnippetName = AControlType;
+
+            if (FTemplateSnippetName.IndexOf(".") != -1)
+            {
+                FTemplateSnippetName = FTemplateSnippetName.Substring(FTemplateSnippetName.LastIndexOf(".") + 1).ToUpper();
+            }
         }
 
         /// <summary>
@@ -95,6 +101,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// the name of the snippet in the template for Readcontrols and setcontrols, in captial letters
+        /// </summary>
+        public string TemplateSnippetName
+        {
+            get
+            {
+                return FTemplateSnippetName;
+            }
+            set
+            {
+                FTemplateSnippetName = value;
+            }
+        }
+
         public bool AddControlToContainer
         {
             get
@@ -103,7 +124,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             set
             {
-                AddControlToContainer = value;
+                FAddControlToContainer = value;
             }
         }
 
@@ -1068,13 +1089,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 addChildren = addChildren + UniqueChildName;                 //child.Name; //controlName;
 
-                IControlGenerator ctrlGenerator = writer.FindControlGenerator(child);
-
-                // add control itself
-                if ((ControlDefChild != null) && (ctrlGenerator != null))
+                if (ControlDefChild != null)
                 {
-                    ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
-                    ctrlGenerator.SetControlProperties(writer, ControlDefChild);
+                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ControlDefChild);
+
+                    // add control itself
+                    if (ctrlGenerator != null)
+                    {
+                        ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
+                        ctrlGenerator.SetControlProperties(writer, ControlDefChild);
+                    }
                 }
             }
 

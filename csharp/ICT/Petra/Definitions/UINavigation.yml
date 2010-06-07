@@ -51,6 +51,8 @@ OpenPetra:
                     PublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
                     BulkAddressReport: {Label=&Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
+                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
+                    SpecialTypes: {Label=Setup Partner Types, Description=Add new Special Types for the Partner Edit screen,  ActionOpenScreen=TFrmPartnerTypeSetup}
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber

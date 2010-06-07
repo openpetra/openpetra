@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public static void NewPartner(IntPtr AParentFormHandle)
         {
-            TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
 
             frm.SetParameters(TScreenMode.smNew, "FAMILY", -1, -1, "");
             frm.Show();
@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// create a new organisation (eg. supplier)
         public static void NewOrganisation(IntPtr AParentFormHandle)
         {
-            TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
 
             frm.SetParameters(TScreenMode.smNew, "ORGANISATION", -1, -1, "");
             frm.Show();
@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// create a new person
         public static void NewPerson(IntPtr AParentFormHandle)
         {
-            TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();

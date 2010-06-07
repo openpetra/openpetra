@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       FPetraUtilsObject.FXMLFiles = "Finance\\\\accountdetail.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml";
       FPetraUtilsObject.FReportName = "Account Detail";
       FPetraUtilsObject.FCurrentReport = "Account Detail";
-	  FPetraUtilsObject.FSettingsDirectory = "Finance";
+      FPetraUtilsObject.FSettingsDirectory = "Finance";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
@@ -159,9 +159,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       rbtAccountListCheckedChanged(null, null);
       rbtCostCentreRangeCheckedChanged(null, null);
       rbtCostCentreListCheckedChanged(null, null);
-	
-	
-	  FPetraUtilsObject.LoadDefaultSettings();
+
+      FPetraUtilsObject.LoadDefaultSettings();
     }
 
     void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
@@ -248,66 +247,74 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       ACalc.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
       if (this.cmbCurrency.SelectedItem != null)
       {
-        ACalc.AddParameter("param_currency", this.cmbCurrency.SelectedItem.ToString());
+          ACalc.AddParameter("param_currency", this.cmbCurrency.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_currency", "");
+          ACalc.AddParameter("param_currency", "");
       }
-      ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
-      ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
-      ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      ACalc.AddParameter("param_start_date", this.dtpDateStart.Date);
-      ACalc.AddParameter("param_end_date", this.dtpDateEnd.Date);
       if (rbtPeriodRange.Checked)
       {
-        ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
+          ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
+
+          ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
+          ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
+          ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
       }
       if (rbtDateRange.Checked)
       {
-        ACalc.AddParameter("param_rgrPeriod", "DateRange");
+          ACalc.AddParameter("param_rgrPeriod", "DateRange");
+
+          ACalc.AddParameter("param_start_date", this.dtpDateStart.Date);
+          ACalc.AddParameter("param_end_date", this.dtpDateEnd.Date);
       }
-      ACalc.AddParameter("param_reference_start", this.txtReferenceFrom.Text);
-      ACalc.AddParameter("param_reference_end", this.txtReferenceTo.Text);
-      ACalc.AddParameter("param_analyis_type_start", this.txtAnalysisTypeFrom.Text);
-      ACalc.AddParameter("param_analyis_type_end", this.txtAnalysisTypeTo.Text);
       if (rbtSortByAccount.Checked)
       {
-        ACalc.AddParameter("param_sortby", "Account");
+          ACalc.AddParameter("param_sortby", "Account");
       }
       if (rbtSortByCostCentre.Checked)
       {
-        ACalc.AddParameter("param_sortby", "Cost Centre");
+          ACalc.AddParameter("param_sortby", "Cost Centre");
       }
       if (rbtSortByReference.Checked)
       {
-        ACalc.AddParameter("param_sortby", "Reference");
+          ACalc.AddParameter("param_sortby", "Reference");
+
+          ACalc.AddParameter("param_reference_start", this.txtReferenceFrom.Text);
+          ACalc.AddParameter("param_reference_end", this.txtReferenceTo.Text);
       }
       if (rbtSortByAnalysisType.Checked)
       {
-        ACalc.AddParameter("param_sortby", "Analysis Type");
+          ACalc.AddParameter("param_sortby", "Analysis Type");
+
+          ACalc.AddParameter("param_analyis_type_start", this.txtAnalysisTypeFrom.Text);
+          ACalc.AddParameter("param_analyis_type_end", this.txtAnalysisTypeTo.Text);
       }
-      ACalc.AddParameter("param_account_code_start", this.cmbAccountStart.GetSelectedString());
-      ACalc.AddParameter("param_account_code_end", this.cmbAccountEnd.GetSelectedString());
-      ACalc.AddParameter("param_account_codes", this.clbAccounts.GetCheckedStringList());
       if (rbtAccountRange.Checked)
       {
-        ACalc.AddParameter("param_rgrAccounts", "AccountRange");
+          ACalc.AddParameter("param_rgrAccounts", "AccountRange");
+
+          ACalc.AddParameter("param_account_code_start", this.cmbAccountStart.GetSelectedString());
+          ACalc.AddParameter("param_account_code_end", this.cmbAccountEnd.GetSelectedString());
       }
       if (rbtAccountList.Checked)
       {
-        ACalc.AddParameter("param_rgrAccounts", "AccountList");
+          ACalc.AddParameter("param_rgrAccounts", "AccountList");
+
+          ACalc.AddParameter("param_account_codes", this.clbAccounts.GetCheckedStringList());
       }
-      ACalc.AddParameter("param_cost_centre_code_start", this.cmbCostCentreStart.GetSelectedString());
-      ACalc.AddParameter("param_cost_centre_code_end", this.cmbCostCentreEnd.GetSelectedString());
-      ACalc.AddParameter("param_cost_centre_codes", this.clbCostCentres.GetCheckedStringList());
       if (rbtCostCentreRange.Checked)
       {
-        ACalc.AddParameter("param_rgrCostCentres", "CostCentreRange");
+          ACalc.AddParameter("param_rgrCostCentres", "CostCentreRange");
+
+          ACalc.AddParameter("param_cost_centre_code_start", this.cmbCostCentreStart.GetSelectedString());
+          ACalc.AddParameter("param_cost_centre_code_end", this.cmbCostCentreEnd.GetSelectedString());
       }
       if (rbtCostCentreList.Checked)
       {
-        ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
+          ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
+
+          ACalc.AddParameter("param_cost_centre_codes", this.clbCostCentres.GetCheckedStringList());
       }
       ReadControlsManual(ACalc, AReportAction);
 
@@ -322,41 +329,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       cmbAccountHierarchy.SetSelectedString(AParameters.Get("param_account_hierarchy_c").ToString());
       cmbCurrency.SelectedValue = AParameters.Get("param_currency").ToString();
-      txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-      txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-      cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      DateTime dtpDateStartDate = AParameters.Get("param_start_date").ToDate();
-      if ((dtpDateStartDate <= DateTime.MinValue)
-          || (dtpDateStartDate >= DateTime.MaxValue))
-      {
-          dtpDateStartDate = DateTime.Now;
-      }
-      dtpDateStart.Date = dtpDateStartDate;
-      DateTime dtpDateEndDate = AParameters.Get("param_end_date").ToDate();
-      if ((dtpDateEndDate <= DateTime.MinValue)
-          || (dtpDateEndDate >= DateTime.MaxValue))
-      {
-          dtpDateEndDate = DateTime.Now;
-      }
-      dtpDateEnd.Date = dtpDateEndDate;
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
       rbtDateRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "DateRange";
-      txtReferenceFrom.Text = AParameters.Get("param_reference_start").ToString();
-      txtReferenceTo.Text = AParameters.Get("param_reference_end").ToString();
-      txtAnalysisTypeFrom.Text = AParameters.Get("param_analyis_type_start").ToString();
-      txtAnalysisTypeTo.Text = AParameters.Get("param_analyis_type_end").ToString();
       rbtSortByAccount.Checked = AParameters.Get("param_sortby").ToString() == "Account";
       rbtSortByCostCentre.Checked = AParameters.Get("param_sortby").ToString() == "Cost Centre";
       rbtSortByReference.Checked = AParameters.Get("param_sortby").ToString() == "Reference";
       rbtSortByAnalysisType.Checked = AParameters.Get("param_sortby").ToString() == "Analysis Type";
-      cmbAccountStart.SetSelectedString(AParameters.Get("param_account_code_start").ToString());
-      cmbAccountEnd.SetSelectedString(AParameters.Get("param_account_code_end").ToString());
-      clbAccounts.SetCheckedStringList(AParameters.Get("param_account_codes").ToString());
       rbtAccountRange.Checked = AParameters.Get("param_rgrAccounts").ToString() == "AccountRange";
       rbtAccountList.Checked = AParameters.Get("param_rgrAccounts").ToString() == "AccountList";
-      cmbCostCentreStart.SetSelectedString(AParameters.Get("param_cost_centre_code_start").ToString());
-      cmbCostCentreEnd.SetSelectedString(AParameters.Get("param_cost_centre_code_end").ToString());
-      clbCostCentres.SetCheckedStringList(AParameters.Get("param_cost_centre_codes").ToString());
       rbtCostCentreRange.Checked = AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreRange";
       rbtCostCentreList.Checked = AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreList";
     }
@@ -370,8 +350,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
-	
-	
 
     }
 #endregion
@@ -412,26 +390,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     /// <summary>
     /// initialisation
     /// </summary>
-	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
+    /// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// Checks / Unchecks the menu item "Wrap Columns"
     /// </summary>
-	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
-	public void CheckWrapColumnMenuItem(bool ACheck)
+    /// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+    public void CheckWrapColumnMenuItem(bool ACheck)
     {
-    	this.mniWrapColumn.Checked = ACheck;
+        this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
-	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
+    /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -450,7 +428,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
-	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -473,9 +451,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
-	/// <param name="AIndex"></param>
-	/// <param name="mniItem"></param>
-	/// <param name="tbbItem"></param>
+    /// <param name="AIndex"></param>
+    /// <param name="mniItem"></param>
+    /// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)

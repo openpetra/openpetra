@@ -560,8 +560,7 @@ namespace Ict.Petra.Client.MCommon
                 btnCreatedLocation.UpdateFields(FLocationDV);
                 btnCreatedPartnerLocation.UpdateFields(FPartnerLocationDV);
 
-
-                cmbLocationType.SelectedValue = ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType;
+                cmbLocationType.SetSelectedString(((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType);
 
                 if (((PLocationRow)FLocationDV[0].Row).IsCountryCodeNull())
                 {

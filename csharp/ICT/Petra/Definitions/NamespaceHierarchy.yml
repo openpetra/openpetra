@@ -27,6 +27,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
+            WebConnectors: {Description=Web Connectors}
     Personnel: {Description=Personnel Module}
         Person: {Description=Person Sub-System}
             DataElements: {Description=DataElements Sub-System}

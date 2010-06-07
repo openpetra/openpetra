@@ -44,6 +44,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
@@ -1279,6 +1280,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
                                string APassword,
                                string AModulePermissions)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "CreateUser");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
         }
 
@@ -2155,7 +2157,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
         public Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo()
         {
             #region ManualCode
-            return TUserManager.ReloadCachedUserInfo();
+            return Ict.Petra.Server.MSysMan.Security.TUserManager.ReloadCachedUserInfo();
             #endregion ManualCode
         }
 
@@ -2163,7 +2165,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
         public void SignalReloadCachedUserInfo(System.String AUserID)
         {
             #region ManualCode
-            TUserManager.SignalReloadCachedUserInfo(AUserID);
+            Ict.Petra.Server.MSysMan.Security.TUserManager.SignalReloadCachedUserInfo(AUserID);
             #endregion ManualCode
         }
     }

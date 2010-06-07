@@ -65,6 +65,7 @@ using Ict.Petra.Shared.Interfaces.MPartner.PartnerMerge.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MPartner
 {
     /// <summary>auto generated</summary>
@@ -751,6 +752,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        ITableMaintenanceWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -761,6 +768,21 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance.UIConnectors
     /// <summary>auto generated</summary>
     public interface ITableMaintenanceUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPartner.TableMaintenance.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface ITableMaintenanceWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors.TPartnerSetupWebConnector)</summary>
+        PartnerSetupTDS LoadPartnerTypes();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors.TPartnerSetupWebConnector)</summary>
+        TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS,
+                                                          out TVerificationResultCollection AVerificationResult);
     }
 
 }

@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
 
             try
             {
-                TPartnerEditDSWinForm frm = new TPartnerEditDSWinForm(this.Handle);
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
                 frm.SetParameters(TScreenMode.smEdit, FMainDS.AApSupplier[0].PartnerKey);
                 frm.Show();
             }

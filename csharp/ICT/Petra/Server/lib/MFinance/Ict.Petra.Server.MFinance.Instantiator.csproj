@@ -79,6 +79,10 @@
     <Compile Include="Instantiator.AutoHierarchy.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MFinance.csproj">
       <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
       <Name>Ict.Petra.Server.MFinance</Name>

@@ -2,6 +2,8 @@
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
   
     <DataSet name="PartnerEditTDS">
         <Table sqltable="p_partner"/>
@@ -264,4 +266,35 @@
             <PrimaryKey thisFields="p_partner_key_n"/>
         </Table>
     </DataSet>
+
+    <DataSet name="PartnerSetupTDS">
+        <Table sqltable="p_country"/>
+        <Table sqltable="p_language"/>
+        <Table sqltable="p_partner_status"/>
+        <Table sqltable="p_acquisition"/>
+        <Table sqltable="p_type"/>
+        <Table sqltable="p_email"/>
+        
+        <Table sqltable="p_denomination"/>
+        
+        <Table sqltable="p_occupation"/>
+        <Table sqltable="pt_marital_status"/>
+        
+        <Table sqltable="a_frequency"/>
+        
+        <Table sqltable="p_relation"/>
+        <Table sqltable="p_relation_category"/>
+
+        <Table sqltable="p_interest"/>
+        <Table sqltable="p_interest_category"/>
+
+        <Table sqltable="p_method_of_contact"/>
+        <Table sqltable="p_contact_attribute"/>
+
+        <Table sqltable="p_publication"/>
+        <Table sqltable="p_publication_cost"/>
+        <Table sqltable="p_reason_subscription_given"/>
+        <Table sqltable="p_reason_subscription_cancelled"/>
+    </DataSet>
+
 </PetraDataSets>

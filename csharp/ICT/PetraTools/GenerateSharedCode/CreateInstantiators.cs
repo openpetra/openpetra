@@ -53,6 +53,27 @@ class CreateInstantiators : AutoGenerationWriter
         return loaderClassSnippet;
     }
 
+    private ProcessTemplate CreateModuleAccessPermissionCheck(ProcessTemplate ATemplate, string AConnectorClassWithNamespace, MethodNode m)
+    {
+        if (m.Attributes != null)
+        {
+            foreach (AttributeNode attr in m.Attributes)
+            {
+                if (CSParser.GetName(attr.Name) == "RequireModulePermission")
+                {
+                    ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
+                    snippet.SetCodelet("METHODNAME", CSParser.GetName(m.Names));
+                    snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
+                    return snippet;
+                }
+            }
+        }
+
+        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
+
+        return new ProcessTemplate();
+    }
+
     private ProcessTemplate CreateInstanceOfConnector(ProcessTemplate ATemplate, InterfaceMethodNode m, string ATypeConnector)
     {
         bool outHasBeenFound = false;
@@ -303,6 +324,11 @@ class CreateInstantiators : AutoGenerationWriter
                 ProcedureSnippet.SetCodelet("PROCEDUREHEADER", formattedMethod);
 
                 // eg: return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
+                ProcedureSnippet.InsertSnippet("CHECKUSERMODULEPERMISSIONS",
+                    CreateModuleAccessPermissionCheck(
+                        ATemplate,
+                        ConnectorNamespace + "." + CSParser.GetName(connectorClass.Name),
+                        m));
                 ProcedureSnippet.SetCodelet("CALLPROCEDURE", "return " + ConnectorNamespace + "." +
                     CSParser.GetName(connectorClass.Name) + "." +
                     MethodName + "(" + actualParameters + ");");

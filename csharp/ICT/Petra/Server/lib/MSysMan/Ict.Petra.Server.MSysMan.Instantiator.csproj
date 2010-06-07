@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{65837962-CBC5-4E5A-B75E-9ADCBD9DDD49}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -77,6 +77,10 @@
     <Compile Include="Instantiator.AutoHierarchy.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Server.MSysMan.csproj">
       <Project>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</Project>
       <Name>Ict.Petra.Server.MSysMan</Name>

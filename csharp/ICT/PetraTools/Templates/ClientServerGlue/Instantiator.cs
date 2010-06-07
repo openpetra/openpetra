@@ -19,6 +19,7 @@ using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 {##TOPLEVELNAMESPACE}
 namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.Instantiator
 {
@@ -256,8 +257,12 @@ namespace {#NAMESPACENAME}
 /// generated method from connector
 {#PROCEDUREHEADER}
 {
+    {#CHECKUSERMODULEPERMISSIONS}
     {#CALLPROCEDURE}
 }
+
+{##CHECKUSERMODULEPERMISSIONS}
+TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}");
 
 {##CALLPROCEDUREWITHGETDATA}
 #if DEBUGMODE

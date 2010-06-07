@@ -86,6 +86,7 @@
     <Compile Include="AddressTools.WebConnector.cs" />
     <Compile Include="Contacts.cs" />
     <Compile Include="ImportExport.cs" />
+    <Compile Include="ModuleSetup.cs" />
     <Compile Include="SimplePartnerEdit.cs" />
     <Compile Include="SimplePartnerFind.cs" />
     <Compile Include="WebConnectors.AssemblyInfo.cs" />

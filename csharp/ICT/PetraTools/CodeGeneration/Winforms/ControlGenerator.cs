@@ -1546,7 +1546,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
                     XmlNode curNode = ChildControl.xmlNode;
-                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(curNode);
+                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ChildControl);
 
                     // add control itself
                     ctrlGenerator.GenerateDeclaration(writer, ChildControl);
@@ -1779,12 +1779,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrl.GetAttribute("Panel2") + ")");
 
             TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel1"));
-            IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
+            IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
 
             ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel2"));
-            ChildGenerator = writer.FindControlGenerator(ChildCtrl.xmlNode);
+            ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
         }
@@ -1924,7 +1924,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
             TControlDef hostedCtrl = FCodeStorage.FindOrCreateControl(hostedControlName, ctrl.controlName);
 
-            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl.xmlNode);
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl);
 
             // add control itself
             if ((hostedCtrl != null) && (ctrlGenerator != null))
@@ -1950,7 +1950,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
             TControlDef hostedCtrl = FCodeStorage.FindOrCreateControl(hostedControlName, ctrl.controlName);
 
-            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl.xmlNode);
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(hostedCtrl);
 
             // add control itself
             if ((hostedCtrl != null) && (ctrlGenerator != null))

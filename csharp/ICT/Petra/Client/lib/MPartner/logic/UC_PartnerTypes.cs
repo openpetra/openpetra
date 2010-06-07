@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -64,6 +65,7 @@ namespace Ict.Petra.Client.MPartner
         private const String StrSecurityPreventsRemovalTitle = "Partner Type Removal Denied";
 
         private PartnerEditTDS FMainDS;
+        private TFrmPetraEditUtils FPetraUtilsObject;
         private DataTable FPartnerTypesGridTable;
         private PTypeTable FDataCache_PartnerTypeListTable;
         private DataView FPartnerTypesGridTableDV;
@@ -100,6 +102,15 @@ namespace Ict.Petra.Client.MPartner
             set
             {
                 FDataGrid = value;
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public TFrmPetraEditUtils PetraUtilsObject
+        {
+            set
+            {
+                FPetraUtilsObject = value;
             }
         }
 
@@ -209,6 +220,8 @@ namespace Ict.Petra.Client.MPartner
                  * due to the adding/removing of a Partner Type.
                  */
                 FillTempPartnerTypesTable();
+
+                FPetraUtilsObject.SetChangedFlag();
 
                 if (!IsRemoval)
                 {

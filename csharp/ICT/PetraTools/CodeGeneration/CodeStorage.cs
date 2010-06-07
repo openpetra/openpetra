@@ -630,6 +630,7 @@ namespace Ict.Tools.CodeGeneration
         }
 
         public string controlTypePrefix = "";
+        public IControlGenerator controlGenerator = null;
         public string parentName = "";
         public int order = -1;
         public XmlNode xmlNode = null;
