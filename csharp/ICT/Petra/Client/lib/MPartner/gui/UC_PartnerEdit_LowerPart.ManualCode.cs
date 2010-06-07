@@ -35,7 +35,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Fields
 
-        private TFrmPartnerEdit2.TModuleSwitchEnum FCurrentModuleTabGroup;
+        private TFrmPartnerEdit.TModuleSwitchEnum FCurrentModuleTabGroup;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
 
@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Properties
 
         /// <summary>todoComment</summary>
-        public TFrmPartnerEdit2.TModuleSwitchEnum CurrentModuleTabGroup
+        public TFrmPartnerEdit.TModuleSwitchEnum CurrentModuleTabGroup
         {
             get
             {
@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             switch (FCurrentModuleTabGroup)
             {
-                case TFrmPartnerEdit2.TModuleSwitchEnum.msPartner:
+                case TFrmPartnerEdit.TModuleSwitchEnum.msPartner:
 
                     ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
                     ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void DisableNewButtonOnAutoCreatedAddress()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void CleanupAddressesBeforeMerge()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshAddressesAfterMerge()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -224,7 +224,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AParameterDT"></param>
         public void SimilarLocationsProcessing(PartnerAddressAggregateTDSSimilarLocationParametersTable AParameterDT)
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AddressAddedOrChangedProcessing(PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
             PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit2.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
                 {

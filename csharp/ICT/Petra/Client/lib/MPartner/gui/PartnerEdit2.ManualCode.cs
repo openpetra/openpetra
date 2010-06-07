@@ -42,7 +42,7 @@ using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TFrmPartnerEdit2
+    public partial class TFrmPartnerEdit
     {
         #region Enums
 
@@ -781,7 +781,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Initializes a new instance of the TPartnerEditDSWinForm class (constructor)
+        /// Initializes a new instance of the TFrmPartnerEdit class (constructor)
         /// </summary>
         public void InitializeManualCode()
         {
@@ -1549,7 +1549,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void UcoPartnerTabSet_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
         {
-            // MessageBox.Show('TPartnerEditDSWinForm.ucoPartnerTabEnableDisableOtherScreenParts = ' + e.Enable.ToString + ')';
+            // MessageBox.Show('TFrmPartnerEdit.ucoPartnerTabEnableDisableOtherScreenParts = ' + e.Enable.ToString + ')';
             EnableDisableUpperPart(e.Enable);
 
 // TODO            tbrMain.Enabled = e.Enable;

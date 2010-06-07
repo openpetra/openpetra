@@ -770,11 +770,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, CurrentMenu.Tag);
 
                     // Open the Partner Edit screen
-                    TPartnerEditDSWinForm frmPEDS;
+                    TFrmPartnerEdit frmPEDS;
 
                     this.Cursor = Cursors.WaitCursor;
 
-                    frmPEDS = new TPartnerEditDSWinForm(this.Handle);
+                    frmPEDS = new TFrmPartnerEdit(this.Handle);
                     frmPEDS.SetParameters(TScreenMode.smEdit, (long)CurrentMenu.Tag);
                     frmPEDS.Show();
 
@@ -1350,11 +1350,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Open the Partner Edit screen
-            TPartnerEditDSWinForm frmPEDS;
+            TFrmPartnerEdit frmPEDS;
 
             this.Cursor = Cursors.WaitCursor;
 
-            frmPEDS = new TPartnerEditDSWinForm();
+            frmPEDS = new TFrmPartnerEdit();
             frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
             frmPEDS.Show();
 

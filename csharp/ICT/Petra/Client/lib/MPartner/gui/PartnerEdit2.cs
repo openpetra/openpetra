@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated: Partner Edit
-  public partial class TFrmPartnerEdit2: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmPartnerEdit: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     private Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit FUIConnector = null;
 
     /// constructor
-    public TFrmPartnerEdit2(IntPtr AParentFormHandle) : base()
+    public TFrmPartnerEdit(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
