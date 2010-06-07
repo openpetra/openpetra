@@ -85,10 +85,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
-                else if (ATablename == PContactAttributeTable.GetTableDBName())
-                {
-                	tempTable = PContactAttributeAccess.LoadAll(ReadTransaction);
-                }
                 else
                 {
                     throw new Exception("TCommonDataReader.LoadData: unknown table " + ATablename);

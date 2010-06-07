@@ -345,12 +345,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Environment.NewLine);
         }
     }
-    
+
     public class SourceGridReportGenerator : SourceGridGenerator
     {
-    	public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
-    	{
-    		string controlName = curNode.Name;
+        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        {
+            string controlName = curNode.Name;
 
             writer.Template.AddToCodelet("INITIALISESCREEN",
                 controlName + "_InitialiseData(FPetraUtilsObject);" +
@@ -367,6 +367,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //            writer.Template.AddToCodelet("SETAVAILABLEFUNCTIONS",
 //                controlName + "_SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());" +
 //                Environment.NewLine);
-    	}
+        }
     }
 }

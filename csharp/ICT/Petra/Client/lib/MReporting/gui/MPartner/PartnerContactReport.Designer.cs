@@ -360,6 +360,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.grdDetail.Name = "grdDetail";
             this.grdDetail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdDetail.DoubleClick += new System.EventHandler(this.grdDetailDoubleClick);
             //
             // pnlDummy
             //
@@ -385,6 +386,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.btnAddDetail.Location = new System.Drawing.Point(2,2);
             this.btnAddDetail.Name = "btnAddDetail";
             this.btnAddDetail.AutoSize = true;
+            this.btnAddDetail.Click += new System.EventHandler(this.AddDetail);
             this.btnAddDetail.Text = "AddDetail";
             //
             // btnRemoveDetail
@@ -392,6 +394,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.btnRemoveDetail.Location = new System.Drawing.Point(2,2);
             this.btnRemoveDetail.Name = "btnRemoveDetail";
             this.btnRemoveDetail.AutoSize = true;
+            this.btnRemoveDetail.Click += new System.EventHandler(this.RemoveDetail);
             this.btnRemoveDetail.Text = "Remove Detail";
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

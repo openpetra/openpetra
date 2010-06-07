@@ -30,6 +30,7 @@ using System.Data;
 using Mono.Unix;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using System.Resources;
 using System.Collections.Specialized;
@@ -42,7 +43,6 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
 
 
-
 using Ict.Petra.Shared.MCommon.Data;
 
 
@@ -53,66 +53,130 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// </summary>
     public partial class TFrmPartnerContactReport
     {
-		protected void grdAttribute_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-		{
-			
-			Ict.Common.Data.TTypedDataTable TypedTable;
-			TRemote.MCommon.DataReader.GetData(PContactAttributeTable.GetTableDBName(), null, out TypedTable);
+        private PContactAttributeDetailTable FContactAttributesTable;
+        private PContactAttributeDetailTable FSelectionTable;
 
-			PContactAttributeTable ContactAttributeTable = new PContactAttributeTable();
-			ContactAttributeTable.Merge(TypedTable);
-			grdAttribute.Columns.Clear();
-			grdAttribute.AddTextColumn("Attribute", ContactAttributeTable.ColumnContactAttributeCode);
+        protected void grdAttribute_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+            // Load Contact Attributes
+            PContactAttributeTable ContactAttributeTable = (PContactAttributeTable)TDataCache.TMPartner.GetCacheableMailingTable(
+                TCacheableMailingTablesEnum.ContactAttributeList);
 
-//			FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-			
-			DataView myDataView = TypedTable.DefaultView;
-			myDataView.AllowNew = false;
-			grdAttribute.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-			grdAttribute.AutoSizeCells();
-		}
-		protected void grdDetail_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-		{
-			PContactAttributeDetailTable DetailTable = new PContactAttributeDetailTable();
-			
-			grdDetail.Columns.Clear();
-			grdDetail.AddTextColumn("Detail", DetailTable.ColumnContactAttrDetailCode);
-			grdDetail.AddTextColumn("Description", DetailTable.ColumnContactAttrDetailDescr);
-			grdDetail.AutoSizeCells();
-		}
-		protected void grdSelection_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-		{
-//			grdSelection.AddTextColumn("Attribute", );
-//			grdSelection.AddTextColumn("Detail", );
-//			grdSelection.AddTextColumn("Description", );
-		}
-		protected void grdAttribute_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-		{
-			
-		}
-		protected void grdDetail_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-		{
-			
-		}
-		protected void grdSelection_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-		{
-			
-		}
-		protected void grdAttribute_SetControls(TParameterList AParameters)
-		{
-			
-		}
-		protected void grdDetail_SetControls(TParameterList AParameters)
-		{
-			
-		}
-		protected void grdSelection_SetControls(TParameterList AParameters)
-		{
-			
-		}
-		protected void AttributeFocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
-		{
-			
-		}
-	}
+            grdAttribute.Columns.Clear();
+            grdAttribute.AddTextColumn("Attribute", ContactAttributeTable.ColumnContactAttributeCode);
+
+            DataView myDataView = ContactAttributeTable.DefaultView;
+            myDataView.AllowNew = false;
+            grdAttribute.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdAttribute.AutoSizeCells();
+        }
+
+        protected void grdDetail_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+            FContactAttributesTable = (PContactAttributeDetailTable)
+                                      TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.ContactAttributeDetailList);
+
+            grdDetail.Columns.Clear();
+            grdDetail.AddTextColumn("Attribute", FContactAttributesTable.ColumnContactAttributeCode);
+            grdDetail.AddTextColumn("Detail", FContactAttributesTable.ColumnContactAttrDetailCode);
+            grdDetail.AddTextColumn("Description", FContactAttributesTable.ColumnContactAttrDetailDescr);
+            grdDetail.Columns[0].Visible = false;
+            grdDetail.AutoSizeCells();
+        }
+
+        protected void grdSelection_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+            FSelectionTable = new PContactAttributeDetailTable();
+            FSelectionTable.DefaultView.AllowNew = false;
+            FSelectionTable.DefaultView.AllowDelete = true;
+            FSelectionTable.DefaultView.AllowEdit = false;
+
+            grdSelection.Columns.Clear();
+            grdSelection.AddTextColumn("Attribute", FSelectionTable.ColumnContactAttributeCode);
+            grdSelection.AddTextColumn("Detail", FSelectionTable.ColumnContactAttrDetailCode);
+            grdSelection.AddTextColumn("Description", FSelectionTable.ColumnContactAttrDetailDescr);
+
+            grdSelection.DataSource = new DevAge.ComponentModel.BoundDataView(FSelectionTable.DefaultView);
+            grdSelection.AutoSizeCells();
+        }
+
+        protected void grdAttribute_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+        }
+
+        protected void grdDetail_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+        }
+
+        protected void grdSelection_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+        }
+
+        protected void grdAttribute_SetControls(TParameterList AParameters)
+        {
+        }
+
+        protected void grdDetail_SetControls(TParameterList AParameters)
+        {
+        }
+
+        protected void grdSelection_SetControls(TParameterList AParameters)
+        {
+        }
+
+        protected void AttributeFocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+        {
+            String AttributeCode = "";
+
+            if (grdAttribute.SelectedDataRows.Length > 0)
+            {
+                AttributeCode = (String)((DataRowView)grdAttribute.SelectedDataRows[0]).Row[0];
+            }
+
+            PContactAttributeDetailTable tmpTable = (PContactAttributeDetailTable)FContactAttributesTable.Copy();
+
+            for (int Counter = tmpTable.Rows.Count - 1; Counter >= 0; --Counter)
+            {
+                if ((String)tmpTable.Rows[Counter][PContactAttributeDetailTable.ColumnContactAttributeCodeId] != AttributeCode)
+                {
+                    tmpTable.Rows.RemoveAt(Counter);
+                }
+            }
+
+            TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.ContactAttributeDetailList);
+
+            tmpTable.DefaultView.AllowNew = false;
+            grdDetail.DataSource = new DevAge.ComponentModel.BoundDataView(tmpTable.DefaultView);
+            grdDetail.AutoSizeCells();
+        }
+
+        protected void grdDetailDoubleClick(System.Object sender, EventArgs e)
+        {
+            String Attribute = "";
+            String Detail = "";
+            String Description = "";
+
+            if (grdDetail.SelectedDataRows.Length > 0)
+            {
+                Attribute = (String)((DataRowView)grdDetail.SelectedDataRows[0]).Row[0];
+                Detail = (String)((DataRowView)grdDetail.SelectedDataRows[0]).Row[1];
+                Description = (String)((DataRowView)grdDetail.SelectedDataRows[0]).Row[2];
+
+                PContactAttributeDetailRow newRow = (PContactAttributeDetailRow)FSelectionTable.NewRow();
+                newRow.ContactAttributeCode = Attribute;
+                newRow.ContactAttrDetailCode = Detail;
+                newRow.ContactAttrDetailDescr = Description;
+
+                FSelectionTable.Rows.Add(newRow);
+            }
+        }
+
+        protected void AddDetail(System.Object sender, EventArgs e)
+        {
+        }
+
+        protected void RemoveDetail(System.Object sender, EventArgs e)
+        {
+        }
+    }
 }

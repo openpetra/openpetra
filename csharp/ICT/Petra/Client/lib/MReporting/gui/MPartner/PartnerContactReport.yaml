@@ -72,15 +72,17 @@ RootNode:
         grdDetail:
         #~ p_contact_attribute_detail
             Dock: Fill
+            ActionDoubleClick: grdDetailDoubleClick
         grdSelection:
         #~ Holds the selected attributes
             Dock: Fill
             ColSpan: 2
         btnAddDetail:
             Label: AddDetail
+            ActionClick: AddDetail
         btnRemoveDetail:
             Label: Remove Detail
-        
+            ActionClick: RemoveDetail
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:

@@ -120,6 +120,7 @@ namespace Ict.Petra.Server.MPartner.Mailing
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
+            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 #if DEBUGMODE
@@ -138,21 +139,22 @@ namespace Ict.Petra.Server.MPartner.Mailing
 
                 try
                 {
-                    /* no standard cacheable table implemented yet.
-                     * case ACacheableTable of
-                     * :
-                     * begin
-                     * .LoadAll(TmpDT, ReadTransaction);
-                     * DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                     * TmpDT, GClientID);
-                     * end;
-                     * // Unknown Standard Cacheable DataTable
-                     * else
-                     */
+                    switch (ACacheableTable)
+                    {
+                        case TCacheableMailingTablesEnum.ContactAttributeList:
+                            TmpTable = PContactAttributeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
 
-                    // begin
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                        Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable) + "' is not available as a Standard Cacheable Table");
+                        case TCacheableMailingTablesEnum.ContactAttributeDetailList:
+                            TmpTable = PContactAttributeDetailAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+
+                        default:
+                            throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
+                            Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable) + "' is not available as a Standard Cacheable Table");
+                    }
                 }
                 finally
                 {
