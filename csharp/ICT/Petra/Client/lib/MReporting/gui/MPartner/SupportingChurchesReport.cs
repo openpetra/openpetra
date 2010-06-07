@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       FPetraUtilsObject.FXMLFiles = "Partner\\\\supportingchurchesreport.xml";
       FPetraUtilsObject.FReportName = "Supporting Churches";
       FPetraUtilsObject.FCurrentReport = "Supporting Churches";
-	  FPetraUtilsObject.FSettingsDirectory = "Partner";
+      FPetraUtilsObject.FSettingsDirectory = "Partner";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
@@ -116,13 +116,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
       ucoPartnerSelection.InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
-	
-	  ucoPartnerSelection.PetraUtilsObject = FPetraUtilsObject;
-	  ucoPartnerSelection.InitUserControl();
-	  ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
-	  ucoReportColumns.InitUserControl();
-	
-	  FPetraUtilsObject.LoadDefaultSettings();
+
+      ucoPartnerSelection.PetraUtilsObject = FPetraUtilsObject;
+      ucoPartnerSelection.InitUserControl();
+      ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportColumns.InitUserControl();
+
+      FPetraUtilsObject.LoadDefaultSettings();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -160,11 +160,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
       if (rbtPartnerName.Checked)
       {
-        ACalc.AddParameter("param_order_by", "PartnerName");
+          ACalc.AddParameter("param_order_by", "PartnerName");
       }
       if (rbtPartnerKey.Checked)
       {
-        ACalc.AddParameter("param_order_by", "PartnerKey");
+          ACalc.AddParameter("param_order_by", "PartnerKey");
       }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
@@ -192,20 +192,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
-	
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Partner Key", 2.5));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Associated Partner Key", 2.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Field", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Type/Relation", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Address", 8.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("FaxNumber", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
-	  FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.0));
-	
+
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Partner Key", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Associated Partner Key", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Field", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Type/Relation", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Address", 8.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("FaxNumber", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.0));
+
       ucoPartnerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
@@ -248,26 +248,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// <summary>
     /// initialisation
     /// </summary>
-	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
+    /// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// Checks / Unchecks the menu item "Wrap Columns"
     /// </summary>
-	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
-	public void CheckWrapColumnMenuItem(bool ACheck)
+    /// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+    public void CheckWrapColumnMenuItem(bool ACheck)
     {
-    	this.mniWrapColumn.Checked = ACheck;
+        this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
-	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
+    /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -286,7 +286,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
-	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -309,9 +309,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
-	/// <param name="AIndex"></param>
-	/// <param name="mniItem"></param>
-	/// <param name="tbbItem"></param>
+    /// <param name="AIndex"></param>
+    /// <param name="mniItem"></param>
+    /// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)

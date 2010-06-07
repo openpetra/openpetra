@@ -53,7 +53,7 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
       FPetraUtilsObject.FReportName = "{#REPORTNAME}";
       FPetraUtilsObject.FCurrentReport = "{#CURRENTREPORT}";
-	  FPetraUtilsObject.FSettingsDirectory = "{#REPORTSETTINGSDIRECTORY}";
+      FPetraUtilsObject.FSettingsDirectory = "{#REPORTSETTINGSDIRECTORY}";
       
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
@@ -63,10 +63,10 @@ namespace {#NAMESPACE}
       this.SetAvailableFunctions();
       
       {#INITIALISESCREEN}
-	  
-	  {#INITUSERCONTROLS}
-	  
-	  FPetraUtilsObject.LoadDefaultSettings();
+      
+      {#INITUSERCONTROLS}
+      
+      FPetraUtilsObject.LoadDefaultSettings();
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -110,9 +110,9 @@ namespace {#NAMESPACE}
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
-	  
-	  {#ADDAVAILABLEFUNCTIONS}
-	  
+      
+      {#ADDAVAILABLEFUNCTIONS}
+      
       {#SETAVAILABLEFUNCTIONS}
       
     }
@@ -156,26 +156,26 @@ namespace {#NAMESPACE}
     /// <summary>
     /// initialisation
     /// </summary>
-	/// <param name="AReportParameter">Initialisation values needed for some reports</param>
+    /// <param name="AReportParameter">Initialisation values needed for some reports</param>
     public void InitialiseData(String AReportParameter)
     {
         FPetraUtilsObject.InitialiseData(AReportParameter);
     }
-	
-	/// <summary>
+    
+    /// <summary>
     /// Checks / Unchecks the menu item "Wrap Columns"
     /// </summary>
-	/// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
-	public void CheckWrapColumnMenuItem(bool ACheck)
+    /// <param name="ACheck">True if menu item is to be checked. Otherwise false</param>
+    public void CheckWrapColumnMenuItem(bool ACheck)
     {
-    	this.mniWrapColumn.Checked = ACheck;
+        this.mniWrapColumn.Checked = ACheck;
     }
 #endregion
 
     /// <summary>
     /// allow to store and load settings
     /// </summary>
-	/// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
+    /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
     public void EnableSettings(bool AEnabled)
     {   
         foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
@@ -194,7 +194,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
     /// </summary>
-	/// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
     public void EnableBusy(bool ABusy)
     {
         mniClose.Enabled = !ABusy;
@@ -217,9 +217,9 @@ namespace {#NAMESPACE}
     /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
     /// </summary>
     /// <returns>false if an item with that index does not exist</returns>
-	/// <param name="AIndex"></param>
-	/// <param name="mniItem"></param>
-	/// <param name="tbbItem"></param>
+    /// <param name="AIndex"></param>
+    /// <param name="mniItem"></param>
+    /// <param name="tbbItem"></param>
     public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
     {
         if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)
@@ -241,3 +241,66 @@ namespace {#NAMESPACE}
 #endregion
   }
 }
+
+{##RADIOBUTTONREADCONTROLS}
+if ({#RBTNAME}.Checked)
+{
+    ACalc.AddParameter("{#PARAMNAME}", "{#RBTVALUE}");
+    {#READCONTROLS}
+}
+
+{##RADIOBUTTONSETCONTROLS}
+{#RBTNAME}.Checked = AParameters.Get("{#PARAMNAME}").ToString() == "{#RBTVALUE}";
+if ({#RBTNAME}.Checked)
+{
+    {#SETCONTROLS}
+}
+
+{##CHECKBOXREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Checked);
+
+{##CHECKBOXSETCONTROLS}
+{#CONTROLNAME}.Checked = AParameters.Get("{#PARAMNAME}").ToBool();
+
+{##TCMBAUTOPOPULATEDREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetSelectedString());
+
+{##TCMBAUTOPOPULATEDSETCONTROLS}
+{#CONTROLNAME}.SetSelectedString(AParameters.Get("{#PARAMNAME}").ToString());
+
+{##COMBOBOXREADCONTROLS}
+if (this.{#CONTROLNAME}.SelectedItem != null)
+{
+    ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.SelectedItem.ToString());
+}
+else
+{
+    ACalc.AddParameter("{#PARAMNAME}", "");
+}
+
+{##COMBOBOXSETCONTROLS}
+{#CONTROLNAME}.SelectedValue = AParameters.Get("{#PARAMNAME}").ToString();
+
+{##TEXTBOXREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
+
+{##TEXTBOXSETCONTROLS}
+{#CONTROLNAME}.Text = AParameters.Get("{#PARAMNAME}").ToString();
+
+{##TCLBVERSATILEREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());
+
+{##TCLBVERSATILESETCONTROLS}
+{#CONTROLNAME}.SetCheckedStringList(AParameters.Get("{#PARAMNAME}").ToString());
+
+{##TTXTPETRADATEREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Date);
+
+{##TTXTPETRADATESETCONTROLS}
+DateTime {#CONTROLNAME}Date = AParameters.Get("{#PARAMNAME}").ToDate();
+if (({#CONTROLNAME}Date <= DateTime.MinValue)
+    || ({#CONTROLNAME}Date >= DateTime.MaxValue))
+{
+    {#CONTROLNAME}Date = DateTime.Now;
+}
+{#CONTROLNAME}.Date = {#CONTROLNAME}Date;

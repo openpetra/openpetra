@@ -50,6 +50,15 @@ namespace Ict.Tools.CodeGeneration
             get;
         }
 
+        /// <summary>
+        /// the name of the snippet in the template for Readcontrols and setcontrols, in captial letters
+        /// </summary>
+        string TemplateSnippetName
+        {
+            set;
+            get;
+        }
+
         bool AddControlToContainer
         {
             set;
@@ -66,7 +75,7 @@ namespace Ict.Tools.CodeGeneration
         void SetControlProperty(string AControlName, string APropertyName, string APropertyValue);
         void SetControlProperty(TControlDef ACtrl, string APropertyName);
         void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode);
-        IControlGenerator FindControlGenerator(XmlNode curNode);
+        IControlGenerator FindControlGenerator(TControlDef ACtrlDef);
         void CallControlFunction(string AControlName, string AFunctionCall);
         void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod);
         void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation);

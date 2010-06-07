@@ -150,18 +150,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
         //    function to find out if this fits (e.g. same prefixes for same control)
         // ArrayList of ControlGenerator
         public ArrayList AvailableControlGenerators = new ArrayList();
-        public IControlGenerator FindControlGenerator(XmlNode curNode)
+        public IControlGenerator FindControlGenerator(TControlDef ACtrlDef)
         {
             IControlGenerator fittingGenerator = null;
 
+            if (ACtrlDef.controlGenerator != null)
+            {
+                return ACtrlDef.controlGenerator;
+            }
+
             foreach (IControlGenerator generator in AvailableControlGenerators)
             {
-                if (generator.ControlFitsNode(curNode))
+                if (generator.ControlFitsNode(ACtrlDef.xmlNode))
                 {
                     if (fittingGenerator != null)
                     {
                         throw new Exception(
-                            "Error: control with name " + curNode.Name + " does fit both control generators " + fittingGenerator.ControlType +
+                            "Error: control with name " + ACtrlDef.xmlNode.Name + " does fit both control generators " +
+                            fittingGenerator.ControlType +
                             " and " +
                             generator.ControlType);
                     }
@@ -172,13 +178,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (fittingGenerator == null)
             {
-                if (TYml2Xml.HasAttribute(curNode, "Type"))
+                if (TYml2Xml.HasAttribute(ACtrlDef.xmlNode, "Type"))
                 {
-                    return new TControlGenerator(curNode.Name.Substring(0, 3), TYml2Xml.GetAttribute(curNode, "Type"));
+                    return new TControlGenerator(ACtrlDef.xmlNode.Name.Substring(0, 3), TYml2Xml.GetAttribute(ACtrlDef.xmlNode, "Type"));
                 }
 
-                throw new Exception("Error: cannot find a generator for control with name " + curNode.Name);
+                throw new Exception("Error: cannot find a generator for control with name " + ACtrlDef.xmlNode.Name);
             }
+
+            ACtrlDef.controlGenerator = fittingGenerator;
 
             return fittingGenerator;
         }
@@ -611,7 +619,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
 
-            IControlGenerator generator = FindControlGenerator(ctrl.xmlNode);
+            IControlGenerator generator = FindControlGenerator(ctrl);
 
             if (generator.RequiresChildren)
             {

@@ -545,6 +545,11 @@ namespace Ict.Tools.CodeGeneration
                     AValue = "";
                 }
 
+                if (AValue.Contains("{#" + APlaceholder + "}"))
+                {
+                    throw new Exception("DoReplacePlaceHolder() Problem: Placeholder recursion, " + APlaceholder);
+                }
+
                 if (AValue.Length > 0)
                 {
                     FTemplateCode = ActivateDefinedIFDEF(FTemplateCode, APlaceholder);
