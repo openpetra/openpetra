@@ -148,8 +148,12 @@ namespace Ict.Tools.CodeGeneration
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
         {
             ASnippet.ReplaceCodelets();
+            ASnippet.FTemplateCode = ASnippet.RemoveUndefinedIFDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ActivateUndefinedIFNDEFs(ASnippet.FTemplateCode);
 
-            if (FCodelets.ContainsKey(ACodeletName) && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine))
+            if (FCodelets.ContainsKey(ACodeletName) 
+                && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine)
+                && ((string)FCodelets[ACodeletName]).Length > 0)
             {
                 AddToCodelet(ACodeletName, Environment.NewLine);
             }

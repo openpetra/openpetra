@@ -180,7 +180,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       if (rbtPeriodRange.Checked)
       {
           ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
-
           ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
           ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
           ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
@@ -188,7 +187,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       if (rbtQuarter.Checked)
       {
           ACalc.AddParameter("param_rgrPeriod", "Quarter");
-
           ACalc.AddParameter("param_quarter", this.txtQuarter.Text);
           ACalc.AddParameter("param_year_i", this.cmbPeriodYearQuarter.GetSelectedString());
       }
@@ -215,7 +213,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
       if (rbtPeriodRange.Checked)
       {
-
           txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
           txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
           cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
@@ -223,7 +220,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
       if (rbtQuarter.Checked)
       {
-
           txtQuarter.Text = AParameters.Get("param_quarter").ToString();
           cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }

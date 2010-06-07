@@ -251,10 +251,12 @@ if ({#RBTNAME}.Checked)
 
 {##RADIOBUTTONSETCONTROLS}
 {#RBTNAME}.Checked = AParameters.Get("{#PARAMNAME}").ToString() == "{#RBTVALUE}";
+{#IFDEF SETCONTROLS}
 if ({#RBTNAME}.Checked)
 {
     {#SETCONTROLS}
 }
+{#ENDIF SETCONTROLS}
 
 {##CHECKBOXREADCONTROLS}
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Checked);

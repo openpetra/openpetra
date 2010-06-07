@@ -192,7 +192,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       if (rbtSelectedCostCentres.Checked)
       {
           ACalc.AddParameter("param_costcentreoptions", "SelectedCostCentres");
-
           ACalc.AddParameter("param_cost_centre_codes", this.clbCostCentres.GetCheckedStringList());
       }
       if (rbtAllCostCentres.Checked)
@@ -237,6 +236,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
       cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       rbtSelectedCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "SelectedCostCentres";
+      if (rbtSelectedCostCentres.Checked)
+      {
+          clbCostCentres.SetCheckedStringList(AParameters.Get("param_cost_centre_codes").ToString());
+      }
       rbtAllCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AllCostCentres";
       rbtAllActiveCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AllActiveCostCentres";
       rbtAccountLevel.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AccountLevel";
