@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
     }
 
-    public partial class TUC_PartnerEdit_PartnerTabSet2
+    public partial class TUC_PartnerEdit_PartnerTabSet
     {
         #region TODO ResourceStrings
 
@@ -300,8 +300,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
-                TUC_PartnerDetails_Family2 UCPartnerDetailsFamily =
-                    (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
+                TUC_PartnerDetails_Family UCPartnerDetailsFamily =
+                    (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
                 UCPartnerDetailsFamily.GetDataFromControls2();
             }
         }
@@ -512,7 +512,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 CountAll;
             Int32 CountActive;
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerAddresses))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerAddresses))
             {
                 if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
                 {
@@ -556,7 +556,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerSubscriptions))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerSubscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -593,7 +593,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerTypes))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerTypes))
             {
                 if (FMainDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
                 {
@@ -606,7 +606,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUC_FamilyMembers))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
             {
                 // determine Tab Title
                 if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
@@ -630,7 +630,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
 #if TODO
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUCPartnerInterests))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerInterests))
             {
                 if (FMainDS.Tables.Contains(PPartnerInterestTable.GetTableName()))
                 {
@@ -644,7 +644,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 #endif
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet2) || (ASender is TUC_PartnerNotes))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerNotes))
             {
                 if ((FMainDS.PPartner[0].IsCommentNull()) || (FMainDS.PPartner[0].Comment == ""))
                 {

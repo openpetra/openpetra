@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from PartnerEdit2.yaml
+// auto generated with nant generateWinforms from PartnerEdit.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -787,7 +787,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmPartnerEdit2
+            // TFrmPartnerEdit
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -801,7 +801,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmPartnerEdit2";
+            this.Name = "TFrmPartnerEdit";
             this.Text = "Partner Edit";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

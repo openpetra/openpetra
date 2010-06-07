@@ -25,7 +25,7 @@ using System;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TUC_PartnerDetails_Family2
+    public partial class TUC_PartnerDetails_Family
     {
         #region Public Methods
 
