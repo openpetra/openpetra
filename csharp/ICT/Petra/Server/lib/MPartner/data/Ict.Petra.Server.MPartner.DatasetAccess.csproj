@@ -61,12 +61,6 @@
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
-      <HintPath>..\..\..\..\..\..\..\..\openpetraorg.omuk\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
-      <HintPath>..\..\..\..\..\..\..\..\openpetraorg.omuk\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
