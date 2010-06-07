@@ -436,7 +436,7 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList),
                     "p_language_code_c",
                     "p_language_description_c",
-                    "#VALUE#, p_language_description_c");
+                    null);
                     break;
 
                 case TListTableEnum.LocationTypeList:

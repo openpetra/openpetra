@@ -718,8 +718,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                // If ALT held down, show the new, generated Partner Edit screen, otherwise the conventional one.
-                if (System.Windows.Forms.Form.ModifierKeys == Keys.Alt)
+                // If ALT held down, show the conventional screen, otherwise the new, generated one.
+                if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
                     TFrmPartnerEdit2 frm = new TFrmPartnerEdit2(this.Handle);
 

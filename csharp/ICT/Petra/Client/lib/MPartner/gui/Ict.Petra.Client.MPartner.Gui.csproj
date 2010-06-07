@@ -183,7 +183,9 @@
     <Compile Include="UC_PartnerDetails_Family2.Designer.cs">
       <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
     </Compile>
-    <Compile Include="UC_PartnerDetails_Family2.ManualCode.cs" />
+    <Compile Include="UC_PartnerDetails_Family2.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Family2.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerDetails_Person2.ManualCode.cs">
       <DependentUpon>UC_PartnerDetails_Person2.cs</DependentUpon>
     </Compile>

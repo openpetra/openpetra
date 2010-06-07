@@ -553,6 +553,12 @@ namespace Ict.Petra.Client.MCommon
 
             ApplySecurity();
             OnHookupDataChange(new System.EventArgs());
+
+            // initial state of buttons. show edit and delete button
+            btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
+            btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
+            btnEditRecord.ImageIndex = 1;
+            btnDeleteRecord.ImageIndex = 2;
         }
 
         /// <summary>

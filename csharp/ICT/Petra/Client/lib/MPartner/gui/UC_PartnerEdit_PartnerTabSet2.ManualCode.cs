@@ -271,12 +271,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls()
         {
-            TUC_PartnerDetails_Family2 UCPartnerDetailsFamily;
-
-            UCPartnerDetailsFamily = (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
-
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
+                TUC_PartnerDetails_Family2 UCPartnerDetailsFamily =
+                    (TUC_PartnerDetails_Family2)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
                 UCPartnerDetailsFamily.GetDataFromControls2();
             }
         }

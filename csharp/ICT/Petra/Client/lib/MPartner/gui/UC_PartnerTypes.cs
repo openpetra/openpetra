@@ -55,23 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
-        private new PartnerEditTDS FMainDS;
         private TUCPartnerTypesLogic FLogic;
-
-        /// <summary>todoComment</summary>
-        public new PartnerEditTDS MainDS
-        {
-            get
-            {
-                return FMainDS;
-            }
-
-            set
-            {
-                FMainDS = value;
-            }
-        }
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
@@ -192,8 +176,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SpecialInitUserControl()
         {
             // Set up screen logic
-            FLogic.MultiTableDS = FMainDS;
+            FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
+            FLogic.PetraUtilsObject = FPetraUtilsObject;
             FLogic.InitialiseDelegatePartnerTypePropagationSelection(@OpenPartnerTypePropagationSelection);
             FLogic.DataGrid = grdPartnerTypes;
             FLogic.LoadTypes();
