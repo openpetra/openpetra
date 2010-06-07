@@ -33,6 +33,8 @@ using System.Data.Odbc;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Shared.MPartner.Partner.Data
 {
@@ -12560,6 +12562,501 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public void SetCountryNameNull()
         {
             this.SetNull(this.myTable.ColumnCountryName);
+        }
+    }
+
+     /// auto generated
+    [Serializable()]
+    public class PartnerSetupTDS : TTypedDataSet
+    {
+
+        private PCountryTable TablePCountry;
+        private PLanguageTable TablePLanguage;
+        private PPartnerStatusTable TablePPartnerStatus;
+        private PAcquisitionTable TablePAcquisition;
+        private PTypeTable TablePType;
+        private PEmailTable TablePEmail;
+        private PDenominationTable TablePDenomination;
+        private POccupationTable TablePOccupation;
+        private PtMaritalStatusTable TablePtMaritalStatus;
+        private AFrequencyTable TableAFrequency;
+        private PRelationTable TablePRelation;
+        private PRelationCategoryTable TablePRelationCategory;
+        private PInterestTable TablePInterest;
+        private PInterestCategoryTable TablePInterestCategory;
+        private PMethodOfContactTable TablePMethodOfContact;
+        private PContactAttributeTable TablePContactAttribute;
+        private PPublicationTable TablePPublication;
+        private PPublicationCostTable TablePPublicationCost;
+        private PReasonSubscriptionGivenTable TablePReasonSubscriptionGiven;
+        private PReasonSubscriptionCancelledTable TablePReasonSubscriptionCancelled;
+
+        /// auto generated
+        public PartnerSetupTDS() :
+                base("PartnerSetupTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public PartnerSetupTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public PartnerSetupTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public PCountryTable PCountry
+        {
+            get
+            {
+                return this.TablePCountry;
+            }
+        }
+
+        /// auto generated
+        public PLanguageTable PLanguage
+        {
+            get
+            {
+                return this.TablePLanguage;
+            }
+        }
+
+        /// auto generated
+        public PPartnerStatusTable PPartnerStatus
+        {
+            get
+            {
+                return this.TablePPartnerStatus;
+            }
+        }
+
+        /// auto generated
+        public PAcquisitionTable PAcquisition
+        {
+            get
+            {
+                return this.TablePAcquisition;
+            }
+        }
+
+        /// auto generated
+        public PTypeTable PType
+        {
+            get
+            {
+                return this.TablePType;
+            }
+        }
+
+        /// auto generated
+        public PEmailTable PEmail
+        {
+            get
+            {
+                return this.TablePEmail;
+            }
+        }
+
+        /// auto generated
+        public PDenominationTable PDenomination
+        {
+            get
+            {
+                return this.TablePDenomination;
+            }
+        }
+
+        /// auto generated
+        public POccupationTable POccupation
+        {
+            get
+            {
+                return this.TablePOccupation;
+            }
+        }
+
+        /// auto generated
+        public PtMaritalStatusTable PtMaritalStatus
+        {
+            get
+            {
+                return this.TablePtMaritalStatus;
+            }
+        }
+
+        /// auto generated
+        public AFrequencyTable AFrequency
+        {
+            get
+            {
+                return this.TableAFrequency;
+            }
+        }
+
+        /// auto generated
+        public PRelationTable PRelation
+        {
+            get
+            {
+                return this.TablePRelation;
+            }
+        }
+
+        /// auto generated
+        public PRelationCategoryTable PRelationCategory
+        {
+            get
+            {
+                return this.TablePRelationCategory;
+            }
+        }
+
+        /// auto generated
+        public PInterestTable PInterest
+        {
+            get
+            {
+                return this.TablePInterest;
+            }
+        }
+
+        /// auto generated
+        public PInterestCategoryTable PInterestCategory
+        {
+            get
+            {
+                return this.TablePInterestCategory;
+            }
+        }
+
+        /// auto generated
+        public PMethodOfContactTable PMethodOfContact
+        {
+            get
+            {
+                return this.TablePMethodOfContact;
+            }
+        }
+
+        /// auto generated
+        public PContactAttributeTable PContactAttribute
+        {
+            get
+            {
+                return this.TablePContactAttribute;
+            }
+        }
+
+        /// auto generated
+        public PPublicationTable PPublication
+        {
+            get
+            {
+                return this.TablePPublication;
+            }
+        }
+
+        /// auto generated
+        public PPublicationCostTable PPublicationCost
+        {
+            get
+            {
+                return this.TablePPublicationCost;
+            }
+        }
+
+        /// auto generated
+        public PReasonSubscriptionGivenTable PReasonSubscriptionGiven
+        {
+            get
+            {
+                return this.TablePReasonSubscriptionGiven;
+            }
+        }
+
+        /// auto generated
+        public PReasonSubscriptionCancelledTable PReasonSubscriptionCancelled
+        {
+            get
+            {
+                return this.TablePReasonSubscriptionCancelled;
+            }
+        }
+
+        /// auto generated
+        public new virtual PartnerSetupTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((PartnerSetupTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new PCountryTable("PCountry"));
+            this.Tables.Add(new PLanguageTable("PLanguage"));
+            this.Tables.Add(new PPartnerStatusTable("PPartnerStatus"));
+            this.Tables.Add(new PAcquisitionTable("PAcquisition"));
+            this.Tables.Add(new PTypeTable("PType"));
+            this.Tables.Add(new PEmailTable("PEmail"));
+            this.Tables.Add(new PDenominationTable("PDenomination"));
+            this.Tables.Add(new POccupationTable("POccupation"));
+            this.Tables.Add(new PtMaritalStatusTable("PtMaritalStatus"));
+            this.Tables.Add(new AFrequencyTable("AFrequency"));
+            this.Tables.Add(new PRelationTable("PRelation"));
+            this.Tables.Add(new PRelationCategoryTable("PRelationCategory"));
+            this.Tables.Add(new PInterestTable("PInterest"));
+            this.Tables.Add(new PInterestCategoryTable("PInterestCategory"));
+            this.Tables.Add(new PMethodOfContactTable("PMethodOfContact"));
+            this.Tables.Add(new PContactAttributeTable("PContactAttribute"));
+            this.Tables.Add(new PPublicationTable("PPublication"));
+            this.Tables.Add(new PPublicationCostTable("PPublicationCost"));
+            this.Tables.Add(new PReasonSubscriptionGivenTable("PReasonSubscriptionGiven"));
+            this.Tables.Add(new PReasonSubscriptionCancelledTable("PReasonSubscriptionCancelled"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("PCountry") != -1))
+            {
+                this.Tables.Add(new PCountryTable("PCountry"));
+            }
+            if ((ds.Tables.IndexOf("PLanguage") != -1))
+            {
+                this.Tables.Add(new PLanguageTable("PLanguage"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerStatus") != -1))
+            {
+                this.Tables.Add(new PPartnerStatusTable("PPartnerStatus"));
+            }
+            if ((ds.Tables.IndexOf("PAcquisition") != -1))
+            {
+                this.Tables.Add(new PAcquisitionTable("PAcquisition"));
+            }
+            if ((ds.Tables.IndexOf("PType") != -1))
+            {
+                this.Tables.Add(new PTypeTable("PType"));
+            }
+            if ((ds.Tables.IndexOf("PEmail") != -1))
+            {
+                this.Tables.Add(new PEmailTable("PEmail"));
+            }
+            if ((ds.Tables.IndexOf("PDenomination") != -1))
+            {
+                this.Tables.Add(new PDenominationTable("PDenomination"));
+            }
+            if ((ds.Tables.IndexOf("POccupation") != -1))
+            {
+                this.Tables.Add(new POccupationTable("POccupation"));
+            }
+            if ((ds.Tables.IndexOf("PtMaritalStatus") != -1))
+            {
+                this.Tables.Add(new PtMaritalStatusTable("PtMaritalStatus"));
+            }
+            if ((ds.Tables.IndexOf("AFrequency") != -1))
+            {
+                this.Tables.Add(new AFrequencyTable("AFrequency"));
+            }
+            if ((ds.Tables.IndexOf("PRelation") != -1))
+            {
+                this.Tables.Add(new PRelationTable("PRelation"));
+            }
+            if ((ds.Tables.IndexOf("PRelationCategory") != -1))
+            {
+                this.Tables.Add(new PRelationCategoryTable("PRelationCategory"));
+            }
+            if ((ds.Tables.IndexOf("PInterest") != -1))
+            {
+                this.Tables.Add(new PInterestTable("PInterest"));
+            }
+            if ((ds.Tables.IndexOf("PInterestCategory") != -1))
+            {
+                this.Tables.Add(new PInterestCategoryTable("PInterestCategory"));
+            }
+            if ((ds.Tables.IndexOf("PMethodOfContact") != -1))
+            {
+                this.Tables.Add(new PMethodOfContactTable("PMethodOfContact"));
+            }
+            if ((ds.Tables.IndexOf("PContactAttribute") != -1))
+            {
+                this.Tables.Add(new PContactAttributeTable("PContactAttribute"));
+            }
+            if ((ds.Tables.IndexOf("PPublication") != -1))
+            {
+                this.Tables.Add(new PPublicationTable("PPublication"));
+            }
+            if ((ds.Tables.IndexOf("PPublicationCost") != -1))
+            {
+                this.Tables.Add(new PPublicationCostTable("PPublicationCost"));
+            }
+            if ((ds.Tables.IndexOf("PReasonSubscriptionGiven") != -1))
+            {
+                this.Tables.Add(new PReasonSubscriptionGivenTable("PReasonSubscriptionGiven"));
+            }
+            if ((ds.Tables.IndexOf("PReasonSubscriptionCancelled") != -1))
+            {
+                this.Tables.Add(new PReasonSubscriptionCancelledTable("PReasonSubscriptionCancelled"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TablePCountry != null))
+            {
+                this.TablePCountry.InitVars();
+            }
+            if ((this.TablePLanguage != null))
+            {
+                this.TablePLanguage.InitVars();
+            }
+            if ((this.TablePPartnerStatus != null))
+            {
+                this.TablePPartnerStatus.InitVars();
+            }
+            if ((this.TablePAcquisition != null))
+            {
+                this.TablePAcquisition.InitVars();
+            }
+            if ((this.TablePType != null))
+            {
+                this.TablePType.InitVars();
+            }
+            if ((this.TablePEmail != null))
+            {
+                this.TablePEmail.InitVars();
+            }
+            if ((this.TablePDenomination != null))
+            {
+                this.TablePDenomination.InitVars();
+            }
+            if ((this.TablePOccupation != null))
+            {
+                this.TablePOccupation.InitVars();
+            }
+            if ((this.TablePtMaritalStatus != null))
+            {
+                this.TablePtMaritalStatus.InitVars();
+            }
+            if ((this.TableAFrequency != null))
+            {
+                this.TableAFrequency.InitVars();
+            }
+            if ((this.TablePRelation != null))
+            {
+                this.TablePRelation.InitVars();
+            }
+            if ((this.TablePRelationCategory != null))
+            {
+                this.TablePRelationCategory.InitVars();
+            }
+            if ((this.TablePInterest != null))
+            {
+                this.TablePInterest.InitVars();
+            }
+            if ((this.TablePInterestCategory != null))
+            {
+                this.TablePInterestCategory.InitVars();
+            }
+            if ((this.TablePMethodOfContact != null))
+            {
+                this.TablePMethodOfContact.InitVars();
+            }
+            if ((this.TablePContactAttribute != null))
+            {
+                this.TablePContactAttribute.InitVars();
+            }
+            if ((this.TablePPublication != null))
+            {
+                this.TablePPublication.InitVars();
+            }
+            if ((this.TablePPublicationCost != null))
+            {
+                this.TablePPublicationCost.InitVars();
+            }
+            if ((this.TablePReasonSubscriptionGiven != null))
+            {
+                this.TablePReasonSubscriptionGiven.InitVars();
+            }
+            if ((this.TablePReasonSubscriptionCancelled != null))
+            {
+                this.TablePReasonSubscriptionCancelled.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "PartnerSetupTDS";
+            this.TablePCountry = ((PCountryTable)(this.Tables["PCountry"]));
+            this.TablePLanguage = ((PLanguageTable)(this.Tables["PLanguage"]));
+            this.TablePPartnerStatus = ((PPartnerStatusTable)(this.Tables["PPartnerStatus"]));
+            this.TablePAcquisition = ((PAcquisitionTable)(this.Tables["PAcquisition"]));
+            this.TablePType = ((PTypeTable)(this.Tables["PType"]));
+            this.TablePEmail = ((PEmailTable)(this.Tables["PEmail"]));
+            this.TablePDenomination = ((PDenominationTable)(this.Tables["PDenomination"]));
+            this.TablePOccupation = ((POccupationTable)(this.Tables["POccupation"]));
+            this.TablePtMaritalStatus = ((PtMaritalStatusTable)(this.Tables["PtMaritalStatus"]));
+            this.TableAFrequency = ((AFrequencyTable)(this.Tables["AFrequency"]));
+            this.TablePRelation = ((PRelationTable)(this.Tables["PRelation"]));
+            this.TablePRelationCategory = ((PRelationCategoryTable)(this.Tables["PRelationCategory"]));
+            this.TablePInterest = ((PInterestTable)(this.Tables["PInterest"]));
+            this.TablePInterestCategory = ((PInterestCategoryTable)(this.Tables["PInterestCategory"]));
+            this.TablePMethodOfContact = ((PMethodOfContactTable)(this.Tables["PMethodOfContact"]));
+            this.TablePContactAttribute = ((PContactAttributeTable)(this.Tables["PContactAttribute"]));
+            this.TablePPublication = ((PPublicationTable)(this.Tables["PPublication"]));
+            this.TablePPublicationCost = ((PPublicationCostTable)(this.Tables["PPublicationCost"]));
+            this.TablePReasonSubscriptionGiven = ((PReasonSubscriptionGivenTable)(this.Tables["PReasonSubscriptionGiven"]));
+            this.TablePReasonSubscriptionCancelled = ((PReasonSubscriptionCancelledTable)(this.Tables["PReasonSubscriptionCancelled"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+
+            if (((this.TablePInterestCategory != null)
+                        && (this.TablePInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKInterest1", "PInterestCategory", new string[] {
+                                "p_category_c"}, "PInterest", new string[] {
+                                "p_category_c"}));
+            }
+            if (((this.TableAFrequency != null)
+                        && (this.TablePPublication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPublication1", "AFrequency", new string[] {
+                                "a_frequency_code_c"}, "PPublication", new string[] {
+                                "a_frequency_code_c"}));
+            }
+            if (((this.TablePLanguage != null)
+                        && (this.TablePPublication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPublication2", "PLanguage", new string[] {
+                                "p_language_code_c"}, "PPublication", new string[] {
+                                "p_publication_language_c"}));
+            }
+            if (((this.TablePPublication != null)
+                        && (this.TablePPublicationCost != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPublicationCost1", "PPublication", new string[] {
+                                "p_publication_code_c"}, "PPublicationCost", new string[] {
+                                "p_publication_code_c"}));
+            }
+            if (((this.TablePRelationCategory != null)
+                        && (this.TablePRelation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKRelation1", "PRelationCategory", new string[] {
+                                "p_code_c"}, "PRelation", new string[] {
+                                "p_relation_category_c"}));
+            }
         }
     }
 }

@@ -61,6 +61,12 @@
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\..\..\..\openpetraorg.omuk\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\..\..\..\..\..\openpetraorg.omuk\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
@@ -101,6 +107,14 @@
     <Compile Include="Partner.DataSets.Access.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MCommon\data\Ict.Petra.Server.MCommon.DataAccess.csproj">
+      <Project>{41425C75-D148-4BEC-9B8F-DBD277E4762F}</Project>
+      <Name>Ict.Petra.Server.MCommon.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MFinance\data\Ict.Petra.Server.MFinance.DataAccess.csproj">
+      <Project>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</Project>
+      <Name>Ict.Petra.Server.MFinance.DataAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Server.MPersonnel.DataAccess.csproj">
       <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>
       <Name>Ict.Petra.Server.MPersonnel.DataAccess</Name>

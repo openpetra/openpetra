@@ -1,0 +1,41 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Partner Types
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS
+    DetailTable: PType
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actAddType: {Label=Add Type, ActionClick=AddType}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnAddType]
+        btnAddType:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailTypeCode, DetailTypeDescription, DetailValidType, DetailTypeDeletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailTypeCode]
+                Row1: [txtDetailTypeDescription]
+                Row2: [chkDetailValidType]
+                Row3: [chkDetailTypeDeletable]
+        txtDetailTypeCode: {Label=Type Code}
+        txtDetailTypeDescription: {Label=Description}
+        chkDetailValidType: {Label=Assignable}
+        chkDetailTypeDeletable: {Label=Deletable}
+    Toolbar:
+        tbbAddType:
