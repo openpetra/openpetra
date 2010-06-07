@@ -151,9 +151,9 @@ namespace Ict.Tools.CodeGeneration
             ASnippet.FTemplateCode = ASnippet.RemoveUndefinedIFDEFs(ASnippet.FTemplateCode);
             ASnippet.FTemplateCode = ASnippet.ActivateUndefinedIFNDEFs(ASnippet.FTemplateCode);
 
-            if (FCodelets.ContainsKey(ACodeletName) 
+            if (FCodelets.ContainsKey(ACodeletName)
                 && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine)
-                && ((string)FCodelets[ACodeletName]).Length > 0)
+                && (((string)FCodelets[ACodeletName]).Length > 0))
             {
                 AddToCodelet(ACodeletName, Environment.NewLine);
             }
