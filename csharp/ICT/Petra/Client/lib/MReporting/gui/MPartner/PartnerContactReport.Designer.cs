@@ -408,6 +408,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.grdSelection.Name = "grdSelection";
             this.grdSelection.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdSelection.DoubleClick += new System.EventHandler(this.grdSelectionDoubleClick);
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 35));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 65));
