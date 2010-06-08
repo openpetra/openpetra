@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.MPartner.Mailing
                             TmpTable = PMethodOfContactAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-                            
+
                         default:
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                             Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable) + "' is not available as a Standard Cacheable Table");

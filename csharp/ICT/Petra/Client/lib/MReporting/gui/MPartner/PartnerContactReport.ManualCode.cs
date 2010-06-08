@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             myDataView.AllowNew = false;
             grdAttribute.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdAttribute.AutoSizeCells();
-            
+
             // Do some other initialisation
             InitializeOtherControls();
         }
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdDetail.AddTextColumn("Description", FContactAttributesTable.ColumnContactAttrDetailDescr);
             grdDetail.Columns[0].Visible = false;
             grdDetail.AutoSizeCells();
-            
+
             grdDetail.Selection.EnableMultiSelection = true;
         }
 
@@ -107,33 +107,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdSelection.AutoSizeCells();
             grdSelection.Selection.EnableMultiSelection = true;
         }
-        
+
         protected void InitializeOtherControls()
         {
-        	// Load MethodOfContact List
-        	PMethodOfContactTable MethodOfContactTable = (PMethodOfContactTable)TDataCache.TMPartner.GetCacheableMailingTable(
+            // Load MethodOfContact List
+            PMethodOfContactTable MethodOfContactTable = (PMethodOfContactTable)TDataCache.TMPartner.GetCacheableMailingTable(
                 TCacheableMailingTablesEnum.MethodOfContactList);
 
-        	cmbContact.Items.Add("*");
-        	
-        	foreach (PMethodOfContactRow Row in MethodOfContactTable.Rows)
-        	{
-        		cmbContact.Items.Add(Row.MethodOfContactCode);
-        	}
-        	
-        	cmbContact.SelectedIndex = 0;
-        	
-        	// Load User List
-        	SUserTable UserTable = (SUserTable)TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList);
-        		
-        	cmbContactor.Items.Add("*");
-        	
-        	foreach (SUserRow Row in UserTable.Rows)
-        	{
-        		cmbContactor.Items.Add(Row.UserId);
-        	}
-        	
-        	cmbContactor.SelectedIndex = 0;
+            cmbContact.Items.Add("*");
+
+            foreach (PMethodOfContactRow Row in MethodOfContactTable.Rows)
+            {
+                cmbContact.Items.Add(Row.MethodOfContactCode);
+            }
+
+            cmbContact.SelectedIndex = 0;
+
+            // Load User List
+            SUserTable UserTable = (SUserTable)TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList);
+
+            cmbContactor.Items.Add("*");
+
+            foreach (SUserRow Row in UserTable.Rows)
+            {
+                cmbContactor.Items.Add(Row.UserId);
+            }
+
+            cmbContactor.SelectedIndex = 0;
         }
 
         protected void grdAttribute_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -184,23 +184,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             tmpTable.DefaultView.AllowNew = false;
             grdDetail.DataSource = new DevAge.ComponentModel.BoundDataView(tmpTable.DefaultView);
             grdDetail.AutoSizeCells();
-            
+
             grdDetail.Selection.ResetSelection(true);
         }
 
         protected void grdDetailDoubleClick(System.Object sender, EventArgs e)
         {
-        	AddDetail(sender, e);
+            AddDetail(sender, e);
         }
 
         protected void grdSelectionDoubleClick(System.Object sender, EventArgs e)
         {
-        	RemoveDetail(sender, e);
+            RemoveDetail(sender, e);
         }
-        
+
         protected void AddDetail(System.Object sender, EventArgs e)
         {
-        	String Attribute = "";
+            String Attribute = "";
             String Detail = "";
             String Description = "";
 
@@ -212,38 +212,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
                 PContactAttributeDetailRow newRow = (PContactAttributeDetailRow)FSelectionTable.NewRow();
                 newRow.Active = true;
-                
+
                 newRow.ContactAttributeCode = Attribute;
                 newRow.ContactAttrDetailCode = Detail;
                 newRow.ContactAttrDetailDescr = Description;
 
-                if (FSelectionTable.Rows.Find(new String[] {Attribute, Detail}) == null)
+                if (FSelectionTable.Rows.Find(new String[] { Attribute, Detail }) == null)
                 {
-                	FSelectionTable.Rows.Add(newRow);
+                    FSelectionTable.Rows.Add(newRow);
                 }
             }
         }
 
         protected void RemoveDetail(System.Object sender, EventArgs e)
         {
-        	for (int Counter = 0; Counter < grdSelection.SelectedDataRows.Length; ++Counter)
+            for (int Counter = 0; Counter < grdSelection.SelectedDataRows.Length; ++Counter)
             {
                 String Attribute = (String)((DataRowView)grdSelection.SelectedDataRows[Counter]).Row[0];
                 String Detail = (String)((DataRowView)grdSelection.SelectedDataRows[Counter]).Row[1];
-                
+
                 for (int Counter2 = FSelectionTable.Rows.Count - 1; Counter2 >= 0; --Counter2)
                 {
-                	PContactAttributeDetailRow currentRow = (PContactAttributeDetailRow)FSelectionTable.Rows[Counter2];
-                	
-                	if ((currentRow.ContactAttributeCode == Attribute) &&
-                	    (currentRow.ContactAttrDetailCode == Detail))
-                	{
-                		FSelectionTable.Rows.RemoveAt(Counter);
-                		break;
-                	}
+                    PContactAttributeDetailRow currentRow = (PContactAttributeDetailRow)FSelectionTable.Rows[Counter2];
+
+                    if ((currentRow.ContactAttributeCode == Attribute)
+                        && (currentRow.ContactAttrDetailCode == Detail))
+                    {
+                        FSelectionTable.Rows.RemoveAt(Counter);
+                        break;
+                    }
                 }
             }
-        	grdSelection.Selection.ResetSelection(true);
+
+            grdSelection.Selection.ResetSelection(true);
         }
     }
 }

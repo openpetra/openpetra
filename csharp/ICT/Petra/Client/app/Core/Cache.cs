@@ -355,8 +355,8 @@ namespace Ict.Petra.Client.App.Core
 
             #endregion
         }
-        
-         /// <summary>
+
+        /// <summary>
         /// todoComment
         /// </summary>
         public class TMSysMan
@@ -393,7 +393,7 @@ namespace Ict.Petra.Client.App.Core
                 // Refresh the Cacheable DataTable on the Serverside and return it
                 TRemote.MSysMan.Application.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
-                
+
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
             }
@@ -713,7 +713,7 @@ namespace Ict.Petra.Client.App.Core
         {
             DataTable ReturnValue;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
-            
+
             ReturnValue = null;
             ACacheableTableSystemType = null;
 
@@ -726,7 +726,7 @@ namespace Ict.Petra.Client.App.Core
                 ReturnValue = TRemote.MFinance.Cacheable.GetCacheableTable(CacheableMFinanceTable, AHashCode, Convert.ToInt32(
                         AFilterCriteria), out ACacheableTableSystemType);
             }
-            
+
             return ReturnValue;
         }
 

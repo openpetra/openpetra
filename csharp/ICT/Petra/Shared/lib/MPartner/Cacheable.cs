@@ -170,7 +170,7 @@ namespace Ict.Petra.Shared.MPartner
         /// List of all contact attribute details
         /// </summary>
         ContactAttributeDetailList,
-        
+
         /// <summary>
         /// List of all contact methods in p_method_of_contact
         /// </summary>
