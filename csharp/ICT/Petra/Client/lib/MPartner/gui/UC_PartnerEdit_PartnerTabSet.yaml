@@ -24,7 +24,7 @@ RootNode:
         tpgPartnerDetails: {LoadPageDynamically=true}
             Label: Partner Details         
             Image: Details.ico
-            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family
             
         tpgFoundationDetails:
 # TODO {LoadPageDynamically=true}

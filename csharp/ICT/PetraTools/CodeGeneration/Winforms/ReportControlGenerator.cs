@@ -230,7 +230,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 RadioButtonSetControlsSnippet.SetCodelet("RBTNAME", rbtName);
                 RadioButtonSetControlsSnippet.SetCodelet("PARAMNAME", paramName);
                 RadioButtonSetControlsSnippet.SetCodelet("RBTVALUE", rbtValue);
-                RadioButtonSetControlsSnippet.SetCodelet("SETCONTROLS", "");
 
                 // only assign variables that make sense
                 if (childControls != null)

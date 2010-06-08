@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from PartnerEdit2.yaml and template windowEditUIConnector
+// auto generated with nant generateWinforms from PartnerEdit.yaml and template windowEditUIConnector
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //

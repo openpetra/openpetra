@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();
@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();
@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();
@@ -246,7 +246,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet2.TDynamicLoadableUserControls.dlucAddresses))
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();

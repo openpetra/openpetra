@@ -15,5 +15,5 @@ RootNode:
             
         ucoPartnerTabSet:
            BackColor: System.Drawing.Color.LightSteelBlue
-           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet2            
+           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet            
            Dock: Fill

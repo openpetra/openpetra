@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_PartnerEdit_PartnerTabSet2.yaml and template usercontrolUnbound
+// auto generated with nant generateWinforms from UC_PartnerEdit_PartnerTabSet.yaml and template usercontrolUnbound
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated user control
-  public partial class TUC_PartnerEdit_PartnerTabSet2: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TUC_PartnerEdit_PartnerTabSet: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     private event TTabPageEventHandler FTabPageEvent;
 
     /// constructor
-    public TUC_PartnerEdit_PartnerTabSet2() : base()
+    public TUC_PartnerEdit_PartnerTabSet() : base()
     {
       //
       // Required for Windows Form Designer support
@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 UCPartnerDetails;
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family UCPartnerDetails;
 
                 if (TClientSettings.DelayedDataLoading)
                 {
@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCPartnerDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetails);
+                UCPartnerDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetails);
                 UCPartnerDetails.MainDS = FMainDS;
                 UCPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
                 UCPartnerDetails.InitUserControl();
@@ -359,7 +359,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetails);
 
                 // Create the UserControl
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2 ucoPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family2();
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family ucoPartnerDetails = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family();
                 FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetails, ucoPartnerDetails);
                 ucoPartnerDetails.Location = new Point(0, 2);
                 ucoPartnerDetails.Dock = DockStyle.Fill;

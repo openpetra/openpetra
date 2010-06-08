@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_PartnerDetails_Family2.yaml and template usercontrol
+// auto generated with nant generateWinforms from UC_PartnerDetails_Family.yaml and template usercontrol
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -47,14 +47,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated user control
-  public partial class TUC_PartnerDetails_Family2: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TUC_PartnerDetails_Family: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
 
     /// constructor
-    public TUC_PartnerDetails_Family2() : base()
+    public TUC_PartnerDetails_Family() : base()
     {
       //
       // Required for Windows Form Designer support

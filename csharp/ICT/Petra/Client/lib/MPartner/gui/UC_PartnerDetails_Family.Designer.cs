@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_PartnerDetails_Family2.yaml
+// auto generated with nant generateWinforms from UC_PartnerDetails_Family.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    partial class TUC_PartnerDetails_Family2
+    partial class TUC_PartnerDetails_Family
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerDetails_Family2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerDetails_Family));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.grpNames = new System.Windows.Forms.GroupBox();
@@ -276,7 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grpMisc.Text = "Miscellaneous";
 
             //
-            // TUC_PartnerDetails_Family2
+            // TUC_PartnerDetails_Family
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -285,7 +285,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Controls.Add(this.pnlContent);
 
-            this.Name = "TUC_PartnerDetails_Family2";
+            this.Name = "TUC_PartnerDetails_Family";
             this.Text = "";
 
 	
