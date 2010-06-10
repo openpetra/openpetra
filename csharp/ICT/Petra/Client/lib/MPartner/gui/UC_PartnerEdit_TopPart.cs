@@ -182,29 +182,38 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPartnerClass.Text = ARow.PartnerClass;
         }
-        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsTitleNull())
+        if (FMainDS.PFamily == null || ((FMainDS.PFamily.Rows.Count > 0) && (FMainDS.PFamily[0].IsTitleNull())))
         {
             txtFamilyTitle.Text = String.Empty;
         }
         else
         {
-            txtFamilyTitle.Text = FMainDS.PFamily[0].Title;
+            if (FMainDS.PFamily.Rows.Count > 0)
+            {
+                txtFamilyTitle.Text = FMainDS.PFamily[0].Title;
+            }
         }
-        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFirstNameNull())
+        if (FMainDS.PFamily == null || ((FMainDS.PFamily.Rows.Count > 0) && (FMainDS.PFamily[0].IsFirstNameNull())))
         {
             txtFamilyFirstName.Text = String.Empty;
         }
         else
         {
-            txtFamilyFirstName.Text = FMainDS.PFamily[0].FirstName;
+            if (FMainDS.PFamily.Rows.Count > 0)
+            {
+                txtFamilyFirstName.Text = FMainDS.PFamily[0].FirstName;
+            }
         }
-        if (FMainDS.PFamily == null || FMainDS.PFamily[0].IsFamilyNameNull())
+        if (FMainDS.PFamily == null || ((FMainDS.PFamily.Rows.Count > 0) && (FMainDS.PFamily[0].IsFamilyNameNull())))
         {
             txtFamilyFamilyName.Text = String.Empty;
         }
         else
         {
-            txtFamilyFamilyName.Text = FMainDS.PFamily[0].FamilyName;
+            if (FMainDS.PFamily.Rows.Count > 0)
+            {
+                txtFamilyFamilyName.Text = FMainDS.PFamily[0].FamilyName;
+            }
         }
         if (ARow.IsAddresseeTypeCodeNull())
         {
@@ -222,45 +231,60 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkFamilyNoSolicitations.Checked = ARow.NoSolicitations;
         }
-        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsTitleNull())
+        if (FMainDS.PPerson == null || ((FMainDS.PPerson.Rows.Count > 0) && (FMainDS.PPerson[0].IsTitleNull())))
         {
             txtPersonTitle.Text = String.Empty;
         }
         else
         {
-            txtPersonTitle.Text = FMainDS.PPerson[0].Title;
+            if (FMainDS.PPerson.Rows.Count > 0)
+            {
+                txtPersonTitle.Text = FMainDS.PPerson[0].Title;
+            }
         }
-        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsFirstNameNull())
+        if (FMainDS.PPerson == null || ((FMainDS.PPerson.Rows.Count > 0) && (FMainDS.PPerson[0].IsFirstNameNull())))
         {
             txtPersonFirstName.Text = String.Empty;
         }
         else
         {
-            txtPersonFirstName.Text = FMainDS.PPerson[0].FirstName;
+            if (FMainDS.PPerson.Rows.Count > 0)
+            {
+                txtPersonFirstName.Text = FMainDS.PPerson[0].FirstName;
+            }
         }
-        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsMiddleName1Null())
+        if (FMainDS.PPerson == null || ((FMainDS.PPerson.Rows.Count > 0) && (FMainDS.PPerson[0].IsMiddleName1Null())))
         {
             txtPersonMiddleName.Text = String.Empty;
         }
         else
         {
-            txtPersonMiddleName.Text = FMainDS.PPerson[0].MiddleName1;
+            if (FMainDS.PPerson.Rows.Count > 0)
+            {
+                txtPersonMiddleName.Text = FMainDS.PPerson[0].MiddleName1;
+            }
         }
-        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsFamilyNameNull())
+        if (FMainDS.PPerson == null || ((FMainDS.PPerson.Rows.Count > 0) && (FMainDS.PPerson[0].IsFamilyNameNull())))
         {
             txtPersonFamilyName.Text = String.Empty;
         }
         else
         {
-            txtPersonFamilyName.Text = FMainDS.PPerson[0].FamilyName;
+            if (FMainDS.PPerson.Rows.Count > 0)
+            {
+                txtPersonFamilyName.Text = FMainDS.PPerson[0].FamilyName;
+            }
         }
-        if (FMainDS.PPerson == null || FMainDS.PPerson[0].IsGenderNull())
+        if (FMainDS.PPerson == null || ((FMainDS.PPerson.Rows.Count > 0) && (FMainDS.PPerson[0].IsGenderNull())))
         {
             cmbPersonGender.SelectedIndex = -1;
         }
         else
         {
-            cmbPersonGender.SetSelectedString(FMainDS.PPerson[0].Gender);
+            if (FMainDS.PPerson.Rows.Count > 0)
+            {
+                cmbPersonGender.SetSelectedString(FMainDS.PPerson[0].Gender);
+            }
         }
         if (ARow.IsAddresseeTypeCodeNull())
         {
@@ -278,37 +302,49 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkPersonNoSolicitations.Checked = ARow.NoSolicitations;
         }
-        if (FMainDS.PChurch == null || FMainDS.PChurch[0].IsChurchNameNull())
+        if (FMainDS.PChurch == null || ((FMainDS.PChurch.Rows.Count > 0) && (FMainDS.PChurch[0].IsChurchNameNull())))
         {
             txtChurchName.Text = String.Empty;
         }
         else
         {
-            txtChurchName.Text = FMainDS.PChurch[0].ChurchName;
+            if (FMainDS.PChurch.Rows.Count > 0)
+            {
+                txtChurchName.Text = FMainDS.PChurch[0].ChurchName;
+            }
         }
-        if (FMainDS.POrganisation == null || FMainDS.POrganisation[0].IsOrganisationNameNull())
+        if (FMainDS.POrganisation == null || ((FMainDS.POrganisation.Rows.Count > 0) && (FMainDS.POrganisation[0].IsOrganisationNameNull())))
         {
             txtOrganisationName.Text = String.Empty;
         }
         else
         {
-            txtOrganisationName.Text = FMainDS.POrganisation[0].OrganisationName;
+            if (FMainDS.POrganisation.Rows.Count > 0)
+            {
+                txtOrganisationName.Text = FMainDS.POrganisation[0].OrganisationName;
+            }
         }
-        if (FMainDS.PUnit == null || FMainDS.PUnit[0].IsUnitNameNull())
+        if (FMainDS.PUnit == null || ((FMainDS.PUnit.Rows.Count > 0) && (FMainDS.PUnit[0].IsUnitNameNull())))
         {
             txtUnitName.Text = String.Empty;
         }
         else
         {
-            txtUnitName.Text = FMainDS.PUnit[0].UnitName;
+            if (FMainDS.PUnit.Rows.Count > 0)
+            {
+                txtUnitName.Text = FMainDS.PUnit[0].UnitName;
+            }
         }
-        if (FMainDS.PVenue == null || FMainDS.PVenue[0].IsVenueNameNull())
+        if (FMainDS.PVenue == null || ((FMainDS.PVenue.Rows.Count > 0) && (FMainDS.PVenue[0].IsVenueNameNull())))
         {
             txtVenueName.Text = String.Empty;
         }
         else
         {
-            txtVenueName.Text = FMainDS.PVenue[0].VenueName;
+            if (FMainDS.PVenue.Rows.Count > 0)
+            {
+                txtVenueName.Text = FMainDS.PVenue[0].VenueName;
+            }
         }
         if (ARow.IsAddresseeTypeCodeNull())
         {
@@ -326,21 +362,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             chkOtherNoSolicitations.Checked = ARow.NoSolicitations;
         }
-        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftDateNull())
+        if (FMainDS.MiscellaneousData == null || ((FMainDS.MiscellaneousData.Rows.Count > 0) && (FMainDS.MiscellaneousData[0].IsLastGiftDateNull())))
         {
             txtLastGiftDetailsDate.Text = String.Empty;
         }
         else
         {
-            txtLastGiftDetailsDate.Text = FMainDS.MiscellaneousData[0].LastGiftDate.ToString();
+            if (FMainDS.MiscellaneousData.Rows.Count > 0)
+            {
+                txtLastGiftDetailsDate.Text = FMainDS.MiscellaneousData[0].LastGiftDate.ToString();
+            }
         }
-        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())
+        if (FMainDS.MiscellaneousData == null || ((FMainDS.MiscellaneousData.Rows.Count > 0) && (FMainDS.MiscellaneousData[0].IsLastGiftInfoNull())))
         {
             txtLastGiftDetails.Text = String.Empty;
         }
         else
         {
-            txtLastGiftDetails.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
+            if (FMainDS.MiscellaneousData.Rows.Count > 0)
+            {
+                txtLastGiftDetails.Text = FMainDS.MiscellaneousData[0].LastGiftInfo;
+            }
         }
         if (ARow.IsStatusCodeNull())
         {
@@ -350,20 +392,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             cmbPartnerStatus.SetSelectedString(ARow.StatusCode);
         }
-        if (FMainDS.MiscellaneousData == null || FMainDS.MiscellaneousData[0].IsLastContactDateNull())
+        if (FMainDS.MiscellaneousData == null || ((FMainDS.MiscellaneousData.Rows.Count > 0) && (FMainDS.MiscellaneousData[0].IsLastContactDateNull())))
         {
             txtLastContact.Text = String.Empty;
         }
         else
         {
-            txtLastContact.Text = FMainDS.MiscellaneousData[0].LastContactDate.ToString();
+            if (FMainDS.MiscellaneousData.Rows.Count > 0)
+            {
+                txtLastContact.Text = FMainDS.MiscellaneousData[0].LastContactDate.ToString();
+            }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private void GetDataFromControls(PPartnerRow ARow)
     {
-        if (FMainDS.PFamily != null)
+        if ((FMainDS.PFamily != null) && (FMainDS.PFamily.Rows.Count > 0))
         {
             if (txtFamilyTitle.Text.Length == 0)
             {
@@ -374,7 +419,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PFamily[0].Title = txtFamilyTitle.Text;
             }
         }
-        if (FMainDS.PFamily != null)
+        if ((FMainDS.PFamily != null) && (FMainDS.PFamily.Rows.Count > 0))
         {
             if (txtFamilyFirstName.Text.Length == 0)
             {
@@ -385,7 +430,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PFamily[0].FirstName = txtFamilyFirstName.Text;
             }
         }
-        if (FMainDS.PFamily != null)
+        if ((FMainDS.PFamily != null) && (FMainDS.PFamily.Rows.Count > 0))
         {
             if (txtFamilyFamilyName.Text.Length == 0)
             {
@@ -405,7 +450,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.AddresseeTypeCode = cmbFamilyAddresseeTypeCode.GetSelectedString();
         }
         ARow.NoSolicitations = chkFamilyNoSolicitations.Checked;
-        if (FMainDS.PPerson != null)
+        if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
         {
             if (txtPersonTitle.Text.Length == 0)
             {
@@ -416,7 +461,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPerson[0].Title = txtPersonTitle.Text;
             }
         }
-        if (FMainDS.PPerson != null)
+        if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
         {
             if (txtPersonFirstName.Text.Length == 0)
             {
@@ -427,7 +472,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPerson[0].FirstName = txtPersonFirstName.Text;
             }
         }
-        if (FMainDS.PPerson != null)
+        if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
         {
             if (txtPersonMiddleName.Text.Length == 0)
             {
@@ -438,7 +483,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPerson[0].MiddleName1 = txtPersonMiddleName.Text;
             }
         }
-        if (FMainDS.PPerson != null)
+        if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
         {
             if (txtPersonFamilyName.Text.Length == 0)
             {
@@ -449,7 +494,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPerson[0].FamilyName = txtPersonFamilyName.Text;
             }
         }
-        if (FMainDS.PPerson != null)
+        if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
         {
             if (cmbPersonGender.SelectedIndex == -1)
             {
@@ -469,7 +514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.AddresseeTypeCode = cmbPersonAddresseeTypeCode.GetSelectedString();
         }
         ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
-        if (FMainDS.PChurch != null)
+        if ((FMainDS.PChurch != null) && (FMainDS.PChurch.Rows.Count > 0))
         {
             if (txtChurchName.Text.Length == 0)
             {
@@ -480,7 +525,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PChurch[0].ChurchName = txtChurchName.Text;
             }
         }
-        if (FMainDS.POrganisation != null)
+        if ((FMainDS.POrganisation != null) && (FMainDS.POrganisation.Rows.Count > 0))
         {
             if (txtOrganisationName.Text.Length == 0)
             {
@@ -491,7 +536,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.POrganisation[0].OrganisationName = txtOrganisationName.Text;
             }
         }
-        if (FMainDS.PUnit != null)
+        if ((FMainDS.PUnit != null) && (FMainDS.PUnit.Rows.Count > 0))
         {
             if (txtUnitName.Text.Length == 0)
             {
@@ -502,7 +547,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PUnit[0].UnitName = txtUnitName.Text;
             }
         }
-        if (FMainDS.PVenue != null)
+        if ((FMainDS.PVenue != null) && (FMainDS.PVenue.Rows.Count > 0))
         {
             if (txtVenueName.Text.Length == 0)
             {
