@@ -328,9 +328,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SetUpPartnerAddress()
         {
-            TUCPartnerAddresses UCAddresses;
-
-            UCAddresses = (TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
+            FUcoAddresses = (TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
 
             if (TClientSettings.DelayedDataLoading)
             {
@@ -338,11 +336,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Cursor = Cursors.AppStarting;
             }
 
-            UCAddresses.MainDS = FMainDS;
-            UCAddresses.PetraUtilsObject = FPetraUtilsObject;
-            UCAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-            UCAddresses.HookupDataChange += new THookupDataChangeEventHandler(this.Uco_HookupDataChange);
-            UCAddresses.InitialiseUserControl();
+            FUcoAddresses.MainDS = FMainDS;
+            FUcoAddresses.PetraUtilsObject = FPetraUtilsObject;
+            FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
+            FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(this.Uco_HookupDataChange);
+            FUcoAddresses.InitialiseUserControl();
 
             // MessageBox.Show('TabSetupPartnerAddresses finished');
             this.Cursor = Cursors.Default;
@@ -419,28 +417,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
-            Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes UCSpecialTypes;
-            Ict.Petra.Client.MCommon.TUCPartnerAddresses UCAddresses;
-
             if (ATabPageEventArgs.Event == "FurtherInit")
             {
                 if (ATabPageEventArgs.Tab == tpgAddresses)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
 
-                    UCAddresses = (Ict.Petra.Client.MCommon.TUCPartnerAddresses)ATabPageEventArgs.UserControlOnTabPage;
-
                     // Hook up EnableDisableOtherScreenParts Event that is fired by UserControls on Tabs
-                    UCAddresses.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
+                    FUcoAddresses.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
                         UcoTab_EnableDisableOtherScreenParts);
 
                     // Hook up RecalculateScreenParts Event
-                    UCAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                    FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
-                    UCAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    UCAddresses.HookupDataChange += new THookupDataChangeEventHandler(Uco_HookupDataChange);
+                    FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(Uco_HookupDataChange);
 
-                    UCAddresses.InitialiseUserControl();
+                    FUcoAddresses.InitialiseUserControl();
+                    
+                    CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
@@ -459,26 +454,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
 
                     // TODO
+                    
+                    CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerTypes)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
 
-                    UCSpecialTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)ATabPageEventArgs.UserControlOnTabPage;
-
                     // Hook up RecalculateScreenParts Event
-                    UCSpecialTypes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                    FUcoPartnerTypes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
-                    UCSpecialTypes.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    UCSpecialTypes.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoPartnerTypes.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPartnerTypes.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
 
-                    UCSpecialTypes.SpecialInitUserControl();
+                    FUcoPartnerTypes.SpecialInitUserControl();
+                    
+                    CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
 
                     // TODO
+                    
+                    CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgNotes)
                 {
@@ -660,6 +659,41 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Changed data (eg. caused by the data saving process) will make a databound SourceGrid redraw, 
+        /// and through that it can get it's size wrong and appear too wide if the user has
+        /// a non-standard display setting, (eg. "Large Fonts (120DPI).
+        /// This Method fixes that by calling the 'AdjustAfterResizing' Method in Tabs that
+        /// host a SourceGrid.
+        /// </summary>
+        private void CorrectDataGridWidthsAfterDataChange()
+        {
+            if (TClientSettings.GUIRunningOnNonStandardDPI)
+            {
+                if (FUcoAddresses != null)
+                {
+                    FUcoAddresses.AdjustAfterResizing();
+                }
+                
+                // TODO
+//                if (FUcoPartnerSubscriptions != null)
+//                {
+//                    FUcoPartnerSubscriptions.AdjustAfterResizing();
+//                }
+                
+                if (FUcoPartnerTypes != null)
+                {
+                    FUcoPartnerTypes.AdjustAfterResizing();
+                }
+                
+                // TODO
+//                if (FUcoFamilyMembers != null)
+//                {
+//                    FUcoFamilyMembers.AdjustAfterResizing();
+//                }                
+            }               
+        }
+        
         private void Uco_HookupDataChange(System.Object sender, System.EventArgs e)
         {
             if (HookupDataChange != null)
