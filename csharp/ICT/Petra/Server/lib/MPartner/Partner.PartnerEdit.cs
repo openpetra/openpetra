@@ -917,11 +917,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TPartnerFamilyIDHandling FamilyIDHandling;
             int FamilyID;
             String ProblemMessage;
-            Int32 ItemsCountAddresses;
-            Int32 ItemsCountSubscriptions;
-            Int32 ItemsCountPartnerTypes;
-            Int32 ItemsCountFamilyMembers;
-            Int32 ItemsCountInterests;
+            Int32 ItemsCountAddresses = 0;
+            Int32 ItemsCountAddressesActive = 0;
+            Int32 ItemsCountSubscriptions = 0;
+            Int32 ItemsCountSubscriptionsActive = 0;
+            Int32 ItemsCountPartnerTypes = 0;
+            Int32 ItemsCountFamilyMembers = 0;
+            Int32 ItemsCountInterests = 0;
+            Int64 FoundationOwner1Key = 0;
+            Int64 FoundationOwner2Key = 0;
+            bool HasEXWORKERPartnerType = false;            
             PFamilyTable PersonFamilyDT;
             TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
             Boolean OfficeSpecificDataLabelsAvailable;
@@ -939,13 +944,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerKey = FNewPartnerPartnerKey;
             FPartnerClass = FNewPartnerPartnerClass;
 
-            // Initialise Variables
-            ItemsCountAddresses = 0;
-            ItemsCountSubscriptions = 0;
-            ItemsCountPartnerTypes = 0;
-            ItemsCountFamilyMembers = 0;
-            ItemsCountInterests = 0;
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
+            
             try
             {
                 /*
@@ -1261,11 +1261,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.SetLastGiftDateNull();
                 MiscellaneousDataDR.LastGiftInfo = "";
                 MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
+                MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
                 MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
+                MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                 MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
                 MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                 MiscellaneousDataDR.ItemsCountInterests = ItemsCountInterests;
                 MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
+                MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
+                MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
+                MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;                
                 MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
                 MiscellaneousDataDT.AcceptChanges();
             }
@@ -1279,10 +1284,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // This will be the DataTables that exist for a certain Partner Class,
             // eg. Person  only one of those Tables will be filled, the other ones are
             // not needed at the Client side.
-            // FPartnerEditScreenDS.RemoveEmptyTables;
-            // For the moment we only remove the following table so that the Partner
-            // Edit screen can discover the value of MiscellaneousDataDR.ItemsCountFamilyMembers
-            FPartnerEditScreenDS.Tables.Remove(PartnerEditTDSFamilyMembersTable.GetTableName());
+            FPartnerEditScreenDS.RemoveEmptyTables();
+
             return FPartnerEditScreenDS;
         }
 
