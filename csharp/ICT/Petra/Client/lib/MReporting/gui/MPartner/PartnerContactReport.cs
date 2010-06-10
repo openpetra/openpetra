@@ -175,27 +175,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
       if (rbtPartnerName.Checked)
       {
-        ACalc.AddParameter("param_order_by_name", "PartnerName");
+          ACalc.AddParameter("param_order_by_name", "PartnerName");
       }
       if (rbtPartnerKey.Checked)
       {
-        ACalc.AddParameter("param_order_by_name", "PartnerKey");
+          ACalc.AddParameter("param_order_by_name", "PartnerKey");
       }
       if (this.cmbContactor.SelectedItem != null)
       {
-        ACalc.AddParameter("param_cmbContactor", this.cmbContactor.SelectedItem.ToString());
+          ACalc.AddParameter("param_cmbContactor", this.cmbContactor.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_cmbContactor", "");
+          ACalc.AddParameter("param_cmbContactor", "");
       }
       if (this.cmbContact.SelectedItem != null)
       {
-        ACalc.AddParameter("param_cmbContact", this.cmbContact.SelectedItem.ToString());
+          ACalc.AddParameter("param_cmbContact", this.cmbContact.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_cmbContact", "");
+          ACalc.AddParameter("param_cmbContact", "");
       }
       ACalc.AddParameter("param_txtDateFrom", this.txtDateFrom.Text);
       ACalc.AddParameter("param_txtDateTo", this.txtDateTo.Text);
