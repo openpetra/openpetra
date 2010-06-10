@@ -55,6 +55,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
     private event TTabPageEventHandler FTabPageEvent;
+    private Ict.Petra.Client.MCommon.TUCPartnerAddresses FUcoAddresses;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family FUcoPartnerDetails;
+    private Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes FUcoPartnerTypes;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes FUcoNotes;
 
     /// constructor
     public TUC_PartnerEdit_PartnerTabSet() : base()
@@ -157,7 +161,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
-
     private void OnDataLoadingFinished()
     {
         if (DataLoadingFinished != null)
@@ -192,12 +195,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
         if (FTabSetup == null)
-	    {
-		    FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+        {
+            FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
 
             // The first time we run this Method we exit straight away; this is when the Form gets initialised
             return;
-	    }
+        }
 
         /*
          * Raise the following Event to inform the base Form that we might be loading some fresh data.
@@ -209,93 +212,82 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
             {
-                Ict.Petra.Client.MCommon.TUCPartnerAddresses UCAddresses;
-
                 if (TClientSettings.DelayedDataLoading)
                 {
                     // Signalise the user that data is beeing loaded
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCAddresses = (Ict.Petra.Client.MCommon.TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
-                UCAddresses.MainDS = FMainDS;
-                UCAddresses.PetraUtilsObject = FPetraUtilsObject;
-                UCAddresses.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCAddresses);
+                FUcoAddresses = (Ict.Petra.Client.MCommon.TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
+                FUcoAddresses.MainDS = FMainDS;
+                FUcoAddresses.PetraUtilsObject = FPetraUtilsObject;
+                FUcoAddresses.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoAddresses);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, UCAddresses, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
         }
-
         if (tabPartners.SelectedTab == tpgPartnerDetails)
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
             {
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family UCPartnerDetails;
-
                 if (TClientSettings.DelayedDataLoading)
                 {
                     // Signalise the user that data is beeing loaded
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCPartnerDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetails);
-                UCPartnerDetails.MainDS = FMainDS;
-                UCPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
-                UCPartnerDetails.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCPartnerDetails);
+                FUcoPartnerDetails = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetails);
+                FUcoPartnerDetails.MainDS = FMainDS;
+                FUcoPartnerDetails.PetraUtilsObject = FPetraUtilsObject;
+                FUcoPartnerDetails.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetails);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, UCPartnerDetails, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
         }
-
         if (tabPartners.SelectedTab == tpgPartnerTypes)
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
             {
-                Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes UCPartnerTypes;
-
                 if (TClientSettings.DelayedDataLoading)
                 {
                     // Signalise the user that data is beeing loaded
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCPartnerTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerTypes);
-                UCPartnerTypes.MainDS = FMainDS;
-                UCPartnerTypes.PetraUtilsObject = FPetraUtilsObject;
-                UCPartnerTypes.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCPartnerTypes);
+                FUcoPartnerTypes = (Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerTypes);
+                FUcoPartnerTypes.MainDS = FMainDS;
+                FUcoPartnerTypes.PetraUtilsObject = FPetraUtilsObject;
+                FUcoPartnerTypes.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerTypes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, UCPartnerTypes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
         }
-
         if (tabPartners.SelectedTab == tpgNotes)
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucNotes))
             {
-                Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes UCNotes;
-
                 if (TClientSettings.DelayedDataLoading)
                 {
                     // Signalise the user that data is beeing loaded
                     this.Cursor = Cursors.AppStarting;
                 }
 
-                UCNotes = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucNotes);
-                UCNotes.MainDS = FMainDS;
-                UCNotes.PetraUtilsObject = FPetraUtilsObject;
-                UCNotes.InitUserControl();
-                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(UCNotes);
+                FUcoNotes = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucNotes);
+                FUcoNotes.MainDS = FMainDS;
+                FUcoNotes.PetraUtilsObject = FPetraUtilsObject;
+                FUcoNotes.InitUserControl();
+                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoNotes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, UCNotes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "FurtherInit"));
 
                 this.Cursor = Cursors.Default;
             }
@@ -348,7 +340,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ReturnValue = ucoAddresses;
                 break;
-
             case TDynamicLoadableUserControls.dlucPartnerDetails:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                 Panel pnlHostForUCPartnerDetails = new Panel();
@@ -379,7 +370,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ReturnValue = ucoPartnerDetails;
                 break;
-
             case TDynamicLoadableUserControls.dlucPartnerTypes:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                 Panel pnlHostForUCPartnerTypes = new Panel();
@@ -410,7 +400,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ReturnValue = ucoPartnerTypes;
                 break;
-
             case TDynamicLoadableUserControls.dlucNotes:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                 Panel pnlHostForUCNotes = new Panel();
@@ -445,6 +434,5 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         return ReturnValue;
     }
-
   }
 }
