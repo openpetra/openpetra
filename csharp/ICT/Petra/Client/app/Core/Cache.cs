@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Account;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -356,6 +357,51 @@ namespace Ict.Petra.Client.App.Core
         }
 
         /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMSysMan
+        {
+            #region TDataCache.TMSysMan
+
+            /**
+             * Returns the chosen DataTable for the Petra SysMan Module
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableSysManTable(TCacheableSysManTablesEnum ACacheableTable)
+            {
+                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+            }
+
+            /**
+             * Tells the PetraServer to reload the cacheable DataTable from the DB,
+             * refreshes the DataTable in the client-side Cache and saves it to a file.
+             *
+             * @param ACacheableTable The cached DataTable that should be reloaded from DB.
+             *
+             */
+            public static void RefreshCacheableSysManTable(TCacheableSysManTablesEnum ACacheableTable)
+            {
+                DataTable TmpDT;
+
+                // Refresh the Cacheable DataTable on the Serverside and return it
+                TRemote.MSysMan.Application.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
+
+                // Update the cached DataTable file
+                TDataCache.SaveCacheableDataTableToFile(TmpDT);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
         /// Causes the PetraServer to reload the specified Cache Table in the
         /// Server-side  It also refreshes the DataTable in the client-side Cache
         /// and saves it to a file.
@@ -375,6 +421,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
+            TCacheableSysManTablesEnum CacheableMSysManTable;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
             {
@@ -400,6 +447,12 @@ namespace Ict.Petra.Client.App.Core
                 // MFinance Namespace
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
                 TMFinance.RefreshCacheableFinanceTable(CacheableMFinanceTable);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan Namespace
+                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
+                TMSysMan.RefreshCacheableSysManTable(CacheableMSysManTable);
             }
         }
 
@@ -581,6 +634,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
+            TCacheableSysManTablesEnum CacheableMSysManTable;
             ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
@@ -621,6 +675,14 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MFinance.Cacheable.GetCacheableTable(CacheableMFinanceTable, AHashCode, out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan Namespace
+                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MSysMan.Application.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
             }
 
             return ReturnValue;

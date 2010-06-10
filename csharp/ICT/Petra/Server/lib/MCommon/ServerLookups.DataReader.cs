@@ -27,6 +27,8 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;

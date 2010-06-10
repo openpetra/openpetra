@@ -290,4 +290,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Environment.NewLine);
         }
     }
+
+    public class SourceGridReportGenerator : SourceGridGenerator
+    {
+        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        {
+            string controlName = curNode.Name;
+
+            writer.Template.AddToCodelet("INITIALISESCREEN",
+                controlName + "_InitialiseData(FPetraUtilsObject);" +
+                Environment.NewLine);
+
+            writer.Template.AddToCodelet("READCONTROLS",
+                controlName + "_ReadControls(ACalc, AReportAction);" +
+                Environment.NewLine);
+
+            writer.Template.AddToCodelet("SETCONTROLS",
+                controlName + "_SetControls(AParameters);" +
+                Environment.NewLine);
+
+//            writer.Template.AddToCodelet("SETAVAILABLEFUNCTIONS",
+//                controlName + "_SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());" +
+//                Environment.NewLine);
+        }
+    }
 }
