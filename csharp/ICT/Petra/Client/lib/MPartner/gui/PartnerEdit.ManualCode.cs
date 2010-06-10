@@ -854,7 +854,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Make sure that DataBinding writes the value of the active Control to the underlying DataSource!
             TDataBinding.EnsureDataChangesAreStored(this);
 
-// TODO            ucoUpperPart.GetDataFromControls();
+            ucoUpperPart.GetDataFromControls();
             ucoLowerPart.GetDataFromControls();
 
             ReturnValue = false;

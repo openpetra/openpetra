@@ -197,6 +197,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Retrieves data that is in the Controls and puts it into the Tables in FMainDS
+        /// </summary>
+        public void GetDataFromControls()
+        {
+            GetDataFromControls(FMainDS.PPartner[0]);    
+        }
+        
+        
+        /// <summary>
         /// Initialises Delegate Function to handle click on the "Worker Field..." button.
         /// </summary>
         /// <returns>void</returns>
