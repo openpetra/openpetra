@@ -434,7 +434,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(Uco_HookupDataChange);
 
                     FUcoAddresses.InitialiseUserControl();
-                    
+
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
@@ -454,7 +454,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
 
                     // TODO
-                    
+
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerTypes)
@@ -468,7 +468,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerTypes.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
 
                     FUcoPartnerTypes.SpecialInitUserControl();
-                    
+
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
@@ -476,7 +476,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
 
                     // TODO
-                    
+
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgNotes)
@@ -660,7 +660,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Changed data (eg. caused by the data saving process) will make a databound SourceGrid redraw, 
+        /// Changed data (eg. caused by the data saving process) will make a databound SourceGrid redraw,
         /// and through that it can get it's size wrong and appear too wide if the user has
         /// a non-standard display setting, (eg. "Large Fonts (120DPI).
         /// This Method fixes that by calling the 'AdjustAfterResizing' Method in Tabs that
@@ -674,26 +674,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FUcoAddresses.AdjustAfterResizing();
                 }
-                
+
                 // TODO
 //                if (FUcoPartnerSubscriptions != null)
 //                {
 //                    FUcoPartnerSubscriptions.AdjustAfterResizing();
 //                }
-                
+
                 if (FUcoPartnerTypes != null)
                 {
                     FUcoPartnerTypes.AdjustAfterResizing();
                 }
-                
+
                 // TODO
 //                if (FUcoFamilyMembers != null)
 //                {
 //                    FUcoFamilyMembers.AdjustAfterResizing();
-//                }                
-            }               
+//                }
+            }
         }
-        
+
         private void Uco_HookupDataChange(System.Object sender, System.EventArgs e)
         {
             if (HookupDataChange != null)

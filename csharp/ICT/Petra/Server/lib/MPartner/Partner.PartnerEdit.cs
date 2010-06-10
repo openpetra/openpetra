@@ -926,7 +926,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountInterests = 0;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
-            bool HasEXWORKERPartnerType = false;            
+            bool HasEXWORKERPartnerType = false;
             PFamilyTable PersonFamilyDT;
             TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
             Boolean OfficeSpecificDataLabelsAvailable;
@@ -945,7 +945,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerClass = FNewPartnerPartnerClass;
 
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
-            
+
             try
             {
                 /*
@@ -1270,7 +1270,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
                 MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
                 MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
-                MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;                
+                MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
                 MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
                 MiscellaneousDataDT.AcceptChanges();
             }

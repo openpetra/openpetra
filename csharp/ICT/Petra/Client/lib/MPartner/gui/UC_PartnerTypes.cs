@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             SetupDataGridVisualAppearance();
         }
-        
+
         private void GrdPartnerTypes_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
             FLogic.ChangeCheckedStateForRow(e.CellContext.Position.Row - 1);

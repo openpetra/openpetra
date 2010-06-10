@@ -144,37 +144,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 // Declare UserControl Member for each dynamically loaded TabPage
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION", "private " + DynamicControlType + " FUco" + CntrlNameWithoutPrefix + ";" + Environment.NewLine);
-                
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION",
+                    "private " + DynamicControlType + " FUco" + CntrlNameWithoutPrefix + ";" + Environment.NewLine);
+
                 // Declare an Enum for each dynamically loaded TabPage
                 string DynamicTabPageEnums = "";
                 DynamicTabPageEnums += "///<summary>Denotes dynamic loadable UserControl " + ctrl.controlName + "</summary>" + Environment.NewLine;
                 DynamicTabPageEnums += "dluc" + CntrlNameWithoutPrefix + "," + Environment.NewLine;
 
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);                
-                                
+                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
+
                 // Dispose UserControl for each dynamically loaded TabPage
                 string CustomDisposingOfControl = "";
                 CustomDisposingOfControl += "if (FUco" + CntrlNameWithoutPrefix + " != null)" + Environment.NewLine;
                 CustomDisposingOfControl += "{" + Environment.NewLine;
                 CustomDisposingOfControl += "    FUco" + CntrlNameWithoutPrefix + ".Dispose();" + Environment.NewLine;
                 CustomDisposingOfControl += "}" + Environment.NewLine;
-                
-                writer.Template.AddToCodelet("CUSTOMDISPOSING", CustomDisposingOfControl);                
-                
+
+                writer.Template.AddToCodelet("CUSTOMDISPOSING", CustomDisposingOfControl);
+
                 // Initialise each dynamically loaded TabPage
-                ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");                
+                ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAME", ctrl.controlName);
                 snippetUserControlInitialisation.SetCodelet("TABCONTROLNAME", TabControlGenerator.TabControlName);
-                snippetUserControlInitialisation.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);                
-                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);                                 
-                
+                snippetUserControlInitialisation.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);
+                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);
+
                 // Dynamically load each dynamically loaded TabPage
-                ProcessTemplate snippetUserControlLoading = writer.Template.GetSnippet("USERCONTROLLOADING");                
+                ProcessTemplate snippetUserControlLoading = writer.Template.GetSnippet("USERCONTROLLOADING");
                 snippetUserControlLoading.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
                 snippetUserControlLoading.SetCodelet("CONTROLNAME", ctrl.controlName);
-                snippetUserControlLoading.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);                
+                snippetUserControlLoading.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);
                 writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLLOADING", snippetUserControlLoading);
             }
         }
@@ -1264,7 +1265,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             ProcessTemplate snippetDynamicTabPage = null;
             ProcessTemplate snippetTabPageSelectionChanged = null;
-            
+
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
@@ -1280,14 +1281,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "ShowToolTips", "true");
             }
 
-
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
 
             if (ctrl.HasAttribute("LoadPagesDynamically") && (ctrl.GetAttribute("LoadPagesDynamically").ToLower() == "true"))
-            {                
-                snippetDynamicTabPage = writer.Template.GetSnippet("DYNAMICTABPAGE");                                
-                writer.Template.InsertSnippet("DYNAMICTABPAGEBASICS", snippetDynamicTabPage);            
-                        
+            {
+                snippetDynamicTabPage = writer.Template.GetSnippet("DYNAMICTABPAGE");
+                writer.Template.InsertSnippet("DYNAMICTABPAGEBASICS", snippetDynamicTabPage);
+
                 snippetTabPageSelectionChanged = writer.Template.GetSnippet("TABPAGESELECTIONCHANGED");
                 writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", snippetTabPageSelectionChanged);
             }
@@ -1295,7 +1295,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", "");
             }
-            
+
             // writer.Template.FTemplateCode.Contains is not very clean, since it might be in a snippet or in an ifdef that will not be part of the resulting file
             if ((writer.CodeStorage.ManualFileExistsAndContains("void TabSelectionChanged"))
                 || (writer.Template.FTemplateCode.Contains("void TabSelectionChanged"))
@@ -1306,7 +1306,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SelectedIndex = 0;" + Environment.NewLine);
                 writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
             }
-            
         }
 
         protected void CreateCode(IFormWriter writer, TControlDef ATabControl)

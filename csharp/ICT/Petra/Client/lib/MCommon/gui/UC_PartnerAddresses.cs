@@ -1079,7 +1079,7 @@ namespace Ict.Petra.Client.MCommon
             ucoDetails.AdjustLabelControlsAfterResizing();
             SetupDataGridVisualAppearance();
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
