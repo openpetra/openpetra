@@ -165,6 +165,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 // Initialise each dynamically loaded TabPage
                 ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetUserControlInitialisation.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAME", ctrl.controlName);
                 snippetUserControlInitialisation.SetCodelet("TABCONTROLNAME", TabControlGenerator.TabControlName);
@@ -1286,9 +1292,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("LoadPagesDynamically") && (ctrl.GetAttribute("LoadPagesDynamically").ToLower() == "true"))
             {
                 snippetDynamicTabPage = writer.Template.GetSnippet("DYNAMICTABPAGE");
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetDynamicTabPage.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 writer.Template.InsertSnippet("DYNAMICTABPAGEBASICS", snippetDynamicTabPage);
 
                 snippetTabPageSelectionChanged = writer.Template.GetSnippet("TABPAGESELECTIONCHANGED");
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetTabPageSelectionChanged.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", snippetTabPageSelectionChanged);
             }
             else

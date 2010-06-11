@@ -1,4 +1,13 @@
 {##DYNAMICTABPAGE}
+private void OnTabPageEvent(TTabPageEventArgs e)
+{
+    if (FTabPageEvent != null)
+    {
+        FTabPageEvent(this, e);
+    }
+}
+
+{#IFDEF ISUSERCONTROL}
 private void OnDataLoadingFinished()
 {
     if (DataLoadingFinished != null)
@@ -15,15 +24,6 @@ private void OnDataLoadingStarted()
     }
 }
 
-private void OnTabPageEvent(TTabPageEventArgs e)
-{
-    if (FTabPageEvent != null)
-    {
-        FTabPageEvent(this, e);
-    }
-}
-
-/// <summary>
 /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
 /// </summary>
 /// <param name="sender"></param>
@@ -42,6 +42,7 @@ private void TabSelectionChanged(System.Object sender, EventArgs e)
 
     {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
 }
+{#ENDIF ISUSERCONTROL}
 
 /// <summary>
 /// Creates UserControls on request. AUTO-GENERATED, don't modify by hand!

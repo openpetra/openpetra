@@ -13,10 +13,16 @@ if ({#TABCONTROLNAME}.SelectedTab == {#CONTROLNAME})
         FUco{#CONTROLNAMEWITHOUTPREFIX}.MainDS = FMainDS;
         FUco{#CONTROLNAMEWITHOUTPREFIX}.PetraUtilsObject = FPetraUtilsObject;
         FUco{#CONTROLNAMEWITHOUTPREFIX}.InitUserControl();
+{#IFDEF ISUSERCONTROL}
         ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUco{#CONTROLNAMEWITHOUTPREFIX});
+{#ENDIF ISUSERCONTROL}
 
-        OnTabPageEvent(new TTabPageEventArgs({#CONTROLNAME}, FUco{#CONTROLNAMEWITHOUTPREFIX}, "FurtherInit"));
+        OnTabPageEvent(new TTabPageEventArgs({#CONTROLNAME}, FUco{#CONTROLNAMEWITHOUTPREFIX}, "InitialActivation"));
 
         this.Cursor = Cursors.Default;
+    }
+    else
+    {
+        OnTabPageEvent(new TTabPageEventArgs({#CONTROLNAME}, FUco{#CONTROLNAMEWITHOUTPREFIX}, "SubsequentActivation"));
     }
 }

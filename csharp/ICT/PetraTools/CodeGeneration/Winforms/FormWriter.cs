@@ -616,6 +616,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        public bool IsUserControlTemplate
+        {
+            get
+            {
+                return !FTemplate.FTemplateCode.Contains(": System.Windows.Forms.Form");
+            }
+        }
+
         private void AddRootControl(string prefix)
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);

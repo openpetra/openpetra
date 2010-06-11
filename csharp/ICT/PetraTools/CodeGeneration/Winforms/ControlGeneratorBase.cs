@@ -703,6 +703,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
             }
+            else if (ctrl.HasAttribute("DynamicControlType"))
+            {
+                writer.Template.AddToCodelet("SAVEDATA", "if(FUco" + ctrl.controlName.Substring(
+                        3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
+                    "    FUco" + ctrl.controlName.Substring(3) + ".GetDataFromControls();" + Environment.NewLine + "}" + Environment.NewLine);
+            }
 
             /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
