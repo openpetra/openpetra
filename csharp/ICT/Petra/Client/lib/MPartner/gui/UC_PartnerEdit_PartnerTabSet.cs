@@ -161,6 +161,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+    private void OnTabPageEvent(TTabPageEventArgs e)
+    {
+        if (FTabPageEvent != null)
+        {
+            FTabPageEvent(this, e);
+        }
+    }
+
     private void OnDataLoadingFinished()
     {
         if (DataLoadingFinished != null)
@@ -177,15 +185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
-    private void OnTabPageEvent(TTabPageEventArgs e)
-    {
-        if (FTabPageEvent != null)
-        {
-            FTabPageEvent(this, e);
-        }
-    }
-
-    /// <summary>
     /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
     /// </summary>
     /// <param name="sender"></param>
@@ -224,9 +223,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoAddresses.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoAddresses);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "SubsequentActivation"));
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerDetails)
@@ -245,9 +248,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoPartnerDetails.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetails);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "SubsequentActivation"));
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerTypes)
@@ -266,9 +273,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoPartnerTypes.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerTypes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
             }
         }
         if (tabPartners.SelectedTab == tpgNotes)
@@ -287,9 +298,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoNotes.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoNotes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "SubsequentActivation"));
             }
         }
 
