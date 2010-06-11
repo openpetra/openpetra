@@ -788,6 +788,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             FTemplate.AddToCodelet("ASSIGNFONTATTRIBUTES", "");
             FTemplate.AddToCodelet("CUSTOMDISPOSING", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEBASICS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
