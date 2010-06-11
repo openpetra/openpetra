@@ -41,6 +41,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
 
+        public AGiftBatchRow PreviouslySelectedDetailRow
+        {
+            get
+            {
+                return FPreviouslySelectedDetailRow;
+            }
+        }
+
         /// <summary>
         /// load the batches into the grid
         /// </summary>
@@ -97,9 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-            ((TFrmGiftBatch)ParentForm).LoadTransactions(
-                ARow.LedgerNumber,
-                ARow.BatchNumber);
+            ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
             FSelectedBatchNumber = ARow.BatchNumber;
         }
 
