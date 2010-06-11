@@ -83,9 +83,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblContactor = new System.Windows.Forms.Label();
             this.cmbContact = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblContact = new System.Windows.Forms.Label();
-            this.txtDateFrom = new System.Windows.Forms.TextBox();
+            this.dtpDateFrom = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateFrom = new System.Windows.Forms.Label();
-            this.txtDateTo = new System.Windows.Forms.TextBox();
+            this.dtpDateTo = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateTo = new System.Windows.Forms.Label();
             this.tpgContactAttributes = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
@@ -281,11 +281,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblContact.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblContact.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDateFrom
+            // dtpDateFrom
             //
-            this.txtDateFrom.Location = new System.Drawing.Point(2,2);
-            this.txtDateFrom.Name = "txtDateFrom";
-            this.txtDateFrom.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateFrom.Location = new System.Drawing.Point(2,2);
+            this.dtpDateFrom.Name = "dtpDateFrom";
+            this.dtpDateFrom.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateFrom
             //
@@ -297,11 +297,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.lblDateFrom.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDateFrom.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDateTo
+            // dtpDateTo
             //
-            this.txtDateTo.Location = new System.Drawing.Point(2,2);
-            this.txtDateTo.Name = "txtDateTo";
-            this.txtDateTo.Size = new System.Drawing.Size(150, 28);
+            this.dtpDateTo.Location = new System.Drawing.Point(2,2);
+            this.dtpDateTo.Name = "dtpDateTo";
+            this.dtpDateTo.Size = new System.Drawing.Size(94, 28);
             //
             // lblDateTo
             //
@@ -326,8 +326,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tableLayoutPanel4.Controls.Add(this.lblDateTo, 0, 3);
             this.tableLayoutPanel4.Controls.Add(this.cmbContactor, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.cmbContact, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.txtDateFrom, 1, 2);
-            this.tableLayoutPanel4.Controls.Add(this.txtDateTo, 1, 3);
+            this.tableLayoutPanel4.Controls.Add(this.dtpDateFrom, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.dtpDateTo, 1, 3);
             this.grpReportRange.Text = "Report Range";
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -768,9 +768,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private System.Windows.Forms.Label lblContactor;
         private Ict.Common.Controls.TCmbAutoComplete cmbContact;
         private System.Windows.Forms.Label lblContact;
-        private System.Windows.Forms.TextBox txtDateFrom;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateFrom;
         private System.Windows.Forms.Label lblDateFrom;
-        private System.Windows.Forms.TextBox txtDateTo;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateTo;
         private System.Windows.Forms.Label lblDateTo;
         private System.Windows.Forms.TabPage tpgContactAttributes;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;

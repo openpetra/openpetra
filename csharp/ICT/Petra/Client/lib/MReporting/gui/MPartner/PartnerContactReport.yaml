@@ -49,14 +49,14 @@ RootNode:
             
         grpReportRange:
             Label: Report Range
-            Controls: [cmbContactor, cmbContact, txtDateFrom, txtDateTo]
+            Controls: [cmbContactor, cmbContact, dtpDateFrom, dtpDateTo]
         cmbContactor:
             Label: Contactor:
         cmbContact:
             Label: Contact
-        txtDateFrom:
+        dtpDateFrom:
             Label: Date From:
-        txtDateTo:
+        dtpDateTo:
             Label: Date To:
             
         pnlDummy:
@@ -97,10 +97,10 @@ RootNode:
             Parameter: 1.5
         Para5:
             Name: Contact Date
-            Parameter: 1.5
+            Parameter: 1.6
         Para6:
             Name: Contact Time
-            Parameter: 1.5
+            Parameter: 1.6
         Para7:
             Name: Mailing
             Parameter: 3.0

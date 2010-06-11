@@ -109,9 +109,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.Text = Catalog.GetString("Partner Contact Report");
       #endregion
 
-      this.txtDateFrom.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDateTo.Font = TAppSettingsManager.GetDefaultBoldFont();
-
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "Partner\\\\partnercontactreport.xml";
@@ -175,30 +172,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
       if (rbtPartnerName.Checked)
       {
-        ACalc.AddParameter("param_order_by_name", "PartnerName");
+          ACalc.AddParameter("param_order_by_name", "PartnerName");
       }
       if (rbtPartnerKey.Checked)
       {
-        ACalc.AddParameter("param_order_by_name", "PartnerKey");
+          ACalc.AddParameter("param_order_by_name", "PartnerKey");
       }
       if (this.cmbContactor.SelectedItem != null)
       {
-        ACalc.AddParameter("param_cmbContactor", this.cmbContactor.SelectedItem.ToString());
+          ACalc.AddParameter("param_cmbContactor", this.cmbContactor.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_cmbContactor", "");
+          ACalc.AddParameter("param_cmbContactor", "");
       }
       if (this.cmbContact.SelectedItem != null)
       {
-        ACalc.AddParameter("param_cmbContact", this.cmbContact.SelectedItem.ToString());
+          ACalc.AddParameter("param_cmbContact", this.cmbContact.SelectedItem.ToString());
       }
       else
       {
-        ACalc.AddParameter("param_cmbContact", "");
+          ACalc.AddParameter("param_cmbContact", "");
       }
-      ACalc.AddParameter("param_txtDateFrom", this.txtDateFrom.Text);
-      ACalc.AddParameter("param_txtDateTo", this.txtDateTo.Text);
+      ACalc.AddParameter("param_dtpDateFrom", this.dtpDateFrom.Date);
+      ACalc.AddParameter("param_dtpDateTo", this.dtpDateTo.Date);
       grdAttribute_ReadControls(ACalc, AReportAction);
       grdDetail_ReadControls(ACalc, AReportAction);
       grdSelection_ReadControls(ACalc, AReportAction);
@@ -218,8 +215,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       rbtPartnerKey.Checked = AParameters.Get("param_order_by_name").ToString() == "PartnerKey";
       cmbContactor.SelectedValue = AParameters.Get("param_cmbContactor").ToString();
       cmbContact.SelectedValue = AParameters.Get("param_cmbContact").ToString();
-      txtDateFrom.Text = AParameters.Get("param_txtDateFrom").ToString();
-      txtDateTo.Text = AParameters.Get("param_txtDateTo").ToString();
+      DateTime dtpDateFromDate = AParameters.Get("param_dtpDateFrom").ToDate();
+      if ((dtpDateFromDate <= DateTime.MinValue)
+          || (dtpDateFromDate >= DateTime.MaxValue))
+      {
+          dtpDateFromDate = DateTime.Now;
+      }
+      dtpDateFrom.Date = dtpDateFromDate;
+      DateTime dtpDateToDate = AParameters.Get("param_dtpDateTo").ToDate();
+      if ((dtpDateToDate <= DateTime.MinValue)
+          || (dtpDateToDate >= DateTime.MaxValue))
+      {
+          dtpDateToDate = DateTime.Now;
+      }
+      dtpDateTo.Date = dtpDateToDate;
       grdAttribute_SetControls(AParameters);
       grdDetail_SetControls(AParameters);
       grdSelection_SetControls(AParameters);
@@ -239,8 +248,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contactor", 1.5));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Method", 1.5));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact ID", 1.5));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact Date", 1.5));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact Time", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact Date", 1.6));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact Time", 1.6));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mailing", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Notes", 5.5));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Contact Attribute", 3.0));

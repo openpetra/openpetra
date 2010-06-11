@@ -146,6 +146,65 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         protected void grdSelection_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            if (FSelectionTable.Rows.Count > 0)
+            {
+                // Add the contact attributes as sql command to param_contact_attributes
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+                sb.Append(" AND(");
+                Boolean FirstAttribute = true;
+
+                foreach (PContactAttributeDetailRow Row in FSelectionTable.Rows)
+                {
+                    if (FirstAttribute)
+                    {
+                        FirstAttribute = false;
+                    }
+                    else
+                    {
+                        sb.Append(" OR ");
+                    }
+
+                    String Attribute = Row.ContactAttributeCode;
+                    String Detail = Row.ContactAttrDetailCode;
+
+                    sb.Append(" (PUB_p_partner_contact_attribute.p_contact_attribute_code_c = ");
+                    sb.Append('\'');
+                    sb.Append(Attribute);
+                    sb.Append('\'');
+                    sb.Append(" AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = ");
+                    sb.Append('\'');
+                    sb.Append(Detail);
+                    sb.Append('\'');
+                    sb.Append(')');
+                }
+
+                sb.Append(")");
+
+                ACalc.AddParameter("param_contact_attributes", sb.ToString());
+                //MessageBox.Show(sb.ToString());
+            }
+            else
+            {
+                ACalc.AddParameter("param_contact_attributes", " ");
+            }
+
+            ACalc.AddParameter("NumberOfAddresses", 0);
+
+            if (AReportAction == TReportActionEnum.raSave)
+            {
+                int Counter = 0;
+
+                foreach (PContactAttributeDetailRow Row in FSelectionTable.Rows)
+                {
+                    ACalc.AddParameter("param_contact_attribute_attribute_" + Counter.ToString(), Row.ContactAttributeCode);
+                    ACalc.AddParameter("param_contact_attribute_detail_" + Counter.ToString(), Row.ContactAttrDetailCode);
+                    ACalc.AddParameter("param_contact_attribute_description_" + Counter.ToString(), Row.ContactAttrDetailDescr);
+                    Counter++;
+                }
+
+                ACalc.AddParameter("param_number_of_contact_attributes", Counter);
+            }
         }
 
         protected void grdAttribute_SetControls(TParameterList AParameters)
@@ -158,6 +217,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         protected void grdSelection_SetControls(TParameterList AParameters)
         {
+            FSelectionTable.Rows.Clear();
+            int NumAttributes = AParameters.Get("param_number_of_contact_attributes").ToInt32();
+
+            for (int Counter = 0; Counter < NumAttributes; ++Counter)
+            {
+                PContactAttributeDetailRow Row = FSelectionTable.NewRowTyped(true);
+
+                Row.ContactAttributeCode = AParameters.Get("param_contact_attribute_attribute_" + Counter.ToString()).ToString();
+                Row.ContactAttrDetailCode = AParameters.Get("param_contact_attribute_detail_" + Counter.ToString()).ToString();
+                Row.ContactAttrDetailDescr = AParameters.Get("param_contact_attribute_description_" + Counter.ToString()).ToString();
+
+                FSelectionTable.Rows.Add(Row);
+            }
         }
 
         protected void AttributeFocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
@@ -226,7 +298,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         protected void RemoveDetail(System.Object sender, EventArgs e)
         {
-            for (int Counter = 0; Counter < grdSelection.SelectedDataRows.Length; ++Counter)
+            for (int Counter = grdSelection.SelectedDataRows.Length - 1; Counter >= 0; --Counter)
             {
                 String Attribute = (String)((DataRowView)grdSelection.SelectedDataRows[Counter]).Row[0];
                 String Detail = (String)((DataRowView)grdSelection.SelectedDataRows[Counter]).Row[1];
