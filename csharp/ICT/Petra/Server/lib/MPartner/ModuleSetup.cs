@@ -47,8 +47,6 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// returns all motivation groups and details for this ledger
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
         public static PartnerSetupTDS LoadPartnerTypes()
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();

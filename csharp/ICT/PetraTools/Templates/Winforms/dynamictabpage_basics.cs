@@ -24,6 +24,7 @@ private void OnDataLoadingStarted()
     }
 }
 
+/// <summary>
 /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
 /// </summary>
 /// <param name="sender"></param>

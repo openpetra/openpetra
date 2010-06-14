@@ -202,6 +202,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpPartnerTypes));
         }
 
+        /// can be called from the hosting window to adjust the size of the control after resizing the window
         public void AdjustAfterResizing()
         {
             SetupDataGridVisualAppearance();

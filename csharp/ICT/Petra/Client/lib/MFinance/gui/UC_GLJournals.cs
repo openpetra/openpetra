@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// return the selected row
-    private AJournalRow GetSelectedDetailRow()
+    public AJournalRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

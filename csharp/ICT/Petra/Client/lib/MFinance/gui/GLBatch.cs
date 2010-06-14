@@ -28,6 +28,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -50,6 +51,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
+
+    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+    private event TTabPageEventHandler FTabPageEvent;
+
+    /// <summary>
+    /// Enumeration of dynamic loadable UserControls which are used
+    /// on the Tabs of a TabControl. AUTO-GENERATED, don't modify by hand!
+    /// </summary>
+    public enum TDynamicLoadableUserControls
+    {
+    }
 
     /// constructor
     public TFrmGLBatch(IntPtr AParentFormHandle) : base()
@@ -370,6 +382,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TabPage currentTab = tabGLBatch.TabPages[tabGLBatch.SelectedIndex];
 
+            if (FTabSetup == null)
+            {
+                FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+
+                // The first time we run this Method we exit straight away; this is when the Form gets initialised
+                return;
+            }
+
             if (PreviouslyMergedToolbarItems != null)
             {
                 ToolStripManager.RevertMerge(tbrMain, PreviouslyMergedToolbarItems);
@@ -412,5 +432,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 PreviouslyMergedMenuItems = ItemsToMerge;
             }
         }
+
   }
 }
