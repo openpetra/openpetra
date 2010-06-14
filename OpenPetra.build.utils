@@ -303,8 +303,8 @@
         // it seems you need to change the file /usr/lib/mono/2.0/Microsoft.CSharp.targets as well, it should read:  DisabledWarnings="$(NoWarn)"
         // see also http://lists.ximian.com/archives/public/mono-patches/2009-December/163612.html
         ReplaceInFile(filename, 
-                      "<TreatWarningsAsErrors>false</TreatWarningsAsErrors>", 
-                      "<TreatWarningsAsErrors>false</TreatWarningsAsErrors><NoWarn>0169,0219,0414,0067</NoWarn>");
+                      "</PropertyGroup>", 
+                      "<NoWarn>0169,0219,0414,0067</NoWarn></PropertyGroup>");
         return true;
     }
 
