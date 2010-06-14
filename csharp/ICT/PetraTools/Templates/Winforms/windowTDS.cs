@@ -6,6 +6,9 @@
 using System;
 using System.Drawing;
 using System.Collections;
+{#IFDEF TABPAGECTRL}
+using System.Collections.Generic;
+{#ENDIF TABPAGECTRL}
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -37,6 +40,21 @@ namespace {#NAMESPACE}
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
     private {#UICONNECTORTYPE} FUIConnector = null;
 {#ENDIF UICONNECTORTYPE}
+
+{#IFDEF TABPAGECTRL}
+    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
+    private event TTabPageEventHandler FTabPageEvent;
+    {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
+    
+    /// <summary>
+    /// Enumeration of dynamic loadable UserControls which are used
+    /// on the Tabs of a TabControl. AUTO-GENERATED, don't modify by hand!
+    /// </summary>
+    public enum TDynamicLoadableUserControls
+    {
+        {#DYNAMICTABPAGEUSERCONTROLENUM}
+    }
+{#ENDIF TABPAGECTRL}
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -131,6 +149,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
@@ -350,6 +369,17 @@ namespace {#NAMESPACE}
         {
             TabPage currentTab = {#TABPAGECTRL}.TabPages[{#TABPAGECTRL}.SelectedIndex];
 
+            if (FTabSetup == null)
+            {
+                FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+
+                // The first time we run this Method we exit straight away; this is when the Form gets initialised        
+                return;
+            }
+
+            {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
+
+            
             if (PreviouslyMergedToolbarItems != null)
             {
                 ToolStripManager.RevertMerge(tbrMain, PreviouslyMergedToolbarItems);
@@ -392,8 +422,14 @@ namespace {#NAMESPACE}
                 PreviouslyMergedMenuItems = ItemsToMerge;
             }
         }
+
+    {#DYNAMICTABPAGEBASICS}        
 {#ENDIF TABPAGECTRL}
   }
 }
 
 {#INCLUDE copyvalues.cs}
+
+{#INCLUDE dynamictabpage_basics.cs}
+{#INCLUDE dynamictabpage_usercontrol_selectionchanged.cs}
+{#INCLUDE dynamictabpage_usercontrol_loading.cs}

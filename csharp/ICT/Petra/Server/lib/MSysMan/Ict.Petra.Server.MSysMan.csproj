@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -60,6 +60,9 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MSysMan">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -73,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cacheable.cs" />
     <Compile Include="Ict.Petra.Server.MSysMan.AssemblyInfo.cs" />
     <Compile Include="ErrorLog.cs" />
     <Compile Include="GroupManager.cs" />
@@ -92,6 +96,10 @@
     <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
       <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
       <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.csproj">
+      <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
+      <Name>Ict.Petra.Server.MCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\MSysMan\data\Ict.Petra.Server.MSysMan.DataAccess.csproj">
       <Project>{CF8F3805-344B-4B75-8498-C93205B2A2A9}</Project>

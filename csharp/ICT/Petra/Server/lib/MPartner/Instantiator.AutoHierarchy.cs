@@ -1351,7 +1351,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
                 case TCacheableMailingTablesEnum.PostCodeRegionList:
                     ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
                         ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-
+            		break;
+            	case TCacheableMailingTablesEnum.ContactAttributeList:
+            		ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+            		break;
+            	case TCacheableMailingTablesEnum.ContactAttributeDetailList:
+            		ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+            		break;
+            	case TCacheableMailingTablesEnum.MethodOfContactList:
+            		ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+            		
                     // Ict.Petra.Shared.MPartner.Cacheable.AddresseeTypeList:
                     // begin
                     // Result := FCachePopulator.ReasonSubscriptionGivenList(Enum(ACacheableTable).ToString("G"));

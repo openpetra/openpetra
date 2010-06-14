@@ -1,0 +1,119 @@
+RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner Contact Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    DetailTable: PContactAttribute
+    TemplateParameters:
+        XMLFILES: [Partner\\\\partnercontactreport.xml]
+        REPORTNAME: Partner Contact
+        CURRENTREPORT: Partner Contact
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: BLANK 
+        # ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [rgrSorting]
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection]
+            Order: AlwaysFirst
+        tpgReportRange:
+            Label: Report Range
+            Controls: [grpReportRange]
+        tpgContactAttributes:
+            Label: Contact Attributes
+            Controls:
+                Row0: [grdAttribute, grdDetail]
+                Row1: [pnlDummy, pnlButton]
+                Row2: [grdSelection]
+            ColWidths: [0=Percent:35, 1=Percent:65]
+            
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Dock: Fill
+        rgrSorting: {ParameterName=param_order_by_name}
+            Label: Address Details
+            Controls: [rbtPartnerName, rbtPartnerKey]
+        rbtPartnerName:
+            Label: Partner Name
+        rbtPartnerKey: 
+            Label: Partner Key
+            
+        grpReportRange:
+            Label: Report Range
+            Controls: [cmbContactor, cmbContact, dtpDateFrom, dtpDateTo]
+        cmbContactor:
+            Label: Contactor:
+        cmbContact:
+            Label: Contact
+        dtpDateFrom:
+            Label: Date From:
+        dtpDateTo:
+            Label: Date To:
+            
+        pnlDummy:
+        
+        pnlButton:
+            Controls: 
+                Row0: [btnAddDetail, btnRemoveDetail]
+            Align: left
+        grdAttribute:
+        #~ p_contact_attribute
+            Dock: Fill
+            ActionFocusRow: AttributeFocusedRowChanged
+        grdDetail:
+        #~ p_contact_attribute_detail
+            Dock: Fill
+            ActionDoubleClick: grdDetailDoubleClick
+        grdSelection:
+        #~ Holds the selected attributes
+            Dock: Fill
+            ColSpan: 2
+            ActionDoubleClick: grdSelectionDoubleClick
+        btnAddDetail:
+            Label: AddDetail
+            ActionClick: AddDetail
+        btnRemoveDetail:
+            Label: Remove Detail
+            ActionClick: RemoveDetail
+        
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: Contactor
+            Parameter: 1.5
+        Para2:
+            Name: Method
+            Parameter: 1.5
+        Para4:
+            Name: Contact ID
+            Parameter: 1.5
+        Para5:
+            Name: Contact Date
+            Parameter: 1.6
+        Para6:
+            Name: Contact Time
+            Parameter: 1.6
+        Para7:
+            Name: Mailing
+            Parameter: 3.0
+        Para8:
+            Name: Notes
+            Parameter: 5.5
+        Para9:
+            Name: Contact Attribute
+            Parameter: 3.0
+        Para10:
+            Name: Contact Detail
+            Parameter: 3.0
+        Para11:
+            Name: Contact Detail Description
+            Parameter: 4.0
+        

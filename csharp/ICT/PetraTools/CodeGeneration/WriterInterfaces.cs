@@ -93,5 +93,10 @@ namespace Ict.Tools.CodeGeneration
         {
             get;
         }
+
+        bool IsUserControlTemplate
+        {
+            get;
+        }
     }
 }

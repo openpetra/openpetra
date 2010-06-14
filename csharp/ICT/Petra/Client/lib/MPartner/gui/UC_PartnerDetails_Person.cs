@@ -148,21 +148,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtPreferredName.Text = ARow.PreferedName;
         }
-        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPreviousNameNull())
+        if (FMainDS.PPartner == null || ((FMainDS.PPartner.Rows.Count > 0) && (FMainDS.PPartner[0].IsPreviousNameNull())))
         {
             txtPreviousName.Text = String.Empty;
         }
         else
         {
-            txtPreviousName.Text = FMainDS.PPartner[0].PreviousName;
+            if (FMainDS.PPartner.Rows.Count > 0)
+            {
+                txtPreviousName.Text = FMainDS.PPartner[0].PreviousName;
+            }
         }
-        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsPartnerShortNameLocNull())
+        if (FMainDS.PPartner == null || ((FMainDS.PPartner.Rows.Count > 0) && (FMainDS.PPartner[0].IsPartnerShortNameLocNull())))
         {
             txtLocalName.Text = String.Empty;
         }
         else
         {
-            txtLocalName.Text = FMainDS.PPartner[0].PartnerShortNameLoc;
+            if (FMainDS.PPartner.Rows.Count > 0)
+            {
+                txtLocalName.Text = FMainDS.PPartner[0].PartnerShortNameLoc;
+            }
         }
         if (ARow.IsDateOfBirthNull())
         {
@@ -212,21 +218,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             txtMaritalStatusComment.Text = ARow.MaritalStatusComment;
         }
-        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsLanguageCodeNull())
+        if (FMainDS.PPartner == null || ((FMainDS.PPartner.Rows.Count > 0) && (FMainDS.PPartner[0].IsLanguageCodeNull())))
         {
             cmbLanguageCode.SelectedIndex = -1;
         }
         else
         {
-            cmbLanguageCode.SetSelectedString(FMainDS.PPartner[0].LanguageCode);
+            if (FMainDS.PPartner.Rows.Count > 0)
+            {
+                cmbLanguageCode.SetSelectedString(FMainDS.PPartner[0].LanguageCode);
+            }
         }
-        if (FMainDS.PPartner == null || FMainDS.PPartner[0].IsAcquisitionCodeNull())
+        if (FMainDS.PPartner == null || ((FMainDS.PPartner.Rows.Count > 0) && (FMainDS.PPartner[0].IsAcquisitionCodeNull())))
         {
             cmbAcquisitionCode.SelectedIndex = -1;
         }
         else
         {
-            cmbAcquisitionCode.SetSelectedString(FMainDS.PPartner[0].AcquisitionCode);
+            if (FMainDS.PPartner.Rows.Count > 0)
+            {
+                cmbAcquisitionCode.SetSelectedString(FMainDS.PPartner[0].AcquisitionCode);
+            }
         }
         if (ARow.IsOccupationCodeNull())
         {
@@ -249,7 +261,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.PreferedName = txtPreferredName.Text;
         }
-        if (FMainDS.PPartner != null)
+        if ((FMainDS.PPartner != null) && (FMainDS.PPartner.Rows.Count > 0))
         {
             if (txtPreviousName.Text.Length == 0)
             {
@@ -260,7 +272,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].PreviousName = txtPreviousName.Text;
             }
         }
-        if (FMainDS.PPartner != null)
+        if ((FMainDS.PPartner != null) && (FMainDS.PPartner.Rows.Count > 0))
         {
             if (txtLocalName.Text.Length == 0)
             {
@@ -319,7 +331,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.MaritalStatusComment = txtMaritalStatusComment.Text;
         }
-        if (FMainDS.PPartner != null)
+        if ((FMainDS.PPartner != null) && (FMainDS.PPartner.Rows.Count > 0))
         {
             if (cmbLanguageCode.SelectedIndex == -1)
             {
@@ -330,7 +342,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].LanguageCode = cmbLanguageCode.GetSelectedString();
             }
         }
-        if (FMainDS.PPartner != null)
+        if ((FMainDS.PPartner != null) && (FMainDS.PPartner.Rows.Count > 0))
         {
             if (cmbAcquisitionCode.SelectedIndex == -1)
             {

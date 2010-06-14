@@ -54,6 +54,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+           /*
+            * The following Dispose calls are necessary to get dynamically created Controls out
+            * of memory if they were created in the Constructor (because of running on
+            * 'Large Fonts (120 DPI)'.
+            */
+            if (FUcoAddresses != null)
+            {
+                FUcoAddresses.Dispose();
+            }
+            if (FUcoPartnerDetails != null)
+            {
+                FUcoPartnerDetails.Dispose();
+            }
+            if (FUcoPartnerTypes != null)
+            {
+                FUcoPartnerTypes.Dispose();
+            }
+            if (FUcoNotes != null)
+            {
+                FUcoNotes.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 

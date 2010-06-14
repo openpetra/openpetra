@@ -162,6 +162,21 @@ namespace Ict.Petra.Shared.MPartner
     public enum TCacheableMailingTablesEnum
     {
         /// <summary>
+        /// List of all contact attributes
+        /// </summary>
+        ContactAttributeList,
+
+        /// <summary>
+        /// List of all contact attribute details
+        /// </summary>
+        ContactAttributeDetailList,
+
+        /// <summary>
+        /// List of all contact methods in p_method_of_contact
+        /// </summary>
+        MethodOfContactList,
+
+        /// <summary>
         /// todoComment
         /// </summary>
         MergeFormList,
@@ -174,7 +189,7 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// list of Post code regions
         /// </summary>
-        PostCodeRegionList
+        PostCodeRegionList,
     };
 
     /// <summary>

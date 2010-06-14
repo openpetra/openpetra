@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F1A7A1DF-BF17-4E23-87AD-95C38EC25D03}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -122,6 +122,10 @@
     <ProjectReference Include="..\MSysMan\data\Ict.Petra.Shared.MSysMan.DataTables.csproj">
       <Project>{E5C3D047-F530-4AAA-B7BE-3CEE79A45BCE}</Project>
       <Name>Ict.Petra.Shared.MSysMan.DataTables</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MSysMan\Ict.Petra.Shared.MSysMan.csproj">
+      <Project>{E25ABF88-1199-434C-B64D-958C2E8FF65A}</Project>
+      <Name>Ict.Petra.Shared.MSysMan</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

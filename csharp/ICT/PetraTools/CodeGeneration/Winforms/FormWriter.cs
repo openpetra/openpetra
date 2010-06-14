@@ -91,6 +91,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new RadioGroupSimpleReportGenerator());
                 AvailableControlGenerators.Add(new RadioButtonReportGenerator());
                 AvailableControlGenerators.Add(new UserControlReportGenerator());
+                AvailableControlGenerators.Add(new SourceGridReportGenerator());
             }
             else
             {
@@ -615,6 +616,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        public bool IsUserControlTemplate
+        {
+            get
+            {
+                return !FTemplate.FTemplateCode.Contains(": System.Windows.Forms.Form");
+            }
+        }
+
         private void AddRootControl(string prefix)
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
@@ -778,6 +787,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLLOADING", "");
             FTemplate.AddToCodelet("ASSIGNFONTATTRIBUTES", "");
+            FTemplate.AddToCodelet("CUSTOMDISPOSING", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEBASICS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {

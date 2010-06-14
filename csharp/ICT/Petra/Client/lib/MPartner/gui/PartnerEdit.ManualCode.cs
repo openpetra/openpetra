@@ -854,7 +854,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Make sure that DataBinding writes the value of the active Control to the underlying DataSource!
             TDataBinding.EnsureDataChangesAreStored(this);
 
-// TODO            ucoUpperPart.GetDataFromControls();
+            ucoUpperPart.GetDataFromControls();
             ucoLowerPart.GetDataFromControls();
 
             ReturnValue = false;
@@ -1373,6 +1373,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TFrmPartnerEdit2_Load(System.Object sender, System.EventArgs e)
         {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
             // Reduce Form height to fit the PartnerEdit screen fully only on 800x600 resolution
             if (System.Windows.Forms.Screen.GetBounds(ucoUpperPart).Height == 600)
             {
