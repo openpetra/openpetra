@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.RemotingSinks.Encryption
@@ -34,15 +35,16 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
     /// </summary>
     public class EncryptionServerSink : BaseChannelSinkWithProperties, IServerChannelSink
     {
-        private byte[] FEncryptionKey;
+        private byte[] FEncryptionKey = null;
+        private RSAParameters FPrivateKey;
         private IServerChannelSink FNextSink;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public EncryptionServerSink(IServerChannelSink ANextSink, byte[] AEncryptionKey)
+        public EncryptionServerSink(IServerChannelSink ANextSink, RSAParameters APrivateKey)
         {
-            FEncryptionKey = AEncryptionKey;
+            FPrivateKey = APrivateKey;
             FNextSink = ANextSink;
         }
 
@@ -115,6 +117,15 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
         {
             if (headers[EncryptionRijndael.GetEncryptionName()] != null)
             {
+                if (headers[EncryptionRijndael.GetEncryptionName() + "KEY"] != null)
+                {
+                    // read the symmetric key, which has been encrypted with our public key
+                    RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+                    RSA.ImportParameters(FPrivateKey);
+                    FEncryptionKey = RSA.Decrypt(
+                        Convert.FromBase64String((String)headers[EncryptionRijndael.GetEncryptionName() + "KEY"]), false);
+                }
+
                 byte[] EncryptionIV = Convert.FromBase64String((String)headers[EncryptionRijndael.GetEncryptionName() + "IV"]);
                 stream = EncryptionRijndael.Decrypt(FEncryptionKey, stream, EncryptionIV);
                 state = true;
@@ -131,6 +142,8 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
                 byte[] EncryptionIV;
                 stream = EncryptionRijndael.Encrypt(FEncryptionKey, stream, out EncryptionIV);
                 headers[EncryptionRijndael.GetEncryptionName()] = "Yes";
+
+                // the initialisation vector is no secret, but we need to generate it for each encryption, and it is needed for decryption
                 headers[EncryptionRijndael.GetEncryptionName() + "IV"] = Convert.ToBase64String(EncryptionIV);
             }
         }

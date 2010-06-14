@@ -49,7 +49,7 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
         /// this will create a new user
         /// </summary>
         bool CreateUser(string AUsername, string APassword);
-        
+
         /// <summary>
         /// which functionality is implemented by this dll
         /// </summary>

@@ -34,9 +34,22 @@ class Program
     {
         try
         {
-            string keyfile = "../../../Testing/secretkey.txt";
-            EncryptionRijndael.CreateSecretKey(keyfile);
-            Console.WriteLine("new key has been written to " + Path.GetFullPath(keyfile));
+            CspParameters cp = new CspParameters();
+            cp.KeyContainerName = "OpenPetraServerKeyContainer";
+
+            // first make sure, we really get a new key
+            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider(cp);
+            RSA.PersistKeyInCsp = false;
+            RSA.Clear();
+
+            // now create the new key
+            RSACryptoServiceProvider RSANew = new RSACryptoServiceProvider(cp);
+
+            Console.WriteLine("public key only: ");
+            Console.WriteLine(RSANew.ToXmlString(false));
+
+            Console.WriteLine("public and private key: ");
+            Console.WriteLine(RSANew.ToXmlString(true));
         }
         catch (Exception e)
         {

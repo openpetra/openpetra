@@ -25,22 +25,27 @@ using System;
 using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using Ict.Common.IO;
+using Ict.Common;
 
 namespace Ict.Petra.Shared.RemotingSinks.Encryption
 {
     internal class EncryptionClientSink : BaseChannelSinkWithProperties, IClientChannelSink
     {
-        private byte[] FEncryptionKey;
+        private static RSAParameters FPublicKeyServer;
+        private static byte[] FEncryptionKey = null;
         private IClientChannelSink FNextSink;
+        private bool SendKeyAgain = true;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public EncryptionClientSink(IClientChannelSink ANextSink, byte[] AEncryptionKey)
+        public EncryptionClientSink(IClientChannelSink ANextSink, RSAParameters APublicKeyServer)
         {
-            FEncryptionKey = AEncryptionKey;
+            FPublicKeyServer = APublicKeyServer;
             FNextSink = ANextSink;
+            SendKeyAgain = true;
         }
 
         public IClientChannelSink NextChannelSink
@@ -114,9 +119,32 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
         /// </summary>
         protected void ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
         {
+            if (FEncryptionKey == null)
+            {
+                // create a symmetric key
+                Rijndael alg = new RijndaelManaged();
+                alg.GenerateKey();
+                FEncryptionKey = alg.Key;
+                SendKeyAgain = true;
+            }
+
+            if (SendKeyAgain)
+            {
+                // tell the server the symmetric key,
+                // but encrypt with the public key of the server.
+                // this means that only the server can read the secret key.
+                RSACryptoServiceProvider serverRSA = new RSACryptoServiceProvider();
+                serverRSA.ImportParameters(FPublicKeyServer);
+                string encryptedSymmetricKey = Convert.ToBase64String(serverRSA.Encrypt(FEncryptionKey, false));
+                headers[EncryptionRijndael.GetEncryptionName() + "KEY"] = encryptedSymmetricKey;
+                SendKeyAgain = false;
+            }
+
             byte[] EncryptionIV;
             stream = EncryptionRijndael.Encrypt(FEncryptionKey, stream, out EncryptionIV);
             headers[EncryptionRijndael.GetEncryptionName()] = "Yes";
+
+            // the initialisation vector is no secret, but we need to generate it for each encryption, and it is needed for decryption
             headers[EncryptionRijndael.GetEncryptionName() + "IV"] = Convert.ToBase64String(EncryptionIV);
         }
 
