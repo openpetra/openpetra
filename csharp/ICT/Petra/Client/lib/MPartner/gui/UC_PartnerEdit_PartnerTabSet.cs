@@ -236,6 +236,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoAddresses.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerDetails)
@@ -261,6 +270,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoPartnerDetails.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerTypes)
@@ -286,6 +304,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoPartnerTypes.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgNotes)
@@ -311,6 +338,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoNotes.AdjustAfterResizing();
+                }
             }
         }
 
@@ -350,7 +386,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -380,7 +416,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -410,7 +446,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -440,7 +476,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);

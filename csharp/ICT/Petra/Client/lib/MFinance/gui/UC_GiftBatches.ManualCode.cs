@@ -88,6 +88,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+            // TODO Adjustment of SourceGrid's column widhts needs to be done like in Petra 2.3 ('SetupDataGridVisualAppearance' Methods)
+        }
+
+        /// <summary>
         /// show ledger number
         /// </summary>
         private void ShowDataManual()

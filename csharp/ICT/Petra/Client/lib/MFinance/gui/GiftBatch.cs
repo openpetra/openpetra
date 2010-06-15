@@ -415,6 +415,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     OnTabPageEvent(new TTabPageEventArgs(tpgBatches, FUcoBatches, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoBatches.AdjustAfterResizing();
+                    }
                 }
             }
             if (tabGiftBatch.SelectedTab == tpgTransactions)
@@ -439,6 +448,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     OnTabPageEvent(new TTabPageEventArgs(tpgTransactions, FUcoTransactions, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoTransactions.AdjustAfterResizing();
+                    }
                 }
             }
 
@@ -522,7 +540,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -552,7 +570,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
