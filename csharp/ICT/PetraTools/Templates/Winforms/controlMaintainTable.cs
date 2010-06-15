@@ -135,7 +135,7 @@ namespace {#NAMESPACE}
     }
 
     /// return the selected row
-    private {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

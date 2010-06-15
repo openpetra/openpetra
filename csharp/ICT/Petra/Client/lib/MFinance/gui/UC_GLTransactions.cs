@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// return the selected row
-    private GLBatchTDSATransactionRow GetSelectedDetailRow()
+    public GLBatchTDSATransactionRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

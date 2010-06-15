@@ -91,6 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// enable the transaction tab page
         public void EnableTransactionsTab()
         {
             this.tpgTransactions.Enabled = true;
@@ -120,8 +121,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    LoadTransactions(FUcoBatches.PreviouslySelectedDetailRow.LedgerNumber,
-                        FUcoBatches.PreviouslySelectedDetailRow.BatchNumber);
+                    LoadTransactions(FUcoBatches.GetSelectedDetailRow().LedgerNumber,
+                        FUcoBatches.GetSelectedDetailRow().BatchNumber);
 
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }

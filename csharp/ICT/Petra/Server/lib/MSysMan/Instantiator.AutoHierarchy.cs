@@ -619,9 +619,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors
         private DateTime FStartTime;
 #endif
 
-        #region ManualCode
-        private TMaintenanceSystemDefaults FSystemDefaultsManager;
-        #endregion ManualCode
         /// <summary>Constructor</summary>
         public TApplicationUIConnectorsNamespace()
         {
@@ -633,9 +630,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors
 
             FStartTime = DateTime.Now;
 #endif
-            #region ManualCode
-            FSystemDefaultsManager = new TMaintenanceSystemDefaults();
-            #endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
@@ -1026,7 +1020,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
         {
             get
             {
-                /// generated method from interface
+                //
                 // Creates or passes a reference to an instantiator of sub-namespaces that
                 // reside in the 'Maintenance.SystemDefaults' sub-namespace.
                 // A call to this function is done everytime a Client uses an object of this

@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     }
 
     /// return the selected row
-    private GiftBatchTDSAGiftDetailRow GetSelectedDetailRow()
+    public GiftBatchTDSAGiftDetailRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

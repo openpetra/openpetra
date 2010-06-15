@@ -1074,6 +1074,9 @@ namespace Ict.Petra.Client.MCommon
             ApplySecurity();
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public void AdjustAfterResizing()
         {
             ucoDetails.AdjustLabelControlsAfterResizing();

@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     }
 
     /// return the selected row
-    private ABatchRow GetSelectedDetailRow()
+    public ABatchRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

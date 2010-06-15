@@ -41,14 +41,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
 
-        public AGiftBatchRow PreviouslySelectedDetailRow
-        {
-            get
-            {
-                return FPreviouslySelectedDetailRow;
-            }
-        }
-
         /// <summary>
         /// load the batches into the grid
         /// </summary>

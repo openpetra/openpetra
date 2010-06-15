@@ -258,7 +258,10 @@ namespace Ict.Petra.Client.App.Core
             // acquire .NET Remoting Proxy objects for remoted Server objects
             //
             FConnector.ServerIPPort = FRemotingPort;
+
+#if DEBUGMODE
             FConnector.GetRemoteTestObject(FRemotingURL_TestObject, out FRemoteFactoryObject);
+#endif
 
             // FConnector.GetRemoteServerSponsor(FRemotingURL_ServerSponsor, out FRemoteSponsor);
             FConnector.GetRemotePollClientTasks(FRemotingURL_PollClientTasks, out FRemotePollClientTasks);
