@@ -361,22 +361,29 @@ namespace {#NAMESPACE}
         private ToolStrip PreviouslyMergedMenuItems = null;
         
         /// <summary>
-        /// change the toolbars that are associated with the tabs
+        /// Changes the toolbars that are associated with the Tabs.
+        /// Optionally dynamically loads UserControls that are associated with the Tabs. 
+        /// AUTO-GENERATED, don't modify by hand!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TabSelectionChanged(System.Object sender, EventArgs e)
         {
+{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
+            bool FirstTabPageSelectionChanged = false;
+{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
             TabPage currentTab = {#TABPAGECTRL}.TabPages[{#TABPAGECTRL}.SelectedIndex];
-
+            
             if (FTabSetup == null)
             {
                 FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-
-                // The first time we run this Method we exit straight away; this is when the Form gets initialised        
-                return;
+{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
+                FirstTabPageSelectionChanged = true;
+{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
             }
 
+            {#IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT}            
+            
             {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
 
             

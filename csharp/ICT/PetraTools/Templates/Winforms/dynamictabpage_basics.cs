@@ -24,22 +24,28 @@ private void OnDataLoadingStarted()
     }
 }
 
+/// <summary>
 /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
 /// </summary>
 /// <param name="sender"></param>
 /// <param name="e"></param>
 private void TabSelectionChanged(System.Object sender, EventArgs e)
 {
+{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
+    bool FirstTabPageSelectionChanged = false;
+{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
     //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
     if (FTabSetup == null)
     {
         FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-
-        // The first time we run this Method we exit straight away; this is when the Form gets initialised        
-        return;
+{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
+        FirstTabPageSelectionChanged = true;
+{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
     }
 
+    {#IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT}
+    
     {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
 }
 {#ENDIF ISUSERCONTROL}

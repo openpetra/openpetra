@@ -790,6 +790,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("CUSTOMDISPOSING", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEBASICS", "");
+            FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
