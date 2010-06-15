@@ -18,7 +18,7 @@ case TDynamicLoadableUserControls.dluc{#CONTROLNAMEWITHOUTPREFIX}:
     /*
      * The following four commands seem strange and unnecessary; however, they are necessary
      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-    */
+     */
     if (TClientSettings.GUIRunningOnNonStandardDPI)
     {
         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
