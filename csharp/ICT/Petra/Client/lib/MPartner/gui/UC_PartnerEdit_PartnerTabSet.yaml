@@ -14,6 +14,7 @@ RootNode:
             DragTabPageEnabled: true
             ShowToolTips: true
             LoadPagesDynamically: true
+            IgnoreFirstTabPageSelectionChange: true
             Dock: Fill
         
         tpgAddresses: {LoadPageDynamically=true}

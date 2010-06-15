@@ -185,19 +185,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// <summary>
     /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void TabSelectionChanged(System.Object sender, EventArgs e)
     {
+        bool FirstTabPageSelectionChanged = false;
         //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
         if (FTabSetup == null)
         {
             FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+            FirstTabPageSelectionChanged = true;
+        }
 
-            // The first time we run this Method we exit straight away; this is when the Form gets initialised
+        if (FirstTabPageSelectionChanged)
+        {
+            // The first time we run this Method we exit straight away!
             return;
         }
 

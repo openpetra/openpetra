@@ -370,19 +370,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ToolStrip PreviouslyMergedMenuItems = null;
 
         /// <summary>
-        /// change the toolbars that are associated with the tabs
+        /// Changes the toolbars that are associated with the Tabs.
+        /// Optionally dynamically loads UserControls that are associated with the Tabs.
+        /// AUTO-GENERATED, don't modify by hand!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TabSelectionChanged(System.Object sender, EventArgs e)
         {
+            bool FirstTabPageSelectionChanged = false;
             TabPage currentTab = tabGiftBatch.TabPages[tabGiftBatch.SelectedIndex];
 
             if (FTabSetup == null)
             {
                 FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+                FirstTabPageSelectionChanged = true;
+            }
 
-                // The first time we run this Method we exit straight away; this is when the Form gets initialised
+            if (FirstTabPageSelectionChanged)
+            {
+                // The first time we run this Method we exit straight away!
                 return;
             }
 

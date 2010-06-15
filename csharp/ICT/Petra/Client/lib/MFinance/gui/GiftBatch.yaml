@@ -15,7 +15,7 @@ RootNode:
         pnlContent:
             Controls: [tabGiftBatch]
             Dock: Fill
-        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false, LoadPagesDynamically=true}
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false, LoadPagesDynamically=true, IgnoreFirstTabPageSelectionChange=true}            
         tpgBatches: {LoadPageDynamically=true}
             Label: Batches
             DynamicControlType: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
