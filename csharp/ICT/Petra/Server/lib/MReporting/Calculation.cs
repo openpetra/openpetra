@@ -514,9 +514,9 @@ namespace Ict.Petra.Server.MReporting
                     {
                         // we don't want to execute the result as SQL; this can be used to sequentially execute calculations/functions in a query.
                         // example: ap_payment_export, Select Payments by Batch Number
-                        if (strSql.ToUpper().IndexOf("SELECT") != 0)
+                        if (strSql.ToUpper().IndexOf("SELECT") > 0)
                         {
-                            strSql = strSql.Substring(strSql.IndexOf("SELECT"));
+                            strSql = strSql.ToUpper().Substring(strSql.IndexOf("SELECT"));
                         }
                         else
                         {

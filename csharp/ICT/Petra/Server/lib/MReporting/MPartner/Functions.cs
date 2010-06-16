@@ -25,7 +25,9 @@ using System;
 
 
 using Ict.Common;
+using Ict.Common.Conversion;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MReporting;
@@ -150,6 +152,30 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "DetermineAddressDateStatus"))
+            {
+                value = new TVariant(DetermineAddressDateStatus(ops[1].ToString(), ops[2].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetSubscriptions"))
+            {
+                value = new TVariant(GetSubscriptions(ops[1].ToInt64(), ops[2].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetFirstEntryFromSQLStatement"))
+            {
+                value = new TVariant(GetFirstEntryFromSQLStatement(ops[1].ToString(), ops[2].ToString(), ops[3].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPartnerTypes"))
+            {
+                value = new TVariant(GetPartnerTypes(ops[1].ToInt64()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
@@ -263,6 +289,156 @@ namespace Ict.Petra.Server.MReporting.MPartner
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Determine the status of an address given the "date effective from" and
+        /// "date good unil" dates.
+        /// The format of the date is dd/mm/yyyy
+        /// </summary>
+        /// <param name="DateEffectiveString">Date from when the address is valid</param>
+        /// <param name="DateGoodUntilString">Date until the address is valid</param>
+        /// <returns> -1 if input String is not a date
+        ///             1 if address is current
+        ///             2 if address is future
+        ///             3 if address is expiered
+        ///  </returns>
+        private int DetermineAddressDateStatus(String DateEffectiveString, String DateGoodUntilString)
+        {
+            DateTime DateEffective;
+            DateTime DateGoodUntil;
+            TVerificationResult VerificationResult = null;
+
+            if (DateEffectiveString.Length == 0)
+            {
+                DateEffective = new DateTime(1, 1, 1);
+            }
+            else
+            {
+                DateEffective = TDate.LongDateStringToDateTime2(DateEffectiveString, "",
+                    out VerificationResult, false, null);
+            }
+
+            if (VerificationResult != null)
+            {
+                return -1;
+            }
+
+            if (DateGoodUntilString.Length == 0)
+            {
+                DateGoodUntil = new DateTime(2999, 12, 31);
+            }
+            else
+            {
+                DateGoodUntil = TDate.LongDateStringToDateTime2(DateGoodUntilString, "",
+                    out VerificationResult, false, null);
+            }
+
+            if (VerificationResult != null)
+            {
+                return -1;
+            }
+
+            DataSet DS = new DataSet();
+            DS.Tables.Add(new PPartnerLocationTable());
+            PPartnerLocationTable TempTable = (PPartnerLocationTable)DS.Tables[PPartnerLocationTable.GetTableName()];
+
+            TempTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
+            TempTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
+
+            DataRow row = TempTable.NewRow();
+            row[PPartnerLocationTable.GetDateGoodUntilDBName()] = DateGoodUntil;
+            row[PPartnerLocationTable.GetDateEffectiveDBName()] = DateEffective;
+            // set the values that must not be null
+            row[PPartnerLocationTable.GetPartnerKeyDBName()] = 0;
+            row[PPartnerLocationTable.GetSiteKeyDBName()] = 0;
+            row[PPartnerLocationTable.GetLocationKeyDBName()] = 0;
+
+            TempTable.Rows.Add(row);
+
+            Calculations.DeterminePartnerLocationsDateStatus(DS);
+
+            int Status = (Int32)TempTable.Rows[0]["Icon"];
+            return Status;
+        }
+
+        /// <summary>
+        /// Get all subscriptions with a defined status of a Partner.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <param name="AStatusString">List of statuses for which to get the subscriptions.</param>
+        /// <returns>List of subscriptions</returns>
+        private String GetSubscriptions(Int64 APartnerKey, String AStatusString)
+        {
+            String ReturnValue = "";
+            PSubscriptionTable table;
+            StringCollection fields;
+
+            fields = new StringCollection();
+            fields.Add(PSubscriptionTable.GetPublicationCodeDBName());
+            fields.Add(PSubscriptionTable.GetSubscriptionStatusDBName());
+
+            table = (PSubscriptionTable)PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, fields,
+                situation.GetDatabaseConnection().Transaction);
+
+            foreach (DataRow dataRow in table.Rows)
+            {
+                PSubscriptionRow SubscriptionRow = (PSubscriptionRow)dataRow;
+
+                if ((!SubscriptionRow.IsSubscriptionStatusNull())
+                    && (AStatusString.Contains(SubscriptionRow.SubscriptionStatus)))
+                {
+                    ReturnValue = ReturnValue + "  " + SubscriptionRow.PublicationCode;
+                }
+            }
+
+            if (ReturnValue.Length == 0)
+            {
+                ReturnValue = "No Subscriptions";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns the first row of a data table that is the result of a sql statement from the xml file.
+        /// If ReplaceString and Replacement are not null then the ReplaceString that is in
+        /// the sql command is replaced by replacement.
+        /// </summary>
+        /// <param name="ASqlID">the identifier of the sql statement</param>
+        /// <param name="AReplaceString">String in the sql command that should be replaced</param>
+        /// <param name="AReplacement">the replacement</param>
+        /// <returns>true if successful, otherwise false</returns>
+        private bool GetFirstEntryFromSQLStatement(String ASqlID, String AReplaceString, String AReplacement)
+        {
+            DataTable ResultTable;
+            bool ReturnValue = false;
+
+            if (!GetDataTableFromXmlSqlStatement(ASqlID, out ResultTable, AReplaceString, AReplacement))
+            {
+                return false;
+            }
+
+            foreach (DataColumn col in ResultTable.Columns)
+            {
+                // remove the old value
+                situation.GetParameters().RemoveVariable(col.ColumnName);
+            }
+
+            if (ResultTable.Rows.Count > 0)
+            {
+                DataRow row = ResultTable.Rows[0];
+
+                foreach (DataColumn col in ResultTable.Columns)
+                {
+                    // add the new value
+                    situation.GetParameters().Add(col.ColumnName, new TVariant(row[col.ColumnName]));
+                }
+
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -1242,5 +1418,31 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         #endregion calculation for publication statistical report
+
+        /// <summary>
+        /// Returns a comma separated list of all partner types of a partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        private String GetPartnerTypes(Int64 APartnerKey)
+        {
+            PPartnerTypeTable PartnerType;
+            String ReturnValue = "";
+
+            PartnerType = PPartnerTypeAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            foreach (PPartnerTypeRow Row in PartnerType.Rows)
+            {
+                ReturnValue = ReturnValue + Row.TypeCode + ',';
+            }
+
+            if (ReturnValue.Length > 0)
+            {
+                // Remove last comma
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 1);
+            }
+
+            return ReturnValue;
+        }
     }
 }

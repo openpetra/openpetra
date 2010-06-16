@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{1A88A039-A817-40AF-A71A-A636AF5B7D1D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -45,6 +45,9 @@
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.Conversion">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Conversion.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -56,6 +59,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
