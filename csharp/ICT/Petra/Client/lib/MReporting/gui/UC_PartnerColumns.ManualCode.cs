@@ -578,13 +578,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             System.Int32 rowCounter;
             TPartnerColumnFunction Func;
 
-//            /* if the columns page is not displayed, don't bother filling the grid */
-//            if (TCl_ReportSettings.TabPages.IndexOf(TPg_Columns) == -1)
-//            {
-//                return;
-//            }
-
-//            base.FillColumnGrid();
             columnTab = new System.Data.DataTable();
 
             /* create columns */
@@ -602,11 +595,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             for (counter = 0; counter <= FColumnParameters.Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
             {
                 calculation = FColumnParameters.GetOrDefault("param_calculation", counter, new TVariant(cmbCalculation.GetSelectedString())).ToString();
-                Func = (TPartnerColumnFunction)GetFunction(calculation);
+                Func = (TPartnerColumnFunction)GetFunction(calculation, FColumnParameters, counter);
 
                 if (Func != null)
                 {
-                    rowContent[counter] = calculation;
+                    rowContent[counter] = Func.GetDisplayValue();
                     rowDisplayWidth[counter] =
                         FColumnParameters.GetOrDefault("ColumnWidth", counter, new TVariant(Func.FColumnWidth)).ToString() + " cm";
                 }
@@ -628,6 +621,16 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected TColumnFunction GetFunction(String calculation)
         {
             return TUC_ColumnHelper.GetFunction(ref FAvailableFunctions, calculation);
+        }
+
+        /// <summary>
+        /// get the function object of the given calculation string
+        /// </summary>
+        /// <returns>nil if the function cannot be found
+        /// </returns>
+        protected TColumnFunction GetFunction(String calculation, TParameterList AParameterList, int AColumnNumber)
+        {
+            return TUC_ColumnHelper.GetFunction(ref FAvailableFunctions, calculation, AParameterList, AColumnNumber);
         }
 
         /// get the content and the width for the columns

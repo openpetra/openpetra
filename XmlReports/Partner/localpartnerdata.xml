@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Local Partner Data">
+    <description>
+      This XML - File reports on the office specific data labels.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_selection">
+        <option name="one partner"></option>
+        <option name="an extract"></option>
+        <option name="all current staff"></option>
+        <option name="all staff"></option>
+      </reportparameter>
+      <reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+      <reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+      <reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+      <reportparameter name="param_startdate"></reportparameter>
+      <reportparameter name="param_enddate"></reportparameter>
+      <reportparameter name="param_label"></reportparameter> <!-- parameter for the calculation, per column -->
+      <reportparameter name="param_labels"></reportparameter> <!-- comma separated list of all labels requested for the report -->
+      <reportparameter name="param_labeluse"></reportparameter> <!-- comma separated list of all uses that the requested labels should be part of -->
+    </reportparameters>
+    
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value variable="param_title"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="descr1">
+        <value text="Sorted by: "></value>
+        <value variable="param_sortby_readable"></value>
+      </field>
+      <field whichfield="period2">
+        <fielddetail>
+          <value text="Selection: "></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},one partner)">
+          <value text="Partner "></value><value variable="param_partnerkey"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},an extract)">
+          <value text="Extract "></value><value variable="param_extract"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all current staff)">
+          <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all staff)">
+          <value text="All Staff"></value>
+        </fielddetail>
+      </field>
+    </pageheader>
+
+    <calculations>
+      <calculation id="Select Partners" returns="PartnerKey, ShortName" returnsFormat="row">
+        <query>
+          <queryDetail><value>
+          SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
+                 PUB_p_partner.p_partner_short_name_c AS ShortName
+          </value></queryDetail>
+
+          <queryDetail condition="eq({param_selection},one partner)"><value>
+          FROM   PUB_p_partner
+          WHERE  PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+          </value></queryDetail>
+
+          <queryDetail condition="eq({param_selection},an extract)"><value>
+          FROM PUB_p_partner, PUB_m_extract, PUB_m_extract_master
+          WHERE PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+            AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+            AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+          </value></queryDetail>
+
+          <queryDetail condition="or(eq({param_selection},all current staff),eq({param_selection},all staff))"><value>
+          FROM PUB_p_partner, PUB_pm_staff_data
+          WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+          </value></queryDetail>
+          
+          <queryDetail condition="eq({param_selection},all current staff)"><value>
+            AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+            AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+              OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
+          </value></queryDetail>
+          
+          <queryDetail condition="eq({param_label_type}, partner)">
+          	<value>AND EXISTS (
+          		SELECT PUB_p_data_label_value_partner.p_partner_key_n 
+          		FROM PUB_p_data_label_value_partner, PUB_p_data_label, PUB_p_data_label_use
+          		WHERE PUB_p_partner.p_partner_key_n = PUB_p_data_label_value_partner.p_partner_key_n
+          			AND PUB_p_data_label.p_key_i = PUB_p_data_label_value_partner.p_data_label_key_i
+          			AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label_value_partner.p_data_label_key_i
+          			AND (</value>
+          			<value function = "csv" text="PUB_p_data_label_use.p_use_c" variable="param_labeluse"/>
+          			<value>) AND (</value>
+          			<value function = "csv" text="PUB_p_data_label.p_text_c" variable="param_labels"/>
+		          	<value>))</value>
+         </queryDetail>
+		 
+	<queryDetail condition="eq({param_label_type}, application)">
+          	<value>AND EXISTS (
+          		SELECT PUB_p_data_label_value_application.p_partner_key_n 
+          		FROM PUB_p_data_label_value_application, PUB_p_data_label, PUB_p_data_label_use
+          		WHERE PUB_p_partner.p_partner_key_n = PUB_p_data_label_value_application.p_partner_key_n
+          			AND PUB_p_data_label.p_key_i = PUB_p_data_label_value_application.p_data_label_key_i
+          			AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label_value_application.p_data_label_key_i
+          			AND (</value>
+          			<value function = "csv" text="PUB_p_data_label_use.p_use_c" variable="param_labeluse"/>
+          			<value>) AND (</value>
+          			<value function = "csv" text="PUB_p_data_label.p_text_c" variable="param_labels"/>
+		          	<value>))</value>
+         </queryDetail>
+          
+        </query>
+      </calculation> <!-- Select Partners -->
+
+      <calculation id="PartnerLabelValue" returns="LabelKey, LabelName, LabelDataType, LabelValueChar, LabelValuePartnerKey, LabelValueNum, LabelValueCurrency, LabelValueInt, LabelValueBool, LabelValueDate" returnsFormat="row">
+        <query>
+          <queryDetail><value>
+          SELECT  DISTINCT p_key_i AS LabelKey, 
+                  p_text_c AS LabelName, 
+                  p_data_type_c AS LabelDataType,
+                  p_value_char_c as LabelValueChar,
+                  p_value_partner_key_n as LabelValuePartnerKey,
+                  p_value_num_n as LabelValueNum,
+                  p_value_currency_n as LabelValueCurrency,
+                  p_value_int_i as LabelValueInt,
+                  p_value_bool_l as LabelValueBool,
+                  p_value_date_d as LabelValueDate,
+                  p_value_time_i as LabelValueTime,
+                  p_value_lookup_c as LabelValueLookup,
+                  PUB_p_data_label.p_currency_code_c as CurrencyCode,
+                  PUB_p_data_label.p_num_decimal_places_i as NumDecimalPlaces,
+                  PUB_p_data_label.p_lookup_category_code_c as LookupCategoryCode
+	</value></queryDetail>
+	<queryDetail condition="eq({param_label_type}, partner)"><value>
+          FROM    PUB_p_data_label, PUB_p_data_label_use, PUB_p_data_label_value_partner 
+          WHERE   PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i 
+          AND     PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i 
+	  AND (</value>
+                    <value function = "csv" text="PUB_p_data_label_use.p_use_c" variable="param_labeluse"/>
+                    <value>) 
+          AND     PUB_p_data_label_value_partner.p_partner_key_n = {{PartnerKey}}
+          AND (</value>
+          			<value function = "csv" text="PUB_p_data_label.p_text_c" variable="param_labels"/>
+          <value>)
+	</value></queryDetail>
+	<queryDetail condition="eq({param_label_type}, application)"><value>
+          FROM    PUB_p_data_label, PUB_p_data_label_use, PUB_p_data_label_value_application
+          WHERE   PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i 
+          AND     PUB_p_data_label_value_application.p_data_label_key_i = PUB_p_data_label.p_key_i
+	   AND (</value>
+                    <value function = "csv" text="PUB_p_data_label_use.p_use_c" variable="param_labeluse"/>
+                    <value>) 
+          AND     PUB_p_data_label_value_application.p_partner_key_n = {{PartnerKey}}
+          AND (</value>
+          			<value function = "csv" text="PUB_p_data_label.p_text_c" variable="param_labels"/>
+          <value>)
+	</value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+	  <calculation id="RetrieveDataLabelValues"
+			returns="LabelValue"
+			returnsFormat="internal">
+		<query>
+			<queryDetail><value function="GetPartnerLabelValues()"/>
+			</queryDetail>
+		</query>
+      </calculation>
+      	  
+
+      <calculation id="DataLabelColumn" 
+          returnsFormat="text" returns="text" align="left">
+        <caption><value variable="param_label"></value></caption>
+        <query>
+          <queryDetail>
+            <value variable="LabelValue"/>
+          </queryDetail>
+        </query>
+      </calculation>
+                 
+      <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption><value text="Partner Name"></value></caption>
+        <query>
+          <queryDetail>
+            <value variable="ShortName"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+      
+      <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerKey"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+      
+    </calculations>
+    
+    
+    <levels>    
+      <level name="main">
+        <detail>
+          <lowerLevelReport calculation="Select Partners" level="Partner Detail"></lowerLevelReport>
+        </detail>
+      </level> <!-- main -->
+
+      <!-- Partner Detail  -->
+      <level identification="PartnerKey" name="Partner Detail">
+        <detail>
+           <field calculation="RetrieveDataLabelValues" whichfield="Columns"></field>
+        </detail>
+      </level>
+           
+    </levels>
+
+  </report><!-- Office Specific Data Labels -->
+  
+</reports>

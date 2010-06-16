@@ -121,6 +121,13 @@
     <Compile Include="BulkAddressReport.Designer.cs">
       <DependentUpon>BulkAddressReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="LocalPartnerDataReport.cs" />
+    <Compile Include="LocalPartnerDataReport.Designer.cs">
+      <DependentUpon>LocalPartnerDataReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocalPartnerDataReport.ManualCode.cs">
+      <DependentUpon>LocalPartnerDataReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerByCity.cs" />
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
@@ -138,6 +145,10 @@
     </Compile>
     <Compile Include="PublicationStatisticalReport.ManualCode.cs">
       <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SubscriptionReport.cs" />
+    <Compile Include="SubscriptionReport.Designer.cs">
+      <DependentUpon>SubscriptionReport.cs</DependentUpon>
     </Compile>
     <Compile Include="SupportingChurchesReport.cs" />
     <Compile Include="SupportingChurchesReport.Designer.cs">
@@ -163,6 +174,9 @@
     <EmbeddedResource Include="BulkAddressReport.resx">
       <DependentUpon>BulkAddressReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LocalPartnerDataReport.resx">
+      <DependentUpon>LocalPartnerDataReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
     </EmbeddedResource>
@@ -171,6 +185,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PublicationStatisticalReport.resx">
       <DependentUpon>PublicationStatisticalReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SubscriptionReport.resx">
+      <DependentUpon>SubscriptionReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SupportingChurchesReport.resx">
       <DependentUpon>SupportingChurchesReport.cs</DependentUpon>

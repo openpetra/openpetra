@@ -88,6 +88,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportValidBankAccount = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPublicationStatisticalReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportBulkAddressReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportPartnerContactReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportSubscriptionReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniReportLocalPartnerDataReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniNewPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniNewPartnerAssistant = new System.Windows.Forms.ToolStripMenuItem();
@@ -264,6 +267,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniReportBulkAddressReport.Click += new System.EventHandler(this.OpenScreenReportBulkAddressReport);
             this.mniReportBulkAddressReport.Text = "&Bulk Address Report";
             //
+            // mniReportPartnerContactReport
+            //
+            this.mniReportPartnerContactReport.Name = "mniReportPartnerContactReport";
+            this.mniReportPartnerContactReport.AutoSize = true;
+            this.mniReportPartnerContactReport.Click += new System.EventHandler(this.OpenScreenReportPartnerContactReport);
+            this.mniReportPartnerContactReport.Text = "Partner C&ontact Report";
+            //
+            // mniReportSubscriptionReport
+            //
+            this.mniReportSubscriptionReport.Name = "mniReportSubscriptionReport";
+            this.mniReportSubscriptionReport.AutoSize = true;
+            this.mniReportSubscriptionReport.Click += new System.EventHandler(this.OpenScreenReportSubscriptionReport);
+            this.mniReportSubscriptionReport.Text = "Subscri&ption Report";
+            //
+            // mniReportLocalPartnerDataReport
+            //
+            this.mniReportLocalPartnerDataReport.Name = "mniReportLocalPartnerDataReport";
+            this.mniReportLocalPartnerDataReport.AutoSize = true;
+            this.mniReportLocalPartnerDataReport.Click += new System.EventHandler(this.OpenScreenReportLocalPartnerDataReport);
+            this.mniReportLocalPartnerDataReport.Text = "&Local Partner Data";
+            //
             // mniReports
             //
             this.mniReports.Name = "mniReports";
@@ -275,7 +299,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniReportSupportingChurches,
                         mniReportValidBankAccount,
                         mniReportPublicationStatisticalReport,
-                        mniReportBulkAddressReport});
+                        mniReportBulkAddressReport,
+                        mniReportPartnerContactReport,
+                        mniReportSubscriptionReport,
+                        mniReportLocalPartnerDataReport});
             this.mniReports.Text = "&Reports...";
             //
             // mniSeparator3
@@ -646,6 +673,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniReportValidBankAccount;
         private System.Windows.Forms.ToolStripMenuItem mniReportPublicationStatisticalReport;
         private System.Windows.Forms.ToolStripMenuItem mniReportBulkAddressReport;
+        private System.Windows.Forms.ToolStripMenuItem mniReportPartnerContactReport;
+        private System.Windows.Forms.ToolStripMenuItem mniReportSubscriptionReport;
+        private System.Windows.Forms.ToolStripMenuItem mniReportLocalPartnerDataReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartner;
         private System.Windows.Forms.ToolStripMenuItem mniNewPartnerAssistant;

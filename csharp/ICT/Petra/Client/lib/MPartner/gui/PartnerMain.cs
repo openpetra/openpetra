@@ -75,6 +75,9 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.mniReportValidBankAccount.Text = Catalog.GetString("&Valid Bank Account Report");
       this.mniReportPublicationStatisticalReport.Text = Catalog.GetString("Publication &Statistical Report");
       this.mniReportBulkAddressReport.Text = Catalog.GetString("&Bulk Address Report");
+      this.mniReportPartnerContactReport.Text = Catalog.GetString("Partner C&ontact Report");
+      this.mniReportSubscriptionReport.Text = Catalog.GetString("Subscri&ption Report");
+      this.mniReportLocalPartnerDataReport.Text = Catalog.GetString("&Local Partner Data");
       this.mniReports.Text = Catalog.GetString("&Reports...");
       this.mniNewPartner.Text = Catalog.GetString("New &Partner...");
       this.mniNewPerson.Text = Catalog.GetString("Add &Person");
@@ -304,6 +307,27 @@ namespace Ict.Petra.Client.MPartner.Gui
     protected void OpenScreenReportBulkAddressReport(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBulkAddressReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmBulkAddressReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportPartnerContactReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerContactReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmPartnerContactReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportSubscriptionReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSubscriptionReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmSubscriptionReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenReportLocalPartnerDataReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPartner.TFrmLocalPartnerDataReport frm = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmLocalPartnerDataReport(this.Handle);
         frm.Show();
     }
 

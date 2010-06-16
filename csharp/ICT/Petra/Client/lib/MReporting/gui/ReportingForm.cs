@@ -1096,6 +1096,15 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FColumnWidth = AColumnWidth;
         }
+
+        /// <summary>
+        /// convert a character length to a width in centimeters
+        /// </summary>
+        /// <returns>void</returns>
+        public static double CharLengthToCM(Int32 ACharLength)
+        {
+            return ACharLength * 0.3;
+        }
     }
 
     /// <summary>

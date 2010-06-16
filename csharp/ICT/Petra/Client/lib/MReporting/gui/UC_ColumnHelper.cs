@@ -169,6 +169,46 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// get the function System.Object of the given calculation string
+        /// </summary>
+        /// <param name="AAvailableFunctions">List with the current functions</param>
+        /// <param name="ACalculation">Name of the function</param>
+        /// <param name="AColumnNumber">Number of the column</param>
+        /// <returns>nil if the function cannot be found
+        /// </returns>
+        public static TColumnFunction GetFunction(ref ArrayList AAvailableFunctions,
+            String ACalculation,
+            TParameterList AParameterList,
+            int AColumnNumber)
+        {
+            TColumnFunction ReturnValue;
+
+            ReturnValue = GetFunction(ref AAvailableFunctions, ACalculation);
+
+            if (ReturnValue == null)
+            {
+                /* this might be a general function that has a parameter, that is displayed */
+                if (AAvailableFunctions != null)
+                {
+                    foreach (TColumnFunction Func in AAvailableFunctions)
+                    {
+                        if (Func.FDescription == ACalculation)
+                        {
+                            /* found an entry with e.g. DataLabelColumn */
+                            /* now need to check if this columns FCalculationParameterValue is used */
+                            if (AParameterList.Get(Func.FCalculationParameterName, AColumnNumber).ToString() == Func.FCalculationParameterValue)
+                            {
+                                return Func;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Remove one colum from the parameter list.
         /// </summary>
         /// <param name="AColumnParameters">List with the current columns</param>
