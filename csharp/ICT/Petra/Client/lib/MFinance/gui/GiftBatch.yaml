@@ -7,20 +7,18 @@ RootNode:
     Template: windowTDS
     WindowWidth: 660
     WindowHeight: 700
+
+    Events:
+        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+
     Controls:
         pnlContent:
             Controls: [tabGiftBatch]
             Dock: Fill
-        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}
-        tpgBatches:
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false, LoadPagesDynamically=true, IgnoreFirstTabPageSelectionChange=true}            
+        tpgBatches: {LoadPageDynamically=true}
             Label: Batches
-            Controls: [ucoBatches]
-        tpgTransactions:
+            DynamicControlType: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
+        tpgTransactions: {LoadPageDynamically=true}
             Label: Transactions
-            Controls: [ucoTransactions]
-        ucoBatches:
-            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
-            Dock: Fill
-        ucoTransactions:
-            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions
-            Dock: Fill
+            DynamicControlType: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions

@@ -23,9 +23,13 @@
 //
 using System;
 using System.IO;
+using System.Xml;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting;
 using System.Collections;
+using System.Security.Cryptography;
+using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.RemotingSinks.Encryption
 {
@@ -34,16 +38,16 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
     /// </summary>
     public class EncryptionServerSinkProvider : IServerChannelSinkProvider
     {
-        private byte[] FEncryptionKey;
+        private RSAParameters FPrivateKey;
 
         private IServerChannelSinkProvider FNextProvider;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public EncryptionServerSinkProvider(string AKeyFile)
+        public EncryptionServerSinkProvider()
         {
-            Init(AKeyFile);
+            Init();
         }
 
         /// <summary>
@@ -51,28 +55,43 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
         /// </summary>
         public EncryptionServerSinkProvider(IDictionary properties, ICollection providerData)
         {
-            String keyfile = (String)properties["keyfile"];
-
-            if (keyfile == null)
-            {
-                throw new RemotingException("'keyfile' has to " +
-                    "be specified for EncryptionServerSinkProvider");
-            }
-
-            Init(keyfile);
+            Init();
         }
 
-        private void Init(string AKeyFile)
+        private void Init()
         {
+            string KeyFile = TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile");
+
             // read the encryption key from the specified file
-            FileInfo fi = new FileInfo(AKeyFile);
+            FileInfo fi = new FileInfo(KeyFile);
 
             if (!fi.Exists)
             {
-                throw new RemotingException("Specified keyfile does not exist");
+                throw new RemotingException(
+                    String.Format("Specified keyfile {0} does not exist", KeyFile));
             }
 
-            FEncryptionKey = Ict.Common.IO.EncryptionRijndael.ReadSecretKey(AKeyFile);
+            XmlDocument doc = new XmlDocument();
+            doc.Load(KeyFile);
+
+            FPrivateKey = new RSAParameters();
+
+            try
+            {
+                FPrivateKey.D = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "D").InnerText);
+                FPrivateKey.P = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "P").InnerText);
+                FPrivateKey.Q = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "Q").InnerText);
+                FPrivateKey.DP = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "DP").InnerText);
+                FPrivateKey.DQ = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "DQ").InnerText);
+                FPrivateKey.InverseQ = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "InverseQ").InnerText);
+                FPrivateKey.Modulus = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "Modulus").InnerText);
+                FPrivateKey.Exponent = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "Exponent").InnerText);
+            }
+            catch (Exception)
+            {
+                throw new RemotingException(
+                    String.Format("Problems reading the keyfile {0}. Cannot find all attributes of the key.", KeyFile));
+            }
         }
 
         /// <summary>
@@ -100,7 +119,7 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
 
             // put our sink on top of the chain and return it
             return new EncryptionServerSink(next,
-                FEncryptionKey);
+                FPrivateKey);
         }
 
         /// <summary>

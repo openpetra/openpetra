@@ -26,6 +26,10 @@ using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting;
 using System.Collections;
+using System.Security.Cryptography;
+using System.Xml;
+using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.RemotingSinks.Encryption
 {
@@ -35,8 +39,7 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
     public class EncryptionClientSinkProvider : IClientChannelSinkProvider
     {
         private IClientChannelSinkProvider FNextProvider;
-
-        private byte[] FEncryptionKey;
+        private RSAParameters FPublicKeyServer;
 
         /// <summary>
         /// constructor
@@ -45,23 +48,31 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
         /// <param name="providerData"></param>
         public EncryptionClientSinkProvider(IDictionary properties, ICollection providerData)
         {
-            String keyfile = (String)properties["keyfile"];
-
-            if (keyfile == null)
+            // do not use property, but create local symmetric key, and send to the server, encrypted with the public key of the server
+            try
             {
-                throw new RemotingException("'keyfile' has to " +
-                    "be specified for EncryptionClientSinkProvider");
+                // get the public key from the server, from a secure site. if the SSL certificate is self signed or not valid, this will fail.
+                // publicKeyXml will contain: <RSAKeyValue><Modulus>w7/g+...+sU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>
+                string publicKeyXml = THTTPUtils.ReadWebsite((string)properties["HttpsPublicKeyXml"]);
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(publicKeyXml);
+
+                try
+                {
+                    FPublicKeyServer = new RSAParameters();
+                    FPublicKeyServer.Modulus = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "Modulus").InnerText);
+                    FPublicKeyServer.Exponent = Convert.FromBase64String(TXMLParser.GetChild(doc.FirstChild, "Exponent").InnerText);
+                }
+                catch
+                {
+                    throw new Exception("Invalid public key XML file, cannot find Modulus or Exponent");
+                }
             }
-
-            // read the encryption key from the specified fike
-            FileInfo fi = new FileInfo(keyfile);
-
-            if (!fi.Exists)
+            catch (Exception)
             {
-                throw new RemotingException("Specified keyfile does not exist");
+                TLogging.Log("Cannot get the public key of the OpenPetra server");
+                throw;
             }
-
-            FEncryptionKey = Ict.Common.IO.EncryptionRijndael.ReadSecretKey(keyfile);
         }
 
         /// <summary>
@@ -90,7 +101,7 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
                 remoteChannelData);
 
             // put our sink on top of the chain and return it
-            return new EncryptionClientSink(next, FEncryptionKey);
+            return new EncryptionClientSink(next, FPublicKeyServer);
         }
     }
 }

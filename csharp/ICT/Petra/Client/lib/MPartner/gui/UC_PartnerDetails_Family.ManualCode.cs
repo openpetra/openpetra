@@ -39,6 +39,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls(FMainDS.PFamily[0]);
         }
 
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+            // TODO Adjustment of SourceGrid's column widhts needs to be done like in Petra 2.3 ('SetupDataGridVisualAppearance' Methods)
+        }
+
         #endregion
     }
 }

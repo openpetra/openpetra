@@ -161,6 +161,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+    private void OnTabPageEvent(TTabPageEventArgs e)
+    {
+        if (FTabPageEvent != null)
+        {
+            FTabPageEvent(this, e);
+        }
+    }
+
     private void OnDataLoadingFinished()
     {
         if (DataLoadingFinished != null)
@@ -177,14 +185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
-    private void OnTabPageEvent(TTabPageEventArgs e)
-    {
-        if (FTabPageEvent != null)
-        {
-            FTabPageEvent(this, e);
-        }
-    }
-
     /// <summary>
     /// Dynamically loads UserControls that are associated with the Tabs. AUTO-GENERATED, don't modify by hand!
     /// </summary>
@@ -192,13 +192,18 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// <param name="e"></param>
     private void TabSelectionChanged(System.Object sender, EventArgs e)
     {
+        bool FirstTabPageSelectionChanged = false;
         //MessageBox.Show("TabSelectionChanged. Current Tab: " + tabPartners.SelectedTab.ToString());
 
         if (FTabSetup == null)
         {
             FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+            FirstTabPageSelectionChanged = true;
+        }
 
-            // The first time we run this Method we exit straight away; this is when the Form gets initialised
+        if (FirstTabPageSelectionChanged)
+        {
+            // The first time we run this Method we exit straight away!
             return;
         }
 
@@ -224,9 +229,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoAddresses.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoAddresses);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgAddresses, FUcoAddresses, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoAddresses.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerDetails)
@@ -245,9 +263,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoPartnerDetails.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetails);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetails, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoPartnerDetails.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerTypes)
@@ -266,9 +297,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoPartnerTypes.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerTypes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoPartnerTypes.AdjustAfterResizing();
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgNotes)
@@ -287,9 +331,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoNotes.InitUserControl();
                 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoNotes);
 
-                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "FurtherInit"));
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "InitialActivation"));
 
                 this.Cursor = Cursors.Default;
+            }
+            else
+            {
+                OnTabPageEvent(new TTabPageEventArgs(tpgNotes, FUcoNotes, "SubsequentActivation"));
+
+                /*
+                 * The following command seems strange and unnecessary; however, it is necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    FUcoNotes.AdjustAfterResizing();
+                }
             }
         }
 
@@ -329,7 +386,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -359,7 +416,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -389,7 +446,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -419,7 +476,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /*
                  * The following four commands seem strange and unnecessary; however, they are necessary
                  * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                */
+                 */
                 if (TClientSettings.GUIRunningOnNonStandardDPI)
                 {
                     this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);

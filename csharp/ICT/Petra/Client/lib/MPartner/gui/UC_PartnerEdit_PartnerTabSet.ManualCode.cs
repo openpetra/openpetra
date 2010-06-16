@@ -417,7 +417,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
-            if (ATabPageEventArgs.Event == "FurtherInit")
+            if (ATabPageEventArgs.Event == "InitialActivation")
             {
                 if (ATabPageEventArgs.Tab == tpgAddresses)
                 {

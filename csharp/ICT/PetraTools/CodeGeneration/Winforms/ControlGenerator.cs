@@ -165,6 +165,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 // Initialise each dynamically loaded TabPage
                 ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetUserControlInitialisation.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
                 snippetUserControlInitialisation.SetCodelet("CONTROLNAME", ctrl.controlName);
                 snippetUserControlInitialisation.SetCodelet("TABCONTROLNAME", TabControlGenerator.TabControlName);
@@ -1265,6 +1271,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             ProcessTemplate snippetDynamicTabPage = null;
             ProcessTemplate snippetTabPageSelectionChanged = null;
+            string IgnoreFirstTabSel = String.Empty;
 
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
@@ -1283,12 +1290,45 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
 
+            if (ctrl.HasAttribute("IgnoreFirstTabPageSelectionChange") && (ctrl.GetAttribute("IgnoreFirstTabPageSelectionChange").ToLower() == "true"))
+            {
+                IgnoreFirstTabSel += "if (FirstTabPageSelectionChanged)" + Environment.NewLine;
+                IgnoreFirstTabSel += "{" + Environment.NewLine;
+                IgnoreFirstTabSel += "    // The first time we run this Method we exit straight away!" + Environment.NewLine;
+                IgnoreFirstTabSel += "    return;" + Environment.NewLine;
+                IgnoreFirstTabSel += "}" + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+
+                writer.Template.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", IgnoreFirstTabSel);
+            }
+
+            if (IgnoreFirstTabSel != String.Empty)
+            {
+                writer.Template.SetCodelet("FIRSTTABPAGESELECTIONCHANGEDVAR", "true");
+            }
+
             if (ctrl.HasAttribute("LoadPagesDynamically") && (ctrl.GetAttribute("LoadPagesDynamically").ToLower() == "true"))
             {
                 snippetDynamicTabPage = writer.Template.GetSnippet("DYNAMICTABPAGE");
+
+                if (IgnoreFirstTabSel != String.Empty)
+                {
+                    snippetDynamicTabPage.SetCodelet("FIRSTTABPAGESELECTIONCHANGEDVAR", "true");
+                }
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetDynamicTabPage.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 writer.Template.InsertSnippet("DYNAMICTABPAGEBASICS", snippetDynamicTabPage);
 
                 snippetTabPageSelectionChanged = writer.Template.GetSnippet("TABPAGESELECTIONCHANGED");
+
+                if (writer.IsUserControlTemplate)
+                {
+                    snippetTabPageSelectionChanged.SetCodelet("ISUSERCONTROL", "true");
+                }
+
                 writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED", snippetTabPageSelectionChanged);
             }
             else

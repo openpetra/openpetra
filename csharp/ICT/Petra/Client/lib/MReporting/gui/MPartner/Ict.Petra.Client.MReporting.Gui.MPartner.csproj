@@ -13,6 +13,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>..\..\..\..\_bin\Debug\Ict.Petra.Client.MReporting.Gui.MPartner.xml</DocumentationFile>
+    <NoWarn>0067</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>../../../../_bin\Debug\</OutputPath>

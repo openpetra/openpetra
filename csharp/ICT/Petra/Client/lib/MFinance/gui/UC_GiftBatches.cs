@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     }
 
     /// return the selected row
-    private AGiftBatchRow GetSelectedDetailRow()
+    public AGiftBatchRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 

@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private PContactAttributeDetailTable FContactAttributesTable;
         private PContactAttributeDetailTable FSelectionTable;
 
-        protected void grdAttribute_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        private void grdAttribute_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             // Load Contact Attributes
             PContactAttributeTable ContactAttributeTable = (PContactAttributeTable)TDataCache.TMPartner.GetCacheableMailingTable(
@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             InitializeOtherControls();
         }
 
-        protected void grdDetail_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        private void grdDetail_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FContactAttributesTable = (PContactAttributeDetailTable)
                                       TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.ContactAttributeDetailList);
@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdDetail.Selection.EnableMultiSelection = true;
         }
 
-        protected void grdSelection_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        private void grdSelection_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FSelectionTable = new PContactAttributeDetailTable();
             FSelectionTable.DefaultView.AllowNew = false;
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdSelection.Selection.EnableMultiSelection = true;
         }
 
-        protected void InitializeOtherControls()
+        private void InitializeOtherControls()
         {
             // Load MethodOfContact List
             PMethodOfContactTable MethodOfContactTable = (PMethodOfContactTable)TDataCache.TMPartner.GetCacheableMailingTable(
@@ -136,15 +136,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             cmbContactor.SelectedIndex = 0;
         }
 
-        protected void grdAttribute_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void grdAttribute_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
         }
 
-        protected void grdDetail_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void grdDetail_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
         }
 
-        protected void grdSelection_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void grdSelection_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (FSelectionTable.Rows.Count > 0)
             {
@@ -207,15 +207,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
-        protected void grdAttribute_SetControls(TParameterList AParameters)
+        private void grdAttribute_SetControls(TParameterList AParameters)
         {
         }
 
-        protected void grdDetail_SetControls(TParameterList AParameters)
+        private void grdDetail_SetControls(TParameterList AParameters)
         {
         }
 
-        protected void grdSelection_SetControls(TParameterList AParameters)
+        private void grdSelection_SetControls(TParameterList AParameters)
         {
             FSelectionTable.Rows.Clear();
             int NumAttributes = AParameters.Get("param_number_of_contact_attributes").ToInt32();
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
-        protected void AttributeFocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+        private void AttributeFocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             String AttributeCode = "";
 
@@ -260,17 +260,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             grdDetail.Selection.ResetSelection(true);
         }
 
-        protected void grdDetailDoubleClick(System.Object sender, EventArgs e)
+        private void grdDetailDoubleClick(System.Object sender, EventArgs e)
         {
             AddDetail(sender, e);
         }
 
-        protected void grdSelectionDoubleClick(System.Object sender, EventArgs e)
+        private void grdSelectionDoubleClick(System.Object sender, EventArgs e)
         {
             RemoveDetail(sender, e);
         }
 
-        protected void AddDetail(System.Object sender, EventArgs e)
+        private void AddDetail(System.Object sender, EventArgs e)
         {
             String Attribute = "";
             String Detail = "";
@@ -296,7 +296,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
-        protected void RemoveDetail(System.Object sender, EventArgs e)
+        private void RemoveDetail(System.Object sender, EventArgs e)
         {
             for (int Counter = grdSelection.SelectedDataRows.Length - 1; Counter >= 0; --Counter)
             {

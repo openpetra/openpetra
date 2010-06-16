@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -40,13 +41,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
 
         private void InitializeManualCode()
         {
             this.tpgTransactions.Enabled = false;
+
+            if (FTabPageEvent == null)
+            {
+                FTabPageEvent += this.TabPageEventHandler;
+            }
+        }
+
+        private void TFrmGiftBatch_Load(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
+            tabGiftBatch.SelectedIndex = 0;
+            TabSelectionChanged(null, null);
         }
 
         /// <summary>
@@ -56,8 +69,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            // Switch to Tab. This ensures that FUcoTransations is existant (it gets dynamically loaded)
+            tabGiftBatch.SelectedIndex = tpgTransactions.TabIndex;
+
+            this.FUcoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -65,8 +80,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ClearCurrentSelections()
         {
-            this.ucoBatches.ClearCurrentSelection();
-            this.ucoTransactions.ClearCurrentSelection();
+            if (this.FUcoBatches != null)
+            {
+                this.FUcoBatches.ClearCurrentSelection();
+            }
+
+            if (this.FUcoTransactions != null)
+            {
+                this.FUcoTransactions.ClearCurrentSelection();
+            }
+        }
+
+        /// enable the transaction tab page
+        public void EnableTransactionsTab()
+        {
+            this.tpgTransactions.Enabled = true;
         }
 
         /// this window contains 2 tabs
@@ -93,8 +121,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    LoadTransactions(FUcoBatches.GetSelectedDetailRow().LedgerNumber,
+                        FUcoBatches.GetSelectedDetailRow().BatchNumber);
+
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
+            }
+        }
+
+        private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
+        {
+            if (ATabPageEventArgs.Event == "InitialActivation")
+            {
+                if (ATabPageEventArgs.Tab == tpgBatches)
+                {
+                    FUcoBatches.LoadBatches(FLedgerNumber);
+                }
+            }
+
+            if (ATabPageEventArgs.Tab == tpgTransactions)
+            {
+                SelectTab(eGiftTabs.Transactions);
             }
         }
     }

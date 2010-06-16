@@ -28,6 +28,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -50,6 +51,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
+
+    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+    private event TTabPageEventHandler FTabPageEvent;
+
+    /// <summary>
+    /// Enumeration of dynamic loadable UserControls which are used
+    /// on the Tabs of a TabControl. AUTO-GENERATED, don't modify by hand!
+    /// </summary>
+    public enum TDynamicLoadableUserControls
+    {
+    }
 
     /// constructor
     public TFrmGLBatch(IntPtr AParentFormHandle) : base()
@@ -362,13 +374,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private ToolStrip PreviouslyMergedMenuItems = null;
 
         /// <summary>
-        /// change the toolbars that are associated with the tabs
+        /// Changes the toolbars that are associated with the Tabs.
+        /// Optionally dynamically loads UserControls that are associated with the Tabs.
+        /// AUTO-GENERATED, don't modify by hand!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TabSelectionChanged(System.Object sender, EventArgs e)
         {
             TabPage currentTab = tabGLBatch.TabPages[tabGLBatch.SelectedIndex];
+
+            if (FTabSetup == null)
+            {
+                FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+            }
 
             if (PreviouslyMergedToolbarItems != null)
             {
@@ -412,5 +431,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 PreviouslyMergedMenuItems = ItemsToMerge;
             }
         }
+
   }
 }
