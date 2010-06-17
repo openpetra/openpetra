@@ -29,7 +29,7 @@ RootNode:
             Controls: [rgrAddressDetails]
             Order: AlwaysLast
         ucoPartnerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Dock: Fill
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting

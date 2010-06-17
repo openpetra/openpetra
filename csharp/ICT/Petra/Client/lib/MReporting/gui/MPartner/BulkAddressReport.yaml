@@ -25,7 +25,7 @@ RootNode:
             Controls: [ucoPartnerSelection]
             Order: AlwaysFirst
         ucoPartnerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Dock: Fill
         rgrSorting: {ParameterName=param_order_by_name}
             Label: Address Details

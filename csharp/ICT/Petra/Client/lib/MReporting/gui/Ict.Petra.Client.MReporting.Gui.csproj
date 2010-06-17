@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{4DCB81E4-7B19-43D5-BEFC-351706003550}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,7 +14,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Client.MReporting.Gui.xml</DocumentationFile>
     <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\timop\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <NoWarn>0067</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>../../../_bin\Debug\</OutputPath>
@@ -142,6 +141,13 @@
     <Compile Include="UC_PartnerColumns.ManualCode.cs">
       <DependentUpon>UC_PartnerColumns.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PartnerSelection.cs" />
+    <Compile Include="UC_PartnerSelection.Designer.cs">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerSelection.ManualCode.cs">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_Sorting.cs" />
     <Compile Include="UC_Sorting.Designer.cs">
       <DependentUpon>UC_Sorting.cs</DependentUpon>
@@ -157,6 +163,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerColumns.resx">
       <DependentUpon>UC_PartnerColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerSelection.resx">
+      <DependentUpon>UC_PartnerSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Sorting.resx">
       <DependentUpon>UC_Sorting.cs</DependentUpon>

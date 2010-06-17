@@ -31,7 +31,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui
 {
     partial class TFrmUC_PartnerSelection
     {

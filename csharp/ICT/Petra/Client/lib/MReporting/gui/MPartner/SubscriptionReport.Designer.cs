@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection();
+            this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection();
             this.rgrSorting = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtPartnerName = new System.Windows.Forms.RadioButton();
@@ -501,7 +501,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection ucoPartnerSelection;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection ucoPartnerSelection;
         private System.Windows.Forms.GroupBox rgrSorting;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.RadioButton rbtPartnerName;

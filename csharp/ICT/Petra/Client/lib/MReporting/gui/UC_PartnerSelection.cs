@@ -42,7 +42,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui
 {
 
   /// auto generated user control

@@ -29,7 +29,7 @@ RootNode:
             Label: Sorting
             Controls: [ucoReportSorting]
         ucoPartnerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Height: 138
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting

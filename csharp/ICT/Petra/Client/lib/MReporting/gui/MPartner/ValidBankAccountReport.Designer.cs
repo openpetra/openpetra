@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
-            this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection();
+            this.ucoPartnerSelection = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection();
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgColumns = new System.Windows.Forms.TabPage();
@@ -457,7 +457,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
-        private Ict.Petra.Client.MReporting.Gui.MPartner.TFrmUC_PartnerSelection ucoPartnerSelection;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection ucoPartnerSelection;
         private System.Windows.Forms.TabPage tpgReportSorting;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgColumns;
