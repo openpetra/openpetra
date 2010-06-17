@@ -49,6 +49,7 @@ private void TabSelectionChanged(System.Object sender, EventArgs e)
     {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
 }
 {#ENDIF ISUSERCONTROL}
+{#DYNAMICTABPAGEUSERCONTROLSETUPMETHODS}
 
 /// <summary>
 /// Creates UserControls on request. AUTO-GENERATED, don't modify by hand!
@@ -65,3 +66,6 @@ private UserControl DynamicLoadUserControl(TDynamicLoadableUserControls AUserCon
 
     return ReturnValue;
 }
+
+{#INCLUDE dynamictabpage_usercontrol_setup.cs}
+{#INCLUDE dynamictabpage_usercontrol_setup_method.cs}
