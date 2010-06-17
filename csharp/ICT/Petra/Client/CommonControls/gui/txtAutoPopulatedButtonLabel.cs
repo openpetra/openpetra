@@ -1161,7 +1161,8 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         private void TextHasChanged(System.Object sender, System.EventArgs e)
         {
-            if ((FUserControlInitialised == true) && (this.FListTable == TListTableEnum.PartnerKey))
+            if ((FUserControlInitialised == true)
+                && ((this.FListTable == TListTableEnum.PartnerKey) || (this.FListTable == TListTableEnum.Extract)))
             {
                 // reset timer and start it again
                 timerGetKey.Stop();
@@ -1172,7 +1173,8 @@ namespace Ict.Petra.Client.CommonControls
 
         private void TimerGetKey_Tick(System.Object sender, System.EventArgs e)
         {
-            if ((FUserControlInitialised == true) && (this.FListTable == TListTableEnum.PartnerKey))
+            if ((FUserControlInitialised == true)
+                && ((this.FListTable == TListTableEnum.PartnerKey) || (this.FListTable == TListTableEnum.Extract)))
             {
                 this.UpdateDisplayedValue();
                 timerGetKey.Stop();

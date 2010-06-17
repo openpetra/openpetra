@@ -618,16 +618,20 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             if (ExtractMasterDT.Rows.Count < 1)
             {
-                throw new ApplicationException(
-                    "TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty; this is unexpected and can lead to sever malfunction of Petra. Contact Petra-Support");
+                ReturnValue = false;
+#if DEBUGMODE
+                Console.WriteLine("TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty");
+#endif
             }
-
-            MExtractMasterRow ExtractRow = ExtractMasterDT.Rows[0] as MExtractMasterRow;
-
-            if (ExtractRow != null)
+            else
             {
-                AExtractDescription = ExtractRow.ExtractDesc;
-                ReturnValue = true;
+                MExtractMasterRow ExtractRow = ExtractMasterDT.Rows[0] as MExtractMasterRow;
+
+                if (ExtractRow != null)
+                {
+                    AExtractDescription = ExtractRow.ExtractDesc;
+                    ReturnValue = true;
+                }
             }
 
             return ReturnValue;
