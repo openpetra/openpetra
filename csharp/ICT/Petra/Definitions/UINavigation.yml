@@ -43,16 +43,17 @@ OpenPetra:
                         ImportPartnersFromCSV: {ActionOpenScreen=TFrmPartnerImport, Label=Import from CSV, Description=Import Partners without overwriting}
                 #Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
-                    PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
-                    PartnerAddress: {Label=Brief &Address Report, ActionOpenScreen=TFrmBriefAddressReport)
-                    BriefFoundation: {Label=Brief &Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
-                    SupportingChurches: {Label=Supporting &Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)
-                    ValidBankAccount: {Label=&Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport)
-                    PublicationStatisticalReport: {Label=Publication &Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
-                    BulkAddressReport: {Label=&Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
-                    PartnerContactReport: {Label=Partner C&ontact Report, ActionOpenScreen=TFrmPartnerContactReport)
-                    SubscriptionReport: {Label=Subscri&ption Report, ActionOpenScreen=TFrmSubscriptionReport)
-                    LocalPartnerDataReport: {Label=&Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport)
+                    PartnerReports:
+                        PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport)
+                        BriefFoundation: {Label=Brief Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
+                        SupportingChurches: {Label=Supporting Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)
+                        ValidBankAccount: {Label=Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport)
+                        PublicationStatisticalReport: {Label=Publication Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
+                        BulkAddressReport: {Label=Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
+                        PartnerContactReport: {Label=Partner Contact Report, ActionOpenScreen=TFrmPartnerContactReport)
+                        SubscriptionReport: {Label=Subscription Report, ActionOpenScreen=TFrmSubscriptionReport)
+                        LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport)
            
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}

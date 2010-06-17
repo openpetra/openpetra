@@ -610,14 +610,10 @@
 			<lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
 		</detail>
 		<footer space="above" >
-			<field whichfield="left 0" pos="0.5cm" width="4cm">
-				<value text="Number of Addresses:"/>
-			</field>
-			<field whichfield="column 0" pos="3.5cm" width="1cm">
+			<field whichfield="left 0" pos="0.3cm" width="18cm">
+				<value text="Number of Addresses: "/>
 				<value variable="NumberOfAddresses"/>
-			</field>
-			<field whichfield="column 1" pos="5.4cm" width="10cm">
-				<value text="Address Flags:  * expired,   ^ not yet current,  # no post to this address"/>
+				<value text="         Address Flags:  * expired,   ^ not yet current,  # no post to this address"/>
 			</field>
 		</footer>
 	</level>
