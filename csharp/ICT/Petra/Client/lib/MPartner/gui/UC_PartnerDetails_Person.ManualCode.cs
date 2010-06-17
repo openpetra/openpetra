@@ -27,5 +27,27 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerDetails_Person
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Gets the data from all controls on this UserControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls2()
+        {
+            GetDataFromControls(FMainDS.PPerson[0]);
+        }
+
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+
+        #endregion
     }
 }

@@ -298,11 +298,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls()
         {
-            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetails))
+            switch (GetPartnerDetailsVariableUC()) 
             {
-                TUC_PartnerDetails_Family UCPartnerDetailsFamily =
-                    (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetails];
-                UCPartnerDetailsFamily.GetDataFromControls2();
+                case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsPerson))
+                    {
+                        TUC_PartnerDetails_Person UCPartnerDetailsPerson =
+                            (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
+                        UCPartnerDetailsPerson.GetDataFromControls2();
+                    }
+                    
+                    break;
+                    
+                case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsFamily))
+                    {
+                        TUC_PartnerDetails_Family UCPartnerDetailsFamily =
+                            (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
+                        UCPartnerDetailsFamily.GetDataFromControls2();
+                    }
+                    
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsBank))
+                    {
+                        TUC_PartnerDetails_Bank UCPartnerDetailsBank =
+                            (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
+                        UCPartnerDetailsBank.GetDataFromControls2();
+                    }
+                    
+                    break;
             }
         }
 
@@ -351,11 +377,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void DisableNewButtonOnAutoCreatedAddress()
         {
-            TUCPartnerAddresses UCAddresses;
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
 
-            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
-
-            UCAddresses.DisableNewButtonOnAutoCreatedAddress();
+            FUcoAddresses.DisableNewButtonOnAutoCreatedAddress();
         }
 
         /// <summary>
@@ -363,11 +391,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void CleanupRecordsBeforeMerge()
         {
-            TUCPartnerAddresses UCAddresses;
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
 
-            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
-
-            UCAddresses.CleanupRecordsBeforeMerge();
+            FUcoAddresses.CleanupRecordsBeforeMerge();
         }
 
         /// <summary>
@@ -375,11 +405,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshRecordsAfterMerge()
         {
-            TUCPartnerAddresses UCAddresses;
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
 
-            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
-
-            UCAddresses.RefreshRecordsAfterMerge();
+            FUcoAddresses.RefreshRecordsAfterMerge();
         }
 
         /// <summary>
@@ -388,11 +420,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AParameterDT"></param>
         public void ProcessServerResponseSimilarLocations(PartnerAddressAggregateTDSSimilarLocationParametersTable AParameterDT)
         {
-            TUCPartnerAddresses UCAddresses;
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
 
-            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
-
-            UCAddresses.ProcessServerResponseSimilarLocations(AParameterDT);
+            FUcoAddresses.ProcessServerResponseSimilarLocations(AParameterDT);
         }
 
         /// <summary>
@@ -404,17 +438,37 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
             PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
         {
-            TUCPartnerAddresses UCAddresses;
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
 
-            UCAddresses = (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
-
-            UCAddresses.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
+            FUcoAddresses.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
         }
 
         #endregion
 
         #region Private Methods
 
+        private TDynamicLoadableUserControls GetPartnerDetailsVariableUC()
+        {
+            switch(FPartnerClass)
+            {
+                case "PERSON":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsPerson;
+                    
+                case "FAMILY":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsFamily;
+                    
+                case "BANK":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsBank;
+                    
+                default:
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsPerson;
+            }
+        }
+        
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
             if (ATabPageEventArgs.Event == "InitialActivation")
