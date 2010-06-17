@@ -63,9 +63,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public enum TDynamicLoadableUserControls
     {
-        ///<summary>Denotes dynamic loadable UserControl tpgBatches</summary>
+        ///<summary>Denotes dynamic loadable UserControl FUcoBatches</summary>
         dlucBatches,
-        ///<summary>Denotes dynamic loadable UserControl tpgTransactions</summary>
+        ///<summary>Denotes dynamic loadable UserControl FUcoTransactions</summary>
         dlucTransactions,
     }
 
