@@ -213,7 +213,9 @@
 		</query>
 	</calculation>
 	
-	<!-- TODO change this to the correct table -->
+	<!-- Info: Value for "DISPLAYGIFT" is a combination of AMOUNT,FIELD,RECIPIENT (with comma as separator)
+		In Petra 2.X the tables s_system_parameter.p_display_gift_amount_l, s_system_parameter.p_display_gift_recipient_l,
+		and s_system_parameter.p_display_gift_field_l  were used to distinguish what gift details were printed. -->
 	<calculation id="SelectSystemParameters" returns="s_default_value_c" returnsFormat="row">
 		<query>
 			<queryDetail><value> 
@@ -317,14 +319,14 @@
 				<value function="assign(LocationType, )"/>
 				<value function="assign(Url, )"/>
 				<value function="assign(SendMail, )"/>
-				<value function="assign(GiftAmount, {a_gift_transaction_amount_n})" condition="eq({s_default_value_c}, TRUE)"/>
-				<value function="assign(Currency, {a_currency_code_c})" condition="eq({s_default_value_c}, TRUE)"/>
+				<value function="assign(GiftAmount, {a_gift_transaction_amount_n})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+				<value function="assign(Currency, {a_currency_code_c})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
 				<value function="assign(GiftCommentType, {a_comment_one_type_c})"/>
 				<value function="assign(GiftComment, {a_gift_comment_one_c})"/>
-				<value function="assign(GiftRecipient, {p_partner_short_name_c})" condition="eq({s_default_value_c}, TRUE)"/>
-				<value function="assign(MotivationDetail, {a_motivation_detail_desc_local_c})" condition="eq({s_default_value_c}, TRUE)"/>
-				<value function="assign(MotivationGroup, {a_motivation_group_desc_local_c})" condition="eq({s_default_value_c}, TRUE)"/>
-				<value function="assign(ReceivingField, {RecipientFieldShortName})" condition="eq({s_default_value_c}, TRUE)"/>
+				<value function="assign(GiftRecipient, {p_partner_short_name_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
+				<value function="assign(MotivationDetail, {a_motivation_detail_desc_local_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
+				<value function="assign(MotivationGroup, {a_motivation_group_desc_local_c})" condition="containsCSV({s_default_value_c}, FIELD)"/>
+				<value function="assign(ReceivingField, {RecipientFieldShortName})" condition="containsCSV({s_default_value_c}, FIELD)"/>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -851,15 +853,15 @@
 			<field whichfield="header 0" pos="0cm" width="20cm" calculation="CalculateGiftSum" >
 				<value text="Last Gift On: "/>
 				<value variable="a_date_entered_d"/>
-				<value text="   Amount: " condition="eq({s_default_value_c}, TRUE)"/>
-				<value variable="GiftSum" condition="eq({s_default_value_c}, TRUE)"/>
+				<value text="   Amount: " condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+				<value variable="GiftSum" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
 				<value text=" "/>
-				<value variable="Currency" condition="eq({s_default_value_c}, TRUE)"/>
+				<value variable="Currency" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
 			</field>
 		</header>
 		<detail>
 			<lowerLevelReport level="GiftDetailLevel" calculation="SelectGiftDetails" condition=
-				"eq({s_default_value_c}, TRUE)"/>
+				"or(containsCSV({s_default_value_c}, RECIPIENT), containsCSV({s_default_value_c}, FIELD))"/>
 		</detail>
 		<footer>
 			<field whichfield="left 0" pos="0cm" width="1cm">
