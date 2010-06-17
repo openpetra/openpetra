@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui
       this.txtPartnerKey.ButtonText = Catalog.GetString("Find");
       this.rbtExtract.Text = Catalog.GetString("Extract");
       this.txtExtract.ButtonText = Catalog.GetString("Find");
-      this.rbtCurrentStaff.Text = Catalog.GetString("Current Staff at");
+      this.rbtCurrentStaff.Text = Catalog.GetString("Staff at");
       this.rbtAllStaff.Text = Catalog.GetString("All Staff");
       this.grpSelection.Text = Catalog.GetString("Selection");
       #endregion

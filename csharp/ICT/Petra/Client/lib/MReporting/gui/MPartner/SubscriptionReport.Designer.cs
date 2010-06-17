@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //
             this.rbtPartnerKey.Location = new System.Drawing.Point(2,2);
             this.rbtPartnerKey.Name = "rbtPartnerKey";
-            this.rbtPartnerKey.Size = new System.Drawing.Size(491, 28);
+            this.rbtPartnerKey.Size = new System.Drawing.Size(446, 28);
             this.rbtPartnerKey.Text = "Partner Key";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

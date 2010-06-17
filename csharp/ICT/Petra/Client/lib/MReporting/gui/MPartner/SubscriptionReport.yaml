@@ -34,7 +34,7 @@ RootNode:
             Label: Partner Name
         rbtPartnerKey: 
             Label: Partner Key
-            Width: 491
+            Width: 446
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:

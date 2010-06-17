@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.rbtCurrentStaff.Name = "rbtCurrentStaff";
             this.rbtCurrentStaff.AutoSize = true;
             this.rbtCurrentStaff.CheckedChanged += new System.EventHandler(this.rbtSelectionChange);
-            this.rbtCurrentStaff.Text = "Current Staff at";
+            this.rbtCurrentStaff.Text = "Staff at";
             //
             // dtpCurrentStaff
             //
