@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -25,7 +25,7 @@ using System;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TUC_PartnerDetails_Person
+    public partial class TUC_PartnerDetails_Bank
     {
         #region Public Methods
 
@@ -36,7 +36,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-            GetDataFromControls(FMainDS.PPerson[0]);
+            GetDataFromControls(FMainDS.PBank[0]);
         }
 
         /// <summary>

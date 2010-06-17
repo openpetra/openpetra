@@ -119,8 +119,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
         {
-            string DynamicControlType;
             string CntrlNameWithoutPrefix = ctrl.controlName.Substring(3);
+            string CntrlVaribleNameWithoutPrefix;
+            StringCollection DynamicControlTypes;
 
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
@@ -130,60 +131,173 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + ctrl.GetAttribute("ToolTip") + "\"");
             }
 
+            #region Dynamic TabPage UserControl loading ('LoadPageDynamically' attribute and 'DynamicControlTypes' Element)
+
             if (ctrl.HasAttribute("LoadPageDynamically") && (ctrl.GetAttribute("LoadPageDynamically").ToLower() == "true"))
             {
-                if (!ctrl.HasAttribute("DynamicControlType"))
+                if ((!ctrl.HasAttribute("DynamicControlType")
+                     && (TYml2Xml.GetElements(ctrl.xmlNode, "DynamicControlTypes").Count == 0)))
                 {
                     throw new Exception(
                         "TabPage '" + ctrl.controlName +
-                        "': 'DynamicControlType' property needs to be specified if 'LoadPageDynamically' is specified");
+                        "': Either the 'DynamicControlType' or the 'DynamicControlTypes' property need to be specified if 'LoadPageDynamically' is specified");
+                }
+                else if (ctrl.HasAttribute("DynamicControlType"))
+                {
+                    DynamicControlTypes = new StringCollection();
+                    DynamicControlTypes.Add(ctrl.GetAttribute("DynamicControlType"));
                 }
                 else
                 {
-                    DynamicControlType = ctrl.GetAttribute("DynamicControlType");
+                    DynamicControlTypes = TYml2Xml.GetElements(ctrl.xmlNode, "DynamicControlTypes");
                 }
 
-                // Declare UserControl Member for each dynamically loaded TabPage
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION",
-                    "private " + DynamicControlType + " FUco" + CntrlNameWithoutPrefix + ";" + Environment.NewLine);
-
-                // Declare an Enum for each dynamically loaded TabPage
-                string DynamicTabPageEnums = "";
-                DynamicTabPageEnums += "///<summary>Denotes dynamic loadable UserControl " + ctrl.controlName + "</summary>" + Environment.NewLine;
-                DynamicTabPageEnums += "dluc" + CntrlNameWithoutPrefix + "," + Environment.NewLine;
-
-                writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
-
-                // Dispose UserControl for each dynamically loaded TabPage
-                string CustomDisposingOfControl = "";
-                CustomDisposingOfControl += "if (FUco" + CntrlNameWithoutPrefix + " != null)" + Environment.NewLine;
-                CustomDisposingOfControl += "{" + Environment.NewLine;
-                CustomDisposingOfControl += "    FUco" + CntrlNameWithoutPrefix + ".Dispose();" + Environment.NewLine;
-                CustomDisposingOfControl += "}" + Environment.NewLine;
-
-                writer.Template.AddToCodelet("CUSTOMDISPOSING", CustomDisposingOfControl);
-
-                // Initialise each dynamically loaded TabPage
                 ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");
-
-                if (writer.IsUserControlTemplate)
+                ProcessTemplate snippetUserControlSetupMethod = writer.Template.GetSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMETHOD");
+                
+                for (int Counter = 0; Counter < DynamicControlTypes.Count; Counter = Counter + 2)
                 {
-                    snippetUserControlInitialisation.SetCodelet("ISUSERCONTROL", "true");
+                    if (DynamicControlTypes.Count == 1)
+                    {
+                        CntrlVaribleNameWithoutPrefix = CntrlNameWithoutPrefix;
+                    }
+                    else
+                    {
+                        CntrlVaribleNameWithoutPrefix = CntrlNameWithoutPrefix + DynamicControlTypes[Counter + 1];
+                    }
+
+//Console.WriteLine("CntrlVaribleNameWithoutPrefix: " + CntrlVaribleNameWithoutPrefix + "; Counter: " + Counter.ToString());
+                    writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION",
+                        "private " + DynamicControlTypes[Counter] + " FUco" + CntrlVaribleNameWithoutPrefix + ";" + Environment.NewLine);
+
+                    // Declare an Enum for each dynamically loaded TabPage
+                    string DynamicTabPageEnums = "";
+                    DynamicTabPageEnums += "///<summary>Denotes dynamic loadable UserControl" + " FUco" + CntrlVaribleNameWithoutPrefix +
+                                           "</summary>" + Environment.NewLine;
+                    DynamicTabPageEnums += "dluc" + CntrlVaribleNameWithoutPrefix + "," + Environment.NewLine;
+                    writer.Template.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", DynamicTabPageEnums);
+
+                    // Dispose UserControl for each dynamically loaded TabPage
+                    string CustomDisposingOfControl = "";
+                    CustomDisposingOfControl += "if (FUco" + CntrlVaribleNameWithoutPrefix + " != null)" + Environment.NewLine;
+                    CustomDisposingOfControl += "{" + Environment.NewLine;
+                    CustomDisposingOfControl += "    FUco" + CntrlVaribleNameWithoutPrefix + ".Dispose();" + Environment.NewLine;
+                    CustomDisposingOfControl += "}" + Environment.NewLine;
+                    writer.Template.AddToCodelet("CUSTOMDISPOSING", CustomDisposingOfControl);
+
+
+                    // Initialise each dynamically loaded TabPage
+
+                    ProcessTemplate snippetUserControlSetup = writer.Template.GetSnippet("DYNAMICTABPAGEUSERCONTROLSETUP");
+                    ProcessTemplate snippetTabPageSubseqAct = writer.Template.GetSnippet("DYNAMICTABPAGESUBSEQUENTACTIVATION");
+
+                    if (writer.IsUserControlTemplate)
+                    {
+                        snippetUserControlSetup.SetCodelet("ISUSERCONTROL", "true");
+                    }
+
+                    snippetUserControlInitialisation.SetCodelet("CONTROLNAME", ctrl.controlName);
+                    snippetUserControlInitialisation.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+
+                    snippetUserControlSetup.SetCodelet("CONTROLNAME", ctrl.controlName);
+
+                    snippetUserControlInitialisation.SetCodelet("TABCONTROLNAME", TabControlGenerator.TabControlName);
+                    snippetUserControlSetup.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlTypes[Counter]);
+
+                    ProcessTemplate snippetUserControlLoading = writer.Template.GetSnippet("USERCONTROLLOADING");
+
+                    if ((ctrl.HasAttribute("SeparateDynamicControlSetupMethod")
+                         && (ctrl.GetAttribute("SeparateDynamicControlSetupMethod").ToLower() == "true"))
+                        || (DynamicControlTypes.Count > 1))
+                    {
+                        if (DynamicControlTypes.Count == 1)
+                        {
+                            snippetUserControlInitialisation.SetCodelet("TABKEY", "TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ")");
+                            snippetUserControlSetupMethod = writer.Template.GetSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMETHOD");
+                            snippetUserControlSetup.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                            snippetUserControlSetupMethod.SetCodelet("DYNLOADINFO", "UserControl 'FUco" + CntrlNameWithoutPrefix + "'.");
+                            snippetUserControlSetupMethod.SetCodelet("USERORTABCONTROLNAMEWITHOUTPREFIX", "UserControl" + CntrlNameWithoutPrefix);
+                            snippetUserControlSetupMethod.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSETUPINLINE2", snippetUserControlSetup);
+                            writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", snippetUserControlSetupMethod);
+
+                            snippetUserControlInitialisation.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPINLINE1",
+                                "SetupUserControl" + CntrlNameWithoutPrefix + "();" + Environment.NewLine);
+
+                            snippetTabPageSubseqAct.SetCodelet("CONTROLNAME", ctrl.controlName);
+                            snippetTabPageSubseqAct.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                            snippetUserControlInitialisation.InsertSnippet("DYNAMICTABPAGESUBSEQUENTACTIVATION", snippetTabPageSubseqAct);
+
+                            writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);
+
+                            snippetUserControlLoading.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                        }
+                        else
+                        {
+                            snippetUserControlInitialisation.SetCodelet("TABKEY", "Get" + CntrlNameWithoutPrefix + "VariableUC())");
+                            ProcessTemplate snippetUserControlSetupMethodMultiUC = writer.Template.GetSnippet(
+                                "DYNAMICTABPAGEUSERCONTROLSETUPMULTIUCPART");
+                            ProcessTemplate snippetTabPageSubseqActIfStmt = writer.Template.GetSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMULTIUCPART");
+
+                            snippetUserControlSetup.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlVaribleNameWithoutPrefix);
+                            snippetUserControlSetupMethod.SetCodelet("DYNLOADINFO", "TabPage '" + ctrl.controlName + "' with varying UserControls.");
+                            snippetUserControlSetupMethod.SetCodelet("USERORTABCONTROLNAMEWITHOUTPREFIX",
+                                "VariableUserControlForTabPage" + CntrlNameWithoutPrefix);
+                            snippetUserControlSetupMethodMultiUC.SetCodelet("TABCONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                            snippetUserControlSetupMethodMultiUC.SetCodelet("USERCONTROLNAMEWITHOUTPREFIX", CntrlVaribleNameWithoutPrefix);
+
+                            snippetUserControlSetupMethodMultiUC.InsertSnippet("MULTIUCCODE", snippetUserControlSetup);
+
+                            if (Counter < DynamicControlTypes.Count - 2)
+                            {
+                                snippetUserControlSetupMethodMultiUC.SetCodelet("ELSESTATEMENT", "else");
+                                snippetTabPageSubseqActIfStmt.SetCodelet("ELSESTATEMENT", "else");
+                            }
+
+                            snippetUserControlSetupMethod.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSETUPINLINE2", snippetUserControlSetupMethodMultiUC);
+
+                            snippetTabPageSubseqActIfStmt.SetCodelet("TABCONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                            snippetTabPageSubseqActIfStmt.SetCodelet("USERCONTROLNAMEWITHOUTPREFIX", CntrlVaribleNameWithoutPrefix);
+
+                            snippetTabPageSubseqAct.SetCodelet("CONTROLNAME", ctrl.controlName);
+                            snippetTabPageSubseqAct.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlVaribleNameWithoutPrefix);
+
+                            snippetTabPageSubseqActIfStmt.InsertSnippet("MULTIUCCODE", snippetTabPageSubseqAct);
+                            snippetUserControlInitialisation.InsertSnippet("DYNAMICTABPAGESUBSEQUENTACTIVATION", snippetTabPageSubseqActIfStmt);
+
+                            if (Counter + 2 == DynamicControlTypes.Count)
+                            {
+                                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", snippetUserControlSetupMethod);
+                                snippetUserControlInitialisation.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPINLINE1",
+                                    "SetupVariableUserControlForTabPage" + CntrlNameWithoutPrefix + "();" + Environment.NewLine);
+                                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);
+                            }
+
+                            snippetUserControlLoading.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlVaribleNameWithoutPrefix);
+                        }
+                    }
+                    else
+                    {
+                        snippetUserControlInitialisation.SetCodelet("TABKEY", "TDynamicLoadableUserControls.dluc" + CntrlNameWithoutPrefix + ")");
+                        snippetUserControlSetup.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                        snippetUserControlInitialisation.InsertSnippet("DYNAMICTABPAGEUSERCONTROLSETUPINLINE1", snippetUserControlSetup);
+
+                        snippetTabPageSubseqAct.SetCodelet("CONTROLNAME", ctrl.controlName);
+                        snippetTabPageSubseqAct.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                        snippetUserControlInitialisation.InsertSnippet("DYNAMICTABPAGESUBSEQUENTACTIVATION", snippetTabPageSubseqAct);
+
+                        writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);
+
+                        snippetUserControlLoading.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
+                    }
+
+                    // Dynamically load each dynamically loaded TabPage
+                    snippetUserControlLoading.SetCodelet("CONTROLNAME", ctrl.controlName);
+                    snippetUserControlLoading.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlTypes[Counter]);
+                    writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLLOADING", snippetUserControlLoading);
                 }
-
-                snippetUserControlInitialisation.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
-                snippetUserControlInitialisation.SetCodelet("CONTROLNAME", ctrl.controlName);
-                snippetUserControlInitialisation.SetCodelet("TABCONTROLNAME", TabControlGenerator.TabControlName);
-                snippetUserControlInitialisation.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);
-                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLINITIALISATION", snippetUserControlInitialisation);
-
-                // Dynamically load each dynamically loaded TabPage
-                ProcessTemplate snippetUserControlLoading = writer.Template.GetSnippet("USERCONTROLLOADING");
-                snippetUserControlLoading.SetCodelet("CONTROLNAMEWITHOUTPREFIX", CntrlNameWithoutPrefix);
-                snippetUserControlLoading.SetCodelet("CONTROLNAME", ctrl.controlName);
-                snippetUserControlLoading.SetCodelet("DYNAMICCONTROLTYPE", DynamicControlType);
-                writer.Template.InsertSnippet("DYNAMICTABPAGEUSERCONTROLLOADING", snippetUserControlLoading);
             }
+
+            #endregion
         }
 
 /*

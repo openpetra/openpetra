@@ -41,10 +41,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
         /// </summary>
         public void AdjustAfterResizing()
         {
-            // TODO Adjustment of SourceGrid's column widhts needs to be done like in Petra 2.3 ('SetupDataGridVisualAppearance' Methods)
         }
 
         #endregion

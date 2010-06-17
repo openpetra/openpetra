@@ -791,6 +791,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLDECLARATION", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEBASICS", "");
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
+            FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
+            FTemplate.AddToCodelet("ELSESTATEMENT", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {

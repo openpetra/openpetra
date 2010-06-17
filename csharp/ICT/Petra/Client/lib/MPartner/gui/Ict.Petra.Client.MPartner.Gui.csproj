@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -169,6 +169,13 @@
     </Compile>
     <Compile Include="Threading.cs" />
     <Compile Include="Types.cs" />
+    <Compile Include="UC_PartnerDetails_Bank.cs" />
+    <Compile Include="UC_PartnerDetails_Bank.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Bank.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerDetails_Family.cs" />
     <Compile Include="UC_PartnerDetails_Family.Designer.cs">
       <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
@@ -259,6 +266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerTypeSetup.resx">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerDetails_Bank.resx">
+      <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerDetails_Family.resx">
       <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>

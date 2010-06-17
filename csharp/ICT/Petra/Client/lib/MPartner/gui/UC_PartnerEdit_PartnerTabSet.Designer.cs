@@ -63,9 +63,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoAddresses.Dispose();
             }
-            if (FUcoPartnerDetails != null)
+            if (FUcoPartnerDetailsFamily != null)
             {
-                FUcoPartnerDetails.Dispose();
+                FUcoPartnerDetailsFamily.Dispose();
+            }
+            if (FUcoPartnerDetailsPerson != null)
+            {
+                FUcoPartnerDetailsPerson.Dispose();
+            }
+            if (FUcoPartnerDetailsBank != null)
+            {
+                FUcoPartnerDetailsBank.Dispose();
             }
             if (FUcoPartnerTypes != null)
             {

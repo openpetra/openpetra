@@ -21,11 +21,12 @@ RootNode:
             Label: Addresses ({0})
             Image: Addresses.ico
             DynamicControlType: Ict.Petra.Client.MCommon.TUCPartnerAddresses
+            SeparateDynamicControlSetupMethod: true
             
         tpgPartnerDetails: {LoadPageDynamically=true}
             Label: Partner Details         
             Image: Details.ico
-            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family
+            DynamicControlTypes: [Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family, Family, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person, Person, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Bank, Bank]
             
         tpgFoundationDetails:
 # TODO {LoadPageDynamically=true}
