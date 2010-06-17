@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       berndr
 //
 // Copyright 2004-2010 by OM International
 //
@@ -20,7 +20,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
-//#region Using directives
+//
+#region Using directives
 
 using System;
 using System.Reflection;
