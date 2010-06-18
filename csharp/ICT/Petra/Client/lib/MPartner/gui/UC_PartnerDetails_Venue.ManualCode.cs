@@ -28,7 +28,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUC_PartnerDetails_Venue
     {
         #region Public Methods
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

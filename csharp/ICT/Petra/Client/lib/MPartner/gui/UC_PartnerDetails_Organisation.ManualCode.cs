@@ -33,7 +33,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ShowHideFoundationTab(null, null);
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ShowHideFoundationTab(object sender, EventArgs e)
         {
         }
-            
+
         #endregion
     }
 }
