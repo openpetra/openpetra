@@ -22,7 +22,9 @@
 			<div id="header">
 
 				<div id="logo">
-					<h1 id="site-title"><a href="index.php?lang=en">OpenPetra.org</a></h1>
+					<img src="img/openpetra_logo_final_white_text.png" alt="OpenPetra.org" height="120px" align="middle"/>
+                </div>
+                <div id="slogan">
 					<h2 id="site-slogan">Free Administration Software for Non-Profits</h2>
 				</div>
 
