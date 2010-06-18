@@ -68,6 +68,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="EndOfCommitmentReport.cs" />
+    <Compile Include="EndOfCommitmentReport.Designer.cs">
+      <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviousExperienceReport.cs" />
     <Compile Include="PreviousExperienceReport.Designer.cs">
       <DependentUpon>PreviousExperienceReport.cs</DependentUpon>
@@ -76,6 +80,9 @@
     <Compile Include="ProgressReport.Designer.cs">
       <DependentUpon>ProgressReport.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="EndOfCommitmentReport.resx">
+      <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PreviousExperienceReport.resx">
       <DependentUpon>PreviousExperienceReport.cs</DependentUpon>
     </EmbeddedResource>
