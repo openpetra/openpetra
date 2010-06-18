@@ -42,13 +42,17 @@ namespace Ict.Petra.Shared.MReporting
     {
         /// <summary>list of integers; the column numbers by which the rows should be sorted</summary>
         public ArrayList FColumnList;
+        /// <summary>Enables sorting of multiple levels. This will make the result into a flat table</summary>
+        private Boolean FCompareMultipleLevels;
 
         /// <summary>
         /// Create a comparer, based on the comma separated list of column numbers
         ///
         /// </summary>
+        /// <param name="AColumns">comma separated list of integers, describing the columns that the sorting should be based upon</param>
+        /// <param name="ACompareMultipleLevels">Indicator if sorting of multiple levels is allowed.</param>
         /// <returns>void</returns>
-        public TRowComparer(String AColumns)
+        public TRowComparer(String AColumns, Boolean ACompareMultipleLevels)
         {
             StringCollection ColumnStringList;
 
@@ -59,13 +63,17 @@ namespace Ict.Petra.Shared.MReporting
             {
                 FColumnList.Add((System.Object)Convert.ToInt32(s));
             }
+
+            FCompareMultipleLevels = ACompareMultipleLevels;
         }
 
         /// <summary>
         /// Compare two rows of type TResult, using the set of column numbers
         /// implements the IComparer interface
         /// </summary>
-        /// <returns>same as IComparer.Compare: &lt;0 means x is less than y, =0 means x=y, &gt;0 means x greater than y
+        /// <param name="x">First object of TResult to compare</param>
+        /// <param name="y">Second object of TResult to compare</param>
+        /// <returns>same as IComparer.Compare: -1 means x is less than y, =0 means x=y, 1 means x>y
         /// </returns>
         public System.Int32 Compare(System.Object x, System.Object y)
         {
@@ -79,18 +87,39 @@ namespace Ict.Petra.Shared.MReporting
             Row2 = (TResult)y;
 
             // for the moment, it only works with plain reports
-            if (Row1.masterRow != Row2.masterRow)
+            if (!FCompareMultipleLevels && (Row1.masterRow != Row2.masterRow))
             {
-                throw new Exception("TRowComparer: Sorting of multilevel reports has not been implemented yet!");
+                throw new Exception("TRowComparer: Sorting of multilevel is not allowed.");
             }
 
             ReturnValue = 0;
 
             // start with the least significant column, ie. from the back
-            for (Counter = FColumnList.Count - 1; Counter <= 0; Counter -= 1)
+            for (Counter = FColumnList.Count - 1; Counter >= 0; Counter -= 1)
             {
                 Column = (System.Int32)FColumnList[Counter];
-                cmp = (Row1.column[Column].CompareTo(Row2.column[Column]));
+
+                if ((Row1.column[Column].IsNil())
+                    && (Row2.column[Column].IsNil()))
+                {
+                    // if both entries are empty, they are equal
+                    continue;
+                }
+
+                if (Row1.column[Column].IsNil())
+                {
+                    // if one is empty
+                    cmp = 1;
+                }
+                else if (Row2.column[Column].IsNil())
+                {
+                    // if the other is empty
+                    cmp = -1;
+                }
+                else
+                {
+                    cmp = (Row1.column[Column].CompareTo(Row2.column[Column]));
+                }
 
                 if (cmp != 0)
                 {
@@ -350,12 +379,23 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Sort(String AColumns)
         {
+            Sort(AColumns, false);
+        }
+
+        /// <summary>
+        /// Sort the result.
+        /// If AMakeFlatTable is false, then it only sorts the children of the same parent line.
+        /// Otherwise it sorts all lines but the result will be that all children have the same parent line.
+        /// First column has higher precedence, so the sorting starts with the last column
+        /// </summary>
+        /// <param name="AColumns">comma separated list of integers, describing the columns that the sorting should be based upon</param>
+        /// <param name="AMakeFlatTable">Indicator if we should make a flat table. This allows sorting with multiple levels</param>
+        /// <returns>void</returns>
+        public void Sort(String AColumns, Boolean AMakeFlatTable)
+        {
             TRowComparer RowComparer;
 
-            RowComparer = new TRowComparer(AColumns);
-
-            // Todo: sort different depths of reports
-            // for the moment, it only works with plain reports
+            RowComparer = new TRowComparer(AColumns, AMakeFlatTable);
 
             /* idea for sorting:
              * for each master
@@ -369,11 +409,28 @@ namespace Ict.Petra.Shared.MReporting
              * change all rows reporting to that row accordingly
              * after that has been done, change all the other negated numbers back
              */
+            if (results.Count < 1)
+            {
+                return;
+            }
+
             this.results.Sort(0, results.Count, RowComparer);
 
-            foreach (TResult row in results)
+            if (AMakeFlatTable)
             {
-                row.childRow = results.IndexOf(row) + 1;
+                foreach (TResult row in results)
+                {
+                    row.childRow = results.IndexOf(row) + 1;
+                    // make a flat table
+                    row.masterRow = 0;
+                }
+            }
+            else
+            {
+                foreach (TResult row in results)
+                {
+                    row.childRow = results.IndexOf(row) + 1;
+                }
             }
         }
 

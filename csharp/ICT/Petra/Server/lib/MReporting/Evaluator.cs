@@ -798,6 +798,19 @@ namespace Ict.Petra.Server.MReporting
             {
                 ReturnValue = new TVariant(ops[1].ToDouble() + ops[2].ToDouble());
             }
+            else if (f == "additems")
+            {
+                length = ops[1].ToInt() + 1;
+
+                double result = 0.0;
+
+                for (counter = 2; counter <= length; ++counter)
+                {
+                    result += ops[counter].ToDouble();
+                }
+
+                ReturnValue = new TVariant(result);
+            }
             else if (f == "mul")
             {
                 ReturnValue = new TVariant(ops[1].ToDouble() * ops[2].ToDouble());
@@ -978,6 +991,42 @@ namespace Ict.Petra.Server.MReporting
             {
                 ReturnValue = new TVariant(ops[1].ToFormattedString(ops[2].ToString()));
             }
+            else if (f == "formattime")
+            {
+                String separator = ops[1].ToString();
+                String hour = ops[2].ToString();
+                String min = ops[3].ToString();
+                String sec = "";
+
+                if ((ops.Length > 4) && (ops[4] != null))
+                {
+                    sec = ops[4].ToString();
+                }
+
+                if (hour.Length < 2)
+                {
+                    hour = "0" + hour;
+                }
+
+                if (min.Length < 2)
+                {
+                    min = "0" + min;
+                }
+
+                if ((sec.Length < 2) && (sec.Length > 0))
+                {
+                    sec = "0" + sec;
+                }
+
+                if (sec.Length > 0)
+                {
+                    ReturnValue = new TVariant(hour + separator + min + separator + sec);
+                }
+                else
+                {
+                    ReturnValue = new TVariant(hour + separator + min);
+                }
+            }
             else if (f == "assign")
             {
                 GetParameters().Add(ops[1].ToString(), ops[2], -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
@@ -998,6 +1047,35 @@ namespace Ict.Petra.Server.MReporting
                 TRptCalculation rptTemplate = ReportStore.GetCalculation(CurrentReport, ops[1].ToString());
                 TRptDataCalcCalculation rptTempCalculation = new TRptDataCalcCalculation(this);
                 ReturnValue = rptTempCalculation.Calculate(rptTemplate, null);
+            }
+            else if (f == "columnexist")
+            {
+                String ColumnID = ops[1].ToString();
+                bool ColumnExist = false;
+
+                System.Data.DataTable TempTable = GetParameters().ToDataTable();
+                int numColumns = TempTable.Columns.Count;
+
+                foreach (System.Data.DataRow Row in TempTable.Rows)
+                {
+                    for (int Counter = 0; Counter < numColumns; ++Counter)
+                    {
+                        TVariant bla = new TVariant();
+
+                        if (Row[Counter].ToString() == ColumnID)
+                        {
+                            ColumnExist = true;
+                            break;
+                        }
+                    }
+
+                    if (ColumnExist)
+                    {
+                        break;
+                    }
+                }
+
+                ReturnValue = new TVariant(ColumnExist);
             }
             else if (f == "conditionrow")
             {

@@ -212,13 +212,17 @@ namespace Ict.Petra.Server.MReporting
             TVariant[] precalculatedDescr = new TVariant[2];
             TVariant[] header = new TVariant[2];
             Boolean display;
+            Boolean hideRow = false;
             Boolean debit_credit_indicator;
+            Boolean param_hide_empty_lines = false;
             int counter;
             String values;
             TRptDataCalcValue rptDataCalcValue;
             TRptGrpValue rptGrpValue;
             int maxDisplayColumns;
             int numberColumns;
+            int ColumnPartnerName = -1;
+            int ColumnPartnerKey = -1;
             TResult newRow;
             ReturnValue = false;
             condition = condition.ToLower();
@@ -244,6 +248,11 @@ namespace Ict.Petra.Server.MReporting
             else
             {
                 debit_credit_indicator = Parameters.Get("debit_credit_indicator", -1, Depth).ToBool();
+            }
+
+            if (Parameters.Get("param_hide_empty_lines").ToString() == "true")
+            {
+                param_hide_empty_lines = true;
             }
 
             if (Depth > 0)
@@ -273,6 +282,27 @@ namespace Ict.Petra.Server.MReporting
                     {
                         column = counter;
                         precalculatedColumns[column] = Precalculate(precalculatedColumns);
+
+                        if (param_hide_empty_lines)
+                        {
+                            // if this parameter is set, hide the row when all columns are empty, except
+                            // of the column partner name and partner key.
+                            TParameter CurrentParameter = Parameters.GetParameter("param_calculation", column, -1, eParameterFit.eExact);
+
+                            if (CurrentParameter.value.ToString() == "Partner Name")
+                            {
+                                ColumnPartnerName = CurrentParameter.column;
+                            }
+                            else if (CurrentParameter.value.ToString() == "Partner Key")
+                            {
+                                ColumnPartnerKey = CurrentParameter.column;
+                            }
+                        }
+                    }
+
+                    if (param_hide_empty_lines)
+                    {
+                        hideRow = IsRowEmpty(ref precalculatedColumns, ColumnPartnerName, ColumnPartnerKey, 0, maxDisplayColumns - 1);
                     }
                 }
                 else
@@ -323,6 +353,7 @@ namespace Ict.Petra.Server.MReporting
 
                 debit_credit_indicator = Parameters.Get("debit_credit_indicator", column, Depth).ToBool();
                 display = true;
+                newRow = null;
                 newRow = Results.AddRow(masterRow,
                     LineId,
                     display,
@@ -346,7 +377,7 @@ namespace Ict.Petra.Server.MReporting
                     display = false;
                 }
 
-                if ((!display) && (newRow != null))
+                if ((newRow != null) && ((!display) || hideRow))
                 {
                     newRow.display = false;
                     ReturnValue = false;
@@ -506,6 +537,40 @@ namespace Ict.Petra.Server.MReporting
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks if all values of a row are empty. But it ignores the columns of the PartnerKey and PartnerName
+        /// </summary>
+        /// <param name="APrecalculatedColumns">Values of the row</param>
+        /// <param name="AColumnPartnerName">Index of the column that is ignored</param>
+        /// <param name="AColumnPartnerKey">Index of the column that is ignored</param>
+        /// <param name="AStartIndex">Start index of columns to check</param>
+        /// <param name="AEndIndex">End index of columns to check</param>
+        /// <returns>true if the row is empty, otherwise false</returns>
+        private bool IsRowEmpty(ref TVariant[] APrecalculatedColumns, int AColumnPartnerName, int AColumnPartnerKey,
+            int AStartIndex, int AEndIndex)
+        {
+            bool returnValue = true;
+
+            for (int Counter = AStartIndex; Counter <= AEndIndex; ++Counter)
+            {
+                if ((Counter == AColumnPartnerName)
+                    || (Counter == AColumnPartnerKey))
+                {
+                    // don't check the column of partner name and partner key because
+                    // they should never be empty.
+                    continue;
+                }
+
+                if (APrecalculatedColumns[Counter].ToString().Length > 0)
+                {
+                    returnValue = false;
+                    break;
+                }
+            }
+
+            return returnValue;
         }
     }
 }

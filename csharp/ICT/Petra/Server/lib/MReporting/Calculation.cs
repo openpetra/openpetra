@@ -223,7 +223,17 @@ namespace Ict.Petra.Server.MReporting
                 if (Parameters.Exists("param_sortby_columns"))
                 {
                     TLogging.Log("sorting...", TLoggingType.ToStatusBar);
-                    calcResult.GetResults().Sort(Parameters.Get("param_sortby_columns").ToString());
+
+                    Boolean SortMultipleLevels = false;
+
+                    if (Parameters.Exists("param_sort_multiple_levels"))
+                    {
+                        // if we allow sorting of multiple levels, the result will be changed to flat table
+                        // and we will end up with all the results in level 0. We might want this in some reports (e.g. Personnel-Birthday report)
+                        SortMultipleLevels = true;
+                    }
+
+                    calcResult.GetResults().Sort(Parameters.Get("param_sortby_columns").ToString(), SortMultipleLevels);
                 }
 
                 TLogging.Log("finished", TLoggingType.ToStatusBar);
@@ -514,7 +524,7 @@ namespace Ict.Petra.Server.MReporting
                     {
                         // we don't want to execute the result as SQL; this can be used to sequentially execute calculations/functions in a query.
                         // example: ap_payment_export, Select Payments by Batch Number
-                        if (strSql.ToUpper().IndexOf("SELECT") > 0)
+                        if (strSql.ToUpper().IndexOf("SELECT") >= 0)
                         {
                             strSql = strSql.ToUpper().Substring(strSql.IndexOf("SELECT"));
                         }
@@ -938,6 +948,7 @@ namespace Ict.Petra.Server.MReporting
 
                         while (listValue.Length != 0)
                         {
+                            bool IsFirstPair = true;
                             string value = StringHelper.GetNextCSV(ref listValue).Trim();
 
                             if (first)
@@ -956,33 +967,50 @@ namespace Ict.Petra.Server.MReporting
                                 // motivation group and detail come in pairs, separated by comma, enclosed by quotes (getNextCSV strips the quotes)
                                 string valuePair = value;
                                 listText = rptValue.strText;
+                                string calculationText = rptValue.strCalculation;
+                                bool ValueIsNumber = (rptValue.strFormat == "Number");
                                 ReturnValue.Add(new TVariant('('));
 
                                 while (listText.Length != 0)
                                 {
-                                    value = StringHelper.GetNextCSV(ref valuePair).Trim();
+                                    if (IsFirstPair)
+                                    {
+                                        // we have taken out the first value already from listValue
+                                        value = valuePair;
+                                        IsFirstPair = false;
+                                    }
+                                    else
+                                    {
+                                        value = StringHelper.GetNextCSV(ref listValue).Trim();
+                                    }
 
                                     if (listText.Length < rptValue.strText.Length)
                                     {
-                                        // not the first in list
-                                        ReturnValue.Add(new TVariant(" AND "));
+                                        if (calculationText.Length > 0)
+                                        {
+                                            ReturnValue.Add(new TVariant(" " + calculationText + " "));
+                                        }
+                                        else
+                                        {
+                                            ReturnValue.Add(new TVariant(" AND "));
+                                        }
                                     }
 
                                     //todo: allow integer as well; problem with motivation detail codes that are just numbers;
                                     //todo: specify type with text, variable names and type
                                     //if (new TVariant(value).TypeVariant == eVariantTypes.eString)
+                                    if (!ValueIsNumber)
                                     {
                                         ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = \""));
                                         ReturnValue.Add(new TVariant(value));
                                         ReturnValue.Add(new TVariant("\" "));
                                     }
-
-                                    /*else
-                                     * {
-                                     * ReturnValue.Add(new TVariant(StringHelper.getNextCSV(ref listText).Trim() + " = "));
-                                     * ReturnValue.Add(new TVariant(value));
-                                     * ReturnValue.Add(new TVariant(' '));
-                                     * }*/
+                                    else
+                                    {
+                                        ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = "));
+                                        ReturnValue.Add(new TVariant(value));
+                                        ReturnValue.Add(new TVariant(' '));
+                                    }
                                 }
 
                                 ReturnValue.Add(new TVariant(')'));

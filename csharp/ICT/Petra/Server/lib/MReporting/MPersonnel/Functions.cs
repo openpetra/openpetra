@@ -72,6 +72,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetType"))
+            {
+                value = new TVariant(GetType(ops[1].ToInt64(), ops[2].ToString(), ops[3].ToString()));
+                return true;
+            }
+
             /*
              * if (isSame(f, 'doSomething')) then
              * begin
@@ -194,6 +200,67 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns the p_partner_type.p_type_code_c of a partner if the type code matches
+        /// with one of the items in ATypeList.
+        /// AMatch defines how the type has to match. Possible values are BEGIN or EXACT
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key of the partner</param>
+        /// <param name="ATypeList">List of items seperated by ;</param>
+        /// <param name="AMatch">defines how the Partner Type must match</param>
+        /// <returns>returns the type code or an empty string</returns>
+        private String GetType(Int64 APartnerKey, String ATypeList, String AMatch)
+        {
+            PPartnerTypeTable PartnerType;
+
+            String[] TypeList = ATypeList.Split(';');
+
+            int MatchingPattern = 0;
+
+            if (AMatch == "BEGIN")
+            {
+                MatchingPattern = 1;
+            }
+            else if (AMatch == "EXACT")
+            {
+                MatchingPattern = 2;
+            }
+
+            PartnerType = PPartnerTypeAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            foreach (PPartnerTypeRow Row in PartnerType.Rows)
+            {
+                foreach (String CurrentType in TypeList)
+                {
+                    switch (MatchingPattern)
+                    {
+                        case 1:
+
+                            if (Row.TypeCode.StartsWith(CurrentType))
+                            {
+                                return Row.TypeCode;
+                            }
+
+                            break;
+
+                        case 2:
+
+                            if (Row.TypeCode == CurrentType)
+                            {
+                                return Row.TypeCode;
+                            }
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            return "";
         }
     }
 }

@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MReporting
                 throw new Exception("No xmlfile defined to be loaded");
             }
 
-            xmlfiles = xmlfiles.Replace("\\", "\\\\");
+            xmlfiles = xmlfiles.Replace("\\", "/");
             xmlfile = StringHelper.GetNextCSV(ref xmlfiles).Trim();
 
             while (xmlfile.Length != 0)
