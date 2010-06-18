@@ -176,6 +176,13 @@
     <Compile Include="UC_PartnerDetails_Bank.ManualCode.cs">
       <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PartnerDetails_Church.cs" />
+    <Compile Include="UC_PartnerDetails_Church.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Church.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Church.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Church.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerDetails_Family.cs" />
     <Compile Include="UC_PartnerDetails_Family.Designer.cs">
       <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
@@ -183,12 +190,33 @@
     <Compile Include="UC_PartnerDetails_Family.ManualCode.cs">
       <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PartnerDetails_Organisation.cs" />
+    <Compile Include="UC_PartnerDetails_Organisation.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Organisation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Organisation.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Organisation.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PartnerDetails_Person.cs" />
     <Compile Include="UC_PartnerDetails_Person.Designer.cs">
       <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerDetails_Person.ManualCode.cs">
       <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Unit.cs" />
+    <Compile Include="UC_PartnerDetails_Unit.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Unit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Unit.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Unit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Venue.cs" />
+    <Compile Include="UC_PartnerDetails_Venue.Designer.cs">
+      <DependentUpon>UC_PartnerDetails_Venue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PartnerDetails_Venue.ManualCode.cs">
+      <DependentUpon>UC_PartnerDetails_Venue.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_PartnerEdit_CollapsiblePart.cs" />
     <Compile Include="UC_PartnerEdit_CollapsiblePart.Designer.cs">
@@ -270,11 +298,23 @@
     <EmbeddedResource Include="UC_PartnerDetails_Bank.resx">
       <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerDetails_Church.resx">
+      <DependentUpon>UC_PartnerDetails_Church.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerDetails_Family.resx">
       <DependentUpon>UC_PartnerDetails_Family.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerDetails_Organisation.resx">
+      <DependentUpon>UC_PartnerDetails_Organisation.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerDetails_Person.resx">
       <DependentUpon>UC_PartnerDetails_Person.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerDetails_Unit.resx">
+      <DependentUpon>UC_PartnerDetails_Unit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_PartnerDetails_Venue.resx">
+      <DependentUpon>UC_PartnerDetails_Venue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerEdit_CollapsiblePart.resx">
       <DependentUpon>UC_PartnerEdit_CollapsiblePart.cs</DependentUpon>
