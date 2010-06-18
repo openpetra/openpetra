@@ -1471,15 +1471,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             /*
              * Set up top part of the Screen
              */
-
             ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
             ucoUpperPart.MainDS = FMainDS;
             ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;
+            ucoUpperPart.ShowData();
             ucoUpperPart.InitialiseUserControl();
 
-            // Show data in the top part of the screen
-            ucoUpperPart.ShowData();
 
             // Set up screen caption
             SetScreenCaption();
@@ -1523,9 +1521,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)
         {
             FPetraUtilsObject.HasChanges = true;
-#if TODO
+
             SetScreenCaption();
-#endif
         }
 
         private void UcoUpperPart_CollapsingEvent(System.Object sender, CollapsibleEventArgs args)
@@ -2191,11 +2188,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DataLoadOperationFinishing(System.Object sender, System.EventArgs e)
         {
+//MessageBox.Show("DataLoadOperationFinishing");
             FPetraUtilsObject.SuppressChangeDetection = false;
         }
 
         private void DataLoadOperationStarting(System.Object sender, System.EventArgs e)
         {
+//MessageBox.Show("DataLoadOperationStarting");
             FPetraUtilsObject.SuppressChangeDetection = true;
         }
 
