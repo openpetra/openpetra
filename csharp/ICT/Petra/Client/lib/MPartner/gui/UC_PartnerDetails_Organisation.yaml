@@ -1,0 +1,54 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: POrganisation
+    Controls:
+        pnlContent:
+            Controls: [grpNames, grpMisc]
+            Dock: Fill
+
+        grpNames: {Dock=Top}
+            Controls:
+                Row0: [txtPreviousName]
+                Row1: [txtLocalName]
+
+        txtPreviousName: {DataField=PPartner.PreviousName}
+            Stretch: horizontally
+        txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
+            Stretch: horizontally
+         
+        grpMisc: {Label=Miscellaneous, Dock=Top}
+            Controls: 
+                Row0: [lblReligious, chkReligious, chkFoundation]
+                Row1: [cmbBusinessCode]
+                Row2: [cmbLanguageCode]
+                Row3: [cmbAcquisitionCode]
+                Row4: [txtContactPartnerKey]
+            ColWidths: [0=Fixed:140, 1=Percent:0, 2=Percent:100]    
+
+        lblReligious:
+            Label: Religious Organisation
+            Align: right
+            
+        chkReligious:
+            NoLabel: true
+            
+        chkFoundation:
+            OnChange: ShowHideFoundationTab
+            Width: 150
+        
+        cmbBusinessCode: {BusinessCode, List=BusinessCodeList}
+            ColSpan: 3
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+            ColSpan: 3
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
+            ColSpan: 3
+        txtContactPartnerKey:
+            Label: Contact Partner
+            Type: PartnerKey
+            ColSpan: 3
