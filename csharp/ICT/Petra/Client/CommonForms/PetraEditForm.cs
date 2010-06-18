@@ -116,6 +116,20 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>todoComment</summary>
+        public bool NoAutoEnableOfSaving
+        {
+            get
+            {
+                return FNoAutoEnableOfSaving;
+            }
+
+            set
+            {
+                FNoAutoEnableOfSaving = value;
+            }
+        }
+
         /// Tells whether the Screen has changes that are not yet saved
         public Boolean HasChanges
         {
@@ -315,6 +329,7 @@ namespace Ict.Petra.Client.CommonForms
             string ctrlname = ctrl.Name;
             string ctrltype = sender.GetType().FullName;
 
+//TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Handler.  SuppressChangeDetection: " + this.SuppressChangeDetection);
             if (ctrlname == "lblLabel")
             {
                 //
@@ -329,7 +344,7 @@ namespace Ict.Petra.Client.CommonForms
                 LocalControlValueChanged();
                 ControlValueChanged();
 
-                // TLogging.Log(DateTime.Now.ToString() + ' MULTIEVENT Ctrl: ' + ctrlname + ' Type: ' + ctrltype);
+//TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
             }
         }
 
@@ -366,11 +381,11 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         public void OnAnyDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
         {
-            // MessageBox.Show('Column_Changing Event: Column=' + e.Column.ColumnName +
-            // '; Column content=' + e.Row[e.Column.ColumnName].ToString +
-            // '; ' + e.ProposedValue.ToString);
             if (!FNoAutoEnableOfSaving)
             {
+//TLogging.Log("Column_Changing Event: Column=" + e.Column.ColumnName +
+//                "; Column content=" + e.Row[e.Column.ColumnName].ToString() +
+//                "; " + e.ProposedValue.ToString());
                 SetChangedFlag();
             }
         }
@@ -382,9 +397,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         public void OnAnyDataRowChanging(System.Object sender, DataRowChangeEventArgs e)
         {
-            // messagebox.show('Row_Changing Event: DataTable=' + e.Row.Table.ToString);
             if (!FNoAutoEnableOfSaving)
             {
+//TLogging.Log("Row_Changing Event: DataTable=" + e.Row.Table.ToString());
                 SetChangedFlag();
             }
         }
