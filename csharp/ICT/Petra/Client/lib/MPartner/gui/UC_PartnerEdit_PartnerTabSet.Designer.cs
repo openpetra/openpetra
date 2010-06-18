@@ -75,6 +75,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoPartnerDetailsBank.Dispose();
             }
+            if (FUcoPartnerDetailsChurch != null)
+            {
+                FUcoPartnerDetailsChurch.Dispose();
+            }
+            if (FUcoPartnerDetailsUnit != null)
+            {
+                FUcoPartnerDetailsUnit.Dispose();
+            }
+            if (FUcoPartnerDetailsOrganisation != null)
+            {
+                FUcoPartnerDetailsOrganisation.Dispose();
+            }
+            if (FUcoPartnerDetailsVenue != null)
+            {
+                FUcoPartnerDetailsVenue.Dispose();
+            }
             if (FUcoPartnerTypes != null)
             {
                 FUcoPartnerTypes.Dispose();

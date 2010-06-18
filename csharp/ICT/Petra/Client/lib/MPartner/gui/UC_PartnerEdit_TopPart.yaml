@@ -115,7 +115,6 @@ RootNode:
         pnlFamily: {Visible=false}
             Controls: 
                 Row1: [txtFamilyTitle, txtFamilyFirstName, txtFamilyFamilyName]
-                #Row2: [lblFamilyEmpty, cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
                 Row2: [pnlFamily2ndLine]
             Dock: Top                          
         txtFamilyTitle:
@@ -231,10 +230,10 @@ RootNode:
             
 # Data Fields for Partner Class BANK
         pnlBank: {Visible=false}
-            Controls: [txtBankName]
+            Controls: [txtBranchName]
             ColWidths: [0=Fixed:80]
             Dock: Top
-        txtBankName:
+        txtBranchName:
             Label: Na&me            
             Width: 428
             Stretch: horizontally

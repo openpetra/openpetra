@@ -28,6 +28,7 @@ using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonControls;
 using Mono.Unix;
@@ -101,8 +102,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// arrange the panels and controls according to the partner class
         public void InitialiseUserControl()
         {
-            FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
-
             #region Show fields according to Partner Class
 
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
@@ -120,9 +119,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
                     tipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
 #endif
-
-//                    FMainDS.PPerson.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+                    txtPersonTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+                    txtPersonFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+                    txtPersonMiddleName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+                    txtPersonFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     this.cmbPersonGender.SelectedValueChanged += new System.EventHandler(this.CmbPersonGender_SelectedValueChanged);
+
                     break;
 
                 case TPartnerClass.FAMILY:
@@ -136,44 +138,51 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
                     tipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
 #endif
+                    txtFamilyTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+                    txtFamilyFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+                    txtFamilyFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
-//                    FMainDS.PFamily.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
                     break;
 
                 case TPartnerClass.CHURCH:
                     pnlChurch.Visible = true;
                     pnlOther.Visible = true;
 
-//                    FMainDS.PChurch.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+                    txtChurchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
                     break;
 
                 case TPartnerClass.ORGANISATION:
                     pnlOrganisation.Visible = true;
                     pnlOther.Visible = true;
 
-//                    FMainDS.POrganisation.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+                    txtOrganisationName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
                     break;
 
                 case TPartnerClass.UNIT:
                     pnlUnit.Visible = true;
                     pnlOther.Visible = true;
 
+                    txtUnitName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 //                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnUnitDataColumnChanging);
-//                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+
                     break;
 
                 case TPartnerClass.BANK:
                     pnlBank.Visible = true;
                     pnlOther.Visible = true;
 
-//                    FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+                    txtBranchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
                     break;
 
                 case TPartnerClass.VENUE:
                     pnlVenue.Visible = true;
                     pnlOther.Visible = true;
 
-//                    FMainDS.PVenue.ColumnChanging += new DataColumnChangeEventHandler(this.OnAnyDataColumnChanging);
+                    txtVenueName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
+
                     break;
 
                 default:
@@ -189,6 +198,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void ShowData()
         {
+            FPartnerClass = FMainDS.PPartner[0].PartnerClass.ToString();
+
             ShowData(FMainDS.PPartner[0]);
 
 // TODO            SetupBtnCreated();
@@ -202,6 +213,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             GetDataFromControls(FMainDS.PPartner[0]);
+
+            GetDataFromControlsExtra(FMainDS.PPartner[0]);
         }
 
         /// <summary>
@@ -249,6 +262,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Private Methods
+
+        private void GetDataFromControlsExtra(PPartnerRow ARow)
+        {
+            /*
+             * Extra logic is needed for FAMILY and PERSON Partners because ARow.NoSolicitations is overwritten in
+             * the auto-generated GetDataFromControls Method by the value of chkOtherNoSolicitations.Checked!
+             */
+            if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+            {
+                ARow.NoSolicitations = chkFamilyNoSolicitations.Checked;
+            }
+            else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+            {
+                ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
+            }
+        }
 
         /// <summary>
         /// Sets the background colour of the CheckBox depending on whether it is
@@ -428,6 +457,84 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Event handlers
 
+
+        private void OnAnyDataColumnChanging(System.Object sender, EventArgs e)
+        {
+            TPartnerClassMainDataChangedEventArgs EventFireArgs;
+
+            /* messagebox.show('Column_Changing Event: Column=' + e.Column.ColumnName + */
+            /* '; Column content=' + e.Row[e.Column.ColumnName].ToString + */
+            /* '; ' + e.ProposedValue.ToString); */
+            /* MessageBox.Show('PartnerClass: ' + FPartnerClass.ToString); */
+            EventFireArgs = new TPartnerClassMainDataChangedEventArgs();
+            EventFireArgs.PartnerClass = FPartnerClass;
+
+            if (FPartnerClass == "PERSON")
+            {
+                if ((sender == txtPersonTitle)
+                    || (sender == txtPersonFirstName)
+                    || (sender == txtPersonMiddleName) || (sender == txtPersonFamilyName))
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtPersonFamilyName.Text,
+                        txtPersonTitle.Text,
+                        txtPersonFirstName.Text,
+                        txtPersonMiddleName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "FAMILY")
+            {
+                if ((sender == txtFamilyTitle) || (sender == txtFamilyFirstName)
+                    || (sender == txtFamilyFamilyName))
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtFamilyFamilyName.Text,
+                        txtFamilyTitle.Text,
+                        txtFamilyFirstName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "CHURCH")
+            {
+                if (sender == txtChurchName)
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtChurchName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "ORGANISATION")
+            {
+                if (sender == txtOrganisationName)
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtOrganisationName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "UNIT")
+            {
+                if (sender == txtUnitName)
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtUnitName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "BANK")
+            {
+                if (sender == txtBranchName)
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtBranchName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+            else if (FPartnerClass == "VENUE")
+            {
+                if (sender == txtVenueName)
+                {
+                    FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtVenueName.Text);
+                    OnPartnerClassMainDataChanged(EventFireArgs);
+                }
+            }
+        }
+
         private void CmbPersonGender_SelectedValueChanged(System.Object sender, System.EventArgs e)
         {
             if (cmbPersonGender.SelectedItem.ToString() == "Female")
@@ -451,6 +558,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void UpdateNoSolicitationsColouring(System.Object sender, System.EventArgs e)
         {
             SetupChkNoSolicitations();
+        }
+
+        #endregion
+
+
+        #region Custom Events
+
+        private void OnPartnerClassMainDataChanged(TPartnerClassMainDataChangedEventArgs e)
+        {
+            /* MessageBox.Show('OnPartnerClassMainDataChanged. e.PartnerClass: ' + e.PartnerClass.ToString); */
+            if (PartnerClassMainDataChanged != null)
+            {
+                PartnerClassMainDataChanged(this, e);
+            }
         }
 
         #endregion

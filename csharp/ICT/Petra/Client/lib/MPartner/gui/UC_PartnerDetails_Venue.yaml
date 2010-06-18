@@ -6,7 +6,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
-    MasterTable: PBank
+    MasterTable: PVenue
     Controls:
         pnlContent:
             Controls: [grpNames, grpMisc]
@@ -16,6 +16,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
+            ColWidths: [0=Fixed:120]
 
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -24,23 +25,17 @@ RootNode:
          
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
-                Row1: [txtBranchCode]
-                Row2: [txtBIC]
-                Row3: [txtEPFormatFile]
-                Row4: [cmbLanguageCode]
-                Row5: [cmbAcquisitionCode]
-                Row6: [txtContactPartnerKey]
-
-        txtBranchCode:
-            Label: Bank/Branch Code      
-            Stretch: horizontally            
+                Row0: [txtVenueCode]
+                Row1: [cmbCurrencyCode]
+                Row2: [cmbLanguageCode]
+                Row3: [cmbAcquisitionCode]
+                Row4: [txtContactPartnerKey]
+            ColWidths: [0=Fixed:120]
             
-        txtBIC:
-            Label: BIC/SWIFT Code
-            
-        txtEPFormatFile:
-            ReadOnly: true
-            
+        txtVenueCode:
+        
+        cmbCurrencyCode: {List=CurrencyCodeList}
+        
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}

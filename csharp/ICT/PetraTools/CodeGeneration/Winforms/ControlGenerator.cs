@@ -154,7 +154,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 ProcessTemplate snippetUserControlInitialisation = writer.Template.GetSnippet("USERCONTROLINITIALISATION");
                 ProcessTemplate snippetUserControlSetupMethod = writer.Template.GetSnippet("DYNAMICTABPAGEUSERCONTROLSETUPMETHOD");
-                
+
                 for (int Counter = 0; Counter < DynamicControlTypes.Count; Counter = Counter + 2)
                 {
                     if (DynamicControlTypes.Count == 1)
@@ -602,7 +602,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             base.SetControlProperties(writer, ctrl);
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
+            }
+            else
+            {
+                writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            }
+
             writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
         }
 

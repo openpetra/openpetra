@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_PartnerDetails_Bank.yaml
+// auto generated with nant generateWinforms from UC_PartnerDetails_Church.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    partial class TUC_PartnerDetails_Bank
+    partial class TUC_PartnerDetails_Church
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerDetails_Bank));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerDetails_Church));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.grpNames = new System.Windows.Forms.GroupBox();
@@ -75,18 +75,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName = new System.Windows.Forms.Label();
             this.grpMisc = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtBranchCode = new System.Windows.Forms.TextBox();
-            this.lblBranchCode = new System.Windows.Forms.Label();
-            this.txtBIC = new System.Windows.Forms.TextBox();
-            this.lblBIC = new System.Windows.Forms.Label();
-            this.txtEPFormatFile = new System.Windows.Forms.TextBox();
-            this.lblEPFormatFile = new System.Windows.Forms.Label();
+            this.cmbDenominationCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblDenominationCode = new System.Windows.Forms.Label();
+            this.txtApproximateSize = new System.Windows.Forms.TextBox();
+            this.lblApproximateSize = new System.Windows.Forms.Label();
+            this.chkMapOnFile = new System.Windows.Forms.CheckBox();
+            this.chkPrayerGroup = new System.Windows.Forms.CheckBox();
             this.cmbLanguageCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblLanguageCode = new System.Windows.Forms.Label();
             this.cmbAcquisitionCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblAcquisitionCode = new System.Windows.Forms.Label();
             this.txtContactPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblContactPartnerKey = new System.Windows.Forms.Label();
+            this.lblAccommodationInfo = new System.Windows.Forms.Label();
+            this.chkAccomodation = new System.Windows.Forms.CheckBox();
+            this.txtAccomodationSize = new System.Windows.Forms.TextBox();
+            this.lblAccomodationSize = new System.Windows.Forms.Label();
+            this.cmbAccomodationType = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblAccomodationType = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.grpNames.SuspendLayout();
@@ -150,7 +156,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblLocalName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 140));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -174,56 +180,54 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.AutoSize = true;
             this.grpMisc.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtBranchCode
+            // cmbDenominationCode
             //
-            this.txtBranchCode.Location = new System.Drawing.Point(2,2);
-            this.txtBranchCode.Name = "txtBranchCode";
-            this.txtBranchCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtBranchCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDenominationCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDenominationCode.Name = "cmbDenominationCode";
+            this.cmbDenominationCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDenominationCode.ListTable = TCmbAutoPopulated.TListTableEnum.DenominationList;
             //
-            // lblBranchCode
+            // lblDenominationCode
             //
-            this.lblBranchCode.Location = new System.Drawing.Point(2,2);
-            this.lblBranchCode.Name = "lblBranchCode";
-            this.lblBranchCode.AutoSize = true;
-            this.lblBranchCode.Text = "Bank/Branch Code:";
-            this.lblBranchCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblBranchCode.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblBranchCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDenominationCode.Location = new System.Drawing.Point(2,2);
+            this.lblDenominationCode.Name = "lblDenominationCode";
+            this.lblDenominationCode.AutoSize = true;
+            this.lblDenominationCode.Text = "Denomination Code:";
+            this.lblDenominationCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDenominationCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDenominationCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtBIC
+            // txtApproximateSize
             //
-            this.txtBIC.Location = new System.Drawing.Point(2,2);
-            this.txtBIC.Name = "txtBIC";
-            this.txtBIC.Size = new System.Drawing.Size(150, 28);
+            this.txtApproximateSize.Location = new System.Drawing.Point(2,2);
+            this.txtApproximateSize.Name = "txtApproximateSize";
+            this.txtApproximateSize.Size = new System.Drawing.Size(45, 28);
             //
-            // lblBIC
+            // lblApproximateSize
             //
-            this.lblBIC.Location = new System.Drawing.Point(2,2);
-            this.lblBIC.Name = "lblBIC";
-            this.lblBIC.AutoSize = true;
-            this.lblBIC.Text = "BIC/SWIFT Code:";
-            this.lblBIC.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblBIC.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblBIC.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblApproximateSize.Location = new System.Drawing.Point(2,2);
+            this.lblApproximateSize.Name = "lblApproximateSize";
+            this.lblApproximateSize.AutoSize = true;
+            this.lblApproximateSize.Text = "Approximate Size:";
+            this.lblApproximateSize.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblApproximateSize.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblApproximateSize.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtEPFormatFile
+            // chkMapOnFile
             //
-            this.txtEPFormatFile.Location = new System.Drawing.Point(2,2);
-            this.txtEPFormatFile.Name = "txtEPFormatFile";
-            this.txtEPFormatFile.Size = new System.Drawing.Size(150, 28);
-            this.txtEPFormatFile.ReadOnly = true;
-            this.txtEPFormatFile.TabStop = false;
+            this.chkMapOnFile.Location = new System.Drawing.Point(2,2);
+            this.chkMapOnFile.Name = "chkMapOnFile";
+            this.chkMapOnFile.AutoSize = true;
+            this.chkMapOnFile.Text = "Map On File";
+            this.chkMapOnFile.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             //
-            // lblEPFormatFile
+            // chkPrayerGroup
             //
-            this.lblEPFormatFile.Location = new System.Drawing.Point(2,2);
-            this.lblEPFormatFile.Name = "lblEPFormatFile";
-            this.lblEPFormatFile.AutoSize = true;
-            this.lblEPFormatFile.Text = "EP Format File:";
-            this.lblEPFormatFile.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblEPFormatFile.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblEPFormatFile.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.chkPrayerGroup.Location = new System.Drawing.Point(2,2);
+            this.chkPrayerGroup.Name = "chkPrayerGroup";
+            this.chkPrayerGroup.AutoSize = true;
+            this.chkPrayerGroup.Text = "Prayer Group";
+            this.chkPrayerGroup.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             //
             // cmbLanguageCode
             //
@@ -285,9 +289,65 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblContactPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblContactPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblContactPartnerKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            //
+            // lblAccommodationInfo
+            //
+            this.lblAccommodationInfo.Location = new System.Drawing.Point(2,2);
+            this.lblAccommodationInfo.Name = "lblAccommodationInfo";
+            this.lblAccommodationInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAccommodationInfo.AutoSize = true;
+            this.lblAccommodationInfo.Text = "Accommodation:";
+            this.lblAccommodationInfo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // chkAccomodation
+            //
+            this.chkAccomodation.Location = new System.Drawing.Point(2,2);
+            this.chkAccomodation.Name = "chkAccomodation";
+            this.chkAccomodation.AutoSize = true;
+            this.chkAccomodation.CheckedChanged += new System.EventHandler(this.ShowHideAccomodationData);
+            this.chkAccomodation.Text = "";
+            this.chkAccomodation.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            //
+            // txtAccomodationSize
+            //
+            this.txtAccomodationSize.Location = new System.Drawing.Point(2,2);
+            this.txtAccomodationSize.Name = "txtAccomodationSize";
+            this.txtAccomodationSize.Size = new System.Drawing.Size(45, 28);
+            //
+            // lblAccomodationSize
+            //
+            this.lblAccomodationSize.Location = new System.Drawing.Point(2,2);
+            this.lblAccomodationSize.Name = "lblAccomodationSize";
+            this.lblAccomodationSize.AutoSize = true;
+            this.lblAccomodationSize.Text = "Accomodation Size:";
+            this.lblAccomodationSize.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccomodationSize.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAccomodationSize.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // cmbAccomodationType
+            //
+            this.cmbAccomodationType.Location = new System.Drawing.Point(2,2);
+            this.cmbAccomodationType.Name = "cmbAccomodationType";
+            this.cmbAccomodationType.Size = new System.Drawing.Size(300, 28);
+            this.cmbAccomodationType.ListTable = TCmbAutoPopulated.TListTableEnum.AccommodationCodeList;
+            //
+            // lblAccomodationType
+            //
+            this.lblAccomodationType.Location = new System.Drawing.Point(2,2);
+            this.lblAccomodationType.Name = "lblAccomodationType";
+            this.lblAccomodationType.AutoSize = true;
+            this.lblAccomodationType.Text = "Accomodation Type:";
+            this.lblAccomodationType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccomodationType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAccomodationType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 7;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 140));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 25));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 30));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 30));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 30));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 30));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 30));
             this.tableLayoutPanel2.RowCount = 6;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -295,22 +355,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblBranchCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblBIC, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblEPFormatFile, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblLanguageCode, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblAcquisitionCode, 0, 4);
-            this.tableLayoutPanel2.Controls.Add(this.lblContactPartnerKey, 0, 5);
-            this.tableLayoutPanel2.Controls.Add(this.txtBranchCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtBIC, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtEPFormatFile, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 4);
-            this.tableLayoutPanel2.Controls.Add(this.txtContactPartnerKey, 1, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblDenominationCode, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblApproximateSize, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblLanguageCode, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblAcquisitionCode, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblContactPartnerKey, 0, 4);
+            this.tableLayoutPanel2.SetColumnSpan(this.lblAccommodationInfo, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblAccommodationInfo, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDenominationCode, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtApproximateSize, 1, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.cmbLanguageCode, 4);
+            this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 2);
+            this.tableLayoutPanel2.SetColumnSpan(this.cmbAcquisitionCode, 4);
+            this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 3);
+            this.tableLayoutPanel2.SetColumnSpan(this.txtContactPartnerKey, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtContactPartnerKey, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.chkMapOnFile, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkAccomodation, 2, 5);
+            this.tableLayoutPanel2.SetColumnSpan(this.chkPrayerGroup, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkPrayerGroup, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblAccomodationSize, 3, 5);
+            this.tableLayoutPanel2.Controls.Add(this.txtAccomodationSize, 4, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblAccomodationType, 5, 5);
+            this.tableLayoutPanel2.Controls.Add(this.cmbAccomodationType, 6, 5);
             this.grpMisc.Text = "Miscellaneous";
 
             //
-            // TUC_PartnerDetails_Bank
+            // TUC_PartnerDetails_Church
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -319,7 +390,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Controls.Add(this.pnlContent);
 
-            this.Name = "TUC_PartnerDetails_Bank";
+            this.Name = "TUC_PartnerDetails_Church";
             this.Text = "";
 
 	
@@ -342,17 +413,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblLocalName;
         private System.Windows.Forms.GroupBox grpMisc;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtBranchCode;
-        private System.Windows.Forms.Label lblBranchCode;
-        private System.Windows.Forms.TextBox txtBIC;
-        private System.Windows.Forms.Label lblBIC;
-        private System.Windows.Forms.TextBox txtEPFormatFile;
-        private System.Windows.Forms.Label lblEPFormatFile;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDenominationCode;
+        private System.Windows.Forms.Label lblDenominationCode;
+        private System.Windows.Forms.TextBox txtApproximateSize;
+        private System.Windows.Forms.Label lblApproximateSize;
+        private System.Windows.Forms.CheckBox chkMapOnFile;
+        private System.Windows.Forms.CheckBox chkPrayerGroup;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbLanguageCode;
         private System.Windows.Forms.Label lblLanguageCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAcquisitionCode;
         private System.Windows.Forms.Label lblAcquisitionCode;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtContactPartnerKey;
         private System.Windows.Forms.Label lblContactPartnerKey;
+        private System.Windows.Forms.Label lblAccommodationInfo;
+        private System.Windows.Forms.CheckBox chkAccomodation;
+        private System.Windows.Forms.TextBox txtAccomodationSize;
+        private System.Windows.Forms.Label lblAccomodationSize;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAccomodationType;
+        private System.Windows.Forms.Label lblAccomodationType;
     }
 }
