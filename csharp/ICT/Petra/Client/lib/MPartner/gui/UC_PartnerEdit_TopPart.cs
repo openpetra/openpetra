@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblChurchName.Text = Catalog.GetString("Na&me:");
       this.lblOrganisationName.Text = Catalog.GetString("Na&me:");
       this.lblUnitName.Text = Catalog.GetString("Na&me:");
-      this.lblBankName.Text = Catalog.GetString("Na&me:");
+      this.lblBranchName.Text = Catalog.GetString("Na&me:");
       this.lblVenueName.Text = Catalog.GetString("Na&me:");
       this.lblOtherAddresseeTypeCode.Text = Catalog.GetString("&Addressee Type:");
       this.chkOtherNoSolicitations.Text = Catalog.GetString("No Solicitations");
@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.txtChurchName.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtOrganisationName.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtUnitName.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtBankName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBranchName.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtVenueName.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtLastGiftDetailsDate.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtLastGiftDetails.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -155,6 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         FPetraUtilsObject.SetStatusBarText(txtChurchName, Catalog.GetString("Enter the name of the church"));
         FPetraUtilsObject.SetStatusBarText(txtOrganisationName, Catalog.GetString("Enter the name of the organisation"));
         FPetraUtilsObject.SetStatusBarText(txtUnitName, Catalog.GetString("Enter the name of the unit"));
+        FPetraUtilsObject.SetStatusBarText(txtBranchName, Catalog.GetString("Enter the name of the bank"));
         FPetraUtilsObject.SetStatusBarText(txtVenueName, Catalog.GetString("Enter the name of the venue"));
         FPetraUtilsObject.SetStatusBarText(cmbOtherAddresseeTypeCode, Catalog.GetString("Enter an addressee type code"));
         cmbOtherAddresseeTypeCode.InitialiseUserControl();
@@ -333,6 +334,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FMainDS.PUnit.Rows.Count > 0)
             {
                 txtUnitName.Text = FMainDS.PUnit[0].UnitName;
+            }
+        }
+        if (FMainDS.PBank == null || ((FMainDS.PBank.Rows.Count > 0) && (FMainDS.PBank[0].IsBranchNameNull())))
+        {
+            txtBranchName.Text = String.Empty;
+        }
+        else
+        {
+            if (FMainDS.PBank.Rows.Count > 0)
+            {
+                txtBranchName.Text = FMainDS.PBank[0].BranchName;
             }
         }
         if (FMainDS.PVenue == null || ((FMainDS.PVenue.Rows.Count > 0) && (FMainDS.PVenue[0].IsVenueNameNull())))
@@ -545,6 +557,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 FMainDS.PUnit[0].UnitName = txtUnitName.Text;
+            }
+        }
+        if ((FMainDS.PBank != null) && (FMainDS.PBank.Rows.Count > 0))
+        {
+            if (txtBranchName.Text.Length == 0)
+            {
+                FMainDS.PBank[0].SetBranchNameNull();
+            }
+            else
+            {
+                FMainDS.PBank[0].BranchName = txtBranchName.Text;
             }
         }
         if ((FMainDS.PVenue != null) && (FMainDS.PVenue.Rows.Count > 0))
