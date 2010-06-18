@@ -298,36 +298,83 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls()
         {
-            switch (GetPartnerDetailsVariableUC()) 
+            switch (GetPartnerDetailsVariableUC())
             {
                 case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
                     if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsPerson))
                     {
                         TUC_PartnerDetails_Person UCPartnerDetailsPerson =
                             (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
                         UCPartnerDetailsPerson.GetDataFromControls2();
                     }
-                    
+
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
                     if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsFamily))
                     {
                         TUC_PartnerDetails_Family UCPartnerDetailsFamily =
                             (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
                         UCPartnerDetailsFamily.GetDataFromControls2();
                     }
-                    
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation))
+                    {
+                        TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
+                            (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
+                        UCPartnerDetailsOrganisation.GetDataFromControls2();
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    {
+                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+                        UCPartnerDetailsChurch.GetDataFromControls2();
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsUnit))
+                    {
+                        TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
+                            (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
+                        UCPartnerDetailsUnit.GetDataFromControls2();
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsVenue))
+                    {
+                        TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
+                            (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
+                        UCPartnerDetailsVenue.GetDataFromControls2();
+                    }
+
                     break;
 
                 case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
                     if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsBank))
                     {
                         TUC_PartnerDetails_Bank UCPartnerDetailsBank =
                             (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
                         UCPartnerDetailsBank.GetDataFromControls2();
                     }
-                    
+
                     break;
             }
         }
@@ -453,22 +500,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TDynamicLoadableUserControls GetPartnerDetailsVariableUC()
         {
-            switch(FPartnerClass)
+            switch (FPartnerClass)
             {
                 case "PERSON":
                     return TDynamicLoadableUserControls.dlucPartnerDetailsPerson;
-                    
+
                 case "FAMILY":
                     return TDynamicLoadableUserControls.dlucPartnerDetailsFamily;
-                    
+
+                case "ORGANISATION":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation;
+
+                case "CHURCH":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsChurch;
+
+                case "UNIT":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsUnit;
+
+                case "VENUE":
+                    return TDynamicLoadableUserControls.dlucPartnerDetailsVenue;
+
                 case "BANK":
                     return TDynamicLoadableUserControls.dlucPartnerDetailsBank;
-                    
+
                 default:
                     return TDynamicLoadableUserControls.dlucPartnerDetailsPerson;
             }
         }
-        
+
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
             if (ATabPageEventArgs.Event == "InitialActivation")

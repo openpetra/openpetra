@@ -59,6 +59,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family FUcoPartnerDetailsFamily;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person FUcoPartnerDetailsPerson;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Bank FUcoPartnerDetailsBank;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Church FUcoPartnerDetailsChurch;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Unit FUcoPartnerDetailsUnit;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Organisation FUcoPartnerDetailsOrganisation;
+    private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Venue FUcoPartnerDetailsVenue;
     private Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes FUcoPartnerTypes;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes FUcoNotes;
 
@@ -122,6 +126,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         dlucPartnerDetailsPerson,
         ///<summary>Denotes dynamic loadable UserControl FUcoPartnerDetailsBank</summary>
         dlucPartnerDetailsBank,
+        ///<summary>Denotes dynamic loadable UserControl FUcoPartnerDetailsChurch</summary>
+        dlucPartnerDetailsChurch,
+        ///<summary>Denotes dynamic loadable UserControl FUcoPartnerDetailsUnit</summary>
+        dlucPartnerDetailsUnit,
+        ///<summary>Denotes dynamic loadable UserControl FUcoPartnerDetailsOrganisation</summary>
+        dlucPartnerDetailsOrganisation,
+        ///<summary>Denotes dynamic loadable UserControl FUcoPartnerDetailsVenue</summary>
+        dlucPartnerDetailsVenue,
         ///<summary>Denotes dynamic loadable UserControl FUcoPartnerTypes</summary>
         dlucPartnerTypes,
         ///<summary>Denotes dynamic loadable UserControl FUcoNotes</summary>
@@ -288,6 +300,62 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoPartnerDetailsBank.AdjustAfterResizing();
                     }
                 }
+                else
+                if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsChurch)
+                {
+                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsChurch, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPartnerDetailsChurch.AdjustAfterResizing();
+                    }
+                }
+                else
+                if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsUnit)
+                {
+                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsUnit, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPartnerDetailsUnit.AdjustAfterResizing();
+                    }
+                }
+                else
+                if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation)
+                {
+                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsOrganisation, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPartnerDetailsOrganisation.AdjustAfterResizing();
+                    }
+                }
+                else
+                if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsVenue)
+                {
+                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsVenue, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPartnerDetailsVenue.AdjustAfterResizing();
+                    }
+                }
             }
         }
         if (tabPartners.SelectedTab == tpgPartnerTypes)
@@ -449,6 +517,82 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.Default;
         }
+        else
+        if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsChurch)
+        {
+            if (TClientSettings.DelayedDataLoading)
+            {
+                // Signalise the user that data is beeing loaded
+                this.Cursor = Cursors.AppStarting;
+            }
+
+            FUcoPartnerDetailsChurch = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Church)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetailsChurch);
+            FUcoPartnerDetailsChurch.MainDS = FMainDS;
+            FUcoPartnerDetailsChurch.PetraUtilsObject = FPetraUtilsObject;
+            FUcoPartnerDetailsChurch.InitUserControl();
+            ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetailsChurch);
+
+            OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsChurch, "InitialActivation"));
+
+            this.Cursor = Cursors.Default;
+        }
+        else
+        if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsUnit)
+        {
+            if (TClientSettings.DelayedDataLoading)
+            {
+                // Signalise the user that data is beeing loaded
+                this.Cursor = Cursors.AppStarting;
+            }
+
+            FUcoPartnerDetailsUnit = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Unit)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetailsUnit);
+            FUcoPartnerDetailsUnit.MainDS = FMainDS;
+            FUcoPartnerDetailsUnit.PetraUtilsObject = FPetraUtilsObject;
+            FUcoPartnerDetailsUnit.InitUserControl();
+            ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetailsUnit);
+
+            OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsUnit, "InitialActivation"));
+
+            this.Cursor = Cursors.Default;
+        }
+        else
+        if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation)
+        {
+            if (TClientSettings.DelayedDataLoading)
+            {
+                // Signalise the user that data is beeing loaded
+                this.Cursor = Cursors.AppStarting;
+            }
+
+            FUcoPartnerDetailsOrganisation = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Organisation)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation);
+            FUcoPartnerDetailsOrganisation.MainDS = FMainDS;
+            FUcoPartnerDetailsOrganisation.PetraUtilsObject = FPetraUtilsObject;
+            FUcoPartnerDetailsOrganisation.InitUserControl();
+            ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetailsOrganisation);
+
+            OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsOrganisation, "InitialActivation"));
+
+            this.Cursor = Cursors.Default;
+        }
+        else
+        if(GetPartnerDetailsVariableUC() == TDynamicLoadableUserControls.dlucPartnerDetailsVenue)
+        {
+            if (TClientSettings.DelayedDataLoading)
+            {
+                // Signalise the user that data is beeing loaded
+                this.Cursor = Cursors.AppStarting;
+            }
+
+            FUcoPartnerDetailsVenue = (Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Venue)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPartnerDetailsVenue);
+            FUcoPartnerDetailsVenue.MainDS = FMainDS;
+            FUcoPartnerDetailsVenue.PetraUtilsObject = FPetraUtilsObject;
+            FUcoPartnerDetailsVenue.InitUserControl();
+            ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPartnerDetailsVenue);
+
+            OnTabPageEvent(new TTabPageEventArgs(tpgPartnerDetails, FUcoPartnerDetailsVenue, "InitialActivation"));
+
+            this.Cursor = Cursors.Default;
+        }
     }
 
     /// <summary>
@@ -580,6 +724,126 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 ReturnValue = ucoPartnerDetailsBank;
+                break;
+            case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                Panel pnlHostForUCPartnerDetailsChurch = new Panel();
+                pnlHostForUCPartnerDetailsChurch.AutoSize = true;
+                pnlHostForUCPartnerDetailsChurch.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerDetailsChurch.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerDetailsChurch.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetailsChurch);
+
+                // Create the UserControl
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Church ucoPartnerDetailsChurch = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Church();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetailsChurch, ucoPartnerDetailsChurch);
+                ucoPartnerDetailsChurch.Location = new Point(0, 2);
+                ucoPartnerDetailsChurch.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerDetailsChurch.Controls.Add(ucoPartnerDetailsChurch);
+
+                /*
+                 * The following four commands seem strange and unnecessary; however, they are necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                    pnlHostForUCPartnerDetailsChurch.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerDetailsChurch.Dock = System.Windows.Forms.DockStyle.Fill;
+                }
+
+                ReturnValue = ucoPartnerDetailsChurch;
+                break;
+            case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                Panel pnlHostForUCPartnerDetailsUnit = new Panel();
+                pnlHostForUCPartnerDetailsUnit.AutoSize = true;
+                pnlHostForUCPartnerDetailsUnit.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerDetailsUnit.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerDetailsUnit.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetailsUnit);
+
+                // Create the UserControl
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Unit ucoPartnerDetailsUnit = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Unit();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetailsUnit, ucoPartnerDetailsUnit);
+                ucoPartnerDetailsUnit.Location = new Point(0, 2);
+                ucoPartnerDetailsUnit.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerDetailsUnit.Controls.Add(ucoPartnerDetailsUnit);
+
+                /*
+                 * The following four commands seem strange and unnecessary; however, they are necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                    pnlHostForUCPartnerDetailsUnit.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerDetailsUnit.Dock = System.Windows.Forms.DockStyle.Fill;
+                }
+
+                ReturnValue = ucoPartnerDetailsUnit;
+                break;
+            case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                Panel pnlHostForUCPartnerDetailsOrganisation = new Panel();
+                pnlHostForUCPartnerDetailsOrganisation.AutoSize = true;
+                pnlHostForUCPartnerDetailsOrganisation.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerDetailsOrganisation.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerDetailsOrganisation.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetailsOrganisation);
+
+                // Create the UserControl
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Organisation ucoPartnerDetailsOrganisation = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Organisation();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation, ucoPartnerDetailsOrganisation);
+                ucoPartnerDetailsOrganisation.Location = new Point(0, 2);
+                ucoPartnerDetailsOrganisation.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerDetailsOrganisation.Controls.Add(ucoPartnerDetailsOrganisation);
+
+                /*
+                 * The following four commands seem strange and unnecessary; however, they are necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                    pnlHostForUCPartnerDetailsOrganisation.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerDetailsOrganisation.Dock = System.Windows.Forms.DockStyle.Fill;
+                }
+
+                ReturnValue = ucoPartnerDetailsOrganisation;
+                break;
+            case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                Panel pnlHostForUCPartnerDetailsVenue = new Panel();
+                pnlHostForUCPartnerDetailsVenue.AutoSize = true;
+                pnlHostForUCPartnerDetailsVenue.Dock = System.Windows.Forms.DockStyle.Fill;
+                pnlHostForUCPartnerDetailsVenue.Location = new System.Drawing.Point(0, 0);
+                pnlHostForUCPartnerDetailsVenue.Padding = new System.Windows.Forms.Padding(2);
+                tpgPartnerDetails.Controls.Add(pnlHostForUCPartnerDetailsVenue);
+
+                // Create the UserControl
+                Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Venue ucoPartnerDetailsVenue = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Venue();
+                FTabSetup.Add(TDynamicLoadableUserControls.dlucPartnerDetailsVenue, ucoPartnerDetailsVenue);
+                ucoPartnerDetailsVenue.Location = new Point(0, 2);
+                ucoPartnerDetailsVenue.Dock = DockStyle.Fill;
+                pnlHostForUCPartnerDetailsVenue.Controls.Add(ucoPartnerDetailsVenue);
+
+                /*
+                 * The following four commands seem strange and unnecessary; however, they are necessary
+                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                 */
+                if (TClientSettings.GUIRunningOnNonStandardDPI)
+                {
+                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                    pnlHostForUCPartnerDetailsVenue.Dock = System.Windows.Forms.DockStyle.None;
+                    pnlHostForUCPartnerDetailsVenue.Dock = System.Windows.Forms.DockStyle.Fill;
+                }
+
+                ReturnValue = ucoPartnerDetailsVenue;
                 break;
             case TDynamicLoadableUserControls.dlucPartnerTypes:
                 // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
