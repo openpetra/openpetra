@@ -120,6 +120,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPreviousName.Location = new System.Drawing.Point(2,2);
             this.txtPreviousName.Name = "txtPreviousName";
+            this.txtPreviousName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPreviousName.Size = new System.Drawing.Size(150, 28);
             //
             // lblPreviousName
@@ -136,6 +137,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtLocalName.Location = new System.Drawing.Point(2,2);
             this.txtLocalName.Name = "txtLocalName";
+            this.txtLocalName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLocalName.Size = new System.Drawing.Size(150, 28);
             //
             // lblLocalName
@@ -176,6 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtBranchCode.Location = new System.Drawing.Point(2,2);
             this.txtBranchCode.Name = "txtBranchCode";
+            this.txtBranchCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBranchCode.Size = new System.Drawing.Size(150, 28);
             //
             // lblBranchCode
@@ -209,6 +212,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtEPFormatFile.Location = new System.Drawing.Point(2,2);
             this.txtEPFormatFile.Name = "txtEPFormatFile";
             this.txtEPFormatFile.Size = new System.Drawing.Size(150, 28);
+            this.txtEPFormatFile.ReadOnly = true;
+            this.txtEPFormatFile.TabStop = false;
             //
             // lblEPFormatFile
             //

@@ -18,7 +18,9 @@ RootNode:
                 Row1: [txtLocalName]
 
         txtPreviousName: {DataField=PPartner.PreviousName}
+            Stretch: horizontally
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
+            Stretch: horizontally
          
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
@@ -30,20 +32,19 @@ RootNode:
                 Row6: [txtContactPartnerKey]
 
         txtBranchCode:
-            Label: Bank/Branch Code            
+            Label: Bank/Branch Code      
+            Stretch: horizontally            
             
         txtBIC:
             Label: BIC/SWIFT Code
             
         txtEPFormatFile:
-# TODO: MultiLine!        
+            ReadOnly: true
+            
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+        
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
+        
         txtContactPartnerKey:
-#            ReadOnly: true
             Label: Contact Partner
             Type: PartnerKey
-#            ShowPartnerName: true
-#            ShowLabel: false
-#            TabStop: false
-#            BorderStyle: None        
