@@ -1067,19 +1067,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PersonRow.OccupationCode = MPartnerConstants.DEFAULT_CODE_UNKNOWN;
                         FPartnerEditScreenDS.PPerson.Rows.Add(PersonRow);
                         GetFamilyMembersInternal(AFamilyPartnerKey, "", out ItemsCountFamilyMembers, true);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-                        
+
                         break;
 
                     case TPartnerClass.FAMILY:
@@ -1098,18 +1098,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         FamilyRow.CreatedBy = CreationUserID;
                         FPartnerEditScreenDS.PFamily.Rows.Add(FamilyRow);
 
-                        /* 
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-                        
+
                         break;
 
                     case TPartnerClass.CHURCH:
@@ -1126,19 +1126,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         ChurchRow.PrayerGroup = false;
                         ChurchRow.MapOnFile = false;
                         FPartnerEditScreenDS.PChurch.Rows.Add(ChurchRow);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());                        
+                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
-                        
+
                         break;
 
                     case TPartnerClass.ORGANISATION:
@@ -1154,15 +1154,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         OrganisationRow.Religious = false;
                         OrganisationRow.Foundation = false;
                         FPartnerEditScreenDS.POrganisation.Rows.Add(OrganisationRow);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());                        
+                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
@@ -1178,19 +1178,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         BankRow.DateCreated = CreationDate;
                         BankRow.CreatedBy = CreationUserID;
                         FPartnerEditScreenDS.PBank.Rows.Add(BankRow);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
                          */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());                        
+                        FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());                        
-                        
+                        FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
+
                         break;
 
                     case TPartnerClass.UNIT:
@@ -1202,15 +1202,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         UnitRow.DateCreated = CreationDate;
                         UnitRow.CreatedBy = CreationUserID;
                         FPartnerEditScreenDS.PUnit.Rows.Add(UnitRow);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());                        
+                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PVenueTable.GetTableName());
@@ -1229,15 +1229,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // Makeup a VenueCode for now, as there is now way to let the user spec one quickly...
                         VenueRow.VenueCode = 'V' + FPartnerKey.ToString().Substring(1);
                         FPartnerEditScreenDS.PVenue.Rows.Add(VenueRow);
-                        
-                        /* 
+
+                        /*
                          * Remove other Partner Class Tables.
-                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part' 
+                         * This is needed for correct working of the creation of new Partners on the Client side (the ShowData Method of the 'Top Part'
                          * relies on null DataTables when determining which data of which DataTables to put into which Controls).
-                         */                        
+                         */
                         FPartnerEditScreenDS.Tables.Remove(PPersonTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PFamilyTable.GetTableName());
-                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());                        
+                        FPartnerEditScreenDS.Tables.Remove(PChurchTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PBankTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(POrganisationTable.GetTableName());
                         FPartnerEditScreenDS.Tables.Remove(PUnitTable.GetTableName());
