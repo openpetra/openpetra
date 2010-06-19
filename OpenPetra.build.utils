@@ -408,18 +408,26 @@
         }
         return true;
     }
-    ]]>
 
     [Function("CalculateStandaloneDBUpdateFileName")]
     public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     {
         string[] numbers = ReleaseID.Split(new char[]{'.', '-'});
+        
+        // need to manually code the medium version increases
+        if (numbers[1] == "1" && numbers[2] == "0")
+        {
+            return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                            0, 0, 15,
+                            numbers[0], numbers[1], numbers[2]);
+        }
 
-        // TODO: at the moment it only works for smaller patches
+        // this is for smaller patches
         return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                             numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
-                            numbers[0], numbers[1], Convert.ToInt16(numbers[2]));
+                            numbers[0], numbers[1], numbers[2]);
     }
+    ]]>
         </code>
     </script>    
     <script language="C#">
