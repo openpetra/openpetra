@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
     public class TImportExportWebConnector
     {
         /// <summary>
-        /// return an XmlDocument with all data in this database;
+        /// return a compressed XmlDocument with all data in this database;
         /// this is useful to convert data between different database systems, etc
         /// </summary>
         /// <returns></returns>
@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             ExportTables(rootNode, "MConference", "");
             ExportTables(rootNode, "MHospitality", "");
             ExportSequences(rootNode);
-            return TXMLParser.XmlToString(OpenPetraData);
+            return TYml2Xml.Xml2YmlGz(OpenPetraData);
         }
 
         /// <summary>
@@ -201,9 +201,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// <summary>
         /// this will reset the current database, and load the data from the given XmlDocument
         /// </summary>
-        /// <param name="ANewDatabaseData"></param>
+        /// <param name="AZippedNewDatabaseData">zipped YML</param>
         /// <returns></returns>
-        public static bool ResetDatabase(string ANewDatabaseData)
+        public static bool ResetDatabase(string AZippedNewDatabaseData)
         {
             List <string>tables = TTableList.GetDBNames();
 
@@ -218,8 +218,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
                 }
 
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(ANewDatabaseData);
+                TYml2Xml ymlParser = new TYml2Xml(PackTools.UnzipString(AZippedNewDatabaseData).Replace("\r", "").Split(new char[] { '\n' }));
+                XmlDocument doc = ymlParser.ParseYML2XML();
 
                 tables.Reverse();
 

@@ -46,9 +46,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             MessageBox.Show(Catalog.GetString("This may take a while. Please just wait!"));
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(TRemote.MSysMan.ImportExport.WebConnectors.ExportAllTables());
-            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Database into File"));
+            string zippedYml = TRemote.MSysMan.ImportExport.WebConnectors.ExportAllTables();
+            TImportExportDialogs.ExportWithDialogYMLGz(zippedYml, Catalog.GetString("Save Database into File"));
         }
 
         /// <summary>
@@ -66,11 +65,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (r == DialogResult.Yes)
             {
-                XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Please select the file to import from"));
+                string zippedYml = TImportExportDialogs.ImportWithDialogYMLGz(Catalog.GetString("Please select the file to import from"));
 
-                if (doc != null)
+                if (zippedYml != null)
                 {
-                    if (TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(TXMLParser.XmlToString(doc)))
+                    if (TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(zippedYml))
                     {
                         // TODO: reset all caches? for comboboxes etc
                         MessageBox.Show(Catalog.GetString("Import of database was successful. Please restart your OpenPetra client"));

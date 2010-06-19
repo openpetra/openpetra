@@ -243,6 +243,18 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// format the XML into zipped YML and return as Base64 string
+        /// </summary>
+        public static string Xml2YmlGz(XmlDocument ADoc)
+        {
+            StringBuilder sb = new StringBuilder(1024 * 1024 * 5);
+
+            WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
+
+            return PackTools.ZipString(sb.ToString());
+        }
+
+        /// <summary>
         /// format the XML into YML to increase readability and save to file
         /// </summary>
         public static bool Xml2Yml(XmlDocument ADoc, string AOutYMLFile)

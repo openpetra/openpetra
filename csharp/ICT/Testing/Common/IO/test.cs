@@ -129,5 +129,15 @@ namespace Ict.Common.IO.Testing
                     filename + ".new"), "after importing from yml: the files should be the same: " + filename);
             System.IO.File.Delete(filename + ".new");
         }
+
+        [Test]
+        public void TestCompressingString()
+        {
+            string testText = "<test>blablablablabla</test>";
+
+            string compressed = PackTools.ZipString(testText);
+
+            Assert.AreEqual(testText, PackTools.UnzipString(compressed), "compressing a string");
+        }
     }
 }
