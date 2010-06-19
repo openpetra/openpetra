@@ -49,7 +49,6 @@ Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
 Source: version.txt; DestDir: {app}/bin30
-Source: ..\..\..\csharp\ICT\Testing\secretkey.txt; DestDir: {app}/etc30; DestName: secretkey.dat
 
 [Icons]
 Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"
