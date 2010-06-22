@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{00E31B0E-4EAC-4867-836D-71190A8F215B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
     <RootNamespace>anniversaries</RootNamespace>
     <AssemblyName>anniversaries</AssemblyName>

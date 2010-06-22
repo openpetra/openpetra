@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNewUser.Text = Catalog.GetString("New User");
-      this.btnRetire.Text = Catalog.GetString("Retire");
+      this.btnRetire.Text = Catalog.GetString("Retire/Unretire");
       this.btnSetPassword.Text = Catalog.GetString("Set Password");
       this.lblDetailUserId.Text = Catalog.GetString("User Id:");
       this.lblDetailFirstName.Text = Catalog.GetString("First Name:");

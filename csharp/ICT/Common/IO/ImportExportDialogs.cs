@@ -78,6 +78,72 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// export zipped yml string to file.
+        /// ask the user for filename
+        /// </summary>
+        /// <param name="AZippedYML"></param>
+        /// <param name="ADialogTitle"></param>
+        /// <returns></returns>
+        public static bool ExportWithDialogYMLGz(string AZippedYML, string ADialogTitle)
+        {
+            SaveFileDialog DialogSave = new SaveFileDialog();
+
+            DialogSave.DefaultExt = "yml.gz";
+            DialogSave.Filter = Catalog.GetString("Zipped Text file (*.yml.gz)|*.yml.gz");
+            DialogSave.AddExtension = true;
+            DialogSave.RestoreDirectory = true;
+            DialogSave.Title = ADialogTitle;
+
+            if (DialogSave.ShowDialog() == DialogResult.OK)
+            {
+                FileStream fs = new FileStream(DialogSave.FileName, FileMode.Create);
+                byte[] buffer = Convert.FromBase64String(AZippedYML);
+                fs.Write(buffer, 0, buffer.Length);
+                fs.Close();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// import a zipped yml file.
+        /// if the file is a plain yml file, the content will be zipped.
+        /// shows a dialog to the user to select the file to import
+        /// </summary>
+        /// <returns></returns>
+        public static string ImportWithDialogYMLGz(string ADialogTitle)
+        {
+            OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            DialogOpen.Filter = Catalog.GetString(
+                "Zipped Text file (*.yml.gz)|*.yml.gz|Text file (*.yml)|*.yml");
+            DialogOpen.FilterIndex = 0;
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = ADialogTitle;
+
+            if (DialogOpen.ShowDialog() == DialogResult.OK)
+            {
+                if (DialogOpen.FileName.ToLower().EndsWith("gz"))
+                {
+                    FileStream fs = new FileStream(DialogOpen.FileName, FileMode.Open);
+                    byte[] buffer = new byte[fs.Length];
+                    fs.Read(buffer, 0, buffer.Length);
+                    fs.Close();
+                    return Convert.ToBase64String(buffer);
+                }
+                else if (DialogOpen.FileName.ToLower().EndsWith("yml"))
+                {
+                    TextReader reader = new StreamReader(DialogOpen.FileName, true);
+                    string ymlData = reader.ReadToEnd();
+                    reader.Close();
+                    return PackTools.ZipString(ymlData);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// convert from all sorts of formats into xml document;
         /// shows a dialog to the user to select the file to import
         /// </summary>

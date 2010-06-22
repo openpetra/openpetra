@@ -114,8 +114,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblUnitName = new System.Windows.Forms.Label();
             this.pnlBank = new System.Windows.Forms.Panel();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtBankName = new System.Windows.Forms.TextBox();
-            this.lblBankName = new System.Windows.Forms.Label();
+            this.txtBranchName = new System.Windows.Forms.TextBox();
+            this.lblBranchName = new System.Windows.Forms.Label();
             this.pnlVenue = new System.Windows.Forms.Panel();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.txtVenueName = new System.Windows.Forms.TextBox();
@@ -656,29 +656,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel9.AutoSize = true;
             this.pnlBank.Controls.Add(this.tableLayoutPanel9);
             //
-            // txtBankName
+            // txtBranchName
             //
-            this.txtBankName.Location = new System.Drawing.Point(2,2);
-            this.txtBankName.Name = "txtBankName";
-            this.txtBankName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtBankName.Size = new System.Drawing.Size(428, 28);
+            this.txtBranchName.Location = new System.Drawing.Point(2,2);
+            this.txtBranchName.Name = "txtBranchName";
+            this.txtBranchName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtBranchName.Size = new System.Drawing.Size(428, 28);
             //
-            // lblBankName
+            // lblBranchName
             //
-            this.lblBankName.Location = new System.Drawing.Point(2,2);
-            this.lblBankName.Name = "lblBankName";
-            this.lblBankName.AutoSize = true;
-            this.lblBankName.Text = "Na&me:";
-            this.lblBankName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblBankName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblBankName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblBranchName.Location = new System.Drawing.Point(2,2);
+            this.lblBranchName.Name = "lblBranchName";
+            this.lblBranchName.AutoSize = true;
+            this.lblBranchName.Text = "Na&me:";
+            this.lblBranchName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBranchName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBranchName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel9.ColumnCount = 2;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel9.RowCount = 1;
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.Controls.Add(this.lblBankName, 0, 0);
-            this.tableLayoutPanel9.Controls.Add(this.txtBankName, 1, 0);
+            this.tableLayoutPanel9.Controls.Add(this.lblBranchName, 0, 0);
+            this.tableLayoutPanel9.Controls.Add(this.txtBranchName, 1, 0);
             //
             // pnlVenue
             //
@@ -1080,8 +1080,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblUnitName;
         private System.Windows.Forms.Panel pnlBank;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
-        private System.Windows.Forms.TextBox txtBankName;
-        private System.Windows.Forms.Label lblBankName;
+        private System.Windows.Forms.TextBox txtBranchName;
+        private System.Windows.Forms.Label lblBranchName;
         private System.Windows.Forms.Panel pnlVenue;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
         private System.Windows.Forms.TextBox txtVenueName;

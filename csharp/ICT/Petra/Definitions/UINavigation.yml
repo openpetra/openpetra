@@ -133,9 +133,9 @@ OpenPetra:
             #Reports:
             FinanceModuleSetup:
                 Main:
-                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                    SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                    CreateLedger: {ActionOpenScreen=Setup.TFrmGLCreateLedger}
+                    SetupCurrencies: {ActionOpenScreen=Setup.TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
             
         Personnel: {Icon=personel_small.ico}
             Reports:
@@ -166,8 +166,8 @@ OpenPetra:
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     #DeleteLedger:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui}
-                    SetupCurrencies: {Description: Not functional yet, ActionOpenScreen=Setup.TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                    SetupCurrencies: {ActionOpenScreen=Setup.TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}

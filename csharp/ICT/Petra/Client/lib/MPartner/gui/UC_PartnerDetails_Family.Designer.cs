@@ -118,6 +118,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtPreviousName.Location = new System.Drawing.Point(2,2);
             this.txtPreviousName.Name = "txtPreviousName";
+            this.txtPreviousName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPreviousName.Size = new System.Drawing.Size(150, 28);
             //
             // lblPreviousName
@@ -134,6 +135,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtLocalName.Location = new System.Drawing.Point(2,2);
             this.txtLocalName.Name = "txtLocalName";
+            this.txtLocalName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLocalName.Size = new System.Drawing.Size(150, 28);
             //
             // lblLocalName
@@ -146,7 +148,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblLocalName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 140));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -255,7 +257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblAcquisitionCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblAcquisitionCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 140));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 5;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());

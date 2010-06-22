@@ -166,7 +166,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.btnRetire.Location = new System.Drawing.Point(2,2);
             this.btnRetire.Name = "btnRetire";
             this.btnRetire.AutoSize = true;
-            this.btnRetire.Text = "Retire";
+            this.btnRetire.Click += new System.EventHandler(this.RetireUser);
+            this.btnRetire.Text = "Retire/Unretire";
             //
             // btnSetPassword
             //

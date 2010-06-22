@@ -262,15 +262,15 @@ namespace Ict.Petra.Server.App.Core.Security
 
                                 if (TableName == "S_USER_DEFAULTS")
                                 {
+                                    // always allow access to the s_user_defaults
+                                    // strangely enough, that is not in the table s_user_table_access_permission
                                 }
-                                // always allow access to the s_user_defaults
-                                // strangely enough, that is not in the table s_user_table_access_permission
                                 else if ((RequiredAccessPermission == "s_can_inquire_l")
-                                         && ((TableName == "S_SYSTEM_PARAMETER") || (TableName == "S_USER_MODULE_ACCESS_PERMISSION")))
+                                         && (TableName == "S_USER_MODULE_ACCESS_PERMISSION"))
                                 {
+                                    // always allow INQUIRE access to the
+                                    // s_user_module_access_permission table
                                 }
-                                // always allow INQUIRE access to the s_system_parameter and
-                                // s_user_module_access_permission tables
                                 else
                                 {
                                     // test for DB table

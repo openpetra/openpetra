@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{BF141020-F97C-4023-8847-604872F2588A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <RootNamespace>treasurerEmails</RootNamespace>
     <AssemblyName>treasurerEmails</AssemblyName>

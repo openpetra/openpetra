@@ -420,16 +420,20 @@ div.comment-list {
 /* Header */
 
 #header-wrapper {background: #2F2F2F url('../img/header.gif') repeat-x left top;}
-#header-wrapper-2 {background: url('../img/header-wrapper-2.gif') repeat-y center top;}
+#header-wrapper-2 {
+    background: #00628a url('../img/header-wrapper-2.gif') repeat-y center top;
+    /* gradient from #00628a to #6090c7 */
+}
+
 #header {
-	background: #333 url('../img/header.gif') repeat-x left top;
+	background: #808080 repeat-x left top;
 	padding: 32px 32px 0 46px;
 }
 
 #help-wrapper {
-	background: url('../img/help.gif') no-repeat left top;
+	background: url('../img/help.png') no-repeat left top;
 	height: 39px;
-	margin: -8px 0 0 auto;
+	margin: -16px 0 0 auto;
 	width: 290px;
 }
 #help {
@@ -438,7 +442,7 @@ div.comment-list {
 	padding: 10px 28px 0 32px;
 }
 #help a {
-	color: #999;
+	color: #C0C0C0;
 	text-decoration: none;
 }
 #help a:hover {color: #DDD;}
@@ -448,12 +452,19 @@ div.comment-list {
 	padding: 0 7px;
 }
 
-#logo {color: #FFF;}
+#slogan {
+    margin: -43px 0 0px 150px;
+}
+#logo {
+    color: #FF;
+    margin: -30px 0 0 0;
+    padding: 0 0 0 0;
+}
 #site-title a {text-decoration: none;}
 #site-title, #site-title a {color: #FFF;}
 #site-title span, #site-title a span {color: #DDD;}
 #site-slogan {
-	color: #B58361;
+	color: #FFF;
 	font-size: 1.3em;
 }
 
@@ -471,8 +482,15 @@ ul.tabbed li {
 }
 ul.tabbed a {text-decoration: none;}
 
-#navigation-wrapper {background: url('../img/navigation.gif') repeat-x left top;}
-#navigation-wrapper-2 {background: url('../img/navigation-wrapper-2.gif') no-repeat center top;}
+#navigation-wrapper 
+{
+    background: url('../img/navigation.gif') repeat-x left top;
+}
+
+#navigation-wrapper-2 {
+    background: url('../img/navigation-wrapper-2.gif') no-repeat center top;
+}
+
 #navigation {
 	background: url('../img/navigation.gif') repeat-x left top;
 	min-height: 46px;
@@ -488,8 +506,8 @@ ul.tabbed a {text-decoration: none;}
 }
 #navigation a:hover {color: #FFF;}
 #navigation li.current_page_item a, #navigation li.current_page_parent a {color: #FFE;}
-#navigation li.current_page_item a {background: url('../img/navigation-arrow-2.gif') no-repeat center bottom;}
-#navigation li.current_page_parent a {background: url('../img/navigation-arrow.gif') no-repeat center bottom;}
+#navigation li.current_page_item a {background: url('../img/navigation-arrow-2.png') no-repeat center bottom;}
+#navigation li.current_page_parent a {background: url('../img/navigation-arrow-2.png') no-repeat center bottom;}
 
 
 /* Subnav */

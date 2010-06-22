@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{6877C414-A72F-4E48-A5ED-E100787641D3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Shared.MConference.DataTables</RootNamespace>
     <AssemblyName>Ict.Petra.Shared.MConference.DataTables</AssemblyName>
@@ -32,11 +32,11 @@
     <Optimize>False</Optimize>
     <IntermediateOutputPath>../../../_bin/Server_Client\Release\</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

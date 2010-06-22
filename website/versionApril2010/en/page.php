@@ -54,7 +54,7 @@
                         <li><a href="index.php?lang=en&page=licensing">Licensing</a></li>
                         <li><a href="index.php?lang=en&page=history-of-petra">History of Petra</a></li>
                         <li><a href="index.php?lang=en&page=history-of-openpetraorg">History of OpenPetra.org</a></li>
-                        <li><a href="index.php?lang=en&page=roadmap">Roadmap till Spring 2010</a></li>
+                        <li><a href="index.php?lang=en&page=roadmap">Roadmap for OpenPetra</a></li>
                     </ul>
                 </div>
 

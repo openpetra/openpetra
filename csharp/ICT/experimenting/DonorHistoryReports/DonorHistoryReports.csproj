@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{18DD2D48-C10F-4460-8375-4777805E9F99}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DonorReports</RootNamespace>
     <AssemblyName>DonorHistoryReports</AssemblyName>

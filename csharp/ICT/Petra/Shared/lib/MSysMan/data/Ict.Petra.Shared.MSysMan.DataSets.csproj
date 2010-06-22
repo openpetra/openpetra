@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{EE491F69-FB10-4009-AEC5-A77AE8D8A532}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Shared.MSysMan.DataSets</RootNamespace>
     <AssemblyName>Ict.Petra.Shared.MSysMan.DataSets</AssemblyName>
@@ -32,11 +32,11 @@
     <Optimize>False</Optimize>
     <IntermediateOutputPath>../../../_bin/Server_Client\Release\</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

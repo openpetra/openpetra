@@ -54,7 +54,7 @@
                         <li><a href="index.php?lang=de&page=german-site/licensing-de">Lizenzrechtliches</a></li>
                         <li><a href="index.php?lang=de&page=german-site/history-of-petra-de">Geschichte von Petra</a></li>
                         <li><a href="index.php?lang=de&page=german-site/history-of-openpetraorg-de">Geschichte von OpenPetra.org</a></li>
-                        <li><a href="index.php?lang=de&page=german-site/roadmap-de">Zeitplan bis Fr&uuml;hjahr 2010</a></li>
+                        <li><a href="index.php?lang=de&page=german-site/roadmap-de">Zeitplan f&uuml;r OpenPetra</a></li>
                     </ul>
                 </div>
 

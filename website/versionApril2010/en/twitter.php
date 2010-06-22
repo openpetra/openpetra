@@ -24,7 +24,7 @@ function fetch_twitter_feed($user, $since = 0) {
     $data = false;
     $path_to_file = CACHE_PATH_TO.DIRECTORY_SEPARATOR.$user.'.'.CACHE_EXTENSION;
     $limit_in_hours=0.5;
-    if(!file_exists($path_to_file) || filemtime($path_to_file) <  time() - $limit_in_hours * 60 * 60)
+    if(!file_exists($path_to_file) || filemtime($path_to_file) <  time() - $limit_in_hours * 60 * 60 || isset($reload))
     {
         // try to get new version
         

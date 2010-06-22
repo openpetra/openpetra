@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Text;
 using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
@@ -213,6 +214,59 @@ namespace Ict.Common.IO
         public static void ZipDirectory(String ADirectory)
         {
             ZipDirectory(ADirectory, "", null);
+        }
+
+        /// zip a utf8 string using gzip into a base64 encoded string
+        public static string ZipString(string ATextToCompress)
+        {
+            Byte[] originalText = Encoding.UTF8.GetBytes(ATextToCompress);
+
+            MemoryStream memoryStream = new MemoryStream();
+            GZipOutputStream gzStream = new GZipOutputStream(memoryStream);
+
+            gzStream.Write(originalText, 0, originalText.Length);
+            gzStream.Flush();
+            gzStream.Finish();
+            memoryStream.Position = 0;
+
+            Byte[] compressedBuffer = new byte[memoryStream.Length];
+            memoryStream.Read(compressedBuffer, 0, compressedBuffer.Length);
+
+            gzStream.Close();
+
+            return Convert.ToBase64String(compressedBuffer);
+        }
+
+        /// unzip a base64 encoded string and return the original utf8 string using gzip
+        public static string UnzipString(string ACompressedString)
+        {
+            string result = string.Empty;
+
+            Byte[] compressedBuffer = Convert.FromBase64String(ACompressedString);
+
+            MemoryStream memoryStream = new MemoryStream(compressedBuffer);
+            GZipInputStream gzStream = new GZipInputStream(memoryStream);
+
+            int size = 2048;
+            byte[] clearTextBuffer = new byte[size];
+
+            while (true)
+            {
+                size = gzStream.Read(clearTextBuffer, 0, size);
+
+                if (size > 0)
+                {
+                    result += Encoding.UTF8.GetString(clearTextBuffer, 0, size);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            gzStream.Close();
+
+            return result;
         }
 
         /// <summary>

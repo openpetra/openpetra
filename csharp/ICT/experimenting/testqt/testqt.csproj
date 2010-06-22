@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{89F6E4BA-EAD8-4273-852E-7E3599B0A424}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <RootNamespace>testqt</RootNamespace>
     <AssemblyName>testqt</AssemblyName>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{5453A5E8-254E-4320-B0E2-D0D9D3362794}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>iisTaskPanel</RootNamespace>
     <AssemblyName>iisTaskPanel</AssemblyName>

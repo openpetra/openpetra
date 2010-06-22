@@ -3,6 +3,7 @@
 <?php 
 $page = $_GET['page'];
 $category = $_GET['category'];
+$reload = $_GET['reload'];
 
 if (!isset($page) && !isset($category))
 { 

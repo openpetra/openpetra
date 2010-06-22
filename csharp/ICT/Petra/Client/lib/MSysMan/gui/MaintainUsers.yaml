@@ -9,7 +9,7 @@ RootNode:
     Template: windowEdit
     Actions:
         actNewUser: {ActionClick=NewUser}
-        actRetire:
+        actRetire: {ActionClick=RetireUser}
         actSetPassword: {ActionClick=SetPassword}
         cndChangePermissions:
     Controls:
@@ -23,7 +23,7 @@ RootNode:
             Dock: Right
             Controls: [btnNewUser, btnRetire, btnSetPassword]
         btnNewUser:
-        btnRetire:
+        btnRetire: {Label=Retire/Unretire}
         btnSetPassword:
         grdDetails:
             Dock: Fill
