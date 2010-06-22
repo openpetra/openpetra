@@ -95,6 +95,8 @@ using Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors;
 
 #region ManualCode
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Shared.MPersonnel;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPersonnel.Instantiator
 {
@@ -847,8 +849,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
         public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable)
         {
             #region ManualCode
-
-            //todo
             return null;
             #endregion ManualCode
         }
@@ -971,6 +971,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+        #region ManualCode
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private Ict.Petra.Server.MPersonnel.Person.TPersonnelCacheable FCachePopulator;
+        #endregion ManualCode
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsCacheableNamespace()
@@ -983,6 +987,9 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 
             FStartTime = DateTime.Now;
 #endif
+			#region ManualCode
+			FCachePopulator = new Ict.Petra.Server.MPersonnel.Person.TPersonnelCacheable();
+			#endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
@@ -1032,13 +1039,73 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             return null; // make sure that the TPersonDataElementsCacheableNamespace object exists until this AppDomain is unloaded!
         }
 
+        #region ManualCode
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            DataTable ReturnValue;
+
+            switch (ACacheableTable)
+            {
+                case TCacheablePersonDataElementsTablesEnum.DocumentTypeList:
+//                    ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
+//                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
+//                    break;
+                case TCacheablePersonDataElementsTablesEnum.CommitmentStatusList:
+                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+                    break;
+                
+                default:
+                    throw new ECachedDataTableNotImplementedException(
+                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
+
+                    //break;
+            }
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable)
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
         {
             #region ManualCode
 
             //todo
-            return null;
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
             #endregion ManualCode
         }
     }
@@ -1741,6 +1808,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+		#region ManualCode
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private Ict.Petra.Server.MPersonnel.Units.TPersonnelCacheable FCachePopulator;
+        #endregion ManualCode
 
         /// <summary>Constructor</summary>
         public TUnitsDataElementsCacheableNamespace()
@@ -1753,6 +1824,9 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
             FStartTime = DateTime.Now;
 #endif
+            #region ManualCode
+			FCachePopulator = new Ict.Petra.Server.MPersonnel.Units.TPersonnelCacheable();
+			#endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
@@ -1802,12 +1876,73 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
             return null; // make sure that the TUnitsDataElementsCacheableNamespace object exists until this AppDomain is unloaded!
         }
 
+        #region ManualCode
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            DataTable ReturnValue;
+
+            switch (ACacheableTable)
+            {
+//                case TCacheableUnitsDataElementsTablesEnum.CampaignList:
+//                    ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
+//                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
+//                    break;
+//                case TCacheableUnitsDataElementsTablesEnum.ConferenceList:
+//                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+//                    break;
+                
+                default:
+                    throw new ECachedDataTableNotImplementedException(
+                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
+
+                    //break;
+            }
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable)
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
         {
             #region ManualCode
 
             //todo
+            AType = null;
             return null;
             #endregion ManualCode
         }

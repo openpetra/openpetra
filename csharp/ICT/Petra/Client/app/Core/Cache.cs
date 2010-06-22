@@ -29,6 +29,7 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Runtime.Serialization;
@@ -359,6 +360,91 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// todoComment
         /// </summary>
+        public class TMPersonnel
+        {
+            #region TDataCache.TMPersonnel
+
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
+             * from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheablePersonnelTable(TCacheablePersonDataElementsTablesEnum ACacheableTable)
+            {
+                //return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable));
+            }
+
+            /**
+             * Tells the PetraServer to reload the cacheable DataTable from the DB,
+             * refreshes the DataTable in the client-side Cache and saves it to a file.
+             *
+             * @param ACacheableTable The cached DataTable that should be reloaded from DB.
+             *
+             */
+            public static void RefreshCacheablePersonnelTable(TCacheablePersonDataElementsTablesEnum ACacheableTable)
+            {
+                // TODO
+                DataTable TmpDT;
+
+                // Refresh the Cacheable DataTable on the Serverside and return it
+//                TRemote.MPartner.Partner.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+//                UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
+//                Cache_Lookup.TMPartner.RefreshCacheablePartnerTable(ACacheableTable);
+//
+//                // Update the cached DataTable file
+//                TDataCache.SaveCacheableDataTableToFile(TmpDT);
+            }
+
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
+             * Sub-Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
+            {
+                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+            }
+
+            /**
+             * Tells the PetraServer to reload the cacheable DataTable from the DB,
+             * refreshes the DataTable in the client-side Cache and saves it to a file.
+             *
+             * @param ACacheableTable The cached DataTable that should be reloaded from DB.
+             *
+             */
+            public static void RefreshCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
+            {
+                DataTable TmpDT;
+// TODO
+                // Refresh the Cacheble DataTable on the Serverside and return it
+//                TRemote.MPartner.Subscriptions.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+//                UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
+//
+//                // Update the cached DataTable file
+//                TDataCache.SaveCacheableDataTableToFile(TmpDT);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public class TMSysMan
         {
             #region TDataCache.TMSysMan
@@ -635,6 +721,8 @@ namespace Ict.Petra.Client.App.Core
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSysManTablesEnum CacheableMSysManTable;
+            TCacheablePersonDataElementsTablesEnum CacheableMPersonnelPersonTable;
+            TCacheableUnitsDataElementsTablesEnum CacheableMPersonnelUnitsTable;
             ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
@@ -683,6 +771,28 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MSysMan.Application.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonDataElementsTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan Namespace
+                CacheableMPersonnelPersonTable = (TCacheablePersonDataElementsTablesEnum)Enum.Parse(typeof(TCacheablePersonDataElementsTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPersonnel.Person.DataElements.Cacheable.GetCacheableTable(CacheableMPersonnelPersonTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitsDataElementsTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan Namespace
+                CacheableMPersonnelUnitsTable = (TCacheableUnitsDataElementsTablesEnum)Enum.Parse(typeof(TCacheableUnitsDataElementsTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPersonnel.Units.DataElements.Cacheable.GetCacheableTable(CacheableMPersonnelUnitsTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
             }
 
             return ReturnValue;

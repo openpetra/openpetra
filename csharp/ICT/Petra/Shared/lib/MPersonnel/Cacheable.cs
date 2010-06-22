@@ -32,9 +32,14 @@ namespace Ict.Petra.Shared.MPersonnel
     public enum TCacheableUnitsDataElementsTablesEnum
     {
         /// <summary>
-        /// none there yet
+        /// List of all campaigns
         /// </summary>
-        NoneYetThereAsWell
+        CampaignList,
+
+        /// <summary>
+        /// List of all conferences
+        /// </summary>
+        ConferenceList
     };
 
     /// <summary>
@@ -44,8 +49,13 @@ namespace Ict.Petra.Shared.MPersonnel
     public enum TCacheablePersonDataElementsTablesEnum
     {
         /// <summary>
-        /// none there yet
+        /// List of available document types
         /// </summary>
-        NoneYetThereEither
+        DocumentTypeList,
+
+        /// <summary>
+        /// List of available commitment statuses
+        /// </summary>
+        CommitmentStatusList
     };
 }
