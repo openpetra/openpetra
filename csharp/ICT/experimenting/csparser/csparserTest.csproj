@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{24453C8C-1F12-4386-B200-B9556FF879B1}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
     <RootNamespace>csparserTest</RootNamespace>
     <AssemblyName>csparserTest</AssemblyName>

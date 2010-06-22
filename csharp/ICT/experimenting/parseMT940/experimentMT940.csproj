@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{10A2BBCD-AC06-4854-931C-58974E8B386F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
     <RootNamespace>experimentMT940</RootNamespace>
     <AssemblyName>experimentMT940</AssemblyName>
