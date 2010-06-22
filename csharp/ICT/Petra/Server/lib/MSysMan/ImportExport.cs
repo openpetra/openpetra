@@ -255,6 +255,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     LoadSequence(seq, doc, Transaction);
                 }
 
+                // make sure we have the correct database version
+                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
+                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        serverExeInfo.ToString()), Transaction, false);
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch (Exception e)

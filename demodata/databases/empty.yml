@@ -53,7 +53,7 @@
         SSystemStatusLogTable:
         SUserDefaultsTable:
         SSystemDefaultsTable:
-            Row1:{DefaultCode=CurrentDatabaseVersion, DefaultDescription="the currently installed release number, set by installer/patchtool", DefaultValue=0.0.15.0, DateCreated=2010-04-07}
+            Row1:{DefaultCode=CurrentDatabaseVersion, DefaultDescription="the currently installed release number, set by installer/patchtool", DefaultValue=0.1.0.0, DateCreated=2010-04-07}
             Row2:{DefaultCode=LocalisedCountyLabel, DefaultDescription=LocalisedCountyLabel, DefaultValue=County/St&ate, DateCreated=2010-04-07}
         SBatchJobTable:
         SErrorMessageTable:
