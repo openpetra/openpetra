@@ -138,6 +138,13 @@ OpenPetra:
                     SetupDailyExchangeRate: {Description=Not functional yet, ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
             
         Personnel: {Icon=personel_small.ico}
+            Reports:
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
+                    PersonnelReports:
+                        ProgressReport: {ActionOpenScreen=TFrmProgressReport}
+                        PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
+                        EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
+                        StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
