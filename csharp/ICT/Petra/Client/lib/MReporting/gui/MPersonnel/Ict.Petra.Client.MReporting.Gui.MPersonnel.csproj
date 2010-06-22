@@ -48,17 +48,35 @@
     <Reference Include="Ict.Common.Controls">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MReporting">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MReporting.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -80,6 +98,13 @@
     <Compile Include="ProgressReport.Designer.cs">
       <DependentUpon>ProgressReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="StartOfCommitmentReport.cs" />
+    <Compile Include="StartOfCommitmentReport.Designer.cs">
+      <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StartOfCommitmentReport.ManualCode.cs">
+      <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -88,6 +113,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressReport.resx">
       <DependentUpon>ProgressReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StartOfCommitmentReport.resx">
+      <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
