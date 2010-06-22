@@ -181,7 +181,22 @@ public class TFixProjectReferences : TCSProjTools
             }
         }
 
-        doc.Save(AFilename + ".new");
+        string xmlString = TXMLParser.XmlToStringIndented(doc);
+
+        if (!xmlString.Contains("'$(Platform)' == 'x86'")
+            || !xmlString.Contains(">x86</Platform>")
+            || !xmlString.Contains(">x86</PlatformTarget>"))
+        {
+            // see also https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=116
+            xmlString = xmlString.Replace(">AnyCPU</Platform>", ">x86</Platform>");
+            xmlString = xmlString.Replace(">AnyCPU</PlatformTarget>", ">x86</PlatformTarget>");
+            xmlString = xmlString.Replace("'$(Platform)' == 'AnyCPU'", "'$(Platform)' == 'x86'");
+        }
+
+        StreamWriter sw = new StreamWriter(AFilename + ".new");
+        sw.Write(xmlString);
+        sw.Close();
+
         TTextFile.Unix2Dos(AFilename + ".new");
         TTextFile.UpdateFile(AFilename);
     }

@@ -257,6 +257,22 @@ namespace Ict.Common.IO
             return sw.ToString();
         }
 
+        /// <summary>
+        /// print an xml document to string with indentation
+        /// </summary>
+        /// <param name="ADoc"></param>
+        /// <returns></returns>
+        public static string XmlToStringIndented(XmlDocument ADoc)
+        {
+            StringWriter sw = new StringWriter();
+            XmlTextWriter xw = new XmlTextWriter(sw);
+
+            xw.Formatting = Formatting.Indented;
+
+            ADoc.WriteTo(xw);
+            return sw.ToString();
+        }
+
         /// used by XmlToString
         private static void MoveElementNameToAttribute(XmlNode AOldNode, XmlNode ANewNode)
         {
