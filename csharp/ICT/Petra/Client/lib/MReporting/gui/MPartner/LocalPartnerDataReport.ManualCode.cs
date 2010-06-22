@@ -25,8 +25,6 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
-//using System.ComponentModel;
-//using System.Windows.Forms;
 using System.Data;
 using Mono.Unix;
 using Ict.Petra.Shared;
@@ -36,10 +34,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Resources;
 using System.Collections.Specialized;
 using Ict.Common;
-//using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
-//using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
