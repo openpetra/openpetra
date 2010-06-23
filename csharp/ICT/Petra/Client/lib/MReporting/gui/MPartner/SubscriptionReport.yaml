@@ -48,10 +48,10 @@ RootNode:
             Parameter: 2.5
         Para5:
             Name: Address valid from
-            Parameter: 1.8
+            Parameter: 2.0
         Para6:
             Name: Address valid to
-            Parameter: 1.8
+            Parameter: 2.0
         Para7:
             Name: Alternate Telephone
             Parameter: 3.3

@@ -195,8 +195,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 1", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 3", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Type", 2.5));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid from", 1.8));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid to", 1.8));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid from", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid to", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.3));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 1.5));

@@ -407,7 +407,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Contact Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Contact Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Date"></value></caption>
 		<query>
 			<queryDetail>

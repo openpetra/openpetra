@@ -622,7 +622,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Address valid to" returns="text" returnsFormat="text">
+	<calculation align="left" id="Address valid to" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Valid to"></value></caption>
 		<query>
 			<queryDetail>
@@ -631,7 +631,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Address valid from" returns="text" returnsFormat="text">
+	<calculation align="left" id="Address valid from" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Valid from"></value></caption>
 		<query>
 			<queryDetail>
