@@ -31,7 +31,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup
+namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     partial class TFrmSetupCurrency
     {

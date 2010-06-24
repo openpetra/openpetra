@@ -133,13 +133,6 @@
       <DependentUpon>GLCreateLedger.cs</DependentUpon>
     </Compile>
     <Compile Include="Ict.Petra.Client.MFinance.Gui.Setup.AssemblyInfo.cs" />
-    <Compile Include="SetupCurrency.cs" />
-    <Compile Include="SetupCurrency.Designer.cs">
-      <DependentUpon>SetupCurrency.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SetupCurrency.ManualCode.cs">
-      <DependentUpon>SetupCurrency.cs</DependentUpon>
-    </Compile>
     <Compile Include="SetupDailyExchangeRate.cs" />
     <Compile Include="SetupDailyExchangeRate.Designer.cs">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
@@ -158,9 +151,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GLCreateLedger.resx">
       <DependentUpon>GLCreateLedger.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SetupCurrency.resx">
-      <DependentUpon>SetupCurrency.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SetupDailyExchangeRate.resx">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>

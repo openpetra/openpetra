@@ -134,7 +134,7 @@ OpenPetra:
             FinanceModuleSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                 Main: 
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                    SetupCurrencies: {ActionOpenScreen=TFrmSetupCurrency}
+                    SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
             
         Personnel: {Icon=personel_small.ico}

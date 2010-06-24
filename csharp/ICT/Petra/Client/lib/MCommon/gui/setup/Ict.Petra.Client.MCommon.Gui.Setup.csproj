@@ -4,8 +4,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ict.Petra.Client.MPartner.Gui.Setup</RootNamespace>
-    <AssemblyName>Ict.Petra.Client.MPartner.Gui.Setup</AssemblyName>
+    <RootNamespace>Ict.Petra.Client.MCommon.Gui.Setup</RootNamespace>
+    <AssemblyName>Ict.Petra.Client.MCommon.Gui.Setup</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\christiank\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
@@ -43,10 +43,62 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.App.Core">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Client.App.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.App.Core.RemoteObjects">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Client.App.Core.RemoteObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.CommonControls.Gui">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Client.CommonControls.Gui.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.CommonForms">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Client.CommonForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="SetupCurrency.cs" />
+    <Compile Include="SetupCurrency.Designer.cs">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupCurrency.ManualCode.cs">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="SetupCurrency.resx">
+      <DependentUpon>SetupCurrency.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
