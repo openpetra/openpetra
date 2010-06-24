@@ -133,6 +133,12 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("_l = true", "_l = 1");
             ReturnValue = ReturnValue.Replace("_l = false", "_l = 0");
 
+            // Get the correct function for DAYOFYEAR
+            while (ReturnValue.Contains("DAYOFYEAR("))
+            {
+                ReturnValue = ReplaceDayOfYear(ReturnValue);
+            }
+
             return ReturnValue;
         }
 
@@ -452,6 +458,30 @@ namespace Ict.Common.DB
         {
             ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
             ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+        }
+
+        /// <summary>
+        /// Replace DAYOFYEAR(p_param) with DATE_FORMAT(p_param, %j)
+        /// </summary>
+        /// <param name="ASqlCommand"></param>
+        /// <returns></returns>
+        private String ReplaceDayOfYear(String ASqlCommand)
+        {
+            int StartIndex = ASqlCommand.IndexOf("DAYOFYEAR(");
+            int EndBracketIndex = ASqlCommand.IndexOf(')', StartIndex + 10);
+
+            if ((StartIndex < 0) || (EndBracketIndex < 0))
+            {
+                TLogging.Log("Cant convert DAYOFYEAR() function to MySQL DATE_FORMAT() function with this sql command:");
+                TLogging.Log(ASqlCommand);
+                return ASqlCommand;
+            }
+
+            int ParameterLength = EndBracketIndex - StartIndex - 10;
+
+            String ReplacedDate = ASqlCommand.Substring(StartIndex + 10, ParameterLength) + ", %j";
+
+            return ASqlCommand.Substring(0, StartIndex) + "DATE_FORMAT(" + ReplacedDate + ASqlCommand.Substring(EndBracketIndex);
         }
     }
 }

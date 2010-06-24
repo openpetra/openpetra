@@ -188,6 +188,12 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("_l = 1", "_l = true");
             ReturnValue = ReturnValue.Replace("_l = 0", "_l = false");
 
+            // Get the correct function for DAYOFYEAR
+            while (ReturnValue.Contains("DAYOFYEAR("))
+            {
+                ReturnValue = ReplaceDayOfYear(ReturnValue);
+            }
+
             return ReturnValue;
         }
 
@@ -523,6 +529,46 @@ namespace Ict.Common.DB
         {
             ADatabase.ExecuteScalar(
                 "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", false);", ATransaction, false);
+        }
+
+        /// <summary>
+        /// Replace DAYOFYEAR(p_param) with to_char(p_param, 'DDD')
+        /// Replace DAYOFYEAR('2010-01-30') with to_char(to_date('2010-01-30', 'YYYY-MM-DD'), 'DDD')
+        /// </summary>
+        /// <param name="ASqlCommand"></param>
+        /// <returns></returns>
+        private String ReplaceDayOfYear(String ASqlCommand)
+        {
+            int StartIndex = ASqlCommand.IndexOf("DAYOFYEAR(");
+            int EndBracketIndex = ASqlCommand.IndexOf(')', StartIndex + 10);
+
+            if ((StartIndex < 0) || (EndBracketIndex < 0))
+            {
+                TLogging.Log("Cant convert DAYOFYEAR() function to PostgreSQL to_char() function with this sql command:");
+                TLogging.Log(ASqlCommand);
+                return ASqlCommand;
+            }
+
+            String ReplacedDate = "";
+
+            if ((ASqlCommand.Length >= StartIndex + 22)
+                && (ASqlCommand[StartIndex + 10] == '\'')
+                && (ASqlCommand[StartIndex + 21] == '\''))
+            {
+                // We have a date string
+                ReplacedDate = "to_date(" + ASqlCommand.Substring(StartIndex + 10, 12) +
+                               ", 'YYYY-MM-DD')";
+            }
+            else
+            {
+                int ParameterLength = EndBracketIndex - StartIndex - 10;
+
+                ReplacedDate = ASqlCommand.Substring(StartIndex + 10, ParameterLength);
+            }
+
+            ReplacedDate = ReplacedDate + ", 'DDD'";
+
+            return ASqlCommand.Substring(0, StartIndex) + "to_char(" + ReplacedDate + ASqlCommand.Substring(EndBracketIndex);
         }
     }
 }
