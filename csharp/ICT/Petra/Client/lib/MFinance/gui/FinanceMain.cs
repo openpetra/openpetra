@@ -298,7 +298,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     protected void OpenScreenSetupCurrency(object sender, EventArgs e)
     {
-        Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency frm = new Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency(this.Handle);
+        Ict.Petra.Client.MCommon.Gui.Setup.TFrmSetupCurrency frm = new Ict.Petra.Client.MCommon.Gui.Setup.TFrmSetupCurrency(this.Handle);
         frm.Show();
     }
 
