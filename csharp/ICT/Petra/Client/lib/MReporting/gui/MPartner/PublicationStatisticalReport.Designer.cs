@@ -459,12 +459,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.Name = "TFrmPublicationStatisticalReport";
             this.Text = "Publication Statistical Report";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	        this.Load += new System.EventHandler(this.TFrmPublicationStatisticalReport_Load);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+            this.Load += new System.EventHandler(this.TFrmPublicationStatisticalReport_Load);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);

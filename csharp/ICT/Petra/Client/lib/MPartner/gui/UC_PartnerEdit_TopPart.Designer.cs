@@ -993,7 +993,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerEdit_TopPart";
             this.Text = "";
 
-	
             this.tableLayoutPanel15.ResumeLayout(false);
             this.pnlSpacer.ResumeLayout(false);
             this.tableLayoutPanel14.ResumeLayout(false);

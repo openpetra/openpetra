@@ -253,7 +253,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Name = "TFrmUC_Columns";
             this.Text = "";
 
-	
             this.pnlBottom.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlAddRemButtons.ResumeLayout(false);

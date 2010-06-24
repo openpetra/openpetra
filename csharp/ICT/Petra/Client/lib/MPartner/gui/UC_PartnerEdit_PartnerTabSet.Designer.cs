@@ -235,7 +235,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerEdit_PartnerTabSet";
             this.Text = "";
 
-	
             this.tpgOfficeSpecific.ResumeLayout(false);
             this.tpgNotes.ResumeLayout(false);
             this.tpgFamilyMembers.ResumeLayout(false);

@@ -169,7 +169,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Name = "TFrmUC_Sorting";
             this.Text = "";
 
-	
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 

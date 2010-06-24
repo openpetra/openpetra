@@ -371,7 +371,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Name = "TUC_GLJournals";
             this.Text = "";
 
-	
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);

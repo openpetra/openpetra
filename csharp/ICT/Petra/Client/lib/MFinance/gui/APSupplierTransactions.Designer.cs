@@ -743,12 +743,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.Name = "TFrmAPSupplierTransactions";
             this.Text = "Supplier Transactions";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);

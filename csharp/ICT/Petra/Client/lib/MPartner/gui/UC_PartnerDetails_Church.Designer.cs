@@ -393,7 +393,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerDetails_Church";
             this.Text = "";
 
-	
             this.tableLayoutPanel2.ResumeLayout(false);
             this.grpMisc.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);

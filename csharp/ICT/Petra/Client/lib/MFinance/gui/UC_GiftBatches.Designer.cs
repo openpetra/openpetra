@@ -618,7 +618,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Name = "TUC_GiftBatches";
             this.Text = "";
 
-	
             this.mnuTabPage.ResumeLayout(false);
             this.tbrTabPage.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);

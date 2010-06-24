@@ -100,7 +100,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerEdit_LowerPart";
             this.Text = "";
 
-	
             this.pnlContent.ResumeLayout(false);
 
             this.ResumeLayout(false);
