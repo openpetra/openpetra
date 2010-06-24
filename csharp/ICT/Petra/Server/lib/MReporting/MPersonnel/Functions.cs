@@ -215,7 +215,16 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         {
             PPartnerTypeTable PartnerType;
 
-            String[] TypeList = ATypeList.Split(';');
+            String[] TypeList;
+
+            if (ATypeList.Contains(";"))
+            {
+                TypeList = ATypeList.Split(';');
+            }
+            else
+            {
+                TypeList = ATypeList.Split(',');
+            }
 
             int MatchingPattern = 0;
 
