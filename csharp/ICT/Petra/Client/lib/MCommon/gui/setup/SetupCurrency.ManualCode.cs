@@ -23,7 +23,7 @@
 //
 using System;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup
+namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     public partial class TFrmSetupCurrency
     {
