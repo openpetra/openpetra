@@ -171,6 +171,12 @@ namespace Ict.Common.DB
 
             // LIKE of sqlite is always case insensitive, so no modification needed (eg ILIKE for postgresql)
 
+            // Get the correct function for DAYOFYEAR
+            while (ReturnValue.Contains("DAYOFYEAR("))
+            {
+                ReturnValue = ReplaceDayOfYear(ReturnValue);
+            }
+
             return ReturnValue;
         }
 
@@ -357,6 +363,26 @@ namespace Ict.Common.DB
         {
             ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
             ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+        }
+
+        /// <summary>
+        /// Replace DAYOFYEAR(p_param) with strftime(%j, p_param)
+        /// </summary>
+        /// <param name="ASqlCommand"></param>
+        /// <returns></returns>
+        private String ReplaceDayOfYear(String ASqlCommand)
+        {
+            int StartIndex = ASqlCommand.IndexOf("DAYOFYEAR(");
+
+            if (StartIndex < 0)
+            {
+                TLogging.Log("Cant convert DAYOFYEAR() function to SQLite strftime() function with this sql command:");
+                TLogging.Log(ASqlCommand);
+                return ASqlCommand;
+            }
+
+            return ASqlCommand.Substring(0, StartIndex) + "strftime(%j, " +
+                   ASqlCommand.Substring(StartIndex + 10);
         }
     }
 }

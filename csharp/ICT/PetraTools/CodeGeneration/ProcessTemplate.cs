@@ -57,7 +57,14 @@ namespace Ict.Tools.CodeGeneration
 
             StreamReader r;
             r = File.OpenText(AFullPath);
-            FTemplateCode = r.ReadToEnd() + Environment.NewLine;
+            FTemplateCode = string.Empty;
+
+            while (!r.EndOfStream)
+            {
+                string line = r.ReadLine().TrimEnd(new char[] { '\r', '\t', ' ', '\n' }).Replace("\t", "    ");
+                FTemplateCode += line + Environment.NewLine;
+            }
+
             r.Close();
 
             // add other files, {#INCLUDE <filename>}
@@ -70,7 +77,14 @@ namespace Ict.Tools.CodeGeneration
                 string filename = FTemplateCode.Substring(pos + "{#INCLUDE ".Length, bracketClosePos - pos - "{#INCLUDE ".Length).Trim();
 
                 r = File.OpenText(Path.GetDirectoryName(AFullPath) + Path.DirectorySeparatorChar + filename);
-                string includeCode = r.ReadToEnd();
+                string includeCode = string.Empty;
+
+                while (!r.EndOfStream)
+                {
+                    string lineTrimmed = r.ReadLine().TrimEnd(new char[] { '\r', '\t', ' ', '\n' }).Replace("\t", "    ");
+                    includeCode += lineTrimmed + Environment.NewLine;
+                }
+
                 r.Close();
 
                 FTemplateCode = FTemplateCode.Replace(line, includeCode);

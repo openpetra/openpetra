@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SubscriptionReport.yaml
+// auto generated with nant generateWinforms from BirthdayListReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -43,20 +43,20 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
 
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmSubscriptionReport: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmBirthdayListReport: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmSubscriptionReport(IntPtr AParentFormHandle) : base()
+    public TFrmBirthdayListReport(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,10 +65,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.rbtPartnerName.Text = Catalog.GetString("Partner Name");
-      this.rbtPartnerKey.Text = Catalog.GetString("Partner Key");
-      this.rgrSorting.Text = Catalog.GetString("Sorting");
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
+      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
+      this.chkUseDate.Text = Catalog.GetString("Use date");
+      this.lblFromDate.Text = Catalog.GetString("From:");
+      this.lblToDate.Text = Catalog.GetString("To:");
+      this.grpDate.Text = Catalog.GetString("Date");
+      this.chkIncludeFamily.Text = Catalog.GetString("Include families");
+      this.chkSelectTypes.Text = Catalog.GetString("Include only persons of selected type(s)");
+      this.grpOptions.Text = Catalog.GetString("Options");
+      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -96,15 +102,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Subscription Report");
+      this.Text = Catalog.GetString("Birthday List Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Partner\\\\subscriptionreport.xml";
-      FPetraUtilsObject.FReportName = "Subscription Report";
-      FPetraUtilsObject.FCurrentReport = "Subscription Report";
-      FPetraUtilsObject.FSettingsDirectory = "Partner";
+      FPetraUtilsObject.FXMLFiles = "Personnel\\\\birthdaylist.xml,Personnel\\\\personnel.xml";
+      FPetraUtilsObject.FReportName = "Birthday List";
+      FPetraUtilsObject.FCurrentReport = "Birthday List";
+      FPetraUtilsObject.FSettingsDirectory = "Personnel";
 
       // Hook up Event that is fired by ucoReportColumns
       // ucoReportColumns.FillColumnGridEventHandler += new TFillColumnGridEventHandler(FPetraUtilsObject.FillColumnGrid);
@@ -114,10 +120,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       this.SetAvailableFunctions();
 
       ucoPartnerSelection.InitialiseData(FPetraUtilsObject);
+      ucoReportSorting.InitialiseData(FPetraUtilsObject);
+      grdTypes_InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoPartnerSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoPartnerSelection.InitUserControl();
+      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
 
@@ -157,14 +167,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
-      if (rbtPartnerName.Checked)
-      {
-          ACalc.AddParameter("param_order_by_name", "PartnerName");
-      }
-      if (rbtPartnerKey.Checked)
-      {
-          ACalc.AddParameter("param_order_by_name", "PartnerKey");
-      }
+      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      ACalc.AddParameter("param_chkUseDate", this.chkUseDate.Checked);
+      ACalc.AddParameter("param_dtpFromDate", this.dtpFromDate.Date);
+      ACalc.AddParameter("param_dtpToDate", this.dtpToDate.Date);
+      ACalc.AddParameter("param_chkIncludeFamily", this.chkIncludeFamily.Checked);
+      ACalc.AddParameter("param_chkSelectTypes", this.chkSelectTypes.Checked);
+      grdTypes_ReadControls(ACalc, AReportAction);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -177,8 +186,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
 
       ucoPartnerSelection.SetControls(AParameters);
-      rbtPartnerName.Checked = AParameters.Get("param_order_by_name").ToString() == "PartnerName";
-      rbtPartnerKey.Checked = AParameters.Get("param_order_by_name").ToString() == "PartnerKey";
+      ucoReportSorting.SetControls(AParameters);
+      chkUseDate.Checked = AParameters.Get("param_chkUseDate").ToBool();
+      DateTime dtpFromDateDate = AParameters.Get("param_dtpFromDate").ToDate();
+      if ((dtpFromDateDate <= DateTime.MinValue)
+          || (dtpFromDateDate >= DateTime.MaxValue))
+      {
+          dtpFromDateDate = DateTime.Now;
+      }
+      dtpFromDate.Date = dtpFromDateDate;
+      DateTime dtpToDateDate = AParameters.Get("param_dtpToDate").ToDate();
+      if ((dtpToDateDate <= DateTime.MinValue)
+          || (dtpToDateDate >= DateTime.MaxValue))
+      {
+          dtpToDateDate = DateTime.Now;
+      }
+      dtpToDate.Date = dtpToDateDate;
+      chkIncludeFamily.Checked = AParameters.Get("param_chkIncludeFamily").ToBool();
+      chkSelectTypes.Checked = AParameters.Get("param_chkSelectTypes").ToBool();
+      grdTypes_SetControls(AParameters);
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -192,34 +218,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
 
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Date of Birth", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("End Date of Commitment", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gender", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Firstname", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Surname", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Type", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Start Date of Commitment", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Email", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Telephone", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Fax", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 1", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Street", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 3", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Type", 2.5));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid from", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address valid to", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Telephone", 3.3));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 1.5));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("County", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail Address", 4.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Field", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("PostCode", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Send Mail", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Street Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone", 3.3));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Url", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Amount", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Comment", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Comment Type", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Currency", 1.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Motivation Detail", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Motivation Group", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Receiving Field", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gift Recipient", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Post Code", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address City", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address State / County / Province", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Country", 2.0));
 
       ucoPartnerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }

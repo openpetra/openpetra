@@ -103,7 +103,7 @@
 				</query>
 			</calculation>
 				
-			<calculation id="Start Date" returnsFormat="text" returns="text">
+			<calculation id="Start Date" returnsFormat="formatteddate" returns="text">
 				<caption><value text="Start Date"/></caption>
 				<query>
 					<queryDetail>
@@ -112,7 +112,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="End Date" returnsFormat="text" returns="text">
+			<calculation id="End Date" returnsFormat="formatteddate" returns="text">
 				<caption><value text="End Date"/></caption>
 				<query>
 					<queryDetail>
@@ -148,7 +148,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Next Report Date" returnsFormat="text" returns="text">
+			<calculation id="Next Report Date" returnsFormat="formatteddate" returns="text">
 				<caption><value text="Next Report Date"/></caption>
 				<query>
 					<queryDetail>

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="Birthday List">      
+		<description>
+			Lists the birthday of a partner, all partners in an extract, 
+			all current staff or all staff in the database.
+			Optionally, a date range can be given (only month and day)
+			Optionally, the family members can be included.
+			Optionally, only partners with selected partner types, included
+			in a list of partner types, are printed.
+
+			requires personnel.xml
+		</description>
+		<reportparameters>
+			<reportparameter name="param_selection">
+				<option name="one partner"/>
+				<option name="an extract"/>
+				<option name="all current staff"/>
+				<option name="all staff"/>
+			</reportparameter>
+			<reportparameter name="param_extract"
+				condition="param_selection=an extract"/>
+			<reportparameter name="param_partnerkey"
+				condition="param_selection=one partner"/>
+			<reportparameter name="param_dtpFromDate"/>
+			<reportparameter name="param_dtpToDate"/>
+			<reportparameter name="param_currentstaffdate"/>
+			<reportparameter name="param_chkIncludeFamily"/>
+			<reportparameter name="param_chkSelectTypes"/>
+			<reportparameter name="param_chkUseDate" />
+			<reportparameter name="param_typecode" />
+			<reportparameter name="param_sortby"/>
+			<reportparameter name="param_sortby_readable"/>
+
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Birthday List" /></field>
+			<field whichfield="title2"><value function = "getSiteName()"/></field>
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text = "Selection: "/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},one partner)">
+					<value text = "Partner "/><value variable = "param_partnerkey"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},an extract)">
+					<value text = "Extract "/><value variable = "param_extract"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},all current staff)">
+					<value text = "All current Staff at date "/><value variable = "param_currentstaffdate" format="formatteddate"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},all staff)">
+					<value text = "All Staff"/>
+				</fielddetail>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail>
+					<value text="Sorted by: "/>
+					<value variable="param_sortby_readable"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period1">
+				<fielddetail condition="eq({param_chkUseDate}, true)">
+					<value text = "Birthdates From "/>
+					<value variable = "param_dtpFromDate" format="formatteddate"/>
+					<value text = " To "/>
+					<value variable = "param_dtpToDate" format="formatteddate"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_chkIncludeFamily},true)">
+					<value text = " Family Members Included"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period2">
+				<fielddetail condition="eq({param_chkSelectTypes},true)">
+					<value text = "This report contains only persons that are assigned one of the following special types:"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period3">
+				<fielddetail condition="eq({param_chkSelectTypes},true)">
+					<value text = " "/>
+					<value variable = "param_typecode"/>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+        	<!-- Select Partners - Box "Include family members" IS NOT checked -->
+			<calculation id="Select Partners"
+					returns="PartnerKey, PartnerName, DOBThisYear, DOB, Gender, Surname, Firstname"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT
+							person.p_partner_key_n AS PartnerKey,
+							DAYOFYEAR(person.p_date_of_birth_d) AS DOBThisYear,
+							person.p_date_of_birth_d AS DOB,
+							person.p_gender_c AS Gender,
+							person.p_family_name_c AS Surname,
+							person.p_first_name_c AS Firstname,
+							partner.p_partner_short_name_c AS PartnerName
+					</value></queryDetail>
+  					<queryDetail condition="eq({param_chkSelectTypes},true)"><value>
+							, pptype.p_type_code_c
+					</value></queryDetail>
+					<queryDetail><value>
+						FROM PUB_p_person AS person,
+							PUB_p_partner AS partner
+					</value></queryDetail>
+					<queryDetail condition="eq({param_chkSelectTypes},true)"><value>
+							, PUB_p_partner_type AS pptype
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_selection},one partner),not({param_chkIncludeFamily}))"><value>
+						WHERE person.p_partner_key_n = {{param_partnerkey}}
+							AND  partner.p_partner_key_n = {{param_partnerkey}}
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_selection},an extract),not({param_chkIncludeFamily}))"><value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+							AND  person.p_partner_key_n = PUB_m_extract.p_partner_key_n
+							AND  partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+					</value></queryDetail>
+					<queryDetail condition="or(eq({param_selection},all staff), eq({param_selection},all current staff))"><value>
+							, PUB_pm_staff_data AS staff
+						WHERE	person.p_partner_key_n = staff.p_partner_key_n
+							AND person.p_partner_key_n = partner.p_partner_key_n
+							AND staff.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+							AND (staff.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+								OR staff.pm_end_of_commitment_d IS NULL)
+							AND person.p_family_key_n IS NOT NULL
+							AND partner.p_status_code_c = 'ACTIVE'
+					</value></queryDetail>
+					<!-- Below checks Type Code  -->
+					<queryDetail condition="eq({param_chkSelectTypes},true)"><value>
+							AND person.p_partner_key_n = pptype.p_partner_key_n
+							AND </value>
+					<value function = "csv" text="pptype.p_type_code_c" variable="param_typecode"/>
+					</queryDetail>
+				   <!-- Below checks daterange  -->
+					<queryDetail condition="and({param_chkUseDate},not(isnull(param_dtpToDate)))"><value>
+							AND DAYOFYEAR(person.p_date_of_birth_d) &gt;= DAYOFYEAR({#param_dtpFromDate#})
+							AND DAYOFYEAR(person.p_date_of_birth_d) &lt;= DAYOFYEAR({#param_dtpToDate#})
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Partners -->
+
+			<!-- Select Family Keys - Box "Include family members" IS checked -->
+			<calculation id="Select Family Keys" returns="FamilyKey" returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT
+							person.p_family_key_n AS FamilyKey
+						FROM PUB_p_person AS person
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},one partner)"><value>
+						WHERE person.p_partner_key_n = {{param_partnerkey}}
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},an extract)"><value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE person.p_partner_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+					</value></queryDetail>
+					<queryDetail condition="or(eq({param_selection},all staff),eq({param_selection},all current staff))"><value>
+							, PUB_pm_staff_data AS staff
+						WHERE person.p_partner_key_n = staff.p_partner_key_n
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},all current staff)"><value>
+							AND staff.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+							AND (staff.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+								OR staff.pm_end_of_commitment_d IS NULL)
+					</value></queryDetail>
+					<queryDetail ><value>
+							AND person.p_family_key_n IS NOT NULL
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Family Keys -->
+
+			<!-- Selct Family Members - Continuation of Family Members -->
+			<calculation id="Selct Family Members" returns="PartnerKey, PartnerName, DOBThisYear, DOB, Gender, Surname, Firstname" returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT 
+						person.p_partner_key_n AS PartnerKey,
+						DAYOFYEAR(person.p_date_of_birth_d) AS DOBThisYear,
+						person.p_date_of_birth_d AS DOB,
+						person.p_gender_c AS Gender,
+						person.p_family_name_c AS Surname,
+						person.p_first_name_c AS Firstname,
+						partner.p_partner_short_name_c AS PartnerName
+					FROM PUB_p_person AS person,
+						PUB_p_partner AS partner
+					</value></queryDetail>
+					<queryDetail condition="eq({param_chkSelectTypes},true)"><value>
+						, PUB_p_partner_type AS pptype
+					</value></queryDetail>
+					<queryDetail><value>
+					WHERE person.p_partner_key_n = partner.p_partner_key_n
+						AND partner.p_status_code_c = 'ACTIVE'
+						AND person.p_family_key_n = {{FamilyKey}}
+					</value></queryDetail>
+					<!-- Below checks Type Code  -->
+					<queryDetail condition="eq({param_chkSelectTypes},true)"><value>
+						AND person.p_partner_key_n = pptype.p_partner_key_n
+						AND 
+						 </value>
+					<value function = "csv" text="pptype.p_type_code_c" variable="param_typecode"/>
+					</queryDetail>
+				   <!-- Below checks daterange  -->
+					<queryDetail condition="and({param_chkUseDate},not(isnull(param_dtpToDate)))"><value>
+						AND DAYOFYEAR(person.p_date_of_birth_d) &gt;= DAYOFYEAR({#param_dtpFromDate#})
+						AND DAYOFYEAR(person.p_date_of_birth_d) &lt;= DAYOFYEAR({#param_dtpToDate#})
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Selct Family Members -->
+
+			<calculation id="GetCommitmentPeriodAndEmail" returnsFormat="internal"
+					returns="CommitmentStart,CommitmentEnd,EmailAddress">
+				<query>
+					<queryDetail>
+						<value function="GetCurrentCommitmentPeriod({{PartnerKey}},{#param_currentstaffdate#})"/>
+						<value function="GetPartnerBestAddress({PartnerKey})"/>
+						<value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+						<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+					</queryDetail>
+					<queryDetail condition="eq({param_chkSelectTypes}, true)">
+						<value function="assign(PartnerType, GetType({PartnerKey}, {param_typecode}, BEGIN))"/>
+					</queryDetail>
+					<queryDetail condition="eq({param_chkSelectTypes}, false)">
+						<value function="assign(PartnerType, GetType({PartnerKey}, OM;EX-OMER;ASSOC, BEGIN))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Partner Surname" returnsFormat="text" returns="text">
+				<caption><value text="Surname"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Surname"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Partner Firstname" returnsFormat="text" returns="text">
+				<caption><value text="Firstname"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="FirstName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Partner Type" returnsFormat="csvlistslash:text" returns="text">
+				<caption><value text="Type"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PartnerType"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Family Key" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Family Key"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="FamilyKey"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Date of Birth" returnsFormat="formatteddate" returns="text">
+				<caption><value text="Date of Birth"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="DOB"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Date Of Birth This Year" returnsFormat="number" returns="number">
+				<caption><value text="Date Of Birth This Year"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="DOBThisYear"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Start Date of Commitment" returnsFormat="text" returns="text">
+				<caption><value text="Start Date of\nCommitment"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="CommitmentStart" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="End Date of Commitment" returnsFormat="text" returns="text">
+				<caption><value text="End Date of\nCommitment"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="CommitmentEnd" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Gender" returnsFormat="text" returns="text">
+				<caption><value text="Gender"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Gender"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Address Fax" returns="text" returnsFormat="text">
+				<caption><value text="Fax Number"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="FaxNumber"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+		</calculations>
+
+		<levels>
+		<level name="main">
+			<detail>
+				<switch>
+					<case condition="not({param_chkIncludeFamily})">
+						<lowerLevelReport level="Partner Detail" calculation ="Select Partners">
+						</lowerLevelReport>
+					</case>
+					<case condition="eq({param_chkIncludeFamily},true)">
+						<lowerLevelReport level="Children Detail" calculation ="Select Family Keys">
+						</lowerLevelReport>
+					</case>
+				</switch>
+			</detail>
+		</level> <!-- main -->
+
+		<level name="Partner Detail" identification="PartnerKey">
+			<detail>
+				<!--field whichfield="columns" /-->
+				<field calculation="GetCommitmentPeriodAndEmail" whichfield="columns" />
+			</detail>
+		</level>  <!-- Partner Detail -->
+
+		<level name="Children Detail" identification="FamilyKey">
+			<detail>
+				<lowerLevelReport level="Children" calculation="Selct Family Members">
+				</lowerLevelReport>
+			</detail>
+		 </level>  <!-- Children Detail -->
+
+		<level name="Children" identification="PartnerKey">
+			<detail>
+				<!--field calculation="List Type" whichfield="columns"/-->
+				<field calculation="GetCommitmentPeriodAndEmail" whichfield="columns" />
+			</detail>
+		</level>  <!-- Children -->
+		</levels>
+
+	</report><!-- Birthday List -->
+
+</reports>
