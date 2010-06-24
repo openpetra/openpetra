@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GLCostCentreHierarchy.yaml and template windowTDS
+// auto generated with nant generateWinforms from GLAccountHierarchy.yaml and template windowTDS
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -42,18 +42,19 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.GL
+namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
 {
 
-  /// auto generated: GL Cost Centre Hierarchy
-  public partial class TFrmGLCostCentreHierarchy: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: GL Account Hierarchy
+  public partial class TFrmGLAccountHierarchy: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
 
     /// constructor
-    public TFrmGLCostCentreHierarchy(IntPtr AParentFormHandle) : base()
+    public TFrmGLAccountHierarchy(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -62,13 +63,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
-      this.lblDetailCostCentreType.Text = Catalog.GetString("Cost Centre Type:");
-      this.lblDetailCostCentreName.Text = Catalog.GetString("Cost Centre Name:");
-      this.chkDetailCostCentreActiveFlag.Text = Catalog.GetString("Active");
+      this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
+      this.lblDetailAccountType.Text = Catalog.GetString("Account Type:");
+      this.lblDetailEngAccountCodeLongDesc.Text = Catalog.GetString("Description Long English:");
+      this.lblDetailEngAccountCodeShortDesc.Text = Catalog.GetString("Description Short English:");
+      this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long Local:");
+      this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short Local:");
+      this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
+      this.chkDetailAccountActiveFlag.Text = Catalog.GetString("Active");
+      this.chkDetailBankAccountFlag.Text = Catalog.GetString("Bank Account");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbAddNewCostCentre.Text = Catalog.GetString("Add Cost Centre");
+      this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
+      this.tbbDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
       this.tbbExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
       this.tbbImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -81,21 +88,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
+      this.mniAddNewAccount.Text = Catalog.GetString("Add Account");
+      this.mniDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
+      this.mniSeparator3.Text = Catalog.GetString("Separator");
+      this.mniExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
+      this.mniImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
+      this.mniAccounts.Text = Catalog.GetString("Accounts");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("GL Cost Centre Hierarchy");
+      this.Text = Catalog.GetString("GL Account Hierarchy");
       #endregion
 
-      this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailCostCentreName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailEngAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailEngAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
-      FPetraUtilsObject.SetStatusBarText(txtDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreType, Catalog.GetString("Type of cost centre (foreign or local)."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCode, Catalog.GetString("Enter a code for the account."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountType, Catalog.GetString("Choose the type of account (e.g., Asset)"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeLongDesc, Catalog.GetString("Enter a description in English (full)."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeShortDesc, Catalog.GetString("Enter a short description in English."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeLongDesc, Catalog.GetString("Enter a description of the account (full)."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeShortDesc, Catalog.GetString("Enter a short description of the account."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailValidCcCombo, Catalog.GetString("Select cost centre type that may be combined with this account."));
+      FPetraUtilsObject.SetStatusBarText(chkDetailAccountActiveFlag, Catalog.GetString("Is this account available for posting transactions?"));
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -128,26 +150,73 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     }
 
-    private void ShowDetails(ACostCentreRow ARow)
+    private void ShowDetails(GLSetupTDSAAccountRow ARow)
     {
-        txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-        txtDetailCostCentreCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        if (ARow.IsCostCentreTypeNull())
+        txtDetailAccountCode.Text = ARow.AccountCode;
+        txtDetailAccountCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        if (ARow.IsAccountTypeNull())
         {
-            cmbDetailCostCentreType.SelectedIndex = -1;
+            cmbDetailAccountType.SelectedIndex = -1;
         }
         else
         {
-            cmbDetailCostCentreType.SetSelectedString(ARow.CostCentreType);
+            cmbDetailAccountType.SetSelectedString(ARow.AccountType);
         }
-        txtDetailCostCentreName.Text = ARow.CostCentreName;
-        if (ARow.IsCostCentreActiveFlagNull())
+        if (ARow.IsEngAccountCodeLongDescNull())
         {
-            chkDetailCostCentreActiveFlag.Checked = false;
+            txtDetailEngAccountCodeLongDesc.Text = String.Empty;
         }
         else
         {
-            chkDetailCostCentreActiveFlag.Checked = ARow.CostCentreActiveFlag;
+            txtDetailEngAccountCodeLongDesc.Text = ARow.EngAccountCodeLongDesc;
+        }
+        if (ARow.IsEngAccountCodeShortDescNull())
+        {
+            txtDetailEngAccountCodeShortDesc.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailEngAccountCodeShortDesc.Text = ARow.EngAccountCodeShortDesc;
+        }
+        if (ARow.IsAccountCodeLongDescNull())
+        {
+            txtDetailAccountCodeLongDesc.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailAccountCodeLongDesc.Text = ARow.AccountCodeLongDesc;
+        }
+        if (ARow.IsAccountCodeShortDescNull())
+        {
+            txtDetailAccountCodeShortDesc.Text = String.Empty;
+        }
+        else
+        {
+            txtDetailAccountCodeShortDesc.Text = ARow.AccountCodeShortDesc;
+        }
+        if (ARow.IsValidCcComboNull())
+        {
+            cmbDetailValidCcCombo.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailValidCcCombo.SetSelectedString(ARow.ValidCcCombo);
+        }
+        if (ARow.IsAccountActiveFlagNull())
+        {
+            chkDetailAccountActiveFlag.Checked = false;
+        }
+        else
+        {
+            chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
+        }
+        if (ARow.IsBankAccountFlagNull())
+        {
+            chkDetailBankAccountFlag.Checked = false;
+        }
+        else
+        {
+            chkDetailBankAccountFlag.Checked = ARow.BankAccountFlag;
         }
     }
 
@@ -156,21 +225,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         GetDataFromControlsManual();
     }
 
-    private void GetDetailsFromControls(ACostCentreRow ARow)
+    private void GetDetailsFromControls(GLSetupTDSAAccountRow ARow)
     {
         if (ARow != null)
         {
-            ARow.CostCentreCode = txtDetailCostCentreCode.Text;
-            if (cmbDetailCostCentreType.SelectedIndex == -1)
+            ARow.AccountCode = txtDetailAccountCode.Text;
+            if (cmbDetailAccountType.SelectedIndex == -1)
             {
-                ARow.SetCostCentreTypeNull();
+                ARow.SetAccountTypeNull();
             }
             else
             {
-                ARow.CostCentreType = cmbDetailCostCentreType.GetSelectedString();
+                ARow.AccountType = cmbDetailAccountType.GetSelectedString();
             }
-            ARow.CostCentreName = txtDetailCostCentreName.Text;
-            ARow.CostCentreActiveFlag = chkDetailCostCentreActiveFlag.Checked;
+            if (txtDetailEngAccountCodeLongDesc.Text.Length == 0)
+            {
+                ARow.SetEngAccountCodeLongDescNull();
+            }
+            else
+            {
+                ARow.EngAccountCodeLongDesc = txtDetailEngAccountCodeLongDesc.Text;
+            }
+            if (txtDetailEngAccountCodeShortDesc.Text.Length == 0)
+            {
+                ARow.SetEngAccountCodeShortDescNull();
+            }
+            else
+            {
+                ARow.EngAccountCodeShortDesc = txtDetailEngAccountCodeShortDesc.Text;
+            }
+            if (txtDetailAccountCodeLongDesc.Text.Length == 0)
+            {
+                ARow.SetAccountCodeLongDescNull();
+            }
+            else
+            {
+                ARow.AccountCodeLongDesc = txtDetailAccountCodeLongDesc.Text;
+            }
+            if (txtDetailAccountCodeShortDesc.Text.Length == 0)
+            {
+                ARow.SetAccountCodeShortDescNull();
+            }
+            else
+            {
+                ARow.AccountCodeShortDesc = txtDetailAccountCodeShortDesc.Text;
+            }
+            if (cmbDetailValidCcCombo.SelectedIndex == -1)
+            {
+                ARow.SetValidCcComboNull();
+            }
+            else
+            {
+                ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
+            }
+            ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
+            ARow.BankAccountFlag = chkDetailBankAccountFlag.Checked;
         }
     }
 
@@ -373,17 +482,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actAddNewCostCentre")
+        if (e.ActionName == "actAddNewAccount")
         {
-            tbbAddNewCostCentre.Enabled = e.Enabled;
+            tbbAddNewAccount.Enabled = e.Enabled;
+            mniAddNewAccount.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actDeleteUnusedAccount")
+        {
+            tbbDeleteUnusedAccount.Enabled = e.Enabled;
+            mniDeleteUnusedAccount.Enabled = e.Enabled;
         }
         if (e.ActionName == "actExportHierarchy")
         {
             tbbExportHierarchy.Enabled = e.Enabled;
+            mniExportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actImportHierarchy")
         {
             tbbImportHierarchy.Enabled = e.Enabled;
+            mniImportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowEdit
+// auto generated with nant generateWinforms from GLCostCentreHierarchy.yaml and template windowTDS
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -41,19 +41,19 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Gift
+namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
 {
 
-  /// auto generated: Gift Motivations
-  public partial class TFrmGiftMotivationSetup: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: GL Cost Centre Hierarchy
+  public partial class TFrmGLCostCentreHierarchy: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS FMainDS;
+    private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
 
     /// constructor
-    public TFrmGiftMotivationSetup(IntPtr AParentFormHandle) : base()
+    public TFrmGLCostCentreHierarchy(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -62,17 +62,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnAddMotivationDetail.Text = Catalog.GetString("Add Detail");
-      this.lblDetailMotivationGroupCode.Text = Catalog.GetString("Group:");
-      this.lblDetailMotivationDetailCode.Text = Catalog.GetString("Detail:");
-      this.lblDetailMotivationDetailDesc.Text = Catalog.GetString("Description:");
-      this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
-      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre:");
-      this.chkDetailMotivationStatus.Text = Catalog.GetString("Active");
-      this.chkDetailReceipt.Text = Catalog.GetString("Print Receipt");
+      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
+      this.lblDetailCostCentreType.Text = Catalog.GetString("Cost Centre Type:");
+      this.lblDetailCostCentreName.Text = Catalog.GetString("Cost Centre Name:");
+      this.chkDetailCostCentreActiveFlag.Text = Catalog.GetString("Active");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbAddMotivationDetail.Text = Catalog.GetString("Add Detail");
+      this.tbbAddNewCostCentre.Text = Catalog.GetString("Add Cost Centre");
+      this.tbbExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
+      this.tbbImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -88,38 +86,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Gift Motivations");
+      this.Text = Catalog.GetString("GL Cost Centre Hierarchy");
       #endregion
 
-      this.txtDetailMotivationGroupCode.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailMotivationDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailMotivationDetailDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCostCentreName.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailDesc, Catalog.GetString("Enter a description"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
-      FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS();
-      grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Motivation Group Code", FMainDS.AMotivationDetail.ColumnMotivationGroupCode);
-      grdDetails.AddTextColumn("Motivation Detail Code", FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
-      grdDetails.AddTextColumn("Detail Description", FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
-      grdDetails.AddTextColumn("Account Code", FMainDS.AMotivationDetail.ColumnAccountCode);
-      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AMotivationDetail.ColumnCostCentreCode);
-      grdDetails.AddCheckBoxColumn("Motivation Status", FMainDS.AMotivationDetail.ColumnMotivationStatus);
-      grdDetails.AddCheckBoxColumn("Print Receipt", FMainDS.AMotivationDetail.ColumnReceipt);
+      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
+      FPetraUtilsObject.SetStatusBarText(txtDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreType, Catalog.GetString("Type of cost centre (foreign or local)."));
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
-      myDataView.AllowNew = false;
-      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
-
       FPetraUtilsObject.InitActionState();
+
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -148,109 +128,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
     }
 
-    /// automatically generated, create a new record of AMotivationDetail and display on the edit screen
-    /// we create the table locally, no dataset
-    public bool CreateNewAMotivationDetail()
+    private void ShowDetails(ACostCentreRow ARow)
     {
-        AMotivationDetailRow NewRow = FMainDS.AMotivationDetail.NewRowTyped();
-        NewRowManual(ref NewRow);
-        FMainDS.AMotivationDetail.Rows.Add(NewRow);
-
-        FPetraUtilsObject.SetChangedFlag();
-
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AMotivationDetail.DefaultView);
-        grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.AMotivationDetail.Rows.Count - 1);
-
-        return true;
-    }
-
-    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
-    {
-        Int32 RowNumberGrid = -1;
-        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+        txtDetailCostCentreCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        if (ARow.IsCostCentreTypeNull())
         {
-            bool found = true;
-            foreach (DataColumn myColumn in FMainDS.AMotivationDetail.PrimaryKey)
-            {
-                string value1 = FMainDS.AMotivationDetail.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
-                if (value1 != value2)
-                {
-                    found = false;
-                }
-            }
-            if (found)
-            {
-                RowNumberGrid = Counter + 1;
-            }
-        }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
-
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
-    }
-
-    /// return the selected row
-    private AMotivationDetailRow GetSelectedDetailRow()
-    {
-        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
-
-        if (SelectedGridRow.Length >= 1)
-        {
-            return (AMotivationDetailRow)SelectedGridRow[0].Row;
-        }
-
-        return null;
-    }
-
-    private void ShowDetails(AMotivationDetailRow ARow)
-    {
-        txtDetailMotivationGroupCode.Text = ARow.MotivationGroupCode;
-        txtDetailMotivationGroupCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailMotivationDetailCode.Text = ARow.MotivationDetailCode;
-        txtDetailMotivationDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailMotivationDetailDesc.Text = ARow.MotivationDetailDesc;
-        cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
-        cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
-        chkDetailMotivationStatus.Checked = ARow.MotivationStatus;
-        if (ARow.IsReceiptNull())
-        {
-            chkDetailReceipt.Checked = false;
+            cmbDetailCostCentreType.SelectedIndex = -1;
         }
         else
         {
-            chkDetailReceipt.Checked = ARow.Receipt;
+            cmbDetailCostCentreType.SetSelectedString(ARow.CostCentreType);
         }
-    }
-
-    private AMotivationDetailRow FPreviouslySelectedDetailRow = null;
-    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
-    {
-        // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != null)
+        txtDetailCostCentreName.Text = ARow.CostCentreName;
+        if (ARow.IsCostCentreActiveFlagNull())
         {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            chkDetailCostCentreActiveFlag.Checked = false;
         }
-        // display the details of the currently selected row
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
+        else
+        {
+            chkDetailCostCentreActiveFlag.Checked = ARow.CostCentreActiveFlag;
+        }
     }
 
-    private void GetDetailsFromControls(AMotivationDetailRow ARow)
+    private void GetDataFromControls()
+    {
+        GetDataFromControlsManual();
+    }
+
+    private void GetDetailsFromControls(ACostCentreRow ARow)
     {
         if (ARow != null)
         {
-            ARow.MotivationGroupCode = txtDetailMotivationGroupCode.Text;
-            ARow.MotivationDetailCode = txtDetailMotivationDetailCode.Text;
-            ARow.MotivationDetailDesc = txtDetailMotivationDetailDesc.Text;
-            ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
-            ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
-            ARow.MotivationStatus = chkDetailMotivationStatus.Checked;
-            ARow.Receipt = chkDetailReceipt.Checked;
+            ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            if (cmbDetailCostCentreType.SelectedIndex == -1)
+            {
+                ARow.SetCostCentreTypeNull();
+            }
+            else
+            {
+                ARow.CostCentreType = cmbDetailCostCentreType.GetSelectedString();
+            }
+            ARow.CostCentreName = txtDetailCostCentreName.Text;
+            ARow.CostCentreActiveFlag = chkDetailCostCentreActiveFlag.Checked;
         }
     }
 
@@ -301,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        GetDataFromControls();
 
         // TODO: verification
 
@@ -327,7 +247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                 if (SubmitDS == null)
                 {
@@ -338,8 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Submit changes to the PETRAServer
                 try
                 {
-                    // SubmissionResult = WEBCONNECTORMASTER.SaveAMotivationDetail(ref SubmitDS, out VerificationResult);
-                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TRemote.MFinance.GL.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -449,15 +368,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actAddMotivationDetail")
-        {
-            btnAddMotivationDetail.Enabled = e.Enabled;
-            tbbAddMotivationDetail.Enabled = e.Enabled;
-        }
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actAddNewCostCentre")
+        {
+            tbbAddNewCostCentre.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportHierarchy")
+        {
+            tbbExportHierarchy.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportHierarchy")
+        {
+            tbbImportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

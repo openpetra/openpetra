@@ -37,7 +37,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Gift
+namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
     public partial class TFrmGiftMotivationSetup
     {

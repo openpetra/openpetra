@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GLAccountHierarchy.yaml and template windowTDS
+// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowEdit
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -41,20 +41,19 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.GL
+namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
 
-  /// auto generated: GL Account Hierarchy
-  public partial class TFrmGLAccountHierarchy: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: Gift Motivations
+  public partial class TFrmGiftMotivationSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
+    private Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS FMainDS;
 
     /// constructor
-    public TFrmGLAccountHierarchy(IntPtr AParentFormHandle) : base()
+    public TFrmGiftMotivationSetup(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -63,21 +62,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
-      this.lblDetailAccountType.Text = Catalog.GetString("Account Type:");
-      this.lblDetailEngAccountCodeLongDesc.Text = Catalog.GetString("Description Long English:");
-      this.lblDetailEngAccountCodeShortDesc.Text = Catalog.GetString("Description Short English:");
-      this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long Local:");
-      this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short Local:");
-      this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
-      this.chkDetailAccountActiveFlag.Text = Catalog.GetString("Active");
-      this.chkDetailBankAccountFlag.Text = Catalog.GetString("Bank Account");
+      this.btnAddMotivationDetail.Text = Catalog.GetString("Add Detail");
+      this.lblDetailMotivationGroupCode.Text = Catalog.GetString("Group:");
+      this.lblDetailMotivationDetailCode.Text = Catalog.GetString("Detail:");
+      this.lblDetailMotivationDetailDesc.Text = Catalog.GetString("Description:");
+      this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
+      this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre:");
+      this.chkDetailMotivationStatus.Text = Catalog.GetString("Active");
+      this.chkDetailReceipt.Text = Catalog.GetString("Print Receipt");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
-      this.tbbDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
-      this.tbbExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
-      this.tbbImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
+      this.tbbAddMotivationDetail.Text = Catalog.GetString("Add Detail");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -88,40 +83,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
       this.mniEditFind.Text = Catalog.GetString("&Find...");
       this.mniEdit.Text = Catalog.GetString("&Edit");
-      this.mniAddNewAccount.Text = Catalog.GetString("Add Account");
-      this.mniDeleteUnusedAccount.Text = Catalog.GetString("Delete Account");
-      this.mniSeparator3.Text = Catalog.GetString("Separator");
-      this.mniExportHierarchy.Text = Catalog.GetString("Export Hierarchy");
-      this.mniImportHierarchy.Text = Catalog.GetString("Import Hierarchy");
-      this.mniAccounts.Text = Catalog.GetString("Accounts");
       this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
       this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("GL Account Hierarchy");
+      this.Text = Catalog.GetString("Gift Motivations");
       #endregion
 
-      this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailEngAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailEngAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailAccountCodeLongDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailAccountCodeShortDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailMotivationGroupCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailMotivationDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailMotivationDetailDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
-      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCode, Catalog.GetString("Enter a code for the account."));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountType, Catalog.GetString("Choose the type of account (e.g., Asset)"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeLongDesc, Catalog.GetString("Enter a description in English (full)."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailEngAccountCodeShortDesc, Catalog.GetString("Enter a short description in English."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeLongDesc, Catalog.GetString("Enter a description of the account (full)."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeShortDesc, Catalog.GetString("Enter a short description of the account."));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailValidCcCombo, Catalog.GetString("Select cost centre type that may be combined with this account."));
-      FPetraUtilsObject.SetStatusBarText(chkDetailAccountActiveFlag, Catalog.GetString("Is this account available for posting transactions?"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailDesc, Catalog.GetString("Enter a description"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
+      FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS();
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Motivation Group Code", FMainDS.AMotivationDetail.ColumnMotivationGroupCode);
+      grdDetails.AddTextColumn("Motivation Detail Code", FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
+      grdDetails.AddTextColumn("Detail Description", FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
+      grdDetails.AddTextColumn("Account Code", FMainDS.AMotivationDetail.ColumnAccountCode);
+      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AMotivationDetail.ColumnCostCentreCode);
+      grdDetails.AddCheckBoxColumn("Motivation Status", FMainDS.AMotivationDetail.ColumnMotivationStatus);
+      grdDetails.AddCheckBoxColumn("Print Receipt", FMainDS.AMotivationDetail.ColumnReceipt);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      FPetraUtilsObject.InitActionState();
+      DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      grdDetails.AutoSizeCells();
 
+      FPetraUtilsObject.InitActionState();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -150,136 +148,109 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     }
 
-    private void ShowDetails(GLSetupTDSAAccountRow ARow)
+    /// automatically generated, create a new record of AMotivationDetail and display on the edit screen
+    /// we create the table locally, no dataset
+    public bool CreateNewAMotivationDetail()
     {
-        txtDetailAccountCode.Text = ARow.AccountCode;
-        txtDetailAccountCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        if (ARow.IsAccountTypeNull())
-        {
-            cmbDetailAccountType.SelectedIndex = -1;
-        }
-        else
-        {
-            cmbDetailAccountType.SetSelectedString(ARow.AccountType);
-        }
-        if (ARow.IsEngAccountCodeLongDescNull())
-        {
-            txtDetailEngAccountCodeLongDesc.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailEngAccountCodeLongDesc.Text = ARow.EngAccountCodeLongDesc;
-        }
-        if (ARow.IsEngAccountCodeShortDescNull())
-        {
-            txtDetailEngAccountCodeShortDesc.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailEngAccountCodeShortDesc.Text = ARow.EngAccountCodeShortDesc;
-        }
-        if (ARow.IsAccountCodeLongDescNull())
-        {
-            txtDetailAccountCodeLongDesc.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailAccountCodeLongDesc.Text = ARow.AccountCodeLongDesc;
-        }
-        if (ARow.IsAccountCodeShortDescNull())
-        {
-            txtDetailAccountCodeShortDesc.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailAccountCodeShortDesc.Text = ARow.AccountCodeShortDesc;
-        }
-        if (ARow.IsValidCcComboNull())
-        {
-            cmbDetailValidCcCombo.SelectedIndex = -1;
-        }
-        else
-        {
-            cmbDetailValidCcCombo.SetSelectedString(ARow.ValidCcCombo);
-        }
-        if (ARow.IsAccountActiveFlagNull())
-        {
-            chkDetailAccountActiveFlag.Checked = false;
-        }
-        else
-        {
-            chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
-        }
-        if (ARow.IsBankAccountFlagNull())
-        {
-            chkDetailBankAccountFlag.Checked = false;
-        }
-        else
-        {
-            chkDetailBankAccountFlag.Checked = ARow.BankAccountFlag;
-        }
+        AMotivationDetailRow NewRow = FMainDS.AMotivationDetail.NewRowTyped();
+        NewRowManual(ref NewRow);
+        FMainDS.AMotivationDetail.Rows.Add(NewRow);
+
+        FPetraUtilsObject.SetChangedFlag();
+
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AMotivationDetail.DefaultView);
+        grdDetails.Refresh();
+        SelectDetailRowByDataTableIndex(FMainDS.AMotivationDetail.Rows.Count - 1);
+
+        return true;
     }
 
-    private void GetDataFromControls()
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
     {
-        GetDataFromControlsManual();
+        Int32 RowNumberGrid = -1;
+        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        {
+            bool found = true;
+            foreach (DataColumn myColumn in FMainDS.AMotivationDetail.PrimaryKey)
+            {
+                string value1 = FMainDS.AMotivationDetail.Rows[ARowNumberInTable][myColumn].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
+                if (value1 != value2)
+                {
+                    found = false;
+                }
+            }
+            if (found)
+            {
+                RowNumberGrid = Counter + 1;
+            }
+        }
+        grdDetails.Selection.ResetSelection(false);
+        grdDetails.Selection.SelectRow(RowNumberGrid, true);
+        // scroll to the row
+        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
+
+        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }
 
-    private void GetDetailsFromControls(GLSetupTDSAAccountRow ARow)
+    /// return the selected row
+    private AMotivationDetailRow GetSelectedDetailRow()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            return (AMotivationDetailRow)SelectedGridRow[0].Row;
+        }
+
+        return null;
+    }
+
+    private void ShowDetails(AMotivationDetailRow ARow)
+    {
+        txtDetailMotivationGroupCode.Text = ARow.MotivationGroupCode;
+        txtDetailMotivationGroupCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailMotivationDetailCode.Text = ARow.MotivationDetailCode;
+        txtDetailMotivationDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailMotivationDetailDesc.Text = ARow.MotivationDetailDesc;
+        cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
+        cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
+        chkDetailMotivationStatus.Checked = ARow.MotivationStatus;
+        if (ARow.IsReceiptNull())
+        {
+            chkDetailReceipt.Checked = false;
+        }
+        else
+        {
+            chkDetailReceipt.Checked = ARow.Receipt;
+        }
+    }    
+
+    private AMotivationDetailRow FPreviouslySelectedDetailRow = null;
+    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    {
+        // get the details from the previously selected row
+        if (FPreviouslySelectedDetailRow != null)
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
+        pnlDetails.Enabled = true;
+    }
+
+    private void GetDetailsFromControls(AMotivationDetailRow ARow)
     {
         if (ARow != null)
         {
-            ARow.AccountCode = txtDetailAccountCode.Text;
-            if (cmbDetailAccountType.SelectedIndex == -1)
-            {
-                ARow.SetAccountTypeNull();
-            }
-            else
-            {
-                ARow.AccountType = cmbDetailAccountType.GetSelectedString();
-            }
-            if (txtDetailEngAccountCodeLongDesc.Text.Length == 0)
-            {
-                ARow.SetEngAccountCodeLongDescNull();
-            }
-            else
-            {
-                ARow.EngAccountCodeLongDesc = txtDetailEngAccountCodeLongDesc.Text;
-            }
-            if (txtDetailEngAccountCodeShortDesc.Text.Length == 0)
-            {
-                ARow.SetEngAccountCodeShortDescNull();
-            }
-            else
-            {
-                ARow.EngAccountCodeShortDesc = txtDetailEngAccountCodeShortDesc.Text;
-            }
-            if (txtDetailAccountCodeLongDesc.Text.Length == 0)
-            {
-                ARow.SetAccountCodeLongDescNull();
-            }
-            else
-            {
-                ARow.AccountCodeLongDesc = txtDetailAccountCodeLongDesc.Text;
-            }
-            if (txtDetailAccountCodeShortDesc.Text.Length == 0)
-            {
-                ARow.SetAccountCodeShortDescNull();
-            }
-            else
-            {
-                ARow.AccountCodeShortDesc = txtDetailAccountCodeShortDesc.Text;
-            }
-            if (cmbDetailValidCcCombo.SelectedIndex == -1)
-            {
-                ARow.SetValidCcComboNull();
-            }
-            else
-            {
-                ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
-            }
-            ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
-            ARow.BankAccountFlag = chkDetailBankAccountFlag.Checked;
+            ARow.MotivationGroupCode = txtDetailMotivationGroupCode.Text;
+            ARow.MotivationDetailCode = txtDetailMotivationDetailCode.Text;
+            ARow.MotivationDetailDesc = txtDetailMotivationDetailDesc.Text;
+            ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
+            ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+            ARow.MotivationStatus = chkDetailMotivationStatus.Checked;
+            ARow.Receipt = chkDetailReceipt.Checked;
         }
     }
 
@@ -330,7 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDataFromControls();
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // TODO: verification
 
@@ -356,7 +327,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                 if (SubmitDS == null)
                 {
@@ -367,7 +338,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.GL.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
+                    // SubmissionResult = WEBCONNECTORMASTER.SaveAMotivationDetail(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -477,30 +449,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
+        if (e.ActionName == "actAddMotivationDetail")
+        {
+            btnAddMotivationDetail.Enabled = e.Enabled;
+            tbbAddMotivationDetail.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
             mniFileSave.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actAddNewAccount")
-        {
-            tbbAddNewAccount.Enabled = e.Enabled;
-            mniAddNewAccount.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actDeleteUnusedAccount")
-        {
-            tbbDeleteUnusedAccount.Enabled = e.Enabled;
-            mniDeleteUnusedAccount.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actExportHierarchy")
-        {
-            tbbExportHierarchy.Enabled = e.Enabled;
-            mniExportHierarchy.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actImportHierarchy")
-        {
-            tbbImportHierarchy.Enabled = e.Enabled;
-            mniImportHierarchy.Enabled = e.Enabled;
         }
         if (e.ActionName == "actClose")
         {

@@ -78,7 +78,7 @@ OpenPetra:
                         #PrintSingleReceipt:
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=Gift.TFrmGiftNewDonorLetter}
-                    Setup:
+                    Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         MotivationDetailSetup: {Description: "Create motivation details, towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
             AccountsPayable:
                 Main:
@@ -107,7 +107,7 @@ OpenPetra:
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
-                    Setup:
+                    Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
                         #Accounts:
@@ -131,11 +131,11 @@ OpenPetra:
             #Budgets:
             #ICH:
             #Reports:
-            FinanceModuleSetup:
-                Main:
-                    CreateLedger: {ActionOpenScreen=Setup.TFrmGLCreateLedger}
-                    SetupCurrencies: {ActionOpenScreen=Setup.TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+            FinanceModuleSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                Main: 
+                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
+                    SetupCurrencies: {ActionOpenScreen=TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
             
         Personnel: {Icon=personel_small.ico}
             Reports:

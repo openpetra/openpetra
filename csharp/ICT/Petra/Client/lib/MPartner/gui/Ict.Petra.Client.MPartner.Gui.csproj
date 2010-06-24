@@ -160,13 +160,6 @@
     <Compile Include="PartnerNewDialog.Designer.cs">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="PartnerTypeSetup.cs" />
-    <Compile Include="PartnerTypeSetup.Designer.cs">
-      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PartnerTypeSetup.ManualCode.cs">
-      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
-    </Compile>
     <Compile Include="Threading.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="UC_PartnerDetails_Bank.cs" />
@@ -291,9 +284,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerNewDialog.resx">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PartnerTypeSetup.resx">
-      <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_PartnerDetails_Bank.resx">
       <DependentUpon>UC_PartnerDetails_Bank.cs</DependentUpon>

@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GiftMotivationSetup.yaml
+// auto generated with nant generateWinforms from GLCostCentreHierarchy.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -31,9 +31,9 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MFinance.Gui.Gift
+namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
 {
-    partial class TFrmGiftMotivationSetup
+    partial class TFrmGLCostCentreHierarchy
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,31 +64,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmGiftMotivationSetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmGLCostCentreHierarchy));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.pnlGrid = new System.Windows.Forms.Panel();
-            this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
-            this.pnlButtons = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnAddMotivationDetail = new System.Windows.Forms.Button();
+            this.sptSplitter = new System.Windows.Forms.SplitContainer();
+            this.trvCostCentres = new System.Windows.Forms.TreeView();
             this.pnlDetails = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailMotivationGroupCode = new System.Windows.Forms.TextBox();
-            this.lblDetailMotivationGroupCode = new System.Windows.Forms.Label();
-            this.txtDetailMotivationDetailCode = new System.Windows.Forms.TextBox();
-            this.lblDetailMotivationDetailCode = new System.Windows.Forms.Label();
-            this.txtDetailMotivationDetailDesc = new System.Windows.Forms.TextBox();
-            this.lblDetailMotivationDetailDesc = new System.Windows.Forms.Label();
-            this.cmbDetailAccountCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblDetailAccountCode = new System.Windows.Forms.Label();
-            this.cmbDetailCostCentreCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtDetailCostCentreCode = new System.Windows.Forms.TextBox();
             this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
-            this.chkDetailMotivationStatus = new System.Windows.Forms.CheckBox();
-            this.chkDetailReceipt = new System.Windows.Forms.CheckBox();
+            this.cmbDetailCostCentreType = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblDetailCostCentreType = new System.Windows.Forms.Label();
+            this.txtDetailCostCentreName = new System.Windows.Forms.TextBox();
+            this.lblDetailCostCentreName = new System.Windows.Forms.Label();
+            this.chkDetailCostCentreActiveFlag = new System.Windows.Forms.CheckBox();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
-            this.tbbAddMotivationDetail = new System.Windows.Forms.ToolStripButton();
+            this.tbbAddNewCostCentre = new System.Windows.Forms.ToolStripButton();
+            this.tbbExportHierarchy = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportHierarchy = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -111,11 +105,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
-            this.pnlGrid.SuspendLayout();
-            this.pnlButtons.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.sptSplitter.SuspendLayout();
+            this.sptSplitter.Panel1.SuspendLayout();
+            this.sptSplitter.Panel2.SuspendLayout();
             this.pnlDetails.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -126,183 +120,107 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.AutoSize = true;
-            this.pnlContent.Controls.Add(this.pnlGrid);
-            this.pnlContent.Controls.Add(this.pnlDetails);
+            this.pnlContent.Controls.Add(this.sptSplitter);
             //
-            // pnlGrid
+            // sptSplitter
             //
-            this.pnlGrid.Name = "pnlGrid";
-            this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlGrid.AutoSize = true;
-            this.pnlGrid.Controls.Add(this.grdDetails);
-            this.pnlGrid.Controls.Add(this.pnlButtons);
+            this.sptSplitter.Name = "sptSplitter";
+            this.sptSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sptSplitter.SplitterDistance = 50;
+            this.sptSplitter.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.sptSplitter.Panel1.Controls.Add(this.trvCostCentres);
+            this.sptSplitter.Panel2.Controls.Add(this.pnlDetails);
             //
-            // grdDetails
+            // trvCostCentres
             //
-            this.grdDetails.Name = "grdDetails";
-            this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
+            this.trvCostCentres.Name = "trvCostCentres";
+            this.trvCostCentres.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // pnlButtons
+            // pnlDetails
             //
-            this.pnlButtons.Name = "pnlButtons";
-            this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlButtons.AutoSize = true;
+            this.pnlDetails.Name = "pnlDetails";
+            this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetails.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
+            this.pnlDetails.Controls.Add(this.tableLayoutPanel1);
             //
-            // btnAddMotivationDetail
+            // txtDetailCostCentreCode
             //
-            this.btnAddMotivationDetail.Location = new System.Drawing.Point(2,2);
-            this.btnAddMotivationDetail.Name = "btnAddMotivationDetail";
-            this.btnAddMotivationDetail.AutoSize = true;
-            this.btnAddMotivationDetail.Click += new System.EventHandler(this.AddDetail);
-            this.btnAddMotivationDetail.Text = "Add Detail";
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.btnAddMotivationDetail, 0, 0);
-            //
-            // pnlDetails
-            //
-            this.pnlDetails.Name = "pnlDetails";
-            this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlDetails.AutoSize = true;
-            //
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
-            //
-            // txtDetailMotivationGroupCode
-            //
-            this.txtDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
-            this.txtDetailMotivationGroupCode.Name = "txtDetailMotivationGroupCode";
-            this.txtDetailMotivationGroupCode.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblDetailMotivationGroupCode
-            //
-            this.lblDetailMotivationGroupCode.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMotivationGroupCode.Name = "lblDetailMotivationGroupCode";
-            this.lblDetailMotivationGroupCode.AutoSize = true;
-            this.lblDetailMotivationGroupCode.Text = "Group:";
-            this.lblDetailMotivationGroupCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailMotivationGroupCode.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailMotivationGroupCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtDetailMotivationDetailCode
-            //
-            this.txtDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
-            this.txtDetailMotivationDetailCode.Name = "txtDetailMotivationDetailCode";
-            this.txtDetailMotivationDetailCode.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblDetailMotivationDetailCode
-            //
-            this.lblDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMotivationDetailCode.Name = "lblDetailMotivationDetailCode";
-            this.lblDetailMotivationDetailCode.AutoSize = true;
-            this.lblDetailMotivationDetailCode.Text = "Detail:";
-            this.lblDetailMotivationDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailMotivationDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailMotivationDetailCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtDetailMotivationDetailDesc
-            //
-            this.txtDetailMotivationDetailDesc.Location = new System.Drawing.Point(2,2);
-            this.txtDetailMotivationDetailDesc.Name = "txtDetailMotivationDetailDesc";
-            this.txtDetailMotivationDetailDesc.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblDetailMotivationDetailDesc
-            //
-            this.lblDetailMotivationDetailDesc.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMotivationDetailDesc.Name = "lblDetailMotivationDetailDesc";
-            this.lblDetailMotivationDetailDesc.AutoSize = true;
-            this.lblDetailMotivationDetailDesc.Text = "Description:";
-            this.lblDetailMotivationDetailDesc.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailMotivationDetailDesc.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailMotivationDetailDesc.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbDetailAccountCode
-            //
-            this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
-            this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
-            this.cmbDetailAccountCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblDetailAccountCode
-            //
-            this.lblDetailAccountCode.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAccountCode.Name = "lblDetailAccountCode";
-            this.lblDetailAccountCode.AutoSize = true;
-            this.lblDetailAccountCode.Text = "Account:";
-            this.lblDetailAccountCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAccountCode.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbDetailCostCentreCode
-            //
-            this.cmbDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
-            this.cmbDetailCostCentreCode.Name = "cmbDetailCostCentreCode";
-            this.cmbDetailCostCentreCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailCostCentreCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            this.txtDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
+            this.txtDetailCostCentreCode.Name = "txtDetailCostCentreCode";
+            this.txtDetailCostCentreCode.Size = new System.Drawing.Size(150, 28);
             //
             // lblDetailCostCentreCode
             //
             this.lblDetailCostCentreCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailCostCentreCode.Name = "lblDetailCostCentreCode";
             this.lblDetailCostCentreCode.AutoSize = true;
-            this.lblDetailCostCentreCode.Text = "Cost Centre:";
+            this.lblDetailCostCentreCode.Text = "Cost Centre Code:";
             this.lblDetailCostCentreCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCostCentreCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailCostCentreCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // chkDetailMotivationStatus
+            // cmbDetailCostCentreType
             //
-            this.chkDetailMotivationStatus.Location = new System.Drawing.Point(2,2);
-            this.chkDetailMotivationStatus.Name = "chkDetailMotivationStatus";
-            this.chkDetailMotivationStatus.AutoSize = true;
-            this.chkDetailMotivationStatus.Text = "Active";
-            this.chkDetailMotivationStatus.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.cmbDetailCostCentreType.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailCostCentreType.Name = "cmbDetailCostCentreType";
+            this.cmbDetailCostCentreType.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailCostCentreType.Items.AddRange(new object[] {"Local","Foreign"});
             //
-            // chkDetailReceipt
+            // lblDetailCostCentreType
             //
-            this.chkDetailReceipt.Location = new System.Drawing.Point(2,2);
-            this.chkDetailReceipt.Name = "chkDetailReceipt";
-            this.chkDetailReceipt.AutoSize = true;
-            this.chkDetailReceipt.Text = "Print Receipt";
-            this.chkDetailReceipt.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 6;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationGroupCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationDetailCode, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationDetailDesc, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAccountCode, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCostCentreCode, 0, 4);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailMotivationStatus, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailMotivationStatus, 0, 5);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationGroupCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationDetailCode, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationDetailDesc, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailAccountCode, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCostCentreCode, 1, 4);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailReceipt, 2, 5);
+            this.lblDetailCostCentreType.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreType.Name = "lblDetailCostCentreType";
+            this.lblDetailCostCentreType.AutoSize = true;
+            this.lblDetailCostCentreType.Text = "Cost Centre Type:";
+            this.lblDetailCostCentreType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtDetailCostCentreName
+            //
+            this.txtDetailCostCentreName.Location = new System.Drawing.Point(2,2);
+            this.txtDetailCostCentreName.Name = "txtDetailCostCentreName";
+            this.txtDetailCostCentreName.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblDetailCostCentreName
+            //
+            this.lblDetailCostCentreName.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreName.Name = "lblDetailCostCentreName";
+            this.lblDetailCostCentreName.AutoSize = true;
+            this.lblDetailCostCentreName.Text = "Cost Centre Name:";
+            this.lblDetailCostCentreName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // chkDetailCostCentreActiveFlag
+            //
+            this.chkDetailCostCentreActiveFlag.Location = new System.Drawing.Point(2,2);
+            this.chkDetailCostCentreActiveFlag.Name = "chkDetailCostCentreActiveFlag";
+            this.chkDetailCostCentreActiveFlag.AutoSize = true;
+            this.chkDetailCostCentreActiveFlag.Text = "Active";
+            this.chkDetailCostCentreActiveFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreCode, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreType, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreName, 0, 2);
+            this.tableLayoutPanel1.SetColumnSpan(this.chkDetailCostCentreActiveFlag, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailCostCentreActiveFlag, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailCostCentreCode, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDetailCostCentreType, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtDetailCostCentreName, 1, 2);
             //
             // tbbSave
             //
@@ -313,12 +231,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
             //
-            // tbbAddMotivationDetail
+            // tbbAddNewCostCentre
             //
-            this.tbbAddMotivationDetail.Name = "tbbAddMotivationDetail";
-            this.tbbAddMotivationDetail.AutoSize = true;
-            this.tbbAddMotivationDetail.Click += new System.EventHandler(this.AddDetail);
-            this.tbbAddMotivationDetail.Text = "Add Detail";
+            this.tbbAddNewCostCentre.Name = "tbbAddNewCostCentre";
+            this.tbbAddNewCostCentre.AutoSize = true;
+            this.tbbAddNewCostCentre.Click += new System.EventHandler(this.AddNewCostCentre);
+            this.tbbAddNewCostCentre.Text = "Add Cost Centre";
+            //
+            // tbbExportHierarchy
+            //
+            this.tbbExportHierarchy.Name = "tbbExportHierarchy";
+            this.tbbExportHierarchy.AutoSize = true;
+            this.tbbExportHierarchy.Click += new System.EventHandler(this.ExportHierarchy);
+            this.tbbExportHierarchy.Text = "Export Hierarchy";
+            //
+            // tbbImportHierarchy
+            //
+            this.tbbImportHierarchy.Name = "tbbImportHierarchy";
+            this.tbbImportHierarchy.AutoSize = true;
+            this.tbbImportHierarchy.Click += new System.EventHandler(this.ImportHierarchy);
+            this.tbbImportHierarchy.Text = "Import Hierarchy";
             //
             // tbrMain
             //
@@ -327,7 +259,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
-                        tbbAddMotivationDetail});
+                        tbbAddNewCostCentre,
+                        tbbExportHierarchy,
+                        tbbImportHierarchy});
             //
             // mniFileSave
             //
@@ -478,7 +412,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmGiftMotivationSetup
+            // TFrmGLCostCentreHierarchy
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -492,8 +426,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmGiftMotivationSetup";
-            this.Text = "Gift Motivations";
+            this.Name = "TFrmGLCostCentreHierarchy";
+            this.Text = "GL Cost Centre Hierarchy";
 
 	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
 	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -504,11 +438,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.pnlButtons.ResumeLayout(false);
-            this.pnlGrid.ResumeLayout(false);
+            this.pnlDetails.ResumeLayout(false);
+            this.sptSplitter.Panel2.ResumeLayout(false);
+            this.sptSplitter.Panel1.ResumeLayout(false);
+            this.sptSplitter.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 
             this.ResumeLayout(false);
@@ -516,28 +450,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.Panel pnlGrid;
-        private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
-        private System.Windows.Forms.Panel pnlButtons;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button btnAddMotivationDetail;
+        private System.Windows.Forms.SplitContainer sptSplitter;
+        private System.Windows.Forms.TreeView trvCostCentres;
         private System.Windows.Forms.Panel pnlDetails;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtDetailMotivationGroupCode;
-        private System.Windows.Forms.Label lblDetailMotivationGroupCode;
-        private System.Windows.Forms.TextBox txtDetailMotivationDetailCode;
-        private System.Windows.Forms.Label lblDetailMotivationDetailCode;
-        private System.Windows.Forms.TextBox txtDetailMotivationDetailDesc;
-        private System.Windows.Forms.Label lblDetailMotivationDetailDesc;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailAccountCode;
-        private System.Windows.Forms.Label lblDetailAccountCode;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCostCentreCode;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox txtDetailCostCentreCode;
         private System.Windows.Forms.Label lblDetailCostCentreCode;
-        private System.Windows.Forms.CheckBox chkDetailMotivationStatus;
-        private System.Windows.Forms.CheckBox chkDetailReceipt;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailCostCentreType;
+        private System.Windows.Forms.Label lblDetailCostCentreType;
+        private System.Windows.Forms.TextBox txtDetailCostCentreName;
+        private System.Windows.Forms.Label lblDetailCostCentreName;
+        private System.Windows.Forms.CheckBox chkDetailCostCentreActiveFlag;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
-        private System.Windows.Forms.ToolStripButton tbbAddMotivationDetail;
+        private System.Windows.Forms.ToolStripButton tbbAddNewCostCentre;
+        private System.Windows.Forms.ToolStripButton tbbExportHierarchy;
+        private System.Windows.Forms.ToolStripButton tbbImportHierarchy;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;
