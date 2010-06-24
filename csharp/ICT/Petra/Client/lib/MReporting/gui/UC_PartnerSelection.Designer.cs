@@ -216,7 +216,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Name = "TFrmUC_PartnerSelection";
             this.Text = "";
 
-	
             this.tableLayoutPanel2.ResumeLayout(false);
             this.grpSelection.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);

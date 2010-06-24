@@ -850,12 +850,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TPartnerFindScreen";
             this.Text = "Partner Find OpenPetra.org";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	        this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+            this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);

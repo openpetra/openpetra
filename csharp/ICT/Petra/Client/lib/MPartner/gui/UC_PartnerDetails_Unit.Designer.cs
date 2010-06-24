@@ -344,7 +344,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerDetails_Unit";
             this.Text = "";
 
-	
             this.tableLayoutPanel3.ResumeLayout(false);
             this.grpCampaignInfo.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);

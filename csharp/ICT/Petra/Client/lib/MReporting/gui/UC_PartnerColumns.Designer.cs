@@ -386,7 +386,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Name = "TFrmUC_PartnerColumns";
             this.Text = "";
 
-	
             this.tableLayoutPanel6.ResumeLayout(false);
             this.pnlLowerButtons.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);

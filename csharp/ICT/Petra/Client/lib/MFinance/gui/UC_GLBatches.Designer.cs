@@ -449,7 +449,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Name = "TUC_GLBatches";
             this.Text = "";
 
-	
             this.mnuTabPage.ResumeLayout(false);
             this.tbrTabPage.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);

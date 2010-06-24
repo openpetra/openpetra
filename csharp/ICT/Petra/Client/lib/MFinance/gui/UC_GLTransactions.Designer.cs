@@ -619,7 +619,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Name = "TUC_GLTransactions";
             this.Text = "";
 
-	
             this.tableLayoutPanel4.ResumeLayout(false);
             this.pnlDetailAmounts.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
