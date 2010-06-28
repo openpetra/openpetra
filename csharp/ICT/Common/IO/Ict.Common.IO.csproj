@@ -46,6 +46,8 @@
       <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -59,11 +61,18 @@
     <Compile Include="ImportExportDialogs.cs" />
     <Compile Include="PackTools.cs" />
     <Compile Include="PatchTools.cs" />
+    <Compile Include="SelectCSVSeparator.cs" />
+    <Compile Include="SelectCSVSeparator.Designer.cs">
+      <DependentUpon>SelectCSVSeparator.cs</DependentUpon>
+    </Compile>
     <Compile Include="SmtpEmail.cs" />
     <Compile Include="HTTPUtils.cs" />
     <Compile Include="TextFile.cs" />
     <Compile Include="XmlParser.cs" />
     <Compile Include="Yml2Xml.cs" />
+    <EmbeddedResource Include="SelectCSVSeparator.resx">
+      <DependentUpon>SelectCSVSeparator.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ict.Common.csproj">

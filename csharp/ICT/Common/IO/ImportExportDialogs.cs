@@ -180,8 +180,15 @@ namespace Ict.Common.IO
 
                 if (DialogOpen.FileName.ToLower().EndsWith("csv"))
                 {
-                    XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName);
-                    return doc;
+                    // select separator, make sure there is a header line with the column captions/names
+                    TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator();
+                    dlgSeparator.CSVFileName = DialogOpen.FileName;
+
+                    if (dlgSeparator.ShowDialog() == DialogResult.OK)
+                    {
+                        XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName, dlgSeparator.SelectedSeparator);
+                        return doc;
+                    }
                 }
                 else if (DialogOpen.FileName.ToLower().EndsWith("xml"))
                 {

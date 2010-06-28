@@ -123,41 +123,52 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// convert a CSV file to an XmlDocument
+        /// convert a CSV file to an XmlDocument.
+        /// the first line is expected to contain the column names/captions
+        /// the separator is read from the header line, and the captions require # at the start of each caption
         /// </summary>
-        /// <param name="ACSVFilename"></param>
-        /// <returns></returns>
         public static XmlDocument ParseCSV2Xml(string ACSVFilename)
+        {
+            return ParseCSV2Xml(ACSVFilename, String.Empty);
+        }
+
+        /// <summary>
+        /// convert a CSV file to an XmlDocument.
+        /// the first line is expected to contain the column names/captions
+        /// </summary>
+        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
-            StreamReader sr = new StreamReader(ACSVFilename);
+            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename), false);
 
             try
             {
                 string headerLine = sr.ReadLine();
+                string separator = ASeparator;
 
-                if (!headerLine.StartsWith("#") && !headerLine.StartsWith("\"#"))
+                if (ASeparator == string.Empty)
                 {
-                    throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
-                        Environment.NewLine +
-                        Catalog.GetString("There must be a row with the column captions, each caption starting with the # character."));
-                }
-
-                // read separator from header line. at least the first two columns need a # at the beginning of the column name
-                string separator = ",";
-
-                if (headerLine[0] == '"')
-                {
-                    separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
-                }
-                else
-                {
-                    separator = headerLine[headerLine.IndexOf("#", 2) - 1].ToString();
-
-                    if (separator == "\"")
+                    if (!headerLine.StartsWith("#") && !headerLine.StartsWith("\"#"))
                     {
-                        separator = headerLine[headerLine.IndexOf("#", 2) - 2].ToString();
+                        throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
+                            Environment.NewLine +
+                            Catalog.GetString("There must be a row with the column captions, each caption starting with the # character."));
+                    }
+
+                    // read separator from header line. at least the first two columns need a # at the beginning of the column name
+                    if (headerLine[0] == '"')
+                    {
+                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
+                    }
+                    else
+                    {
+                        separator = headerLine[headerLine.IndexOf("#", 2) - 1].ToString();
+
+                        if (separator == "\"")
+                        {
+                            separator = headerLine[headerLine.IndexOf("#", 2) - 2].ToString();
+                        }
                     }
                 }
 
