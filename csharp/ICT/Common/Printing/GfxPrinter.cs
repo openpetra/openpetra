@@ -402,6 +402,8 @@ namespace Ict.Common.Printing
                     string nextWord = buffer.Substring(0, indexWhitespace);
                     fittingText += previousWhitespaces + nextWhitespaces + nextWord;
 
+                    nextWhitespaces = "";
+                    
                     // sometimes there are forced whitespaces (eg &nbsp;, already replaced by spaces etc)
                     // consider them as a word
                     previousWhitespaces = buffer[indexWhitespace].ToString();
@@ -468,7 +470,7 @@ namespace Ict.Common.Printing
                 }
                 else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
-                    length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
+                    length = GetTextLengthThatWillFit(ATxt, AFont, AWidth - AXPos);
                 }
 
                 if (FCurrentState.FNoWrap)
