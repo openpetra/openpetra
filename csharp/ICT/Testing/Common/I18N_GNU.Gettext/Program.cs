@@ -26,18 +26,18 @@
 using System;
 using GNU.Gettext; //Required namespace for i18n
 
-namespace I18N_GNU.Gettext    
+namespace I18N_GNU.Gettext
 {
     class Example
     {
         //This variable will allow us to set which strings are translatable
-    	//"my_class" is a catalog identifier, used in the next section
-    	private static GettextResourceManager _catalog = new GettextResourceManager ("my_class");
-	
+        //"my_class" is a catalog identifier, used in the next section
+        private static GettextResourceManager _catalog = new GettextResourceManager("my_class");
+
         public static void Main(string[] args)
         {
-    		//This string is modified adding the method GetString() from the catalog variable
-    		System.Console.WriteLine (_catalog.GetString ("Hello world!"));
+            //This string is modified adding the method GetString() from the catalog variable
+            System.Console.WriteLine(_catalog.GetString("Hello world!"));
         }
     }
 }
