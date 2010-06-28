@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchTool", "PetraTools\Pat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchToolConsole", "PetraTools\PatchTool\PatchToolConsole.csproj", "{B3976248-2013-44E4-8937-EB17E2EC1DA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertExtToCSV", "PetraTools\ConvertExtToCSV\ConvertExtToCSV.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -116,5 +118,9 @@ Global
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Debug|x86.Build.0 = Debug|x86
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Release|x86.ActiveCfg = Release|x86
 		{B3976248-2013-44E4-8937-EB17E2EC1DA9}.Release|x86.Build.0 = Release|x86
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Debug|x86.Build.0 = Debug|x86
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Debug|x86.ActiveCfg = Debug|x86
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Release|x86.Build.0 = Release|x86
+		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

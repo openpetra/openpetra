@@ -369,23 +369,20 @@ namespace Ict.Common
         /// <returns>the first value of the list</returns>
         public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators)
         {
-            int commaPosition;
             string value;
             int position;
             Boolean escape;
-            int alternativeSeparatorCounter;
 
             if (list.Length == 0)
             {
                 return "";
             }
 
-            // find which is the separator used in the file
-            commaPosition = list.IndexOf(separator);
-
             if (ATryAllSeparators == true)
             {
-                alternativeSeparatorCounter = 0;
+                // find which is the separator used in the file
+                int commaPosition = list.IndexOf(separator);
+                int alternativeSeparatorCounter = 0;
 
                 while ((commaPosition == -1) && (alternativeSeparatorCounter < DefaultCSVSeparators.Length))
                 {
@@ -399,40 +396,49 @@ namespace Ict.Common
             escape = false;
             value = "";
 
-            while ((position < list.Length) && (escape || (list.Substring(position, 1) != separator)))
+            if (!list.StartsWith(separator))
             {
-                if (escape)
+                while (position < list.Length)
                 {
-                    escape = false;
-                }
-                else
-                {
-                    if (list[position] == '\\')
+                    if (escape)
                     {
-                        escape = true;
-                        position++;
-                    }
-                }
-
-                if (list[position] == '"')
-                {
-                    string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1));
-
-                    if (value.Length == 0)
-                    {
-                        value += quotedstring;
+                        escape = false;
                     }
                     else
                     {
-                        value += "\"" + quotedstring + "\"";
+                        if (list[position] == '\\')
+                        {
+                            escape = true;
+                            position++;
+                        }
                     }
 
-                    position += quotedstring.Length + 2;
-                }
-                else
-                {
-                    value = value + list[position];
-                    position++;
+                    if (list[position] == '"')
+                    {
+                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1));
+
+                        if (value.Length == 0)
+                        {
+                            value += quotedstring;
+                        }
+                        else
+                        {
+                            value += "\"" + quotedstring + "\"";
+                        }
+
+                        position += quotedstring.Length + 2;
+                    }
+                    else
+                    {
+                        value = value + list[position];
+                        position++;
+                    }
+
+                    if (!escape && (position + separator.Length - 1 < list.Length) && (list.Substring(position, separator.Length) == separator))
+                    {
+                        // found the next separator
+                        break;
+                    }
                 }
             }
 
@@ -444,7 +450,7 @@ namespace Ict.Common
             }
             else
             {
-                list = list.Substring(position + 1, list.Length - position - 1);
+                list = list.Substring(position + separator.Length, list.Length - position - separator.Length);
 
                 // there still was a separator, so if the list is now empty, we need to provide an empty value
                 if (list.Length == 0)

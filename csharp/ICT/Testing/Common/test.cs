@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -274,6 +274,12 @@ namespace Ict.Common.Testing
             string testAccountCodeLeadingZero = StringHelper.AddCSV("test", "0100");
             Assert.AreEqual("0100", StringHelper.GetCSVValue(testAccountCodeLeadingZero,
                     1), "Integers with leading zero should be treated as string; for account codes");
+
+            string testListSeparator2Spaces = "\"Test  Hallo\"  0  \"\"  0";
+            Assert.AreEqual("Test  Hallo", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
+            Assert.AreEqual("0", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
+            Assert.AreEqual("", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
+            Assert.AreEqual("0", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
         }
 
         [Test]
@@ -629,16 +635,16 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
 
             Assert.AreEqual("Einhundertdreiundzwanzig Euro", NumberToWords.AmountToWords(123, "Euro", "Cent"));
-            Assert.AreEqual("Eintausendzweihundertdrei�ig Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
+            Assert.AreEqual("Eintausendzweihundertdreißig Euro", NumberToWords.AmountToWords(1230, "Euro", "Cent"));
             Assert.AreEqual("Dreihundertachtzig Euro", NumberToWords.AmountToWords(380, "Euro", "Cent"));
-            Assert.AreEqual("Zw�lftausenddreihundert Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
+            Assert.AreEqual("Zwölftausenddreihundert Euro", NumberToWords.AmountToWords(12300, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausend Euro", NumberToWords.AmountToWords(123000, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeins Euro", NumberToWords.AmountToWords(123001, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteins Euro", NumberToWords.AmountToWords(123101, "Euro", "Cent"));
-            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddrei�ig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
+            Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
             Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
-            Assert.AreEqual("Drei Euro F�nfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
             Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
 
             Thread.CurrentThread.CurrentCulture = oldCulture;
