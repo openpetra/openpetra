@@ -63,6 +63,12 @@
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.dll</HintPath>
     </Reference>
@@ -86,9 +92,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BirthdayListReport.cs" />
+    <Compile Include="BirthdayListReport.Designer.cs">
+      <DependentUpon>BirthdayListReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BirthdayListReport.ManualCode.cs">
+      <DependentUpon>BirthdayListReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EmergencyContactReportStaff.cs" />
+    <Compile Include="EmergencyContactReportStaff.Designer.cs">
+      <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
+    </Compile>
     <Compile Include="EndOfCommitmentReport.cs" />
     <Compile Include="EndOfCommitmentReport.Designer.cs">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportExpiryReport.cs" />
+    <Compile Include="PassportExpiryReport.Designer.cs">
+      <DependentUpon>PassportExpiryReport.cs</DependentUpon>
     </Compile>
     <Compile Include="PreviousExperienceReport.cs" />
     <Compile Include="PreviousExperienceReport.Designer.cs">
@@ -105,8 +126,17 @@
     <Compile Include="StartOfCommitmentReport.ManualCode.cs">
       <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="BirthdayListReport.resx">
+      <DependentUpon>BirthdayListReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmergencyContactReportStaff.resx">
+      <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PassportExpiryReport.resx">
+      <DependentUpon>PassportExpiryReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreviousExperienceReport.resx">
       <DependentUpon>PreviousExperienceReport.cs</DependentUpon>

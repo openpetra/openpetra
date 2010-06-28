@@ -176,6 +176,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetOccupation"))
+            {
+                value = new TVariant(GetOccupation(ops[1].ToString()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
@@ -1440,6 +1446,47 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 // Remove last comma
                 ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 1);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get the Occupation Code and Occupation description from p_occupation table and stores them
+        /// in the report variables OccupationDescription and Occupation
+        /// </summary>
+        /// <param name="AOccupationCode">The unique key to retrieve the data</param>
+        /// <returns></returns>
+        private bool GetOccupation(String AOccupationCode)
+        {
+            bool ReturnValue = false;
+
+            if (AOccupationCode.Length > 0)
+            {
+                POccupationTable OccupationTable;
+
+                OccupationTable = POccupationAccess.LoadByPrimaryKey(AOccupationCode, situation.GetDatabaseConnection().Transaction);
+
+                DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + AOccupationCode + "'");
+
+                if (OccupationTable.Rows.Count > 0)
+                {
+                    POccupationRow OccupationRow = (POccupationRow)OccupationTable.Rows[0];
+
+                    situation.GetParameters().Add("OccupationDescription",
+                        OccupationRow.OccupationDescription,
+                        -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    situation.GetParameters().Add("Occupation",
+                        OccupationRow.OccupationCode,
+                        -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    ReturnValue = true;
+                }
+            }
+
+            if (!ReturnValue)
+            {
+                situation.GetParameters().RemoveVariable("OccupationDescription", -1, -1, eParameterFit.eExact);
+                situation.GetParameters().RemoveVariable("Occupation", -1, -1, eParameterFit.eExact);
             }
 
             return ReturnValue;
