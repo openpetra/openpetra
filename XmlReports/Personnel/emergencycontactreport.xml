@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Emergency Contact report">
+	<description>
+		Emergency Contact Report for conferences / campaigns
+	</description>
+	<reportparameters>
+		<reportparameter name="param_source"></reportparameter>
+		<reportparameter name="param_event_name"></reportparameter>
+		<reportparameter name="param_extract_name"></reportparameter>
+		<reportparameter name="param_event_description"></reportparameter>
+		<reportparameter name="param_extract_description"></reportparameter>
+		<reportparameter name="param_conference_code"></reportparameter>
+		<reportparameter name="param_unit_key"></reportparameter>
+		<reportparameter name="param_event_only"></reportparameter>
+		<reportparameter name="param_hide_empty_lines"></reportparameter>
+		<reportparameter name="param_print_two_lines"></reportparameter>
+		<reportparameter name="param_application_status_accepted"></reportparameter>
+		<reportparameter name="param_application_status_cancelled"></reportparameter>
+		<reportparameter name="param_application_status_enquiry"></reportparameter>
+		<reportparameter name="param_application_status_hold"></reportparameter>
+		<reportparameter name="param_application_status_rejected"></reportparameter>
+	</reportparameters>
+	
+	<reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value text="Emergency Contact Report"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="descr1">
+        <value text="Sorted by: "></value>
+        <value variable="param_sortby_readable"></value>
+      </field>
+	  
+      <field whichfield="period1">
+        <fielddetail>
+	  <value text="Application Status:"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_accepted}, true)">
+	  <value text=" Accepted"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_cancelled}, true)">
+	  <value text=" Cancelled"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_rejected}, true)">
+	  <value text=" Rejected"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_enquiry}, true)">
+	  <value text=" Enquiry"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_hold}, true)">
+	  <value text=" Hold"></value>
+	</fielddetail>
+      </field>
+	  
+      <field whichfield="period2">
+        <fielddetail>
+          <value text="Selection: "></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source}, Event)">
+          <value text="Event: "></value><value variable="param_event_name"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source}, Extract)">
+          <value text="Extract: "></value><value variable="param_extract_name"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source},EntireDatabase)">
+          <value text="Entire Database"></value>
+        </fielddetail>
+      </field>
+    </pageheader>
+
+    <calculations>
+	
+	<calculation id="Select Partners" returns="PartnerKey, ApplicantPartnerName, FirstLanguage, Gender, MaritalStatus, DateOfBirth
+				" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT DISTINCT
+					PUB_p_partner.p_partner_key_n AS PartnerKey,
+					PUB_p_partner.p_partner_short_name_c AS ApplicantPartnerName,
+					PUB_p_partner.p_language_code_c AS FirstLanguage,
+					
+					PUB_p_person.p_gender_c AS Gender,
+					PUB_p_person.p_marital_status_c AS MaritalStatus,
+					PUB_p_person.p_date_of_birth_d AS DateOfBirth
+					
+				FROM
+					PUB_p_person, PUB_p_partner,
+			</value></queryDetail>
+			
+			<!-- event and related options -->
+			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))"><value>
+					PUB_pm_short_term_application, PUB_pm_general_application
+				WHERE
+					PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+			</value></queryDetail>
+			
+			<!-- this event only -->
+			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
+					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application
+				WHERE
+					PUB_p_unit.p_partner_key_n = {param_unit_key}
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_campaign_code_c
+			</value></queryDetail>
+			
+			<!-- all events -->
+			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
+					PUB_pm_short_term_application, PUB_pm_general_application
+				WHERE
+					PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+			</value></queryDetail>
+			
+			<!-- extract and this event only -->
+			<queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
+					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+				WHERE
+					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_campaign_code_c
+			</value></queryDetail>
+			
+			<!-- extract and event and related otions -->
+			<queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
+					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+				WHERE
+					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+			</value></queryDetail>
+			
+			<!-- extract and all events -->
+			<queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))"><value>
+					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+				WHERE
+					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+			</value></queryDetail>
+			
+			<queryDetail><value>
+					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+					AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
+					AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
+					AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
+					AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
+					AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+					AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+					AND ( PUB_pm_general_application.pm_gen_application_status_c = ''
+			</value></queryDetail>
+			<queryDetail condition="eq({param_application_status_accepted}, true)"><value>
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'A'
+			</value></queryDetail>
+			<queryDetail condition="eq({param_application_status_cancelled}, true)"><value>
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C1'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C2'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C3'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C4'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C5'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C6'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'C7' 
+			</value></queryDetail>
+			<queryDetail condition="eq({param_application_status_enquiry}, true)"><value>
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'E'
+			</value></queryDetail>
+			<queryDetail condition="eq({param_application_status_hold}, true)"><value>
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'H'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-LANG'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-MED'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-REF'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-SUP' 
+			</value></queryDetail>
+			<queryDetail condition="eq({param_application_status_rejected}, true)"><value>
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R1'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R2'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R3'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R4'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R5'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R6'
+							OR PUB_pm_general_application.pm_gen_application_status_c = 'R7' 
+			</value></queryDetail>
+			<queryDetail><value>
+							)
+			</value></queryDetail>
+			<queryDetail><value>
+							ORDER BY  ApplicantPartnerName
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="SelectRelationships" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner_relationship.p_partner_key_n AS EmergencyContactKey,
+					PUB_p_partner_relationship.p_relation_name_c AS EmergencyContactType,
+					PUB_p_partner_relationship.p_comment_c AS Comment,
+					PUB_p_partner.p_partner_short_name_c AS EmergencyContactName
+				FROM
+					PUB_p_partner_relationship, PUB_p_partner
+				WHERE 
+						PUB_p_partner_relationship.p_relation_key_n = {PartnerKey}
+					AND PUB_p_partner_relationship.p_partner_key_n &lt;&gt; 0
+					AND (PUB_p_partner_relationship.p_relation_name_c = "PARENT" OR
+						PUB_p_partner_relationship.p_relation_name_c = "GUARDIAN" OR
+						PUB_p_partner_relationship.p_relation_name_c = "RELATIVE" OR
+						PUB_p_partner_relationship.p_relation_name_c = "EMER-1" OR
+						PUB_p_partner_relationship.p_relation_name_c = "EMER-2" OR
+						PUB_p_partner_relationship.p_relation_name_c = "SUPPCHURCH" OR
+						PUB_p_partner_relationship.p_relation_name_c = "CH-CNTACT1" OR
+						PUB_p_partner_relationship.p_relation_name_c = "CH-CNTACT2" OR
+						PUB_p_partner_relationship.p_relation_name_c = "NOK-OTHER")
+					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Emergency Contact Details" returns="Automatic" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value text="NO-SQL"/>
+				<value function="GetPartnerBestAddress({EmergencyContactKey})"/>
+				<value function="assign(Fax, )" condition="lt({FaxNumber}, 1)"/>
+				<value function="assign(Fax, concatenate({FaxNumber}, {FaxExtension}))" condition="gt({FaxNumber}, 0)"/>
+				<value function="assign(Telephone, concatenate({TelephoneNumber}, {Extension}))"/>
+			</queryDetail>
+			
+		</query>
+	</calculation>
+	
+	<calculation id="MakePartnerHeader" returns="PartnerNameAndField, PartnerAddress" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value function="GetPartnerBestAddress({PartnerKey})"/>
+				<value function="assign(FieldOfStaff, GetFieldOfPartner({PartnerKey}))"/>
+				<value function="assign(PartnerNameAndField, concatenateww({PartnerKey}, {ApplicantPartnerName}, 2))"/>
+				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, Field:, 3))"/>
+				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, {FieldOfStaff}, 1))" condition="gt({FieldOfStaff}, 0)"/>
+				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, ?, 1))" condition="lt(length({FieldOfStaff}), 1)"/>
+				<value function="assign(PartnerAddress,  )"/>
+				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
+				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
+		<caption><value text="Address Line 1"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Locality"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
+		<caption><value text="Address Line 3"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Address3"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
+		<caption><value text="Alternate Telephone"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="AlternateTelephone"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Application Key" returns="text" returnsFormat="text">
+		<caption><value text="Application Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ApplicationKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Application Status" returns="text" returnsFormat="text">
+		<caption><value text="App. Status"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ApplicationStatus"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="City" returns="text" returnsFormat="text">
+		<caption><value text="City"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="City"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Comment" returns="text" returnsFormat="text">
+		<caption><value text="Comment"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Comment"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Conference Role" returns="text" returnsFormat="text">
+		<caption><value text="Conference Role"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="ConferenceRole"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Country" returns="text" returnsFormat="text">
+		<caption><value text="Country"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="CountryCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+		<caption><value text="DOB"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="DateOfBirth"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="E-Mail" returns="text" returnsFormat="text">
+		<caption><value text="E-Mail"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EmailAddress"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Emergency Contact Key" returns="text" returnsFormat="partnerkey">
+		<caption><value text="Key"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EmergencyContactKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Emergency Contact Name" returns="text" returnsFormat="text">
+		<caption><value text="Name"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EmergencyContactName"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Emergency Contact Type" returns="text" returnsFormat="text">
+		<caption><value text="Contact Type"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EmergencyContactType"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Event Code" returns="text" returnsFormat="text">
+		<caption><value text="Event Code"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="EventCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Extension" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="Extension"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Fax" returns="text" returnsFormat="text">
+		<caption><value text="Fax"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Fax"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Fax Extension" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="FaxExtension"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Fax Number" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="FaxNumber"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="First Language" returns="text" returnsFormat="text">
+		<caption><value text="First Language"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="FirstLanguage"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Gender" returns="text" returnsFormat="text">
+		<caption><value text="Gender"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Gender"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Marital Status" returns="text" returnsFormat="text">
+		<caption><value text="Marital Status"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="MaritalStatus"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Mobile" returns="text" returnsFormat="text">
+		<caption><value text="Mobile"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="MobileNumber"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Address" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="PartnerAddress"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Key Applicant" returns="text" returnsFormat="partnerkey">
+		<query>
+			<queryDetail>
+				<value variable="PartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Name And Field" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="PartnerNameAndField"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Field of Staff" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="FieldOfStaff"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Post Code" returns="text" returnsFormat="text">
+		<caption><value text="Post Code"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="PostalCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="State / County / Province" returns="text" returnsFormat="text">
+		<caption><value text="State / County"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="County"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Street" returns="text" returnsFormat="text">
+		<caption><value text="Street"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="StreetName"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+		<caption><value text="Telephone"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Telephone"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Telephone Number" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="TelephoneNumber"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+   
+    <levels> 
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
+		</detail>
+	</level> 
+	
+	<level name="Partner Level" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="9cm" calculation="MakePartnerHeader">
+				<value text=""/>
+				<value variable="PartnerNameAndField"/>
+			</field>
+			<field whichfield="header 1" pos="10cm" width="15cm">
+				<value text=""/>
+				<value variable="PartnerAddress"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Emergency Detail Level" calculation="SelectRelationships"></lowerLevelReport>
+		</detail>
+		<footer space="below">
+			<field whichfield="left 0" pos="0cm" width="9cm" >
+				<value text=" "/>
+			</field>
+			<field whichfield="left 1">
+				<value text=" "/>
+			</field>				
+		</footer>
+	</level>
+	
+	<level name="Emergency Detail Level" identification="EmergencyContactKey">
+		<detail>
+			<field whichfield="left 0" pos="0cm" width="1cm">
+				<value text=""/>
+			</field>
+			<field whichfield="Columns" pos="1cm" calculation="Get Emergency Contact Details">
+			</field>
+		</detail>
+	</level>
+	
+    </levels>
+  </report>
+</reports>

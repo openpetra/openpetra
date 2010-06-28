@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="Passport Expiry Report">
+		<description>
+			requires personnel.xml
+		</description>
+		<reportparameters/>
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Passport Expiry Report" /></field>
+			<field whichfield="title2"><value function = "getSiteName()"/></field>
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text = "Selection: "/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},one partner)">
+					<value text = "Partner "/><value variable = "param_partnerkey"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},an extract)">
+					<value text = "Extract "/><value variable = "param_extract"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},all current staff)">
+					<value text = "All current Staff at date "/>
+					<value variable = "param_currentstaffdate" format="formatteddate"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_selection},all staff)">
+					<value text = "All Staff"/>
+				</fielddetail>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail condition="ne({param_selection}, one partner)">
+					<value text="Sorted by: "/>
+					<value variable="param_sortby_readable"/>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+			<calculation id="Select Passport"
+					returns="PartnerKey, PartnerName, ExpiryDate, PassportNumber, PassportType, PassportNationality,
+					CountryOfIssue, DateOfBirth, DateOfIssue, PassportName, PlaceOfBirth, PlaceOfIssue,
+					PersonFirstName, PersonPreferedName, PersonMiddleName, PersonLastName, Gender, PersonDOB, Occupation,
+					CountryName" returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT 
+							PUB_p_partner.p_partner_key_n AS PartnerKey,
+							PUB_p_partner.p_partner_short_name_c AS PartnerName,
+							PUB_pm_passport_details.pm_date_of_expiration_d AS ExpiryDate,
+							PUB_pm_passport_details.pm_passport_number_c AS PassportNumber,
+							PUB_pm_passport_details.pm_passport_details_type_c AS PassportType,
+							PUB_pm_passport_details.p_passport_nationality_code_c AS PassportNationality,
+							PUB_pm_passport_details.p_country_of_issue_c AS CountryOfIssue,
+							PUB_pm_passport_details.pm_passport_dob_d AS DateOfBirth,
+							PUB_pm_passport_details.pm_date_of_issue_d AS DateOfIssue,
+							PUB_pm_passport_details.pm_full_passport_name_c AS PassportName,
+							PUB_pm_passport_details.pm_place_of_birth_c AS PlaceOfBirth,
+							PUB_pm_passport_details.pm_place_of_issue_c AS PlaceOfIssue,
+							PUB_p_person.p_first_name_c AS PersonFirstName,
+							PUB_p_person.p_prefered_name_c AS PersonPreferedName,
+							PUB_p_person.p_middle_name_1_c AS PersonMiddleName,
+							PUB_p_person.p_family_name_c AS PersonLastName,
+							PUB_p_person.p_gender_c AS Gender,
+							PUB_p_person.p_date_of_birth_d AS PersonDOB,
+							PUB_p_person.p_occupation_code_c AS Occupation,
+							PUB_p_country.p_country_name_c AS CountryName
+						FROM
+							PUB_p_partner,
+							PUB_p_person,
+							PUB_pm_passport_details,
+							PUB_p_country
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},one partner)"><value>
+						WHERE 
+							PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},an extract)"><value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},all current staff)"><value>
+							, PUB_pm_staff_data
+						WHERE  PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+							AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+							AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+								OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
+					</value></queryDetail>
+					<queryDetail condition="eq({param_selection},all staff)"><value>
+							, PUB_pm_staff_data
+						WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+					</value></queryDetail>
+					<queryDetail><value>
+							AND PUB_pm_passport_details.p_partner_key_n = PUB_p_partner.p_partner_key_n
+							AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+							AND (PUB_p_country.p_country_code_c = PUB_pm_passport_details.p_passport_nationality_code_c
+								OR (PUB_pm_passport_details.p_passport_nationality_code_c IS NULL 
+									AND PUB_p_country.p_country_code_c ='99'))
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Evaluations -->
+			
+			<calculation id="GetOtherFields" returnsFormat="text" returns="FieldName">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(FieldName, GetFieldOfPartner({PartnerKey}))"/>
+						<value function="assign(PartnerType, GetType({PartnerKey}, OMER;EX-OMER;ASSOC, BEGIN))"/>
+						<value function="GetOccupation({Occupation})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Expiry Date" returnsFormat="formatteddate" returns="text">
+				<caption><value text="Expiry Date"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="ExpiryDate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Field Name" returnsFormat="text" returns="text">
+				<caption><value text="Field Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="FieldName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Partner Type" returnsFormat="text" returns="text">
+				<caption><value text="Partner Type"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PartnerType" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Number" returnsFormat="text" returns="text">
+				<caption><value text="Passport Number"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PassportNumber"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Type" returnsFormat="text" returns="text">
+				<caption><value text="Passport Type"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PassportType"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Country of Issue" returnsFormat="text" returns="text">
+				<caption><value text="Passport Country of Issue"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="CountryOfIssue"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Date of Birth" returnsFormat="formatteddate" returns="text">
+				<caption><value text="Passport Date of Birth"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="DateOfBirth"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Date of Issue" returnsFormat="formatteddate" returns="text">
+				<caption><value text="Passport Date of Issue"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="DateOfIssue"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Name" returnsFormat="text" returns="text">
+				<caption><value text="Passport Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PassportName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Place of Birth" returnsFormat="text" returns="text">
+				<caption><value text="Passport Place of Birth"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PlaceOfBirth"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Place of Issue" returnsFormat="text" returns="text">
+				<caption><value text="Passport Place of Issue"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PlaceOfIssue"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Person Last Name" returnsFormat="text" returns="text">
+				<caption><value text="Last Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PersonLastName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Person First Name" returnsFormat="text" returns="text">
+				<caption><value text="First Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PersonFirstName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Person Middle Name" returnsFormat="text" returns="text">
+				<caption><value text="Middle Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PersonMiddleName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Person Prefered Name" returnsFormat="text" returns="text">
+				<caption><value text="Prefered Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PersonPreferedName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Person Date of Birth" returnsFormat="text" returns="text">
+				<caption><value text="Date of Birth"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PersonDOB"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Passport Nationality" returnsFormat="text" returns="text">
+				<caption><value text="Nationality"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="PassportNationality"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Country Name" returnsFormat="text" returns="text">
+				<caption><value text="Country Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="CountryName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Gender" returnsFormat="text" returns="text">
+				<caption><value text="Gender"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Gender"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Occupation" returnsFormat="text" returns="text">
+				<caption><value text="Occupation"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Occupation"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Occupation Description" returnsFormat="text" returns="text">
+				<caption><value text="Occupation Description"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="OccupationDescription"/>
+					</queryDetail>
+				</query>
+			</calculation>
+		</calculations>
+		
+		<levels>
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="Partner Detail" calculation="Select Passport">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+			<level name="Partner Detail" identification="PartnerKey">
+				<detail>
+					<field whichfield="columns" calculation="GetOtherFields"/>
+				</detail>
+			</level>  <!-- Partner Detail -->
+		</levels>
+	</report>
+</reports>
