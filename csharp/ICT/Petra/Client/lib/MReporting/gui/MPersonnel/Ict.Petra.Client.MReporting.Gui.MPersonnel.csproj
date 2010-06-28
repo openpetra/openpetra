@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{97DF12C5-27C0-446C-AF5F-7C592977F1AE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -111,6 +111,13 @@
     <Compile Include="PassportExpiryReport.Designer.cs">
       <DependentUpon>PassportExpiryReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="PersonalDocumentExpiryReport.cs" />
+    <Compile Include="PersonalDocumentExpiryReport.Designer.cs">
+      <DependentUpon>PersonalDocumentExpiryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PersonalDocumentExpiryReport.ManualCode.cs">
+      <DependentUpon>PersonalDocumentExpiryReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviousExperienceReport.cs" />
     <Compile Include="PreviousExperienceReport.Designer.cs">
       <DependentUpon>PreviousExperienceReport.cs</DependentUpon>
@@ -137,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PassportExpiryReport.resx">
       <DependentUpon>PassportExpiryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PersonalDocumentExpiryReport.resx">
+      <DependentUpon>PersonalDocumentExpiryReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreviousExperienceReport.resx">
       <DependentUpon>PreviousExperienceReport.cs</DependentUpon>
