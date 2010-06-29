@@ -103,6 +103,13 @@
     <Compile Include="EmergencyContactReportStaff.Designer.cs">
       <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
     </Compile>
+    <Compile Include="EmergencyDataReport.cs" />
+    <Compile Include="EmergencyDataReport.Designer.cs">
+      <DependentUpon>EmergencyDataReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EmergencyDataReport.ManualCode.cs">
+      <DependentUpon>EmergencyDataReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="EndOfCommitmentReport.cs" />
     <Compile Include="EndOfCommitmentReport.Designer.cs">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
@@ -138,6 +145,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EmergencyContactReportStaff.resx">
       <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EmergencyDataReport.resx">
+      <DependentUpon>EmergencyDataReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>

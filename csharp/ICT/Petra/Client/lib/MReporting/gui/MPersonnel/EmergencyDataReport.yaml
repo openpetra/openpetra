@@ -1,0 +1,57 @@
+RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Emergency Data Report
+    Template: reportwindow
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    TemplateParameters:
+        XMLFILES: [Personnel\\\\emergencydatareport.xml,Personnel\\\\commonpersonnel.xml]
+        REPORTNAME: Emergency Data Report
+        CURRENTREPORT: Emergency Data Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Personnel
+    Security:
+        ModulePermissionRequired: [PERSONNEL]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection]
+            Order: AlwaysFirst
+        tpgReportDetails:
+            Lable: Report Details
+            Controls: [grpReportDetails]
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
+            Dock: Fill
+        grpReportDetails:
+            Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkDriverLicense, chkOtherEmergencyData, chkSpecialNeeds, chkAbilities, chkLanguages, chkEmergencyContacts, chkProofQuestion]
+            
+        chkFamilyMembers:
+            Label: Show Family Members
+        chkAddress:
+            Label: Show Address
+        chkPassport:
+            Label: Show Passport
+        chkPersonalDocuments:
+            Label: Show Personal Documents
+        chkDriverLicense:
+            Label: Show Driver License
+        chkOtherEmergencyData:
+            Label: Show Other Emergency Data
+        chkSpecialNeeds:
+            Label: Show Special Needs
+        chkAbilities:
+            Label: Show Abilities
+        chkLanguages:
+            Label: Show Languages
+        chkEmergencyContacts:
+            Label: Show Emergency Contacts
+        chkProofQuestion:
+            Label: Show Proof of Life Question
+            
