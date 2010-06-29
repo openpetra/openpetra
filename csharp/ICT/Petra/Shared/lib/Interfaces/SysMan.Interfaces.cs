@@ -1,4 +1,4 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
+// Auto generated with nant generateGlue, based on csharp\openpetraorg\csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 // and the Server c# files (eg. UIConnector implementations)
 // Do not change this file manually.
 //
@@ -342,7 +342,7 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         string ExportAllTables();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        bool ResetDatabase(string ANewDatabaseData);
+        bool ResetDatabase(string AZippedNewDatabaseData);
     }
 
 }

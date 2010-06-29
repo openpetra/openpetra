@@ -1,5 +1,5 @@
 // Auto generated with nant generateGlue
-// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
+// based on csharp\openpetraorg\csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 //
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -971,11 +971,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+
         #region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
         private Ict.Petra.Server.MPersonnel.Person.TPersonnelCacheable FCachePopulator;
         #endregion ManualCode
-
         /// <summary>Constructor</summary>
         public TPersonDataElementsCacheableNamespace()
         {
@@ -1808,11 +1808,11 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+
 		#region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
         private Ict.Petra.Server.MPersonnel.Units.TPersonnelCacheable FCachePopulator;
         #endregion ManualCode
-
         /// <summary>Constructor</summary>
         public TUnitsDataElementsCacheableNamespace()
         {

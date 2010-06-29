@@ -1,5 +1,5 @@
 // Auto generated with nant generateGlue
-// based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
+// based on csharp\openpetraorg\csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 //
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -1903,9 +1903,9 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public bool ResetDatabase(string ANewDatabaseData)
+        public bool ResetDatabase(string AZippedNewDatabaseData)
         {
-            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(ANewDatabaseData);
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
         }
     }
 }
