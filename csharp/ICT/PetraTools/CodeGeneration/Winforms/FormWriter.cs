@@ -914,6 +914,51 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("DETAILTABLETYPE", "");
             }
 
+            if (FCodeStorage.HasAttribute("CacheableTable"))
+            {
+                FTemplate.AddToCodelet("CACHEABLETABLE", "\"" + FCodeStorage.GetAttribute("CacheableTable") + "\"");
+
+                if (FCodeStorage.HasAttribute("CacheableTableSpecificFilter"))
+                {
+                    FTemplate.AddToCodelet("FILTERVAR", "object FFilter;");
+
+                    string CacheableTableSpecificFilter = FCodeStorage.GetAttribute("CacheableTableSpecificFilter");
+
+                    if (CacheableTableSpecificFilter.StartsWith("\""))
+                    {
+                        FTemplate.AddToCodelet("LOADDATAONCONSTRUCTORRUN", "LoadDataAndFinishScreenSetup();");
+                        FTemplate.AddToCodelet("CACHEABLETABLERETRIEVEMETHOD", "GetCacheableDataTableFromCache");
+                        FTemplate.AddToCodelet("DISPLAYFILTERINFORMTITLE", "this.Text = this.Text + \"   [Filtered]\";");
+                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERLOAD", "" + CacheableTableSpecificFilter + ", FFilter");
+                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", ", " + CacheableTableSpecificFilter + ", FFilter");
+                    }
+                    else
+                    {
+                        FTemplate.AddToCodelet("LOADDATAONCONSTRUCTORRUN",
+                            "// LoadDataAndFinishScreenSetup() needs to be called manually after setting FFilter!");
+                        FTemplate.AddToCodelet("CACHEABLETABLERETRIEVEMETHOD", "GetSpecificallyFilteredCacheableDataTableFromCache");
+                        FTemplate.AddToCodelet("DISPLAYFILTERINFORMTITLE",
+                            "this.Text = this.Text + \"   [" + CacheableTableSpecificFilter + " = \" + FFilter.ToString() + \"]\";");
+                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERLOAD", "\"" + CacheableTableSpecificFilter + "\", FFilter");
+                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", ", \"" + CacheableTableSpecificFilter + "\", FFilter");
+                    }
+
+                    FTemplate.AddToCodelet("CACHEABLETABLESAVEMETHOD", "SaveSpecificallyFilteredCacheableDataTableToPetraServer");
+                    //FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", "FFilter, out VerificationResult");
+                }
+                else
+                {
+                    FTemplate.AddToCodelet("FILTERVAR", "");
+                    FTemplate.AddToCodelet("DISPLAYFILTERINFORMTITLE", "");
+                    FTemplate.AddToCodelet("LOADDATAONCONSTRUCTORRUN", "LoadDataAndFinishScreenSetup();");
+                    FTemplate.AddToCodelet("CACHEABLETABLERETRIEVEMETHOD", "GetCacheableDataTableFromCache");
+                    FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERLOAD", "String.Empty, null");
+                    FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", "");
+                    FTemplate.AddToCodelet("CACHEABLETABLESAVEMETHOD", "SaveChangedCacheableDataTableToPetraServer");
+                    //FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", "out VerificationResult");
+                }
+            }
+
             // find the first control that is a panel or groupbox or tab control
             if (FCodeStorage.HasRootControl("content"))
             {

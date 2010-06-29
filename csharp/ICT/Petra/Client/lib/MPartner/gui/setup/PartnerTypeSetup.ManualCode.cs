@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             ARow.TypeCode = newName;
-        }
+        }        
 
         private TSubmitChangesResult StoreManualCode(ref PartnerSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
