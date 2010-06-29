@@ -37,6 +37,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Account;
@@ -240,37 +241,40 @@ namespace Ict.Petra.Client.App.Core
             public static DataTable GetCacheableFinanceTable(TCacheableFinanceTablesEnum ACacheableTable, System.Int32 ALedgerNumber)
             {
                 DataTable ReturnValue;
+                Type DataTableType;
 
                 ReturnValue = null;
 
-                // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: ALedgerNumber=''' + ALedgerNumber.ToString + ''''); $ENDIF
                 switch (ACacheableTable)
                 {
                     case TCacheableFinanceTablesEnum.AccountHierarchyList:
                         ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountHierarchyList, AAccountHierarchyTable.GetLedgerNumberDBName(
-                            ), ALedgerNumber);
+                            ), ALedgerNumber, out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.CostCentreList:
                         ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.CostCentreList,
-                        ACostCentreTable.GetLedgerNumberDBName(), ALedgerNumber);
+                        ACostCentreTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.AccountList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountList, AAccountTable.GetLedgerNumberDBName(), ALedgerNumber);
+                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountList, AAccountTable.GetLedgerNumberDBName(), ALedgerNumber,
+                        out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.AccountingPeriodList:
                         ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountingPeriodList, AAccountingPeriodTable.GetLedgerNumberDBName(
-                            ), ALedgerNumber);
+                            ), ALedgerNumber, out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.LedgerDetails:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber);
+                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
+                        out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable, AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber);
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
                     default:
@@ -344,14 +348,15 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetBasedOnLedger(TCacheableFinanceTablesEnum ACacheableTable,
                 String ALedgerColumnDBName,
-                System.Int32 ALedgerNumber)
+                System.Int32 ALedgerNumber,
+                out Type ADataTableType)
             {
                 String CacheableTableName;
                 String FilterCriteria;
 
                 CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
                 FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
-                return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber);
+                return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
             }
 
             #endregion
@@ -841,39 +846,39 @@ namespace Ict.Petra.Client.App.Core
         }
 
         /// <summary>
-        /// Returns the chosen DataTable from the
+        /// Returns the chosen DataTable from the Client-side Cache.
         ///
         /// If the DataTable is not available on the Client side, this procedure checks
         /// whether it available from a file and whether this file contains up-to-date
         /// data. If it isn't available from file or the file is out of date, the
         /// DataTable is retrieved once from the Petra Server and persisted in a file
         /// (as Binary Serialized DataTable) before giving it to the caller.
-        ///
         /// </summary>
         /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
-        /// DataSet</param>
-        /// <returns>Chosen DataTable
-        /// </returns>
+        /// DataTable</param>
+        /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName)
         {
-            return GetCacheableDataTableFromCache(ACacheableTableName, "", null);
+            Type DataTableType;
+
+            return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out DataTableType);
         }
 
         /// <summary>
-        /// Returns the chosen DataTable from the
+        /// Returns the chosen DataTable from the Client-side Cache.
         ///
         /// If the DataTable is not available on the Client side, this procedure checks
         /// whether it available from a file and whether this file contains up-to-date
         /// data. If it isn't available from file or the file is out of date, the
         /// DataTable is retrieved once from the Petra Server and persisted in a file
         /// (as Binary Serialized DataTable) before giving it to the caller.
-        ///
-        /// @comment This overload needs to be used for cacheable DataTables that are
+        /// </summary>
+        /// <remarks>
+        /// This overload needs to be used for cacheable DataTables that are
         /// returned not containing all DataRows that are available in the DB, but
         /// only some DataRows based on specified criteria (eg. some cacheable Finance
         /// DataTables).
-        ///
-        /// </summary>
+        /// </remarks>
         /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
         /// DataSet</param>
         /// <param name="AFilterCriteriaString">A criteria string that can be passed to the
@@ -881,20 +886,25 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="AFilterCriteria">An Object containing the filter criteria value that is
         /// used by the server-side function that retrieves the data for the cacheable
         /// DataTable</param>
-        /// <returns>Chosen DataTable
-        /// </returns>
-        public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria)
+        /// <param name="ADataTableType"> The Type of the DataTable (useful in case it's a
+        /// Typed DataTable).</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
+            out Type ADataTableType)
         {
+            DataTable ReturnValue;
             DataTable CacheableDataTableFromCache;
             DataTable CacheableDataTableFromServer = null;
             DataTable CacheableDataTableFromFile = null;
-            DataView CacheableDataTableFromFileDV;
+            DataView CacheableDataTableFilteredDV = null;
             String HashCode = "";
-
-            System.Type CacheableTableSystemType;
             Int32 TmpSize;
             Boolean CacheableDataTableReloadNecessary = true;
+
             System.Type TmpType;
+            DataRow[] FilteredRows = null;
+
+            ADataTableType = null;
 
             /*
              * Check whether cacheable DataTable is available in the Client-side Cache
@@ -907,7 +917,7 @@ namespace Ict.Petra.Client.App.Core
                 try
                 {
                     // Cacheable DataTable is in Clientside Cache
-                    CacheableDataTableFromCache = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out CacheableTableSystemType);
+                    CacheableDataTableFromCache = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out ADataTableType);
 
                     if (AFilterCriteriaString != "")
                     {
@@ -915,7 +925,9 @@ namespace Ict.Petra.Client.App.Core
                          * Check if any rows of the Cacheable DataTable in the Client-side
                          * Cache match the AFilterCriteriaString
                          */
-                        if (CacheableDataTableFromCache.Select(AFilterCriteriaString).Length != 0)
+                        FilteredRows = CacheableDataTableFromCache.Select(AFilterCriteriaString);
+
+                        if (FilteredRows.Length != 0)
                         {
                             // We have what we are looking for > no need to make a Server call
                             CacheableDataTableReloadNecessary = false;
@@ -978,11 +990,11 @@ namespace Ict.Petra.Client.App.Core
                     // with the DataTable in the Serverside Cache)
                     if (AFilterCriteriaString != "")
                     {
-                        CacheableDataTableFromFileDV = new DataView(CacheableDataTableFromFile,
+                        CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromFile,
                             AFilterCriteriaString,
                             "",
                             DataViewRowState.CurrentRows);
-                        DataUtilities.CalculateHashAndSize(CacheableDataTableFromFileDV, out HashCode, out TmpSize);
+                        DataUtilities.CalculateHashAndSize(CacheableDataTableFilteredDV, out HashCode, out TmpSize);
                     }
                     else
                     {
@@ -1000,18 +1012,19 @@ namespace Ict.Petra.Client.App.Core
                      * retrieve the Type of the DataTable (it's a Typed DataTable in most
                      * cases).
                      */
-                    if (AFilterCriteriaString != "")
+                    if ((AFilterCriteriaString != "")
+                        && (AFilterCriteria != null))
                     {
                         CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                             HashCode,
                             AFilterCriteria,
-                            out CacheableTableSystemType);
+                            out ADataTableType);
                     }
                     else
                     {
                         CacheableDataTableFromServer = GetCacheableDataTableFromPetraServer(ACacheableTableName,
                             HashCode,
-                            out CacheableTableSystemType);
+                            out ADataTableType);
                     }
 
                     /*
@@ -1025,6 +1038,23 @@ namespace Ict.Petra.Client.App.Core
 #if DEBUGMODE
                         TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from PetraServer.");
 #endif
+
+                        if (AFilterCriteriaString != "")
+                        {
+                            CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromServer,
+                                AFilterCriteriaString,
+                                "",
+                                DataViewRowState.CurrentRows);
+
+                            DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
+
+                            FilteredRows = new DataRow[FilteredRowsColl.Count];
+
+                            for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
+                            {
+                                FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
+                            }
+                        }
 
                         /*
                          * Add returned DataTable to the Cache - or Merge it if it already
@@ -1052,7 +1082,7 @@ namespace Ict.Petra.Client.App.Core
                             "Cacheable DataTable '" + ACacheableTableName + "': PetraServer tells that the Client-side DataTable is up-to-date.");
 #endif
 
-                        if (!(CacheableTableSystemType == typeof(System.Data.DataTable)))
+                        if (!(ADataTableType == typeof(System.Data.DataTable)))
                         {
                             /*
                              * The DataTable needs to be a typed DataTable, so we need to change
@@ -1060,7 +1090,19 @@ namespace Ict.Petra.Client.App.Core
                              * PetraServer (so that a Typed DataTable is again a Typed a
                              * DataTable and not just a DataTable after loading it from a file).
                              */
-                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, CacheableTableSystemType, "");
+                            DataUtilities.ChangeDataTableToTypedDataTable(ref CacheableDataTableFromFile, ADataTableType, "");
+                        }
+
+                        if (AFilterCriteriaString != "")
+                        {
+                            DataRowCollection FilteredRowsColl = CacheableDataTableFilteredDV.ToTable().Rows;
+
+                            FilteredRows = new DataRow[FilteredRowsColl.Count];
+
+                            for (int ServerRowsCounter = 0; ServerRowsCounter < FilteredRowsColl.Count; ServerRowsCounter++)
+                            {
+                                FilteredRows.SetValue(FilteredRowsColl[ServerRowsCounter], ServerRowsCounter);
+                            }
                         }
 
                         // Add DataTable to the Cache that got loaded from a file
@@ -1081,7 +1123,181 @@ namespace Ict.Petra.Client.App.Core
                 }
             }
 
-            return UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType);
+            ReturnValue = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType);
+
+            // If a Filter is set, we must return only the DataRows that match the Filter, not all DataRows
+            if (FilteredRows != null)
+            {
+                ReturnValue.Clear();
+
+                for (int FilteredRowsCounter = 0; FilteredRowsCounter < FilteredRows.Length; FilteredRowsCounter++)
+                {
+                    ReturnValue.ImportRow(FilteredRows[FilteredRowsCounter]);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
+        /// <remarks>
+        /// This overload needs to be used for cacheable DataTables that are
+        /// returned not containing all DataRows that are available in the DB, but
+        /// only some DataRows based on specified criteria (eg. some cacheable Finance
+        /// DataTables). Set the <paramref name="ASpecificFilter" /> to a supported value to
+        /// get the desired filtering.
+        /// </remarks>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataTable</param>
+        /// <param name="ASpecificFilter">Hard-coded string that directs the filtering and the use of
+        /// <paramref name="AFilterCriteria" />.</param>
+        /// <param name="AFilterCriteria">An Object containing the filter criteria value that is
+        /// used by the server-side function that retrieves the data for the cacheable DataTable.</param>
+        /// <param name="ADataTableType"> The Type of the DataTable (useful in case it's a
+        /// Typed DataTable).</param>
+        /// <returns>Chosen DataTable, filtered as specified.</returns>
+        public static DataTable GetSpecificallyFilteredCacheableDataTableFromCache(String ACacheableTableName,
+            string ASpecificFilter,
+            object AFilterCriteria,
+            out Type ADataTableType)
+        {
+            TCacheableFinanceTablesEnum FinanceEnumValue;
+            DataTable ReturnValue = null;
+
+            ADataTableType = null;
+
+            if (AFilterCriteria == null)
+            {
+                throw new ArgumentException("GetSpecificallyFilteredCacheableDataTableFromCache: AFilterCriteria must not be null");
+            }
+
+            if (ASpecificFilter == "Ledger")
+            {
+                try
+                {
+                    FinanceEnumValue = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
+                }
+                catch (System.ArgumentException)
+                {
+                    throw new ArgumentException(
+                        "GetSpecificallyFilteredCacheableDataTableFromCache: Argument 'ACacheableTableName' is not a recognized " +
+                        "TCacheableFinanceTablesEnum value!");
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                ReturnValue = TMFinance.GetCacheableFinanceTable(FinanceEnumValue, (int)AFilterCriteria);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Saves changes of that were made to a specific Cachable DataTable.
+        /// </summary>
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTableName">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="AChangedCacheableDT">Cacheable DataTable with changes. The whole DataTable needs
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public static TSubmitChangesResult SaveChangedCacheableDataTableToPetraServer(String ACacheableTableName,
+            ref TTypedDataTable AChangedCacheableDT,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+            TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
+            TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
+
+            AVerificationResult = null;
+
+            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MPartner.Partner Namespace
+                CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPartner.Partner.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerPartnerTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSubscriptionsTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MPartner.Subscriptions Namespace
+                CacheableMPartnerSubscriptionsTable = (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerSubscriptionsTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+
+            ReloadCacheTable(ACacheableTableName);
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Saves changes of that were made to a specific Cachable DataTable.
+        /// </summary>
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTableName">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="AChangedCacheableDT">Cacheable DataTable with changes. The whole DataTable needs
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="AFilterCriteria">An Object containing the filter criteria value that is
+        /// used by the server-side function that retrieves the data for the cacheable
+        /// DataTable. (This is needed for the re-loading of the DataTable into the server-side
+        /// Cache Manager after saving was successful.)</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public static TSubmitChangesResult SaveSpecificallyFilteredCacheableDataTableToPetraServer(String ACacheableTableName,
+            ref TTypedDataTable AChangedCacheableDT,
+            object AFilterCriteria,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+            TCacheableFinanceTablesEnum CacheableMFinanceTable;
+
+            AVerificationResult = null;
+
+            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MFinance Namespace
+                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MFinance.Cacheable.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
+                    ref AChangedCacheableDT,
+                    (int)AFilterCriteria,
+                    out AVerificationResult);
+            }
+
+            ReloadCacheTable(ACacheableTableName);
+
+            return ReturnValue;
         }
 
         /// <summary>
