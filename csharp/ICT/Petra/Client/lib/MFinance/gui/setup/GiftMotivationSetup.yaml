@@ -1,16 +1,18 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Gift Motivations
-    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Gift Motivations
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AMotivationDetail
+    CacheableTable: MotivationList
+    CacheableTableSpecificFilter: Ledger
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit
-    Template: windowEdit
+    Template: windowMaintainCacheableTable
     WindowWidth: 660
     WindowHeight: 700
     Actions:
-        actAddMotivationDetail: {Label=Add Detail, ActionClick=AddDetail}
+        actNew: {Label=New, ActionClick=NewRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -20,8 +22,8 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnAddMotivationDetail]
-        btnAddMotivationDetail:
+            Controls: [btnNew]
+        btnNew:
         grdDetails:
             Dock: Fill
             Columns: [DetailMotivationGroupCode, DetailMotivationDetailCode, DetailMotivationDetailDesc, DetailAccountCode, DetailCostCentreCode, DetailMotivationStatus, DetailReceipt]
@@ -43,4 +45,5 @@ RootNode:
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
     Toolbar:
-        tbbAddMotivationDetail:
+        tbbNew:
+            Label: New Motivation Detail

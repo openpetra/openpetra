@@ -38,11 +38,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmPartnerTypeSetup
     {
-        private void InitializeManualCode()
-        {
-            FMainDS = TRemote.MPartner.TableMaintenance.WebConnectors.LoadPartnerTypes();
-        }
-
         private void NewRowManual(ref PTypeRow ARow)
         {
             string newName = Catalog.GetString("NEWTYPE");
@@ -59,14 +54,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             ARow.TypeCode = newName;
-        }        
-
-        private TSubmitChangesResult StoreManualCode(ref PartnerSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
-        {
-            return TRemote.MPartner.TableMaintenance.WebConnectors.SavePartnerMaintenanceTables(ref ASubmitChanges, out AVerificationResult);
         }
 
-        private void AddType(Object sender, EventArgs e)
+        private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPType();
         }

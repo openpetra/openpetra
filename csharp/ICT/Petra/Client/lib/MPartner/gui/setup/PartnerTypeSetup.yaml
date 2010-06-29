@@ -1,16 +1,17 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Partner Types
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Partner Types
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
-    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS
+    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS
     DetailTable: PType
+    CacheableTable: PartnerTypeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
-    Template: windowEdit
+    Template: windowMaintainCacheableTable
     WindowWidth: 660
     WindowHeight: 700
     Actions:
-        actAddType: {Label=Add Type, ActionClick=AddType}
+        actNew: {Label=New, ActionClick=NewRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -20,8 +21,8 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnAddType]
-        btnAddType:
+            Controls: [btnNew]
+        btnNew:
         grdDetails:
             Dock: Fill
             Columns: [DetailTypeCode, DetailTypeDescription, DetailValidType, DetailTypeDeletable]
@@ -38,4 +39,5 @@ RootNode:
         chkDetailValidType: {Label=Assignable}
         chkDetailTypeDeletable: {Label=Deletable}
     Toolbar:
-        tbbAddType:
+        tbbNew:
+            Label: New Partner Type

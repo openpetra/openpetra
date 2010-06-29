@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from PartnerTypeSetup.yaml and template windowEdit
+// auto generated with nant generateWinforms from PartnerTypeSetup.yaml and template windowMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -36,6 +36,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -46,11 +47,14 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Partner Types
+  /// auto generated: Maintain Partner Types
   public partial class TFrmPartnerTypeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS FMainDS;
+    private class FMainDS
+    {
+        public static PTypeTable PType;
+    }
 
     /// constructor
     public TFrmPartnerTypeSetup(IntPtr AParentFormHandle) : base()
@@ -62,14 +66,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnAddType.Text = Catalog.GetString("Add Type");
+      this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailTypeCode.Text = Catalog.GetString("Type Code:");
       this.lblDetailTypeDescription.Text = Catalog.GetString("Description:");
       this.chkDetailValidType.Text = Catalog.GetString("Assignable");
       this.chkDetailTypeDeletable.Text = Catalog.GetString("Deletable");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbAddType.Text = Catalog.GetString("Add Type");
+      this.tbbNew.Text = Catalog.GetString("New Partner Type");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -85,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Partner Types");
+      this.Text = Catalog.GetString("Maintain Partner Types");
       #endregion
 
       this.txtDetailTypeCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -96,21 +100,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailTypeDescription, Catalog.GetString("Enter a full description"));
       FPetraUtilsObject.SetStatusBarText(chkDetailValidType, Catalog.GetString("Select if this Type Code is selectable by users"));
       FPetraUtilsObject.SetStatusBarText(chkDetailTypeDeletable, Catalog.GetString("Select if deletable"));
-      FMainDS = new Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS();
-      InitializeManualCode();
-      grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Type Code", FMainDS.PType.ColumnTypeCode);
-      grdDetails.AddTextColumn("Description", FMainDS.PType.ColumnTypeDescription);
-      grdDetails.AddCheckBoxColumn("Assignable", FMainDS.PType.ColumnValidType);
-      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PType.ColumnTypeDeletable);
-      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.PType.DefaultView;
-      myDataView.AllowNew = false;
-      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
-
-      FPetraUtilsObject.InitActionState();
+      LoadDataAndFinishScreenSetup();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -131,6 +122,33 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+    /// <returns>void</returns>
+    private void LoadDataAndFinishScreenSetup()
+    {
+      Type DataTableType;
+
+      // Load Data
+      FMainDS.PType = new PTypeTable();
+      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("PartnerTypeList", String.Empty, null, out DataTableType);
+      FMainDS.PType.Merge(CacheDT);
+
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Type Code", FMainDS.PType.ColumnTypeCode);
+      grdDetails.AddTextColumn("Description", FMainDS.PType.ColumnTypeDescription);
+      grdDetails.AddCheckBoxColumn("Assignable", FMainDS.PType.ColumnValidType);
+      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PType.ColumnTypeDeletable);
+
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+      DataView myDataView = FMainDS.PType.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      grdDetails.AutoSizeCells();
+
+      FPetraUtilsObject.InitActionState();
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -298,12 +316,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataTable InspectDT in FMainDS.Tables)
+            foreach (DataRow InspectDR in FMainDS.PType.Rows)
             {
-                foreach (DataRow InspectDR in InspectDT.Rows)
-                {
-                    InspectDR.EndEdit();
-                }
+                InspectDR.EndEdit();
             }
 
             if (!FPetraUtilsObject.HasChanges)
@@ -318,9 +333,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PType.GetChangesTyped();
 
-                if (SubmitDS == null)
+                if (SubmitDT == null)
                 {
                     // nothing to be saved, so it is ok to close the screen etc
                     return true;
@@ -329,8 +344,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    // SubmissionResult = WEBCONNECTORMASTER.SavePType(ref SubmitDS, out VerificationResult);
-                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("PartnerTypeList", ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -390,13 +404,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
+                        FMainDS.PType.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
+                        FMainDS.PType.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
+                        FMainDS.PType.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
@@ -433,6 +447,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         return false;
     }
+
 #endregion
 
 #region Action Handling
@@ -440,10 +455,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actAddType")
+        if (e.ActionName == "actNew")
         {
-            btnAddType.Enabled = e.Enabled;
-            tbbAddType.Enabled = e.Enabled;
+            btnNew.Enabled = e.Enabled;
+            tbbNew.Enabled = e.Enabled;
         }
         if (e.ActionName == "actSave")
         {

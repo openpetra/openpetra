@@ -50,20 +50,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             set
             {
+                FFilter = value;
                 FLedgerNumber = value;
-                FMainDS = TRemote.MFinance.Gift.WebConnectors.LoadMotivationDetails(FLedgerNumber);
 
+                LoadDataAndFinishScreenSetup();
+//                FMainDS = TRemote.MFinance.Gift.WebConnectors.LoadMotivationDetails(FLedgerNumber);
+//
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
                 // including summary cost centres: this is useful for sponsoring children etc.
                 // TODO: system wide setting to only support posting costcentres or not
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, false, false, false, true);
-
-                DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
-                myDataView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-                grdDetails.AutoSizeCells();
+//
+//                DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
+//                myDataView.AllowNew = false;
+//                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+//                grdDetails.AutoSizeCells();
             }
+        }
+
+        private object GetFilterCriteria()
+        {
+            return FLedgerNumber;
         }
 
         private void NewRowManual(ref AMotivationDetailRow ARow)
@@ -94,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
         }
 
-        private void AddDetail(Object sender, EventArgs e)
+        private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewAMotivationDetail();
         }

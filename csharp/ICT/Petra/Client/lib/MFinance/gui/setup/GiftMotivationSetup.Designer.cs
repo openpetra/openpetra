@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnAddMotivationDetail = new System.Windows.Forms.Button();
+            this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailMotivationGroupCode = new System.Windows.Forms.TextBox();
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.chkDetailReceipt = new System.Windows.Forms.CheckBox();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
-            this.tbbAddMotivationDetail = new System.Windows.Forms.ToolStripButton();
+            this.tbbNew = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -156,18 +156,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.tableLayoutPanel1.AutoSize = true;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
             //
-            // btnAddMotivationDetail
+            // btnNew
             //
-            this.btnAddMotivationDetail.Location = new System.Drawing.Point(2,2);
-            this.btnAddMotivationDetail.Name = "btnAddMotivationDetail";
-            this.btnAddMotivationDetail.AutoSize = true;
-            this.btnAddMotivationDetail.Click += new System.EventHandler(this.AddDetail);
-            this.btnAddMotivationDetail.Text = "Add Detail";
+            this.btnNew.Location = new System.Drawing.Point(2,2);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.AutoSize = true;
+            this.btnNew.Click += new System.EventHandler(this.NewRecord);
+            this.btnNew.Text = "New";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.btnAddMotivationDetail, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
             //
             // pnlDetails
             //
@@ -313,12 +313,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
             //
-            // tbbAddMotivationDetail
+            // tbbNew
             //
-            this.tbbAddMotivationDetail.Name = "tbbAddMotivationDetail";
-            this.tbbAddMotivationDetail.AutoSize = true;
-            this.tbbAddMotivationDetail.Click += new System.EventHandler(this.AddDetail);
-            this.tbbAddMotivationDetail.Text = "Add Detail";
+            this.tbbNew.Name = "tbbNew";
+            this.tbbNew.AutoSize = true;
+            this.tbbNew.Click += new System.EventHandler(this.NewRecord);
+            this.tbbNew.Text = "New Motivation Detail";
             //
             // tbrMain
             //
@@ -327,7 +327,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
-                        tbbAddMotivationDetail});
+                        tbbNew});
             //
             // mniFileSave
             //
@@ -493,14 +493,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmGiftMotivationSetup";
-            this.Text = "Gift Motivations";
+            this.Text = "Maintain Gift Motivations";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
@@ -520,7 +520,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button btnAddMotivationDetail;
+        private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtDetailMotivationGroupCode;
@@ -537,7 +537,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private System.Windows.Forms.CheckBox chkDetailReceipt;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
-        private System.Windows.Forms.ToolStripButton tbbAddMotivationDetail;
+        private System.Windows.Forms.ToolStripButton tbbNew;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;

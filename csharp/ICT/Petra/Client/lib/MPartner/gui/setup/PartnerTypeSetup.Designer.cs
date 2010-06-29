@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnAddType = new System.Windows.Forms.Button();
+            this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailTypeCode = new System.Windows.Forms.TextBox();
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.chkDetailTypeDeletable = new System.Windows.Forms.CheckBox();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
-            this.tbbAddType = new System.Windows.Forms.ToolStripButton();
+            this.tbbNew = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,18 +150,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tableLayoutPanel1.AutoSize = true;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
             //
-            // btnAddType
+            // btnNew
             //
-            this.btnAddType.Location = new System.Drawing.Point(2,2);
-            this.btnAddType.Name = "btnAddType";
-            this.btnAddType.AutoSize = true;
-            this.btnAddType.Click += new System.EventHandler(this.AddType);
-            this.btnAddType.Text = "Add Type";
+            this.btnNew.Location = new System.Drawing.Point(2,2);
+            this.btnNew.Name = "btnNew";
+            this.btnNew.AutoSize = true;
+            this.btnNew.Click += new System.EventHandler(this.NewRecord);
+            this.btnNew.Text = "New";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.btnAddType, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
             //
             // pnlDetails
             //
@@ -249,12 +249,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tbbSave.ToolTipText = "Saves changed data";
             this.tbbSave.Text = "&Save";
             //
-            // tbbAddType
+            // tbbNew
             //
-            this.tbbAddType.Name = "tbbAddType";
-            this.tbbAddType.AutoSize = true;
-            this.tbbAddType.Click += new System.EventHandler(this.AddType);
-            this.tbbAddType.Text = "Add Type";
+            this.tbbNew.Name = "tbbNew";
+            this.tbbNew.AutoSize = true;
+            this.tbbNew.Click += new System.EventHandler(this.NewRecord);
+            this.tbbNew.Text = "New Partner Type";
             //
             // tbrMain
             //
@@ -263,7 +263,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tbrMain.AutoSize = true;
             this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbSave,
-                        tbbAddType});
+                        tbbNew});
             //
             // mniFileSave
             //
@@ -429,14 +429,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmPartnerTypeSetup";
-            this.Text = "Partner Types";
+            this.Text = "Maintain Partner Types";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
@@ -456,7 +456,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button btnAddType;
+        private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtDetailTypeCode;
@@ -467,7 +467,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private System.Windows.Forms.CheckBox chkDetailTypeDeletable;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
-        private System.Windows.Forms.ToolStripButton tbbAddType;
+        private System.Windows.Forms.ToolStripButton tbbNew;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniFileSave;

@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowEdit
+// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -36,6 +36,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -46,11 +47,15 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
 
-  /// auto generated: Gift Motivations
+  /// auto generated: Maintain Gift Motivations
   public partial class TFrmGiftMotivationSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    private Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS FMainDS;
+    object FFilter;
+    private class FMainDS
+    {
+        public static AMotivationDetailTable AMotivationDetail;
+    }
 
     /// constructor
     public TFrmGiftMotivationSetup(IntPtr AParentFormHandle) : base()
@@ -62,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnAddMotivationDetail.Text = Catalog.GetString("Add Detail");
+      this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailMotivationGroupCode.Text = Catalog.GetString("Group:");
       this.lblDetailMotivationDetailCode.Text = Catalog.GetString("Detail:");
       this.lblDetailMotivationDetailDesc.Text = Catalog.GetString("Description:");
@@ -72,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       this.chkDetailReceipt.Text = Catalog.GetString("Print Receipt");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbAddMotivationDetail.Text = Catalog.GetString("Add Detail");
+      this.tbbNew.Text = Catalog.GetString("New Motivation Detail");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -88,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Gift Motivations");
+      this.Text = Catalog.GetString("Maintain Gift Motivations");
       #endregion
 
       this.txtDetailMotivationGroupCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -103,23 +108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
       FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
       FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
-      FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS();
-      grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Motivation Group Code", FMainDS.AMotivationDetail.ColumnMotivationGroupCode);
-      grdDetails.AddTextColumn("Motivation Detail Code", FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
-      grdDetails.AddTextColumn("Detail Description", FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
-      grdDetails.AddTextColumn("Account Code", FMainDS.AMotivationDetail.ColumnAccountCode);
-      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AMotivationDetail.ColumnCostCentreCode);
-      grdDetails.AddCheckBoxColumn("Motivation Status", FMainDS.AMotivationDetail.ColumnMotivationStatus);
-      grdDetails.AddCheckBoxColumn("Print Receipt", FMainDS.AMotivationDetail.ColumnReceipt);
-      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
-      myDataView.AllowNew = false;
-      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
-
-      FPetraUtilsObject.InitActionState();
+      // LoadDataAndFinishScreenSetup() needs to be called manually after setting FFilter!
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -140,6 +130,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
+    }
+
+    /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+    /// <returns>void</returns>
+    private void LoadDataAndFinishScreenSetup()
+    {
+      Type DataTableType;
+
+      // Load Data
+      FMainDS.AMotivationDetail = new AMotivationDetailTable();
+      DataTable CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("MotivationList", "Ledger", FFilter, out DataTableType);
+      FMainDS.AMotivationDetail.Merge(CacheDT);
+
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Motivation Group Code", FMainDS.AMotivationDetail.ColumnMotivationGroupCode);
+      grdDetails.AddTextColumn("Motivation Detail Code", FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
+      grdDetails.AddTextColumn("Detail Description", FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
+      grdDetails.AddTextColumn("Account Code", FMainDS.AMotivationDetail.ColumnAccountCode);
+      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AMotivationDetail.ColumnCostCentreCode);
+      grdDetails.AddCheckBoxColumn("Motivation Status", FMainDS.AMotivationDetail.ColumnMotivationStatus);
+      grdDetails.AddCheckBoxColumn("Print Receipt", FMainDS.AMotivationDetail.ColumnReceipt);
+
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+      DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      grdDetails.AutoSizeCells();
+
+      FPetraUtilsObject.InitActionState();
+      this.Text = this.Text + "   [Ledger = " + FFilter.ToString() + "]";
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -224,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             chkDetailReceipt.Checked = ARow.Receipt;
         }
-    }    
+    }
 
     private AMotivationDetailRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
@@ -307,12 +328,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataTable InspectDT in FMainDS.Tables)
+            foreach (DataRow InspectDR in FMainDS.AMotivationDetail.Rows)
             {
-                foreach (DataRow InspectDR in InspectDT.Rows)
-                {
-                    InspectDR.EndEdit();
-                }
+                InspectDR.EndEdit();
             }
 
             if (!FPetraUtilsObject.HasChanges)
@@ -327,9 +345,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS SubmitDS = FMainDS.GetChangesTyped(true);
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.AMotivationDetail.GetChangesTyped();
 
-                if (SubmitDS == null)
+                if (SubmitDT == null)
                 {
                     // nothing to be saved, so it is ok to close the screen etc
                     return true;
@@ -338,8 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 // Submit changes to the PETRAServer
                 try
                 {
-                    // SubmissionResult = WEBCONNECTORMASTER.SaveAMotivationDetail(ref SubmitDS, out VerificationResult);
-                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TDataCache.SaveSpecificallyFilteredCacheableDataTableToPetraServer("MotivationList", ref SubmitDT, FFilter, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -399,13 +416,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
+                        FMainDS.AMotivationDetail.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
+                        FMainDS.AMotivationDetail.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
+                        FMainDS.AMotivationDetail.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
@@ -442,6 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         return false;
     }
+
 #endregion
 
 #region Action Handling
@@ -449,10 +467,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     /// auto generated
     public void ActionEnabledEvent(object sender, ActionEventArgs e)
     {
-        if (e.ActionName == "actAddMotivationDetail")
+        if (e.ActionName == "actNew")
         {
-            btnAddMotivationDetail.Enabled = e.Enabled;
-            tbbAddMotivationDetail.Enabled = e.Enabled;
+            btnNew.Enabled = e.Enabled;
+            tbbNew.Enabled = e.Enabled;
         }
         if (e.ActionName == "actSave")
         {
