@@ -1,0 +1,64 @@
+RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Personal Data Report
+    Template: reportwindow
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    TemplateParameters:
+        XMLFILES: [Personnel\\\\personaldatareport.xml,Personnel\\\\commonpersonnel.xml]
+        REPORTNAME: Personal Data Report
+        CURRENTREPORT: Personal Data Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Personnel
+    Security:
+        ModulePermissionRequired: [PERSONNEL]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection]
+            Order: AlwaysFirst
+        tpgReportDetails:
+            Lable: Report Details
+            Controls: [grpReportDetails]
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
+            Dock: Fill
+        grpReportDetails:
+            Controls: [chkPersonalInfo, chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkPersonalBudget, chkVisions, chkQualifications, chkAbilities, chkLanguages, chkPreviousExperiences, chkValuableItems]
+            
+        chkPersonalInfo:
+            Label: Show Personal Info
+        chkLocalPartnerData:
+            Label: Show Local Partner Data
+        chkLocalPersonnelData:
+            Label: Show Local Personnel Data
+        chkJobAssignments:
+            Label: Show Job Assignments
+        chkCommitments:
+            Label: Show Commitments
+        chkPassport:
+            Label: Show Passport
+        chkPersonalDocuments:
+            Label: Show Personal Documents
+        chkSpecialNeeds:
+            Label: Show Special Needs
+        chkPersonalBudget:
+            Label: Show Personal Budget
+        chkVisions:
+            Label: Show Visions
+        chkQualifications:
+            Label: Show Qualifications
+        chkAbilities:
+            Label: Show Abilities
+        chkLanguages:
+            Label: Show Languages
+        chkPreviousExperiences:
+            Label: Show Previous Experiences
+        chkValuableItems:
+            Label: Show Valuable Items
