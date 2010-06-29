@@ -57,7 +57,9 @@ OpenPetra:
            
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
-                    SpecialTypes: {Label=Setup Partner Types, Description=Add new Special Types for the Partner Edit screen,  ActionOpenScreen=TFrmPartnerTypeSetup}
+                    Partner-related:                        
+                        PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses,  ActionOpenScreen=TFrmPartnerStatusSetup}
+                        SpecialTypes: {Label=Setup Partner Types, Description=Maintain Special Types,  ActionOpenScreen=TFrmPartnerTypeSetup}
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
@@ -79,7 +81,7 @@ OpenPetra:
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=Gift.TFrmGiftNewDonorLetter}
                     Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        MotivationDetailSetup: {Description: "Create motivation details, towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
+                        SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
             AccountsPayable:
                 Main:
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
