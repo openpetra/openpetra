@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: Currency List
-    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: ACurrency
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
     FormType: edit
