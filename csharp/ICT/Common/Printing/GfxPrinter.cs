@@ -403,7 +403,7 @@ namespace Ict.Common.Printing
                     fittingText += previousWhitespaces + nextWhitespaces + nextWord;
 
                     nextWhitespaces = "";
-                    
+
                     // sometimes there are forced whitespaces (eg &nbsp;, already replaced by spaces etc)
                     // consider them as a word
                     previousWhitespaces = buffer[indexWhitespace].ToString();
