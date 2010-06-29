@@ -68,7 +68,15 @@ class Program
                 {
                     while (line.Length > 0)
                     {
-                        newCSVLine = StringHelper.AddCSV(newCSVLine, StringHelper.GetNextCSV(ref line, "  "));
+                        try
+                        {
+                            newCSVLine = StringHelper.AddCSV(newCSVLine, StringHelper.GetNextCSV(ref line, "  "));
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                            // we have the case that a string contains new line characters, so the ending quote cannot be found in the current line
+                            line += " " + sr.ReadLine();
+                        }
                     }
                 }
 
