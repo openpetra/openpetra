@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5EB278CF-DB6B-49BB-8200-4665043831A3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -84,6 +84,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.MPartner.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="PartnerStatusSetup.cs" />
+    <Compile Include="PartnerStatusSetup.Designer.cs">
+      <DependentUpon>PartnerStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerStatusSetup.ManualCode.cs">
+      <DependentUpon>PartnerStatusSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerTypeSetup.cs" />
     <Compile Include="PartnerTypeSetup.Designer.cs">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
@@ -91,6 +98,9 @@
     <Compile Include="PartnerTypeSetup.ManualCode.cs">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="PartnerStatusSetup.resx">
+      <DependentUpon>PartnerStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerTypeSetup.resx">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
     </EmbeddedResource>
