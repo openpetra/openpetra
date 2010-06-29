@@ -1,4 +1,4 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
+// Auto generated with nant generateGlue, based on csharp\openpetraorg\csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 // and the Server c# files (eg. UIConnector implementations)
 // Do not change this file manually.
 //
@@ -32,6 +32,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
 #region ManualCode
+using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -379,6 +380,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.TPartnerCacheableNamespace)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.TPartnerCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -726,6 +731,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.TSubscriptionsCacheableNamespace)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.TSubscriptionsCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

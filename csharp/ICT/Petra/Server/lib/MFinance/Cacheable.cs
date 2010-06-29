@@ -25,7 +25,9 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -368,6 +370,97 @@ namespace Ict.Petra.Server.MFinance
             return ResultingCachedDataTable(TableName, AHashCode, TmpView, out AType);
         }
 
+        /// <summary>
+        /// Saves a specific Cachable DataTable. The whole DataTable needs to be submitted,
+        /// not just changes to it!
+        /// </summary>
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the 
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs 
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="ALedgerNumber">The LedgerNumber that the rows that should be stored in
+        /// the Cache need to match.</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
+            ref TTypedDataTable ASubmitTable,
+            int ALedgerNumber,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
+            Type TmpType;
+Console.WriteLine("Entering Finance.SaveChangedStandardCacheableTable...");            
+            AVerificationResult = null;
+
+            // TODO: check write permissions
+
+            if (ASubmitTable != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                
+                try
+                {
+                    switch (ACacheableTable)
+                    {
+                        case TCacheableFinanceTablesEnum.MotivationList:
+                    
+                            if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+Console.WriteLine("Motivation Details changes successfully saved!");
+                            }
+                                
+                            break;
+                                                
+                        default:
+                    
+                           throw new Exception("TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" + CacheableDTName + "':  Exception " + e.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            /*
+             * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers' 
+             * Cache and inform all other Clients that they need to reload this Cacheable DataTable 
+             * the next time something in the Client accesses it.
+             */            
+            if (SubmissionResult == TSubmitChangesResult.scrOK) 
+            {
+                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);                
+                GetStandardCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
+            }
+            
+            return SubmissionResult;
+        }
+        
         /// <summary>
         /// constructor
         /// </summary>

@@ -1,4 +1,4 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
+// Auto generated with nant generateGlue, based on csharp\openpetraorg\csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
 // and the Server c# files (eg. UIConnector implementations)
 // Do not change this file manually.
 //
@@ -57,6 +57,8 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using System.Xml;
+using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -337,6 +339,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
         void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
                                    System.Int32 ALedgerNumber,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               int ALedgerNumber,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
