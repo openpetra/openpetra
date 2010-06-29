@@ -940,7 +940,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FTemplate.AddToCodelet("DISPLAYFILTERINFORMTITLE",
                             "this.Text = this.Text + \"   [" + CacheableTableSpecificFilter + " = \" + FFilter.ToString() + \"]\";");
                         FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERLOAD", "\"" + CacheableTableSpecificFilter + "\", FFilter");
-                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", ", \"" + CacheableTableSpecificFilter + "\", FFilter");
+                        FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", ", FFilter");
                     }
 
                     FTemplate.AddToCodelet("CACHEABLETABLESAVEMETHOD", "SaveSpecificallyFilteredCacheableDataTableToPetraServer");
