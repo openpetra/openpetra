@@ -947,6 +947,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     bool IsDetailNotMaster;
                     TTableField field = null;
+                    string TableFieldTable;
+                    string ColumnFieldNameResolved;
 
                     // customfield, eg. UC_GLTransactions, ATransaction.DateEntered and ATransaction.AnalysisAttributes
                     // there needs to be a list of CustomColumns
@@ -958,17 +960,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
                     }
 
+                    if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
+                    {
+                        TableFieldTable = FCodeStorage.GetAttribute("DetailTable");
+
+                        if (ColumnFieldName.StartsWith("Detail"))
+                        {
+                            ColumnFieldNameResolved = ColumnFieldName.Substring(6);     // Drop 'Details' out of 'Details...'
+                        }
+                        else
+                        {
+                            ColumnFieldNameResolved = ColumnFieldName;
+                        }
+                    }
+                    else
+                    {
+                        TableFieldTable = ctrl.GetAttribute("TableName");
+                        ColumnFieldNameResolved = ColumnFieldName;
+                    }
+
                     if (CustomColumnNode != null)
                     {
                         AddColumnToGrid(writer, ctrl.controlName,
                             TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                             TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
-                            ctrl.GetAttribute("TableName"),
-                            ColumnFieldName);
+                            TableFieldTable,
+                            ColumnFieldNameResolved);
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field =
+                            TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster,
+                                true);
                     }
                     else
                     {
@@ -998,7 +1021,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("ActionFocusRow"));
             }
 
-            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
+                && FCodeStorage.HasAttribute("DatasetType"))
             {
                 writer.Template.AddToCodelet("SHOWDATA", "");
 
@@ -1140,7 +1164,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster, true);
+                        field =
+                            TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName,
+                                out IsDetailNotMaster,
+                                true);
                     }
                     else
                     {
@@ -1184,7 +1211,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //                    ctrl.GetAttribute("ActionFocusRow"));
             }
 
-            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable") && FCodeStorage.HasAttribute("DatasetType"))
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
+                && FCodeStorage.HasAttribute("DatasetType"))
             {
                 writer.Template.AddToCodelet("SHOWDATA", "");
 
@@ -1200,8 +1228,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
-                                    ' ')[0], out temp, true);
+                            field =
+                                TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
+                                        ' ')[0], out temp, true);
                         }
                         else
                         {
@@ -1269,7 +1298,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     FButtonLabelType = "PartnerKey";
 
-                    if (!(TYml2Xml.HasAttribute(curNode, "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    if (!(TYml2Xml.HasAttribute(curNode,
+                              "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
                     {
                         FDefaultWidth = 370;
                     }
@@ -1347,7 +1377,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
             writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
-            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." + FButtonLabelType);
+            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." +
+                FButtonLabelType);
             writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
             writer.SetControlProperty(ControlName, "MaxLength", "32767");
             writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
@@ -1412,7 +1443,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
 
-            if (ctrl.HasAttribute("IgnoreFirstTabPageSelectionChange") && (ctrl.GetAttribute("IgnoreFirstTabPageSelectionChange").ToLower() == "true"))
+            if (ctrl.HasAttribute("IgnoreFirstTabPageSelectionChange")
+                && (ctrl.GetAttribute("IgnoreFirstTabPageSelectionChange").ToLower() == "true"))
             {
                 IgnoreFirstTabSel += "if (FirstTabPageSelectionChanged)" + Environment.NewLine;
                 IgnoreFirstTabSel += "{" + Environment.NewLine;
@@ -1540,7 +1572,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if (ctrl == null)
                         {
-                            throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
+                            throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
+                                curNode.Name);
                         }
 
                         ctrl.rowNumber = countRow;
@@ -1587,10 +1620,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrl.SetAttribute("Width", (FCodeStorage.FWidth - 10).ToString());
                 FAutoSize = false;
             }
-            else if (ctrl.HasAttribute("Width") && (ctrl.GetAttribute("Dock") != "Left") && (ctrl.GetAttribute("Dock") != "Right"))
+            else if (ctrl.HasAttribute("Width") && (ctrl.GetAttribute("Dock") != "Left")
+                     && (ctrl.GetAttribute("Dock") != "Right"))
             {
                 throw new Exception(
-                    "Control " + ctrl.controlName + " must have both Width and Height attributes, or just Height, but not Width alone");
+                    "Control " + ctrl.controlName +
+                    " must have both Width and Height attributes, or just Height, but not Width alone");
             }
 
             base.SetControlProperties(writer, ctrl);
@@ -1707,7 +1742,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
                 {
-                    return !TYml2Xml.HasAttribute(curNode, "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
+                    return !TYml2Xml.HasAttribute(curNode,
+                        "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
                 }
             }
 
@@ -1742,7 +1778,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (string optionalValue in optionalValues)
             {
-                string radioButtonName = "rbt" + StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ", "_").Replace("&",
+                string radioButtonName = "rbt" +
+                                         StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ",
+                        "_").Replace("&",
                         ""), false, false);
                 TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, curNode.Name);
                 newCtrl.Label = optionalValue;
@@ -1783,7 +1821,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (TXMLParser.GetChild(curNode, "Controls") == null)
                 {
-                    return TYml2Xml.HasAttribute(curNode, "BorderVisible") && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
+                    return TYml2Xml.HasAttribute(curNode,
+                        "BorderVisible") && TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() == "false";
                 }
             }
 
@@ -2046,7 +2085,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 localControlType = ctrl.controlType;
             }
 
-            writer.Template.AddToCodelet("CONTROLDECLARATION", "private " + localControlType + " " + ctrl.controlName + ";" + Environment.NewLine);
+            writer.Template.AddToCodelet("CONTROLDECLARATION", "private " + localControlType + " " + ctrl.controlName + ";" +
+                Environment.NewLine);
             writer.Template.AddToCodelet("CONTROLCREATION", "this." + ctrl.controlName + " = new " + localControlType + "(" +
                 TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl") + ");" + Environment.NewLine);
         }
@@ -2184,7 +2224,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             // todo: use properties from yaml
 
-            writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".PetraUtilsObject = FPetraUtilsObject;" + Environment.NewLine);
+            writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".PetraUtilsObject = FPetraUtilsObject;" +
+                Environment.NewLine);
 
             if (writer.CodeStorage.HasAttribute("DatasetType"))
             {
