@@ -36,7 +36,6 @@ using Ict.Petra.Shared.MHospitality.Data;
 
 namespace Ict.Petra.Shared.MHospitality.Data
 {
-
      /// auto generated
     [Serializable()]
     public class HospitalityTDS : TTypedDataSet
@@ -213,7 +212,6 @@ namespace Ict.Petra.Shared.MHospitality.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TablePcBuilding != null)
                         && (this.TablePcRoom != null)))
             {

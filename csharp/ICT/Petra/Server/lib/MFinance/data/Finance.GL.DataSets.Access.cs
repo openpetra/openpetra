@@ -46,7 +46,6 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.Data.Access
 {
-
      /// auto generated
     [Serializable()]
     public class GLBatchTDSAccess

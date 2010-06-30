@@ -34,7 +34,6 @@ using Ict.Petra.Shared.MSysMan.Data;
 
 namespace Ict.Petra.Shared.MSysMan.Data
 {
-
      /// auto generated
     [Serializable()]
     public class MaintainUsersTDS : TTypedDataSet
@@ -251,7 +250,6 @@ namespace Ict.Petra.Shared.MSysMan.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableSUser != null)
                         && (this.TableSGroup != null)))
             {

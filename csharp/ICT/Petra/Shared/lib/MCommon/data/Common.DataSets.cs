@@ -35,7 +35,6 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Shared.MCommon.Data
 {
-
      /// auto generated
     [Serializable()]
     public class OfficeSpecificDataLabelsTDS : TTypedDataSet
@@ -212,7 +211,6 @@ namespace Ict.Petra.Shared.MCommon.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableDataLabelLookupCategoryList != null)
                         && (this.TableDataLabelList != null)))
             {
@@ -248,7 +246,6 @@ namespace Ict.Petra.Shared.MCommon.Data
                                 "p_key_i"}, "PDataLabelValuePartner", new string[] {
                                 "p_data_label_key_i"}));
             }
-
             this.FRelations.Add(new TTypedRelation("LabelUse", "DataLabelList", new string[] {
                             "p_key_i"}, "DataLabelUseList", new string[] {
                             "p_data_label_key_i"}, false));
@@ -1080,7 +1077,6 @@ namespace Ict.Petra.Shared.MCommon.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TablePPartner != null)
                         && (this.TablePFamily != null)))
             {

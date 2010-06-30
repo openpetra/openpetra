@@ -241,6 +241,7 @@
             <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
             <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
             <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
             <Field sqltable="p_person" sqlfield="p_family_key_n"/>
             <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
             <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>

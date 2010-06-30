@@ -40,7 +40,6 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.AP.Data.Access
 {
-
      /// auto generated
     [Serializable()]
     public class AccountsPayableTDSAccess

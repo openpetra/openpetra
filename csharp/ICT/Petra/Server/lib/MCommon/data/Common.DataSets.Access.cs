@@ -42,7 +42,6 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 
 namespace Ict.Petra.Server.MCommon.Data.Access
 {
-
      /// auto generated
     [Serializable()]
     public class OfficeSpecificDataLabelsTDSAccess
