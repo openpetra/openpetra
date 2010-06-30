@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblFilename.Text = Catalog.GetString("Filename:");
       this.btnSelectFile.Text = Catalog.GetString("Select File");
+      this.chkSemiAutomatic.Text = Catalog.GetString("Semi Automatic Import");
       this.lblCurrentRecordStatus.Text = Catalog.GetString("Current Import File Record Status:");
       this.lblExplanation.Text = Catalog.GetString("Explanation:");
       this.lblTakeAction.Text = Catalog.GetString("Take Action:");

@@ -194,45 +194,48 @@ namespace Ict.Common.IO
                 {
                     string line = sr.ReadLine();
 
-                    SortedList <string, string>AttributePairs = new SortedList <string, string>();
-
-                    foreach (string attrName in AllAttributes)
+                    if (line.Trim().Length > 0)
                     {
-                        AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
-                    }
+                        SortedList <string, string>AttributePairs = new SortedList <string, string>();
 
-                    string rowName = "Element";
-
-                    if (AttributePairs.ContainsKey("name"))
-                    {
-                        rowName = AttributePairs["name"];
-                    }
-
-                    XmlNode newNode = myDoc.CreateElement("", rowName, "");
-
-                    if (AttributePairs.ContainsKey("childOf"))
-                    {
-                        XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
-
-                        if (parentNode == null)
+                        foreach (string attrName in AllAttributes)
                         {
-                            parentNode = myDoc.DocumentElement;
+                            AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
                         }
 
-                        parentNode.AppendChild(newNode);
-                    }
-                    else
-                    {
-                        myDoc.DocumentElement.AppendChild(newNode);
-                    }
+                        string rowName = "Element";
 
-                    foreach (string attrName in AllAttributes)
-                    {
-                        if ((attrName != "name") && (attrName != "childOf"))
+                        if (AttributePairs.ContainsKey("name"))
                         {
-                            XmlAttribute attr = myDoc.CreateAttribute(attrName);
-                            attr.Value = AttributePairs[attrName];
-                            newNode.Attributes.Append(attr);
+                            rowName = AttributePairs["name"];
+                        }
+
+                        XmlNode newNode = myDoc.CreateElement("", rowName, "");
+
+                        if (AttributePairs.ContainsKey("childOf"))
+                        {
+                            XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
+
+                            if (parentNode == null)
+                            {
+                                parentNode = myDoc.DocumentElement;
+                            }
+
+                            parentNode.AppendChild(newNode);
+                        }
+                        else
+                        {
+                            myDoc.DocumentElement.AppendChild(newNode);
+                        }
+
+                        foreach (string attrName in AllAttributes)
+                        {
+                            if ((attrName != "name") && (attrName != "childOf"))
+                            {
+                                XmlAttribute attr = myDoc.CreateAttribute(attrName);
+                                attr.Value = AttributePairs[attrName];
+                                newNode.Attributes.Append(attr);
+                            }
                         }
                     }
                 }

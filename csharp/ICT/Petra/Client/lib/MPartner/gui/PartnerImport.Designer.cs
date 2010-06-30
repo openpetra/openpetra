@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFilename = new System.Windows.Forms.TextBox();
             this.lblFilename = new System.Windows.Forms.Label();
             this.btnSelectFile = new System.Windows.Forms.Button();
+            this.chkSemiAutomatic = new System.Windows.Forms.CheckBox();
             this.pnlImportRecord = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCurrentRecordStatus = new System.Windows.Forms.TextBox();
@@ -151,7 +152,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.txtFilename.Location = new System.Drawing.Point(2,2);
             this.txtFilename.Name = "txtFilename";
-            this.txtFilename.Size = new System.Drawing.Size(150, 28);
+            this.txtFilename.Size = new System.Drawing.Size(300, 28);
             this.txtFilename.ReadOnly = true;
             this.txtFilename.TabStop = false;
             //
@@ -172,13 +173,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnSelectFile.AutoSize = true;
             this.btnSelectFile.Click += new System.EventHandler(this.OpenFile);
             this.btnSelectFile.Text = "Select File";
+            //
+            // chkSemiAutomatic
+            //
+            this.chkSemiAutomatic.Location = new System.Drawing.Point(2,2);
+            this.chkSemiAutomatic.Name = "chkSemiAutomatic";
+            this.chkSemiAutomatic.AutoSize = true;
+            this.chkSemiAutomatic.Text = "Semi Automatic Import";
+            this.chkSemiAutomatic.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblFilename, 0, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.chkSemiAutomatic, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkSemiAutomatic, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtFilename, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.btnSelectFile, 2, 0);
             //
@@ -387,6 +399,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel3.Controls.Add(this.grdParsedValues, 0, 1);
             this.tableLayoutPanel3.SetColumnSpan(this.grdMatchingRecords, 3);
             this.tableLayoutPanel3.Controls.Add(this.grdMatchingRecords, 0, 2);
+            this.tableLayoutPanel3.SetColumnSpan(this.txtCurrentRecordStatus, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtCurrentRecordStatus, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.pnlActions, 2, 1);
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -507,7 +520,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(770, 500);
+            this.ClientSize = new System.Drawing.Size(770, 700);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -548,6 +561,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtFilename;
         private System.Windows.Forms.Label lblFilename;
         private System.Windows.Forms.Button btnSelectFile;
+        private System.Windows.Forms.CheckBox chkSemiAutomatic;
         private System.Windows.Forms.Panel pnlImportRecord;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtCurrentRecordStatus;
