@@ -151,6 +151,10 @@ OpenPetra:
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}
                         PassportExpiryReport: {ActionOpenScreen=TFrmPassportExpiryReport}
                         PersonalDocumentExpiryReport: {ActionOpenScreen=TFrmPersonalDocumentExpiryReport}
+                        EmergencyDataReport: {ActionOpenScreen=TFrmEmergencyDataReport}
+                        PersonalDataReport: {ActionOpenScreen=TFrmPersonalDataReport}
+                        CampaignOptions: {ActionOpenScreen=TFrmCampaignOptions}
+                        UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
