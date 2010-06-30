@@ -470,7 +470,7 @@ namespace Ict.Common.Printing
                 }
                 else if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
-                    length = GetTextLengthThatWillFit(ATxt, AFont, AWidth - AXPos);
+                    length = GetTextLengthThatWillFit(ATxt, AFont, AWidth);
                 }
 
                 if (FCurrentState.FNoWrap)
