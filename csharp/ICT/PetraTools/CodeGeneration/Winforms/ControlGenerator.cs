@@ -1379,7 +1379,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
             writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." +
                 FButtonLabelType);
-            writer.SetControlProperty(ControlName, "PartnerClass", "\"\"");
+            writer.SetControlProperty(ControlName, "PartnerClass", "\"" + ctrl.GetAttribute("PartnerClass") + "\"");
             writer.SetControlProperty(ControlName, "MaxLength", "32767");
             writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
             writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
