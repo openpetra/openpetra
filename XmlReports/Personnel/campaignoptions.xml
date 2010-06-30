@@ -121,14 +121,6 @@
 				</query>
 			</calculation>
 
-			<!--calculation id="Campaign Code" returnsFormat="text" returns="text">
-				<caption><value text="Campaign Code"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="CampaignCode"/>
-					</queryDetail>
-				</query>
-			</calculation-->
 			<calculation id="Campaign Code" returnsFormat="csvlistslash:text" returns="text">
 				<caption><value text="Campaign Code"/></caption>
 				<query>

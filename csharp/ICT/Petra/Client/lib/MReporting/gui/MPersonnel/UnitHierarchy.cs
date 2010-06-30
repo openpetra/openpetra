@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnFindUnit.Text = Catalog.GetString("Find Unit");
+      this.txtPartnerKey.ButtonText = Catalog.GetString("Find");
       this.chkInclude.Text = Catalog.GetString("Include Conferences and Campaigns");
       this.grpUnit.Text = Catalog.GetString("Base Unit");
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
@@ -97,8 +97,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       this.mniHelp.Text = Catalog.GetString("&Help");
       this.Text = Catalog.GetString("Unit Hierarchy Report");
       #endregion
-
-      this.txtUnitCode.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
@@ -149,7 +147,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_txtUnitCode", this.txtUnitCode.Text);
       ACalc.AddParameter("param_chkInclude", this.chkInclude.Checked);
       ReadControlsManual(ACalc, AReportAction);
 
@@ -162,8 +159,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     public void SetControls(TParameterList AParameters)
     {
 
-      txtUnitCode.Text = AParameters.Get("param_txtUnitCode").ToString();
       chkInclude.Checked = AParameters.Get("param_chkInclude").ToBool();
+      SetControlsManual(AParameters);
     }
 #endregion
 

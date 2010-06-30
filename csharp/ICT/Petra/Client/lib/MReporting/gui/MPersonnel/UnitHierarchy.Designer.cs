@@ -71,8 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grpUnit = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtUnitCode = new System.Windows.Forms.TextBox();
-            this.btnFindUnit = new System.Windows.Forms.Button();
+            this.txtPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.chkInclude = new System.Windows.Forms.CheckBox();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
@@ -143,19 +142,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tableLayoutPanel2.AutoSize = true;
             this.grpUnit.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtUnitCode
+            // txtPartnerKey
             //
-            this.txtUnitCode.Location = new System.Drawing.Point(2,2);
-            this.txtUnitCode.Name = "txtUnitCode";
-            this.txtUnitCode.Size = new System.Drawing.Size(150, 28);
-            //
-            // btnFindUnit
-            //
-            this.btnFindUnit.Location = new System.Drawing.Point(2,2);
-            this.btnFindUnit.Name = "btnFindUnit";
-            this.btnFindUnit.AutoSize = true;
-            this.btnFindUnit.Click += new System.EventHandler(this.FindUnit);
-            this.btnFindUnit.Text = "Find Unit";
+            this.txtPartnerKey.Location = new System.Drawing.Point(2,2);
+            this.txtPartnerKey.Name = "txtPartnerKey";
+            this.txtPartnerKey.Size = new System.Drawing.Size(370, 28);
+            this.txtPartnerKey.ASpecialSetting = true;
+            this.txtPartnerKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtPartnerKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtPartnerKey.PartnerClass = "UNIT";
+            this.txtPartnerKey.MaxLength = 32767;
+            this.txtPartnerKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtPartnerKey.TextBoxWidth = 80;
+            this.txtPartnerKey.ButtonWidth = 40;
+            this.txtPartnerKey.ReadOnly = false;
+            this.txtPartnerKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
+            this.txtPartnerKey.ButtonText = "Find";
             //
             // chkInclude
             //
@@ -166,13 +168,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkInclude.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.txtUnitCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnFindUnit, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkInclude, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtPartnerKey, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkInclude, 0, 1);
             this.grpUnit.Text = "Base Unit";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -484,8 +484,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpUnit;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtUnitCode;
-        private System.Windows.Forms.Button btnFindUnit;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtPartnerKey;
         private System.Windows.Forms.CheckBox chkInclude;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;

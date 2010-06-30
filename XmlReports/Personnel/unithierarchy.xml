@@ -22,7 +22,7 @@
 			<field whichfield="descr1">
 				<fielddetail>
 					<value text="Base Unit: "/>
-					<value variable="ParentKey"/>
+					<value variable="param_txtUnitCode"/>
 				</fielddetail>
 			</field>
 			
@@ -68,7 +68,7 @@
 			<calculation id="Parent Key" returnsFormat="partnerkey" returns="text">
 				<query>
 					<queryDetail>
-						<value variable="ParentKey"/>
+						<value variable="param_txtUnitCode"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -77,7 +77,7 @@
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
-						<value function="GenerateUnitHierarchy({ParentKey}, {param_includeteenstreet})"/>
+						<value function="GenerateUnitHierarchy({param_txtUnitCode}, {param_chkInclude})"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -85,20 +85,18 @@
 		</calculations>
 		
 		<levels>
-		<level name="main">
-			<detail>
-				<lowerLevelReport level="ChildUnitLevel" calculation="GetChildUnits">
-				</lowerLevelReport>
-			</detail>
-		</level> <!-- main -->
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="ChildUnitLevel" calculation="GetChildUnits">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
 
-		<level name="ChildUnitLevel">
-			<detail>
-				<field whichfield="columns"/>
-			</detail>
-		</level>
-		
-		
+			<level name="ChildUnitLevel">
+				<detail>
+					<field whichfield="columns"/>
+				</detail>
+			</level>
 		
 		</levels>
 

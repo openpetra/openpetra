@@ -14,7 +14,7 @@ RootNode:
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: 
-        SETCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: 
         REPORTSETTINGSDIRECTORY: Personnel
         SETAVAILABLEFUNCTIONS: BLANK
     Security:
@@ -30,12 +30,12 @@ RootNode:
         
         grpUnit:
             Label: Base Unit
-            Controls:[txtUnitCode, btnFindUnit, chkInclude]
-        txtUnitCode:
+            Controls:[txtPartnerKey, chkInclude]
+            
+        txtPartnerKey: 
             NoLabel: true
-        btnFindUnit:
-            Label: Find Unit
-            Action: actFindUnit
+            Type: PartnerKey
+            PartnerClass: UNIT
         chkInclude:
             Label: Include Conferences and Campaigns
         

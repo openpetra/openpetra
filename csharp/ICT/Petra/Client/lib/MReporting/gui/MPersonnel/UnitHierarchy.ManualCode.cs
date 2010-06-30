@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Common;
@@ -36,6 +37,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
@@ -54,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
                 try
                 {
-                    UnitKey = Convert.ToInt64(txtUnitCode.Text);
+                    UnitKey = Convert.ToInt64(txtPartnerKey.Text);
                 }
                 catch (Exception e)
                 {
@@ -83,11 +85,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             ACalc.AddParameter("ColumnWidth", "12", ColumnCounter);
 
             ACalc.SetMaxDisplayColumns(3);
+
+            ACalc.AddParameter("param_txtUnitCode", txtPartnerKey.Text);
         }
-        
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            txtPartnerKey.Text = AParameters.Get("param_txtUnitCode").ToString();
+        }
+
         private void FindUnit(System.Object sender, EventArgs e)
         {
-        	
+            Int64 PartnerKey = -1;
+            String ResultStringLbl;
+            TLocationPK ResultLocationPK;
+
+            // the user has to select an existing partner to make that partner a supplier
+            if (TPartnerFindScreenManager.OpenModalForm("UNIT",
+                    out PartnerKey,
+                    out ResultStringLbl,
+                    out ResultLocationPK,
+                    this.Handle))
+            {
+                txtPartnerKey.Text = PartnerKey.ToString();
+            }
         }
     }
 }
