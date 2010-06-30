@@ -99,6 +99,13 @@
     <Compile Include="BirthdayListReport.ManualCode.cs">
       <DependentUpon>BirthdayListReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="CampaignOptions.cs" />
+    <Compile Include="CampaignOptions.Designer.cs">
+      <DependentUpon>CampaignOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CampaignOptions.ManualCode.cs">
+      <DependentUpon>CampaignOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="EmergencyContactReportStaff.cs" />
     <Compile Include="EmergencyContactReportStaff.Designer.cs">
       <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
@@ -147,8 +154,18 @@
     <Compile Include="StartOfCommitmentReport.ManualCode.cs">
       <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="UnitHierarchy.cs" />
+    <Compile Include="UnitHierarchy.Designer.cs">
+      <DependentUpon>UnitHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UnitHierarchy.ManualCode.cs">
+      <DependentUpon>UnitHierarchy.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="BirthdayListReport.resx">
       <DependentUpon>BirthdayListReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CampaignOptions.resx">
+      <DependentUpon>CampaignOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EmergencyContactReportStaff.resx">
       <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
@@ -176,6 +193,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StartOfCommitmentReport.resx">
       <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UnitHierarchy.resx">
+      <DependentUpon>UnitHierarchy.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
