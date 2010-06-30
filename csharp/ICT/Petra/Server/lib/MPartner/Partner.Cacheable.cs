@@ -623,11 +623,11 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <remarks>
         /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
         /// once its saved successfully to the DB, which in turn tells all other Clients
-        /// that they need to reload this Cacheable DataTable the next time something in the 
+        /// that they need to reload this Cacheable DataTable the next time something in the
         /// Client accesses it.
         /// </remarks>
         /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
-        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs 
+        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
         /// to be submitted, not just changes to it!</param>
         /// <param name="AVerificationResult">Will be filled with any
         /// VerificationResults if errors occur.</param>
@@ -641,7 +641,8 @@ namespace Ict.Petra.Server.MPartner.Partner
             TVerificationResultCollection SingleVerificationResultCollection;
             string CacheableDTName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable);
             Type TmpType;
-Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");            
+
+            // Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
 
             // TODO: check write permissions
@@ -650,35 +651,36 @@ Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");
             {
                 AVerificationResult = new TVerificationResultCollection();
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     switch (ACacheableTable)
                     {
                         case TCacheablePartnerTablesEnum.PartnerTypeList:
-                    
+
                             if (PTypeAccess.SubmitChanges((PTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
-Console.WriteLine("PartnerTypeList changes successfully saved!");
+                                // Console.WriteLine("PartnerTypeList changes successfully saved!");
                             }
-                                
+
                             break;
-                    
+
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
-                        
+
                             if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-                           
+
                             break;
-                            
+
                         default:
-                    
-                           throw new Exception("TPartnerCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+
+                            throw new Exception(
+                            "TPartnerCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -692,7 +694,10 @@ Console.WriteLine("PartnerTypeList changes successfully saved!");
                 }
                 catch (Exception e)
                 {
-                    TLogging.Log("TPartnerCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" + CacheableDTName + "':  Exception " + e.ToString());
+                    TLogging.Log(
+                        "TPartnerCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                        CacheableDTName +
+                        "':  Exception " + e.ToString());
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -701,19 +706,19 @@ Console.WriteLine("PartnerTypeList changes successfully saved!");
             }
 
             /*
-             * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers' 
-             * Cache and inform all other Clients that they need to reload this Cacheable DataTable 
+             * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+             * Cache and inform all other Clients that they need to reload this Cacheable DataTable
              * the next time something in the Client accesses it.
-             */            
-            if (SubmissionResult == TSubmitChangesResult.scrOK) 
+             */
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);                
+                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
                 GetStandardCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
-            
+
             return SubmissionResult;
         }
-        
+
         #endregion
     }
 }
