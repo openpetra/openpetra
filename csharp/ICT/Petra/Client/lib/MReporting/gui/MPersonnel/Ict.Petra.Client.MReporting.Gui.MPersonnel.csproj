@@ -66,6 +66,9 @@
     <Reference Include="Ict.Petra.Shared.MPartner">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
@@ -147,6 +150,17 @@
     <Compile Include="ProgressReport.Designer.cs">
       <DependentUpon>ProgressReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShortTerm\AbilitiesReport.cs" />
+    <Compile Include="ShortTerm\AbilitiesReport.Designer.cs">
+      <DependentUpon>AbilitiesReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShortTerm\UC_ShortTermerSelection.cs" />
+    <Compile Include="ShortTerm\UC_ShortTermerSelection.Designer.cs">
+      <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShortTerm\UC_ShortTermerSelection.ManualCode.cs">
+      <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="StartOfCommitmentReport.cs" />
     <Compile Include="StartOfCommitmentReport.Designer.cs">
       <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
@@ -191,6 +205,12 @@
     <EmbeddedResource Include="ProgressReport.resx">
       <DependentUpon>ProgressReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\AbilitiesReport.resx">
+      <DependentUpon>AbilitiesReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\UC_ShortTermerSelection.resx">
+      <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="StartOfCommitmentReport.resx">
       <DependentUpon>StartOfCommitmentReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -202,6 +222,10 @@
     <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
       <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
@@ -223,5 +247,6 @@
       <Project>{4DCB81E4-7B19-43D5-BEFC-351706003550}</Project>
       <Name>Ict.Petra.Client.MReporting.Gui</Name>
     </ProjectReference>
+    <Folder Include="ShortTerm" />
   </ItemGroup>
 </Project>
