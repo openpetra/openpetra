@@ -555,6 +555,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // to avoid dependency cycle, we need to add module windows this way
             TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain));
             TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain));
+            TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain));
         }
 
         /// <summary>
