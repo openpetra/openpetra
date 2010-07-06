@@ -8,10 +8,9 @@
 	</description>
 	<reportparameters>
 		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_event_name"></reportparameter>
+		<reportparameter name="param_event_code"></reportparameter>
 		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_event_description"></reportparameter>
-		<reportparameter name="param_extract_description"></reportparameter>
+		<reportparameter name="param_event_name"></reportparameter>
 		<reportparameter name="param_conference_code"></reportparameter>
 		<reportparameter name="param_unit_key"></reportparameter>
 		<reportparameter name="param_event_selection"></reportparameter>
@@ -59,10 +58,10 @@
           <value text="Selection: "></value>
         </fielddetail-->
         <fielddetail condition="eq({param_event_selection}, this)">
-          <value text="Event: "></value><value variable="param_event_name"></value>
+          <value text="Event: "></value><value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_event_selection}, related)">
-          <value text="Event and related options: "></value><value variable="param_event_name"></value>
+          <value text="Event and related options: "></value><value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_event_selection}, all)">
           <value text="All Events"></value>

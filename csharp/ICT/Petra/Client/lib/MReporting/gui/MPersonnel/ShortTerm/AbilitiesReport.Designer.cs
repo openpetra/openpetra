@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.ucoShortTermerSelection = new Ict.Petra.Client.MReporting.Gui.TFrmUC_ShortTermerSelection();
+            this.ucoShortTermerSelection = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -454,7 +454,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_ShortTermerSelection ucoShortTermerSelection;
+        private Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection ucoShortTermerSelection;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

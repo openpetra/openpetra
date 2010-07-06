@@ -11,7 +11,6 @@
 		<reportparameter name="param_event_name"></reportparameter>
 		<reportparameter name="param_extract_name"></reportparameter>
 		<reportparameter name="param_event_description"></reportparameter>
-		<reportparameter name="param_extract_description"></reportparameter>
 		<reportparameter name="param_conference_code"></reportparameter>
 		<reportparameter name="param_unit_key"></reportparameter>
 		<reportparameter name="param_event_only"></reportparameter>
