@@ -31,7 +31,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MReporting.Gui
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     partial class TFrmUC_ShortTermerSelection
     {
@@ -72,7 +72,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.pnlEventSelection = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnEvent = new System.Windows.Forms.Button();
-            this.txtEvent = new System.Windows.Forms.TextBox();
+            this.txtEventCode = new System.Windows.Forms.TextBox();
+            this.lblEventName = new System.Windows.Forms.Label();
             this.rbtThisEventOnly = new System.Windows.Forms.RadioButton();
             this.rbtRelatedOptions = new System.Windows.Forms.RadioButton();
             this.rbtAllEvents = new System.Windows.Forms.RadioButton();
@@ -143,18 +144,28 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.btnEvent.Click += new System.EventHandler(this.btnEventClicked);
             this.btnEvent.Text = "Event...";
             //
-            // txtEvent
+            // txtEventCode
             //
-            this.txtEvent.Location = new System.Drawing.Point(2,2);
-            this.txtEvent.Name = "txtEvent";
-            this.txtEvent.Size = new System.Drawing.Size(150, 28);
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.txtEventCode.Location = new System.Drawing.Point(2,2);
+            this.txtEventCode.Name = "txtEventCode";
+            this.txtEventCode.Size = new System.Drawing.Size(150, 28);
+            //
+            // lblEventName
+            //
+            this.lblEventName.Location = new System.Drawing.Point(2,2);
+            this.lblEventName.Name = "lblEventName";
+            this.lblEventName.AutoSize = true;
+            this.lblEventName.Text = "Event Name:";
+            this.lblEventName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.btnEvent, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtEvent, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtEventCode, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblEventName, 2, 0);
             //
             // rbtThisEventOnly
             //
@@ -225,7 +236,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             this.txtExtract.Location = new System.Drawing.Point(2,2);
             this.txtExtract.Name = "txtExtract";
-            this.txtExtract.Size = new System.Drawing.Size(150, 28);
+            this.txtExtract.Size = new System.Drawing.Size(400, 28);
             this.txtExtract.ASpecialSetting = true;
             this.txtExtract.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtExtract.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Extract;
@@ -348,7 +359,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.Panel pnlEventSelection;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button btnEvent;
-        private System.Windows.Forms.TextBox txtEvent;
+        private System.Windows.Forms.TextBox txtEventCode;
+        private System.Windows.Forms.Label lblEventName;
         private System.Windows.Forms.RadioButton rbtThisEventOnly;
         private System.Windows.Forms.RadioButton rbtRelatedOptions;
         private System.Windows.Forms.RadioButton rbtAllEvents;

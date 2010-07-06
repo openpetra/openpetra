@@ -34,7 +34,7 @@ using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     /// <summary>
     /// Description of UC_PartnerSelection.ManualCode.
@@ -57,21 +57,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FPetraUtilsObject = APetraUtilsObject;
 
-            long PartnerKey = -1;
+            FSelectedUnitKey = 0;
+            // TODO
+            // In some cases we might want to set the values for the user control right here.
+            // For example if a report is opened from an existing conference, we want to show the
+            // data of this conference.
+            FSetControlsWithConstructorValues = false;
 
-            try
-            {
-                // TODO
-//	                PartnerKey = StringHelper.StrToPartnerKey(AReportParameter);
-                FSelectedUnitKey = PartnerKey;
-                FSetControlsWithConstructorValues = true;
-            }
-            catch
-            {
-                FSelectedUnitKey = 0;
-                FSetControlsWithConstructorValues = false;
-            }
-
+            txtEventCode.ReadOnly = true;
             rbtThisEventOnly.Checked = true;
             rbtAllParticipants.Checked = true;
         }
@@ -115,22 +108,19 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ACalculator.AddParameter("param_event_selection", "all");
             }
 
-            ACalculator.AddParameter("param_event_name", txtEvent.Text);
+            ACalculator.AddParameter("param_event_code", txtEventCode.Text);
+            ACalculator.AddParameter("param_event_name", lblEventName.Text);
             ACalculator.AddParameter("param_extract_name", txtExtract.Text);
-            // TODO
-//            FCalculator.AddParameter("param_event_description", lblEventCode.Text);
-//            FCalculator.AddParameter("param_extract_description", lblExtract.Text);
 
-            if (txtEvent.Text.Length > 5)
+            if (txtEventCode.Text.Length > 5)
             {
-                ACalculator.AddParameter("param_conference_code", txtEvent.Text.Substring(0, 5) + "%");
+                ACalculator.AddParameter("param_conference_code", txtEventCode.Text.Substring(0, 5) + "%");
             }
             else
             {
-                ACalculator.AddParameter("param_conference_code", txtEvent.Text);
+                ACalculator.AddParameter("param_conference_code", txtEventCode.Text);
             }
 
-            // TODO
             ACalculator.AddParameter("param_unit_key", FSelectedUnitKey.ToString());
 
             if (chkAccepted.Checked)
@@ -182,7 +172,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && (!rbtAllEvents.Checked)
-                && (txtEvent.Text.Length == 0))
+                && (txtEventCode.Text.Length == 0))
             {
                 // Error: an event must be selected when we generate the report
                 // But we allow saving even if no event is selected
@@ -218,7 +208,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             rbtAllParticipants.Checked = (AParameters.Get("param_source").ToString() == "Event");
             rbtFromExtract.Checked = (AParameters.Get("param_source").ToString() == "Extract");
-            txtEvent.Text = AParameters.Get("param_event_name").ToString();
+            txtEventCode.Text = AParameters.Get("param_event_code").ToString();
+            lblEventName.Text = AParameters.Get("param_event_name").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
 
             chkAccepted.Checked = AParameters.Get("param_application_status_accepted").ToBool();
@@ -235,8 +226,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         private void rbtEventSelectionChanged(object sender, EventArgs e)
         {
-            txtEvent.Enabled = !rbtAllEvents.Checked;
+            txtEventCode.Enabled = !rbtAllEvents.Checked;
             btnEvent.Enabled = !rbtAllEvents.Checked;
+            lblEventName.Visible = !rbtAllEvents.Checked;
         }
 
         private void rbtParticipantsSelectionChanged(object sender, EventArgs e)
@@ -246,7 +238,19 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void btnEventClicked(object sender, EventArgs e)
         {
-            // TODO open event selection dialog
+            TFrmSelectEvent SelectEventForm = new TFrmSelectEvent(this.Handle);
+
+            if (SelectEventForm.ShowDialog() == DialogResult.OK)
+            {
+                txtEventCode.Text = SelectEventForm.FSelectedCampaignCode;
+                lblEventName.Text = SelectEventForm.FSelectedUnitName;
+                FSelectedUnitKey = SelectEventForm.FSelectedPartnerKey;
+            }
+            else
+            {
+                // should we reset the values or keep the old values?
+                // For now, just keep the old values.
+            }
         }
     }
 }

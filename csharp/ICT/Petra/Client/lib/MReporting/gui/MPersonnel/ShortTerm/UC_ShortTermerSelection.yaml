@@ -1,6 +1,6 @@
 RootNode:
     BaseClass: UserControl
-    Namespace: Ict.Petra.Client.MReporting.Gui
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
     UtilObjectClass: TFrmPetraReportingUtils
     FormType: edit
@@ -30,12 +30,14 @@ RootNode:
         
         pnlEventSelection:
             Controls: 
-                Row1: [btnEvent, txtEvent]
+                Row1: [btnEvent, txtEventCode, lblEventName]
         btnEvent:
             Label: Event...
             ActionClick: btnEventClicked
-        txtEvent:
+        txtEventCode:
             NoLabel: true
+        lblEventName:
+            Text: 
         rbtThisEventOnly:
             Label: Consider this event only
             OnChange: rbtEventSelectionChanged
@@ -54,6 +56,7 @@ RootNode:
         txtExtract:
             NoLabel: true
             Type: Extract
+            Width: 400
         chkAccepted:
             Label: Accepted
         chkCancelled:

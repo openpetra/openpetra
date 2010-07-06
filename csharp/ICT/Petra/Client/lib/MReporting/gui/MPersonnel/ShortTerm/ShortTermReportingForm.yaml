@@ -22,5 +22,5 @@
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
         ucoShortTermerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ShortTermerSelection
-          
+            Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection
+        

@@ -154,6 +154,13 @@
     <Compile Include="ShortTerm\AbilitiesReport.Designer.cs">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShortTerm\SelectEvent.cs" />
+    <Compile Include="ShortTerm\SelectEvent.Designer.cs">
+      <DependentUpon>SelectEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShortTerm\SelectEvent.ManualCode.cs">
+      <DependentUpon>SelectEvent.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShortTerm\UC_ShortTermerSelection.cs" />
     <Compile Include="ShortTerm\UC_ShortTermerSelection.Designer.cs">
       <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>
@@ -207,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\AbilitiesReport.resx">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\SelectEvent.resx">
+      <DependentUpon>SelectEvent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\UC_ShortTermerSelection.resx">
       <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>

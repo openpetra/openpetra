@@ -42,7 +42,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
 
   /// auto generated user control
@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnEvent.Text = Catalog.GetString("Event...");
+      this.lblEventName.Text = Catalog.GetString("Event Name:");
       this.rbtThisEventOnly.Text = Catalog.GetString("Consider this event only");
       this.rbtRelatedOptions.Text = Catalog.GetString("Consider this event and related options");
       this.rbtAllEvents.Text = Catalog.GetString("Consider all events");
@@ -79,7 +80,7 @@ namespace Ict.Petra.Client.MReporting.Gui
       this.grpApplicationStatus.Text = Catalog.GetString("Application Status");
       #endregion
 
-      this.txtEvent.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtEventCode.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
