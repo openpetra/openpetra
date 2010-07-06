@@ -1069,9 +1069,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             switch (ACacheableTable)
             {
                 case TCacheablePersonDataElementsTablesEnum.DocumentTypeList:
-//                    ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
-//                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-//                    break;
                 case TCacheablePersonDataElementsTablesEnum.CommitmentStatusList:
                     ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
                     break;
@@ -1905,11 +1902,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
             switch (ACacheableTable)
             {
-//                case TCacheableUnitsDataElementsTablesEnum.CampaignList:
-//                    ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
-//                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-//                    break;
-//                case TCacheableUnitsDataElementsTablesEnum.ConferenceList:
+            	case TCacheableUnitsDataElementsTablesEnum.CampaignList:
+            		ReturnValue = FCachePopulator.GetCampaignUnitsTable(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable),
+            		                                                    AHashCode, ARefreshFromDB, out AType);
+            		break;
+            	case TCacheableUnitsDataElementsTablesEnum.ConferenceList:
+            		ReturnValue = FCachePopulator.GetCoferenceUnitsTable(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable),
+            		                                                    AHashCode, ARefreshFromDB, out AType);
+               		break;
+//                case TCacheableUnitsDataElementsTablesEnum.
 //                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 //                    break;
                 
@@ -1940,10 +1941,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
                                                        out System.Type AType)
         {
             #region ManualCode
-
-            //todo
-            AType = null;
-            return null;
+			return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
             #endregion ManualCode
         }
     }
