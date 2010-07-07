@@ -330,7 +330,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkReplaceAddress.Enabled = false;
             this.chkReplaceAddress.AutoSize = true;
             this.chkReplaceAddress.Text = "Replace current address in list below with imported one";
-            this.chkReplaceAddress.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkReplaceAddress.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkReplaceAddress.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

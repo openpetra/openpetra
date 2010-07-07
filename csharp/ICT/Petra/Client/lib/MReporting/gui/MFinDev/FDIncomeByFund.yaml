@@ -43,6 +43,6 @@
         cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         txtQuarter: {Label=Quarter, ParameterName=param_quarter, Width=30}
-        chkYearToDate: {Label=YTD, ParameterName=param_ytd, Help=Should we calculate from the start of the year?}
+        chkYearToDate: {Label=YTD, ParameterName=param_ytd, Help=Should we calculate from the start of the year?, CheckBoxAttachedLabel=right}
         cmbDepth: {Label=Depth, ParameterName=param_depth}
             OptionalValues: [summary, =standard, detail]

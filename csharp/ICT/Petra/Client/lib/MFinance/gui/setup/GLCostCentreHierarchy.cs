@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
       this.lblDetailCostCentreType.Text = Catalog.GetString("Cost Centre Type:");
       this.lblDetailCostCentreName.Text = Catalog.GetString("Cost Centre Name:");
-      this.chkDetailCostCentreActiveFlag.Text = Catalog.GetString("Active");
+      this.lblDetailCostCentreActiveFlag.Text = Catalog.GetString("Active:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewCostCentre.Text = Catalog.GetString("Add Cost Centre");

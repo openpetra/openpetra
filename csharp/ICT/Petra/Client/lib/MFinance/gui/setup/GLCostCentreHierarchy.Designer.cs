@@ -78,6 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.txtDetailCostCentreName = new System.Windows.Forms.TextBox();
             this.lblDetailCostCentreName = new System.Windows.Forms.Label();
             this.chkDetailCostCentreActiveFlag = new System.Windows.Forms.CheckBox();
+            this.lblDetailCostCentreActiveFlag = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewCostCentre = new System.Windows.Forms.ToolStripButton();
@@ -202,9 +203,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             //
             this.chkDetailCostCentreActiveFlag.Location = new System.Drawing.Point(2,2);
             this.chkDetailCostCentreActiveFlag.Name = "chkDetailCostCentreActiveFlag";
-            this.chkDetailCostCentreActiveFlag.AutoSize = true;
-            this.chkDetailCostCentreActiveFlag.Text = "Active";
-            this.chkDetailCostCentreActiveFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDetailCostCentreActiveFlag.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailCostCentreActiveFlag.Text = "";
+            this.chkDetailCostCentreActiveFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailCostCentreActiveFlag
+            //
+            this.lblDetailCostCentreActiveFlag.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCostCentreActiveFlag.Name = "lblDetailCostCentreActiveFlag";
+            this.lblDetailCostCentreActiveFlag.AutoSize = true;
+            this.lblDetailCostCentreActiveFlag.Text = "Active:";
+            this.lblDetailCostCentreActiveFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCostCentreActiveFlag.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCostCentreActiveFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -216,11 +227,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreCode, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreType, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreName, 0, 2);
-            this.tableLayoutPanel1.SetColumnSpan(this.chkDetailCostCentreActiveFlag, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkDetailCostCentreActiveFlag, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailCostCentreActiveFlag, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailCostCentreCode, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailCostCentreType, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailCostCentreName, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailCostCentreActiveFlag, 1, 3);
             //
             // tbbSave
             //
@@ -429,12 +440,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.Name = "TFrmGLCostCentreHierarchy";
             this.Text = "GL Cost Centre Hierarchy";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
@@ -461,6 +472,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
         private System.Windows.Forms.TextBox txtDetailCostCentreName;
         private System.Windows.Forms.Label lblDetailCostCentreName;
         private System.Windows.Forms.CheckBox chkDetailCostCentreActiveFlag;
+        private System.Windows.Forms.Label lblDetailCostCentreActiveFlag;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewCostCentre;

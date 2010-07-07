@@ -44,6 +44,7 @@ RootNode:
             Width: 300
         chkUseDates:
             Label: Use Expiry Dates
+            CheckBoxAttachedLabel: right
             OnChange: UseDatesChanged
             Width: 300
         dtpFromDate:

@@ -34,31 +34,46 @@ RootNode:
             
         chkPersonalInfo:
             Label: Show Personal Info
+            CheckBoxAttachedLabel: right
         chkLocalPartnerData:
             Label: Show Local Partner Data
+            CheckBoxAttachedLabel: right
         chkLocalPersonnelData:
             Label: Show Local Personnel Data
+            CheckBoxAttachedLabel: right
         chkJobAssignments:
             Label: Show Job Assignments
+            CheckBoxAttachedLabel: right
         chkCommitments:
             Label: Show Commitments
+            CheckBoxAttachedLabel: right
         chkPassport:
             Label: Show Passport
+            CheckBoxAttachedLabel: right
         chkPersonalDocuments:
             Label: Show Personal Documents
+            CheckBoxAttachedLabel: right
         chkSpecialNeeds:
             Label: Show Special Needs
+            CheckBoxAttachedLabel: right
         chkPersonalBudget:
             Label: Show Personal Budget
+            CheckBoxAttachedLabel: right
         chkVisions:
             Label: Show Visions
+            CheckBoxAttachedLabel: right
         chkQualifications:
             Label: Show Qualifications
+            CheckBoxAttachedLabel: right
         chkAbilities:
             Label: Show Abilities
+            CheckBoxAttachedLabel: right
         chkLanguages:
             Label: Show Languages
+            CheckBoxAttachedLabel: right
         chkPreviousExperiences:
             Label: Show Previous Experiences
+            CheckBoxAttachedLabel: right
         chkValuableItems:
             Label: Show Valuable Items
+            CheckBoxAttachedLabel: right

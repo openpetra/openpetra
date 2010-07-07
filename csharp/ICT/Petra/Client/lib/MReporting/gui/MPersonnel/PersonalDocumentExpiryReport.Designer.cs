@@ -219,7 +219,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkUseDates.Size = new System.Drawing.Size(300, 28);
             this.chkUseDates.CheckedChanged += new System.EventHandler(this.UseDatesChanged);
             this.chkUseDates.Text = "Use Expiry Dates";
-            this.chkUseDates.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkUseDates.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkUseDates.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // dtpFromDate
             //

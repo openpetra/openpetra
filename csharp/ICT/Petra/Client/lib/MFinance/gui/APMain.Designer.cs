@@ -211,7 +211,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkDueToday.Name = "chkDueToday";
             this.chkDueToday.AutoSize = true;
             this.chkDueToday.Text = "Due &Today";
-            this.chkDueToday.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDueToday.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkDueToday.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkOverdue
             //
@@ -219,7 +220,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkOverdue.Name = "chkOverdue";
             this.chkOverdue.AutoSize = true;
             this.chkOverdue.Text = "&Overdue";
-            this.chkOverdue.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkOverdue.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkOverdue.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkDueFuture
             //
@@ -227,7 +229,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkDueFuture.Name = "chkDueFuture";
             this.chkDueFuture.AutoSize = true;
             this.chkDueFuture.Text = "Due &Within Future";
-            this.chkDueFuture.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDueFuture.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkDueFuture.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // tableLayoutPanel3
             //
@@ -335,7 +338,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkShowOutstandingAmounts.Name = "chkShowOutstandingAmounts";
             this.chkShowOutstandingAmounts.AutoSize = true;
             this.chkShowOutstandingAmounts.Text = "Show Outstanding &Amounts";
-            this.chkShowOutstandingAmounts.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkShowOutstandingAmounts.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkShowOutstandingAmounts.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkHideInactiveSuppliers
             //
@@ -343,7 +347,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkHideInactiveSuppliers.Name = "chkHideInactiveSuppliers";
             this.chkHideInactiveSuppliers.AutoSize = true;
             this.chkHideInactiveSuppliers.Text = "Hide &Inactive Suppliers";
-            this.chkHideInactiveSuppliers.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkHideInactiveSuppliers.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkHideInactiveSuppliers.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // cmbSupplierCurrency
             //

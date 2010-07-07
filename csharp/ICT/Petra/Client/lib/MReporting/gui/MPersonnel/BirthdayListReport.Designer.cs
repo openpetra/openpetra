@@ -189,7 +189,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkUseDate.AutoSize = true;
             this.chkUseDate.CheckedChanged += new System.EventHandler(this.UseDateChanged);
             this.chkUseDate.Text = "Use date";
-            this.chkUseDate.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkUseDate.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkUseDate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // dtpFromDate
             //
@@ -256,7 +257,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkIncludeFamily.Name = "chkIncludeFamily";
             this.chkIncludeFamily.AutoSize = true;
             this.chkIncludeFamily.Text = "Include families";
-            this.chkIncludeFamily.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkIncludeFamily.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkIncludeFamily.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkSelectTypes
             //
@@ -265,7 +267,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkSelectTypes.AutoSize = true;
             this.chkSelectTypes.CheckedChanged += new System.EventHandler(this.SelectTypesChanged);
             this.chkSelectTypes.Text = "Include only persons of selected type(s)";
-            this.chkSelectTypes.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkSelectTypes.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkSelectTypes.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // grdTypes
             //

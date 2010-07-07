@@ -238,7 +238,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.chkNoReceipt.Name = "chkNoReceipt";
             this.chkNoReceipt.AutoSize = true;
             this.chkNoReceipt.Text = "No Receipt";
-            this.chkNoReceipt.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkNoReceipt.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkNoReceipt.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

@@ -274,7 +274,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkPrintRemittance.Name = "chkPrintRemittance";
             this.chkPrintRemittance.AutoSize = true;
             this.chkPrintRemittance.Text = "Print Remittance";
-            this.chkPrintRemittance.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPrintRemittance.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPrintRemittance.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPrintLabel
             //
@@ -282,7 +283,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkPrintLabel.Name = "chkPrintLabel";
             this.chkPrintLabel.AutoSize = true;
             this.chkPrintLabel.Text = "Print Label";
-            this.chkPrintLabel.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPrintLabel.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPrintLabel.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPrintCheque
             //
@@ -290,7 +292,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkPrintCheque.Name = "chkPrintCheque";
             this.chkPrintCheque.AutoSize = true;
             this.chkPrintCheque.Text = "Print Cheque";
-            this.chkPrintCheque.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPrintCheque.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPrintCheque.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // txtChequeNumber
             //
@@ -412,7 +415,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkClaimDiscount.AutoSize = true;
             this.chkClaimDiscount.Enabled = false;
             this.chkClaimDiscount.Text = "Claim Discount";
-            this.chkClaimDiscount.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkClaimDiscount.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkClaimDiscount.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // txtAmountToPay
             //

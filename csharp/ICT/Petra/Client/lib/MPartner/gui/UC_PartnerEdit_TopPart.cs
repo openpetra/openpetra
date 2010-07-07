@@ -81,7 +81,6 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.chkOtherNoSolicitations.Text = Catalog.GetString("No Solicitations");
       this.lblLastGiftDetailsDate.Text = Catalog.GetString("Last Gift:");
       this.btnWorkerField.Text = Catalog.GetString("&Worker Field...");
-      this.lblEmptySpacer.Text = Catalog.GetString("Empty Spacer:");
       this.lblPartnerStatus.Text = Catalog.GetString("Partner &Status:");
       this.lblStatusUpdated.Text = Catalog.GetString("Status Updated:");
       this.lblLastContact.Text = Catalog.GetString("Last Contact:");

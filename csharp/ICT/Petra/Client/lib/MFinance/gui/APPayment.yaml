@@ -37,8 +37,11 @@ RootNode:
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
             Dock:Top
         chkPrintRemittance:
+            CheckBoxAttachedLabel: right
         chkPrintLabel:
+            CheckBoxAttachedLabel: right
         chkPrintCheque:
+            CheckBoxAttachedLabel: right
         txtChequeNumber:
         grpDetails:
             Controls: [grdDetails, pnlDetails]
@@ -56,6 +59,7 @@ RootNode:
             OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
         chkClaimDiscount:
             # TODO: allow discounts
+            CheckBoxAttachedLabel: right
             ReadOnly: true
         txtAmountToPay:
             # TODO: allow partial payments

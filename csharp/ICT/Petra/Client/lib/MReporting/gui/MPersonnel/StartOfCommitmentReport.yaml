@@ -43,6 +43,7 @@ RootNode:
             Label: and:
         chkSelectedStatus:
             Label: Include only Persons with selected Commitment
+            CheckBoxAttachedLabel: right
             OnChange: chkSelectedStatusChanged
         grdStatuses:
             Height: 200
@@ -50,6 +51,7 @@ RootNode:
             #Margin: 24,5,0,0
         chkNoSelectedStatus:
             Label: Include Persons with no Commitment Status set
+            CheckBoxAttachedLabel: right
             #Margin: 24,30,30,30
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}

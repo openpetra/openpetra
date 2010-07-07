@@ -85,8 +85,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.lblDetailAccountCodeShortDesc = new System.Windows.Forms.Label();
             this.cmbDetailValidCcCombo = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDetailValidCcCombo = new System.Windows.Forms.Label();
-            this.chkDetailAccountActiveFlag = new System.Windows.Forms.CheckBox();
             this.chkDetailBankAccountFlag = new System.Windows.Forms.CheckBox();
+            this.lblDetailBankAccountFlag = new System.Windows.Forms.Label();
+            this.chkDetailAccountActiveFlag = new System.Windows.Forms.CheckBox();
+            this.lblDetailAccountActiveFlag = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewAccount = new System.Windows.Forms.ToolStripButton();
@@ -279,26 +281,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.lblDetailValidCcCombo.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailValidCcCombo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // chkDetailAccountActiveFlag
-            //
-            this.chkDetailAccountActiveFlag.Location = new System.Drawing.Point(2,2);
-            this.chkDetailAccountActiveFlag.Name = "chkDetailAccountActiveFlag";
-            this.chkDetailAccountActiveFlag.AutoSize = true;
-            this.chkDetailAccountActiveFlag.Text = "Active";
-            this.chkDetailAccountActiveFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            //
             // chkDetailBankAccountFlag
             //
             this.chkDetailBankAccountFlag.Location = new System.Drawing.Point(2,2);
             this.chkDetailBankAccountFlag.Name = "chkDetailBankAccountFlag";
-            this.chkDetailBankAccountFlag.AutoSize = true;
-            this.chkDetailBankAccountFlag.Text = "Bank Account";
-            this.chkDetailBankAccountFlag.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel1.ColumnCount = 3;
+            this.chkDetailBankAccountFlag.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailBankAccountFlag.Text = "";
+            this.chkDetailBankAccountFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailBankAccountFlag
+            //
+            this.lblDetailBankAccountFlag.Location = new System.Drawing.Point(2,2);
+            this.lblDetailBankAccountFlag.Name = "lblDetailBankAccountFlag";
+            this.lblDetailBankAccountFlag.AutoSize = true;
+            this.lblDetailBankAccountFlag.Text = "Bank Account:";
+            this.lblDetailBankAccountFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailBankAccountFlag.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailBankAccountFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // chkDetailAccountActiveFlag
+            //
+            this.chkDetailAccountActiveFlag.Location = new System.Drawing.Point(2,2);
+            this.chkDetailAccountActiveFlag.Name = "chkDetailAccountActiveFlag";
+            this.chkDetailAccountActiveFlag.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailAccountActiveFlag.Text = "";
+            this.chkDetailAccountActiveFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailAccountActiveFlag
+            //
+            this.lblDetailAccountActiveFlag.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAccountActiveFlag.Name = "lblDetailAccountActiveFlag";
+            this.lblDetailAccountActiveFlag.AutoSize = true;
+            this.lblDetailAccountActiveFlag.Text = "Active:";
+            this.lblDetailAccountActiveFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAccountActiveFlag.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAccountActiveFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 8;
+            this.tableLayoutPanel1.RowCount = 9;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -314,8 +336,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeLongDesc, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountCodeShortDesc, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailValidCcCombo, 0, 6);
-            this.tableLayoutPanel1.SetColumnSpan(this.chkDetailAccountActiveFlag, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkDetailAccountActiveFlag, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailBankAccountFlag, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountActiveFlag, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCode, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailAccountType, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailEngAccountCodeLongDesc, 1, 2);
@@ -323,7 +345,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeLongDesc, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCodeShortDesc, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailValidCcCombo, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.chkDetailBankAccountFlag, 2, 7);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailBankAccountFlag, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailAccountActiveFlag, 1, 8);
             //
             // tbbSave
             //
@@ -587,12 +610,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             this.Name = "TFrmGLAccountHierarchy";
             this.Text = "GL Account Hierarchy";
 
-	        this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
-	        this.Load += new System.EventHandler(this.TFrmPetra_Load);
-	        this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
-	        this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-	        this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
-	
+            this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
+            this.Load += new System.EventHandler(this.TFrmPetra_Load);
+            this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
+            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
+
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
@@ -626,8 +649,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
         private System.Windows.Forms.Label lblDetailAccountCodeShortDesc;
         private Ict.Common.Controls.TCmbAutoComplete cmbDetailValidCcCombo;
         private System.Windows.Forms.Label lblDetailValidCcCombo;
-        private System.Windows.Forms.CheckBox chkDetailAccountActiveFlag;
         private System.Windows.Forms.CheckBox chkDetailBankAccountFlag;
+        private System.Windows.Forms.Label lblDetailBankAccountFlag;
+        private System.Windows.Forms.CheckBox chkDetailAccountActiveFlag;
+        private System.Windows.Forms.Label lblDetailAccountActiveFlag;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewAccount;

@@ -85,7 +85,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.cmbDetailCostCentreCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailCostCentreCode = new System.Windows.Forms.Label();
             this.chkDetailMotivationStatus = new System.Windows.Forms.CheckBox();
+            this.lblDetailMotivationStatus = new System.Windows.Forms.Label();
             this.chkDetailReceipt = new System.Windows.Forms.CheckBox();
+            this.lblDetailReceipt = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -218,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             //
             this.txtDetailMotivationDetailDesc.Location = new System.Drawing.Point(2,2);
             this.txtDetailMotivationDetailDesc.Name = "txtDetailMotivationDetailDesc";
-            this.txtDetailMotivationDetailDesc.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailMotivationDetailDesc.Size = new System.Drawing.Size(195, 28);
             //
             // lblDetailMotivationDetailDesc
             //
@@ -268,23 +270,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             //
             this.chkDetailMotivationStatus.Location = new System.Drawing.Point(2,2);
             this.chkDetailMotivationStatus.Name = "chkDetailMotivationStatus";
-            this.chkDetailMotivationStatus.AutoSize = true;
-            this.chkDetailMotivationStatus.Text = "Active";
-            this.chkDetailMotivationStatus.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDetailMotivationStatus.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailMotivationStatus.Text = "";
+            this.chkDetailMotivationStatus.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailMotivationStatus
+            //
+            this.lblDetailMotivationStatus.Location = new System.Drawing.Point(2,2);
+            this.lblDetailMotivationStatus.Name = "lblDetailMotivationStatus";
+            this.lblDetailMotivationStatus.AutoSize = true;
+            this.lblDetailMotivationStatus.Text = "Active:";
+            this.lblDetailMotivationStatus.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMotivationStatus.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMotivationStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailReceipt
             //
             this.chkDetailReceipt.Location = new System.Drawing.Point(2,2);
             this.chkDetailReceipt.Name = "chkDetailReceipt";
-            this.chkDetailReceipt.AutoSize = true;
-            this.chkDetailReceipt.Text = "Print Receipt";
-            this.chkDetailReceipt.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 3;
+            this.chkDetailReceipt.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailReceipt.Text = "";
+            this.chkDetailReceipt.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailReceipt
+            //
+            this.lblDetailReceipt.Location = new System.Drawing.Point(2,2);
+            this.lblDetailReceipt.Name = "lblDetailReceipt";
+            this.lblDetailReceipt.AutoSize = true;
+            this.lblDetailReceipt.Text = "Print Receipt:";
+            this.lblDetailReceipt.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailReceipt.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailReceipt.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 200));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 6;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowCount = 5;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -292,17 +314,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationGroupCode, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationDetailCode, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationDetailDesc, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAccountCode, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCostCentreCode, 0, 4);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailMotivationStatus, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailMotivationStatus, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailAccountCode, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCostCentreCode, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationStatus, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationGroupCode, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationDetailCode, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationDetailDesc, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailAccountCode, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCostCentreCode, 1, 4);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailReceipt, 2, 5);
+            this.tableLayoutPanel2.SetColumnSpan(this.cmbDetailAccountCode, 3);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailAccountCode, 1, 2);
+            this.tableLayoutPanel2.SetColumnSpan(this.cmbDetailCostCentreCode, 3);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCostCentreCode, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailMotivationStatus, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailMotivationDetailDesc, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailReceipt, 2, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailMotivationDetailDesc, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailReceipt, 3, 4);
             //
             // tbbSave
             //
@@ -534,7 +559,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailCostCentreCode;
         private System.Windows.Forms.Label lblDetailCostCentreCode;
         private System.Windows.Forms.CheckBox chkDetailMotivationStatus;
+        private System.Windows.Forms.Label lblDetailMotivationStatus;
         private System.Windows.Forms.CheckBox chkDetailReceipt;
+        private System.Windows.Forms.Label lblDetailReceipt;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;

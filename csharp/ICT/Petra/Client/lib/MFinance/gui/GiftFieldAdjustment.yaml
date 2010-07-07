@@ -24,7 +24,7 @@
         dtpDateEffective: {Tooltip=Date for adjusted Gift batch}
         txtRecipientKey: {Type=PartnerKey}
         txtOldFieldKey: {Type=PartnerKey}
-        chkNoReceipt: {Tooltip=tick this if the gift was already receipted last year}
+        chkNoReceipt: {Tooltip=tick this if the gift was already receipted last year, CheckBoxAttachedLabel=right}
     Menu:
     Toolbar:
         tbbFieldChangeAdjustment:

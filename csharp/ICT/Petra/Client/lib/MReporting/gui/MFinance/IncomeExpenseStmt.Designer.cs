@@ -464,7 +464,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.chkCostCentreBreakdown.Name = "chkCostCentreBreakdown";
             this.chkCostCentreBreakdown.AutoSize = true;
             this.chkCostCentreBreakdown.Text = "Cost Centre Breakdown";
-            this.chkCostCentreBreakdown.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkCostCentreBreakdown.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkCostCentreBreakdown.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // rgrDepth
             //

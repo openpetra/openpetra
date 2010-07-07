@@ -334,7 +334,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             this.chkHideAgedTransactions.Name = "chkHideAgedTransactions";
             this.chkHideAgedTransactions.AutoSize = true;
             this.chkHideAgedTransactions.Text = "Hide &Aged Transactions";
-            this.chkHideAgedTransactions.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkHideAgedTransactions.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkHideAgedTransactions.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());

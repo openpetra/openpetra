@@ -45,7 +45,7 @@ RootNode:
             ControlsOrientation: horizontal
             Dock:Top
         cmbStatus: {Label=&Status}
-        chkHideAgedTransactions: {Label=Hide &Aged Transactions}
+        chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right}
         pnlButtons:
             Controls: [btnTagApprovable, btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged]
             ControlsOrientation: horizontal

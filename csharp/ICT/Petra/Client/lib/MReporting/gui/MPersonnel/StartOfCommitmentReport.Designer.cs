@@ -213,7 +213,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkSelectedStatus.AutoSize = true;
             this.chkSelectedStatus.CheckedChanged += new System.EventHandler(this.chkSelectedStatusChanged);
             this.chkSelectedStatus.Text = "Include only Persons with selected Commitment";
-            this.chkSelectedStatus.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkSelectedStatus.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkSelectedStatus.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // grdStatuses
             //
@@ -227,7 +228,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkNoSelectedStatus.Name = "chkNoSelectedStatus";
             this.chkNoSelectedStatus.AutoSize = true;
             this.chkNoSelectedStatus.Text = "Include Persons with no Commitment Status set";
-            this.chkNoSelectedStatus.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkNoSelectedStatus.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkNoSelectedStatus.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 3;

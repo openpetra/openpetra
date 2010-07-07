@@ -51,9 +51,11 @@ RootNode:
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
             ControlsOrientation: horizontal
         chkDueToday: {Label=Due &Today}
-        chkOverdue: {Label=&Overdue}
+            CheckBoxAttachedLabel: right
+        chkOverdue: {Label=&Overdue, CheckBoxAttachedLabel=right}        
         chkDueFuture:
             Label: Due &Within Future
+            CheckBoxAttachedLabel: right
             Controls: [nudNumberTimeUnits, cmbTimeUnit]
             ControlsOrientation: horizontal
         nudNumberTimeUnits: {NoLabel=true}
@@ -79,8 +81,8 @@ RootNode:
             ControlsOrientation: horizontal
         grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
         grdInvoiceResult: {Dock=Fill}
-        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts}
-        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers}
+        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right}
+        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right}
         cmbSupplierCurrency: {Label=C&urrency}
         pnlTaggingOptions:
             Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]

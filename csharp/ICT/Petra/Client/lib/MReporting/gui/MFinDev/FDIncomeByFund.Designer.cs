@@ -333,7 +333,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.chkYearToDate.Name = "chkYearToDate";
             this.chkYearToDate.AutoSize = true;
             this.chkYearToDate.Text = "YTD";
-            this.chkYearToDate.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkYearToDate.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkYearToDate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // cmbDepth
             //

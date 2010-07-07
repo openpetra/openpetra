@@ -138,7 +138,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtWorkerField = new System.Windows.Forms.TextBox();
             this.pnlSpacer = new System.Windows.Forms.Panel();
             this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblEmptySpacer = new System.Windows.Forms.Label();
             this.cmbPartnerStatus = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPartnerStatus = new System.Windows.Forms.Label();
             this.txtStatusUpdated = new System.Windows.Forms.TextBox();
@@ -368,7 +367,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkFamilyNoSolicitations.AutoSize = true;
             this.chkFamilyNoSolicitations.CheckedChanged += new System.EventHandler(this.UpdateNoSolicitationsColouring);
             this.chkFamilyNoSolicitations.Text = "No Solicitations";
-            this.chkFamilyNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkFamilyNoSolicitations.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkFamilyNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 300));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 115));
@@ -497,7 +497,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkPersonNoSolicitations.AutoSize = true;
             this.chkPersonNoSolicitations.CheckedChanged += new System.EventHandler(this.UpdateNoSolicitationsColouring);
             this.chkPersonNoSolicitations.Text = "No Solicitations";
-            this.chkPersonNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPersonNoSolicitations.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPersonNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel5.ColumnCount = 5;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 80));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -758,7 +759,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkOtherNoSolicitations.AutoSize = true;
             this.chkOtherNoSolicitations.CheckedChanged += new System.EventHandler(this.UpdateNoSolicitationsColouring);
             this.chkOtherNoSolicitations.Text = "No Solicitations";
-            this.chkOtherNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkOtherNoSolicitations.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkOtherNoSolicitations.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel11.ColumnCount = 3;
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 300));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 115));
@@ -825,13 +827,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlRight.AutoSize = true;
+            this.pnlRight.Width = 215;
             //
             // tableLayoutPanel13
             //
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel13.AutoSize = true;
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(215, 28);
             this.pnlRight.Controls.Add(this.tableLayoutPanel13);
             //
             // pnlWorkerField
@@ -881,27 +883,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.pnlSpacer.Location = new System.Drawing.Point(2,2);
             this.pnlSpacer.Name = "pnlSpacer";
-            this.pnlSpacer.AutoSize = true;
+            this.pnlSpacer.Size = new System.Drawing.Size(690, 18);
             //
             // tableLayoutPanel15
             //
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
             this.tableLayoutPanel15.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel15.AutoSize = true;
+            this.tableLayoutPanel15.Size = new System.Drawing.Size(690, 18);
             this.pnlSpacer.Controls.Add(this.tableLayoutPanel15);
-            //
-            // lblEmptySpacer
-            //
-            this.lblEmptySpacer.Location = new System.Drawing.Point(2,2);
-            this.lblEmptySpacer.Name = "lblEmptySpacer";
-            this.lblEmptySpacer.AutoSize = true;
-            this.lblEmptySpacer.Text = "Empty Spacer:";
-            this.lblEmptySpacer.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel15.ColumnCount = 1;
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel15.ColumnCount = 0;
             this.tableLayoutPanel15.RowCount = 1;
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.Controls.Add(this.lblEmptySpacer, 0, 0);
             //
             // cmbPartnerStatus
             //
@@ -1103,7 +1095,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtWorkerField;
         private System.Windows.Forms.Panel pnlSpacer;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel15;
-        private System.Windows.Forms.Label lblEmptySpacer;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPartnerStatus;
         private System.Windows.Forms.Label lblPartnerStatus;
         private System.Windows.Forms.TextBox txtStatusUpdated;

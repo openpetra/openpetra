@@ -30,30 +30,30 @@ RootNode:
             Dock: Fill
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill
-            
+            Dock: Fill            
         grpDate:
             Label: Date
             Dock: Top
-            Controls: [chkUseDate, dtpFromDate, dtpToDate]
+            Controls: [chkUseDate, dtpFromDate, dtpToDate]            
         grpOptions:
             Label: Options
             Dock: Fill
-            Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]
-           
+            Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
         chkUseDate:
             Label: Use date
+            CheckBoxAttachedLabel: right
             OnChange: UseDateChanged
         dtpFromDate:
             Label: From
         dtpToDate:
-            Label: To
-        
+            Label: To        
         chkIncludeFamily:
             Label: Include families
+            CheckBoxAttachedLabel: right            
         chkSelectTypes:
             Label: Include only persons of selected type(s)
-            OnChange: SelectTypesChanged
+            CheckBoxAttachedLabel: right
+            OnChange: SelectTypesChanged            
         grdTypes:
             Height: 200
             Width: 320

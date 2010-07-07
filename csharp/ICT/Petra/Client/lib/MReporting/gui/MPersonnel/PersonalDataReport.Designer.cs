@@ -178,7 +178,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPersonalInfo.Name = "chkPersonalInfo";
             this.chkPersonalInfo.AutoSize = true;
             this.chkPersonalInfo.Text = "Show Personal Info";
-            this.chkPersonalInfo.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPersonalInfo.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPersonalInfo.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkLocalPartnerData
             //
@@ -186,7 +187,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkLocalPartnerData.Name = "chkLocalPartnerData";
             this.chkLocalPartnerData.AutoSize = true;
             this.chkLocalPartnerData.Text = "Show Local Partner Data";
-            this.chkLocalPartnerData.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkLocalPartnerData.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkLocalPartnerData.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkLocalPersonnelData
             //
@@ -194,7 +196,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkLocalPersonnelData.Name = "chkLocalPersonnelData";
             this.chkLocalPersonnelData.AutoSize = true;
             this.chkLocalPersonnelData.Text = "Show Local Personnel Data";
-            this.chkLocalPersonnelData.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkLocalPersonnelData.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkLocalPersonnelData.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkJobAssignments
             //
@@ -202,7 +205,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkJobAssignments.Name = "chkJobAssignments";
             this.chkJobAssignments.AutoSize = true;
             this.chkJobAssignments.Text = "Show Job Assignments";
-            this.chkJobAssignments.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkJobAssignments.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkJobAssignments.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkCommitments
             //
@@ -210,7 +214,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkCommitments.Name = "chkCommitments";
             this.chkCommitments.AutoSize = true;
             this.chkCommitments.Text = "Show Commitments";
-            this.chkCommitments.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkCommitments.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkCommitments.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPassport
             //
@@ -218,7 +223,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPassport.Name = "chkPassport";
             this.chkPassport.AutoSize = true;
             this.chkPassport.Text = "Show Passport";
-            this.chkPassport.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPassport.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPassport.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPersonalDocuments
             //
@@ -226,7 +232,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPersonalDocuments.Name = "chkPersonalDocuments";
             this.chkPersonalDocuments.AutoSize = true;
             this.chkPersonalDocuments.Text = "Show Personal Documents";
-            this.chkPersonalDocuments.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPersonalDocuments.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPersonalDocuments.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkSpecialNeeds
             //
@@ -234,7 +241,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkSpecialNeeds.Name = "chkSpecialNeeds";
             this.chkSpecialNeeds.AutoSize = true;
             this.chkSpecialNeeds.Text = "Show Special Needs";
-            this.chkSpecialNeeds.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkSpecialNeeds.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkSpecialNeeds.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPersonalBudget
             //
@@ -242,7 +250,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPersonalBudget.Name = "chkPersonalBudget";
             this.chkPersonalBudget.AutoSize = true;
             this.chkPersonalBudget.Text = "Show Personal Budget";
-            this.chkPersonalBudget.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPersonalBudget.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPersonalBudget.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkVisions
             //
@@ -250,7 +259,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkVisions.Name = "chkVisions";
             this.chkVisions.AutoSize = true;
             this.chkVisions.Text = "Show Visions";
-            this.chkVisions.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkVisions.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkVisions.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkQualifications
             //
@@ -258,7 +268,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkQualifications.Name = "chkQualifications";
             this.chkQualifications.AutoSize = true;
             this.chkQualifications.Text = "Show Qualifications";
-            this.chkQualifications.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkQualifications.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkQualifications.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkAbilities
             //
@@ -266,7 +277,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkAbilities.Name = "chkAbilities";
             this.chkAbilities.AutoSize = true;
             this.chkAbilities.Text = "Show Abilities";
-            this.chkAbilities.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkAbilities.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkAbilities.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkLanguages
             //
@@ -274,7 +286,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkLanguages.Name = "chkLanguages";
             this.chkLanguages.AutoSize = true;
             this.chkLanguages.Text = "Show Languages";
-            this.chkLanguages.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkLanguages.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkLanguages.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPreviousExperiences
             //
@@ -282,7 +295,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPreviousExperiences.Name = "chkPreviousExperiences";
             this.chkPreviousExperiences.AutoSize = true;
             this.chkPreviousExperiences.Text = "Show Previous Experiences";
-            this.chkPreviousExperiences.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPreviousExperiences.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPreviousExperiences.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkValuableItems
             //
@@ -290,7 +304,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkValuableItems.Name = "chkValuableItems";
             this.chkValuableItems.AutoSize = true;
             this.chkValuableItems.Text = "Show Valuable Items";
-            this.chkValuableItems.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkValuableItems.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkValuableItems.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 15;

@@ -70,8 +70,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
       this.lblDetailAccountCodeLongDesc.Text = Catalog.GetString("Description Long Local:");
       this.lblDetailAccountCodeShortDesc.Text = Catalog.GetString("Description Short Local:");
       this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
-      this.chkDetailAccountActiveFlag.Text = Catalog.GetString("Active");
-      this.chkDetailBankAccountFlag.Text = Catalog.GetString("Bank Account");
+      this.lblDetailBankAccountFlag.Text = Catalog.GetString("Bank Account:");
+      this.lblDetailAccountActiveFlag.Text = Catalog.GetString("Active:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
@@ -202,14 +202,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
         {
             cmbDetailValidCcCombo.SetSelectedString(ARow.ValidCcCombo);
         }
-        if (ARow.IsAccountActiveFlagNull())
-        {
-            chkDetailAccountActiveFlag.Checked = false;
-        }
-        else
-        {
-            chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
-        }
         if (ARow.IsBankAccountFlagNull())
         {
             chkDetailBankAccountFlag.Checked = false;
@@ -217,6 +209,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
         else
         {
             chkDetailBankAccountFlag.Checked = ARow.BankAccountFlag;
+        }
+        if (ARow.IsAccountActiveFlagNull())
+        {
+            chkDetailAccountActiveFlag.Checked = false;
+        }
+        else
+        {
+            chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
     }
 
@@ -278,8 +278,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
             {
                 ARow.ValidCcCombo = cmbDetailValidCcCombo.GetSelectedString();
             }
-            ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
             ARow.BankAccountFlag = chkDetailBankAccountFlag.Checked;
+            ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
         }
     }
 

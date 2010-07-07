@@ -58,7 +58,7 @@ RootNode:
         btnUseSelectedFamily: {Label=Use selected Family in list below, Enabled=false}
         btnFindOtherPerson: {Label=Find other Person to use for this Record..., Enabled=false}
         btnFindOtherFamily: {Label=Find other Family to add this Person to..., Enabled=false}
-        chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false}
+        chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false, CheckBoxAttachedLabel=right}
     Toolbar:
         tbbStartImport:
         tbbCancelImport:

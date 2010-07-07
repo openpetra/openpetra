@@ -34,6 +34,7 @@ RootNode:
             ColWidths: [0=Fixed:110]
             RowHeights: [2=Fixed:28, 3=Fixed:24, 4=Fixed:24]
             Dock: Right
+            Width: 215
             
         pnlWorkerField: {Visible=false}
             Controls: 
@@ -53,9 +54,9 @@ RootNode:
             BorderStyle: None
             
         pnlSpacer:
-            Controls: [lblEmptySpacer]
-        lblEmptySpacer:
-            NoLabel: true                        
+            Controls: [Empty]
+            Height: 18
+        Empty:
             
         cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100}
         txtStatusUpdated:
@@ -143,6 +144,7 @@ RootNode:
         cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkFamilyNoSolicitations:
             Label: No Solicitations
+            CheckBoxAttachedLabel: right
             Align: right
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring
@@ -189,6 +191,7 @@ RootNode:
         cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, Dock: Right}
         chkPersonNoSolicitations:
             Label: No Solicitations
+            CheckBoxAttachedLabel: right
             Align: right
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring
@@ -262,6 +265,7 @@ RootNode:
         cmbOtherAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkOtherNoSolicitations:
             Label: No Solicitations
+            CheckBoxAttachedLabel: right
             Align: right
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring

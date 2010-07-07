@@ -174,7 +174,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkFamilyMembers.Name = "chkFamilyMembers";
             this.chkFamilyMembers.AutoSize = true;
             this.chkFamilyMembers.Text = "Show Family Members";
-            this.chkFamilyMembers.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkFamilyMembers.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkFamilyMembers.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkAddress
             //
@@ -182,7 +183,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkAddress.Name = "chkAddress";
             this.chkAddress.AutoSize = true;
             this.chkAddress.Text = "Show Address";
-            this.chkAddress.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkAddress.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkAddress.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPassport
             //
@@ -190,7 +192,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPassport.Name = "chkPassport";
             this.chkPassport.AutoSize = true;
             this.chkPassport.Text = "Show Passport";
-            this.chkPassport.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPassport.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPassport.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkPersonalDocuments
             //
@@ -198,7 +201,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkPersonalDocuments.Name = "chkPersonalDocuments";
             this.chkPersonalDocuments.AutoSize = true;
             this.chkPersonalDocuments.Text = "Show Personal Documents";
-            this.chkPersonalDocuments.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkPersonalDocuments.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkPersonalDocuments.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkDriverLicense
             //
@@ -206,7 +210,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkDriverLicense.Name = "chkDriverLicense";
             this.chkDriverLicense.AutoSize = true;
             this.chkDriverLicense.Text = "Show Driver License";
-            this.chkDriverLicense.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDriverLicense.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkDriverLicense.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkOtherEmergencyData
             //
@@ -214,7 +219,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkOtherEmergencyData.Name = "chkOtherEmergencyData";
             this.chkOtherEmergencyData.AutoSize = true;
             this.chkOtherEmergencyData.Text = "Show Other Emergency Data";
-            this.chkOtherEmergencyData.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkOtherEmergencyData.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkOtherEmergencyData.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkSpecialNeeds
             //
@@ -222,7 +228,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkSpecialNeeds.Name = "chkSpecialNeeds";
             this.chkSpecialNeeds.AutoSize = true;
             this.chkSpecialNeeds.Text = "Show Special Needs";
-            this.chkSpecialNeeds.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkSpecialNeeds.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkSpecialNeeds.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkAbilities
             //
@@ -230,7 +237,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkAbilities.Name = "chkAbilities";
             this.chkAbilities.AutoSize = true;
             this.chkAbilities.Text = "Show Abilities";
-            this.chkAbilities.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkAbilities.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkAbilities.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkLanguages
             //
@@ -238,7 +246,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkLanguages.Name = "chkLanguages";
             this.chkLanguages.AutoSize = true;
             this.chkLanguages.Text = "Show Languages";
-            this.chkLanguages.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkLanguages.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkLanguages.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkEmergencyContacts
             //
@@ -246,7 +255,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkEmergencyContacts.Name = "chkEmergencyContacts";
             this.chkEmergencyContacts.AutoSize = true;
             this.chkEmergencyContacts.Text = "Show Emergency Contacts";
-            this.chkEmergencyContacts.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkEmergencyContacts.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkEmergencyContacts.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkProofQuestion
             //
@@ -254,7 +264,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.chkProofQuestion.Name = "chkProofQuestion";
             this.chkProofQuestion.AutoSize = true;
             this.chkProofQuestion.Text = "Show Proof of Life Question";
-            this.chkProofQuestion.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkProofQuestion.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkProofQuestion.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 11;
