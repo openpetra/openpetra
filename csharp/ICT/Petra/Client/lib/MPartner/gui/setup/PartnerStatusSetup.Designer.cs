@@ -79,8 +79,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailPartnerStatusDescription = new System.Windows.Forms.TextBox();
             this.lblDetailPartnerStatusDescription = new System.Windows.Forms.Label();
             this.chkDetailPartnerIsActive = new System.Windows.Forms.CheckBox();
+            this.lblDetailPartnerIsActive = new System.Windows.Forms.Label();
             this.chkDetailIncludePartnerOnReport = new System.Windows.Forms.CheckBox();
+            this.lblDetailIncludePartnerOnReport = new System.Windows.Forms.Label();
             this.chkDetailDeletable = new System.Windows.Forms.CheckBox();
+            this.lblDetailDeletable = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -197,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailPartnerStatusDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailPartnerStatusDescription.Name = "txtDetailPartnerStatusDescription";
-            this.txtDetailPartnerStatusDescription.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailPartnerStatusDescription.Size = new System.Drawing.Size(260, 28);
             //
             // lblDetailPartnerStatusDescription
             //
@@ -213,44 +216,74 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.chkDetailPartnerIsActive.Location = new System.Drawing.Point(2,2);
             this.chkDetailPartnerIsActive.Name = "chkDetailPartnerIsActive";
-            this.chkDetailPartnerIsActive.AutoSize = true;
-            this.chkDetailPartnerIsActive.Text = "Active Partner";
-            this.chkDetailPartnerIsActive.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDetailPartnerIsActive.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailPartnerIsActive.Text = "";
+            this.chkDetailPartnerIsActive.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailPartnerIsActive
+            //
+            this.lblDetailPartnerIsActive.Location = new System.Drawing.Point(2,2);
+            this.lblDetailPartnerIsActive.Name = "lblDetailPartnerIsActive";
+            this.lblDetailPartnerIsActive.AutoSize = true;
+            this.lblDetailPartnerIsActive.Text = "Active Partner:";
+            this.lblDetailPartnerIsActive.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailPartnerIsActive.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailPartnerIsActive.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailIncludePartnerOnReport
             //
             this.chkDetailIncludePartnerOnReport.Location = new System.Drawing.Point(2,2);
             this.chkDetailIncludePartnerOnReport.Name = "chkDetailIncludePartnerOnReport";
-            this.chkDetailIncludePartnerOnReport.AutoSize = true;
-            this.chkDetailIncludePartnerOnReport.Text = "Include Partners on Reports";
-            this.chkDetailIncludePartnerOnReport.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDetailIncludePartnerOnReport.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailIncludePartnerOnReport.Text = "";
+            this.chkDetailIncludePartnerOnReport.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailIncludePartnerOnReport
+            //
+            this.lblDetailIncludePartnerOnReport.Location = new System.Drawing.Point(2,2);
+            this.lblDetailIncludePartnerOnReport.Name = "lblDetailIncludePartnerOnReport";
+            this.lblDetailIncludePartnerOnReport.AutoSize = true;
+            this.lblDetailIncludePartnerOnReport.Text = "Include Partners on Reports:";
+            this.lblDetailIncludePartnerOnReport.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailIncludePartnerOnReport.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailIncludePartnerOnReport.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailDeletable
             //
             this.chkDetailDeletable.Location = new System.Drawing.Point(2,2);
             this.chkDetailDeletable.Name = "chkDetailDeletable";
-            this.chkDetailDeletable.AutoSize = true;
-            this.chkDetailDeletable.Text = "Deletable";
-            this.chkDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.chkDetailDeletable.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailDeletable.Text = "";
+            this.chkDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailDeletable
+            //
+            this.lblDetailDeletable.Location = new System.Drawing.Point(2,2);
+            this.lblDetailDeletable.Name = "lblDetailDeletable";
+            this.lblDetailDeletable.AutoSize = true;
+            this.lblDetailDeletable.Text = "Deletable:";
+            this.lblDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDeletable.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDeletable.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 5;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailStatusCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailPartnerStatusDescription, 0, 1);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailPartnerIsActive, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailPartnerIsActive, 0, 2);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailIncludePartnerOnReport, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailIncludePartnerOnReport, 0, 3);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailDeletable, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailPartnerIsActive, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletable, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailStatusCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailPartnerStatusDescription, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailPartnerIsActive, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailPartnerStatusDescription, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailIncludePartnerOnReport, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailPartnerStatusDescription, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailIncludePartnerOnReport, 3, 1);
             //
             // tbbSave
             //
@@ -431,7 +464,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(770, 400);
+            this.ClientSize = new System.Drawing.Size(780, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -476,8 +509,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private System.Windows.Forms.TextBox txtDetailPartnerStatusDescription;
         private System.Windows.Forms.Label lblDetailPartnerStatusDescription;
         private System.Windows.Forms.CheckBox chkDetailPartnerIsActive;
+        private System.Windows.Forms.Label lblDetailPartnerIsActive;
         private System.Windows.Forms.CheckBox chkDetailIncludePartnerOnReport;
+        private System.Windows.Forms.Label lblDetailIncludePartnerOnReport;
         private System.Windows.Forms.CheckBox chkDetailDeletable;
+        private System.Windows.Forms.Label lblDetailDeletable;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;

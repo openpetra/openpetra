@@ -79,7 +79,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailTypeDescription = new System.Windows.Forms.TextBox();
             this.lblDetailTypeDescription = new System.Windows.Forms.Label();
             this.chkDetailValidType = new System.Windows.Forms.CheckBox();
+            this.lblDetailValidType = new System.Windows.Forms.Label();
             this.chkDetailTypeDeletable = new System.Windows.Forms.CheckBox();
+            this.lblDetailTypeDeletable = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -196,7 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailTypeDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailTypeDescription.Name = "txtDetailTypeDescription";
-            this.txtDetailTypeDescription.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailTypeDescription.Size = new System.Drawing.Size(255, 28);
             //
             // lblDetailTypeDescription
             //
@@ -212,33 +214,53 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.chkDetailValidType.Location = new System.Drawing.Point(2,2);
             this.chkDetailValidType.Name = "chkDetailValidType";
-            this.chkDetailValidType.AutoSize = true;
-            this.chkDetailValidType.Text = "Assignable";
-            this.chkDetailValidType.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkDetailValidType.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailValidType.Text = "";
+            this.chkDetailValidType.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailValidType
+            //
+            this.lblDetailValidType.Location = new System.Drawing.Point(2,2);
+            this.lblDetailValidType.Name = "lblDetailValidType";
+            this.lblDetailValidType.AutoSize = true;
+            this.lblDetailValidType.Text = "Assignable:";
+            this.lblDetailValidType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailValidType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailValidType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailTypeDeletable
             //
             this.chkDetailTypeDeletable.Location = new System.Drawing.Point(2,2);
             this.chkDetailTypeDeletable.Name = "chkDetailTypeDeletable";
-            this.chkDetailTypeDeletable.AutoSize = true;
-            this.chkDetailTypeDeletable.Text = "Deletable";
-            this.chkDetailTypeDeletable.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.chkDetailTypeDeletable.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailTypeDeletable.Text = "";
+            this.chkDetailTypeDeletable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailTypeDeletable
+            //
+            this.lblDetailTypeDeletable.Location = new System.Drawing.Point(2,2);
+            this.lblDetailTypeDeletable.Name = "lblDetailTypeDeletable";
+            this.lblDetailTypeDeletable.AutoSize = true;
+            this.lblDetailTypeDeletable.Text = "Deletable:";
+            this.lblDetailTypeDeletable.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailTypeDeletable.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailTypeDeletable.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDescription, 0, 1);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailValidType, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailValidType, 0, 2);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkDetailTypeDeletable, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailTypeDeletable, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailValidType, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailTypeCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailTypeDescription, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailValidType, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDescription, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDeletable, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailTypeDescription, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailTypeDeletable, 3, 1);
             //
             // tbbSave
             //
@@ -464,7 +486,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private System.Windows.Forms.TextBox txtDetailTypeDescription;
         private System.Windows.Forms.Label lblDetailTypeDescription;
         private System.Windows.Forms.CheckBox chkDetailValidType;
+        private System.Windows.Forms.Label lblDetailValidType;
         private System.Windows.Forms.CheckBox chkDetailTypeDeletable;
+        private System.Windows.Forms.Label lblDetailTypeDeletable;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;

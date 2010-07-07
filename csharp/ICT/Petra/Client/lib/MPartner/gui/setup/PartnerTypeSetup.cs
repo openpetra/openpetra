@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// constructor
     public TFrmPartnerTypeSetup(IntPtr AParentFormHandle) : base()
     {
+      Control[] FoundCheckBoxes;
+
       //
       // Required for Windows Form Designer support
       //
@@ -69,8 +71,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailTypeCode.Text = Catalog.GetString("Type Code:");
       this.lblDetailTypeDescription.Text = Catalog.GetString("Description:");
-      this.chkDetailValidType.Text = Catalog.GetString("Assignable");
-      this.chkDetailTypeDeletable.Text = Catalog.GetString("Deletable");
+      this.lblDetailValidType.Text = Catalog.GetString("Assignable:");
+      this.lblDetailTypeDeletable.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Partner Type");
@@ -100,6 +102,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailTypeDescription, Catalog.GetString("Enter a full description"));
       FPetraUtilsObject.SetStatusBarText(chkDetailValidType, Catalog.GetString("Select if this Type Code is selectable by users"));
       FPetraUtilsObject.SetStatusBarText(chkDetailTypeDeletable, Catalog.GetString("Select if deletable"));
+
+      /*
+       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
+       * 'Deletable' flag is true are system records that must not be deleted)
+       */
+      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
+
+      if (FoundCheckBoxes.Length > 0)
+      {
+          FoundCheckBoxes[0].Enabled = false;
+      }
 
       LoadDataAndFinishScreenSetup();
     }

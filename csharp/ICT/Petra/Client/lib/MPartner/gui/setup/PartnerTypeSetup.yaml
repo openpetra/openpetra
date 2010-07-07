@@ -2,7 +2,6 @@ RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Partner Types
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
-    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerSetupTDS
     DetailTable: PType
     CacheableTable: PartnerTypeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
@@ -30,12 +29,10 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailTypeCode]
-                Row1: [txtDetailTypeDescription]
-                Row2: [chkDetailValidType]
-                Row3: [chkDetailTypeDeletable]
+                Row0: [txtDetailTypeCode, txtDetailTypeDescription]
+                Row1: [chkDetailValidType, chkDetailTypeDeletable]
         txtDetailTypeCode: {Label=Type Code}
-        txtDetailTypeDescription: {Label=Description}
+        txtDetailTypeDescription: {Label=Description, Width=255}
         chkDetailValidType: {Label=Assignable}
         chkDetailTypeDeletable: {Label=Deletable}
     Toolbar:

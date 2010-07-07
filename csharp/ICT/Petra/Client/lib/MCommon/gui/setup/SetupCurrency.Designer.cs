@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             //
             this.txtDetailCurrencySymbol.Location = new System.Drawing.Point(2,2);
             this.txtDetailCurrencySymbol.Name = "txtDetailCurrencySymbol";
-            this.txtDetailCurrencySymbol.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCurrencySymbol.Size = new System.Drawing.Size(50, 28);
             //
             // lblDetailCurrencySymbol
             //
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             //
             this.txtDetailDisplayFormat.Location = new System.Drawing.Point(2,2);
             this.txtDetailDisplayFormat.Name = "txtDetailDisplayFormat";
-            this.txtDetailDisplayFormat.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailDisplayFormat.Size = new System.Drawing.Size(180, 28);
             //
             // lblDetailDisplayFormat
             //
@@ -270,25 +270,27 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.lblDetailDisplayFormat.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDisplayFormat.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailDisplayFormat.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 5;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyName, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencySymbol, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryCode, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDisplayFormat, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencySymbol, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryCode, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDisplayFormat, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyName, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencySymbol, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCountryCode, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailDisplayFormat, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencySymbol, 1, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.cmbDetailCountryCode, 3);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailCountryCode, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailDisplayFormat, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCurrencyName, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCurrencyName, 3, 0);
             //
             // tbbSave
             //

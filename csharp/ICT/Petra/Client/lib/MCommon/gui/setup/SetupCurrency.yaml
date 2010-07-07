@@ -32,14 +32,13 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailCurrencyCode]
-                Row1: [txtDetailCurrencyName]
-                Row2: [txtDetailCurrencySymbol]
-                Row3: [cmbDetailCountryCode]
-                Row4: [txtDetailDisplayFormat]
-        txtDetailCurrencyCode: {Label=Currency Code, OnlySetOnce=true}
+                Row0: [txtDetailCurrencyCode, txtDetailCurrencyName]
+                Row1: [txtDetailCurrencySymbol]
+                Row2: [cmbDetailCountryCode]
+                Row3: [txtDetailDisplayFormat]
+        txtDetailCurrencyCode: {Label=Currency Code}
         txtDetailCurrencyName: {Label=Currency Name}
-        txtDetailCurrencySymbol: {Label=Currency Symbol}
-        cmbDetailCountryCode: {Label=Country Code, List=CountryList}
+        txtDetailCurrencySymbol: {Label=Currency Symbol, Width=50}
+        cmbDetailCountryCode: {Label=Country Code, List=CountryList, ColSpan=3}
         # TODO: should be nudNumberOfDecimals
-        txtDetailDisplayFormat: {Label=Number of Decimals}
+        txtDetailDisplayFormat: {Label=Number of Decimals, Width=180}

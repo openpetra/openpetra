@@ -60,6 +60,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     /// constructor
     public TFrmGiftMotivationSetup(IntPtr AParentFormHandle) : base()
     {
+      Control[] FoundCheckBoxes;
+
       //
       // Required for Windows Form Designer support
       //
@@ -73,8 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       this.lblDetailMotivationDetailDesc.Text = Catalog.GetString("Description:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre:");
-      this.chkDetailMotivationStatus.Text = Catalog.GetString("Active");
-      this.chkDetailReceipt.Text = Catalog.GetString("Print Receipt");
+      this.lblDetailMotivationStatus.Text = Catalog.GetString("Active:");
+      this.lblDetailReceipt.Text = Catalog.GetString("Print Receipt:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Motivation Detail");
@@ -108,6 +110,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
       FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
       FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
+
+      /*
+       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
+       * 'Deletable' flag is true are system records that must not be deleted)
+       */
+      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
+
+      if (FoundCheckBoxes.Length > 0)
+      {
+          FoundCheckBoxes[0].Enabled = false;
+      }
 
       // LoadDataAndFinishScreenSetup() needs to be called manually after setting FFilter!
     }
@@ -149,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       grdDetails.AddTextColumn("Detail Description", FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
       grdDetails.AddTextColumn("Account Code", FMainDS.AMotivationDetail.ColumnAccountCode);
       grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AMotivationDetail.ColumnCostCentreCode);
-      grdDetails.AddCheckBoxColumn("Motivation Status", FMainDS.AMotivationDetail.ColumnMotivationStatus);
+      grdDetails.AddCheckBoxColumn("Active", FMainDS.AMotivationDetail.ColumnMotivationStatus);
       grdDetails.AddCheckBoxColumn("Print Receipt", FMainDS.AMotivationDetail.ColumnReceipt);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// constructor
     public TFrmPartnerStatusSetup(IntPtr AParentFormHandle) : base()
     {
+      Control[] FoundCheckBoxes;
+
       //
       // Required for Windows Form Designer support
       //
@@ -69,9 +71,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailStatusCode.Text = Catalog.GetString("Status Code:");
       this.lblDetailPartnerStatusDescription.Text = Catalog.GetString("Description:");
-      this.chkDetailPartnerIsActive.Text = Catalog.GetString("Active Partner");
-      this.chkDetailIncludePartnerOnReport.Text = Catalog.GetString("Include Partners on Reports");
-      this.chkDetailDeletable.Text = Catalog.GetString("Deletable");
+      this.lblDetailPartnerIsActive.Text = Catalog.GetString("Active Partner:");
+      this.lblDetailIncludePartnerOnReport.Text = Catalog.GetString("Include Partners on Reports:");
+      this.lblDetailDeletable.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Partner Status");
@@ -102,6 +104,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(chkDetailPartnerIsActive, Catalog.GetString("Select if partner status should be considered as active"));
       FPetraUtilsObject.SetStatusBarText(chkDetailIncludePartnerOnReport, Catalog.GetString("Select if partner should be included on reports"));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletable, Catalog.GetString("This code is Required for System operation by other code"));
+
+      /*
+       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
+       * 'Deletable' flag is true are system records that must not be deleted)
+       */
+      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
+
+      if (FoundCheckBoxes.Length > 0)
+      {
+          FoundCheckBoxes[0].Enabled = false;
+      }
 
       LoadDataAndFinishScreenSetup();
     }

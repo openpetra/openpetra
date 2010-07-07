@@ -30,8 +30,8 @@ RootNode:
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
-                Row5: [lblAccommodationInfo, chkAccomodation, txtAccomodationSize, cmbAccomodationType]
-            ColWidths: [0=Fixed:140, 1=Percent:25, 2=Percent:30, 3=Percent:30, 4=Percent:30, 5=Percent:30, 6=Percent:30]
+                Row5: [chkAccomodation, txtAccomodationSize, cmbAccomodationType]
+            ColWidths: [0=Fixed:140, 1=Fixed:130, 2=Fixed:140, 3=Fixed:45]
 
         cmbDenominationCode: {List=DenominationList}
         
@@ -39,24 +39,25 @@ RootNode:
             Width: 45
             
         chkMapOnFile:
+            CheckBoxAttachedLabel: right
+            ColSpan: 0
+            Align: right
             
         chkPrayerGroup:
-        
+            CheckBoxAttachedLabel: right
+            ColSpan: 0
+            
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
             ColSpan: 5
             
-        lblAccommodationInfo:
-            Label: Accommodation
-            Align: right
-            
         chkAccomodation:
-            NoLabel: true
             OnChange: ShowHideAccomodationData
             
         txtAccomodationSize:
             Width: 45
             
         cmbAccomodationType: {DataField=AccomodationType, List=AccommodationCodeList}
+            Width: 100
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
             ColSpan: 5

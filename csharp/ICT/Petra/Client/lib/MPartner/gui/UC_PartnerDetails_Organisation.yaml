@@ -24,31 +24,34 @@ RootNode:
          
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
-                Row0: [lblReligious, chkReligious, chkFoundation]
+                Row0: [pnlCheckBoxes]
                 Row1: [cmbBusinessCode]
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
-            ColWidths: [0=Fixed:140, 1=Percent:0, 2=Percent:100]    
+            ColWidths: [0=Fixed:140]       
 
-        lblReligious:
-            Label: Religious Organisation
-            Align: right
-            
+        pnlCheckBoxes:
+            Controls: 
+                Row0: [chkReligious, chkFoundation]
+            ColWidths: [0=Fixed:450]    
+            Margin: 140,0,0,5        
+                            
         chkReligious:
-            NoLabel: true
+            Label: Religious Organisation
+            CheckBoxAttachedLabel: right
             
         chkFoundation:
+            CheckBoxAttachedLabel: right
             OnChange: ShowHideFoundationTab
-            Width: 150
-        
+             
         cmbBusinessCode: {BusinessCode, List=BusinessCodeList}
-            ColSpan: 3
+
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-            ColSpan: 3
+
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-            ColSpan: 3
+            Stretch: horizontally
+            
         txtContactPartnerKey:
             Label: Contact Partner
             Type: PartnerKey
-            ColSpan: 3

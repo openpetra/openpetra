@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblAcquisitionCode.Text = Catalog.GetString("Acquisition Code:");
       this.txtContactPartnerKey.ButtonText = Catalog.GetString("Find");
       this.lblContactPartnerKey.Text = Catalog.GetString("Contact Partner:");
-      this.lblAccommodationInfo.Text = Catalog.GetString("Accommodation:");
+      this.lblAccomodation.Text = Catalog.GetString("Accomodation:");
       this.lblAccomodationSize.Text = Catalog.GetString("Accomodation Size:");
       this.lblAccomodationType.Text = Catalog.GetString("Accomodation Type:");
       this.grpMisc.Text = Catalog.GetString("Miscellaneous");

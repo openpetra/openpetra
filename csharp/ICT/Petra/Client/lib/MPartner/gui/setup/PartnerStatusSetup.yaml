@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 770
+    WindowWidth: 780
     WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
@@ -32,16 +32,14 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailStatusCode]
-                Row1: [txtDetailPartnerStatusDescription]
-                Row2: [chkDetailPartnerIsActive]
-                Row3: [chkDetailIncludePartnerOnReport]
-                Row4: [chkDetailDeletable]
+                Row0: [txtDetailStatusCode, txtDetailPartnerStatusDescription]
+                Row2: [chkDetailPartnerIsActive, chkDetailIncludePartnerOnReport]
+                Row3: [chkDetailDeletable]
         txtDetailStatusCode: {Label=Status Code}
-        txtDetailPartnerStatusDescription: {Label=Description}
+        txtDetailPartnerStatusDescription: {Label=Description, Width: 260}
         chkDetailPartnerIsActive: {Label=Active Partner}
         chkDetailIncludePartnerOnReport: {Label=Include Partners on Reports}
-        chkDetailDeletable: {Label=Deletable}
+        chkDetailDeletable:
     Toolbar:
         tbbNew:
             Label: New Partner Status

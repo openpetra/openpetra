@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblPreviousName.Text = Catalog.GetString("Previous Name:");
       this.lblLocalName.Text = Catalog.GetString("Local Name:");
       this.grpNames.Text = Catalog.GetString("Names");
-      this.lblReligious.Text = Catalog.GetString("Religious Organisation:");
+      this.chkReligious.Text = Catalog.GetString("Religious Organisation");
       this.chkFoundation.Text = Catalog.GetString("Foundation");
       this.lblBusinessCode.Text = Catalog.GetString("Business Code:");
       this.lblLanguageCode.Text = Catalog.GetString("Language Code:");

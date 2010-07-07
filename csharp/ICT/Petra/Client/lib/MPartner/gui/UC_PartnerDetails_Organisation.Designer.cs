@@ -75,7 +75,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLocalName = new System.Windows.Forms.Label();
             this.grpMisc = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblReligious = new System.Windows.Forms.Label();
+            this.pnlCheckBoxes = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.chkReligious = new System.Windows.Forms.CheckBox();
             this.chkFoundation = new System.Windows.Forms.CheckBox();
             this.cmbBusinessCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -92,6 +93,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel1.SuspendLayout();
             this.grpMisc.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.pnlCheckBoxes.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
 
             //
             // pnlContent
@@ -173,31 +176,45 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.AutoSize = true;
             this.grpMisc.Controls.Add(this.tableLayoutPanel2);
             //
-            // lblReligious
+            // pnlCheckBoxes
             //
-            this.lblReligious.Location = new System.Drawing.Point(2,2);
-            this.lblReligious.Name = "lblReligious";
-            this.lblReligious.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblReligious.AutoSize = true;
-            this.lblReligious.Text = "Religious Organisation:";
-            this.lblReligious.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.pnlCheckBoxes.Location = new System.Drawing.Point(2,2);
+            this.pnlCheckBoxes.Name = "pnlCheckBoxes";
+            this.pnlCheckBoxes.Margin = new System.Windows.Forms.Padding(140,0,0,5);
+            this.pnlCheckBoxes.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.pnlCheckBoxes.Controls.Add(this.tableLayoutPanel3);
             //
             // chkReligious
             //
             this.chkReligious.Location = new System.Drawing.Point(2,2);
             this.chkReligious.Name = "chkReligious";
             this.chkReligious.AutoSize = true;
-            this.chkReligious.Text = "";
-            this.chkReligious.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkReligious.Text = "Religious Organisation";
+            this.chkReligious.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkReligious.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkFoundation
             //
             this.chkFoundation.Location = new System.Drawing.Point(2,2);
             this.chkFoundation.Name = "chkFoundation";
-            this.chkFoundation.Size = new System.Drawing.Size(150, 28);
+            this.chkFoundation.AutoSize = true;
             this.chkFoundation.CheckedChanged += new System.EventHandler(this.ShowHideFoundationTab);
             this.chkFoundation.Text = "Foundation";
-            this.chkFoundation.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkFoundation.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkFoundation.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 450));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.chkReligious, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.chkFoundation, 1, 0);
             //
             // cmbBusinessCode
             //
@@ -237,6 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.cmbAcquisitionCode.Location = new System.Drawing.Point(2,2);
             this.cmbAcquisitionCode.Name = "cmbAcquisitionCode";
+            this.cmbAcquisitionCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbAcquisitionCode.Size = new System.Drawing.Size(300, 28);
             this.cmbAcquisitionCode.ListTable = TCmbAutoPopulated.TListTableEnum.AcquisitionCodeList;
             //
@@ -276,10 +294,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblContactPartnerKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblContactPartnerKey.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblContactPartnerKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 4;
+            this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 140));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 0));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, 100));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 5;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -287,22 +303,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.SetColumnSpan(this.lblReligious, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblReligious, 0, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.pnlCheckBoxes, 2);
+            this.tableLayoutPanel2.Controls.Add(this.pnlCheckBoxes, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblBusinessCode, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblLanguageCode, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblAcquisitionCode, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblContactPartnerKey, 0, 4);
-            this.tableLayoutPanel2.SetColumnSpan(this.cmbBusinessCode, 2);
             this.tableLayoutPanel2.Controls.Add(this.cmbBusinessCode, 1, 1);
-            this.tableLayoutPanel2.SetColumnSpan(this.cmbLanguageCode, 2);
             this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 2);
-            this.tableLayoutPanel2.SetColumnSpan(this.cmbAcquisitionCode, 2);
             this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 3);
-            this.tableLayoutPanel2.SetColumnSpan(this.txtContactPartnerKey, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtContactPartnerKey, 1, 4);
-            this.tableLayoutPanel2.Controls.Add(this.chkReligious, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkFoundation, 3, 0);
             this.grpMisc.Text = "Miscellaneous";
 
             //
@@ -318,6 +328,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Name = "TUC_PartnerDetails_Organisation";
             this.Text = "";
 
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.pnlCheckBoxes.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.grpMisc.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -337,7 +349,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblLocalName;
         private System.Windows.Forms.GroupBox grpMisc;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label lblReligious;
+        private System.Windows.Forms.Panel pnlCheckBoxes;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.CheckBox chkReligious;
         private System.Windows.Forms.CheckBox chkFoundation;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBusinessCode;
