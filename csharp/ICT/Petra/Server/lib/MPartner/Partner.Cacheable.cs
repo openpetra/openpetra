@@ -656,19 +656,98 @@ namespace Ict.Petra.Server.MPartner.Partner
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheablePartnerTablesEnum.PartnerTypeList:
+                         case TCacheablePartnerTablesEnum.AcquisitionCodeList:
+                            if (PAcquisitionAccess.SubmitChanges((PAcquisitionTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
 
+                            break;
+                         
+                        case TCacheablePartnerTablesEnum.AddresseeTypeList:
+                            if (PAddresseeTypeAccess.SubmitChanges((PAddresseeTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                                                        
+                         case TCacheablePartnerTablesEnum.BusinessCodeList:
+                            if (PBusinessAccess.SubmitChanges((PBusinessTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                            
+                        case TCacheablePartnerTablesEnum.CountryList:
+                            if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                                                                     
+                        case TCacheablePartnerTablesEnum.DenominationList:
+                            if (PDenominationAccess.SubmitChanges((PDenominationTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheablePartnerTablesEnum.LanguageCodeList:
+                            if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                                                    
+                        case TCacheablePartnerTablesEnum.LocationTypeList:
+                            if (PLocationTypeAccess.SubmitChanges((PLocationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                            
+                        case TCacheablePartnerTablesEnum.MaritalStatusList:
+                            if (PtMaritalStatusAccess.SubmitChanges((PtMaritalStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                            
+                        case TCacheablePartnerTablesEnum.OccupationList:
+                            if (POccupationAccess.SubmitChanges((POccupationTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+                                                        
+                        case TCacheablePartnerTablesEnum.PartnerTypeList:
                             if (PTypeAccess.SubmitChanges((PTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
-                                // Console.WriteLine("PartnerTypeList changes successfully saved!");
+// Console.WriteLine("PartnerTypeList changes successfully saved!");
                             }
 
                             break;
 
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
-
                             if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
