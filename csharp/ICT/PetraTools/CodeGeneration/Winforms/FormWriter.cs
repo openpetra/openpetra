@@ -177,7 +177,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            if (fittingGenerator == null)
+            if ((fittingGenerator == null)
+                && (!ACtrlDef.controlName.StartsWith("Empty")))
             {
                 if (TYml2Xml.HasAttribute(ACtrlDef.xmlNode, "Type"))
                 {

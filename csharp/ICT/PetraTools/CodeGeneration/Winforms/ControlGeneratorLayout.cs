@@ -526,12 +526,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // add control itself
-            ctrlGenerator.GenerateDeclaration(writer, ctrl);
-            ctrlGenerator.SetControlProperties(writer, ctrl);
-            ctrlGenerator.OnChangeDataType(writer, curNode, controlName);
-            writer.InitialiseDataSource(curNode, controlName);
+            if (!ctrl.controlName.StartsWith("Empty"))
+            {
+                ctrlGenerator.GenerateDeclaration(writer, ctrl);
+                ctrlGenerator.SetControlProperties(writer, ctrl);
+                ctrlGenerator.OnChangeDataType(writer, curNode, controlName);
+                writer.InitialiseDataSource(curNode, controlName);
 
-            writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
+                writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
+            }
 
 /* this does not work yet; creates endless loop/recursion
  *          if (ctrl.HasAttribute("LabelUnit"))
@@ -662,6 +665,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
                 }
+            }
+            else if (ctrl.controlName.StartsWith("Empty"))
+            {
+                // don't do anything here!
             }
             else if (ctrlGenerator.GenerateLabel(ctrl))
             {

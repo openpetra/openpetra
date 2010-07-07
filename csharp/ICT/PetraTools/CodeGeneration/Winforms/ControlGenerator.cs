@@ -591,8 +591,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public CheckBoxGenerator()
             : base("chk", typeof(CheckBox))
         {
-            base.FAutoSize = true;
-            base.FGenerateLabel = false;
             this.FChangeEventName = "CheckedChanged";
         }
 
@@ -600,18 +598,46 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             CheckForOtherControls(ctrl);
 
-            base.SetControlProperties(writer, ctrl);
-
-            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
+            if ((ctrl.HasAttribute("CheckBoxAttachedLabel"))
+                && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
+                    || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
             {
-                writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
+                base.FGenerateLabel = false;
+                base.FAutoSize = true;
+
+                base.SetControlProperties(writer, ctrl);
+
+                if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
+                {
+                    writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+
+                    if (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
+                    {
+                        writer.SetControlProperty(ctrl.controlName, "CheckAlign", "System.Drawing.ContentAlignment.MiddleRight");
+                    }
+                    else
+                    {
+                        writer.SetControlProperty(ctrl.controlName, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                    }
+
+                    writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
+                }
             }
             else
             {
-                writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
-            }
+                base.FGenerateLabel = true;
+                base.FAutoSize = false;
+                ctrl.SetAttribute("Width", 30.ToString ());
 
-            writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
+                base.SetControlProperties(writer, ctrl);
+
+                writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
+                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 0, 3, 0)");
+            }
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
@@ -1570,7 +1596,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
 
-                        if (ctrl == null)
+                        if ((ctrl == null)
+                            && (!ctrlname.StartsWith("Empty")))
                         {
                             throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
                                 curNode.Name);
@@ -1599,7 +1626,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     ctrl.parentName = curNode.Name;
                 }
-                else
+                else if (!ctrlname.StartsWith("Empty"))
                 {
                     throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
                 }
