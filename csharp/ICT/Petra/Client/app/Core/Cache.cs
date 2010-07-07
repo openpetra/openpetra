@@ -1134,8 +1134,11 @@ namespace Ict.Petra.Client.App.Core
                 {
                     ReturnValue.ImportRow(FilteredRows[FilteredRowsCounter]);
                 }
+                
+                ReturnValue.AcceptChanges();
             }
 
+           
             return ReturnValue;
         }
 
