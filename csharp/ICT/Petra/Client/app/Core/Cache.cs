@@ -422,7 +422,7 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable));
             }
 
             /**

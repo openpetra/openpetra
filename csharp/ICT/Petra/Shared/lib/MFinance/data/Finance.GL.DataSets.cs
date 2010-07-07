@@ -37,7 +37,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared.MFinance.GL.Data
 {
-
      /// auto generated
     [Serializable()]
     public class GLBatchTDS : TTypedDataSet
@@ -274,7 +273,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableALedger != null)
                         && (this.TableAAccount != null)))
             {
@@ -1423,7 +1421,6 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableALedger != null)
                         && (this.TableAAccount != null)))
             {

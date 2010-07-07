@@ -10,7 +10,6 @@
 	<reportparameters>
 		<reportparameter name="param_source"></reportparameter>
 		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_extract_description"></reportparameter>
 		<reportparameter name="param_hide_empty_lines"></reportparameter>
 		<reportparameter name="param_print_two_lines"></reportparameter>
 	</reportparameters>

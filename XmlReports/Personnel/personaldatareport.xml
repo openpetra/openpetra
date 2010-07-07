@@ -9,7 +9,6 @@
 	<reportparameters>
 		<reportparameter name="param_source"></reportparameter>
 		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_extract_description"></reportparameter>
 	</reportparameters>
 	
 	<reportheader></reportheader>

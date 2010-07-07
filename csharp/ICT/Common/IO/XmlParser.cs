@@ -432,6 +432,41 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// add or set an attribute value
+        /// </summary>
+        /// <param name="cur"></param>
+        /// <param name="AAttribName"></param>
+        /// <param name="AAttribValue"></param>
+        public static void SetAttribute(XmlNode cur, string AAttribName, string AAttribValue)
+        {
+            if (cur.Attributes[AAttribName] != null)
+            {
+                cur.Attributes[AAttribName].Value = AAttribValue;
+            }
+            else
+            {
+                XmlAttribute newAttrib = cur.OwnerDocument.CreateAttribute(AAttribName);
+                newAttrib.Value = AAttribValue;
+                cur.Attributes.Append(newAttrib);
+            }
+        }
+
+        /// <summary>
+        /// rename an existing attribute
+        /// </summary>
+        /// <param name="cur"></param>
+        /// <param name="AAttribOldName"></param>
+        /// <param name="AAttribNewName"></param>
+        public static void RenameAttribute(XmlNode cur, string AAttribOldName, string AAttribNewName)
+        {
+            if (cur.Attributes[AAttribOldName] != null)
+            {
+                SetAttribute(cur, AAttribNewName, cur.Attributes[AAttribOldName].Value);
+                cur.Attributes.Remove(cur.Attributes[AAttribOldName]);
+            }
+        }
+
+        /// <summary>
         /// retrieve the value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
         /// </summary>
         /// <param name="cur">the current node</param>

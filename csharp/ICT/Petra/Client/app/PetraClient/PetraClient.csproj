@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{8B8EEEE1-C72B-48AD-9BD6-D79DC83D68D8}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -168,6 +168,10 @@
     <ProjectReference Include="..\..\lib\MPartner\gui\Ict.Petra.Client.MPartner.Gui.csproj">
       <Project>{2B06F76C-A8FE-4F0A-A312-B53055F9E77A}</Project>
       <Name>Ict.Petra.Client.MPartner.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lib\MPersonnel\gui\Ict.Petra.Client.MPersonnel.Gui.csproj">
+      <Project>{6870213C-A7D8-4B1A-A398-C18C0363A391}</Project>
+      <Name>Ict.Petra.Client.MPersonnel.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MSysMan\gui\Ict.Petra.Client.MSysMan.Gui.csproj">
       <Project>{84F5D8D3-FC70-40C0-9116-5621035F77B5}</Project>

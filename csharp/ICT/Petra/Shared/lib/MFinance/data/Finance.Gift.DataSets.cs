@@ -36,7 +36,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared.MFinance.Gift.Data
 {
-
      /// auto generated
     [Serializable()]
     public class GiftBatchTDS : TTypedDataSet
@@ -213,7 +212,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableAGiftBatch != null)
                         && (this.TableAGift != null)))
             {
@@ -942,7 +940,6 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableAMotivationDetail != null)
                         && (this.TableAEpMatch != null)))
             {

@@ -27,6 +27,8 @@ using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data.Odbc;
 using System.Data;
 
@@ -75,6 +77,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (StringHelper.IsSame(f, "GetType"))
             {
                 value = new TVariant(GetType(ops[1].ToInt64(), ops[2].ToString(), ops[3].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GenerateUnitHierarchy"))
+            {
+                value = new TVariant(GenerateUnitHierarchy(ops[1].ToInt64(), ops[2].ToString()));
                 return true;
             }
 
@@ -270,6 +278,205 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return "";
+        }
+
+        /// <summary>
+        /// Get recursively all the child units of a unit and puts them into the
+        /// results list.
+        /// This function is called by the "UnitHierarchyReport"
+        /// </summary>
+        /// <param name="AUnitKey">Parent unit to get the child unit from</param>
+        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// be included in the result.</param>
+        /// <returns>True</returns>
+        private bool GenerateUnitHierarchy(long AUnitKey, string AWithCampaigns)
+        {
+            int ChildRow = 1;
+
+            GetChildUnits(AUnitKey, 0, (AWithCampaigns == "true"), ref ChildRow);
+
+            DataTable table = situation.GetResults().ToDataTable(parameters);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get recursively all the child units of a unit and puts them into the
+        /// results list.
+        /// </summary>
+        /// <param name="AUnitKey">Parent unit to get the child unit from</param>
+        /// <param name="AChildLevel">Indicates how deep we are in the recursion</param>
+        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// be included in the result</param>
+        /// <returns>False if the parent unit is not active.
+        /// Otherwise true</returns>
+        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithCampaigns, ref int AChildRow)
+        {
+            UmUnitStructureTable UnitStructure;
+            PUnitTable UnitTable;
+            PPartnerTable PartnerTable;
+            UUnitTypeTable UnitType;
+
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(AUnitKey, situation.GetDatabaseConnection().Transaction);
+
+            if ((PartnerTable.Rows.Count > 0)
+                && (((PPartnerRow)PartnerTable.Rows[0]).StatusCode != "ACTIVE"))
+            {
+                return false;
+            }
+
+            string PreceedingWhiteSpaces = new string(' ', AChildLevel * 2);
+
+            UnitStructure = UmUnitStructureAccess.LoadViaPUnitParentUnitKey(AUnitKey, situation.GetDatabaseConnection().Transaction);
+
+            // Add this unit to the results
+            UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, situation.GetDatabaseConnection().Transaction);
+
+            if (UnitTable.Rows.Count > 0)
+            {
+                PUnitRow UnitRow = (PUnitRow)UnitTable.Rows[0];
+
+                string UnitTypeName = UnitRow.UnitTypeCode;
+
+                UnitType = UUnitTypeAccess.LoadByPrimaryKey(UnitRow.UnitTypeCode, situation.GetDatabaseConnection().Transaction);
+
+                if (UnitType.Rows.Count > 0)
+                {
+                    UnitTypeName = ((UUnitTypeRow)UnitType.Rows[0]).UnitTypeName;
+                }
+
+                string UnitKeyString = FormatAsUnitKey(UnitRow.PartnerKey);
+
+                TVariant[] Header =
+                {
+                    new TVariant(), new TVariant(), new TVariant(), new TVariant()
+                };
+                TVariant[] Description =
+                {
+                    new TVariant(), new TVariant()
+                };
+                TVariant[] Columns =
+                {
+                    new TVariant(PreceedingWhiteSpaces + UnitKeyString),
+                    new TVariant(PreceedingWhiteSpaces + UnitTypeName),
+                    new TVariant(PreceedingWhiteSpaces + UnitRow.UnitName),
+                    new TVariant(UnitRow.PartnerKey)
+                };
+
+                situation.GetResults().AddRow(0, AChildRow++, true, 1, "", "", false,
+                    Header, Description, Columns);
+            }
+
+            //
+            // Add the children to the results
+            //
+
+            SortedList <string, long>ChildList = new SortedList <string, long>();
+            AChildLevel++;
+
+            foreach (DataRow Row in UnitStructure.Rows)
+            {
+                // Add the name and the key into a sorted list
+                // so we can sort the result alphabetically
+                long ChildUnitKey = (long)Row[UmUnitStructureTable.GetChildUnitKeyDBName()];
+
+                if (ChildUnitKey == AUnitKey)
+                {
+                    continue;
+                }
+
+                UnitTable = PUnitAccess.LoadByPrimaryKey(ChildUnitKey, situation.GetDatabaseConnection().Transaction);
+
+                if (UnitTable.Rows.Count < 1)
+                {
+                    continue;
+                }
+
+                PUnitRow UnitRow = (PUnitRow)UnitTable.Rows[0];
+
+                string UnitName = UnitRow.UnitName;
+                string UnitTypeName = UnitRow.UnitTypeCode;
+
+                if (!AWithCampaigns
+                    && ((UnitTypeName.StartsWith("GA"))
+                        || (UnitTypeName.StartsWith("GC"))
+                        || (UnitTypeName.StartsWith("TN"))
+                        || (UnitTypeName.StartsWith("TS"))))
+                {
+                    continue;
+                }
+
+                // use as key UnitName (for sorting) plus UnitKey so that it is
+                // unique. We might have two units with the same name
+                ChildList.Add(UnitName + ChildUnitKey.ToString(), ChildUnitKey);
+            }
+
+            foreach (KeyValuePair <string, long>kvp in ChildList)
+            {
+                GetChildUnits(kvp.Value, AChildLevel, AWithCampaigns, ref AChildRow);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Formats a integer to a 10 character long string to represent a partner key.
+        /// </summary>
+        /// <param name="AUnitKey"></param>
+        /// <returns>string with 10 characters</returns>
+        private string FormatAsUnitKey(long AUnitKey)
+        {
+            string UnitKeyString = AUnitKey.ToString();
+            string ReturnValue = "";
+
+            switch (UnitKeyString.Length)
+            {
+                case 1:
+                    ReturnValue = "000000000" + UnitKeyString;
+                    break;
+
+                case 2:
+                    ReturnValue = "00000000" + UnitKeyString;
+                    break;
+
+                case 3:
+                    ReturnValue = "0000000" + UnitKeyString;
+                    break;
+
+                case 4:
+                    ReturnValue = "000000" + UnitKeyString;
+                    break;
+
+                case 5:
+                    ReturnValue = "00000" + UnitKeyString;
+                    break;
+
+                case 6:
+                    ReturnValue = "0000" + UnitKeyString;
+                    break;
+
+                case 7:
+                    ReturnValue = "000" + UnitKeyString;
+                    break;
+
+                case 8:
+                    ReturnValue = "00" + UnitKeyString;
+                    break;
+
+                case 9:
+                    ReturnValue = "0" + UnitKeyString;
+                    break;
+
+                case 10:
+                    ReturnValue = UnitKeyString;
+                    break;
+
+                default:
+                    ReturnValue = "0000000000";
+                    break;
+            }
+
+            return ReturnValue;
         }
     }
 }

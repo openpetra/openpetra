@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using Mono.Unix;
+using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -56,7 +57,7 @@ namespace Ict.Petra.Client.MPartner
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
-            ACurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_PARTNERKEY].Value = newPartner.PartnerKey.ToString();
+            TXMLParser.SetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY, newPartner.PartnerKey.ToString());
 
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
@@ -129,11 +130,25 @@ namespace Ict.Petra.Client.MPartner
             partnerlocation.PartnerKey = newPartner.PartnerKey;
             partnerlocation.DateEffective = DateTime.Now;
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            partnerlocation.SendMail = false;
+            partnerlocation.SendMail = true;
             partnerlocation.EmailAddress = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_EMAIL);
             partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PHONE);
             partnerlocation.MobileNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
             MainDS.PPartnerLocation.Rows.Add(partnerlocation);
+
+            // import special types
+            if (TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
+            {
+                string specialTypes = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+
+                while (specialTypes.Length > 0)
+                {
+                    PPartnerTypeRow partnerType = MainDS.PPartnerType.NewRowTyped(true);
+                    partnerType.PartnerKey = newPartner.PartnerKey;
+                    partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
+                    MainDS.PPartnerType.Rows.Add(partnerType);
+                }
+            }
 
             return MainDS;
         }

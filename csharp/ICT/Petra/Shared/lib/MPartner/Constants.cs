@@ -205,6 +205,9 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_TITLE = "Title";
 
         /// <summary>Partner Import Column Name</summary>
+        public const String PARTNERIMPORT_SPECIALTYPES = "SpecialTypes";
+
+        /// <summary>Partner Import Column Name</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
 
         /// <summary>Default Aquisition Code to use for Partner Import</summary>

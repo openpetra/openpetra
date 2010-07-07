@@ -43,7 +43,6 @@ using Ict.Petra.Server.MHospitality.Data.Access;
 
 namespace Ict.Petra.Server.MHospitality.Data.Access
 {
-
      /// auto generated
     [Serializable()]
     public class HospitalityTDSAccess

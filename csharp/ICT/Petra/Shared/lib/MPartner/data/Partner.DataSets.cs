@@ -38,7 +38,6 @@ using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Shared.MPartner.Partner.Data
 {
-
      /// auto generated
     [Serializable()]
     public class PartnerEditTDS : TTypedDataSet
@@ -675,7 +674,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TablePPartner != null)
                         && (this.TablePBank != null)))
             {
@@ -984,7 +982,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                                 "p_partner_key_n"}, "PVenue", new string[] {
                                 "p_contact_partner_key_n"}));
             }
-
             this.FRelations.Add(new TTypedRelation("Address", "PPartnerLocation", new string[] {
                             "p_site_key_n", "p_location_key_i"}, "PLocation", new string[] {
                             "p_site_key_n", "p_location_key_i"}, false));
@@ -6971,7 +6968,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TablePLocation != null)
                         && (this.TablePPartnerLocation != null)))
             {
@@ -10805,31 +10801,33 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnFirstNameId = 6;
         /// used for generic TTypedDataTable functions
-        public static short ColumnFamilyKeyId = 7;
+        public static short ColumnFamilyNameId = 7;
         /// used for generic TTypedDataTable functions
-        public static short ColumnTelephoneNumberId = 8;
+        public static short ColumnFamilyKeyId = 8;
         /// used for generic TTypedDataTable functions
-        public static short ColumnLocationTypeId = 9;
+        public static short ColumnTelephoneNumberId = 9;
         /// used for generic TTypedDataTable functions
-        public static short ColumnEmailAddressId = 10;
+        public static short ColumnLocationTypeId = 10;
         /// used for generic TTypedDataTable functions
-        public static short ColumnSiteKeyId = 11;
+        public static short ColumnEmailAddressId = 11;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCityId = 12;
+        public static short ColumnSiteKeyId = 12;
         /// used for generic TTypedDataTable functions
-        public static short ColumnPostalCodeId = 13;
+        public static short ColumnCityId = 13;
         /// used for generic TTypedDataTable functions
-        public static short ColumnLocalityId = 14;
+        public static short ColumnPostalCodeId = 14;
         /// used for generic TTypedDataTable functions
-        public static short ColumnStreetNameId = 15;
+        public static short ColumnLocalityId = 15;
         /// used for generic TTypedDataTable functions
-        public static short ColumnAddress3Id = 16;
+        public static short ColumnStreetNameId = 16;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCountyId = 17;
+        public static short ColumnAddress3Id = 17;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCountryCodeId = 18;
+        public static short ColumnCountyId = 18;
         /// used for generic TTypedDataTable functions
-        public static short ColumnLocationKeyId = 19;
+        public static short ColumnCountryCodeId = 19;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnLocationKeyId = 20;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -10843,19 +10841,20 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                     new TTypedColumnInfo(4, "PreviousName", "p_previous_name_c", "Previous Name", OdbcType.VarChar, 512, false),
                     new TTypedColumnInfo(5, "AcquisitionCode", "p_acquisition_code_c", "Acquisition Code", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(6, "FirstName", "p_first_name_c", "First Name", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(7, "FamilyKey", "p_family_key_n", "Partner Key", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(8, "TelephoneNumber", "p_telephone_number_c", "Phone", OdbcType.VarChar, 50, false),
-                    new TTypedColumnInfo(9, "LocationType", "p_location_type_c", "Location Type", OdbcType.VarChar, 24, false),
-                    new TTypedColumnInfo(10, "EmailAddress", "p_email_address_c", "Email", OdbcType.VarChar, 120, false),
-                    new TTypedColumnInfo(11, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
-                    new TTypedColumnInfo(12, "City", "p_city_c", "City", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(13, "PostalCode", "p_postal_code_c", "Post Code", OdbcType.VarChar, 40, false),
-                    new TTypedColumnInfo(14, "Locality", "p_locality_c", "Addr1", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(15, "StreetName", "p_street_name_c", "Addr2", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(16, "Address3", "p_address_3_c", "Addr3", OdbcType.VarChar, 100, false),
-                    new TTypedColumnInfo(17, "County", "p_county_c", "Province", OdbcType.VarChar, 64, false),
-                    new TTypedColumnInfo(18, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, false),
-                    new TTypedColumnInfo(19, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true)
+                    new TTypedColumnInfo(7, "FamilyName", "p_family_name_c", "Family Name", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(8, "FamilyKey", "p_family_key_n", "Partner Key", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(9, "TelephoneNumber", "p_telephone_number_c", "Phone", OdbcType.VarChar, 50, false),
+                    new TTypedColumnInfo(10, "LocationType", "p_location_type_c", "Location Type", OdbcType.VarChar, 24, false),
+                    new TTypedColumnInfo(11, "EmailAddress", "p_email_address_c", "Email", OdbcType.VarChar, 120, false),
+                    new TTypedColumnInfo(12, "SiteKey", "p_site_key_n", "Site Key", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(13, "City", "p_city_c", "City", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(14, "PostalCode", "p_postal_code_c", "Post Code", OdbcType.VarChar, 40, false),
+                    new TTypedColumnInfo(15, "Locality", "p_locality_c", "Addr1", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(16, "StreetName", "p_street_name_c", "Addr2", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(17, "Address3", "p_address_3_c", "Addr3", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(18, "County", "p_county_c", "Province", OdbcType.VarChar, 64, false),
+                    new TTypedColumnInfo(19, "CountryCode", "p_country_code_c", "Country Code", OdbcType.VarChar, 8, false),
+                    new TTypedColumnInfo(20, "LocationKey", "p_location_key_i", "Location Key", OdbcType.Int, -1, true)
                 },
                 new int[] {
                 }));
@@ -10895,6 +10894,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public DataColumn ColumnAcquisitionCode;
         ///
         public DataColumn ColumnFirstName;
+        ///
+        public DataColumn ColumnFamilyName;
         /// A cross reference to the family record of this person.
         /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
         public DataColumn ColumnFamilyKey;
@@ -10934,6 +10935,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_previous_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_acquisition_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_family_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_telephone_number_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_location_type_c", typeof(String)));
@@ -10959,6 +10961,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.ColumnPreviousName = this.Columns["p_previous_name_c"];
             this.ColumnAcquisitionCode = this.Columns["p_acquisition_code_c"];
             this.ColumnFirstName = this.Columns["p_first_name_c"];
+            this.ColumnFamilyName = this.Columns["p_family_name_c"];
             this.ColumnFamilyKey = this.Columns["p_family_key_n"];
             this.ColumnTelephoneNumber = this.Columns["p_telephone_number_c"];
             this.ColumnLocationType = this.Columns["p_location_type_c"];
@@ -11110,6 +11113,18 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
 
         /// get character length for column
         public static short GetFirstNameLength()
+        {
+            return 64;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetFamilyNameDBName()
+        {
+            return "p_family_name_c";
+        }
+
+        /// get character length for column
+        public static short GetFamilyNameLength()
         {
             return 64;
         }
@@ -11468,6 +11483,32 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             }
         }
 
+        ///
+        public String FamilyName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnFamilyName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnFamilyName)
+                            || (((String)(this[this.myTable.ColumnFamilyName])) != value)))
+                {
+                    this[this.myTable.ColumnFamilyName] = value;
+                }
+            }
+        }
+
         /// A cross reference to the family record of this person.
         /// It should be set to ? (not 0 because such a record does not exist!) when there is no family record.
         public Int64 FamilyKey
@@ -11818,6 +11859,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.SetNull(this.myTable.ColumnPreviousName);
             this.SetNull(this.myTable.ColumnAcquisitionCode);
             this.SetNull(this.myTable.ColumnFirstName);
+            this.SetNull(this.myTable.ColumnFamilyName);
             this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnTelephoneNumber);
             this.SetNull(this.myTable.ColumnLocationType);
@@ -11915,6 +11957,18 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         public void SetFirstNameNull()
         {
             this.SetNull(this.myTable.ColumnFirstName);
+        }
+
+        /// test for NULL value
+        public bool IsFamilyNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnFamilyName);
+        }
+
+        /// assign NULL value
+        public void SetFamilyNameNull()
+        {
+            this.SetNull(this.myTable.ColumnFamilyName);
         }
 
         /// test for NULL value
@@ -13021,7 +13075,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TablePInterestCategory != null)
                         && (this.TablePInterest != null)))
             {

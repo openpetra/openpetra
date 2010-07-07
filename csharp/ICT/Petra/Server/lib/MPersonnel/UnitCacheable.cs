@@ -30,6 +30,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
@@ -81,6 +82,7 @@ namespace Ict.Petra.Server.MPersonnel.Units
             }
         }
 #endif
+
 
 
         /**
@@ -141,19 +143,12 @@ namespace Ict.Petra.Server.MPersonnel.Units
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheableUnitsDataElementsTablesEnum.CampaignList:
-                            // TODO
-//                            TmpTable = PAddresseeTypeAccess.LoadAll(ReadTransaction);
-//                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-
-                        case TCacheableUnitsDataElementsTablesEnum.ConferenceList:
-                            // TODO
+//                        case TCacheableUnitsDataElementsTablesEnum.CampaignList:
 //                            TmpTable = PAcquisitionAccess.LoadAll(ReadTransaction);
 //                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+//							break
+                        // Unknown Standard Cacheable DataTable
 
-                            // Unknown Standard Cacheable DataTable
-                            break;
 
                         default:
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
@@ -178,6 +173,214 @@ namespace Ict.Petra.Server.MPersonnel.Units
 
             // Return the DataTable from the Cache only if the Hash is not the same
             return ResultingCachedDataTable(TableName, AHashCode, out AType);
+        }
+
+        /**
+         * Returns non-standard cachable table 'ConferenceUnits'.
+         * DB Table:  p_partner_location, p_partner, p_unit, p_country
+         * @comment Used eg. Select Event Dialog
+         *
+         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+         * once its contents got retrieved from the DB. It returns the cached
+         * DataTable from it on subsequent calls, therefore making more no more DB
+         * queries.
+         *
+         * @comment The DataTables is retrieved as Typed DataTables, but is passed
+         * out as a normal DataTable. However, this DataTable can be cast by the
+         * caller to the appropriate TypedDataTable to have access to the features of
+         * a Typed DataTable!
+         *
+         * @param ATableName TableName that the returned DataTable should have.
+         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can be
+         * specified to always get a DataTable back (see @return)
+         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
+         * DB and through that refresh the Table in the Cache with what is now in the
+         * DB (this would be done when it is known that the DB Table has changed).
+         * Otherwise set to false.
+         * @return DataTable If the Hash passed in in AHashCode doesn't fit the Hash that
+         * the CacheableTablesManager has for this cacheable DataTable, the
+         * 'InstalledSitesList' DataTable is returned, otherwise nil.
+         *
+         */
+        public DataTable GetCoferenceUnitsTable(String ATableName, String AHashCode, Boolean ARefreshFromDB, out System.Type AType)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            DataTable TmpTable;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 7)
+            {
+                Console.WriteLine(this.GetType().FullName + ".GetCoferenceUnitsTable called.");
+            }
+#endif
+
+            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(ATableName))))
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                try
+                {
+                    TmpTable = DBAccess.GDBAccessObj.SelectDT(
+                        "SELECT DISTINCT " +
+                        PPartnerTable.GetPartnerShortNameDBName() +
+                        ", " + PPartnerTable.GetPartnerClassDBName() +
+                        ", " + PUnitTable.GetXyzTbdCodeDBName() +
+                        ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName() +
+                        ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                        ", " + PUnitTable.GetUnitTypeCodeDBName() +
+
+                        " FROM PUB." + PPartnerTable.GetTableDBName() +
+                        ", PUB." + PUnitTable.GetTableDBName() +
+                        ", PUB." + PLocationTable.GetTableDBName() +
+                        ", PUB." + PPartnerLocationTable.GetTableDBName() +
+                        ", PUB." + PCountryTable.GetTableDBName() +
+
+                        " WHERE " +
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND " +
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
+
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
+                        PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND " +
+
+
+                        PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' AND " +
+                        PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' AND (" +
+                        PUnitTable.GetUnitTypeCodeDBName() + " = 'TS-CONG' OR " +
+                        PUnitTable.GetUnitTypeCodeDBName() + " = 'GA-CONF' OR " +
+                        PUnitTable.GetUnitTypeCodeDBName() + " = 'GC-CONG' )"
+                        ,
+                        ATableName, ReadTransaction);
+                    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, TmpTable, DomainManager.GClientID);
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TSrvSetting.DL >= 7)
+                        {
+                            Console.WriteLine(this.GetType().FullName + ".GetCoferenceUnitsTable: commited own transaction.");
+                        }
+#endif
+                    }
+                }
+            }
+
+            /* Return the DataTable from the Cache only if the Hash is not the same */
+            return ResultingCachedDataTable(ATableName, AHashCode, out AType);
+        }
+
+        /**
+         * Returns non-standard cachable table 'CampaignList'.
+         * DB Table:  p_partner_location, p_partner, p_unit, p_country
+         * @comment Used eg. in Select Event Dialog
+         *
+         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+         * once its contents got retrieved from the DB. It returns the cached
+         * DataTable from it on subsequent calls, therefore making more no more DB
+         * queries.
+         *
+         * @comment The DataTables is retrieved as Typed DataTables, but is passed
+         * out as a normal DataTable. However, this DataTable can be cast by the
+         * caller to the appropriate TypedDataTable to have access to the features of
+         * a Typed DataTable!
+         *
+         * @param ATableName TableName that the returned DataTable should have.
+         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can be
+         * specified to always get a DataTable back (see @return)
+         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
+         * DB and through that refresh the Table in the Cache with what is now in the
+         * DB (this would be done when it is known that the DB Table has changed).
+         * Otherwise set to false.
+         * @return DataTable If the Hash passed in in AHashCode doesn't fit the Hash that
+         * the CacheableTablesManager has for this cacheable DataTable, the
+         * 'InstalledSitesList' DataTable is returned, otherwise nil.
+         *
+         */
+        public DataTable GetCampaignUnitsTable(String ATableName, String AHashCode, Boolean ARefreshFromDB, out System.Type AType)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            DataTable TmpTable;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 7)
+            {
+                Console.WriteLine(this.GetType().FullName + ".GetCampaignUnitsTable called.");
+            }
+#endif
+
+            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(ATableName))))
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                try
+                {
+                    TmpTable = DBAccess.GDBAccessObj.SelectDT(
+                        "SELECT DISTINCT " +
+                        PPartnerTable.GetPartnerShortNameDBName() +
+                        ", " + PPartnerTable.GetPartnerClassDBName() +
+                        ", " + PUnitTable.GetXyzTbdCodeDBName() +
+                        ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
+                        ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName() +
+                        ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                        ", " + PUnitTable.GetUnitTypeCodeDBName() +
+
+                        " FROM PUB." + PPartnerTable.GetTableDBName() +
+                        ", PUB." + PUnitTable.GetTableDBName() +
+                        ", PUB." + PLocationTable.GetTableDBName() +
+                        ", PUB." + PPartnerLocationTable.GetTableDBName() +
+                        ", PUB." + PCountryTable.GetTableDBName() +
+
+                        " WHERE " +
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND " +
+                        PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' AND " +
+                        PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
+                        PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
+                        PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
+                        PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND " +
+                        PUnitTable.GetXyzTbdCodeDBName() + " <> '' ",
+                        ATableName, ReadTransaction);
+                    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, TmpTable, DomainManager.GClientID);
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TSrvSetting.DL >= 7)
+                        {
+                            Console.WriteLine(this.GetType().FullName + ".GetCampaignUnitsTable: commited own transaction.");
+                        }
+#endif
+                    }
+                }
+            }
+
+            /* Return the DataTable from the Cache only if the Hash is not the same */
+            return ResultingCachedDataTable(ATableName, AHashCode, out AType);
         }
     }
     #endregion

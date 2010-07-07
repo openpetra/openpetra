@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 3.0.0.3800
+# SharpDevelop 3.2.0.5777
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateSQL", "PetraTools\GenerateSQL\GenerateSQL.csproj", "{EBD199AC-DAAA-41B6-A1DB-FEA311B84576}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common", "Common\Ict.Common.csproj", "{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}"
@@ -39,6 +39,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchToolConsole", "PetraTools\PatchTool\PatchToolConsole.csproj", "{B3976248-2013-44E4-8937-EB17E2EC1DA9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertExtToCSV", "PetraTools\ConvertExtToCSV\ConvertExtToCSV.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateSampleData", "PetraTools\GenerateSampleData\GenerateSampleData.csproj", "{1CA035A1-A879-46CC-B367-84C2BD25F4D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,5 +124,9 @@ Global
 		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Debug|x86.ActiveCfg = Debug|x86
 		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Release|x86.Build.0 = Release|x86
 		{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}.Release|x86.ActiveCfg = Release|x86
+		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Debug|x86.Build.0 = Debug|x86
+		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Debug|x86.ActiveCfg = Debug|x86
+		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Release|x86.Build.0 = Release|x86
+		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

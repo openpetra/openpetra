@@ -4,6 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: browse
     WindowWidth: 770
+    WindowHeight: 700
     Actions:
         actStartImport: {ActionClick=StartImport}
         actCancelImport: {ActionClick=CancelImport, InitiallyEnabled=false}
@@ -17,15 +18,17 @@ RootNode:
             Dock: Top
             Controls:
                 Row0: [txtFilename, btnSelectFile]
+                Row1: [chkSemiAutomatic]
                 # todo: other options, eg. skip partners that have already been imported, log file, etc.
-        txtFilename: {ReadOnly=true}
+        txtFilename: {ReadOnly=true, Width:300}
         btnSelectFile: {ActionClick=OpenFile}
+        chkSemiAutomatic: {Label=Semi Automatic Import, Help="In this mode most partners are imported or updated automatically, only for unclear situations the user has to intervene"}
         pnlImportRecord:
             Controls:
                 RowA: [txtCurrentRecordStatus]
                 Row0: [grdParsedValues, pnlActions]
                 Row1: [grdMatchingRecords]
-        txtCurrentRecordStatus: {Label=Current Import File Record Status, ReadOnly=true, Width=500}
+        txtCurrentRecordStatus: {Label=Current Import File Record Status, ReadOnly=true, Width=500, ColSpan=2}
         grdParsedValues:
             Width: 400
             Height: 300

@@ -39,7 +39,6 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MSysMan.Data.Access
 {
-
      /// auto generated
     [Serializable()]
     public class MaintainUsersTDSAccess

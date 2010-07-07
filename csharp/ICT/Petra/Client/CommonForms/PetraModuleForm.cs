@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         public void OpenPersonnelModule(System.Object sender, System.EventArgs e)
         {
-            // TODO OpenOrFocusScreen("Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain");
+            OpenOrFocusScreen("Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain");
         }
 
         /// <summary>

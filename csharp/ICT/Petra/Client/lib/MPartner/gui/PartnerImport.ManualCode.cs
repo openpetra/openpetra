@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Specialized;
 using Mono.Unix;
@@ -60,6 +61,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             pnlImportRecord.Enabled = false;
+            chkSemiAutomatic.Checked = true;
         }
 
         XmlNode FCurrentPartnerNode = null;
@@ -84,6 +86,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                 XmlNode root = doc.FirstChild.NextSibling;
                 FCurrentPartnerNode = root.FirstChild;
             }
+        }
+
+        private Thread FThreadAutomaticImport = null;
+        bool FNeedUserFeedback = false;
+
+        private void ThreadAutomaticImport()
+        {
+            while (!FNeedUserFeedback)
+            {
+                DisplayCurrentRecord();
+
+                if (FNeedUserFeedback)
+                {
+                    break;
+                }
+                else
+                {
+                    if (FCurrentPartnerNode != null)
+                    {
+                        FCurrentPartnerNode = FCurrentPartnerNode.NextSibling;
+
+                        FCurrentNumberOfRecord++;
+                    }
+                }
+            }
+
+            FThreadAutomaticImport = null;
         }
 
         private void StartImport(Object sender, EventArgs e)
@@ -112,7 +141,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             pnlImportRecord.Enabled = true;
 
-            DisplayCurrentRecord();
+            if (chkSemiAutomatic.Checked)
+            {
+                StartThread();
+            }
+            else
+            {
+                DisplayCurrentRecord();
+            }
+        }
+
+        private void StartThread()
+        {
+            FNeedUserFeedback = false;
+            // TODO: disable all buttons apart from cancel button?
+            FThreadAutomaticImport = new Thread(new ThreadStart(ThreadAutomaticImport));
+            FThreadAutomaticImport.Start();
         }
 
         private void DisplayCurrentRecord()
@@ -128,6 +172,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlActions.Enabled = false;
                     this.FPetraUtilsObject.EnableAction("actStartImport", true);
                     this.FPetraUtilsObject.EnableAction("actCancelImport", false);
+
+                    // TODO: finish the thread
                 }
 
                 grdParsedValues.DataSource = null;
@@ -140,6 +186,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ValuePairs.Columns.Add(new DataColumn("Attribute", typeof(string)));
             ValuePairs.Columns.Add(new DataColumn("Value", typeof(string)));
+            ValuePairs.Columns.Add(new DataColumn("Order", typeof(int)));
 
             if (FCurrentPartnerNode != null)
             {
@@ -148,6 +195,40 @@ namespace Ict.Petra.Client.MPartner.Gui
                     DataRow valuePair = ValuePairs.NewRow();
                     valuePair["Attribute"] = attr.Name;
                     valuePair["Value"] = attr.Value;
+
+                    if (attr.Name == MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                    {
+                        valuePair["Order"] = 0;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    {
+                        valuePair["Order"] = 1;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_STREETNAME)
+                    {
+                        valuePair["Order"] = 2;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_CITY)
+                    {
+                        valuePair["Order"] = 3;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_POSTALCODE)
+                    {
+                        valuePair["Order"] = 4;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_COUNTRYCODE)
+                    {
+                        valuePair["Order"] = 5;
+                    }
+                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_EMAIL)
+                    {
+                        valuePair["Order"] = 6;
+                    }
+                    else
+                    {
+                        valuePair["Order"] = 99;
+                    }
+
                     ValuePairs.Rows.Add(valuePair);
                 }
 
@@ -161,6 +242,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdParsedValues.AddTextColumn(Catalog.GetString("Attribute"), ValuePairs.Columns["Attribute"], 150);
             grdParsedValues.AddTextColumn(Catalog.GetString("Value"), ValuePairs.Columns["Value"], 150);
             ValuePairs.DefaultView.AllowNew = false;
+            ValuePairs.DefaultView.Sort = "Order";
             grdParsedValues.DataSource = new DevAge.ComponentModel.BoundDataView(ValuePairs.DefaultView);
 
             // get all partners with same surname in that city
@@ -176,11 +258,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity, 150);
             result.SearchResult.DefaultView.AllowNew = false;
             grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
+
+            if (FThreadAutomaticImport != null)
+            {
+                // check if the partner to import matches completely one of the search results
+                foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
+                {
+                    if ((row.StreetName == FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_STREETNAME].Value)
+                        && (row.City == FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_CITY].Value)
+                        && row.PartnerShortName.StartsWith(
+                            FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_FAMILYNAME].Value + ", " +
+                            FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value))
+                    {
+                        TXMLParser.SetAttribute(FCurrentPartnerNode, "PartnerKey", row.PartnerKey.ToString());
+                        break;
+                    }
+                }
+
+                if (TXMLParser.GetIntAttribute(FCurrentPartnerNode, "PartnerKey") > 0)
+                {
+                    // TODO: if any data is different, wait for user interaction, or update data automatically?
+                    // otherwise skip to next partner
+                    SkipRecord(null, null);
+                }
+                else if (result.SearchResult.Count == 0)
+                {
+                    // automatically create a new partner, and proceed to next partner
+                    // TODO: create PERSON or FAMILY?
+                    CreateNewFamily(null, null);
+                }
+                else
+                {
+                    FNeedUserFeedback = true;
+                }
+            }
         }
 
         private void CancelImport(Object sender, EventArgs e)
         {
+            // todo: cleanly stop the thread during automatic import?
+            if (FThreadAutomaticImport != null)
+            {
+                FNeedUserFeedback = true;
+                return;
+            }
+
             FCurrentPartnerNode = null;
+            // TODO: store partner keys of imported partners
             this.FPetraUtilsObject.EnableAction("actStartImport", true);
             this.FPetraUtilsObject.EnableAction("actCancelImport", false);
         }
@@ -195,6 +319,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void SkipRecord(Object sender, EventArgs e)
         {
+            if (FThreadAutomaticImport != null)
+            {
+                // skipping is done centrally in the thread during automatic import
+                return;
+            }
+
             if (FCurrentPartnerNode != null)
             {
                 FCurrentPartnerNode = FCurrentPartnerNode.NextSibling;
@@ -202,6 +332,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FCurrentNumberOfRecord++;
 
                 FCurrentPartnerNode = SkipImportedPartners(FCurrentPartnerNode);
+            }
+
+            if (chkSemiAutomatic.Checked)
+            {
+                StartThread();
             }
 
             DisplayCurrentRecord();

@@ -65,7 +65,21 @@ namespace Ict.Common
         /// <returns>void</returns>
         public TCmdOpts()
         {
-            FList = StringHelper.InitStrArr(Environment.GetCommandLineArgs());
+            FList = new StringCollection();
+            string[] list = Environment.GetCommandLineArgs();
+
+            // allow space after : to allow automatic tab expansion for the filename on the Command line
+            foreach (string s in list)
+            {
+                if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":"))
+                {
+                    FList[FList.Count - 1] += s.Trim();
+                }
+                else
+                {
+                    FList.Add(s.Trim());
+                }
+            }
         }
 
         /// <summary>

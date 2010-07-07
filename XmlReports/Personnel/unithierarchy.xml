@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">           
+<reports>
+	<report id="Unit Hierarchy Report">
+		<description>
+			
+		</description>
+		<reportparameters>
+			
+			<!-- Below comma separated list of the column names. Not done! -->
+			<reportparameter name="param_sortby_readable"/>
+		</reportparameters>
+		<reportheader/>
+
+		<pageheader>
+			<field whichfield="title1"><value text ="Unit Hierarchy" /></field>
+			<field whichfield="title2"><value function = "getSiteName()"/></field>
+   			<field whichfield="descr2">
+			</field>
+			<field whichfield="period1">
+			</field>
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text="Base Unit: "/>
+					<value variable="param_txtUnitCode"/>
+				</fielddetail>
+			</field>
+			
+		</pageheader>
+
+		<calculations>
+		
+			<calculation id="UnitName" returnsFormat="text" returns="text">
+				<caption><value text="Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="UnitName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="UnitType" returnsFormat="text" returns="text">
+				<caption><value text="Unit Type"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Unit Type" format="text"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="UnitKey" returnsFormat="text" returns="text">
+				<caption><value text="Key"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="UnitKey"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="PartnerKey" returnsFormat="partnerkey" returns="text">
+				<query>
+					<queryDetail>
+						<value variable="PartnerKey"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Parent Key" returnsFormat="partnerkey" returns="text">
+				<query>
+					<queryDetail>
+						<value variable="param_txtUnitCode"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="GetChildUnits" returns="UnitKey" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="GenerateUnitHierarchy({param_txtUnitCode}, {param_chkInclude})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+		
+		</calculations>
+		
+		<levels>
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="ChildUnitLevel" calculation="GetChildUnits">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+			<level name="ChildUnitLevel">
+				<detail>
+					<field whichfield="columns"/>
+				</detail>
+			</level>
+		
+		</levels>
+
+	</report>
+
+</reports>

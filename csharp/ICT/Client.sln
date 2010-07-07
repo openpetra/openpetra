@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.2.0.5777
@@ -57,6 +57,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MCommon.Gui.Setup", "Petra\Client\lib\MCommon\gui\setup\Ict.Petra.Client.MCommon.Gui.Setup.csproj", "{11E82D0E-6AC3-4D48-A584-A36B5208B496}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MSysMan.Gui.Setup", "Petra\Client\lib\MSysMan\gui\setup\Ict.Petra.Client.MSysMan.Gui.Setup.csproj", "{43974592-6DD9-4DB8-BFCD-794BB16474D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPersonnel.Gui", "Petra\Client\lib\MPersonnel\gui\Ict.Petra.Client.MPersonnel.Gui.csproj", "{6870213C-A7D8-4B1A-A398-C18C0363A391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPersonnel.Logic", "Petra\Client\lib\MPersonnel\logic\Ict.Petra.Client.MPersonnel.Logic.csproj", "{0CEEC712-549F-4EF5-8C41-20B1A0C386DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,5 +180,13 @@ Global
 		{43974592-6DD9-4DB8-BFCD-794BB16474D5}.Debug|x86.ActiveCfg = Debug|x86
 		{43974592-6DD9-4DB8-BFCD-794BB16474D5}.Release|x86.Build.0 = Release|x86
 		{43974592-6DD9-4DB8-BFCD-794BB16474D5}.Release|x86.ActiveCfg = Release|x86
+		{6870213C-A7D8-4B1A-A398-C18C0363A391}.Debug|x86.Build.0 = Debug|x86
+		{6870213C-A7D8-4B1A-A398-C18C0363A391}.Debug|x86.ActiveCfg = Debug|x86
+		{6870213C-A7D8-4B1A-A398-C18C0363A391}.Release|x86.Build.0 = Release|x86
+		{6870213C-A7D8-4B1A-A398-C18C0363A391}.Release|x86.ActiveCfg = Release|x86
+		{0CEEC712-549F-4EF5-8C41-20B1A0C386DA}.Debug|x86.Build.0 = Debug|x86
+		{0CEEC712-549F-4EF5-8C41-20B1A0C386DA}.Debug|x86.ActiveCfg = Debug|x86
+		{0CEEC712-549F-4EF5-8C41-20B1A0C386DA}.Release|x86.Build.0 = Release|x86
+		{0CEEC712-549F-4EF5-8C41-20B1A0C386DA}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

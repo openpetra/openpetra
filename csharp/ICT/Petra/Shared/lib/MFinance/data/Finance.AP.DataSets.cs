@@ -34,7 +34,6 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Shared.MFinance.AP.Data
 {
-
      /// auto generated
     [Serializable()]
     public class AccountsPayableTDS : TTypedDataSet
@@ -211,7 +210,6 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         /// auto generated
         protected override void InitConstraints()
         {
-
             if (((this.TableAApDocumentDetail != null)
                         && (this.TableAApAnalAttrib != null)))
             {
