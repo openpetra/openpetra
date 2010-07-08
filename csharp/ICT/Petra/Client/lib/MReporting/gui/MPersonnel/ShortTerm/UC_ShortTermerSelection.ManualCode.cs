@@ -183,11 +183,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
-            if (!chkAccepted.Checked
+            if ((AReportAction == TReportActionEnum.raGenerate) &&
+                (!chkAccepted.Checked
                 && !chkCancelled.Checked
                 && !chkEnquiry.Checked
                 && !chkHold.Checked
-                && !chkRejected.Checked)
+                && !chkRejected.Checked))
             {
                 // Error: at least one status must be checked
                 VerificationResult = new TVerificationResult("Select at least one application status.",

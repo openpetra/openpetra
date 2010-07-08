@@ -2,9 +2,10 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-  <report id="Applicant General Info">
+  <report id="Short Termer Report">
 	<description>
-		Short termer applicant general info report
+		General Short termer report.
+		Used for applications and other infos.
 	</description>
 	<reportparameters/>
 	

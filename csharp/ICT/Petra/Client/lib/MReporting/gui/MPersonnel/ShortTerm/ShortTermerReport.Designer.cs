@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ApplicantGeneralInfoReport.yaml
+// auto generated with nant generateWinforms from ShortTermerReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
-    partial class TFrmApplicantGeneralInfoReport
+    partial class TFrmShortTermerReport
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmApplicantGeneralInfoReport));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmShortTermerReport));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
@@ -438,7 +438,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmApplicantGeneralInfoReport
+            // TFrmShortTermerReport
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -452,8 +452,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmApplicantGeneralInfoReport";
-            this.Text = "Applicant General Info Report";
+            this.Name = "TFrmShortTermerReport";
+            this.Text = "Short Termer Report";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
