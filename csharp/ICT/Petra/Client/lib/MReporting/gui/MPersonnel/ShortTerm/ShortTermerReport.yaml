@@ -1,12 +1,12 @@
 RootNode:
     BaseYaml: ShortTermReportingForm.yaml
     FormType: report
-    FormTitle: Applicant General Info Report
+    FormTitle: Short Termer Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
-        XMLFILES: [Personnel\\\\applicantgeneralinforeport.xml,Personnel\\\\shorttermerreport.xml]
-        REPORTNAME: Applicant General Info
-        CURRENTREPORT: Applicant General Info
+        XMLFILES: [Personnel\\\\generalshorttermerreport.xml,Personnel\\\\shorttermerreport.xml]
+        REPORTNAME: Short Termer Report
+        CURRENTREPORT: Short Termer Report
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: ucoShortTermerSelection.CheckAdditionalInfo(ACalc, AReportAction);
@@ -213,41 +213,44 @@ RootNode:
             Name: Party Contact
             Parameter: 6.0
         Para61:
+            Name: Party Type
+            Parameter: 4.5
+        Para62:
             Name: Passport County of Issue
             Parameter: 4.0
-        Para62:
+        Para63:
             Name: Passport Date of Birth
             Parameter: 2.0
-        Para63:
+        Para64:
             Name: Passport Date of Issue
             Parameter: 2.0
-        Para64:
+        Para65:
             Name: Passport Expiry Date
             Parameter: 2.0
-        Para65:
+        Para66:
             Name: Passport Name
             Parameter: 4.0
-        Para66:
+        Para67:
             Name: Passport Number
             Parameter: 4.0
-        Para67:
+        Para68:
             Name: Passport Place of Birth
             Parameter: 4.0
-        Para68:
+        Para69:
             Name: Passport Place of Issue
             Parameter: 4.0
-        Para69:
+        Para70:
             Name: Passport Type
             Parameter: 4.0
-        Para70:
+        Para71:
             Name: Preferred Name
             Parameter: 4.0
-        Para71:
+        Para72:
             Name: Profession
             Parameter: 3.0
-        Para72:
+        Para73:
             Name:  Program Fee Received
             Parameter: 4.5
-        Para73:
+        Para74:
             Name: Spoken Languages
             Parameter: 7.0

@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ApplicantGeneralInfoReport.yaml
+// auto generated with nant generateWinforms from ShortTermerReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmApplicantGeneralInfoReport: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmShortTermerReport: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmApplicantGeneralInfoReport(IntPtr AParentFormHandle) : base()
+    public TFrmShortTermerReport(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -95,14 +95,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Applicant General Info Report");
+      this.Text = Catalog.GetString("Short Termer Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Personnel\\\\applicantgeneralinforeport.xml,Personnel\\\\shorttermerreport.xml";
-      FPetraUtilsObject.FReportName = "Applicant General Info";
-      FPetraUtilsObject.FCurrentReport = "Applicant General Info";
+      FPetraUtilsObject.FXMLFiles = "Personnel\\\\generalshorttermerreport.xml,Personnel\\\\shorttermerreport.xml";
+      FPetraUtilsObject.FReportName = "Short Termer Report";
+      FPetraUtilsObject.FCurrentReport = "Short Termer Report";
       FPetraUtilsObject.FSettingsDirectory = "Personnel";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -253,6 +253,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Party Contact", 6.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Party Type", 4.5));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport County of Issue", 4.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Date of Birth", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Date of Issue", 2.0));

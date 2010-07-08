@@ -154,10 +154,6 @@
     <Compile Include="ShortTerm\AbilitiesReport.Designer.cs">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShortTerm\ApplicantGeneralInfoReport.cs" />
-    <Compile Include="ShortTerm\ApplicantGeneralInfoReport.Designer.cs">
-      <DependentUpon>ApplicantGeneralInfoReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="ShortTerm\EmergencyContactInformationReport.cs" />
     <Compile Include="ShortTerm\EmergencyContactInformationReport.Designer.cs">
       <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
@@ -172,6 +168,10 @@
     </Compile>
     <Compile Include="ShortTerm\SelectEvent.ManualCode.cs">
       <DependentUpon>SelectEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShortTerm\ShortTermerReport.cs" />
+    <Compile Include="ShortTerm\ShortTermerReport.Designer.cs">
+      <DependentUpon>ShortTermerReport.cs</DependentUpon>
     </Compile>
     <Compile Include="ShortTerm\UC_ShortTermerAdditionalSetting.cs" />
     <Compile Include="ShortTerm\UC_ShortTermerAdditionalSetting.Designer.cs">
@@ -234,9 +234,6 @@
     <EmbeddedResource Include="ShortTerm\AbilitiesReport.resx">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ShortTerm\ApplicantGeneralInfoReport.resx">
-      <DependentUpon>ApplicantGeneralInfoReport.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\EmergencyContactInformationReport.resx">
       <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -245,6 +242,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\SelectEvent.resx">
       <DependentUpon>SelectEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\ShortTermerReport.resx">
+      <DependentUpon>ShortTermerReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\UC_ShortTermerAdditionalSetting.resx">
       <DependentUpon>UC_ShortTermerAdditionalSetting.cs</DependentUpon>

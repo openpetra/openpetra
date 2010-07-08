@@ -156,7 +156,10 @@ OpenPetra:
                         CampaignOptions: {ActionOpenScreen=TFrmCampaignOptions}
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
                     ShortTermerReports:
+                        GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
+                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
+                        LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
         ConferenceManagement: {Icon=conference_small.ico}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
