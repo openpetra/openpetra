@@ -69,6 +69,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
         Setup: {Description=Setup Sub-System}
             UIConnectors: {Description=User Interface Connectors}
+            WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
     Hospitality: {Description=Hospitality Module}
         UIConnectors: {Description=User Interface Connectors}
     FinDev: {Description=Financial Development Module}

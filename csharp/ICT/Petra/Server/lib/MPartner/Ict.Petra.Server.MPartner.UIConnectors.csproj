@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{C9D92B0D-06CE-4580-A03F-8E0C54C3038D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -123,6 +123,10 @@
     <ProjectReference Include="..\MFinance\Ict.Petra.Server.MFinance.csproj">
       <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
       <Name>Ict.Petra.Server.MFinance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MFinance\setup\Ict.Petra.Server.MFinance.Setup.csproj">
+      <Project>{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}</Project>
+      <Name>Ict.Petra.Server.MFinance.Setup</Name>
     </ProjectReference>
     <ProjectReference Include="..\MSysMan\Ict.Petra.Server.MSysMan.csproj">
       <Project>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</Project>

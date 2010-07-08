@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.2.0.5505
@@ -99,6 +99,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MSysMan.DatasetAccess", "Petra\Server\lib\MSysMan\data\Ict.Petra.Server.MSysMan.DatasetAccess.csproj", "{45FE3810-367A-4C3F-B35C-4F4485228AE8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MPersonnel", "Petra\Server\lib\MPersonnel\Ict.Petra.Server.MPersonnel.csproj", "{5E6DE599-3860-4741-B4FA-A93BE6AFABEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Setup.WebConnectors", "Petra\Server\lib\MFinance\setup\Ict.Petra.Server.MFinance.Setup.WebConnectors.csproj", "{300D0150-6427-4245-A064-112DA03939FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Setup", "Petra\Server\lib\MFinance\setup\Ict.Petra.Server.MFinance.Setup.csproj", "{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -302,5 +306,13 @@ Global
 		{5E6DE599-3860-4741-B4FA-A93BE6AFABEB}.Debug|x86.Build.0 = Debug|x86
 		{5E6DE599-3860-4741-B4FA-A93BE6AFABEB}.Release|x86.ActiveCfg = Release|x86
 		{5E6DE599-3860-4741-B4FA-A93BE6AFABEB}.Release|x86.Build.0 = Release|x86
+		{300D0150-6427-4245-A064-112DA03939FD}.Debug|x86.Build.0 = Debug|x86
+		{300D0150-6427-4245-A064-112DA03939FD}.Debug|x86.ActiveCfg = Debug|x86
+		{300D0150-6427-4245-A064-112DA03939FD}.Release|x86.Build.0 = Release|x86
+		{300D0150-6427-4245-A064-112DA03939FD}.Release|x86.ActiveCfg = Release|x86
+		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Debug|x86.Build.0 = Debug|x86
+		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Debug|x86.ActiveCfg = Debug|x86
+		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Release|x86.Build.0 = Release|x86
+		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

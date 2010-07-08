@@ -66,6 +66,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion
+using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
     /// <summary>auto generated</summary>
@@ -528,9 +529,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
-        TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
-                                            out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
         string ExportAccountHierarchy(Int32 ALedgerNumber,
                                       string AAccountHierarchyName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector)</summary>
@@ -722,6 +720,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        ISetupWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -732,6 +736,19 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors
     /// <summary>auto generated</summary>
     public interface ISetupUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface ISetupWebConnectorsNamespace : IInterface
+    {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors.TSetupWebConnectorsNamespace)</summary>
+        TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
+                                            out TVerificationResultCollection AVerificationResult);
     }
 
 }

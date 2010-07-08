@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{C68F7EC9-BE30-4F11-869A-2C9E5A758880}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -155,6 +155,14 @@
     <ProjectReference Include="data\Ict.Petra.Server.MFinance.DataAccess.csproj">
       <Project>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</Project>
       <Name>Ict.Petra.Server.MFinance.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MFinance.csproj">
+      <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
+      <Name>Ict.Petra.Server.MFinance</Name>
+    </ProjectReference>
+    <ProjectReference Include="setup\Ict.Petra.Server.MFinance.Setup.WebConnectors.csproj">
+      <Project>{300D0150-6427-4245-A064-112DA03939FD}</Project>
+      <Name>Ict.Petra.Server.MFinance.Setup.WebConnectors</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -40,7 +40,7 @@ namespace Ict.Petra.Server.MFinance.Setup
     /// Business Logic can be contained in Classes or can be contained just in
     /// procedures/functions that are not part of a Class.
     /// </summary>
-    public class Common
+    public static class Main
     {
         /// <summary>
         /// check if the partner has a link to a cost centre (eg. a worker)
