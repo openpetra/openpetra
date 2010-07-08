@@ -23,4 +23,4 @@
             Dock: Fill
         ucoShortTermerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection
-        
+            Dock: Fill
