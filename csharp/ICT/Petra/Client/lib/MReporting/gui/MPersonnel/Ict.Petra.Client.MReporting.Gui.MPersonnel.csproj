@@ -158,6 +158,10 @@
     <Compile Include="ShortTerm\ApplicantGeneralInfoReport.Designer.cs">
       <DependentUpon>ApplicantGeneralInfoReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShortTerm\EmergencyContactInformationReport.cs" />
+    <Compile Include="ShortTerm\EmergencyContactInformationReport.Designer.cs">
+      <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShortTerm\SelectEvent.cs" />
     <Compile Include="ShortTerm\SelectEvent.Designer.cs">
       <DependentUpon>SelectEvent.cs</DependentUpon>
@@ -228,6 +232,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\ApplicantGeneralInfoReport.resx">
       <DependentUpon>ApplicantGeneralInfoReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\EmergencyContactInformationReport.resx">
+      <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\SelectEvent.resx">
       <DependentUpon>SelectEvent.cs</DependentUpon>
