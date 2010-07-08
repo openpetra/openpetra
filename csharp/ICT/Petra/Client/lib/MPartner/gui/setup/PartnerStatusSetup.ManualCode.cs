@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             ARow.StatusCode = newName;
-            
+
             // New rows normally don't contain Partner Statuses that denote 'Active' Partners
             ARow.PartnerIsActive = false;
         }

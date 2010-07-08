@@ -777,5 +777,35 @@ namespace Ict.Petra.Shared.MPartner
                     Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
             }
         }
+
+        /// <summary>
+        /// Calculates the age in years at the current date.
+        /// </summary>
+        /// <param name="ABirthday">The birthday from which to calculate the current age</param>
+        /// <returns>The age in years</returns>
+        public static int CalculateAge(DateTime ABirthday)
+        {
+            return CalculateAge(ABirthday, DateTime.Now);
+        }
+
+        /// <summary>
+        /// Calculates the age in years at a given date.
+        /// </summary>
+        /// <param name="ABirthday">The birthday from which to calculate the age</param>
+        /// <param name="ACalculationDate">The date against which the birthday should be calculated</param>
+        /// <returns>The age in years</returns>
+        public static int CalculateAge(DateTime ABirthday, DateTime ACalculationDate)
+        {
+            int years = ACalculationDate.Year - ABirthday.Year;
+
+            // subtract another year if we're before the birthday in the current year
+            if ((ACalculationDate.Month < ABirthday.Month)
+                || ((ACalculationDate.Month == ABirthday.Month) && (ACalculationDate.Day < ABirthday.Day)))
+            {
+                years--;
+            }
+
+            return years;
+        }
     }
 }

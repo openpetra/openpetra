@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblFilename = new System.Windows.Forms.Label();
             this.btnSelectFile = new System.Windows.Forms.Button();
             this.chkSemiAutomatic = new System.Windows.Forms.CheckBox();
+            this.lblSemiAutomatic = new System.Windows.Forms.Label();
             this.pnlImportRecord = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCurrentRecordStatus = new System.Windows.Forms.TextBox();
@@ -178,9 +179,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.chkSemiAutomatic.Location = new System.Drawing.Point(2,2);
             this.chkSemiAutomatic.Name = "chkSemiAutomatic";
-            this.chkSemiAutomatic.AutoSize = true;
-            this.chkSemiAutomatic.Text = "Semi Automatic Import";
-            this.chkSemiAutomatic.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkSemiAutomatic.Size = new System.Drawing.Size(30, 28);
+            this.chkSemiAutomatic.Text = "";
+            this.chkSemiAutomatic.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblSemiAutomatic
+            //
+            this.lblSemiAutomatic.Location = new System.Drawing.Point(2,2);
+            this.lblSemiAutomatic.Name = "lblSemiAutomatic";
+            this.lblSemiAutomatic.AutoSize = true;
+            this.lblSemiAutomatic.Text = "Semi Automatic Import:";
+            this.lblSemiAutomatic.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSemiAutomatic.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSemiAutomatic.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 3;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -189,9 +200,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblFilename, 0, 0);
-            this.tableLayoutPanel2.SetColumnSpan(this.chkSemiAutomatic, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkSemiAutomatic, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblSemiAutomatic, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtFilename, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkSemiAutomatic, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.btnSelectFile, 2, 0);
             //
             // pnlImportRecord
@@ -563,6 +574,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblFilename;
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.CheckBox chkSemiAutomatic;
+        private System.Windows.Forms.Label lblSemiAutomatic;
         private System.Windows.Forms.Panel pnlImportRecord;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtCurrentRecordStatus;

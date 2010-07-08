@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilitiesReport.yaml
+// auto generated with nant generateWinforms from ApplicantGeneralInfoReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
-    partial class TFrmAbilitiesReport
+    partial class TFrmApplicantGeneralInfoReport
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,11 +64,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAbilitiesReport));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmApplicantGeneralInfoReport));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoShortTermerSelection = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection();
+            this.tpgReportSorting = new System.Windows.Forms.TabPage();
+            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
+            this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
+            this.ucoShortTermerAdditionalSettings = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerAdditionalSetting();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -106,6 +110,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
+            this.tpgReportSorting.SuspendLayout();
+            this.tpgAdditionalSettings.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -126,6 +132,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
+            // tpgReportSorting
+            //
+            this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
+            this.tpgReportSorting.Name = "tpgReportSorting";
+            this.tpgReportSorting.AutoSize = true;
+            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
+            //
+            // ucoReportSorting
+            //
+            this.ucoReportSorting.Name = "ucoReportSorting";
+            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgReportSorting.Text = "Sorting";
+            this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgAdditionalSettings
+            //
+            this.tpgAdditionalSettings.Location = new System.Drawing.Point(2,2);
+            this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
+            this.tpgAdditionalSettings.AutoSize = true;
+            this.tpgAdditionalSettings.Controls.Add(this.ucoShortTermerAdditionalSettings);
+            //
+            // ucoShortTermerAdditionalSettings
+            //
+            this.ucoShortTermerAdditionalSettings.Name = "ucoShortTermerAdditionalSettings";
+            this.ucoShortTermerAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgAdditionalSettings.Text = "Additional Settings";
+            this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
             // tpgColumns
             //
             this.tpgColumns.Location = new System.Drawing.Point(2,2);
@@ -145,6 +179,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
+            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
+            this.tabReportSettings.Controls.Add(this.tpgAdditionalSettings);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
@@ -402,7 +438,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAbilitiesReport
+            // TFrmApplicantGeneralInfoReport
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -416,8 +452,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAbilitiesReport";
-            this.Text = "Abilities Report";
+            this.Name = "TFrmApplicantGeneralInfoReport";
+            this.Text = "Applicant General Info Report";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -429,6 +465,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
+            this.tpgAdditionalSettings.ResumeLayout(false);
+            this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -439,6 +477,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection ucoShortTermerSelection;
+        private System.Windows.Forms.TabPage tpgReportSorting;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
+        private System.Windows.Forms.TabPage tpgAdditionalSettings;
+        private Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerAdditionalSetting ucoShortTermerAdditionalSettings;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

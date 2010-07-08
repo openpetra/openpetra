@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Applicant General Info">
+	<description>
+		Short termer applicant general info report
+	</description>
+	<reportparameters/>
+	
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1"><value text="Applicant General Info Report"></value></field>
+      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="descr1">
+        <value text="Sorted by: "></value>
+        <value variable="param_sortby_readable"></value>
+      </field>
+	  
+      <field whichfield="period1">
+        <fielddetail>
+	  <value text="Application Status:"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_accepted}, true)">
+	  <value text=" Accepted"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_cancelled}, true)">
+	  <value text=" Cancelled"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_rejected}, true)">
+	  <value text=" Rejected"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_enquiry}, true)">
+	  <value text=" Enquiry"></value>
+	</fielddetail>
+	<fielddetail condition="eq({param_application_status_hold}, true)">
+	  <value text=" Hold"></value>
+	</fielddetail>
+      </field>
+	  
+      <field whichfield="period2">
+        <fielddetail>
+          <value text="Selection: "></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source}, Event)">
+          <value text="Event: "></value><value variable="param_event_code"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source}, Extract)">
+          <value text="Extract: "></value><value variable="param_extract_name"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_source},EntireDatabase)">
+          <value text="Entire Database"></value>
+        </fielddetail>
+      </field>
+    </pageheader>
+
+    <calculations>
+	
+	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+		<caption><value text="Telephone"></value></caption>
+		<query>
+			<queryDetail>
+				<value variable="Telephone"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+    
+    <levels> 
+	<level name="main">
+		<detail>
+			<switch>
+				<case condition="eq({param_print_two_lines}, true)">
+					<lowerLevelReport calculation="Select Partners" level="Partner Details 2 Lines"></lowerLevelReport>
+				</case>
+				<default>
+					<lowerLevelReport calculation="Select Partners" level="Partner Details"></lowerLevelReport>
+				</default>
+			</switch>
+		</detail>
+	</level> 
+
+	<level name="Partner Details" identification="PartnerKey">
+		<detail>
+			<field whichfield="Columns" calculation="CleanUp" ></field>
+		</detail>
+	</level>
+	
+	<level name="Partner Details 2 Lines" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="7cm" calculation="MakePartnerName">
+				<value text=""/>
+				<value variable="PartnerNameAndKey"/>
+			</field>
+			<field whichfield="header 1" pos="7cm" width="10cm" calculation="MakePartnerName">
+				<value text="Event: "/>
+				<value variable="EventCode"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Only Data Level"></lowerLevelReport>
+		</detail>
+		<footer space="above">
+		</footer>
+	</level>
+	
+	<level name="Only Data Level" identification="PartnerKey">
+		<detail>
+			<field whichfield="Columns" calculation="CleanUp" ></field>
+		</detail>
+	</level>
+	
+    </levels>
+
+  </report>
+  
+</reports>

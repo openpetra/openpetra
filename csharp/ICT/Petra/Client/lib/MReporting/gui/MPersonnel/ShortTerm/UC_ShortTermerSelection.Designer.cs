@@ -85,10 +85,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.grpApplicationStatus = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.chkAccepted = new System.Windows.Forms.CheckBox();
+            this.lblAccepted = new System.Windows.Forms.Label();
             this.chkCancelled = new System.Windows.Forms.CheckBox();
+            this.lblCancelled = new System.Windows.Forms.Label();
             this.chkHold = new System.Windows.Forms.CheckBox();
+            this.lblHold = new System.Windows.Forms.Label();
             this.chkEnquiry = new System.Windows.Forms.CheckBox();
+            this.lblEnquiry = new System.Windows.Forms.Label();
             this.chkRejected = new System.Windows.Forms.CheckBox();
+            this.lblRejected = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
             this.grpEvent.SuspendLayout();
@@ -276,42 +281,97 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             //
             this.chkAccepted.Location = new System.Drawing.Point(2,2);
             this.chkAccepted.Name = "chkAccepted";
-            this.chkAccepted.AutoSize = true;
-            this.chkAccepted.Text = "Accepted";
-            this.chkAccepted.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkAccepted.Size = new System.Drawing.Size(30, 28);
+            this.chkAccepted.Text = "";
+            this.chkAccepted.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblAccepted
+            //
+            this.lblAccepted.Location = new System.Drawing.Point(2,2);
+            this.lblAccepted.Name = "lblAccepted";
+            this.lblAccepted.AutoSize = true;
+            this.lblAccepted.Text = "Accepted:";
+            this.lblAccepted.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAccepted.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAccepted.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkCancelled
             //
             this.chkCancelled.Location = new System.Drawing.Point(2,2);
             this.chkCancelled.Name = "chkCancelled";
-            this.chkCancelled.AutoSize = true;
-            this.chkCancelled.Text = "Cancelled";
-            this.chkCancelled.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkCancelled.Size = new System.Drawing.Size(30, 28);
+            this.chkCancelled.Text = "";
+            this.chkCancelled.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblCancelled
+            //
+            this.lblCancelled.Location = new System.Drawing.Point(2,2);
+            this.lblCancelled.Name = "lblCancelled";
+            this.lblCancelled.AutoSize = true;
+            this.lblCancelled.Text = "Cancelled:";
+            this.lblCancelled.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCancelled.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCancelled.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkHold
             //
             this.chkHold.Location = new System.Drawing.Point(2,2);
             this.chkHold.Name = "chkHold";
-            this.chkHold.AutoSize = true;
-            this.chkHold.Text = "Hold";
-            this.chkHold.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkHold.Size = new System.Drawing.Size(30, 28);
+            this.chkHold.Text = "";
+            this.chkHold.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblHold
+            //
+            this.lblHold.Location = new System.Drawing.Point(2,2);
+            this.lblHold.Name = "lblHold";
+            this.lblHold.AutoSize = true;
+            this.lblHold.Text = "Hold:";
+            this.lblHold.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblHold.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblHold.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkEnquiry
             //
             this.chkEnquiry.Location = new System.Drawing.Point(2,2);
             this.chkEnquiry.Name = "chkEnquiry";
-            this.chkEnquiry.AutoSize = true;
-            this.chkEnquiry.Text = "Enquiry";
-            this.chkEnquiry.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.chkEnquiry.Size = new System.Drawing.Size(30, 28);
+            this.chkEnquiry.Text = "";
+            this.chkEnquiry.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblEnquiry
+            //
+            this.lblEnquiry.Location = new System.Drawing.Point(2,2);
+            this.lblEnquiry.Name = "lblEnquiry";
+            this.lblEnquiry.AutoSize = true;
+            this.lblEnquiry.Text = "Enquiry:";
+            this.lblEnquiry.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblEnquiry.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblEnquiry.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkRejected
             //
             this.chkRejected.Location = new System.Drawing.Point(2,2);
             this.chkRejected.Name = "chkRejected";
-            this.chkRejected.AutoSize = true;
-            this.chkRejected.Text = "Rejected";
-            this.chkRejected.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel4.ColumnCount = 5;
+            this.chkRejected.Size = new System.Drawing.Size(30, 28);
+            this.chkRejected.Text = "";
+            this.chkRejected.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblRejected
+            //
+            this.lblRejected.Location = new System.Drawing.Point(2,2);
+            this.lblRejected.Name = "lblRejected";
+            this.lblRejected.AutoSize = true;
+            this.lblRejected.Text = "Rejected:";
+            this.lblRejected.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblRejected.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblRejected.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel4.ColumnCount = 10;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -319,11 +379,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.chkAccepted, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.chkCancelled, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.chkHold, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.chkEnquiry, 3, 0);
-            this.tableLayoutPanel4.Controls.Add(this.chkRejected, 4, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblAccepted, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkAccepted, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblCancelled, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkCancelled, 3, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblHold, 4, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkHold, 5, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblEnquiry, 6, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkEnquiry, 7, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblRejected, 8, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkRejected, 9, 0);
             this.grpApplicationStatus.Text = "Application Status";
 
             //
@@ -372,9 +437,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private System.Windows.Forms.GroupBox grpApplicationStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.CheckBox chkAccepted;
+        private System.Windows.Forms.Label lblAccepted;
         private System.Windows.Forms.CheckBox chkCancelled;
+        private System.Windows.Forms.Label lblCancelled;
         private System.Windows.Forms.CheckBox chkHold;
+        private System.Windows.Forms.Label lblHold;
         private System.Windows.Forms.CheckBox chkEnquiry;
+        private System.Windows.Forms.Label lblEnquiry;
         private System.Windows.Forms.CheckBox chkRejected;
+        private System.Windows.Forms.Label lblRejected;
     }
 }

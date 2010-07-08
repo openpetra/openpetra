@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       this.rbtConference.Text = Catalog.GetString("Conferences Only");
       this.rbtTeenstreet.Text = Catalog.GetString("Teenstreet Only");
       this.rbtAll.Text = Catalog.GetString("All");
-      this.chkCurrentFutureOnly.Text = Catalog.GetString("Current / Future Events Only");
+      this.lblCurrentFutureOnly.Text = Catalog.GetString("Current / Future Events Only:");
       this.grpEvents.Text = Catalog.GetString("Events");
       this.btnAccept.Text = Catalog.GetString("Accept");
       this.btnCancel.Text = Catalog.GetString("Cancel");

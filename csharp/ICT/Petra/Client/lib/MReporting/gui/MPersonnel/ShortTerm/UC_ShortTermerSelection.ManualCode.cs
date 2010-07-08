@@ -23,6 +23,7 @@
 //
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections;
@@ -217,6 +218,48 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             chkHold.Checked = AParameters.Get("param_application_status_hold").ToBool();
             chkEnquiry.Checked = AParameters.Get("param_application_status_enquiry").ToBool();
             chkRejected.Checked = AParameters.Get("param_application_status_rejected").ToBool();
+
+            // TODO in which cases do we take the values from Initialisation and not the one from
+            // SetControls?
+            FSelectedUnitKey = AParameters.Get("param_unit_key").ToInt64();
+        }
+
+        /// <summary>
+        /// Checks if some addional info is required in the report. This function must be called
+        /// after "ReadControls()" on UC_PartnerColumns. Because it looks if there are some special
+        /// values in the ACalculator parameters which requires some special function calls
+        /// in the xml file.
+        /// </summary>
+        /// <param name="ACalculator"></param>
+        /// <param name="AReportAction"></param>
+        public void CheckAdditionalInfo(TRptCalculator ACalculator, TReportActionEnum AReportAction)
+        {
+            if (IsAddressDetailUsed(ACalculator))
+            {
+                ACalculator.AddParameter("param_address_detail", "true");
+            }
+            else
+            {
+                ACalculator.AddParameter("param_address_detail", "false");
+            }
+
+            if (IsPassportDetailUsed(ACalculator))
+            {
+                ACalculator.AddParameter("param_passport_detail", "true");
+            }
+            else
+            {
+                ACalculator.AddParameter("param_passport_detail", "false");
+            }
+
+            if (IsChurchDetailUsed(ACalculator))
+            {
+                ACalculator.AddParameter("param_church_detail", "true");
+            }
+            else
+            {
+                ACalculator.AddParameter("param_church_detail", "false");
+            }
         }
 
         /// <summary>
@@ -251,6 +294,97 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 // should we reset the values or keep the old values?
                 // For now, just keep the old values.
             }
+        }
+
+        /// <summary>
+        /// Checks if there is one column which needs address details.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsAddressDetailUsed(TRptCalculator ACalculator)
+        {
+            // if one part of an address is used
+            DataTable ColumnParameters = ACalculator.GetParameters().ToDataTable();
+            bool HasAddressDetail = false;
+
+            foreach (DataRow Row in ColumnParameters.Rows)
+            {
+                String ColumnValue = Row[4].ToString();
+
+                if ((ColumnValue == "eString:Address Street")
+                    || (ColumnValue == "eString:Address Post Code")
+                    || (ColumnValue == "eString:Address City")
+                    || (ColumnValue == "eString:Address State / County / Province")
+                    || (ColumnValue == "eString:Address Country")
+                    || (ColumnValue == "eString:Address Email")
+                    || (ColumnValue == "eString:Address Telephone")
+                    || (ColumnValue == "eString:Address Line 1")
+                    || (ColumnValue == "eString:Address Line 3"))
+                {
+                    HasAddressDetail = true;
+                    break;
+                }
+            }
+
+            return HasAddressDetail;
+        }
+
+        /// <summary>
+        /// Checks if there is one column which needs passport details.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsPassportDetailUsed(TRptCalculator ACalculator)
+        {
+            // if one part of an address is used
+            DataTable ColumnParameters = ACalculator.GetParameters().ToDataTable();
+            bool HasPassportDetail = false;
+
+            foreach (DataRow Row in ColumnParameters.Rows)
+            {
+                String ColumnValue = Row[4].ToString();
+
+                if ((ColumnValue == "eString:Nationality")
+                    || (ColumnValue == "eString:Passport Expiry Date")
+                    || (ColumnValue == "eString:Passport Name")
+                    || (ColumnValue == "eString:Passport Number")
+                    || (ColumnValue == "eString:Passport Date of Issue")
+                    || (ColumnValue == "eString:Passport Place of Issue")
+                    || (ColumnValue == "eString:Passport Type")
+                    || (ColumnValue == "eString:Passport Date of Birth")
+                    || (ColumnValue == "eString:Passport Place of Birth")
+                    || (ColumnValue == "eString:Passport Country of Issue"))
+                {
+                    HasPassportDetail = true;
+                    break;
+                }
+            }
+
+            return HasPassportDetail;
+        }
+
+        /// <summary>
+        /// Checks if there is one column which needs address details of the church
+        /// </summary>
+        /// <returns></returns>
+        private bool IsChurchDetailUsed(TRptCalculator ACalculator)
+        {
+            // if one part of an address is used
+            DataTable ColumnParameters = ACalculator.GetParameters().ToDataTable();
+
+            bool HasAddressDetail = false;
+
+            foreach (DataRow Row in ColumnParameters.Rows)
+            {
+                String ColumnValue = Row[4].ToString();
+
+                if ((ColumnValue.Contains("eString:Church Address"))
+                    || (ColumnValue == "eString:Church Name"))
+                {
+                    HasAddressDetail = true;
+                    break;
+                }
+            }
+
+            return HasAddressDetail;
         }
     }
 }

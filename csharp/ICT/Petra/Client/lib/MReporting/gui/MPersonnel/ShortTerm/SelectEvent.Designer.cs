@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.rbtTeenstreet = new System.Windows.Forms.RadioButton();
             this.rbtAll = new System.Windows.Forms.RadioButton();
             this.chkCurrentFutureOnly = new System.Windows.Forms.CheckBox();
+            this.lblCurrentFutureOnly = new System.Windows.Forms.Label();
             this.grdEvent = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -164,11 +165,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             //
             this.chkCurrentFutureOnly.Location = new System.Drawing.Point(2,2);
             this.chkCurrentFutureOnly.Name = "chkCurrentFutureOnly";
-            this.chkCurrentFutureOnly.AutoSize = true;
+            this.chkCurrentFutureOnly.Size = new System.Drawing.Size(30, 28);
             this.chkCurrentFutureOnly.CheckedChanged += new System.EventHandler(this.EventDateChanged);
-            this.chkCurrentFutureOnly.Text = "Current / Future Events Only";
-            this.chkCurrentFutureOnly.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 4;
+            this.chkCurrentFutureOnly.Text = "";
+            this.chkCurrentFutureOnly.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblCurrentFutureOnly
+            //
+            this.lblCurrentFutureOnly.Location = new System.Drawing.Point(2,2);
+            this.lblCurrentFutureOnly.Name = "lblCurrentFutureOnly";
+            this.lblCurrentFutureOnly.AutoSize = true;
+            this.lblCurrentFutureOnly.Text = "Current / Future Events Only:";
+            this.lblCurrentFutureOnly.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrentFutureOnly.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentFutureOnly.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -176,11 +188,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.SetColumnSpan(this.rbtCampaign, 2);
             this.tableLayoutPanel2.Controls.Add(this.rbtCampaign, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkCurrentFutureOnly, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.rbtConference, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtTeenstreet, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtAll, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblCurrentFutureOnly, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkCurrentFutureOnly, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.rbtConference, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtTeenstreet, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtAll, 4, 0);
             this.grpEvents.Text = "Events";
             //
             // grdEvent
@@ -361,6 +375,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private System.Windows.Forms.RadioButton rbtTeenstreet;
         private System.Windows.Forms.RadioButton rbtAll;
         private System.Windows.Forms.CheckBox chkCurrentFutureOnly;
+        private System.Windows.Forms.Label lblCurrentFutureOnly;
         private Ict.Common.Controls.TSgrdDataGridPaged grdEvent;
         private System.Windows.Forms.Panel pnlBottom;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;

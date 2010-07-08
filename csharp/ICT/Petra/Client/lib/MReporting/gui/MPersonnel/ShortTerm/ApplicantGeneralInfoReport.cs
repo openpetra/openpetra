@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UnitHierarchy.yaml
+// auto generated with nant generateWinforms from ApplicantGeneralInfoReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmUnitHierarchy: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmApplicantGeneralInfoReport: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmUnitHierarchy(IntPtr AParentFormHandle) : base()
+    public TFrmApplicantGeneralInfoReport(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,10 +65,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.txtPartnerKey.ButtonText = Catalog.GetString("Find");
-      this.lblInclude.Text = Catalog.GetString("Include Conferences and Campaigns:");
-      this.grpUnit.Text = Catalog.GetString("Base Unit");
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
+      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
+      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
+      this.tpgColumns.Text = Catalog.GetString("Column Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -95,14 +95,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Unit Hierarchy Report");
+      this.Text = Catalog.GetString("Applicant General Info Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Personnel\\\\unithierarchy.xml";
-      FPetraUtilsObject.FReportName = "Unit Hierarchy Report";
-      FPetraUtilsObject.FCurrentReport = "Unit Hierarchy Report";
+      FPetraUtilsObject.FXMLFiles = "Personnel\\\\applicantgeneralinforeport.xml,Personnel\\\\shorttermerreport.xml";
+      FPetraUtilsObject.FReportName = "Applicant General Info";
+      FPetraUtilsObject.FCurrentReport = "Applicant General Info";
       FPetraUtilsObject.FSettingsDirectory = "Personnel";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -111,6 +111,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       // FPetraUtilsObject.InitialiseSettingsGui(ucoReportColumns, mniLoadSettings, /*ConMnuLoadSettings*/null,
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
       this.SetAvailableFunctions();
+
+      ucoShortTermerSelection.InitialiseData(FPetraUtilsObject);
+      ucoReportSorting.InitialiseData(FPetraUtilsObject);
+      ucoShortTermerAdditionalSettings.InitialiseData(FPetraUtilsObject);
+      ucoReportColumns.InitialiseData(FPetraUtilsObject);
+
+      ucoShortTermerSelection.PetraUtilsObject = FPetraUtilsObject;
+      ucoShortTermerSelection.InitUserControl();
+      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportSorting.InitUserControl();
+      ucoShortTermerAdditionalSettings.PetraUtilsObject = FPetraUtilsObject;
+      ucoShortTermerAdditionalSettings.InitUserControl();
+      ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportColumns.InitUserControl();
 
       FPetraUtilsObject.LoadDefaultSettings();
     }
@@ -147,9 +161,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_chkInclude", this.chkInclude.Checked);
-      ReadControlsManual(ACalc, AReportAction);
+      ucoShortTermerSelection.ReadControls(ACalc, AReportAction);
+      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      ucoShortTermerAdditionalSettings.ReadControls(ACalc, AReportAction);
+      ucoReportColumns.ReadControls(ACalc, AReportAction);
 
+      ucoShortTermerSelection.CheckAdditionalInfo(ACalc, AReportAction);
     }
 
     /**
@@ -159,8 +176,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     public void SetControls(TParameterList AParameters)
     {
 
-      chkInclude.Checked = AParameters.Get("param_chkInclude").ToBool();
-      SetControlsManual(AParameters);
+      ucoShortTermerSelection.SetControls(AParameters);
+      ucoReportSorting.SetControls(AParameters);
+      ucoShortTermerAdditionalSettings.SetControls(AParameters);
+      ucoReportColumns.SetControls(AParameters);
     }
 #endregion
 
@@ -172,6 +191,86 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Accepted by Serving Field", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 1", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Street", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Line 3", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Post Code", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address City", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Country", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address State / County / Province", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Telephone", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address Email", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Application Comment", 3.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Application Status", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Date", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Details", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Location", 3.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Time", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Transport", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Type", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Booking Fee Received", 4.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Charged Field Key", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Charged Field Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Name", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Line 1", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Street", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Line 3", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Post Code", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address City", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Country", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address State / County / Province", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Telephone", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Email", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Fax", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Mobile", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Church Address Alternate Telephone", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Conference Role", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Date of birth", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Date", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Details", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Location", 3.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Time", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Transport", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Type", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Dietary Needs", 5.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Driver Status", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Event Code", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Event Name", 5.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Event Preference 1 Code", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Event Preference 2 Code", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fellowship Group", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("First Language", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gender", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Leader", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Leadership Rating", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Marital Status", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Medical Info", 5.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Missing Information", 7.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Nationality", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Other Needs and Notes", 5.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Party Contact", 6.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport County of Issue", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Date of Birth", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Date of Issue", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Expiry Date", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Number", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Place of Birth", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Place of Issue", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Type", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Preferred Name", 4.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Profession", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Program Fee Received", 4.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Spoken Languages", 7.0));
+
+      ucoShortTermerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoShortTermerAdditionalSettings.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

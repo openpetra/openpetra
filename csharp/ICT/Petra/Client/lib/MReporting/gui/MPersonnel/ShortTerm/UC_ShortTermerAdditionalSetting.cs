@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_ShortTermerSelection.yaml and template usercontrolUnbound
+// auto generated with nant generateWinforms from UC_ShortTermerAdditionalSetting.yaml and template usercontrolUnbound
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -46,14 +46,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
 
   /// auto generated user control
-  public partial class TFrmUC_ShortTermerSelection: UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TFrmUC_ShortTermerAdditionalSetting: UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
 
     /// constructor
-    public TFrmUC_ShortTermerSelection() : base()
+    public TFrmUC_ShortTermerAdditionalSetting() : base()
     {
       //
       // Required for Windows Form Designer support
@@ -62,25 +62,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnEvent.Text = Catalog.GetString("Event...");
-      this.lblEventName.Text = Catalog.GetString("Event Name:");
-      this.rbtThisEventOnly.Text = Catalog.GetString("Consider this event only");
-      this.rbtRelatedOptions.Text = Catalog.GetString("Consider this event and related options");
-      this.rbtAllEvents.Text = Catalog.GetString("Consider all events");
-      this.grpEvent.Text = Catalog.GetString("Event");
-      this.rbtAllParticipants.Text = Catalog.GetString("List all participants");
-      this.rbtFromExtract.Text = Catalog.GetString("List participants from Extract");
-      this.txtExtract.ButtonText = Catalog.GetString("Find");
-      this.grpParticipants.Text = Catalog.GetString("Participants at Event");
-      this.lblAccepted.Text = Catalog.GetString("Accepted:");
-      this.lblCancelled.Text = Catalog.GetString("Cancelled:");
-      this.lblHold.Text = Catalog.GetString("Hold:");
-      this.lblEnquiry.Text = Catalog.GetString("Enquiry:");
-      this.lblRejected.Text = Catalog.GetString("Rejected:");
-      this.grpApplicationStatus.Text = Catalog.GetString("Application Status");
+      this.chkHideEmptyLines.Text = Catalog.GetString("Hide empty lines");
+      this.chkPrintTwoLines.Text = Catalog.GetString("Print result on two lines (Sort by Partner Name)");
+      this.grpAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       #endregion
 
-      this.txtEventCode.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
