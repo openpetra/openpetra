@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.txtPartnerKey.ButtonText = Catalog.GetString("Find");
-      this.chkInclude.Text = Catalog.GetString("Include Conferences and Campaigns");
+      this.lblInclude.Text = Catalog.GetString("Include Conferences and Campaigns:");
       this.grpUnit.Text = Catalog.GetString("Base Unit");
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");

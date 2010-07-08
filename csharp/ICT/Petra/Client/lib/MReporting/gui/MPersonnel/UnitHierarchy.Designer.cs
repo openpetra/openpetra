@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtPartnerKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.chkInclude = new System.Windows.Forms.CheckBox();
+            this.lblInclude = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
@@ -163,16 +164,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             //
             this.chkInclude.Location = new System.Drawing.Point(2,2);
             this.chkInclude.Name = "chkInclude";
-            this.chkInclude.AutoSize = true;
-            this.chkInclude.Text = "Include Conferences and Campaigns";
-            this.chkInclude.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 1;
+            this.chkInclude.Size = new System.Drawing.Size(30, 28);
+            this.chkInclude.Text = "";
+            this.chkInclude.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblInclude
+            //
+            this.lblInclude.Location = new System.Drawing.Point(2,2);
+            this.lblInclude.Name = "lblInclude";
+            this.lblInclude.AutoSize = true;
+            this.lblInclude.Text = "Include Conferences and Campaigns:";
+            this.lblInclude.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblInclude.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblInclude.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.SetColumnSpan(this.txtPartnerKey, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtPartnerKey, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkInclude, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblInclude, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkInclude, 1, 1);
             this.grpUnit.Text = "Base Unit";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -486,6 +500,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtPartnerKey;
         private System.Windows.Forms.CheckBox chkInclude;
+        private System.Windows.Forms.Label lblInclude;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;
