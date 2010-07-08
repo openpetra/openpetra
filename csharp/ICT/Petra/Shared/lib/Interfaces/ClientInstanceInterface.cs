@@ -96,11 +96,5 @@ namespace Ict.Petra.Shared.Interfaces
         /// </summary>
         /// <returns></returns>
         IClientInstanceInterface2 CreateInstance2();
-
-        /// <summary>
-        /// start demo
-        /// </summary>
-        /// <returns></returns>
-        IClientAsyncProgressDemoInterface CreateAsycProgressDemo();
     }
 }

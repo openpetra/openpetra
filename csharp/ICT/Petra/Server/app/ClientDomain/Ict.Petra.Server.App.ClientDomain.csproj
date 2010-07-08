@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{DC487150-0555-4C05-A13F-91588D9D750D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -76,10 +76,6 @@
     <Compile Include="PollClientTasks.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\MCommon\Ict.Petra.Server.MCommon.csproj">
-      <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
-      <Name>Ict.Petra.Server.MCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Server.App.Core.csproj">
       <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
       <Name>Ict.Petra.Server.App.Core</Name>

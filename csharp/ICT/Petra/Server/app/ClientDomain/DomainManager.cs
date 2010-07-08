@@ -41,7 +41,6 @@ using Ict.Petra.Shared.RemotingSinks.Encryption;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
-using Ict.Petra.Server.MCommon;
 
 namespace Ict.Petra.Server.App.ClientDomain
 {
@@ -895,15 +894,6 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public IClientAsyncProgressDemoInterface CreateAsycProgressDemo()
-        {
-            return new TAsyncProgressDemo();
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
         public IClientInstanceInterface CreateInstance()
         {
             return new TMyVanishingRemotedObject();
@@ -1253,108 +1243,6 @@ namespace Ict.Petra.Server.App.ClientDomain
         {
             AHelloString = "HELLO!" + Environment.NewLine + "HashCode: " + this.GetHashCode().ToString() + Environment.NewLine +
                            "In the application domain: " + Thread.GetDomain().FriendlyName;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    public class TAsyncProgressDemo : TConfigurableMBRObject, IClientAsyncProgressDemoInterface
-    {
-        private TAsynchronousExecutionProgress FAsyncExecProgress;
-
-        /// <summary>asynchronous execution control object</summary>
-        private Boolean FStoppingDone;
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
-        {
-            get
-            {
-                return (IAsynchronousExecutionProgress)FAsyncExecProgress;
-            }
-        }
-
-
-        #region TAsyncProgressDemo
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void Start()
-        {
-            Thread TheThread;
-
-            this.FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            this.FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Executing;
-            TheThread = new Thread(new ThreadStart(ProgressSimulation));
-            TheThread.Start();
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
-            {
-                Console.WriteLine("TAsyncProgressDemo: ProgressSimulation thread started.");
-            }
-#endif
-        }
-
-        private void ProgressSimulation()
-        {
-            while (true)
-            {
-                while ((FAsyncExecProgress.ProgressPercentage < 100) && (FAsyncExecProgress.ProgressState != TAsyncExecProgressState.Aeps_Stopping))
-                {
-                    FAsyncExecProgress.ProgressPercentage = (short)(FAsyncExecProgress.ProgressPercentage + 5);
-                    FAsyncExecProgress.ProgressInformation = "Progress: " + FAsyncExecProgress.ProgressPercentage.ToString() + '%';
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 6)
-                    {
-                        Console.WriteLine("TAsyncProgressDemo: " + FAsyncExecProgress.ProgressInformation);
-                    }
-#endif
-                    Thread.Sleep(800);
-                }
-
-                if (FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping)
-                {
-                    if (!FStoppingDone)
-                    {
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 6)
-                        {
-                            Console.WriteLine("TAsyncProgressDemo: stopping...");
-                        }
-#endif
-                        FStoppingDone = true;
-                        Thread.Sleep(4000);
-                    }
-                    else
-                    {
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 6)
-                        {
-                            Console.WriteLine("TAsyncProgressDemo: stopping finished!");
-                        }
-#endif
-                        FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
-                        return;
-                    }
-                }
-                else
-                {
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 6)
-                    {
-                        Console.WriteLine("TAsyncProgressDemo: finished!");
-                    }
-#endif
-                    FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Finished;
-                    return;
-                }
-            }
         }
 
         #endregion
