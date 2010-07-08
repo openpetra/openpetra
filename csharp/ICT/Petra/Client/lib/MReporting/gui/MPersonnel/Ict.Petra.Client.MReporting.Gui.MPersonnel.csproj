@@ -165,12 +165,12 @@
     <Compile Include="ShortTerm\SelectEvent.ManualCode.cs">
       <DependentUpon>SelectEvent.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShortTerm\UC_ShortTermeradditionalSetting.cs" />
-    <Compile Include="ShortTerm\UC_ShortTermeradditionalSetting.Designer.cs">
-      <DependentUpon>UC_ShortTermeradditionalSetting.cs</DependentUpon>
+    <Compile Include="ShortTerm\UC_ShortTermerAdditionalSetting.cs" />
+    <Compile Include="ShortTerm\UC_ShortTermerAdditionalSetting.Designer.cs">
+      <DependentUpon>UC_ShortTermerAdditionalSetting.cs</DependentUpon>
     </Compile>
     <Compile Include="ShortTerm\UC_ShortTermerAdditionalSetting.ManualCode.cs">
-      <DependentUpon>UC_ShortTermeradditionalSetting.cs</DependentUpon>
+      <DependentUpon>UC_ShortTermerAdditionalSetting.cs</DependentUpon>
     </Compile>
     <Compile Include="ShortTerm\UC_ShortTermerSelection.cs" />
     <Compile Include="ShortTerm\UC_ShortTermerSelection.Designer.cs">
@@ -232,8 +232,8 @@
     <EmbeddedResource Include="ShortTerm\SelectEvent.resx">
       <DependentUpon>SelectEvent.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ShortTerm\UC_ShortTermeradditionalSetting.resx">
-      <DependentUpon>UC_ShortTermeradditionalSetting.cs</DependentUpon>
+    <EmbeddedResource Include="ShortTerm\UC_ShortTermerAdditionalSetting.resx">
+      <DependentUpon>UC_ShortTermerAdditionalSetting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\UC_ShortTermerSelection.resx">
       <DependentUpon>UC_ShortTermerSelection.cs</DependentUpon>
