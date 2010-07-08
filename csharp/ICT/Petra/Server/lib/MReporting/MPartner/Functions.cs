@@ -746,7 +746,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if ((ABankCountryCode.Length == 0)
                 || (ABankCountryCode == "?"))
             {
-                if (GetPartnerBestAddressRow(PartnerKey, out PartnerLocationRow))
+                if (GetPartnerBestAddressRow(PartnerKey, situation, out PartnerLocationRow))
                 {
                     LocationTable = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
                         PartnerLocationRow.LocationKey,
@@ -779,7 +779,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// <param name="APartnerKey">Partner key</param>
         /// <param name="AAddressRow">best address</param>
         /// <returns>true if a best address was found, otherwise false</returns>
-        private bool GetPartnerBestAddressRow(long APartnerKey, out PPartnerLocationRow AAddressRow)
+        public static bool GetPartnerBestAddressRow(long APartnerKey, TRptSituation ASituation, out PPartnerLocationRow AAddressRow)
         {
             bool FoundBestAddress = false;
 
@@ -793,7 +793,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
 
             // find all locations of the partner, put it into a dataset
-            PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
+            PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ASituation.GetDatabaseConnection().Transaction);
 
             // uses Ict.Petra.Shared.MPartner.Calculations.pas, DetermineBestAddress
             Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationTable, DateTime.Today);
@@ -1096,7 +1096,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                 FNumberOfAcitvePartner++;
 
-                if (GetPartnerBestAddressRow(PartnerRow.PartnerKey, out PartnerLocationRow))
+                if (GetPartnerBestAddressRow(PartnerRow.PartnerKey, situation, out PartnerLocationRow))
                 {
                     if (PartnerLocationRow == null)
                     {

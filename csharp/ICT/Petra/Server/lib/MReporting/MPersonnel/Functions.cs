@@ -23,9 +23,13 @@
 //
 using System;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Server.MReporting.MPartner;
 using Ict.Common;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -40,6 +44,8 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
     /// </summary>
     public class TRptUserFunctionsPersonnel : TRptUserFunctions
     {
+        private static PmSpecialNeedRow FCachedSpecialNeedRow;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -83,6 +89,90 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (StringHelper.IsSame(f, "GenerateUnitHierarchy"))
             {
                 value = new TVariant(GenerateUnitHierarchy(ops[1].ToInt64(), ops[2].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetMissingInfo"))
+            {
+                value = new TVariant(GetMissingInfo(ops[1].ToInt64(), ops[2].ToInt(), ops[3].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPersonLanguages"))
+            {
+                value = new TVariant(GetPersonLanguages(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPassport"))
+            {
+                value = new TVariant(GetPassport(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetDriverStatus"))
+            {
+                value = new TVariant(GetDriverStatus(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetChurch"))
+            {
+                value = new TVariant(GetChurch(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetLeadershipRating"))
+            {
+                value = new TVariant(GetLeadershipRating(ops[1].ToInt64(), ops[2].ToInt(), ops[3].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetDietary"))
+            {
+                value = new TVariant(GetDietary(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetMedicalInfo"))
+            {
+                value = new TVariant(GetMedicalInfo(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetOtherNeeds"))
+            {
+                value = new TVariant(GetOtherNeeds(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPartyType"))
+            {
+                value = new TVariant(GetPartyType(ops[1].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetPartnerContact"))
+            {
+                value = new TVariant(GetPartnerContact(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "CalculateAge"))
+            {
+                value = new TVariant(CalculateAge(ops[1].ToDate()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "CalculateAgeAtDate"))
+            {
+                value = new TVariant(CalculateAgeAtDate(ops[1].ToDate(), ops[2].ToDate()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetArrivalPoint"))
+            {
+                value = new TVariant(GetArrivalPoint(ops[1].ToString()));
                 return true;
             }
 
@@ -280,6 +370,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             return "";
         }
 
+        #region Calculation for unit hierarchy report
         /// <summary>
         /// Get recursively all the child units of a unit and puts them into the
         /// results list.
@@ -477,6 +568,662 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return ReturnValue;
+        }
+
+        #endregion
+        /// <summary>
+        /// Get the missing information of a short term application partner.
+        /// This could be Passport, Date of Birth, Gender, Mother Tongue, Emergency Contact, Event, Travel information
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key</param>
+        /// <param name="AApplicationKey">Application Key</param>
+        /// <param name="ARegistrationOffice">Registration Office</param>
+        /// <returns>String of all the missing informations for this partner and application</returns>
+        private String GetMissingInfo(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice)
+        {
+            String MissingInfo = "";
+            PmPassportDetailsTable PassportTable;
+            PPersonTable PersonTable;
+            PPartnerTable PartnerTable;
+            PPartnerRelationshipTable PartnerRelationshipTable;
+            PmShortTermApplicationTable ShortTermApplicationTable;
+
+            // Check for passport Details
+            PassportTable = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, situation.GetDatabaseConnection().Transaction);
+            bool PassportDetailMissing = true;
+
+            for (int Counter = 0; Counter < PassportTable.Rows.Count; ++Counter)
+            {
+                PmPassportDetailsRow row = (PmPassportDetailsRow)PassportTable.Rows[Counter];
+
+                if (row.FullPassportName.Length > 0)
+                {
+                    PassportDetailMissing = false;
+                }
+            }
+
+            if (PassportDetailMissing)
+            {
+                MissingInfo += " Passport Details,";
+            }
+
+            // Check for Date of Birth and Gender
+            PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PassportTable.Rows.Count == 0)
+            {
+                MissingInfo += " Date of Birth, Gender,";
+            }
+            else
+            {
+                PPersonRow PersonRow = (PPersonRow)PersonTable.Rows[0];
+
+                if (PersonRow.IsDateOfBirthNull())
+                {
+                    MissingInfo += " Date of Birth,";
+                }
+
+                if (PersonRow.Gender == "Unknown")
+                {
+                    MissingInfo += " Gender,";
+                }
+            }
+
+            // Check for mother tongue
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PassportTable.Rows.Count == 0)
+            {
+                MissingInfo += " Mother Tongue,";
+            }
+            else if (((PPartnerRow)PartnerTable.Rows[0]).LanguageCode == "99")
+            {
+                MissingInfo += " Mother Tongue,";
+            }
+
+            // Check for partner relationship
+            PartnerRelationshipTable = PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(APartnerKey,
+                situation.GetDatabaseConnection().Transaction);
+
+            bool HasEmergencyContact = false;
+
+            for (int Counter = 0; Counter < PartnerRelationshipTable.Rows.Count; ++Counter)
+            {
+                PPartnerRelationshipRow Row = (PPartnerRelationshipRow)PartnerRelationshipTable.Rows[Counter];
+
+                if (Row.PartnerKey == 0)
+                {
+                    continue;
+                }
+
+                if ((Row.RelationName == "PAREND")
+                    || (Row.RelationName == "GUARDIAN")
+                    || (Row.RelationName == "RELATIVE")
+                    || (Row.RelationName == "EMER-1")
+                    || (Row.RelationName == "EMER-2")
+                    || (Row.RelationName == "NOK-OTHER"))
+                {
+                    HasEmergencyContact = true;
+                    break;
+                }
+            }
+
+            if (!HasEmergencyContact)
+            {
+                MissingInfo += " Emergency Contact,";
+            }
+
+            // Check for Event and Travel information
+            ShortTermApplicationTable = PmShortTermApplicationAccess.LoadByPrimaryKey(APartnerKey,
+                AApplicationKey, ARegistrationOffice, situation.GetDatabaseConnection().Transaction);
+
+            bool HasEvent = false;
+            bool HasTravelInfo = false;
+
+            for (int Counter = 0; Counter < ShortTermApplicationTable.Rows.Count; ++Counter)
+            {
+                PmShortTermApplicationRow Row = (PmShortTermApplicationRow)ShortTermApplicationTable.Rows[Counter];
+
+                if ((Row.ConfirmedOptionCode != "")
+                    || (Row.Option1Code != "")
+                    || (Row.Option2Code != ""))
+                {
+                    HasEvent = true;
+                }
+
+                if ((!Row.IsArrivalNull())
+                    && (!Row.IsDepartureNull()))
+                {
+                    HasTravelInfo = true;
+                }
+            }
+
+            if (!HasEvent)
+            {
+                MissingInfo += " Event,";
+            }
+
+            if (!HasTravelInfo)
+            {
+                MissingInfo += "Travel Information,";
+            }
+
+            // remove the last ,
+            if (MissingInfo.Length > 0)
+            {
+                MissingInfo.Remove(MissingInfo.Length - 1);
+            }
+
+            return MissingInfo;
+        }
+
+        /// <summary>
+        /// Gets all the languages of the person
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key</param>
+        /// <returns></returns>
+        private String GetPersonLanguages(Int64 APartnerKey)
+        {
+            PmPersonLanguageTable LanguageTable;
+            PPartnerTable PartnerTable;
+            String SpokenLanguages = "";
+            String MotherLanguageCode = "99";
+            bool MotherTongeInList = false;
+
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PartnerTable.Rows.Count > 0)
+            {
+                MotherLanguageCode = ((PPartnerRow)PartnerTable.Rows[0]).LanguageCode;
+            }
+
+            LanguageTable = PmPersonLanguageAccess.LoadViaPPerson(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            for (int Counter = 0; Counter < LanguageTable.Rows.Count; ++Counter)
+            {
+                PmPersonLanguageRow Row = (PmPersonLanguageRow)LanguageTable.Rows[Counter];
+
+                if (Row.LanguageCode == MotherLanguageCode)
+                {
+                    SpokenLanguages += MotherLanguageCode + " (M";
+                    MotherTongeInList = true;
+                }
+                else
+                {
+                    SpokenLanguages += Row.LanguageCode + " (" + Row.LanguageLevel;
+                }
+
+                if (Row.WillingToTranslate)
+                {
+                    SpokenLanguages += ", tx";
+
+                    if (Row.TranslateInto)
+                    {
+                        SpokenLanguages += " into";
+                    }
+
+                    if (Row.TranslateOutOf)
+                    {
+                        SpokenLanguages += " from";
+                    }
+                }
+
+                SpokenLanguages += "), ";
+            }
+
+            if (!MotherTongeInList)
+            {
+                // Insert mother tongue at the first place:
+                SpokenLanguages = MotherLanguageCode + " (M), " + SpokenLanguages;
+            }
+
+            // remove the last comma and space
+            if (SpokenLanguages.Length > 2)
+            {
+                SpokenLanguages.Remove(SpokenLanguages.Length - 2);
+            }
+
+            return SpokenLanguages;
+        }
+
+        /// <summary>
+        /// Get the passport details and estores them as parameters.
+        /// If there is a passport with the MainPassport flag set, then use this passport.
+        /// Otherwise use the most recent passport which has a passport number.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <returns>true if one passport was found, otherwise false</returns>
+        private bool GetPassport(Int64 APartnerKey)
+        {
+            PmPassportDetailsTable PassportTable = new PmPassportDetailsTable();
+
+            PmPassportDetailsRow ResultPassportRow = GetLatestPassport(APartnerKey, situation);
+
+            if (ResultPassportRow != null)
+            {
+                // add the results to the parameters
+                foreach (DataColumn col in PassportTable.Columns)
+                {
+                    situation.GetParameters().Add(StringHelper.UpperCamelCase(col.ColumnName, true,
+                            true), new TVariant(ResultPassportRow[col.ColumnName]));
+                }
+            }
+            else
+            {
+                // add empty results to the parameters.
+                // Otherwise the old rsults from the previous calculations will be used.
+                foreach (DataColumn col in PassportTable.Columns)
+                {
+                    situation.GetParameters().Add(StringHelper.UpperCamelCase(col.ColumnName, true,
+                            true), new TVariant(""));
+                }
+            }
+
+            return ResultPassportRow != null;
+        }
+
+        private String GetDriverStatus(Int64 APartnerKey)
+        {
+            String DriverStatus = "";
+            PmPersonalDataTable PersonalDataTable;
+            PtDriverStatusTable DriverStatusTable;
+
+            PersonalDataTable = PmPersonalDataAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PersonalDataTable.Rows.Count > 0)
+            {
+                if (!((PmPersonalDataRow)PersonalDataTable.Rows[0]).IsDriverStatusNull())
+                {
+                    String DriverStatusCode = ((PmPersonalDataRow)PersonalDataTable.Rows[0]).DriverStatus;
+
+                    DriverStatusTable = PtDriverStatusAccess.LoadByPrimaryKey(DriverStatusCode, situation.GetDatabaseConnection().Transaction);
+
+                    if (DriverStatusTable.Rows.Count > 0)
+                    {
+                        DriverStatus = ((PtDriverStatusRow)DriverStatusTable.Rows[0]).Description;
+                    }
+                }
+            }
+
+            return DriverStatus;
+        }
+
+        /// <summary>
+        /// Add the address details of the supporting church of a partner to the results
+        /// </summary>
+        /// <param name="APartnerKey">The partner key of whom the supporting church details should be added</param>
+        /// <returns></returns>
+        private bool GetChurch(Int64 APartnerKey)
+        {
+            PPartnerRelationshipTable RelationshipTable;
+            PPartnerTable ChurchTable;
+
+            Dictionary <String, String>GatheredResults = new Dictionary <String, String>();
+
+            PPartnerRelationshipRow TemplateRow = new PPartnerRelationshipTable().NewRowTyped(false);
+
+            TemplateRow.RelationKey = APartnerKey;
+            TemplateRow.RelationName = "SUPPCHURCH";
+
+            RelationshipTable = PPartnerRelationshipAccess.LoadUsingTemplate(TemplateRow, situation.GetDatabaseConnection().Transaction);
+
+            bool IsFirstAddress = true;
+
+            foreach (PPartnerRelationshipRow Row in RelationshipTable.Rows)
+            {
+                ChurchTable = PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, situation.GetDatabaseConnection().Transaction);
+
+                if (ChurchTable.Rows.Count < 1)
+                {
+                    continue;
+                }
+
+                PPartnerLocationRow PartnerLocationRow;
+                PLocationTable LocationTable;
+                PLocationRow LocationRow;
+
+                if (!TRptUserFunctionsPartner.GetPartnerBestAddressRow(Row.PartnerKey, situation, out PartnerLocationRow))
+                {
+                    continue;
+                }
+
+                LocationTable = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
+                    PartnerLocationRow.LocationKey, situation.GetDatabaseConnection().Transaction);
+
+                if (LocationTable.Rows.Count < 1)
+                {
+                    continue;
+                }
+
+                if (IsFirstAddress)
+                {
+                    GatheredResults.Add("Church-Name", ((PPartnerRow)ChurchTable.Rows[0]).PartnerShortName);
+                }
+                else
+                {
+                    GatheredResults["Church-Name"] += ", " + ((PPartnerRow)ChurchTable.Rows[0]).PartnerShortName + " ";
+                }
+
+                LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                // Add this church address to the results
+                // the variables will be something like Church-PostalCode, Church-StreetName
+
+                // get the location details into the parameters
+                foreach (DataColumn col in LocationTable.Columns)
+                {
+                    if (IsFirstAddress)
+                    {
+                        GatheredResults.Add("Church-" + StringHelper.UpperCamelCase(col.ColumnName, true, true),
+                            LocationTable.Rows[0][col.ColumnName].ToString());
+                    }
+                    else
+                    {
+                        GatheredResults["Church-" + StringHelper.UpperCamelCase(col.ColumnName, true, true)] +=
+                            ", " + LocationTable.Rows[0][col.ColumnName].ToString();
+                    }
+                }
+
+                // also put the phone number and email etc into the parameters
+                String TelephoneNumber;
+                String FaxNumber;
+
+                if (PartnerLocationRow.Extension > 0)
+                {
+                    TelephoneNumber = PartnerLocationRow.TelephoneNumber + PartnerLocationRow.Extension.ToString();
+                }
+                else
+                {
+                    TelephoneNumber = PartnerLocationRow.TelephoneNumber;
+                }
+
+                if (PartnerLocationRow.FaxExtension > 0)
+                {
+                    FaxNumber = PartnerLocationRow.FaxNumber + PartnerLocationRow.FaxExtension.ToString();
+                }
+                else
+                {
+                    FaxNumber = PartnerLocationRow.FaxNumber;
+                }
+
+                if (IsFirstAddress)
+                {
+                    GatheredResults.Add("Church-Telephone", TelephoneNumber);
+                    GatheredResults.Add("Church-FaxNumber", FaxNumber);
+                    GatheredResults.Add("Church-EmailAddress", PartnerLocationRow.EmailAddress);
+                    GatheredResults.Add("Church-MobileNumber", PartnerLocationRow.MobileNumber);
+                    GatheredResults.Add("Church-AlternateTelephone", PartnerLocationRow.AlternateTelephone);
+                }
+                else
+                {
+                    GatheredResults["Church-Telephone"] += ", " + TelephoneNumber;
+                    GatheredResults["Church-FaxNumber"] += ", " + FaxNumber;
+                    GatheredResults["Church-EmailAddress"] += ", " + PartnerLocationRow.EmailAddress;
+                    GatheredResults["Church-MobileNumber"] += ", " + PartnerLocationRow.MobileNumber;
+                    GatheredResults["Church-AlternateTelephone"] += ", " + PartnerLocationRow.AlternateTelephone;
+                }
+
+                IsFirstAddress = false;
+            }
+
+            if (IsFirstAddress)
+            {
+                situation.GetParameters().RemoveVariable("Church-Telephone");
+                situation.GetParameters().RemoveVariable("Church-FaxNumber");
+                situation.GetParameters().RemoveVariable("Church-EmailAddress");
+                situation.GetParameters().RemoveVariable("Church-MobileNumber");
+                situation.GetParameters().RemoveVariable("Church-AlternateTelephone");
+                situation.GetParameters().RemoveVariable("Church-Name");
+                situation.GetParameters().RemoveVariable("Church-Locality");
+                situation.GetParameters().RemoveVariable("Church-Address3");
+                situation.GetParameters().RemoveVariable("Church-City");
+                situation.GetParameters().RemoveVariable("Church-CountryCode");
+                situation.GetParameters().RemoveVariable("Church-County");
+                situation.GetParameters().RemoveVariable("Church-PostalCode");
+                situation.GetParameters().RemoveVariable("Church-StreetName");
+            }
+            else
+            {
+                foreach (KeyValuePair <String, String>kvp in GatheredResults)
+                {
+                    situation.GetParameters().Add(kvp.Key, new TVariant(kvp.Value));
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get the leadership rating of a short term application partner.
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key</param>
+        /// <param name="AApplicationKey">Application Key</param>
+        /// <param name="ARegistrationOffice">Registration Office</param>
+        /// <returns>String of all the missing informations for this partner and application</returns>
+        private String GetLeadershipRating(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice)
+        {
+            String LeadershipRating = "";
+            PmShortTermApplicationTable ShortTermTable;
+            PtLeadershipRatingTable LeadershipRatingTable;
+
+            ShortTermTable = PmShortTermApplicationAccess.LoadByPrimaryKey(APartnerKey,
+                AApplicationKey, ARegistrationOffice, situation.GetDatabaseConnection().Transaction);
+
+            if (ShortTermTable.Rows.Count > 0)
+            {
+                if (!((PmShortTermApplicationRow)ShortTermTable.Rows[0]).IsStLeadershipRatingNull())
+                {
+                    String LeadershipRatingCode = ((PmShortTermApplicationRow)ShortTermTable.Rows[0]).StLeadershipRating;
+                    LeadershipRatingTable = PtLeadershipRatingAccess.LoadByPrimaryKey(LeadershipRatingCode,
+                        situation.GetDatabaseConnection().Transaction);
+
+                    if (LeadershipRatingTable.Rows.Count > 0)
+                    {
+                        LeadershipRating = ((PtLeadershipRatingRow)LeadershipRatingTable.Rows[0]).Description;
+                    }
+                }
+            }
+
+            return LeadershipRating;
+        }
+
+        private String GetDietary(Int64 APartnerKey)
+        {
+            String Dietary = "";
+
+            if (RefreshCachedSpecialNeedRow(APartnerKey))
+            {
+                Dietary = FCachedSpecialNeedRow.DietaryComment;
+            }
+
+            return Dietary;
+        }
+
+        private String GetMedicalInfo(Int64 APartnerKey)
+        {
+            String MedicalInfo = "";
+
+            if (RefreshCachedSpecialNeedRow(APartnerKey))
+            {
+                MedicalInfo = FCachedSpecialNeedRow.MedicalComment;
+            }
+
+            return MedicalInfo;
+        }
+
+        private String GetOtherNeeds(Int64 APartnerKey)
+        {
+            String OtherNeeds = "";
+
+            if (RefreshCachedSpecialNeedRow(APartnerKey))
+            {
+                OtherNeeds = FCachedSpecialNeedRow.OtherSpecialNeed;
+            }
+
+            return OtherNeeds;
+        }
+
+        /// <summary>
+        /// Refreshes the cached special need row for a partner if it needs to.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key for the special need</param>
+        /// <returns>true if the cached row matches the partner key, otherwise false</returns>
+        private bool RefreshCachedSpecialNeedRow(Int64 APartnerKey)
+        {
+            bool ReturnValue = false;
+
+            if ((FCachedSpecialNeedRow == null)
+                || (FCachedSpecialNeedRow.PartnerKey != APartnerKey))
+            {
+                PmSpecialNeedTable SpecialNeedsTable;
+
+                SpecialNeedsTable = PmSpecialNeedAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+                if (SpecialNeedsTable.Rows.Count > 0)
+                {
+                    FCachedSpecialNeedRow = (PmSpecialNeedRow)SpecialNeedsTable.Rows[0];
+                    ReturnValue = true;
+                }
+            }
+            else if (FCachedSpecialNeedRow.PartnerKey == APartnerKey)
+            {
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        private String GetPartnerContact(Int64 APartnerKey)
+        {
+            String PartnerContact = "";
+            PPartnerTable PartnerTable;
+
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PartnerTable.Rows.Count > 0)
+            {
+                PPartnerRow Row = (PPartnerRow)PartnerTable.Rows[0];
+
+                if (Row.PartnerKey != 0)
+                {
+                    PartnerContact = "Contact: " + Row.PartnerKey.ToString() + " " + Row.PartnerShortName;
+                }
+            }
+
+            return PartnerContact;
+        }
+
+        private String GetPartyType(String ATypeKey)
+        {
+            PtPartyTypeTable PartyTable;
+            String PartyType = "";
+
+            if (ATypeKey != "")
+            {
+                PartyTable = PtPartyTypeAccess.LoadByPrimaryKey(ATypeKey, situation.GetDatabaseConnection().Transaction);
+
+                if (PartyTable.Rows.Count > 0)
+                {
+                    PartyType = ATypeKey + " " + ((PtPartyTypeRow)PartyTable.Rows[0]).Description;
+                }
+            }
+
+            return PartyType;
+        }
+
+        /// <summary>
+        /// Calculates the current age in years from a given date
+        /// </summary>
+        /// <param name="ABirthday">date to calculate the age</param>
+        /// <returns>The calculated age as a string</returns>
+        private String CalculateAge(DateTime ABirthday)
+        {
+            return Calculations.CalculateAge(ABirthday).ToString();
+        }
+
+        /// <summary>
+        /// Calculates the age in years at a given date
+        /// </summary>
+        /// <param name="ABirthday">date to calculate the age</param>
+        /// <param name="ATestDate">date from when to calculate the age</param>
+        /// <returns>The calculated age as a string</returns>
+        private String CalculateAgeAtDate(DateTime ABirthday, DateTime ATestDate)
+        {
+            return Calculations.CalculateAge(ABirthday, ATestDate).ToString();
+        }
+
+        /// <summary>
+        /// Retrieves the full description of an arrival point.
+        /// </summary>
+        /// <param name="AArrivalPointCode">Short Code of the arrival point</param>
+        /// <returns>The description of the arrival point.</returns>
+        private String GetArrivalPoint(String AArrivalPointCode)
+        {
+            String ReturnValue = "";
+
+            PtArrivalPointTable ArrivalTable;
+
+            ArrivalTable = PtArrivalPointAccess.LoadByPrimaryKey(AArrivalPointCode, situation.GetDatabaseConnection().Transaction);
+
+            if (ArrivalTable.Rows.Count > 0)
+            {
+                ReturnValue = ((PtArrivalPointRow)ArrivalTable.Rows[0]).Description;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get the passport details and restores them as parameters.
+        /// If there is a passport with the MainPassport flag set, then use this passport.
+        /// Otherwise use the most recent passport which has a passport number.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <param name="ASituation">A current Report Situation</param>
+        /// <returns>true if one passport was found, otherwise false</returns>
+        public static PmPassportDetailsRow GetLatestPassport(Int64 APartnerKey, TRptSituation ASituation)
+        {
+            PmPassportDetailsTable PassportTable = null;
+            PmPassportDetailsRow ResultPassportRow = null;
+
+            StringCollection PassportCollumns = new StringCollection();
+            StringCollection OrderList = new StringCollection();
+
+            PassportCollumns.Add(PmPassportDetailsTable.GetPassportNationalityCodeDBName());
+            PassportCollumns.Add(PmPassportDetailsTable.GetPassportNumberDBName());
+            PassportCollumns.Add(PmPassportDetailsTable.GetDateOfExpirationDBName());
+            PassportCollumns.Add(PmPassportDetailsTable.GetFullPassportNameDBName());
+            OrderList.Add("ORDER BY " + PmPassportDetailsTable.GetDateOfExpirationDBName() + " DESC");
+
+            PassportTable = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportCollumns, ASituation.GetDatabaseConnection().Transaction,
+                OrderList, 0, 0);
+
+            // Look for MainPassport flag
+            foreach (PmPassportDetailsRow Row in PassportTable.Rows)
+            {
+                if (!Row.IsMainPassportNull()
+                    && Row.MainPassport)
+                {
+                    ResultPassportRow = Row;
+                    break;
+                }
+            }
+
+            // Look for the most recent passport with a passport number
+            if (ResultPassportRow == null)
+            {
+                foreach (PmPassportDetailsRow Row in PassportTable.Rows)
+                {
+                    if (Row.PassportNumber.Length > 0)
+                    {
+                        ResultPassportRow = Row;
+                        break;
+                    }
+                }
+            }
+
+            return ResultPassportRow;
         }
     }
 }
