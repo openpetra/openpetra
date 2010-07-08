@@ -533,6 +533,9 @@ namespace Ict.Tools.CodeGeneration
             CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
                 ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj",
                 ref CSFiles);
+            CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+                ModuleName + "/setup/Ict.Petra.Server." + ModuleName + ".Setup.WebConnectors.csproj",
+                ref CSFiles);
 
             return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
         }

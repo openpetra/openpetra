@@ -265,9 +265,19 @@ class CreateInstantiators : AutoGenerationWriter
 
         List <CSParser>CSFiles = new List <CSParser>();
         string module = AFullNamespace.Split('.')[3];
-        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
-            module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
-            ref CSFiles);
+
+        if (!AFullNamespace.Contains(".Setup."))
+        {
+            CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
+                module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
+                ref CSFiles);
+        }
+        else
+        {
+            CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
+                module + "/setup/Ict.Petra.Server." + module + ".Setup.WebConnectors.csproj",
+                ref CSFiles);
+        }
 
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
         interfacesSnippet.SetCodelet("METHOD", "");
