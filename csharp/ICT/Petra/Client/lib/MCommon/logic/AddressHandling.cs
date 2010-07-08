@@ -28,7 +28,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon
@@ -962,7 +962,7 @@ namespace Ict.Petra.Client.MCommon
             PCountryTable DataCacheCountryDT;
             PCountryRow CountryDR;
 
-            DataCacheCountryDT = (PCountryTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
+            DataCacheCountryDT = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
             CountryDR = (PCountryRow)DataCacheCountryDT.Rows.Find(ACountryCode);
 
             if (CountryDR != null)

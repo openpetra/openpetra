@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.Interfaces.MCommon.Cacheable;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
@@ -45,6 +46,12 @@ namespace Ict.Petra.Shared.Interfaces.MCommon
     public interface IMCommonNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
+        ICacheableNamespace Cacheable
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
         IUIConnectorsNamespace UIConnectors
         {
             get;
@@ -56,6 +63,29 @@ namespace Ict.Petra.Shared.Interfaces.MCommon
             get;
         }
 
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MCommon.Cacheable
+{
+    /// <summary>auto generated</summary>
+    public interface ICacheableNamespace : IInterface
+    {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+                                                System.String AHashCode,
+                                                out System.Type AType);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

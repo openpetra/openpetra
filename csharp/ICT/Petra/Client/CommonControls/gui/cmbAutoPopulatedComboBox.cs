@@ -27,6 +27,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -366,7 +367,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.CountryList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList),
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList),
                     PCountryTable.GetCountryCodeDBName(),
                     PCountryTable.GetCountryNameDBName(),
                     null
@@ -433,7 +434,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.LanguageCodeList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList),
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList),
                     "p_language_code_c",
                     "p_language_description_c",
                     null);

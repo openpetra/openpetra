@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using System.Globalization;
 
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.CommonControls
                 // Pass on any set Tag
                 cmbCountry.Tag = this.Tag;
                 cmbCountry.cmbCombobox.Tag = this.Tag;
-                FDataCache_CountryListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
+                FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
                 cmbCountry.cmbCombobox.BeginUpdate();
                 cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
                 cmbCountry.cmbCombobox.DisplayMember = "p_country_code_c";

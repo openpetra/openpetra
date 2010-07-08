@@ -28,7 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using System.Globalization;
 using Mono.Unix;
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public void InitialiseUserControl()
         {
-            FDataCache_CountryListTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
+            FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
             FDataLoading = true;
             cmbCountry.BeginUpdate();
             cmbCountry.DataSource = FDataCache_CountryListTable.DefaultView;

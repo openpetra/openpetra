@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -64,6 +64,9 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
@@ -79,12 +82,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cacheable.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Main.AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="ServerLookups.DataReader.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
+      <Project>{DC487150-0555-4C05-A13F-91588D9D750D}</Project>
+      <Name>Ict.Petra.Server.App.ClientDomain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MPartner\data\Ict.Petra.Server.MPartner.DataAccess.csproj">
       <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157DF}</Project>
       <Name>Ict.Petra.Server.MPartner.DataAccess</Name>

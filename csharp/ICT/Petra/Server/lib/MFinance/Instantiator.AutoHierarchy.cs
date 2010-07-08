@@ -132,6 +132,8 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 #endregion ManualCode
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
+
 namespace Ict.Petra.Server.MFinance.Instantiator
 {
     /// <summary>

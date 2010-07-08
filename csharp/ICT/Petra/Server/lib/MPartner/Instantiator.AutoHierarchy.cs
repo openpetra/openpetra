@@ -1928,7 +1928,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
                 case TCacheablePartnerTablesEnum.AcquisitionCodeList:
                 case TCacheablePartnerTablesEnum.AddresseeTypeList:
                 case TCacheablePartnerTablesEnum.BusinessCodeList:
-                case TCacheablePartnerTablesEnum.CountryList:
                 case TCacheablePartnerTablesEnum.CurrencyCodeList:
                 case TCacheablePartnerTablesEnum.DataLabelList:
                 case TCacheablePartnerTablesEnum.DataLabelUseList:
@@ -1937,7 +1936,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
                 case TCacheablePartnerTablesEnum.DenominationList:
                 case TCacheablePartnerTablesEnum.InterestList:
                 case TCacheablePartnerTablesEnum.InterestCategoryList:
-                case TCacheablePartnerTablesEnum.LanguageCodeList:
                 case TCacheablePartnerTablesEnum.LocationTypeList:
                 case TCacheablePartnerTablesEnum.MaritalStatusList:
                 case TCacheablePartnerTablesEnum.OccupationList:

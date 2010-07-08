@@ -24,7 +24,7 @@
 using System;
 using System.Data;
 
-using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.App.Core
@@ -36,9 +36,9 @@ namespace Ict.Petra.Client.App.Core
     public static class Cache_Lookup
     {
         /// <summary>
-        /// Lookups available for the Partner Module.
+        /// Common Lookups.
         /// </summary>
-        public static class TMPartner
+        public static class TMCommon
         {
             static private DataTable FCountryListDataCacheDT;
             static private DataTable FLanguageListDataCacheDT;
@@ -49,17 +49,17 @@ namespace Ict.Petra.Client.App.Core
             /// <remarks>Called by TDataCache if the DataTable was
             /// refreshed on the Serverside.</remarks>
             /// <param name="ACacheableTable"></param>
-            public static void RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
+            public static void RefreshCacheableCommonTable(TCacheableCommonTablesEnum ACacheableTable)
             {
                 switch (ACacheableTable)
                 {
-                    case TCacheablePartnerTablesEnum.CountryList:
-                        FCountryListDataCacheDT = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
+                    case TCacheableCommonTablesEnum.CountryList:
+                        FCountryListDataCacheDT = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
 
                         break;
 
-                    case TCacheablePartnerTablesEnum.LanguageCodeList:
-                        FLanguageListDataCacheDT = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList);
+                    case TCacheableCommonTablesEnum.LanguageCodeList:
+                        FLanguageListDataCacheDT = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
 
                         break;
                 }
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.App.Core
 
                 if (FCountryListDataCacheDT == null)
                 {
-                    RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum.CountryList);
+                    RefreshCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
                 }
 
                 FoundDR = (PCountryRow)FCountryListDataCacheDT.Rows.Find(ACountryCode);
@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.App.Core
 
                 if (FLanguageListDataCacheDT == null)
                 {
-                    RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum.LanguageCodeList);
+                    RefreshCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
                 }
 
                 FoundDR = (PLanguageRow)FLanguageListDataCacheDT.Rows.Find(ALanguageCode);

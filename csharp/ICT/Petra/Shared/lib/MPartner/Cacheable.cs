@@ -46,11 +46,6 @@ namespace Ict.Petra.Shared.MPartner
         BusinessCodeList,
 
         /// <summary>
-        /// list of countries
-        /// </summary>
-        CountryList,
-
-        /// <summary>
         /// list of currencies
         /// </summary>
         CurrencyCodeList,
@@ -94,11 +89,6 @@ namespace Ict.Petra.Shared.MPartner
         /// categories of interest values
         /// </summary>
         InterestCategoryList,
-
-        /// <summary>
-        /// list of languages
-        /// </summary>
-        LanguageCodeList,
 
         /// <summary>
         /// type of location

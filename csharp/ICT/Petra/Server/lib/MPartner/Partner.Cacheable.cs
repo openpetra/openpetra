@@ -162,11 +162,6 @@ namespace Ict.Petra.Server.MPartner.Partner
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
-                        case TCacheablePartnerTablesEnum.CountryList:
-                            TmpTable = PCountryAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-
                         case TCacheablePartnerTablesEnum.CurrencyCodeList:
                             TmpTable = ACurrencyAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
@@ -207,11 +202,6 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                         case TCacheablePartnerTablesEnum.InterestCategoryList:
                             TmpTable = PInterestCategoryAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-
-                        case TCacheablePartnerTablesEnum.LanguageCodeList:
-                            TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
@@ -686,29 +676,9 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                             break;
 
-                        case TCacheablePartnerTablesEnum.CountryList:
-
-                            if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-
-                            break;
-
                         case TCacheablePartnerTablesEnum.DenominationList:
 
                             if (PDenominationAccess.SubmitChanges((PDenominationTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-
-                            break;
-
-                        case TCacheablePartnerTablesEnum.LanguageCodeList:
-
-                            if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
@@ -802,7 +772,6 @@ namespace Ict.Petra.Server.MPartner.Partner
              */
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
                 GetStandardCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 

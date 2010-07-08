@@ -895,7 +895,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 LocationDR = FPartnerDR;
             }
 
-            CountryName = Cache_Lookup.TMPartner.DetermineCountryNameFromCode(LocationDR[PLocationTable.GetCountryCodeDBName()].ToString());
+            CountryName = Cache_Lookup.TMCommon.DetermineCountryNameFromCode(LocationDR[PLocationTable.GetCountryCodeDBName()].ToString());
 
             txtAddress1.Text = Calculations.DetermineLocationString("", "",
                 LocationDR[PLocationTable.GetLocalityDBName()].ToString(),
@@ -1288,7 +1288,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             OtherDataDR = FPartnerInfoDS.PartnerAdditionalInfo[0];
 
-            txtLanguages.Text = Cache_Lookup.TMPartner.DetermineLanguageNameFromCode(OtherDataDR.MainLanguages);
+            txtLanguages.Text = Cache_Lookup.TMCommon.DetermineLanguageNameFromCode(OtherDataDR.MainLanguages);
             txtNotes.Text = OtherDataDR.Notes;
 
             if (!OtherDataDR.IsDateModifiedNull())
@@ -1397,7 +1397,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     for (int Counter = 0; Counter < AdditionalLangs.Length; Counter++)
                     {
                         txtLanguages.Text = txtLanguages.Text +
-                                            Cache_Lookup.TMPartner.DetermineLanguageNameFromCode(AdditionalLangs[Counter]) +
+                                            Cache_Lookup.TMCommon.DetermineLanguageNameFromCode(AdditionalLangs[Counter]) +
                                             LANG_LIST_SEPARATOR;
                     }
 

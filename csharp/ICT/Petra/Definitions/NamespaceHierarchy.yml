@@ -1,5 +1,6 @@
 NamespaceHierarchy:
     Common: {Description=Common Module}
+        Cacheable: {Description=Cacheable DataTables}
         UIConnectors: {Description = User Interface Connectors}
         DataReader: {Description="Simple Data Connector for reading data; checks for permissions; returns typed tables"}
     Partner: {Description=Partner Module}

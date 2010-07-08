@@ -47,10 +47,13 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
 using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Petra.Shared.Interfaces.MCommon.Cacheable;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
+using Ict.Petra.Server.MCommon.Instantiator.Cacheable;
 using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
 using Ict.Petra.Server.MCommon.Instantiator.DataReader;
+//using Ict.Petra.Server.MCommon.Cacheable;  // this doesn't exist, but gets written by generateGlue...
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MCommon.DataReader;
 
@@ -60,6 +63,8 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.RemotedExceptions;
 #endregion ManualCode
 namespace Ict.Petra.Server.MCommon.Instantiator
 {
@@ -155,6 +160,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+        private TCacheableNamespace FCacheableSubNamespace;
         private TUIConnectorsNamespace FUIConnectorsSubNamespace;
         private TDataReaderNamespace FDataReaderSubNamespace;
 
@@ -220,6 +226,35 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
+        /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
+        public ICacheableNamespace Cacheable
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MCommon.Cacheable' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MCommon.Cacheable' sub-namespace
+                //
+
+                // accessing TCacheableNamespace the first time? > instantiate the object
+                if (FCacheableSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MCommon.Instantiator.Cacheable') should be automatically contructable.
+                    FCacheableSubNamespace = new TCacheableNamespace();
+                }
+
+                return FCacheableSubNamespace;
+            }
+
+        }
+
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
         {
@@ -276,6 +311,180 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                 return FDataReaderSubNamespace;
             }
 
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
+{
+    /// <summary>auto generated class </summary>
+    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        #region ManualCode
+
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private Ict.Petra.Server.MCommon.TCacheable FCachePopulator;
+        #endregion ManualCode
+        /// <summary>Constructor</summary>
+        public TCacheableNamespace()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+            #region ManualCode
+            FCachePopulator = new Ict.Petra.Server.MCommon.TCacheable();
+            #endregion ManualCode
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TCacheableNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TCacheableNamespace object exists until this AppDomain is unloaded!
+        }
+
+        #region ManualCode
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private DataTable GetCacheableTableInternal(TCacheableCommonTablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            DataTable ReturnValue;
+
+            switch (ACacheableTable)
+            {
+                case TCacheableCommonTablesEnum.CountryList:
+                case TCacheableCommonTablesEnum.LanguageCodeList:
+
+                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+
+                    // Unknown Cacheable DataTable
+                    break;
+
+                default:
+                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
+                        Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
+            }
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion ManualCode
+        /// generated method from interface
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
+        {
+            #region ManualCode
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+                                          out System.Data.DataTable ADataTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
         }
     }
 }
@@ -484,6 +693,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         private DateTime FStartTime;
 #endif
 
+        #region ManualCode
+
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private Ict.Petra.Server.MCommon.TCacheable FCachePopulator;
+        #endregion ManualCode
         /// <summary>Constructor</summary>
         public TDataReaderNamespace()
         {
@@ -551,7 +765,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         {
             #region ManualCode
             return TCommonDataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
-            #endregion ManualCode
+            #endregion ManualCode            
         }
 
         /// generated method from interface
