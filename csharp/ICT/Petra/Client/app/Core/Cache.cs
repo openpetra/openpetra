@@ -39,6 +39,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Account;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -77,13 +78,40 @@ namespace Ict.Petra.Client.App.Core
             IsolatedStorageScope.User | IsolatedStorageScope.Assembly |
             IsolatedStorageScope.Roaming, null, null);
 
+
+        #region TDataCache.TMCommon
+        
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMCommon
+        {
+            /**
+             * Returns the chosen DataTable for the Common Namespace from the Cache.
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableCommonTable(TCacheableCommonTablesEnum ACacheableTable)
+            {
+                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+            }
+        }
+        
+        #endregion 
+
+
+        #region TDataCache.TMPartner
         /// <summary>
         /// todoComment
         /// </summary>
         public class TMPartner
         {
-            #region TDataCache.TMPartner
-
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
              * from the
@@ -99,26 +127,6 @@ namespace Ict.Petra.Client.App.Core
             public static DataTable GetCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
             {
                 return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
-            }
-
-            /**
-             * Tells the PetraServer to reload the cacheable DataTable from the DB,
-             * refreshes the DataTable in the client-side Cache and saves it to a file.
-             *
-             * @param ACacheableTable The cached DataTable that should be reloaded from DB.
-             *
-             */
-            public static void RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
-            {
-                DataTable TmpDT;
-
-                // Refresh the Cacheable DataTable on the Serverside and return it
-                TRemote.MPartner.Partner.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
-                UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
-                Cache_Lookup.TMPartner.RefreshCacheablePartnerTable(ACacheableTable);
-
-                // Update the cached DataTable file
-                TDataCache.SaveCacheableDataTableToFile(TmpDT);
             }
 
             /**
@@ -191,18 +199,19 @@ namespace Ict.Petra.Client.App.Core
 
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }
-
-            #endregion
+            }            
         }
+        
+        #endregion
+        
 
+        #region TDataCache.TMFinance
+        
         /// <summary>
         /// todoComment
         /// </summary>
         public class TMFinance
         {
-            #region TDataCache.TMFinance
-
             /**
              * Returns the chosen DataTable for the Petra Finance Module from the
              *
@@ -327,11 +336,6 @@ namespace Ict.Petra.Client.App.Core
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
             }
 
-            #endregion
-
-
-            #region TDataCache.TMFinance
-
             /**
              * Get rows from a table that are based on a ledger; (e.g. Costcentres, Accounts)
              * The cache will only retrieve data for the one ledger, and check the next time
@@ -358,17 +362,18 @@ namespace Ict.Petra.Client.App.Core
                 FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
                 return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
             }
-
-            #endregion
         }
+        
+        #endregion
+        
 
+        #region TDataCache.TMPersonnel
+        
         /// <summary>
         /// todoComment
         /// </summary>
         public class TMPersonnel
         {
-            #region TDataCache.TMPersonnel
-
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
              * from the
@@ -442,18 +447,19 @@ namespace Ict.Petra.Client.App.Core
 //
 //                // Update the cached DataTable file
 //                TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }
-
-            #endregion
+            }            
         }
+        
+        #endregion        
+        
 
+        #region TDataCache.TMSysMan
+        
         /// <summary>
         /// todoComment
         /// </summary>
         public class TMSysMan
         {
-            #region TDataCache.TMSysMan
-
             /**
              * Returns the chosen DataTable for the Petra SysMan Module
              *
@@ -487,99 +493,11 @@ namespace Ict.Petra.Client.App.Core
 
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }
-
-            #endregion
+            }            
         }
-
-        /// <summary>
-        /// Causes the PetraServer to reload the specified Cache Table in the
-        /// Server-side  It also refreshes the DataTable in the client-side Cache
-        /// and saves it to a file.
-        ///
-        /// @comment This procedure needs to be called from a 4GL 'Maintain Tables'-type
-        /// screen through AppLink after changes have been made there to make sure that
-        /// the PetraServer and all other PetraClients have the updated data in the
-        /// cacheable DataTable!
-        ///
-        /// </summary>
-        /// <param name="ACacheableTableName">Name of the Cache Table to be reloaded
-        /// </param>
-        /// <returns>void</returns>
-        public static void RefreshCacheTableServerSide(String ACacheableTableName)
-        {
-            TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
-            TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
-            TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
-            TCacheableFinanceTablesEnum CacheableMFinanceTable;
-            TCacheableSysManTablesEnum CacheableMSysManTable;
-
-            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Partner Namespace
-                CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
-                TMPartner.RefreshCacheablePartnerTable(CacheableMPartnerPartnerTable);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSubscriptionsTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Subscriptions Namespace
-                CacheableMPartnerSubscriptionsTable = (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
-                    ACacheableTableName);
-                TMPartner.RefreshCacheableSubscriptionsTable(CacheableMPartnerSubscriptionsTable);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableMailingTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MPartner.Mailing Namespace
-                CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
-                TMPartner.RefreshCacheableMailingTable(CacheableMPartnerMailingTable);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MFinance Namespace
-                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
-                TMFinance.RefreshCacheableFinanceTable(CacheableMFinanceTable);
-            }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MSysMan Namespace
-                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
-                TMSysMan.RefreshCacheableSysManTable(CacheableMSysManTable);
-            }
-        }
-
-        /// <summary>
-        /// Causes the PetraServer to reload the specified Cache Table in the
-        /// Server-side  It also refreshes the DataTable in the client-side Cache
-        /// and saves it to a file.
-        ///
-        /// @comment This procedure needs to be called from a 4GL 'Maintain Tables'-type
-        /// screen through AppLink after changes have been made there to make sure that
-        /// the PetraServer and all other PetraClients have the updated data in the
-        /// cacheable DataTable!
-        ///
-        /// @comment Currently only implemented for Finance Cacheable DataTables (where
-        /// AFilterCriteria needs to be the LedgerNumber).
-        ///
-        /// </summary>
-        /// <param name="ACacheableTableName">Name of the Cache Table to be reloaded</param>
-        /// <param name="AFilterCriteria">An Object containing the filter criteria value that is
-        /// used by the server-side function that retrieves the data for the cacheable
-        /// DataTable
-        /// </param>
-        /// <returns>void</returns>
-        public static void RefreshCacheTableServerSide(String ACacheableTableName, object AFilterCriteria)
-        {
-            TCacheableFinanceTablesEnum CacheableMFinanceTable;
-
-            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
-            {
-                // MFinance Namespace
-                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
-                TMFinance.RefreshCacheableFinanceTable(CacheableMFinanceTable, (System.Int32)AFilterCriteria);
-
-                // AFilterCriteria will be the LedgerNumber
-            }
-        }
+        
+        #endregion
+        
 
         /// <summary>
         /// Causes the TDataCache to reload the specified Cache DataTable the next time
@@ -721,6 +639,7 @@ namespace Ict.Petra.Client.App.Core
         {
             ACacheableTableSystemType = null;
             DataTable ReturnValue;
+            TCacheableCommonTablesEnum CacheableMCommonTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
@@ -730,7 +649,17 @@ namespace Ict.Petra.Client.App.Core
             TCacheableUnitsDataElementsTablesEnum CacheableMPersonnelUnitsTable;
             ReturnValue = null;
 
-            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
+            if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MCommon Namespace
+                CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MCommon.Cacheable.GetCacheableTable(CacheableMCommonTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
             {
                 // MPartner.Partner Namespace
                 CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
