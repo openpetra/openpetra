@@ -350,6 +350,26 @@ namespace Ict.Petra.Client.MReporting.Logic
         }
 
         /// <summary>
+        /// Removes one parameter from the parameter list
+        /// </summary>
+        /// <param name="parameterId">name of the parameter</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public bool RemoveParameter(String parameterId)
+        {
+            bool returnValue = false;
+
+            TParameter ParameterToRemove = Parameters.GetParameter(parameterId);
+
+            if (ParameterToRemove != null)
+            {
+                Parameters.RemoveVariable(parameterId);
+                returnValue = true;
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
         /// get the settings and formatting information for the report
         /// </summary>
         /// <returns></returns>

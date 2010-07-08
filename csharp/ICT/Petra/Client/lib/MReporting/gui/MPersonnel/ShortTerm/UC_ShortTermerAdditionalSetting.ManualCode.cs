@@ -77,9 +77,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 ACalculator.AddParameter("param_print_two_lines", "true");
                 // we can't sort with two lines
-                // TODO
-                // implement RemoveParameter...
-                // ACalculator.RemoveParameter("param_sortby_columns");
+                ACalculator.RemoveParameter("param_sortby_columns");
             }
             else
             {
