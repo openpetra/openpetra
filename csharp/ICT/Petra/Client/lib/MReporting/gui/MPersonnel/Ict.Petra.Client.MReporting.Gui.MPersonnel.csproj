@@ -162,6 +162,10 @@
     <Compile Include="ShortTerm\EmergencyContactInformationReport.Designer.cs">
       <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShortTerm\LanguagesReport.cs" />
+    <Compile Include="ShortTerm\LanguagesReport.Designer.cs">
+      <DependentUpon>LanguagesReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShortTerm\SelectEvent.cs" />
     <Compile Include="ShortTerm\SelectEvent.Designer.cs">
       <DependentUpon>SelectEvent.cs</DependentUpon>
@@ -235,6 +239,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\EmergencyContactInformationReport.resx">
       <DependentUpon>EmergencyContactInformationReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShortTerm\LanguagesReport.resx">
+      <DependentUpon>LanguagesReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\SelectEvent.resx">
       <DependentUpon>SelectEvent.cs</DependentUpon>
