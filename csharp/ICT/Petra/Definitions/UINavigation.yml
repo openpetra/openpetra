@@ -110,8 +110,8 @@ OpenPetra:
                     #YearEnd:
                     #ICHProcessing:
                     Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=GL.TFrmGLAccountHierarchy}
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=GL.TFrmGLCostCentreHierarchy}
+                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
+                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         #Accounts:
                             #AddPostingAccount:
                             #AddForeignCurrencyAccount:

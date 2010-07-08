@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
+namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmGLAccountHierarchy
     {

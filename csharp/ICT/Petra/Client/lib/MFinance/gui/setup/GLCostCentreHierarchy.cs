@@ -43,7 +43,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
+namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
   /// auto generated: GL Cost Centre Hierarchy
@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.GL.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

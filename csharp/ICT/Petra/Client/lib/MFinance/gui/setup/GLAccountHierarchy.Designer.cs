@@ -31,7 +31,7 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup.GL
+namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     partial class TFrmGLAccountHierarchy
     {

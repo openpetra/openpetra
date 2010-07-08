@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: GL Cost Centre Hierarchy
-    Namespace: Ict.Petra.Client.MFinance.Gui.Setup.GL
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: ACostCentre
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
