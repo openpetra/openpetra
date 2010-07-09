@@ -66,9 +66,23 @@ namespace Ict.Petra.Client.MPersonnel.Gui
       this.mniFile.Text = Catalog.GetString("&File");
       this.mniExtracts.Text = Catalog.GetString("&Extracts...");
       this.mniReportPartnerByCity.Text = Catalog.GetString("Progress Report");
-      this.mniReportPartnerAddress.Text = Catalog.GetString("Previous Experience Report");
+      this.mniGeneralShortTermerReport.Text = Catalog.GetString("General Short Termer Report");
       this.mniAbilitiesReport.Text = Catalog.GetString("Abilities Report");
+      this.mniPersonnelEmergencyContactReport.Text = Catalog.GetString("Emergency Contact Report");
+      this.mniLanguagesReport.Text = Catalog.GetString("Languages Report");
       this.mniShortTermerReports.Text = Catalog.GetString("Short Termer Reports");
+      this.mniIndividualDataReport.Text = Catalog.GetString("Individual Data Report");
+      this.mniEmergencyDataReport.Text = Catalog.GetString("Emergency Data Report");
+      this.mniBirthdayList.Text = Catalog.GetString("Birthday List");
+      this.mniEmergencyContactReport.Text = Catalog.GetString("Emergency Contact Report");
+      this.mniPassportExpiryReport.Text = Catalog.GetString("Passport Expiry Report");
+      this.mniPersonalDocumentExpiryReport.Text = Catalog.GetString("Personal Document Expiry Report");
+      this.mniStartOfCommitmentReport.Text = Catalog.GetString("Start Of Commitment Report");
+      this.mniEndOfCommitmentReport.Text = Catalog.GetString("End Of Commitment Report");
+      this.mniPreviousExperienceReport.Text = Catalog.GetString("Previous Experience Report");
+      this.mniProgressReport.Text = Catalog.GetString("Progress Report");
+      this.mniCampaignOptions.Text = Catalog.GetString("Campaign Options");
+      this.mniUnitHierarchy.Text = Catalog.GetString("Unit Hierarchy");
       this.mniReports.Text = Catalog.GetString("&Reports...");
       this.mniPartner.Text = Catalog.GetString("Partner");
       this.mniTodo.Text = Catalog.GetString("Todo");
@@ -209,9 +223,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
     }
 
     /// auto generated
-    protected void OpenScreenReportPartnerAddress(object sender, EventArgs e)
+    protected void OpenScreenGeneralShortTermerReport(object sender, EventArgs e)
     {
-        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport(this.Handle);
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmShortTermerReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmShortTermerReport(this.Handle);
         frm.Show();
     }
 
@@ -219,6 +233,104 @@ namespace Ict.Petra.Client.MPersonnel.Gui
     protected void OpenScreenAbilitiesReport(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmAbilitiesReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmAbilitiesReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenPersonnelEmergencyContactReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactInformationReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactInformationReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenLanguagesReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLanguagesReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLanguagesReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenIndividualDataReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDataReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDataReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenEmergencyDataReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenBirthdayList(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmBirthdayListReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmBirthdayListReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenEmergencyContactReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactReportStaff frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactReportStaff(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenPassportExpiryReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPassportExpiryReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPassportExpiryReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenPersonalDocumentExpiryReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDocumentExpiryReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDocumentExpiryReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenStartOfCommitmentReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmStartOfCommitmentReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmStartOfCommitmentReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenEndOfCommitmentReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEndOfCommitmentReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEndOfCommitmentReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenPreviousExperienceReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenProgressReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenCampaignOptions(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmCampaignOptions frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmCampaignOptions(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenUnitHierarchy(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUnitHierarchy frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUnitHierarchy(this.Handle);
         frm.Show();
     }
 
