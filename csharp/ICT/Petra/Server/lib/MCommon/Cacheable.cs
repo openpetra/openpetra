@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MCommon
                             }
 
                             break;
-                            
+
                         default:
 
                             throw new Exception(

@@ -124,6 +124,13 @@
     <Compile Include="EndOfCommitmentReport.Designer.cs">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="LocalPersonnelDataReport.cs" />
+    <Compile Include="LocalPersonnelDataReport.Designer.cs">
+      <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocalPersonnelDataReport.ManualCode.cs">
+      <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PassportExpiryReport.cs" />
     <Compile Include="PassportExpiryReport.Designer.cs">
       <DependentUpon>PassportExpiryReport.cs</DependentUpon>
@@ -215,6 +222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocalPersonnelDataReport.resx">
+      <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PassportExpiryReport.resx">
       <DependentUpon>PassportExpiryReport.cs</DependentUpon>

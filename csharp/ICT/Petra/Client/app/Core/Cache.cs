@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.App.Core
 
 
         #region TDataCache.TMCommon
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -102,8 +102,8 @@ namespace Ict.Petra.Client.App.Core
                 return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
             }
         }
-        
-        #endregion 
+
+        #endregion
 
 
         #region TDataCache.TMPartner
@@ -199,14 +199,14 @@ namespace Ict.Petra.Client.App.Core
 
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }            
+            }
         }
-        
+
         #endregion
-        
+
 
         #region TDataCache.TMFinance
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -363,12 +363,12 @@ namespace Ict.Petra.Client.App.Core
                 return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
             }
         }
-        
+
         #endregion
-        
+
 
         #region TDataCache.TMPersonnel
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -447,14 +447,14 @@ namespace Ict.Petra.Client.App.Core
 //
 //                // Update the cached DataTable file
 //                TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }            
+            }
         }
-        
-        #endregion        
-        
+
+        #endregion
+
 
         #region TDataCache.TMSysMan
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -493,11 +493,11 @@ namespace Ict.Petra.Client.App.Core
 
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
-            }            
+            }
         }
-        
+
         #endregion
-        
+
 
         /// <summary>
         /// Causes the TDataCache to reload the specified Cache DataTable the next time
