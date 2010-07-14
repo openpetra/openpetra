@@ -155,6 +155,7 @@ OpenPetra:
                         PersonalDataReport: {ActionOpenScreen=TFrmPersonalDataReport}
                         CampaignOptions: {ActionOpenScreen=TFrmCampaignOptions}
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
+                        LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
                     ShortTermerReports:
                         GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
