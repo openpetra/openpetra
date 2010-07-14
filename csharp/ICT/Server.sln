@@ -104,6 +104,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Setup", "Petra\Server\lib\MFinance\setup\Ict.Petra.Server.MFinance.Setup.csproj", "{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MConference", "Petra\Server\lib\MConference\Ict.Petra.Server.MConference.csproj", "{A6A1BB7A-D7AB-4269-B6E5-13145FC45965}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MConference.Instantiator", "Petra\Server\lib\MConference\Ict.Petra.Server.MConference.Instantiator.csproj", "{3EF6D79F-5ED9-4B63-AABF-62DE9A002BB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MConference.WebConnectors", "Petra\Server\lib\MConference\Ict.Petra.Server.MConference.WebConnectors.csproj", "{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -314,5 +320,17 @@ Global
 		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Debug|x86.ActiveCfg = Debug|x86
 		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Release|x86.Build.0 = Release|x86
 		{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}.Release|x86.ActiveCfg = Release|x86
+		{A6A1BB7A-D7AB-4269-B6E5-13145FC45965}.Debug|x86.Build.0 = Debug|x86
+		{A6A1BB7A-D7AB-4269-B6E5-13145FC45965}.Debug|x86.ActiveCfg = Debug|x86
+		{A6A1BB7A-D7AB-4269-B6E5-13145FC45965}.Release|x86.Build.0 = Release|x86
+		{A6A1BB7A-D7AB-4269-B6E5-13145FC45965}.Release|x86.ActiveCfg = Release|x86
+		{3EF6D79F-5ED9-4B63-AABF-62DE9A002BB6}.Debug|x86.Build.0 = Debug|x86
+		{3EF6D79F-5ED9-4B63-AABF-62DE9A002BB6}.Debug|x86.ActiveCfg = Debug|x86
+		{3EF6D79F-5ED9-4B63-AABF-62DE9A002BB6}.Release|x86.Build.0 = Release|x86
+		{3EF6D79F-5ED9-4B63-AABF-62DE9A002BB6}.Release|x86.ActiveCfg = Release|x86
+		{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}.Debug|x86.Build.0 = Debug|x86
+		{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}.Debug|x86.ActiveCfg = Debug|x86
+		{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}.Release|x86.Build.0 = Release|x86
+		{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

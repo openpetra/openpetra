@@ -24,6 +24,7 @@
 using System;
 using Ict.Common;
 using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MSysMan;
@@ -66,6 +67,15 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             get
             {
                 return UCommonObject;
+            }
+        }
+
+        /// <summary>Reference to the topmost level of the Petra Partner Module Namespace</summary>
+        public static IMConferenceNamespace MConference
+        {
+            get
+            {
+                return UConferenceObject;
             }
         }
 
@@ -116,6 +126,7 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
 
         private static IClientManagerInterface UClientManager;
         private static IMCommonNamespace UCommonObject;
+        private static IMConferenceNamespace UConferenceObject;
         private static IMPartnerNamespace UPartnerObject;
         private static IMPersonnelNamespace UPersonnelObject;
         private static IMFinanceNamespace UFinanceObject;
@@ -128,6 +139,7 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
         /// <returns>void</returns>
         public TRemote(IClientManagerInterface AClientManager,
             IMCommonNamespace ACommonObject,
+            IMConferenceNamespace AConferenceObject,
             IMPartnerNamespace APartnerObject,
             IMPersonnelNamespace APersonnelObject,
             IMFinanceNamespace AFinanceObject,
@@ -136,6 +148,7 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
         {
             UClientManager = AClientManager;
             USysManObject = ASysManObject;
+            UConferenceObject = AConferenceObject;
             UPartnerObject = APartnerObject;
             UCommonObject = ACommonObject;
             UPersonnelObject = APersonnelObject;

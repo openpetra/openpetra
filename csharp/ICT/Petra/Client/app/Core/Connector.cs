@@ -28,6 +28,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
 using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -252,6 +253,54 @@ namespace Ict.Petra.Client.App.Core
             catch (Exception exp)
             {
                 TLogging.Log("Error in GetRemoteMCommonObject(), Possible reasons :-" + exp.ToString(), TLoggingType.ToLogfile);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a Remoting Proxy object for the Server-side MConference namespace
+        ///
+        /// @comment The MConferenceNamespace holds client-instantiable objects for the
+        /// Petra Conference Module.
+        ///
+        /// </summary>
+        /// <param name="RemotingURL">The Server-assigned URL for the MConference namespace object</param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MConference namespace object
+        /// </param>
+        /// <returns>void</returns>
+        public void GetRemoteMConferenceObject(string RemotingURL, out IMConferenceNamespace ARemote)
+        {
+            string strTCP;
+            string strServer;
+
+            ARemote = null;
+            strServer = null;
+#if DEBUGMODE
+            TLogging.Log("Entering GetRemoteMConferenceObject()...", TLoggingType.ToLogfile);
+#endif
+            try
+            {
+                strServer = DetermineServerIPAddress() + ':' + FServerIPPort.ToString();
+                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+#if DEBUGMODE
+                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+#endif
+                ARemote = (IMConferenceNamespace)RemotingServices.Connect(typeof(IMConferenceNamespace), strTCP);
+
+                if (ARemote == null)
+                {
+                    TLogging.Log("GetRemoteMConferenceObject: Connection failed!", TLoggingType.ToLogfile);
+                }
+                else
+                {
+#if DEBUGMODE
+                    TLogging.Log("GetRemoteMConferenceObject: connected.", TLoggingType.ToLogfile);
+#endif
+                }
+            }
+            catch (Exception exp)
+            {
+                TLogging.Log("Error in GetRemoteMConferenceObject(), Possible reasons :-" + exp.ToString(), TLoggingType.ToLogfile);
                 throw;
             }
         }

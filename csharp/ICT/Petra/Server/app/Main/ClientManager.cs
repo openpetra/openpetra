@@ -1402,6 +1402,7 @@ namespace Ict.Petra.Server.App.Main
             String RemotingURL_RemotedObject = "";
             String RemotingURL_PollClientTasks;
             String RemotingURL_MCommon;
+            String RemotingURL_MConference;
             String RemotingURL_MSysMan;
             String RemotingURL_MPartner;
             String RemotingURL_MPersonnel;
@@ -1760,6 +1761,16 @@ namespace Ict.Petra.Server.App.Main
             if (TSrvSetting.DL >= 5)
             {
                 Console.WriteLine("  TMCommon instantiated. Remoting URL: " + RemotingURL_MCommon);
+            }
+#endif
+
+            // Load CONFERENCE Module assembly (always loaded)
+            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, out RemotingURL_MConference);
+            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, RemotingURL_MConference);
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 5)
+            {
+                Console.WriteLine("  TMConference instantiated. Remoting URL: " + RemotingURL_MConference);
             }
 #endif
 
