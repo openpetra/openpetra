@@ -97,13 +97,5 @@
       <Project>{F07B0AA0-5BD8-4070-98B4-D0CB1CB69978}</Project>
       <Name>Ict.Petra.Server.MConference.WebConnectors</Name>
     </ProjectReference>
-    <ProjectReference Include="Ict.Petra.Server.MPersonnel.csproj">
-      <Project>{5E6DE599-3860-4741-B4FA-A93BE6AFABEB}</Project>
-      <Name>Ict.Petra.Server.MPersonnel</Name>
-    </ProjectReference>
-    <ProjectReference Include="Ict.Petra.Server.MPersonnel.UIConnectors.csproj">
-      <Project>{F2C85B76-E712-4C7B-9BB2-8F063C68D56B}</Project>
-      <Name>Ict.Petra.Server.MPersonnel.UIConnectors</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
