@@ -67,12 +67,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AProtected"></param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AProtected)
         {
             // Switch to Tab. This ensures that FUcoTransations is existant (it gets dynamically loaded)
             tabGiftBatch.SelectedIndex = tpgTransactions.TabIndex;
 
-            this.FUcoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            this.FUcoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AProtected);
         }
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (this.tpgTransactions.Enabled)
                 {
                     LoadTransactions(FUcoBatches.GetSelectedDetailRow().LedgerNumber,
-                        FUcoBatches.GetSelectedDetailRow().BatchNumber);
+                        FUcoBatches.GetSelectedDetailRow().BatchNumber, FPetraUtilsObject.DetailProtectedMode);
 
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }

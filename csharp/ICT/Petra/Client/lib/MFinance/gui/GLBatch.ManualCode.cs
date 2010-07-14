@@ -31,6 +31,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TFrmGLBatch
     {
         private Int32 FLedgerNumber;
+         
 
         /// <summary>
         /// use this ledger
@@ -55,11 +56,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AProtected"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AProtected)
         {
             this.tpgJournals.Enabled = true;
             DisableTransactions();
-            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
+            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber, AProtected);
         }
 
         /// <summary>
@@ -68,10 +70,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        /// <param name="AProtected"></param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Boolean AProtected)
         {
             this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber);
+            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AProtected);
         }
 
         /// <summary>

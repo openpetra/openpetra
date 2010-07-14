@@ -37,13 +37,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private Boolean FProtected = false;
 
         /// <summary>
         /// load the gifts into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AProtected"></param>
+        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AProtected)
         {
             if ((FLedgerNumber != -1) && (FBatchNumber != -1))
             {
@@ -52,6 +54,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
+            FProtected = AProtected;
+            btnDeleteDetail.Enabled = !AProtected;
+            btnNewDetail.Enabled = !AProtected;
+            btnNewGift.Enabled = !AProtected;
 
             FPreviouslySelectedDetailRow = null;
 

@@ -36,13 +36,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private Boolean FProtected = false;
 
         /// <summary>
         /// load the journals into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AProtected"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, Boolean AProtected)
         {
             if (FBatchNumber != -1)
             {
@@ -51,6 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
+            FProtected = AProtected;
+            this.btnAdd.Enabled = !AProtected;
+            this.btnRemove.Enabled = !AProtected;
 
             FPreviouslySelectedDetailRow = null;
 
@@ -88,7 +93,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).LoadTransactions(
                     ARow.LedgerNumber,
                     ARow.BatchNumber,
-                    ARow.JournalNumber);
+                    ARow.JournalNumber,
+                    FProtected
+                   );
             }
         }
 

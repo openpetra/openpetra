@@ -38,6 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
+        private Boolean FProtected = false;
 
         /// <summary>
         /// load the transactions into the grid
@@ -45,7 +46,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        /// <param name="AProtected"></param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Boolean AProtected)
         {
             if (FBatchNumber != -1)
             {
@@ -54,8 +56,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            FJournalNumber = AJournalNumber;
-
+        	FJournalNumber = AJournalNumber;
+			FProtected = AProtected;
+        	btnNew.Enabled = !AProtected;
+        	btnRemove.Enabled = !AProtected;
             FPreviouslySelectedDetailRow = null;
 
             DataView view = new DataView(FMainDS.ATransaction);

@@ -105,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
+        	FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted"));
             ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
             FSelectedBatchNumber = ARow.BatchNumber;
         }

@@ -73,10 +73,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
+        	FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted"));
             ((TFrmGLBatch)ParentForm).LoadJournals(
-                ARow.LedgerNumber,
-                ARow.BatchNumber);
+            	ARow.LedgerNumber,
+                ARow.BatchNumber,
+				FPetraUtilsObject.DetailProtectedMode);
             FSelectedBatchNumber = ARow.BatchNumber;
+            
+            
         }
 
         private void ShowJournalTab(Object sender, EventArgs e)
