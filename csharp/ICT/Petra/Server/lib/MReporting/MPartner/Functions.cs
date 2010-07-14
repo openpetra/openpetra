@@ -201,6 +201,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 null,
                 mRptCalculation.rptGrpTemplate,
                 mRptCalculation.rptGrpQuery);
+            List <int>AddedColumns = new List <int>();
 
             if (mRptCalcResult.IsZeroOrNull())
             {
@@ -276,7 +277,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                 for (col = 0; col <= situation.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; col += 1)
                 {
-                    situation.GetParameters().RemoveVariable("LabelValue", col, situation.GetDepth(), eParameterFit.eBestFit);
+                    if (!AddedColumns.Contains(col))
+                    {
+                        situation.GetParameters().RemoveVariable("LabelValue", col, situation.GetDepth(), eParameterFit.eBestFit);
+                    }
 
                     if (situation.GetParameters().Exists("param_label", col, -1, eParameterFit.eExact))
                     {
@@ -288,6 +292,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                                     LabelValue,
                                     col, situation.GetDepth(),
                                     null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                                AddedColumns.Add(col);
                             }
                         }
                     }

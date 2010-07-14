@@ -1,0 +1,35 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFrom.yaml
+    FormTitle: Select Conference
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    #~ DatasetType: Ict.Petra.Shared.MConference.ConferenceTDS
+    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    MasterTable: PcConference
+    DetailTable: PPartner
+    #~ UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    Formtype: browse
+    Template: windowFind
+    WindowWidth: 754
+    WindowHeight: 623
+    Controls: 
+        pnlContent:
+            Dock: Fill
+            Controls: [grpFindConference, pnlButtons]
+        grpFindConference:
+            Controls:[txtConference, txtPrefix, btnSearch, grdConferences]
+        txtConverence:
+            Label: Conference
+        txtPrefix:
+            Label: Prefix
+        btnSearch:
+            Label: Search
+        grdConferences:
+            Columns: [PartnerKey, CampaignCodePrefix]
+        
+        pnlButtons:
+            Controls:
+                Row1: [btnAccept, btnCancel]
+        btnAccept:
+            Label: Accept
+        btnCancel:
+            Label: Cancel

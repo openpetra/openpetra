@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F1A7A1DF-BF17-4E23-87AD-95C38EC25D03}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -64,6 +64,7 @@
     <Compile Include="AsynchronousExecution.cs" />
     <Compile Include="ClientInstanceInterface.cs" />
     <Compile Include="Common.Interfaces.cs" />
+    <Compile Include="Conference.Interfaces.cs" />
     <Compile Include="Finance.Interfaces.cs" />
     <Compile Include="FinDev.Interfaces.cs" />
     <Compile Include="Hospitality.Interfaces.cs" />

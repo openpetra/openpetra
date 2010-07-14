@@ -77,10 +77,28 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniExtracts = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReports = new System.Windows.Forms.ToolStripMenuItem();
             this.mniReportPartnerByCity = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniReportPartnerAddress = new System.Windows.Forms.ToolStripMenuItem();
             this.mniShortTermerReports = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniGeneralShortTermerReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniAbilitiesReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniPersonnelEmergencyContactReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniLanguagesReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniIndividualDataReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEmergencyDataReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniLocalPersonnelDataReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniBirthdayList = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEmergencyContactReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniPassportExpiryReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniPersonalDocumentExpiryReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniStartOfCommitmentReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEndOfCommitmentReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniPreviousExperienceReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniProgressReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniCampaignOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniUnitHierarchy = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mniMaintainTables = new System.Windows.Forms.ToolStripMenuItem();
             this.mniTodo = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraModules = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,9 +111,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniPetraSysManModule = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -162,12 +180,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniReportPartnerByCity.Click += new System.EventHandler(this.OpenScreenReportPartnerByCity);
             this.mniReportPartnerByCity.Text = "Progress Report";
             //
-            // mniReportPartnerAddress
+            // mniGeneralShortTermerReport
             //
-            this.mniReportPartnerAddress.Name = "mniReportPartnerAddress";
-            this.mniReportPartnerAddress.AutoSize = true;
-            this.mniReportPartnerAddress.Click += new System.EventHandler(this.OpenScreenReportPartnerAddress);
-            this.mniReportPartnerAddress.Text = "Previous Experience Report";
+            this.mniGeneralShortTermerReport.Name = "mniGeneralShortTermerReport";
+            this.mniGeneralShortTermerReport.AutoSize = true;
+            this.mniGeneralShortTermerReport.Click += new System.EventHandler(this.OpenScreenGeneralShortTermerReport);
+            this.mniGeneralShortTermerReport.Text = "General Short Termer Report";
             //
             // mniAbilitiesReport
             //
@@ -176,13 +194,139 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniAbilitiesReport.Click += new System.EventHandler(this.OpenScreenAbilitiesReport);
             this.mniAbilitiesReport.Text = "Abilities Report";
             //
+            // mniPersonnelEmergencyContactReport
+            //
+            this.mniPersonnelEmergencyContactReport.Name = "mniPersonnelEmergencyContactReport";
+            this.mniPersonnelEmergencyContactReport.AutoSize = true;
+            this.mniPersonnelEmergencyContactReport.Click += new System.EventHandler(this.OpenScreenPersonnelEmergencyContactReport);
+            this.mniPersonnelEmergencyContactReport.Text = "Emergency Contact Report";
+            //
+            // mniLanguagesReport
+            //
+            this.mniLanguagesReport.Name = "mniLanguagesReport";
+            this.mniLanguagesReport.AutoSize = true;
+            this.mniLanguagesReport.Click += new System.EventHandler(this.OpenScreenLanguagesReport);
+            this.mniLanguagesReport.Text = "Languages Report";
+            //
             // mniShortTermerReports
             //
             this.mniShortTermerReports.Name = "mniShortTermerReports";
             this.mniShortTermerReports.AutoSize = true;
             this.mniShortTermerReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniAbilitiesReport});
+                           mniGeneralShortTermerReport,
+                        mniAbilitiesReport,
+                        mniPersonnelEmergencyContactReport,
+                        mniLanguagesReport});
             this.mniShortTermerReports.Text = "Short Termer Reports";
+            //
+            // mniIndividualDataReport
+            //
+            this.mniIndividualDataReport.Name = "mniIndividualDataReport";
+            this.mniIndividualDataReport.AutoSize = true;
+            this.mniIndividualDataReport.Click += new System.EventHandler(this.OpenScreenIndividualDataReport);
+            this.mniIndividualDataReport.Text = "Individual Data Report";
+            //
+            // mniEmergencyDataReport
+            //
+            this.mniEmergencyDataReport.Name = "mniEmergencyDataReport";
+            this.mniEmergencyDataReport.AutoSize = true;
+            this.mniEmergencyDataReport.Click += new System.EventHandler(this.OpenScreenEmergencyDataReport);
+            this.mniEmergencyDataReport.Text = "Emergency Data Report";
+            //
+            // mniLocalPersonnelDataReport
+            //
+            this.mniLocalPersonnelDataReport.Name = "mniLocalPersonnelDataReport";
+            this.mniLocalPersonnelDataReport.AutoSize = true;
+            this.mniLocalPersonnelDataReport.Click += new System.EventHandler(this.OpenScreenLocalPersonnelDataReport);
+            this.mniLocalPersonnelDataReport.Text = "Local Personnel Data Report";
+            //
+            // mniSeparator1
+            //
+            this.mniSeparator1.Name = "mniSeparator1";
+            this.mniSeparator1.AutoSize = true;
+            this.mniSeparator1.Text = "-";
+            //
+            // mniBirthdayList
+            //
+            this.mniBirthdayList.Name = "mniBirthdayList";
+            this.mniBirthdayList.AutoSize = true;
+            this.mniBirthdayList.Click += new System.EventHandler(this.OpenScreenBirthdayList);
+            this.mniBirthdayList.Text = "Birthday List";
+            //
+            // mniEmergencyContactReport
+            //
+            this.mniEmergencyContactReport.Name = "mniEmergencyContactReport";
+            this.mniEmergencyContactReport.AutoSize = true;
+            this.mniEmergencyContactReport.Click += new System.EventHandler(this.OpenScreenEmergencyContactReport);
+            this.mniEmergencyContactReport.Text = "Emergency Contact Report";
+            //
+            // mniPassportExpiryReport
+            //
+            this.mniPassportExpiryReport.Name = "mniPassportExpiryReport";
+            this.mniPassportExpiryReport.AutoSize = true;
+            this.mniPassportExpiryReport.Click += new System.EventHandler(this.OpenScreenPassportExpiryReport);
+            this.mniPassportExpiryReport.Text = "Passport Expiry Report";
+            //
+            // mniPersonalDocumentExpiryReport
+            //
+            this.mniPersonalDocumentExpiryReport.Name = "mniPersonalDocumentExpiryReport";
+            this.mniPersonalDocumentExpiryReport.AutoSize = true;
+            this.mniPersonalDocumentExpiryReport.Click += new System.EventHandler(this.OpenScreenPersonalDocumentExpiryReport);
+            this.mniPersonalDocumentExpiryReport.Text = "Personal Document Expiry Report";
+            //
+            // mniSeparator2
+            //
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
+            //
+            // mniStartOfCommitmentReport
+            //
+            this.mniStartOfCommitmentReport.Name = "mniStartOfCommitmentReport";
+            this.mniStartOfCommitmentReport.AutoSize = true;
+            this.mniStartOfCommitmentReport.Click += new System.EventHandler(this.OpenScreenStartOfCommitmentReport);
+            this.mniStartOfCommitmentReport.Text = "Start Of Commitment Report";
+            //
+            // mniEndOfCommitmentReport
+            //
+            this.mniEndOfCommitmentReport.Name = "mniEndOfCommitmentReport";
+            this.mniEndOfCommitmentReport.AutoSize = true;
+            this.mniEndOfCommitmentReport.Click += new System.EventHandler(this.OpenScreenEndOfCommitmentReport);
+            this.mniEndOfCommitmentReport.Text = "End Of Commitment Report";
+            //
+            // mniPreviousExperienceReport
+            //
+            this.mniPreviousExperienceReport.Name = "mniPreviousExperienceReport";
+            this.mniPreviousExperienceReport.AutoSize = true;
+            this.mniPreviousExperienceReport.Click += new System.EventHandler(this.OpenScreenPreviousExperienceReport);
+            this.mniPreviousExperienceReport.Text = "Previous Experience Report";
+            //
+            // mniProgressReport
+            //
+            this.mniProgressReport.Name = "mniProgressReport";
+            this.mniProgressReport.AutoSize = true;
+            this.mniProgressReport.Click += new System.EventHandler(this.OpenScreenProgressReport);
+            this.mniProgressReport.Text = "Progress Report";
+            //
+            // mniSeparator3
+            //
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
+            //
+            // mniCampaignOptions
+            //
+            this.mniCampaignOptions.Name = "mniCampaignOptions";
+            this.mniCampaignOptions.AutoSize = true;
+            this.mniCampaignOptions.Click += new System.EventHandler(this.OpenScreenCampaignOptions);
+            this.mniCampaignOptions.Text = "Campaign Options";
+            //
+            // mniUnitHierarchy
+            //
+            this.mniUnitHierarchy.Name = "mniUnitHierarchy";
+            this.mniUnitHierarchy.AutoSize = true;
+            this.mniUnitHierarchy.Click += new System.EventHandler(this.OpenScreenUnitHierarchy);
+            this.mniUnitHierarchy.Text = "Unit Hierarchy";
             //
             // mniReports
             //
@@ -190,15 +334,30 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniReports.AutoSize = true;
             this.mniReports.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniReportPartnerByCity,
-                        mniReportPartnerAddress,
-                        mniShortTermerReports});
+                        mniShortTermerReports,
+                        mniIndividualDataReport,
+                        mniEmergencyDataReport,
+                        mniLocalPersonnelDataReport,
+                        mniSeparator1,
+                        mniBirthdayList,
+                        mniEmergencyContactReport,
+                        mniPassportExpiryReport,
+                        mniPersonalDocumentExpiryReport,
+                        mniSeparator2,
+                        mniStartOfCommitmentReport,
+                        mniEndOfCommitmentReport,
+                        mniPreviousExperienceReport,
+                        mniProgressReport,
+                        mniSeparator3,
+                        mniCampaignOptions,
+                        mniUnitHierarchy});
             this.mniReports.Text = "&Reports...";
             //
-            // mniSeparator1
+            // mniSeparator4
             //
-            this.mniSeparator1.Name = "mniSeparator1";
-            this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = "-";
+            this.mniSeparator4.Name = "mniSeparator4";
+            this.mniSeparator4.AutoSize = true;
+            this.mniSeparator4.Text = "-";
             //
             // mniPartner
             //
@@ -207,7 +366,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniPartner.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniExtracts,
                         mniReports,
-                        mniSeparator1});
+                        mniSeparator4});
             this.mniPartner.Text = "Partner";
             //
             // mniTodo
@@ -293,11 +452,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator2
+            // mniSeparator5
             //
-            this.mniSeparator2.Name = "mniSeparator2";
-            this.mniSeparator2.AutoSize = true;
-            this.mniSeparator2.Text = "-";
+            this.mniSeparator5.Name = "mniSeparator5";
+            this.mniSeparator5.AutoSize = true;
+            this.mniSeparator5.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -305,11 +464,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator3
+            // mniSeparator6
             //
-            this.mniSeparator3.Name = "mniSeparator3";
-            this.mniSeparator3.AutoSize = true;
-            this.mniSeparator3.Text = "-";
+            this.mniSeparator6.Name = "mniSeparator6";
+            this.mniSeparator6.AutoSize = true;
+            this.mniSeparator6.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -329,9 +488,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator2,
+                        mniSeparator5,
                         mniHelpBugReport,
-                        mniSeparator3,
+                        mniSeparator6,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -396,10 +555,28 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         private System.Windows.Forms.ToolStripMenuItem mniExtracts;
         private System.Windows.Forms.ToolStripMenuItem mniReports;
         private System.Windows.Forms.ToolStripMenuItem mniReportPartnerByCity;
-        private System.Windows.Forms.ToolStripMenuItem mniReportPartnerAddress;
         private System.Windows.Forms.ToolStripMenuItem mniShortTermerReports;
+        private System.Windows.Forms.ToolStripMenuItem mniGeneralShortTermerReport;
         private System.Windows.Forms.ToolStripMenuItem mniAbilitiesReport;
+        private System.Windows.Forms.ToolStripMenuItem mniPersonnelEmergencyContactReport;
+        private System.Windows.Forms.ToolStripMenuItem mniLanguagesReport;
+        private System.Windows.Forms.ToolStripMenuItem mniIndividualDataReport;
+        private System.Windows.Forms.ToolStripMenuItem mniEmergencyDataReport;
+        private System.Windows.Forms.ToolStripMenuItem mniLocalPersonnelDataReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem mniBirthdayList;
+        private System.Windows.Forms.ToolStripMenuItem mniEmergencyContactReport;
+        private System.Windows.Forms.ToolStripMenuItem mniPassportExpiryReport;
+        private System.Windows.Forms.ToolStripMenuItem mniPersonalDocumentExpiryReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mniStartOfCommitmentReport;
+        private System.Windows.Forms.ToolStripMenuItem mniEndOfCommitmentReport;
+        private System.Windows.Forms.ToolStripMenuItem mniPreviousExperienceReport;
+        private System.Windows.Forms.ToolStripMenuItem mniProgressReport;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem mniCampaignOptions;
+        private System.Windows.Forms.ToolStripMenuItem mniUnitHierarchy;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator4;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainTables;
         private System.Windows.Forms.ToolStripMenuItem mniTodo;
         private System.Windows.Forms.ToolStripMenuItem mniPetraModules;
@@ -412,9 +589,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         private System.Windows.Forms.ToolStripMenuItem mniPetraSysManModule;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator2;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator6;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;

@@ -143,7 +143,7 @@
           			<value function = "csv" text="PUB_p_data_label.p_text_c" variable="param_labels"/>
           <value>)
 	</value></queryDetail>
-	<queryDetail condition="eq({param_label_type}, application)"><value>
+	<queryDetail condition="or(eq({param_label_type}, application), eq({param_label_type}, personnel))"><value>
           FROM    PUB_p_data_label, PUB_p_data_label_use, PUB_p_data_label_value_application
           WHERE   PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i 
           AND     PUB_p_data_label_value_application.p_data_label_key_i = PUB_p_data_label.p_key_i

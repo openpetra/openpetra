@@ -25,35 +25,34 @@ RootNode:
            mniExtracts: {Label=&Extracts...}
            mniReports: 
                Label: &Reports...
-               mniReportPartnerByCity: {Label=Progress Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport)
-               mniReportPartnerAddress: {Label=Previous Experience Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport)
+               mniReportPartnerByCity: {Label=Progress Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport}
                mniShortTermerReports:
                 Label: Short Termer Reports
-                mniAbilitiesReport: {Label=Abilities Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmAbilitiesReport)
+                mniGeneralShortTermerReport: {Label=General Short Termer Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmShortTermerReport}
+                mniAbilitiesReport: {Label=Abilities Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmAbilitiesReport}
+                mniPersonnelEmergencyContactReport: {Label=Emergency Contact Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactInformationReport}
+                mniLanguagesReport: {Label=Languages Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLanguagesReport}
+                
+               mniIndividualDataReport: {Label=Individual Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDataReport}
+               mniEmergencyDataReport: {Label=Emergency Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport}
+               mniLocalPersonnelDataReport: {Label=Local Personnel Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLocalPersonnelDataReport}
+               mniSeparator: {Label=-}
+               mniBirthdayList: {Label=Birthday List, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmBirthdayListReport}
+               mniEmergencyContactReport: {Label=Emergency Contact Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactReportStaff}
+               mniPassportExpiryReport: {Label=Passport Expiry Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPassportExpiryReport}
+               mniPersonalDocumentExpiryReport: {Label=Personal Document Expiry Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDocumentExpiryReport}
+               
+               mniSeparator: {Label=-}
+               mniStartOfCommitmentReport: {Label=Start Of Commitment Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmStartOfCommitmentReport}
+               mniEndOfCommitmentReport: {Label=End Of Commitment Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEndOfCommitmentReport}
+               mniPreviousExperienceReport: {Label=Previous Experience Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPreviousExperienceReport}
+               mniProgressReport: {Label=Progress Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport}
+               mniSeparator: {Label=-}
+               mniCampaignOptions: {Label=Campaign Options, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmCampaignOptions}
+               mniUnitHierarchy: {Label=Unit Hierarchy, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUnitHierarchy}
+               
            mniSeparator: {Label=-}
-           #~ mniNewPartner: {Label=New &Partner...}
-           #~ mniNewPartnerAssistant: 
-              #~ Label: &New Partner (assistant)
-              #~ mniNewPerson: {Label=Add &Person}
-              #~ mniNewFamily: {Label=Add &Family}
-              #~ mniNewChurch: {Label=Add &Church}
-           #~ mniMergePartners: {Label=&Merge Partners}
-           #~ mniDeletePartner: {Label=D&elete Partner}
-           #~ mniSeparator: {Label=-}
-           #~ mniCheckDuplicateAddresses: {Label=&Duplicate Address Check}
-           #~ mniMergeAddresses: {Label=Mer&ge Addresses}
-           #~ mniViewPartnersAtLocation: {Label=&View Partners at Location}
-        #~ mniMailing:
-           #~ Label: Mailin&g
-           #~ mniLabelPrint: {Label=&Label Print}
-           #~ mniMailsortLabelPrint: {Label=Mails&ort Label Print}
-           #~ mniSeparator: {Label=-}
-           #~ mniSubscriptionExpiryNotices: {Label=Subscription Expiry &Notices}
-           #~ mniSubscriptionCancellation: {Label=Subscription &Cancellation}
-           #~ mniSeparator: {Label=-}
-           #~ mniFormLetterPrint: {Label=&Form Letter Print}
-           #~ mniSeparator: {Label=-}
-           #~ mniExtractMailMerge: {Label=Extrac&t Mail Merge}
+          
         mniMaintainTables:
            Label: Maintain &Tables
            mniTodo: {Label=Todo}
