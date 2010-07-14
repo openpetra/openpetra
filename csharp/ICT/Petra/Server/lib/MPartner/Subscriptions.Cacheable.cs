@@ -253,6 +253,26 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
                             break;
 
+                        case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
+
+                            if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
+
+                            if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
                         default:
 
                             throw new Exception(
