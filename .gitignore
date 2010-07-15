@@ -9,12 +9,14 @@ db/basedb_progress
 *.local
 OpenPetra.build.config
 *.exe.config
+/etc/*.config
+app.config
 *.CollectedGettext.cs
 *.bak
 _bin
-app.config
 *.yaml.xml
 *.cs.error
+*.error
 *.FileListAbsolute.txt
 *.pdb
 *.pidb
@@ -32,7 +34,9 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /setup/petra0300/remoteclientWin/version.txt
 /setup/petra0300/standalone/version.txt
 /setup/petra0300/standalone/Output
+/setup/petra0300/loaddata.sh
 /csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/*
 *Setup-*.exe
-/tmp/*
+/tmp
 *.patch
+/log

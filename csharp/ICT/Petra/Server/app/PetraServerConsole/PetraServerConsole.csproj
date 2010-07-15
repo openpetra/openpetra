@@ -75,7 +75,6 @@
     <Compile Include="PetraServerConsole.AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="PetraServerConsole.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\MCommon\Ict.Petra.Server.MCommon.csproj">
