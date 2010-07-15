@@ -36,6 +36,11 @@ namespace Ict.Petra.Shared.MCommon
         CountryList,
 
         /// <summary>
+        /// List of Frequencies (e.g. of Mailings, Publications, etc.)
+        /// </summary>
+        FrequencyList,
+
+        /// <summary>
         /// list of languages
         /// </summary>
         LanguageCodeList

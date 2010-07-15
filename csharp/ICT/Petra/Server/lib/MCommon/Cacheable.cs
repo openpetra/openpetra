@@ -146,6 +146,11 @@ namespace Ict.Petra.Server.MCommon
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
+                        case TCacheableCommonTablesEnum.FrequencyList:
+                            TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;                        
+
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                             TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
@@ -219,6 +224,16 @@ namespace Ict.Petra.Server.MCommon
                         case TCacheableCommonTablesEnum.CountryList:
 
                             if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheableCommonTablesEnum.FrequencyList:
+
+                            if (AFrequencyAccess.SubmitChanges((AFrequencyTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
