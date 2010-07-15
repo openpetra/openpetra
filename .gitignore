@@ -14,6 +14,7 @@ OpenPetra.build.config
 _bin
 app.config
 *.yaml.xml
+*.cs.error
 *.FileListAbsolute.txt
 *.pdb
 *.pidb
@@ -31,72 +32,7 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /setup/petra0300/remoteclientWin/version.txt
 /setup/petra0300/standalone/version.txt
 /setup/petra0300/standalone/Output
-/csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/YamlEdit.sln
-/csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/YamlEdit.suo
-/csharp/ICT/Petra/Client/lib/MPartner/gui/_old/PartnerEdit2.Designer.cs
-/csharp/ICT/Petra/Client/lib/MPartner/gui/_old/PartnerEdit2.cs
-/csharp/ICT/Petra/Client/lib/MPartner/gui/_old/PartnerEdit2.resx
-/csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/YAMLEdit.ssn
-/BASE.csharp/ICT/Client.sln
-/BASE.csharp/ICT/Petra/Client/app/PetraClient/MainWindowNew.ManualCode.cs
-/BASE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.Designer.cs
-/BASE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.ManualCode.cs
-/BASE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.cs
-/BASE.csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.Designer.cs
-/BASE.csharp/ICT/Petra/Server/app/ClientDomain/DomainManager.cs
-/BASE.csharp/ICT/Server.sln
-/LOCAL.csharp/ICT/Client.sln
-/LOCAL.csharp/ICT/Petra/Client/app/PetraClient/MainWindowNew.ManualCode.cs
-/LOCAL.csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.Designer.cs
-/LOCAL.csharp/ICT/Petra/Server/app/ClientDomain/DomainManager.cs
-/LOCAL.csharp/ICT/Server.sln
-/REMOTE.csharp/ICT/Client.sln
-/REMOTE.csharp/ICT/Petra/Client/app/PetraClient/MainWindowNew.ManualCode.cs
-/REMOTE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.Designer.cs
-/REMOTE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.ManualCode.cs
-/REMOTE.csharp/ICT/Petra/Client/lib/MPartner/gui/PartnerImport.cs
-/REMOTE.csharp/ICT/Petra/Client/lib/MReporting/gui/MPartner/PartnerByCity.Designer.cs
-/REMOTE.csharp/ICT/Petra/Server/app/ClientDomain/DomainManager.cs
-/REMOTE.csharp/ICT/Server.sln
-/XmlReports/Settings/Partner/Bulk Address/Bulk Address.xml
-/XmlReports/Settings/Partner/Foundation Report oo/Foundation Report.xml
-/XmlReports/Settings/Partner/Foundation Report oo/test1.xml
-/XmlReports/Settings/Partner/Foundation Report/Foundation Report.xml
-/XmlReports/Settings/Partner/Foundation Report/test22.xml
-/XmlReports/Settings/Partner/Local Partner Data/test1.xml
-/XmlReports/Settings/Partner/Local Partner Data/test2.xml
-/XmlReports/Settings/Partner/Local Partner Data/test4.xml
-/XmlReports/Settings/Partner/Local Partner Data/test5.xml
-/XmlReports/Settings/Partner/Partner Addresses/Partner Addresses.xml
-/XmlReports/Settings/Partner/Partner Addresses/test1.xml
-/XmlReports/Settings/Partner/Partner Contact/test all details.xml
-/XmlReports/Settings/Partner/Partner Contact/test1.xml
-/XmlReports/Settings/Partner/Partner Contact/test2.xml
-/XmlReports/Settings/Partner/Partner Contact/test3.xml
-/XmlReports/Settings/Partner/Partner by City/Test1.xml
-/XmlReports/Settings/Partner/Pub. Statistics/test123.xml
-/XmlReports/Settings/Partner/Pub. Statistics/test2.xml
-/XmlReports/Settings/Partner/Pub. Statistics/test4.xml
-/XmlReports/Settings/Partner/Subscription Report/test1.xml
-/XmlReports/Settings/Partner/Supporting Churches/Supporting Churches.xml
-/XmlReports/Settings/Partner/Valid Bank Account Report/Valid Bank Account Report.xml
-/XmlReports/Settings/Personnel/Birthday List/Birthday List.xml
-/XmlReports/Settings/Personnel/Birthday List/test2.xml
-/XmlReports/Settings/Personnel/Birthday List/test3.xml
-/XmlReports/Settings/Personnel/Emergency Contact Staff/Emergency Contact Report Staff.xml
-/XmlReports/Settings/Personnel/Emergency Contact Staff/test1.xml
-/XmlReports/Settings/Personnel/Emergency Data Report/Emergency Data Report.xml
-/XmlReports/Settings/Personnel/Emergency Data Report/test1.xml
-/XmlReports/Settings/Personnel/End of Commitment Report/test1.xml
-/XmlReports/Settings/Personnel/Passport Expiry Report/test1.xml
-/XmlReports/Settings/Personnel/Personal Data Report/test2.xml
-/XmlReports/Settings/Personnel/Personal Documents Expiry/test1.xml
-/XmlReports/Settings/Personnel/Previous Experience Report/test1.xml
-/XmlReports/Settings/Personnel/Progress Report/test1.xml
-/XmlReports/Settings/Personnel/Start of Commitment Report/test1.xml
-/XmlReports/Settings/Personnel/Start of Commitment Report/test2.xml
-/XmlReports/Settings/Personnel/Start of Commitment Report/test4.xml
-/csharp/ICT/Petra/Client/lib/MPartner/gui/UC_PartnerEdit_PartnerTabSet.cs.error
-/csharp/ICT/Petra/Client/lib/MReporting/gui/MFinDev/FDIncomeByFund.cs.error
-/csharp/ICT/Petra/Client/lib/MReporting/gui/MFinance/AccountDetail.cs.error
-/csharp/ICT/Petra/Client/lib/MReporting/gui/MPersonnel/EmergencyDataReport.cs.error
+/csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/*
+*Setup-*.exe
+/tmp/*
+*.patch
