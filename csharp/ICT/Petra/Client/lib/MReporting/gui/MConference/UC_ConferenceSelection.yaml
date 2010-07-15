@@ -1,0 +1,31 @@
+RootNode:
+    BaseClass: UserControl
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    UtilObjectClass: TFrmPetraReportingUtils
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        pnlContent:
+            Controls: [grpSelectConference, grpSelectAttendees]
+        grpSelectConference:
+            Label: Select Conference
+            Controls:
+                Row0: [rbtConference, txtConference]
+                Row1: [rbtAllConferences]
+        rbtConference: {Label=Conference, OnChange=rbtConferenceSelectionChange}
+        txtConference: {NoLabel=true, Type=PartnerKey}
+        rbtAllConferences: {Label=AllConferences, OnChange=rbtConferenceSelectionChange}
+        
+        grpSelectAttendees:
+            Label: SelectAttendees
+            Controls:
+                Row0: [rbtAllAttendees]
+                Row1: [rbtExtract, txtExtract]
+                Row2: [rbtOneAttendee, txtOneAttendee]
+        rbtAllAttendees: {Label=All Attendees, OnChange=rbtAttendeeSelectionChange}
+        rbtExtract: {Label=From Extract, OnChange=rbtAttendeeSelectionChange}
+        txtExtract: {NoLabel=true, Type=Extract}
+        rbtOneAttendee: {Label=One Attendee, OnChange=rbtAttendeeSelectionChange}
+        txtOneAttendee: {NoLabel=true, Type=PartnerKey}
+        

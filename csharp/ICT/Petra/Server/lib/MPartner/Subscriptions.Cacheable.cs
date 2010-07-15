@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
         /// that they need to reload this Cacheable DataTable the next time something in the
         /// Client accesses it.
         /// </remarks>
-        /// <param name="ATableName">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="ACacheableTable">The Cacheable DataTable with changes.</param>
         /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
         /// to be submitted, not just changes to it!</param>
         /// <param name="AVerificationResult">Will be filled with any
@@ -246,6 +246,27 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.PublicationList:
 
                             if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
+
+                            if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
+
+                            if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable,
+                                    SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

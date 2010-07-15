@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{279D5FBA-A4FA-42F6-9737-2E4F60623917}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,7 +12,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <StartArguments>-C:PetraServerConsole.exe.config</StartArguments>
+    <StartArguments>-C:../../../../../../etc/Server.config</StartArguments>
     <DocumentationFile>..\..\_bin\Debug\PetraServerConsole.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -75,7 +75,6 @@
     <Compile Include="PetraServerConsole.AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="PetraServerConsole.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\MCommon\Ict.Petra.Server.MCommon.csproj">

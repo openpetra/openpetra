@@ -60,6 +60,5 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="test.cs" />
-    <None Include="app.config" />
   </ItemGroup>
 </Project>

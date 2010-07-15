@@ -35,6 +35,7 @@ RootNode:
                 
                mniIndividualDataReport: {Label=Individual Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDataReport}
                mniEmergencyDataReport: {Label=Emergency Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport}
+               mniLocalPersonnelDataReport: {Label=Local Personnel Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLocalPersonnelDataReport}
                mniSeparator: {Label=-}
                mniBirthdayList: {Label=Birthday List, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmBirthdayListReport}
                mniEmergencyContactReport: {Label=Emergency Contact Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactReportStaff}

@@ -399,6 +399,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <param name="AChildLevel">Indicates how deep we are in the recursion</param>
         /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
         /// be included in the result</param>
+        /// <param name="AChildRow">the number of the row</param>
         /// <returns>False if the parent unit is not active.
         /// Otherwise true</returns>
         private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithCampaigns, ref int AChildRow)

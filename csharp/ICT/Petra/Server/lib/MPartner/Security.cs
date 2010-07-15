@@ -53,9 +53,9 @@ namespace Ict.Petra.Server.MPartner
         /// advantage of not needing a Server roundtrip for a DB lookup!</para>
         /// </remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
-        /// <returns><see cref="TPartnerAccessLevelEnum.palGranted" /> if access
+        /// <returns><see cref="T:TPartnerAccessLevelEnum.palGranted" /> if access
         /// to the Partner is granted, otherwise a different
-        /// <see cref="TPartnerAccessLevelEnum" /> value.</returns>
+        /// <see cref="T:TPartnerAccessLevelEnum" /> value.</returns>
         public static TPartnerAccessLevelEnum CanAccessPartner(
             PPartnerRow APartnerRow)
         {
@@ -124,12 +124,12 @@ namespace Ict.Petra.Server.MPartner
         /// <summary>
         /// Tests whether the current user has access to a particular Partner.
         /// </summary>
-        /// <remarks>This Method throws an <see cref="ESecurityPartnerAccessDeniedException" />
+        /// <remarks>This Method throws an <see cref="T:ESecurityPartnerAccessDeniedException" />
         /// if access to the Partner is not granted, thereby ensuring that a denied access
         /// doesn't go unnoticed.</remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
         /// <returns>void</returns>
-        /// <exception cref="ESecurityPartnerAccessDeniedException">Thrown if access is not granted.</exception>
+        /// <exception cref="T:ESecurityPartnerAccessDeniedException">Thrown if access is not granted.</exception>
         public static void CanAccessPartnerExc(PPartnerRow APartnerRow)
         {
             TPartnerAccessLevelEnum AccessLevel;

@@ -14,12 +14,17 @@
     <property name="BuildClientArchive" value="false" unless="${property::exists('BuildClientArchive')}"/>
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
+    <property name="Logging.dir" value="${OpenPetraRoot.dir}/log"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
+    <property name="ClientConfigFile" value="${OpenPetraRoot.dir}/etc/Client.config"/>
+    <property name="ServerConfigFile" value="${OpenPetraRoot.dir}/etc/Server.config"/>
+    <property name="ServerAdminConfigFile" value="${OpenPetraRoot.dir}/etc/ServerAdmin.config"/>
+    <property name="TestReportingConfigFile" value="${OpenPetraRoot.dir}/etc/TestReporting.config"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
@@ -45,6 +50,10 @@
     </if>
     <loadtasks assembly="${IctNAntTasks.file}" if="${file::exists(IctNAntTasks.file)}"/>
     
+    <if test="${not directory::exists(Logging.dir)}">
+        <mkdir dir="${Logging.dir}" />
+    </if>
+
     <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
         <echo message="A list of available commands: TODO"/>
@@ -81,17 +90,9 @@
         <call target="compileTemplate"/>
     </target>
     <target name="compileTesting" description="compile the Testing module">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/app-sample.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the Tests.Reporting project and will be copied to _bin/${Output.dir}/Tests.Reporting.dll.config -->
-        </if>
-        <property name="appconfigfileIO" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/Common/IO/app.config"/>
-        <if test="${not file::exists(appconfigfileIO)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Testing/Common/IO/app-sample.config"
-                tofile="${appconfigfileIO}"/>
-            <!-- app.config is part of the Tests.Common.IO project and will be copied to _bin/${Output.dir}/Tests.Common.IO.dll.config -->
+        <if test="${not file::exists(TestReportingConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/TestReporting.config.sample"
+                tofile="${TestReportingConfigFile}"/>
         </if>
     
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
@@ -104,19 +105,6 @@
                 <include name="Mono.Security.dll" />
             </fileset>
         </copy>
-        
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/Tests.Reporting.dll.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/Tests.Common.IO.dll.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfileIO}"
-                tofile="${appconfigfileBin}"/>
-        </if>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
     <target name="compileSingleGuiProject">
@@ -164,11 +152,9 @@
     <target name="compilePetraServer" description="compile Ict/Petra/Server">
         <!-- if this is just for the remote client build, we might want to skip the building of the server -->
         <if test="${not SkipCompileServer}">
-            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app.config"/>
-            <if test="${not file::exists(appconfigfile)}">
-                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/PetraServerConsole/app-sample-${DBMS.Type}.config"
-                    tofile="${appconfigfile}"/>
-                <!-- app.config is part of the PetraServerConsole project and will be copied to _bin/${Output.dir}/PetraServerConsole.exe.config -->
+            <if test="${not file::exists(ServerConfigFile)}">
+                <copy file="${OpenPetraRoot.dir}/etc/Server-${DBMS.Type}.config.sample"
+                    tofile="${ServerConfigFile}"/>
             </if>
 
             <call target="compilePetraServerAdmin"/>
@@ -178,13 +164,6 @@
 
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
-
-            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/PetraServerConsole.exe.config"/>
-            <if test="${not file::exists(appconfigfileBin)}">
-                <!-- mdbuild does not seem to copy the app file -->
-                <copy file="${appconfigfile}"
-                    tofile="${appconfigfileBin}"/>
-            </if>
 
             <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
                 <fileset basedir="${ThirdParty.dir}/Mono">
@@ -202,38 +181,22 @@
         </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
-        <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/app/PetraServerAdminConsole/app.config"/>
-        <if test="${not file::exists(appconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/app/PetraServerAdminConsole/app-sample.config"
-                tofile="${appconfigfile}"/>
-            <!-- app.config is part of the PetraServerAdminConsole project and will be copied to _bin/${Output.dir}/PetraServerAdminConsole.exe.config -->
+        <if test="${not file::exists(ServerAdminConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/ServerAdmin.config.sample"
+                tofile="${ServerAdminConfigFile}"/>
         </if>
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin.sln"/>
         <call target="compileTemplate"/>
-        <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}/PetraServerAdminConsole.exe.config"/>
-        <if test="${not file::exists(appconfigfileBin)}">
-            <!-- mdbuild does not seem to copy the app file -->
-            <copy file="${appconfigfile}"
-                tofile="${appconfigfileBin}"/>
-        </if>
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
         <!-- if this is just for the server build, we might want to skip the building of the client -->
         <if test="${not SkipCompileClient}">
-            <property name="appconfigfile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app.config"/>
-            <if test="${not file::exists(appconfigfile)}">
-                <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClient/app-sample.config"
-                    tofile="${appconfigfile}"/>
-                <!-- app.config is part of the PetraClient project and will be copied to _bin/${Output.dir}/PetraClient.exe.config -->
+            <if test="${not file::exists(ClientConfigFile)}">
+                <copy file="${OpenPetraRoot.dir}/etc/Client.config.sample"
+                    tofile="${ClientConfigFile}"/>
             </if>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
             <call target="compileTemplate"/>
-            <property name="appconfigfileBin" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/PetraClient.exe.config"/>
-            <if test="${not file::exists(appconfigfileBin)}">
-                <!-- mdbuild does not seem to copy the app file -->
-                <copy file="${appconfigfile}"
-                    tofile="${appconfigfileBin}"/>
-            </if>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
             <call target="compileTemplate"/>
             <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
@@ -434,7 +397,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
-                    commandline="PetraServerConsole.exe -RunWithoutMenu:true"
+                    commandline="PetraServerConsole.exe -RunWithoutMenu:true -C:${ServerConfigFile}"
                     spawn="true">
                     <!-- todo: install newer version of nant that knows spawn;
                          unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
@@ -446,7 +409,7 @@
         <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
-                    commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false"
+                    commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false -C:${ServerConfigFile}"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -459,7 +422,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="PetraClient.exe"
+                    commandline="PetraClient.exe -C:${ClientConfigFile}"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -469,7 +432,7 @@
         <if test="${framework::get-target-framework() == 'net-2.0'}" >
             <exec program="cmd.exe" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
-                    commandline="/C start PetraClient.exe"
+                    commandline="/C start PetraClient.exe -C:${ClientConfigFile}"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -482,7 +445,7 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
-                    commandline="PetraServerAdminConsole.exe -Command:Stop"
+                    commandline="PetraServerAdminConsole.exe -Command:Stop -C:${ServerAdminConfigFile}"
                     spawn="true">
                <environment>
                   <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -493,7 +456,7 @@
             <exec program="PetraServerAdminConsole.exe" 
                     basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
-                    commandline="-Command:Stop"/>
+                    commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
         </if>
     </target>
         

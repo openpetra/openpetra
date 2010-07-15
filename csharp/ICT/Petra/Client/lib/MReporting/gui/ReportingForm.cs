@@ -807,6 +807,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             FVerificationResults.Add(AVerificationResult);
         }
 
+        /// count the verification results
+        public virtual int GetVerificationResultCount()
+        {
+            return FVerificationResults.Count;
+        }
+
         #endregion
 
         #region Column Functions and Calculations

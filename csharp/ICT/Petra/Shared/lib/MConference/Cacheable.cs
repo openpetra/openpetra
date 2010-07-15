@@ -25,16 +25,16 @@ using System;
 
 namespace Ict.Petra.Shared.MConference
 {
-    /// Used for referencing Cacheable DataTables for the Petra Conference Module.
-    class Cacheable
+    /// Enums holding the possible cacheable tables for the Petra Conference Module.
+    [Serializable()]
+    public enum TCacheableConferenceTablesEnum
     {
-        /*
-         *   Enums holding the possible cacheable tables for the Petra Conference Module.
-         */
-        [Serializable()]
-        public enum TCacheableConferenceTablesEnum
-        {
-            NoneYetThere
-        };
+        /// No comment
+        NoneYetThere
+    };
+
+    /// Used for referencing Cacheable DataTables for the Petra Conference Module.
+    public class Cacheable
+    {
     }
 }

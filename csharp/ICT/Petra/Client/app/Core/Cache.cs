@@ -402,7 +402,7 @@ namespace Ict.Petra.Client.App.Core
             public static void RefreshCacheablePersonnelTable(TCacheablePersonDataElementsTablesEnum ACacheableTable)
             {
                 // TODO
-                DataTable TmpDT;
+//                DataTable TmpDT;
 
                 // Refresh the Cacheable DataTable on the Serverside and return it
 //                TRemote.MPartner.Partner.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
@@ -439,7 +439,7 @@ namespace Ict.Petra.Client.App.Core
              */
             public static void RefreshCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
             {
-                DataTable TmpDT;
+//                DataTable TmpDT;
 // TODO
                 // Refresh the Cacheble DataTable on the Serverside and return it
 //                TRemote.MPartner.Subscriptions.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);

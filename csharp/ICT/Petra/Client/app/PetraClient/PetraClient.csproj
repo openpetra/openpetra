@@ -13,7 +13,7 @@
     <BaseIntermediateOutputPath>..\..\_bin\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <DocumentationFile>..\..\_bin\Debug\PetraClient.xml</DocumentationFile>
-    <StartArguments>-C:PetraClient.exe.config</StartArguments>
+    <StartArguments>-C:../../../../../../etc/Client.config</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\_bin\Debug\</OutputPath>
@@ -142,7 +142,6 @@
     <EmbeddedResource Include="SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CommonControls\logic\Ict.Petra.Client.CommonControls.Logic.csproj">

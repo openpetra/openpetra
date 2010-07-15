@@ -782,6 +782,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// Find the best address of a partner
         /// </summary>
         /// <param name="APartnerKey">Partner key</param>
+        /// <param name="ASituation">describing the current state of the report generator</param>
         /// <param name="AAddressRow">best address</param>
         /// <returns>true if a best address was found, otherwise false</returns>
         public static bool GetPartnerBestAddressRow(long APartnerKey, TRptSituation ASituation, out PPartnerLocationRow AAddressRow)

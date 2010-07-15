@@ -173,6 +173,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AAvailableFunctions">List with the current functions</param>
         /// <param name="ACalculation">Name of the function</param>
+        /// <param name="AParameterList">the current list of parameters</param>
         /// <param name="AColumnNumber">Number of the column</param>
         /// <returns>nil if the function cannot be found
         /// </returns>

@@ -204,6 +204,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 

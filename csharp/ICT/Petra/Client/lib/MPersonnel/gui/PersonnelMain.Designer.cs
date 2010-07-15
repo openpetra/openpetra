@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniLanguagesReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniIndividualDataReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEmergencyDataReport = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniLocalPersonnelDataReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniBirthdayList = new System.Windows.Forms.ToolStripMenuItem();
             this.mniEmergencyContactReport = new System.Windows.Forms.ToolStripMenuItem();
@@ -232,6 +233,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             this.mniEmergencyDataReport.Click += new System.EventHandler(this.OpenScreenEmergencyDataReport);
             this.mniEmergencyDataReport.Text = "Emergency Data Report";
             //
+            // mniLocalPersonnelDataReport
+            //
+            this.mniLocalPersonnelDataReport.Name = "mniLocalPersonnelDataReport";
+            this.mniLocalPersonnelDataReport.AutoSize = true;
+            this.mniLocalPersonnelDataReport.Click += new System.EventHandler(this.OpenScreenLocalPersonnelDataReport);
+            this.mniLocalPersonnelDataReport.Text = "Local Personnel Data Report";
+            //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
@@ -329,6 +337,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                         mniShortTermerReports,
                         mniIndividualDataReport,
                         mniEmergencyDataReport,
+                        mniLocalPersonnelDataReport,
                         mniSeparator1,
                         mniBirthdayList,
                         mniEmergencyContactReport,
@@ -553,6 +562,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         private System.Windows.Forms.ToolStripMenuItem mniLanguagesReport;
         private System.Windows.Forms.ToolStripMenuItem mniIndividualDataReport;
         private System.Windows.Forms.ToolStripMenuItem mniEmergencyDataReport;
+        private System.Windows.Forms.ToolStripMenuItem mniLocalPersonnelDataReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniBirthdayList;
         private System.Windows.Forms.ToolStripMenuItem mniEmergencyContactReport;

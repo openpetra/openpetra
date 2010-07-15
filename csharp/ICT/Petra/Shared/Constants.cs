@@ -127,6 +127,9 @@ namespace Ict.Petra.Shared
         public const String REMOTINGURL_IDENTIFIER_MCOMMON = "MCommon";
 
         /// <summary>Remoting URL Identifiers</summary>
+        public const String REMOTINGURL_IDENTIFIER_MCONFERENCE = "MConference";
+
+        /// <summary>Remoting URL Identifiers</summary>
         public const String REMOTINGURL_IDENTIFIER_MPARTNER = "MPartner";
 
         /// <summary>Remoting URL Identifiers</summary>

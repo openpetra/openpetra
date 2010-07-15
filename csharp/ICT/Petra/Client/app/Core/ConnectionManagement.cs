@@ -32,6 +32,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MFinance;
@@ -64,6 +65,7 @@ namespace Ict.Petra.Client.App.Core
         private TExecutingOSEnum FServerOS;
         private String FRemotingURL_TestObject;
         private String FRemotingURL_PollClientTasks;
+        private String FRemotingURL_MConference;
         private String FRemotingURL_MPartner;
         private String FRemotingURL_MPersonnel;
         private String FRemotingURL_MCommon;
@@ -73,6 +75,7 @@ namespace Ict.Petra.Client.App.Core
         private IRemoteFactory FRemoteFactoryObject;
         private IPollClientTasksInterface FRemotePollClientTasks;
         private IMCommonNamespace FRemoteCommonObjects;
+        private IMConferenceNamespace FRemoteConferenceObjects;
         private IMPartnerNamespace FRemotePartnerObjects;
         private IMPersonnelNamespace FRemotePersonnelObjects;
         private IMFinanceNamespace FRemoteFinanceObjects;
@@ -265,6 +268,7 @@ namespace Ict.Petra.Client.App.Core
 
             // FConnector.GetRemoteServerSponsor(FRemotingURL_ServerSponsor, out FRemoteSponsor);
             FConnector.GetRemotePollClientTasks(FRemotingURL_PollClientTasks, out FRemotePollClientTasks);
+            FConnector.GetRemoteMConferenceObject(FRemotingURL_MConference, out FRemoteConferenceObjects);
             FConnector.GetRemoteMPersonnelObject(FRemotingURL_MPersonnel, out FRemotePersonnelObjects);
             FConnector.GetRemoteMCommonObject(FRemotingURL_MCommon, out FRemoteCommonObjects);
             FConnector.GetRemoteMPartnerObject(FRemotingURL_MPartner, out FRemotePartnerObjects);
@@ -287,6 +291,7 @@ namespace Ict.Petra.Client.App.Core
             //
             FRemote = new TRemote(FClientManager,
                 FRemoteCommonObjects,
+                FRemoteConferenceObjects,
                 FRemotePartnerObjects,
                 FRemotePersonnelObjects,
                 FRemoteFinanceObjects,
@@ -370,6 +375,11 @@ namespace Ict.Petra.Client.App.Core
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON))
                 {
                     FRemotingURL_MCommon = (String)ARemotingURLs[SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON];
+                }
+
+                if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE))
+                {
+                    FRemotingURL_MConference = (String)ARemotingURLs[SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE];
                 }
 
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER))

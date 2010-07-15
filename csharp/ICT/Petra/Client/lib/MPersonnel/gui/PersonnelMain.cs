@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
       this.mniShortTermerReports.Text = Catalog.GetString("Short Termer Reports");
       this.mniIndividualDataReport.Text = Catalog.GetString("Individual Data Report");
       this.mniEmergencyDataReport.Text = Catalog.GetString("Emergency Data Report");
+      this.mniLocalPersonnelDataReport.Text = Catalog.GetString("Local Personnel Data Report");
       this.mniBirthdayList.Text = Catalog.GetString("Birthday List");
       this.mniEmergencyContactReport.Text = Catalog.GetString("Emergency Contact Report");
       this.mniPassportExpiryReport.Text = Catalog.GetString("Passport Expiry Report");
@@ -261,6 +262,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui
     protected void OpenScreenEmergencyDataReport(object sender, EventArgs e)
     {
         Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport(this.Handle);
+        frm.Show();
+    }
+
+    /// auto generated
+    protected void OpenScreenLocalPersonnelDataReport(object sender, EventArgs e)
+    {
+        Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLocalPersonnelDataReport frm = new Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLocalPersonnelDataReport(this.Handle);
         frm.Show();
     }
 

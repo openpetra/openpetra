@@ -56,7 +56,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="PetraServerAdminConsole.cs" />
     <Compile Include="Main.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Ict.Petra.ServerAdmin.App.Core.csproj">
