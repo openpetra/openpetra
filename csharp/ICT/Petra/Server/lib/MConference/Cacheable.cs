@@ -88,7 +88,6 @@ namespace Ict.Petra.Server.MConference.Cacheable
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
 #if DEBUGMODE

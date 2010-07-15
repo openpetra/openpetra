@@ -25,12 +25,11 @@ using System;
 
 namespace Ict.Petra.Shared.MConference
 {
-    /*
-     *   Enums holding the possible cacheable tables for the Petra Conference Module.
-     */
+    /// Enums holding the possible cacheable tables for the Petra Conference Module.
     [Serializable()]
     public enum TCacheableConferenceTablesEnum
     {
+        /// No comment
         NoneYetThere
     };
 

@@ -149,7 +149,7 @@ namespace Ict.Petra.Server.MCommon
                         case TCacheableCommonTablesEnum.FrequencyList:
                             TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;                        
+                            break;
 
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                             TmpTable = PLanguageAccess.LoadAll(ReadTransaction);

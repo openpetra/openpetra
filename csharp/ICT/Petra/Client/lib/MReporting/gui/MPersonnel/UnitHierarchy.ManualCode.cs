@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 {
                     UnitKey = Convert.ToInt64(txtPartnerKey.Text);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     UnitKey = 0;
                 }

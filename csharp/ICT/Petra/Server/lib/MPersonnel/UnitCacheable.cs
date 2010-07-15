@@ -123,7 +123,6 @@ namespace Ict.Petra.Server.MPersonnel.Units
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             String TableName;
-            DataTable TmpTable;
 
             TableName = Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable);
 #if DEBUGMODE
@@ -144,7 +143,7 @@ namespace Ict.Petra.Server.MPersonnel.Units
                     switch (ACacheableTable)
                     {
 //                        case TCacheableUnitsDataElementsTablesEnum.CampaignList:
-//                            TmpTable = PAcquisitionAccess.LoadAll(ReadTransaction);
+//                            DataTable TmpTable = PAcquisitionAccess.LoadAll(ReadTransaction);
 //                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
 //							break
                         // Unknown Standard Cacheable DataTable
