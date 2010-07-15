@@ -620,10 +620,9 @@ namespace Ict.Common.Controls
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AController"></param>
-        /// <param name="AEditor">An instance of an Editor (based on ICellVirtual.Editor)
+        /// <param name="AEditor">An instance of an Editor (based on ICellVirtual.Editor)</param>
         /// <param name="AModel"></param>
         /// <param name="AView"></param>
-        /// </param>
         /// <returns>void</returns>
         public void AddTextColumn(String AColumnTitle,
             DataColumn ADataColumn,

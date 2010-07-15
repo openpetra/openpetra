@@ -38,8 +38,8 @@ namespace Ict.Common.DB
     /// <summary>
     /// <see cref="IsolationLevel" /> that needs to be enforced when requesting a
     /// DB Transaction with Methods
-    /// <see cref="DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, out bool)" /> and
-    /// <see cref="DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)" />.
+    /// <see cref="M:DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, out Boolean)" /> and
+    /// <see cref="M:DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out Boolean)" />.
     /// </summary>
     public enum TEnforceIsolationLevel
     {

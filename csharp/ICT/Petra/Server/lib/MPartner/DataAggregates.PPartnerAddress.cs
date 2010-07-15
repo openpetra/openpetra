@@ -462,7 +462,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </para>
         /// <para>
         /// <em>The performance of the other overload
-        /// <see cref="ApplySecurity(ref PPartnerLocationTable, ref PLocationTable)" />
+        /// <see cref="M:ApplySecurity(ref PPartnerLocationTable, ref PLocationTable)" />
         /// is better. Use it whenever the Partner Location data is available in the
         /// form of the Typed DataTable PPartnerLocation!</em>
         /// </para>
@@ -666,7 +666,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// DataTable.
         /// </para>
         /// <para>
-        /// <em>Another overload <see cref="ApplySecurity(ref DataTable)" /> is available which
+        /// <em>Another overload <see cref="M:ApplySecurity(ref DataTable)" /> is available which
         /// can be used if the Partner Location (and/or Location) data isn't available
         /// in the form of the Typed DataTables PPartnerLocation and PLocation!</em>
         /// </para>
