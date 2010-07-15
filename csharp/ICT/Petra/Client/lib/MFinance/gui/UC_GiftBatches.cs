@@ -213,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
                 FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
-                pnlDetails.Enabled = true;
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -229,7 +229,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
         else
         {
-            pnlDetails.Enabled = true;
             FPreviouslySelectedDetailRow = ARow;
             if (ARow.IsBatchDescriptionNull())
             {
@@ -245,6 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailCurrencyCode.SetSelectedString(ARow.CurrencyCode);
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
             ShowDetailsManual(ARow);
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }

@@ -169,7 +169,7 @@ namespace {#NAMESPACE}
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
                 FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
-                pnlDetails.Enabled = true;
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -186,9 +186,9 @@ namespace {#NAMESPACE}
         }
         else
         {
-            pnlDetails.Enabled = true;
             FPreviouslySelectedDetailRow = ARow;
             {#SHOWDETAILS}
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
