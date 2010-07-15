@@ -88,6 +88,9 @@ namespace Ict.Petra.Client.CommonControls
             DenominationList,
 
             /// <summary>todoComment</summary>
+            FrequencyList,
+
+            /// <summary>todoComment</summary>
             GenderList,
 
             /// <summary>todoComment</summary>
@@ -401,6 +404,15 @@ namespace Ict.Petra.Client.CommonControls
                     "s_user_id_c",
                     "p_partner_key_n",
                     null,
+                    null);
+                    break;
+
+                case TListTableEnum.FrequencyList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.FrequencyList),
+                    "a_frequency_code_c",
+                    "a_frequency_description_c",
                     null);
                     break;
 
@@ -725,6 +737,10 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.FoundationOwnerList:
                     cmbAutoPopulated.ColumnWidthCol1 = 120;
+                    break;
+
+                case TListTableEnum.FrequencyList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.GenderList:
