@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
-
+       
         /// <summary>
         /// load the gifts into the grid
         /// </summary>
@@ -52,6 +52,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
+            btnDeleteDetail.Enabled = FPetraUtilsObject.DetailProtectedMode;
+            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
             FPreviouslySelectedDetailRow = null;
 

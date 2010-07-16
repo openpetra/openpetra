@@ -31,6 +31,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TFrmGLBatch
     {
         private Int32 FLedgerNumber;
+         
 
         /// <summary>
         /// use this ledger
