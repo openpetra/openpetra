@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
-    private Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS FMainDS;
+    private Ict.Petra.Shared.MConference.Data.SelectConferenceTDS FMainDS;
 
     /// constructor
     public TFrmUC_ConferenceSelection() : base()
@@ -63,8 +63,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.rbtConference.Text = Catalog.GetString("Conference");
-      this.txtConference.ButtonText = Catalog.GetString("Find");
-      this.rbtAllConferences.Text = Catalog.GetString("AllConferences");
+      this.btnSelectConference.Text = Catalog.GetString("Find");
+      this.lblConferenceName.Text = Catalog.GetString("Conference Name:");
+      this.rbtAllConferences.Text = Catalog.GetString("All Conferences");
       this.grpSelectConference.Text = Catalog.GetString("Select Conference");
       this.rbtAllAttendees.Text = Catalog.GetString("All Attendees");
       this.rbtExtract.Text = Catalog.GetString("From Extract");
@@ -74,6 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.grpSelectAttendees.Text = Catalog.GetString("SelectAttendees");
       #endregion
 
+      this.txtConference.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -86,7 +88,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     }
 
     /// dataset for the whole screen
-    public Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS MainDS
+    public Ict.Petra.Shared.MConference.Data.SelectConferenceTDS MainDS
     {
         set
         {
@@ -103,6 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
     }
 
 #region Implement interface functions
@@ -135,6 +138,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actFind")
+        {
+            btnSelectConference.Enabled = e.Enabled;
+        }
+    }
+
 #endregion
   }
 }

@@ -1,21 +1,33 @@
 RootNode:
     BaseClass: UserControl
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
-    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    DatasetType: Ict.Petra.Shared.MConference.Data.SelectConferenceTDS
     UtilObjectClass: TFrmPetraReportingUtils
     FormType: edit
     Template: usercontrolUnbound
+    Actions:
+        actFind:
+            ActionClick: FindConference
     Controls:
         pnlContent:
             Controls: [grpSelectConference, grpSelectAttendees]
         grpSelectConference:
             Label: Select Conference
             Controls:
-                Row0: [rbtConference, txtConference]
+                Row0: [rbtConference, btnSelectConference, txtConference, lblConferenceName]
                 Row1: [rbtAllConferences]
-        rbtConference: {Label=Conference, OnChange=rbtConferenceSelectionChange}
-        txtConference: {NoLabel=true, Type=PartnerKey}
-        rbtAllConferences: {Label=AllConferences, OnChange=rbtConferenceSelectionChange}
+            Dock: Top
+        rbtConference: {Label=Conference, OnChange=rbtConferenceSelectionChange, Width=150}
+        btnSelectConference:
+            Label: Find
+            Width: 40
+            Height: 22
+            Action: actFind
+        txtConference: 
+            NoLabel: true
+            Width: 80
+        lblConferenceName:
+        rbtAllConferences: {Label=All Conferences, OnChange=rbtConferenceSelectionChange}
         
         grpSelectAttendees:
             Label: SelectAttendees
@@ -23,7 +35,8 @@ RootNode:
                 Row0: [rbtAllAttendees]
                 Row1: [rbtExtract, txtExtract]
                 Row2: [rbtOneAttendee, txtOneAttendee]
-        rbtAllAttendees: {Label=All Attendees, OnChange=rbtAttendeeSelectionChange}
+            Dock: Fill
+        rbtAllAttendees: {Label=All Attendees, OnChange=rbtAttendeeSelectionChange, Width=150}
         rbtExtract: {Label=From Extract, OnChange=rbtAttendeeSelectionChange}
         txtExtract: {NoLabel=true, Type=Extract}
         rbtOneAttendee: {Label=One Attendee, OnChange=rbtAttendeeSelectionChange}

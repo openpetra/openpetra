@@ -67,14 +67,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmUC_ConferenceSelection));
 
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grpSelectConference = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtConference = new System.Windows.Forms.RadioButton();
-            this.txtConference = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.btnSelectConference = new System.Windows.Forms.Button();
+            this.txtConference = new System.Windows.Forms.TextBox();
+            this.lblConferenceName = new System.Windows.Forms.Label();
             this.rbtAllConferences = new System.Windows.Forms.RadioButton();
             this.grpSelectAttendees = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtAllAttendees = new System.Windows.Forms.RadioButton();
             this.rbtExtract = new System.Windows.Forms.RadioButton();
             this.txtExtract = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
@@ -82,11 +83,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.txtOneAttendee = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
 
             this.pnlContent.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.grpSelectConference.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.grpSelectAttendees.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
 
             //
             // pnlContent
@@ -94,51 +94,51 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.pnlContent.Location = new System.Drawing.Point(2,2);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.AutoSize = true;
+            this.pnlContent.Controls.Add(this.grpSelectAttendees);
+            this.pnlContent.Controls.Add(this.grpSelectConference);
+            //
+            // grpSelectConference
+            //
+            this.grpSelectConference.Name = "grpSelectConference";
+            this.grpSelectConference.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpSelectConference.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.pnlContent.Controls.Add(this.tableLayoutPanel1);
-            //
-            // grpSelectConference
-            //
-            this.grpSelectConference.Location = new System.Drawing.Point(2,2);
-            this.grpSelectConference.Name = "grpSelectConference";
-            this.grpSelectConference.AutoSize = true;
-            //
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.grpSelectConference.Controls.Add(this.tableLayoutPanel2);
+            this.grpSelectConference.Controls.Add(this.tableLayoutPanel1);
             //
             // rbtConference
             //
             this.rbtConference.Location = new System.Drawing.Point(2,2);
             this.rbtConference.Name = "rbtConference";
-            this.rbtConference.AutoSize = true;
+            this.rbtConference.Size = new System.Drawing.Size(150, 28);
             this.rbtConference.CheckedChanged += new System.EventHandler(this.rbtConferenceSelectionChange);
             this.rbtConference.Text = "Conference";
+            //
+            // btnSelectConference
+            //
+            this.btnSelectConference.Location = new System.Drawing.Point(2,2);
+            this.btnSelectConference.Name = "btnSelectConference";
+            this.btnSelectConference.Size = new System.Drawing.Size(40, 22);
+            this.btnSelectConference.Click += new System.EventHandler(this.FindConference);
+            this.btnSelectConference.Text = "Find";
             //
             // txtConference
             //
             this.txtConference.Location = new System.Drawing.Point(2,2);
             this.txtConference.Name = "txtConference";
-            this.txtConference.Size = new System.Drawing.Size(370, 28);
-            this.txtConference.ASpecialSetting = true;
-            this.txtConference.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtConference.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
-            this.txtConference.PartnerClass = "";
-            this.txtConference.MaxLength = 32767;
-            this.txtConference.Tag = "CustomDisableAlthoughInvisible";
-            this.txtConference.TextBoxWidth = 80;
-            this.txtConference.ButtonWidth = 40;
-            this.txtConference.ReadOnly = false;
-            this.txtConference.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.txtConference.ButtonText = "Find";
+            this.txtConference.Size = new System.Drawing.Size(80, 28);
+            //
+            // lblConferenceName
+            //
+            this.lblConferenceName.Location = new System.Drawing.Point(2,2);
+            this.lblConferenceName.Name = "lblConferenceName";
+            this.lblConferenceName.AutoSize = true;
+            this.lblConferenceName.Text = "Conference Name:";
+            this.lblConferenceName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // rbtAllConferences
             //
@@ -146,36 +146,40 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.rbtAllConferences.Name = "rbtAllConferences";
             this.rbtAllConferences.AutoSize = true;
             this.rbtAllConferences.CheckedChanged += new System.EventHandler(this.rbtConferenceSelectionChange);
-            this.rbtAllConferences.Text = "AllConferences";
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.rbtConference, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtAllConferences, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtConference, 1, 0);
+            this.rbtAllConferences.Text = "All Conferences";
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rbtConference, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.rbtAllConferences, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnSelectConference, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtConference, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblConferenceName, 3, 0);
             this.grpSelectConference.Text = "Select Conference";
             //
             // grpSelectAttendees
             //
-            this.grpSelectAttendees.Location = new System.Drawing.Point(2,2);
             this.grpSelectAttendees.Name = "grpSelectAttendees";
+            this.grpSelectAttendees.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpSelectAttendees.AutoSize = true;
             //
-            // tableLayoutPanel3
+            // tableLayoutPanel2
             //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            this.grpSelectAttendees.Controls.Add(this.tableLayoutPanel3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.grpSelectAttendees.Controls.Add(this.tableLayoutPanel2);
             //
             // rbtAllAttendees
             //
             this.rbtAllAttendees.Location = new System.Drawing.Point(2,2);
             this.rbtAllAttendees.Name = "rbtAllAttendees";
-            this.rbtAllAttendees.AutoSize = true;
+            this.rbtAllAttendees.Size = new System.Drawing.Size(150, 28);
             this.rbtAllAttendees.CheckedChanged += new System.EventHandler(this.rbtAttendeeSelectionChange);
             this.rbtAllAttendees.Text = "All Attendees";
             //
@@ -191,7 +195,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             this.txtExtract.Location = new System.Drawing.Point(2,2);
             this.txtExtract.Name = "txtExtract";
-            this.txtExtract.Size = new System.Drawing.Size(370, 28);
+            this.txtExtract.Size = new System.Drawing.Size(150, 28);
             this.txtExtract.ASpecialSetting = true;
             this.txtExtract.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtExtract.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Extract;
@@ -228,26 +232,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.txtOneAttendee.ReadOnly = false;
             this.txtOneAttendee.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtOneAttendee.ButtonText = "Find";
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtAllAttendees, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtExtract, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.rbtOneAttendee, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.txtExtract, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtOneAttendee, 1, 2);
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.rbtAllAttendees, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtExtract, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.rbtOneAttendee, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtExtract, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtOneAttendee, 1, 2);
             this.grpSelectAttendees.Text = "SelectAttendees";
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.grpSelectConference, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.grpSelectAttendees, 0, 1);
 
             //
             // TFrmUC_ConferenceSelection
@@ -262,11 +259,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Name = "TFrmUC_ConferenceSelection";
             this.Text = "";
 
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.grpSelectAttendees.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.grpSelectConference.ResumeLayout(false);
+            this.grpSelectAttendees.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.grpSelectConference.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 
             this.ResumeLayout(false);
@@ -274,14 +270,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         }
 
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpSelectConference;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.RadioButton rbtConference;
-        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtConference;
+        private System.Windows.Forms.Button btnSelectConference;
+        private System.Windows.Forms.TextBox txtConference;
+        private System.Windows.Forms.Label lblConferenceName;
         private System.Windows.Forms.RadioButton rbtAllConferences;
         private System.Windows.Forms.GroupBox grpSelectAttendees;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.RadioButton rbtAllAttendees;
         private System.Windows.Forms.RadioButton rbtExtract;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtExtract;

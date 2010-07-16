@@ -1,35 +1,50 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraFrom.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: Select Conference
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
-    #~ DatasetType: Ict.Petra.Shared.MConference.ConferenceTDS
-    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    DatasetType: Ict.Petra.Shared.MConference.Data.SelectConferenceTDS
+    FormType: browse
+    Template: windowFind
     MasterTable: PcConference
     DetailTable: PPartner
-    #~ UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
-    Formtype: browse
-    Template: windowFind
-    WindowWidth: 754
-    WindowHeight: 623
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data]
+    TemplateParameters:
+        INITMANUALCODE: InitGridManually();
+    WindowWidth: 522
+    WindowHeight: 404
+    Actions:
+        actSearch: {ActionClick=Search}
+        actAccept: {ActionClick=Accept}
+        actCancel: {ActionClick=Cancel}
     Controls: 
         pnlContent:
             Dock: Fill
             Controls: [grpFindConference, pnlButtons]
         grpFindConference:
             Controls:[txtConference, txtPrefix, btnSearch, grdConferences]
-        txtConverence:
+        txtConference:
             Label: Conference
         txtPrefix:
             Label: Prefix
         btnSearch:
             Label: Search
+            Action: actSearch
         grdConferences:
-            Columns: [PartnerKey, CampaignCodePrefix]
-        
+            Dock: Fill
+            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.XyzTbdPrefix, PcConference.Start, PcConference.End]
+            CustomColumns:
+                PartnerShortName: {Label=Conference Name}
+                ConferenceKey: {Label=Conference Key}
+                XyzTbdPrefix: {Label=Campaign Code Prefix}
+            ActionDoubleClick: actAccept
+            Width: 500
+            Height: 200
         pnlButtons:
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:
             Label: Accept
+            Action: actAccept
         btnCancel:
             Label: Cancel
+            Action: actCancel
