@@ -38,7 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
-        
+
 
         /// <summary>
         /// load the transactions into the grid
@@ -55,9 +55,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-        	FJournalNumber = AJournalNumber;
-			btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-        	btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            FJournalNumber = AJournalNumber;
+            btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             FPreviouslySelectedDetailRow = null;
 
             DataView view = new DataView(FMainDS.ATransaction);

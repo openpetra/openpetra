@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
-       
+
         /// <summary>
         /// load the gifts into the grid
         /// </summary>

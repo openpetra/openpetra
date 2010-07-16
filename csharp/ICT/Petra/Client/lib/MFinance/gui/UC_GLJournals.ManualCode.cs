@@ -36,7 +36,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
-       
+
 
         /// <summary>
         /// load the journals into the grid
@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            
+
             this.btnAdd.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             this.btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARow.LedgerNumber,
                     ARow.BatchNumber,
                     ARow.JournalNumber
-                   );
+                    );
             }
         }
 
