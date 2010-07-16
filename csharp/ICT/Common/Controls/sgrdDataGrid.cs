@@ -707,9 +707,8 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AEditor"></param>
-        /// </param>
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor)
         {
