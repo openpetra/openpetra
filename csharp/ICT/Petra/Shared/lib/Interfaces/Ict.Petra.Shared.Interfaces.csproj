@@ -88,6 +88,10 @@
       <Project>{2ED62D43-A6DF-4DA1-B18D-F051BB019CE0}</Project>
       <Name>Ict.Petra.Shared.MCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MConference\data\Ict.Petra.Shared.MConference.DataSets.csproj">
+      <Project>{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}</Project>
+      <Name>Ict.Petra.Shared.MConference.DataSets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MFinance\data\Ict.Petra.Shared.MFinance.DataSets.csproj">
       <Project>{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}</Project>
       <Name>Ict.Petra.Shared.MFinance.DataSets</Name>

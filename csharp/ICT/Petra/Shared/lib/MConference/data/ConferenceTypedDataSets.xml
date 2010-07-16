@@ -1,0 +1,10 @@
+<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MConference.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+  
+    <DataSet name="SelectConferenceTDS">
+        <Table sqltable="p_partner" sqlfield="p_partner_short_name_c" />
+        <Table sqltable="pc_conference"/>
+    </DataSet>
+
+</PetraDataSets>

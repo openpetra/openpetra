@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 # SharpDevelop 3.2.0.5505
@@ -53,6 +53,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.RemotingSinks", "Petra\Shared\lib\RemotingSinks\Ict.Petra.Shared.RemotingSinks.csproj", "{9D2382FA-5EB8-4088-9664-A1BFDA20750B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.MSysMan.DataSets", "Petra\Shared\lib\MSysMan\data\Ict.Petra.Shared.MSysMan.DataSets.csproj", "{EE491F69-FB10-4009-AEC5-A77AE8D8A532}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.MConference.DataSets", "Petra\Shared\lib\MConference\data\Ict.Petra.Shared.MConference.DataSets.csproj", "{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,5 +166,9 @@ Global
 		{EE491F69-FB10-4009-AEC5-A77AE8D8A532}.Debug|x86.Build.0 = Debug|x86
 		{EE491F69-FB10-4009-AEC5-A77AE8D8A532}.Release|x86.ActiveCfg = Release|x86
 		{EE491F69-FB10-4009-AEC5-A77AE8D8A532}.Release|x86.Build.0 = Release|x86
+		{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}.Debug|x86.Build.0 = Debug|x86
+		{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}.Debug|x86.ActiveCfg = Debug|x86
+		{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}.Release|x86.Build.0 = Release|x86
+		{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

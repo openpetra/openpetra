@@ -53,8 +53,10 @@ using Ict.Petra.Server.MConference.Instantiator.Cacheable;
 using Ict.Petra.Server.MConference.Instantiator.WebConnectors;
 using Ict.Petra.Server.MConference.Cacheable;
 using Ict.Petra.Server.MConference.WebConnectors;
+
 #region ManualCode
 using Ict.Petra.Shared .MPartner.Partner.Data;
+using Ict.Petra.Shared.MConference.Data;
 #endregion
 namespace Ict.Petra.Server.MConference.Instantiator
 {
@@ -420,6 +422,13 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         public PUnitTable GetCampaignOptions(Int64 AUnitKey)
         {
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey);
+        }
+
+        /// generated method from connector
+        public SelectConferenceTDS GetConferences(String AConferenceName,
+                                                  String APrefix)
+        {
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetConferences(AConferenceName, APrefix);
         }
     }
 }
