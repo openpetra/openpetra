@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{11E82D0E-6AC3-4D48-A584-A36B5208B496}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,6 +52,9 @@
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
@@ -78,6 +81,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="LanguageCodeSetup.cs" />
+    <Compile Include="LanguageCodeSetup.Designer.cs">
+      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageCodeSetup.ManualCode.cs">
+      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="SetupCurrency.cs" />
     <Compile Include="SetupCurrency.Designer.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
@@ -85,6 +95,9 @@
     <Compile Include="SetupCurrency.ManualCode.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="LanguageCodeSetup.resx">
+      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SetupCurrency.resx">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </EmbeddedResource>

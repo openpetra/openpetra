@@ -423,7 +423,8 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
             {
                 case TCacheableCommonTablesEnum.CountryList:
                 case TCacheableCommonTablesEnum.LanguageCodeList:
-
+				case TCacheableCommonTablesEnum.FrequencyList:
+            		
                     ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
                     // Unknown Cacheable DataTable
