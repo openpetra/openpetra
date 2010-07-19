@@ -38,6 +38,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmPartnerTypeSetup
     {
+        private void RunOnceOnActivationManual()
+        {
+            chkDetailTypeDeletable.Enabled = false;
+        }
+
         private void NewRowManual(ref PTypeRow ARow)
         {
             string newName = Catalog.GetString("NEWTYPE");
@@ -59,6 +64,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPType();
-        }
+        }        
     }
 }

@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Denomination Code
+  /// auto generated: Maintain Denomination Codes
   public partial class TFrmDenominationCodeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Denomination Code");
+      this.Text = Catalog.GetString("Maintain Denomination Codes");
       #endregion
 
       this.txtDetailDenominationCode.Font = TAppSettingsManager.GetDefaultBoldFont();

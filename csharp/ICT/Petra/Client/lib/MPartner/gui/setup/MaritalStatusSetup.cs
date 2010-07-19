@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Marital Staus
+  /// auto generated: Maintain Marital Statuses
   public partial class TFrmMaritalStatusSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Marital Staus");
+      this.Text = Catalog.GetString("Maintain Marital Statuses");
       #endregion
 
       this.txtDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -286,6 +286,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// auto generated
     public void RunOnceOnActivation()
     {
+        RunOnceOnActivationManual();
     }
 
     /// <summary>

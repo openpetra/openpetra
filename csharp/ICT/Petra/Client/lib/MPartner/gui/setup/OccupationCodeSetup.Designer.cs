@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmOccupationCodeSetup";
-            this.Text = "Maintain Occupation Code";
+            this.Text = "Maintain Occupation Codes";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

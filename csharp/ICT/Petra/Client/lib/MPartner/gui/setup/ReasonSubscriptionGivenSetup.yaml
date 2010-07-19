@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Reason Subscription Given
+    FormTitle: Maintain Reason Subscription Given List
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PReasonSubscriptionGiven
     CacheableTable: ReasonSubscriptionGivenList

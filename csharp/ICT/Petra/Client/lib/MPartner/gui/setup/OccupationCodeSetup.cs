@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Occupation Code
+  /// auto generated: Maintain Occupation Codes
   public partial class TFrmOccupationCodeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Occupation Code");
+      this.Text = Catalog.GetString("Maintain Occupation Codes");
       #endregion
 
       this.txtDetailOccupationCode.Font = TAppSettingsManager.GetDefaultBoldFont();

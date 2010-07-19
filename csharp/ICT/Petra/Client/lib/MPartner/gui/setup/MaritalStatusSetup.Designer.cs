@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailDescription.Name = "txtDetailDescription";
-            this.txtDetailDescription.Size = new System.Drawing.Size(250, 28);
+            this.txtDetailDescription.Size = new System.Drawing.Size(285, 28);
             //
             // lblDetailDescription
             //
@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(672, 500);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -473,7 +473,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmMaritalStatusSetup";
-            this.Text = "Maintain Marital Staus";
+            this.Text = "Maintain Marital Statuses";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

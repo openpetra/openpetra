@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MCommon.Data;
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
 
-  /// auto generated: Maintain Language Code
+  /// auto generated: Maintain Language Codes
   public partial class TFrmLanguageCodeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Language Code");
+      this.Text = Catalog.GetString("Maintain Language Codes");
       #endregion
 
       this.txtDetailLanguageCode.Font = TAppSettingsManager.GetDefaultBoldFont();

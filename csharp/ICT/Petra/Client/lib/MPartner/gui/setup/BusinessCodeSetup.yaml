@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Business Code
+    FormTitle: Maintain Business Codes
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PBusiness
     CacheableTable: BusinessCodeList

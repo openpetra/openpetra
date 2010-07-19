@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Partner Types
+    FormTitle: Maintain Special Types
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PType
     CacheableTable: PartnerTypeList
@@ -37,4 +37,4 @@ RootNode:
         chkDetailTypeDeletable: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Partner Type
+            Label: New Special Type
