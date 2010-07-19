@@ -48,8 +48,11 @@
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
-      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+    <Reference Include="Ict.Petra.Shared.MConference.DataSets">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MConference.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
@@ -101,9 +104,20 @@
       <DependentUpon>AbsenteeReport.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="PresentAttendeeReport.cs" />
+    <Compile Include="PresentAttendeeReport.Designer.cs">
+      <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="SelectCampaignOption.cs" />
     <Compile Include="SelectCampaignOption.Designer.cs">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectConferenceForm.cs" />
+    <Compile Include="SelectConferenceForm.Designer.cs">
+      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SelectConferenceForm.ManualCode.cs">
+      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_ConferenceSelection.cs" />
     <Compile Include="UC_ConferenceSelection.Designer.cs">
@@ -118,8 +132,14 @@
     <EmbeddedResource Include="AbsenteeReport.resx">
       <DependentUpon>AbsenteeReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PresentAttendeeReport.resx">
+      <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SelectCampaignOption.resx">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectConferenceForm.resx">
+      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_ConferenceSelection.resx">
       <DependentUpon>UC_ConferenceSelection.cs</DependentUpon>

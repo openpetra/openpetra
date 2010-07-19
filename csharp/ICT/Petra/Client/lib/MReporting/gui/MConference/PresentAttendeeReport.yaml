@@ -1,12 +1,12 @@
 RootNode:
     BaseYaml: ConferenceReportingForm.yaml
     FormType: report
-    FormTitle: Absentee Report
+    FormTitle: Present Attendee Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
     TemplateParameters:
-        XMLFILES: [Conference\\\\absenteereport.xml,Conference\\\\conference.xml]
-        REPORTNAME: Absentee Report
-        CURRENTREPORT: Absentee Report
+        XMLFILES: [Conference\\\\presentattendeereport.xml,Conference\\\\conference.xml]
+        REPORTNAME: Present Attendee Report
+        CURRENTREPORT: Present Attendee Report
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK

@@ -32,8 +32,11 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MConference;
+using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MConference;
+using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 
@@ -98,23 +101,108 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 #endif
                 }
             }
-
-//			foreach(PUnitRow UnitRow in UnitTable.Rows)
-//			{
-//				if (!UnitRow.CampaignCode.StartsWith(ConferenceCodePrefix, true, null))
-//				{
-//					continue;
-//				}
-//
-//				DataRow NewRow = AConferenceTable.NewRow();
-//
-//				NewRow["Partner Key"] = UnitRow.PartnerKey;
-//				NewRow["Campaign Code"] = UnitRow.CampaignCode;
-//				NewRow["Unit Name"] = UnitRow.UnitName;
-//
-//				AConferenceTable.Rows.Add(NewRow);
-//			}
             return UnitTable;
+        }
+
+        /// <summary>
+        /// Get the conferences which are set up in the system.
+        /// If no prefix and conference name is given, return all of them.
+        /// Otherwise only the conferences that start with the given parameters are returned.
+        /// </summary>
+        /// <param name="AConferenceName">Matching patterns for Unit Name</param>
+        /// <param name="APrefix">Matching pattern for campaign code</param>
+        /// <returns>A dataset with all the conferences in question</returns>
+        public static SelectConferenceTDS GetConferences(String AConferenceName, String APrefix)
+        {
+            SelectConferenceTDS ResultTable = new SelectConferenceTDS();
+
+            PcConferenceTable ConferenceTable = new PcConferenceTable();
+            PcConferenceRow TemplateRow = (PcConferenceRow)ConferenceTable.NewRow();
+
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+            if (APrefix == "*")
+            {
+                APrefix = "";
+            }
+
+            if (AConferenceName == "*")
+            {
+                AConferenceName = "";
+            }
+            else if (AConferenceName.EndsWith("*"))
+            {
+                AConferenceName = AConferenceName.Substring(0, AConferenceName.Length - 1);
+            }
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetConferences called!");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                /* Load data */
+
+                if (APrefix.Length > 0)
+                {
+                    APrefix = APrefix.Replace('*', '%') + "%";
+                    TemplateRow.XyzTbdPrefix = APrefix;
+
+                    StringCollection Operators = new StringCollection();
+                    Operators.Add("LIKE");
+
+                    ConferenceTable = PcConferenceAccess.LoadUsingTemplate(TemplateRow, Operators, null, ReadTransaction);
+                }
+                else
+                {
+                    ConferenceTable = PcConferenceAccess.LoadAll(ReadTransaction);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetConferences: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            String ShortName;
+            TPartnerClass PartnerClass;
+
+            foreach (PcConferenceRow ConferenceRow in ConferenceTable.Rows)
+            {
+                TPartnerServerLookups.GetPartnerShortName(ConferenceRow.ConferenceKey, out ShortName, out PartnerClass);
+
+                if ((AConferenceName.Length > 0)
+                    && (!ShortName.StartsWith(AConferenceName, true, null)))
+                {
+                    continue;
+                }
+
+                ResultTable.PcConference.ImportRow(ConferenceRow);
+
+                DataRow NewRow = ResultTable.PPartner.NewRow();
+                NewRow[PPartnerTable.GetPartnerShortNameDBName()] = ShortName;
+                NewRow[PPartnerTable.GetPartnerKeyDBName()] = ConferenceRow.ConferenceKey;
+
+                ResultTable.PPartner.Rows.Add(NewRow);
+            }
+
+            return ResultTable;
         }
     }
 }

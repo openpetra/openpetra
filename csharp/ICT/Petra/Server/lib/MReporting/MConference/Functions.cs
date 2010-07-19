@@ -22,8 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Server.MReporting;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Petra.Server.MConference.Data.Access;
+using Ict.Petra.Server.MHospitality.Data.Access;
+using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Server.MReporting.MConference
@@ -49,6 +54,12 @@ namespace Ict.Petra.Server.MReporting.MConference
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetConferenceRoom"))
+            {
+                value = new TVariant(GetConferenceRoom(ops[1].ToInt64(), ops[2].ToInt64(), ops[3].ToString()));
+                return true;
+            }
+
             /*
              * if (isSame(f, 'doSomething')) then
              * begin
@@ -59,6 +70,29 @@ namespace Ict.Petra.Server.MReporting.MConference
              */
             value = new TVariant();
             return false;
+        }
+
+        /// <summary>
+        /// Gets the Room for a given partner during a confernce.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the person</param>
+        /// <param name="AConferenceKey">PartnerKey of the confernce</param>
+        /// <param name="ADefaultValue">Default value if no room was found</param>
+        /// <returns></returns>
+        private String GetConferenceRoom(Int64 APartnerKey, Int64 AConferenceKey, String ADefaultValue)
+        {
+            String ReturnValue = ADefaultValue;
+            PcRoomAllocTable RoomAllocTable;
+
+            RoomAllocTable = PcRoomAllocAccess.LoadViaPcAttendee(AConferenceKey, APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (RoomAllocTable.Rows.Count > 0)
+            {
+                ReturnValue = ((PcRoomAllocRow)RoomAllocTable.Rows[0]).BuildingCode + " " +
+                              ((PcRoomAllocRow)RoomAllocTable.Rows[0]).RoomNumber;
+            }
+
+            return ReturnValue;
         }
     }
 }
