@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{1A88A039-A817-40AF-A71A-A636AF5B7D1D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -91,6 +91,10 @@
     <Compile Include="Functions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MPartner\Ict.Petra.Server.MPartner.csproj">
+      <Project>{5AF07F51-C0B4-4AC7-9007-8CB607F9DA03}</Project>
+      <Name>Ict.Petra.Server.MPartner</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ict.Petra.Server.MReporting.csproj">
       <Project>{1532B4C2-5A04-4FFC-B383-E147A2377370}</Project>
       <Name>Ict.Petra.Server.MReporting</Name>

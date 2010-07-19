@@ -29,6 +29,7 @@ using Ict.Common.Conversion;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared;
@@ -173,6 +174,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if (StringHelper.IsSame(f, "GetPartnerTypes"))
             {
                 value = new TVariant(GetPartnerTypes(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetProfession"))
+            {
+                value = new TVariant(GetProfession(ops[1].ToInt64()));
                 return true;
             }
 
@@ -1455,6 +1462,38 @@ namespace Ict.Petra.Server.MReporting.MPartner
             }
 
             return ReturnValue;
+        }
+
+        private String GetProfession(Int64 APartnerKey)
+        {
+            PPersonTable PersonTable;
+            POccupationTable OccupationTable;
+            String Profession = "";
+
+            PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+
+            if (PersonTable.Rows.Count > 0)
+            {
+                if (!((PPersonRow)PersonTable.Rows[0]).IsOccupationCodeNull())
+                {
+                    String OccupationCode = ((PPersonRow)PersonTable.Rows[0]).OccupationCode;
+
+                    TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
+                    System.Type TypeOfTable;
+
+                    OccupationTable = (POccupationTable)PartnerCacheable.GetStandardCacheableTable(
+                        TCacheablePartnerTablesEnum.OccupationList, "", false, out TypeOfTable);
+
+                    DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + OccupationCode + "'");
+
+                    if (OccupationRows.Length > 0)
+                    {
+                        Profession = ((POccupationRow)OccupationRows[0]).OccupationDescription;
+                    }
+                }
+            }
+
+            return Profession;
         }
 
         /// <summary>
