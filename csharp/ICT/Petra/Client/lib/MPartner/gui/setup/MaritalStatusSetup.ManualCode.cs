@@ -58,22 +58,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 newName += countNewDetail.ToString();
             }
 
-            ARow.Code= newName;
+            ARow.Code = newName;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPtMaritalStatus();
         }
-        
+
         private void EnableDisableAssignableDate(Object sender, EventArgs e)
         {
             dtpDetailAssignableDate.Enabled = !chkDetailAssignableFlag.Checked;
-            
-            if (chkDetailAssignableFlag.Checked) 
+
+            if (chkDetailAssignableFlag.Checked)
             {
-            	dtpDetailAssignableDate.Date = null;	
+                dtpDetailAssignableDate.Date = null;
             }
-        }        
+        }
     }
 }
