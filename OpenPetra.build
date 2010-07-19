@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="OpenPetra" default="help">
-    <sysinfo />
+    <property name="sys.env.ProgramFiles" value="${environment::get-folder-path('ProgramFiles')}"/>
     <include buildfile="OpenPetra.build.config" />
     <include buildfile="OpenPetra.build.utils" />
     <include buildfile="setup/petra0300/linuxserver/LinuxRelease.build" />
