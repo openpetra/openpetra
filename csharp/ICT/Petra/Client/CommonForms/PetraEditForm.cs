@@ -71,6 +71,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Tells whether a Detail of a list of Items is currently beeing edited
         protected Boolean FDetailEditMode;
 
+        /// Tells whether a Detail of a list of Items is in protected mode (readonly)
+        protected Boolean FDetailProtectedMode;
+
         /// Used for keeping track of data verification errors
         protected TVerificationResultCollection FVerificationResultCollection;
 
@@ -665,6 +668,20 @@ namespace Ict.Petra.Client.CommonForms
                 FDetailEditMode = value;
             }
         }
+
+        /// <summary>todoComment</summary>
+        public bool DetailProtectedMode
+        {
+            get
+            {
+                return FDetailProtectedMode;
+            }
+            set
+            {
+                FDetailProtectedMode = value;
+            }
+        }
+
 
         /// <summary>todoComment</summary>
         protected void SetScreenCaption()

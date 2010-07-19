@@ -32,6 +32,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber;
 
+
         /// <summary>
         /// use this ledger
         /// </summary>
