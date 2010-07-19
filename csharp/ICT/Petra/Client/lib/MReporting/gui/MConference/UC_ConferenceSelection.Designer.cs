@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             this.txtExtract.Location = new System.Drawing.Point(2,2);
             this.txtExtract.Name = "txtExtract";
-            this.txtExtract.Size = new System.Drawing.Size(150, 28);
+            this.txtExtract.Size = new System.Drawing.Size(400, 28);
             this.txtExtract.ASpecialSetting = true;
             this.txtExtract.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtExtract.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Extract;

@@ -38,7 +38,7 @@ RootNode:
             Dock: Fill
         rbtAllAttendees: {Label=All Attendees, OnChange=rbtAttendeeSelectionChange, Width=150}
         rbtExtract: {Label=From Extract, OnChange=rbtAttendeeSelectionChange}
-        txtExtract: {NoLabel=true, Type=Extract}
+        txtExtract: {NoLabel=true, Type=Extract, Width=400}
         rbtOneAttendee: {Label=One Attendee, OnChange=rbtAttendeeSelectionChange}
         txtOneAttendee: {NoLabel=true, Type=PartnerKey}
         
