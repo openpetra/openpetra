@@ -578,6 +578,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     AddControl(ctrl, FCurrentColumn * 2, 0);
                 }
+                else if (FOrientation == eOrientation.TableLayout)
+                {
+                    AddControl(ctrl, FCurrentColumn, FCurrentRow);
+                }
 
                 StringCollection childControls = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
 
@@ -621,6 +625,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         AddControl(subTlpControlName, FCurrentColumn * 2 + 1, 0);
                     }
+                    else if (FOrientation == eOrientation.TableLayout)
+                    {
+                        AddControl(subTlpControlName, FCurrentColumn + 1, FCurrentRow);
+                    }
                 }
                 else if (childControls.Count == 1)
                 {
@@ -630,6 +638,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
                     ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
                     ChildGenerator.SetControlProperties(writer, ChildCtrl);
+
+                    if (FOrientation == eOrientation.Vertical)
+                    {
+                        AddControl(ChildCtrl, 1, FCurrentRow);
+                    }
+                    else if (FOrientation == eOrientation.Horizontal)
+                    {
+                        AddControl(ChildCtrl, FCurrentColumn * 2 + 1, 0);
+                    }
+                    else if (FOrientation == eOrientation.TableLayout)
+                    {
+                        AddControl(ChildCtrl, FCurrentColumn + 1, FCurrentRow);
+                    }
                 }
 
                 // add and install event handler for change of selection
