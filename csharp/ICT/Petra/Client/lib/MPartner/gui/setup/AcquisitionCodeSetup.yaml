@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Acquisition Code
+    FormTitle: Maintain Acquisition Codes
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PAcquisition
     CacheableTable: AcquisitionCodeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 786
+    WindowHeight: 650
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -35,7 +35,7 @@ RootNode:
                 Row1: [chkDetailValidAcquisition, chkDetailDeletable]
                 Row2: [chkDetailRecruitingEffort]
         txtDetailAcquisitionCode: {Label=Acquisition Code}
-        txtDetailAcquisitionDescription: {Width=152}
+        txtDetailAcquisitionDescription: {Width=275}
         chkDetailValidAcquisition: {Label=Assignable}
         chkDetailDeletable:
         chkDetailRecruitingEffort: {Label=Recruiting Mission}

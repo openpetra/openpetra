@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Acquisition Code
+  /// auto generated: Maintain Acquisition Codes
   public partial class TFrmAcquisitionCodeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Acquisition Code");
+      this.Text = Catalog.GetString("Maintain Acquisition Codes");
       #endregion
 
       this.txtDetailAcquisitionCode.Font = TAppSettingsManager.GetDefaultBoldFont();

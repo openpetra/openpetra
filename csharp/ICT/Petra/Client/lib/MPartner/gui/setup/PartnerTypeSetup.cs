@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Partner Types
+  /// auto generated: Maintain Special Types
   public partial class TFrmPartnerTypeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.lblDetailTypeDeletable.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Partner Type");
+      this.tbbNew.Text = Catalog.GetString("New Special Type");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Partner Types");
+      this.Text = Catalog.GetString("Maintain Special Types");
       #endregion
 
       this.txtDetailTypeCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -281,6 +281,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// auto generated
     public void RunOnceOnActivation()
     {
+        RunOnceOnActivationManual();
     }
 
     /// <summary>

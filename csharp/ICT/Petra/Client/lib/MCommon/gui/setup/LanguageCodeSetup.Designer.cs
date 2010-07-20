@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmLanguageCodeSetup";
-            this.Text = "Maintain Language Code";
+            this.Text = "Maintain Language Codes";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

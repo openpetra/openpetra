@@ -38,6 +38,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmMaritalStatusSetup
     {
+        private void RunOnceOnActivationManual()
+        {
+            chkDetailDeletableFlag.Enabled = false;
+        }
+
         private void NewRowManual(ref PtMaritalStatusRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");

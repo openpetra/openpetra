@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Publication
+    FormTitle: Maintain Publications
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PPublication
     CacheableTable: PublicationList

@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Reason Subscription Cancelled
+  /// auto generated: Maintain Reason Subscription Cancelled List
   public partial class TFrmReasonSubscriptionCancelledSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Reason Subscription Cancelled");
+      this.Text = Catalog.GetString("Maintain Reason Subscription Cancelled List");
       #endregion
 
       this.txtDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();

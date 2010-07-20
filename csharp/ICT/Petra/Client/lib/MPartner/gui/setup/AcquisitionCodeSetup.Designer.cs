@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailAcquisitionDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailAcquisitionDescription.Name = "txtDetailAcquisitionDescription";
-            this.txtDetailAcquisitionDescription.Size = new System.Drawing.Size(152, 28);
+            this.txtDetailAcquisitionDescription.Size = new System.Drawing.Size(275, 28);
             //
             // lblDetailAcquisitionDescription
             //
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(660, 700);
+            this.ClientSize = new System.Drawing.Size(786, 650);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -474,7 +474,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmAcquisitionCodeSetup";
-            this.Text = "Maintain Acquisition Code";
+            this.Text = "Maintain Acquisition Codes";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Denomination Code
+    FormTitle: Maintain Denomination Codes
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PDenomination
     CacheableTable: DenominationList

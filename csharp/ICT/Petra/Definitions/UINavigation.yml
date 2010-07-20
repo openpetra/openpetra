@@ -58,24 +58,23 @@ OpenPetra:
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
                     Partner-related:           
-                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Language Code, Description=Maintain Language Code,  ActionOpenScreen=TFrmLanguageCodeSetup}              
-                        PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses,  ActionOpenScreen=TFrmPartnerStatusSetup}
-                        Acquisition:   {Label=Setup Acquisition Code, Description=Maintain Acquisition Code,  ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
-                        SpecialTypes:  {Label=Setup Partner Types, Description=Maintain Special Types,  ActionOpenScreen=TFrmPartnerTypeSetup}
-                        Denomination:  {Label=Setup Denomination Code, Description=Maintain Denomination Code,  ActionOpenScreen=TFrmDenominationCodeSetup} 
-                        Business:      {Label=Setup Business Code, Description=Maintain Business Code,  ActionOpenScreen=TFrmBusinessCodeSetup}
-                        Occupation:    {Label=Setup Occupation Code, Description=Maintain Occupation Code,  ActionOpenScreen=TFrmOccupationCodeSetup}   
-                        MaritalStatus: {Label=Setup Marital Status, Description=Maintain Marital Status,  ActionOpenScreen=TFrmMaritalStatusSetup}   
+                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
+                        PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
+                        Acquisition:   {Label=Setup Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
+                        SpecialTypes:  {Label=Setup Special Types, Description=Maintain Special Types, ActionOpenScreen=TFrmPartnerTypeSetup}
+                        Denomination:  {Label=Setup Denomination Codes, Description=Maintain Denomination Codes, ActionOpenScreen=TFrmDenominationCodeSetup} 
+                        Business:      {Label=Setup Business Codes, Description=Maintain Business Codes, ActionOpenScreen=TFrmBusinessCodeSetup}
+                        Occupation:    {Label=Setup Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
+                        MaritalStatus: {Label=Setup Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
                         
                     Subscription-related: 
-                        Publication: {Label=Setup Publication, Description=Maintain Publication,  ActionOpenScreen=TFrmPublicationSetup}
-                        ReasonSubscriptionGiven: {Label=Setup Reason Subscription Given, Description=Maintain Reason Subscription Given,  ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
-                        ReasonSubscriptionCancelled: {Label=Setup Reason Subscription Cancelled, Description=Maintain Reason Subscription Cancelled,  ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
-                         
-                        
-                    Location-related:  
-                        AddreseeTypes: {Label=Setup Addressee Types, Description=Maintain Addressee Types,  ActionOpenScreen=TFrmAddresseeTypeSetup}
-                        LocationTypes: {Label=Setup Location Types, Description=Maintain Location Types,  ActionOpenScreen=TFrmLocationTypeSetup}
+                        Publications: {Label=Setup Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
+                        ReasonSubscriptionGiven: {Label=Setup Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
+                        ReasonSubscriptionCancelled: {Label=Setup Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
+                                                 
+                    Address-related:  
+                        AddreseeTypes: {Label=Setup Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        LocationTypes: {Label=Setup Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
                     
             #MoreFunctions:
                 #SetupPartnerModule:

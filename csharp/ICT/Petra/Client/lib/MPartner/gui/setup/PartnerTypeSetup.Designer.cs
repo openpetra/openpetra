@@ -276,7 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Partner Type";
+            this.tbbNew.Text = "New Special Type";
             //
             // tbrMain
             //
@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmPartnerTypeSetup";
-            this.Text = "Maintain Partner Types";
+            this.Text = "Maintain Special Types";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

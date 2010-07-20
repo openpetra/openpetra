@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Language Code
+    FormTitle: Maintain Language Codes
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PLanguage
     CacheableTable: LanguageCodeList

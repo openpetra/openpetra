@@ -406,7 +406,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmReasonSubscriptionGivenSetup";
-            this.Text = "Maintain Reason Subscription Given";
+            this.Text = "Maintain Reason Subscription Given List";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
