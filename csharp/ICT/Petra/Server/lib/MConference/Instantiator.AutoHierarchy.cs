@@ -430,6 +430,14 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         {
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetConferences(AConferenceName, APrefix);
         }
+
+        /// generated method from connector
+        public bool GetEarliestAndLatestDate(Int64 AConferenceKey,
+                                             out DateTime AEarliestArrivalDate,
+                                             out DateTime ALatestDepartureDate)
+        {
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate);
+        }
     }
 }
 

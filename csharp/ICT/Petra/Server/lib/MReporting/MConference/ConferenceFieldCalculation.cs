@@ -214,12 +214,12 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             if (!ShortTermerRow.IsArrivalNull())
             {
-                ArrivalDate = (DateTime)ShortTermerRow.Arrival;
+                ArrivalDate = ShortTermerRow.Arrival.Value;
             }
 
             if (!ShortTermerRow.IsDepartureNull())
             {
-                DepartureDate = (DateTime)ShortTermerRow.Departure;
+                DepartureDate = ShortTermerRow.Departure.Value;
             }
 
             FAttendeeDays = DepartureDate.Subtract(ArrivalDate).Days + 1;
@@ -298,8 +298,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                  * Note: this does not include pre and post congress stays
                  */
                 CalculationDays = GetDaysAtCongress(ref ASituation, ShortTermerRow,
-                    (DateTime)ShortTermerRow.Arrival,
-                    (DateTime)ShortTermerRow.Departure);
+                    ShortTermerRow.Arrival.Value,
+                    ShortTermerRow.Departure.Value);
 
                 if (FConferenceCostType == TConferenceCostTypeEnum.cctPerDay)
                 {
@@ -366,8 +366,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                  * Note: this does not include pre and post congress stays
                  */
                 FIsCongressVolunteer = true;
-                int Nights = GetDaysAtCongress(ref ASituation, ShortTermerRow, (DateTime)ShortTermerRow.Arrival,
-                    (DateTime)ShortTermerRow.Departure);
+                int Nights = GetDaysAtCongress(ref ASituation, ShortTermerRow, ShortTermerRow.Arrival.Value,
+                    ShortTermerRow.Departure.Value);
 
                 if (FConferenceCostType == TConferenceCostTypeEnum.cctPerDay)
                 {
@@ -392,7 +392,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
             }
 
-            if (((DateTime)ShortTermerRow.Arrival).CompareTo(FAttendeeStartDate) < 0)
+            if (ShortTermerRow.Arrival.Value.CompareTo(FAttendeeStartDate) < 0)
             {
                 /*
                  * Pre-conference charging, which is always by the day *
@@ -400,10 +400,10 @@ namespace Ict.Petra.Server.MReporting.MConference
                  */
 
                 CalculationDays = GetRoomAllocatedNightsBetween(ref ASituation, ShortTermerRow.PartnerKey,
-                    (DateTime)ShortTermerRow.Arrival, FAttendeeStartDate);
+                    ShortTermerRow.Arrival.Value, FAttendeeStartDate);
 
                 if ((FConferenceCostType == TConferenceCostTypeEnum.cctPerDay)
-                    && (((DateTime)ShortTermerRow.Departure).CompareTo(FAttendeeStartDate) < 0))
+                    && (ShortTermerRow.Departure.Value.CompareTo(FAttendeeStartDate) < 0))
                 {
                     /* a day only needs to be added if the person leaves before the conference
                      * starts, otherwise the daily charge is taken into consideration with the
@@ -438,7 +438,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                 FConferenceFlags = FConferenceFlags + "P";
             }             // End of pre conference calculation
 
-            if (((DateTime)ShortTermerRow.Departure).CompareTo(FConferenceEndDate) > 0)
+            if (ShortTermerRow.Departure.Value.CompareTo(FConferenceEndDate) > 0)
             {
                 /* Post-conference charging, which is always by the day
                  * For Conference costs only relevent for Congress only people
@@ -448,10 +448,10 @@ namespace Ict.Petra.Server.MReporting.MConference
                 if (FIsCongressOnly)
                 {
                     CalculationDays = GetRoomAllocatedNightsBetween(ref ASituation, ShortTermerRow.PartnerKey,
-                        FConferenceEndDate, (DateTime)ShortTermerRow.Departure);
+                        FConferenceEndDate, ShortTermerRow.Departure.Value);
 
                     if ((FConferenceCostType == TConferenceCostTypeEnum.cctPerDay)
-                        && (((DateTime)ShortTermerRow.Arrival).CompareTo(FConferenceEndDate) > 0))
+                        && (ShortTermerRow.Arrival.Value.CompareTo(FConferenceEndDate) > 0))
                     {
                         /* a day only needs to be added if the person arrives after the conference
                          * ends, otherwise the daily charge is taken into consideration with the
@@ -506,11 +506,11 @@ namespace Ict.Petra.Server.MReporting.MConference
             if (FConferenceCostType == TConferenceCostTypeEnum.cctPerCampaign)
             {
                 // consider short stay only if it is not on a daily basis
-                if (((((DateTime)ShortTermerRow.Departure).Subtract((DateTime)ShortTermerRow.Arrival).Days * 2) <= FConferenceDays)
+                if (((ShortTermerRow.Departure.Value.Subtract(ShortTermerRow.Arrival.Value).Days * 2) <= FConferenceDays)
                     && (ShortTermerRow.StCongressCode != "VOL")
                     && (!ShortTermerRow.StXyzTbdOnlyFlag))
                 {
-                    FCongressCosts = ((DateTime)ShortTermerRow.Departure).Subtract((DateTime)ShortTermerRow.Arrival).Days * FConferenceDayRate *
+                    FCongressCosts = ShortTermerRow.Departure.Value.Subtract(ShortTermerRow.Arrival.Value).Days * FConferenceDayRate *
                                      (100 - ChildDiscount) / 100;
 
                     if (FIsCongressRole)
@@ -906,8 +906,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                     return false;
                 }
 
-                FConferenceStartDate = (DateTime)Row.Start;
-                FConferenceEndDate = (DateTime)Row.End;
+                FConferenceStartDate = Row.Start.Value;
+                FConferenceEndDate = Row.End.Value;
                 FConferenceDays = FConferenceEndDate.Subtract(FConferenceStartDate).Days + 1;
 
                 FConferenceCurrency = Row.CurrencyCode;
@@ -1159,8 +1159,8 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
 
-            FAttendeeStartDate = (DateTime)PartnerLocationRow.DateEffective;
-            FAttendeeEndDate = (DateTime)PartnerLocationRow.DateGoodUntil;
+            FAttendeeStartDate = PartnerLocationRow.DateEffective.Value;
+            FAttendeeEndDate = PartnerLocationRow.DateGoodUntil.Value;
 
             // Update arrival and departure dates if none have been entered yet,
             // either in the application travel details or the actual arrival at the conference
@@ -1280,8 +1280,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                     continue;
                 }
 
-                AccommodationString = AccommodationString + "(" + ((DateTime)RoomAllocRow.In).Subtract(
-                    (DateTime)RoomAllocRow.Out).Days.ToString() + "), ";
+                AccommodationString = AccommodationString + "(" + RoomAllocRow.In.Subtract(
+                    RoomAllocRow.Out.Value).Days.ToString() + "), ";
 
                 int PreNights = 0;
                 int ConferenceNights = 0;
@@ -1290,9 +1290,9 @@ namespace Ict.Petra.Server.MReporting.MConference
                 if (RoomAllocRow.In.CompareTo(FAttendeeStartDate) < 0)
                 {
                     // calculate Pre conference nights
-                    if (((DateTime)RoomAllocRow.Out).CompareTo(FAttendeeStartDate) < 1)
+                    if (RoomAllocRow.Out.Value.CompareTo(FAttendeeStartDate) < 1)
                     {
-                        PreNights = ((DateTime)RoomAllocRow.Out).Subtract(RoomAllocRow.In).Days;
+                        PreNights = RoomAllocRow.Out.Value.Subtract(RoomAllocRow.In).Days;
                     }
                     else
                     {
@@ -1301,7 +1301,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
 
                 if ((RoomAllocRow.In.CompareTo(FAttendeeEndDate) < 0)
-                    || (((DateTime)RoomAllocRow.Out).CompareTo(FAttendeeStartDate) > 0))
+                    || (RoomAllocRow.Out.Value.CompareTo(FAttendeeStartDate) > 0))
                 {
                     // calculate conference nights
                     ConferenceNights = FAttendeeEndDate.Subtract(FAttendeeStartDate).Days;
@@ -1313,21 +1313,21 @@ namespace Ict.Petra.Server.MReporting.MConference
                     }
 
                     //subtract if there are days left out at end of conference
-                    if (((DateTime)RoomAllocRow.Out).CompareTo(FAttendeeEndDate) < 0)
+                    if (RoomAllocRow.Out.Value.CompareTo(FAttendeeEndDate) < 0)
                     {
-                        ConferenceNights = ConferenceNights - FAttendeeEndDate.Subtract((DateTime)RoomAllocRow.Out).Days;
+                        ConferenceNights = ConferenceNights - FAttendeeEndDate.Subtract(RoomAllocRow.Out.Value).Days;
                     }
 
-                    if (((DateTime)RoomAllocRow.Out).CompareTo(FAttendeeEndDate) > 0)
+                    if (RoomAllocRow.Out.Value.CompareTo(FAttendeeEndDate) > 0)
                     {
                         // calculate post conference nights
                         if (RoomAllocRow.In.CompareTo(FAttendeeEndDate) > 0)
                         {
-                            PostNights = ((DateTime)RoomAllocRow.Out).Subtract(RoomAllocRow.In).Days;
+                            PostNights = RoomAllocRow.Out.Value.Subtract(RoomAllocRow.In).Days;
                         }
                         else
                         {
-                            PostNights = ((DateTime)RoomAllocRow.Out).Subtract(FAttendeeEndDate).Days;
+                            PostNights = RoomAllocRow.Out.Value.Subtract(FAttendeeEndDate).Days;
                         }
 
                         FConferenceFlags = FConferenceFlags + "T";
@@ -1405,7 +1405,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             foreach (PcRoomAllocRow RoomAllocRow in RoomAllocTable.Rows)
             {
-                if ((((DateTime)RoomAllocRow.Out).CompareTo(AFromDate) < 1)
+                if ((RoomAllocRow.Out.Value.CompareTo(AFromDate) < 1)
                     || (RoomAllocRow.In.CompareTo(AToDate) > 0))
                 {
                     continue;
@@ -1416,12 +1416,12 @@ namespace Ict.Petra.Server.MReporting.MConference
                     RoomAllocRow.In = AFromDate;
                 }
 
-                if (((DateTime)RoomAllocRow.Out).CompareTo(AToDate) > 0)
+                if (RoomAllocRow.Out.Value.CompareTo(AToDate) > 0)
                 {
                     RoomAllocRow.Out = AToDate;
                 }
 
-                Nights = Nights + ((DateTime)RoomAllocRow.Out).Subtract(RoomAllocRow.In).Days;
+                Nights = Nights + RoomAllocRow.Out.Value.Subtract(RoomAllocRow.In).Days;
             }
 
             if (Nights <= 0)
@@ -1506,7 +1506,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             {
                 if ((Row.Type)
                     && (ARegistrationDate.CompareTo(Row.Applicable) <= 0)
-                    && ((((DateTime)AShortTermerRow.Departure).Subtract((DateTime)AShortTermerRow.Arrival).Days * 2) > FConferenceDays))
+                    && ((AShortTermerRow.Departure.Value.Subtract(AShortTermerRow.Arrival.Value).Days * 2) > FConferenceDays))
                 {
                     // Early
                     if (Row.AmountPercent)
