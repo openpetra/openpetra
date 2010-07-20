@@ -91,8 +91,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             // pnlContent
             //
-            this.pnlContent.Location = new System.Drawing.Point(2,2);
             this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlContent.AutoSize = true;
             this.pnlContent.Controls.Add(this.grpSelectAttendees);
             this.pnlContent.Controls.Add(this.grpSelectConference);

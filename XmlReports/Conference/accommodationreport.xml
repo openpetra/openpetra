@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+	<report id="Accommodation Report">
+		<description>
+			Report for Brief, Full or Detail Accommodations
+		</description>
+		<reportparameters>
+			<reportparameter name="param_report_detail"></reportparameter>
+			<reportparameter name="param_dtpStartDate"></reportparameter>
+			<reportparameter name="param_dtpEndDate"></reportparameter>
+			<reportparameter name="param_dtpFromDate"></reportparameter>
+			<reportparameter name="param_dtpToDate"></reportparameter>
+		</reportparameters>
+
+		<reportheader></reportheader>
+		
+		<pageheader>
+			<field whichfield="title1">
+				<value variable="param_report_detail"></value>
+				<value text=" Accommodation Report"></value>
+			</field>
+			<field whichfield="title2"><value function="getSiteName()"></value></field>
+			<field whichfield="descr1">
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_conferenceselection}, one conference)">
+							<value text="Conference Start Date: "></value>
+							<value variable="param_dtpStartDate"></value>
+							<value text=" End Date: "></value>
+							<value variable="param_dtpEndDate"></value>
+						</case>
+						<default>
+							<value text="Selected Date: "></value>
+							<value variable="param_dtpFromDate"></value>
+							<value text=" - "></value>
+							<value variable="param_dtpToDate"></value>
+						</default>
+					</switch>
+				</fielddetail>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail>
+					<value text="Selection: "></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, one attendee)">
+					<value text="Partner: "></value><value variable="param_partnerkey"></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, all attendees)">
+					<value text="All Attendees"></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, from extract)">
+					<value text="Extract: "></value><value variable="param_extractname"></value>
+				</fielddetail>
+			  </field>
+			<field whichfield="period1">
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_conferenceselection}, one conference)">
+							<value text="Selected Conference: "></value>
+							<value variable="param_conferencename"></value>
+						</case>
+					</switch>
+				</fielddetail>
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_conferenceselection}, all conferences)">
+							<value text="All Conferences selected"></value>
+						</case>
+					</switch>
+				</fielddetail>
+			</field>
+			<field whichfield="period2">
+				<fielddetail>
+					<switch><case condition="eq({param_conferenceselection}, one conference)">
+						<value text="Selected Campaign Options: "></value>
+						<value variable="param_conferenceoptionscode"></value>
+					</case></switch>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+			<calculation id="Select Attendees" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT
+							PUB_p_partner.p_partner_key_n AS AttendeeKey,
+							PUB_p_partner.p_partner_short_name_c AS AttendeeName,
+							PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
+							PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
+							PUB_pm_short_term_application.pm_st_confirmed_option_n AS ConferenceKey,
+							PUB_pc_conference.pc_start_d AS StartDate,
+							PUB_pc_conference.pc_end_d AS EndDate
+						FROM   PUB_p_partner,
+							PUB_pm_short_term_application,
+							PUB_pc_conference,
+							PUB_pm_general_application
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+						WHERE 
+							PUB_pm_short_term_application.p_partner_key_n  = {{param_partnerkey}}
+							AND
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+						WHERE 
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+							, PUB_m_extract, PUB_m_extract_master
+						WHERE
+							 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+							AND
+					</value></queryDetail>
+					<queryDetail condition="eq({param_conferenceselection}, one conference)">
+							<value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
+									variable="param_conferenceoptions" calculation="OR" format="Number">
+							</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
+					</value></queryDetail>
+					
+					<queryDetail condition="eq({param_conferenceselection}, all conferences)"><value>
+							(	   ( PUB_pm_short_term_application.pm_arrival_d &gt;= {#param_dtpFromDate#} AND
+									PUB_pm_short_term_application.pm_arrival_d &lt;= {#param_dtpToDate#} )
+								OR ( PUB_pm_short_term_application.pm_departure_d &gt;= {#param_dtpFromDate#} AND
+									PUB_pm_short_term_application.pm_departure_d &lt;= {#param_dtpToDate#} )
+								OR ( PUB_pm_short_term_application.pm_arrival_d &lt;= {#param_dtpFromDate#} AND
+									PUB_pm_short_term_application.pm_departure_d &gt;= {#param_dtpToDate#} )
+							)	
+							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5)
+					</value></queryDetail>
+					
+					<queryDetail><value>
+							AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
+							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+							AND PUB_pm_general_application.pm_gen_application_status_c = "A"
+							ORDER BY
+								PUB_p_partner.p_partner_short_name_c
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Attendee -->
+			
+			<calculation id="Select Rooms" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+							SELECT DISTINCT
+								PUB_pc_room_alloc.pc_room_number_c AS RoomNumber,
+								PUB_pc_room_alloc.pc_building_code_c AS BuildingCode,
+								PUB_pc_room_alloc.p_venue_key_n AS VenueKey
+							FROM 
+								PUB_pc_room_alloc
+							WHERE
+									PUB_pc_room_alloc.pc_in_d &gt;= {#param_dtpFromDate#}
+								AND PUB_pc_room_alloc.pc_in_d &lt;= {#param_dtpToDate#}
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="GetRoomBooking" returns="BuildingCode" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="GetRoomBooking({VenueKey}, {BuildingCode}, {RoomNumber}, {param_dtpFromDate}, {param_dtpToDate})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="CalculateSingleAttendee" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="CalculatePartnerAccom({ConferenceKey}, {StartDate}, {EndDate}, {param_dtpFromDate}, {param_dtpToDate}, {AttendeeKey}, {param_report_detail})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="ClearAccomTable" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="ClearAccomTable()"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="FinishAccomTable" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="FinishAccomTable({param_report_detail})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Venue" returns="text" returnsFormat="text">
+				<caption><value text="Venue"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="VenueKey"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Building" returns="text" returnsFormat="text">
+				<caption><value text="Building"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="BuildingCode"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Room" returns="text" returnsFormat="text">
+				<caption>
+					<value text="Venue" condition="eq({param_report_detail}, Brief)" ></value>
+					<value text="Venue / Room" condition="eq({param_report_detail}, Full)" ></value>
+					<value text="Venue / Room" condition="eq({param_report_detail}, Detail)" ></value>
+				</caption>
+				<query>
+					<queryDetail>
+						<value variable="RoomNumber"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Cost" returns="text" returnsFormat="text">
+				<caption><value text="Cost"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Cost"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="CheckDate" returns="text" returnsFormat="text">
+				<query>
+					<queryDetail>
+						<value variable="CheckDate"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+		</calculations>
+    
+		<levels> 
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="main2"/>
+				</detail>
+			</level>
+			
+			<level name="main2">
+				<detail>
+					<!-- Use this dummy level to clear any results from any previous accommodation reports -->
+					<lowerLevelReport calculation="ClearAccomTable" level="Dummy Level"></lowerLevelReport>
+					<lowerLevelReport calculation="Select Attendees" level="Single Attendee Level"></lowerLevelReport>
+					<!-- Use this dummy level to transfer the calculated values to the report results -->
+					<lowerLevelReport calculation="FinishAccomTable" level="Dummy Level"></lowerLevelReport>
+				</detail>
+				<footer>
+					<!-- This is the footer for the "no accommodation" list -->
+					<field whichfield="column 1" pos="1.0cm" width="18cm">
+					</field>
+				</footer>
+			</level> 
+
+			<level name="Single Attendee Level">
+				<header>
+					<field whichfield="left 0" calculation="CalculateSingleAttendee"/>
+				</header>
+				<detail>
+				</detail>
+			</level>
+			
+			<level name="Dummy Level">
+				<detail>
+				</detail>
+			</level>
+			
+		</levels>
+	</report>
+</reports>

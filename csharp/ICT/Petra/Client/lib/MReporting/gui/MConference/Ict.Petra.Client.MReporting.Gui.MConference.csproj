@@ -103,6 +103,13 @@
     <Compile Include="AbsenteeReport.Designer.cs">
       <DependentUpon>AbsenteeReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="AccommodationReport.cs" />
+    <Compile Include="AccommodationReport.Designer.cs">
+      <DependentUpon>AccommodationReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AccomodationReport.ManualCode.cs">
+      <DependentUpon>AccommodationReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="PresentAttendeeReport.cs" />
     <Compile Include="PresentAttendeeReport.Designer.cs">
@@ -131,6 +138,9 @@
     </Compile>
     <EmbeddedResource Include="AbsenteeReport.resx">
       <DependentUpon>AbsenteeReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AccommodationReport.resx">
+      <DependentUpon>AccommodationReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PresentAttendeeReport.resx">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>

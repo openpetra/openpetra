@@ -42,6 +42,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmUC_ConferenceSelection
     {
+        /// <summary>publish conference selection check box</summary>
+        public bool AllConferenceSelected
+        {
+            get
+            {
+                return rbtAllConferences.Checked;
+            }
+        }
+
+        /// <summary>publish conference selection check box</summary>
+        public bool OneConferenceSelected
+        {
+            get
+            {
+                return rbtConference.Checked;
+            }
+        }
+
+        /// <summary>publish conference key</summary>
+        public String ConferenceKey
+        {
+            get
+            {
+                return txtConference.Text;
+            }
+        }
+
         /// <summary>
         /// Initialisation
         /// </summary>
@@ -249,6 +276,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 txtConference.Text = SelectConference.SelectedConferenceKey.ToString();
                 lblConferenceName.Text = SelectConference.SelectedConferenceName;
             }
+        }
+
+        public void AddEventHandler(EventHandler AEventHandler)
+        {
+            txtConference.TextChanged += AEventHandler;    //new EventHandler(txtConference_TextChanged);
+            //txtConference.
         }
     }
 }

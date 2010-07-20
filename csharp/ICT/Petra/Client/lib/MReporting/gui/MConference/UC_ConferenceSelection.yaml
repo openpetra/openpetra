@@ -11,6 +11,7 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [grpSelectConference, grpSelectAttendees]
+            Dock: Top
         grpSelectConference:
             Label: Select Conference
             Controls:
