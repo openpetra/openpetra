@@ -31,20 +31,18 @@ using System.Drawing;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.Controls;
-using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MReporting;
+//using Ict.Petra.Shared.MReporting;
 
-namespace Ict.Petra.Client.MReporting.Gui.MConference
+namespace Ict.Petra.Client.MConference.Gui
 {
     /// <summary>
-    /// Description of TFrmSelectConferenceForm.ManualCode.
+    /// Description of TFrmConferenceFindForm.ManualCode.
     /// </summary>
-    public partial class TFrmSelectConferenceForm
+    public partial class TFrmConferenceFindForm
     {
         private String FSelectedConferenceName;
         private Int64 FSelectedConferenceKey;
@@ -124,6 +122,48 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             }
 
             grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PcConference.DefaultView);
+        }
+    }
+
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Partner Find Screen.
+    /// </summary>
+    public static class TConferenceFindScreenManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Conference Find screen.
+        /// </summary>
+        /// <param name="AConferenceNamePattern">Mathcing pattern for the conference name</param>
+        /// <param name="ACampaignCodePattern">Matching patterns for the campaign code</param>
+        /// <param name="AConferenceKey">Conference key of the found conference</param>
+        /// <param name="AConferenceName">Partner ShortName name of the found conference</param>
+        /// <param name="AParentFormHandle"></param>
+        /// <returns>True if a conference was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String AConferenceNamePattern,
+            String ACampaignCodePattern,
+            out Int64 AConferenceKey,
+            out String AConferenceName,
+            IntPtr AParentFormHandle)
+        {
+            DialogResult dlgResult;
+
+            AConferenceKey = -1;
+            AConferenceName = String.Empty;
+
+            TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentFormHandle);
+
+            dlgResult = FindConference.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                AConferenceKey = FindConference.SelectedConferenceKey;
+                AConferenceName = FindConference.SelectedConferenceName;
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

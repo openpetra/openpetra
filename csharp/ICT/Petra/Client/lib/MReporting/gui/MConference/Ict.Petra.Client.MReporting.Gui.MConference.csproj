@@ -119,13 +119,6 @@
     <Compile Include="SelectCampaignOption.Designer.cs">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
     </Compile>
-    <Compile Include="SelectConferenceForm.cs" />
-    <Compile Include="SelectConferenceForm.Designer.cs">
-      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SelectConferenceForm.ManualCode.cs">
-      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UC_ConferenceSelection.cs" />
     <Compile Include="UC_ConferenceSelection.Designer.cs">
       <DependentUpon>UC_ConferenceSelection.cs</DependentUpon>
@@ -147,9 +140,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SelectCampaignOption.resx">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SelectConferenceForm.resx">
-      <DependentUpon>SelectConferenceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_ConferenceSelection.resx">
       <DependentUpon>UC_ConferenceSelection.cs</DependentUpon>

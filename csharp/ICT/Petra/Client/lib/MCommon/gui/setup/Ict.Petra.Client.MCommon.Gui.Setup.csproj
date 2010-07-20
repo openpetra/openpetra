@@ -52,9 +52,6 @@
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Common.IO">
-      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
@@ -81,13 +78,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.Setup.AssemblyInfo.cs" />
-    <Compile Include="LanguageCodeSetup.cs" />
-    <Compile Include="LanguageCodeSetup.Designer.cs">
-      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LanguageCodeSetup.ManualCode.cs">
-      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
-    </Compile>
     <Compile Include="SetupCurrency.cs" />
     <Compile Include="SetupCurrency.Designer.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
@@ -95,9 +85,6 @@
     <Compile Include="SetupCurrency.ManualCode.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="LanguageCodeSetup.resx">
-      <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SetupCurrency.resx">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </EmbeddedResource>

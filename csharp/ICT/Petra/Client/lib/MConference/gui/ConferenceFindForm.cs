@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SelectConferenceForm.yaml and template windowFind
+// auto generated with nant generateWinforms from ConferenceFindForm.yaml and template windowFind
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -42,17 +42,17 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MConference.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MConference
+namespace Ict.Petra.Client.MConference.Gui
 {
 
-  /// auto generated: Select Conference
-  public partial class TFrmSelectConferenceForm: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+  /// auto generated: Conference Find
+  public partial class TFrmConferenceFindForm: System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MConference.Data.SelectConferenceTDS FMainDS;
 
     /// constructor
-    public TFrmSelectConferenceForm(IntPtr AParentFormHandle) : base()
+    public TFrmConferenceFindForm(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Select Conference");
+      this.Text = Catalog.GetString("Conference Find");
       #endregion
 
       this.txtConference.Font = TAppSettingsManager.GetDefaultBoldFont();

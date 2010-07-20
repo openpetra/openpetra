@@ -5,9 +5,6 @@ RootNode:
     UtilObjectClass: TFrmPetraReportingUtils
     FormType: edit
     Template: usercontrolUnbound
-    Actions:
-        actFind:
-            ActionClick: FindConference
     Controls:
         pnlContent:
             Controls: [grpSelectConference, grpSelectAttendees]
@@ -15,19 +12,11 @@ RootNode:
         grpSelectConference:
             Label: Select Conference
             Controls:
-                Row0: [rbtConference, btnSelectConference, txtConference, lblConferenceName]
+                Row0: [rbtConference, txtConference]
                 Row1: [rbtAllConferences]
             Dock: Top
         rbtConference: {Label=Conference, OnChange=rbtConferenceSelectionChange, Width=150}
-        btnSelectConference:
-            Label: Find
-            Width: 40
-            Height: 22
-            Action: actFind
-        txtConference: 
-            NoLabel: true
-            Width: 80
-        lblConferenceName:
+        txtConference: {NoLabel=true, Type=Conference, Width=400}
         rbtAllConferences: {Label=All Conferences, OnChange=rbtConferenceSelectionChange}
         
         grpSelectAttendees:

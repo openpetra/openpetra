@@ -160,6 +160,10 @@
       <Project>{F1D473DD-F831-4662-A3F9-EE5016D4C625}</Project>
       <Name>Ict.Petra.Client.MCommon.Gui</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\lib\MConference\gui\Ict.Petra.Client.MConference.Gui.csproj">
+      <Project>{B2C1226E-B8B1-44E5-9BBB-D8C4CB620B00}</Project>
+      <Name>Ict.Petra.Client.MConference.Gui</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\MFinance\gui\Ict.Petra.Client.MFinance.Gui.csproj">
       <Project>{B8226A6F-E8BE-41B3-8509-0FD128B16574}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui</Name>

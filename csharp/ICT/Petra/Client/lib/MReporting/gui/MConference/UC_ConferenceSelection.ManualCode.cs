@@ -78,7 +78,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             rbtAllAttendees.Checked = true;
             txtExtract.Enabled = false;
-            lblConferenceName.Text = "";
+            // TODO
+            //lblConferenceName.Text = "";
         }
 
         /// <summary>
@@ -120,7 +121,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             ACalculator.AddParameter("param_partnerkey", txtOneAttendee.Text);
             ACalculator.AddParameter("param_conferencekey", txtConference.Text);
-            ACalculator.AddParameter("param_conferencename", lblConferenceName.Text);
+            // TODO
+            //ACalculator.AddParameter("param_conferencename", txtConference.labe  lblConferenceName.Text);
             ACalculator.AddParameter("param_extractname", txtExtract.Text);
 
             TVerificationResult VerificationResult;
@@ -194,7 +196,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 else
                 {
                     CampaignOptions = txtConference.Text;
-                    CampaignOptionsCode = lblConferenceName.Text;
+                    // TODO
+//                    CampaignOptionsCode = lblConferenceName.Text;
                 }
 
                 ACalculator.AddParameter("param_conferenceoptions", CampaignOptions);
@@ -239,7 +242,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 txtConference.Text = AParameters.Get("param_conferencekey").ToString();
             }
 
-            lblConferenceName.Text = AParameters.Get("param_conferencename").ToString();
+//TODO
+            //lblConferenceName.Text = AParameters.Get("param_conferencename").ToString();
 
             txtExtract.Text = AParameters.Get("param_extractname").ToString();
         }
@@ -252,8 +256,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         protected void rbtConferenceSelectionChange(object sender, EventArgs e)
         {
             txtConference.Enabled = rbtConference.Checked;
-            btnSelectConference.Enabled = rbtConference.Checked;
-            lblConferenceName.Enabled = rbtConference.Checked;
+            txtConference.Enabled = rbtConference.Checked;
+//            btnSelectConference.Enabled = rbtConference.Checked;
+//            lblConferenceName.Enabled = rbtConference.Checked;
         }
 
         /// <summary>
@@ -269,12 +274,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
         private void FindConference(object sender, EventArgs e)
         {
-            TFrmSelectConferenceForm SelectConference = new TFrmSelectConferenceForm(this.Handle);
-
-            if (SelectConference.ShowDialog(this) == DialogResult.OK)
+//            TFrmSelectConferenceForm SelectConference = new TFrmSelectConferenceForm(this.Handle);
+//
+//            if (SelectConference.ShowDialog(this) == DialogResult.OK)
             {
-                txtConference.Text = SelectConference.SelectedConferenceKey.ToString();
-                lblConferenceName.Text = SelectConference.SelectedConferenceName;
+//                txtConference.Text = SelectConference.SelectedConferenceKey.ToString();
+                // TODO
+//                lblConferenceName.Text = SelectConference.SelectedConferenceName;
             }
         }
 

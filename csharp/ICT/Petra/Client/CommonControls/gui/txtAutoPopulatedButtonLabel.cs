@@ -52,6 +52,9 @@ namespace Ict.Petra.Client.CommonControls
     /// <summary>Partner found</summary>
     public delegate void TDelegatePartnerFound(Int64 APartnerKey, Int32 ALocationKey);
 
+    /// <summary>Partner found</summary>
+    public delegate void TDelegateConferenceChanged(Int64 AConferenceKey, String AConferenceName, bool AValidConference);
+
     class txtAutoPopulatedButtonLabel
     {
         /// <summary>Exception message</summary>
@@ -110,7 +113,10 @@ namespace Ict.Petra.Client.CommonControls
             PartnerKey,
 
             /// <summary>Type extract</summary>
-            Extract
+            Extract,
+
+            /// <summary>Type conference</summary>
+            Conference
         };
 
         /// <summary></summary>
@@ -438,6 +444,17 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property gets the Text of the text box label control.
+        /// </summary>
+        public string LabelText
+        {
+            get
+            {
+                return this.txtAutoPopulated.lblLabel.Text;
+            }
+        }
+
+        /// <summary>
         /// ButtonWidth if the type 'PartnerKey' from the ListTable property is chosen.
         /// </summary>
         public int TextBoxWidth
@@ -503,6 +520,11 @@ namespace Ict.Petra.Client.CommonControls
         /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
         /// </summary>
         public event TDelegatePartnerFound PartnerFound;
+
+        /// <summary>
+        /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
+        /// </summary>
+        public event TDelegateConferenceChanged ConferenceChanged;
 
         /// <summary>
         /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
@@ -672,6 +694,25 @@ namespace Ict.Petra.Client.CommonControls
 
                     #endregion
                     break;
+
+                case TListTableEnum.Conference:
+                    #region TListTableEnum.Conference
+
+                    /* Settings for the button */
+                    this.FDefaultButtonText = "&Conference";
+                    this.FDefaultButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+                    this.FDefaultButtonWidth = 108;
+                    this.FDefaultTextBoxWidth = 80;
+                    this.txtAutoPopulated.AdjustButtonWidth = false;
+                    mFontSize = this.txtAutoPopulated.txtTextBox.Font.Size;
+                    mFont = new System.Drawing.Font("Courier New", mFontSize, System.Drawing.FontStyle.Bold);
+                    this.txtAutoPopulated.txtTextBox.Font = mFont;
+                    this.FLookUpColumnIndex = -1;
+                    this.txtAutoPopulated.txtTextBox.Text = "0000000000";
+                    this.txtAutoPopulated.Size = this.Size;
+                    this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+                    #endregion
+                    break;
             }
 
             if (this.FASpecialSetting == true)
@@ -804,6 +845,25 @@ namespace Ict.Petra.Client.CommonControls
                         this.FPartnerClass = "";
 
                         // TLogging.Log('End PartnerKey setup');
+                        #endregion
+                        break;
+
+                    case TListTableEnum.Conference:
+                        #region TListTableEnum.Conference
+
+                        /* this.ASpecialSetting := true; */
+                        /* No LookUp Table to set up since there are to many PartnerKeys */
+                        this.txtAutoPopulated.LookUpDataSource = null;
+                        this.txtAutoPopulated.TextBoxLookUpMember = "";
+                        this.txtAutoPopulated.LabelLookUpMember = "";
+                        this.txtAutoPopulated.KeyValues = TKeyValuesEnum.OnlyDigits;
+                        this.txtAutoPopulated.txtTextBox.ControlMode = TMaskedTextBoxMode.PartnerKey;
+
+                        /* DataBinding Settings */
+                        this.txtAutoPopulated.lblLabel.Text = null;
+                        this.FPartnerClass = "";
+
+                        /* TLogging.Log('End PartnerKey setup'); */
                         #endregion
                         break;
                 }
@@ -1113,6 +1173,71 @@ namespace Ict.Petra.Client.CommonControls
                     // End TListTableEnum.Extract:
                     #endregion
                     break;
+
+                case TListTableEnum.Conference:
+                    #region TListTableEnum.Conference
+
+                    /* TLogging.Log('Verification Branch: ' + Enum.GetName(typeof(TListTableEnum), TListTableEnum.Conference)); */
+                    mPartnerKey = Convert.ToInt64(e.ProposedValue);
+
+                    /* If the delegate is defined, the host form is allowed to dictate what is valid */
+                    if (this.VerifyUserEntry != null)
+                    {
+                        /* delegate IS defined */
+                        /* TLogging.Log('VerifyUserEntry is assigned!', [TLoggingType.ToLogfile]); */
+                        /* TLogging.Log('VerifyUserEntry proposed Value: ' + e.ProposedValue.ToString, [TLoggingType.ToLogfile]); */
+                        try
+                        {
+                            mDelegateVerified = this.VerifyUserEntry(mPartnerKey.ToString(), out mVerifiedString);
+                            this.FVerifiedString = mVerifiedString;
+                        }
+                        catch (Exception)
+                        {
+                            this.FVerifiedString = UNIT_NO_DATA_MESSAGE;
+                            throw new EVerificationMissing("this.VerifyUserEntry could not be called!");
+                        }
+
+                        /* end try */
+                    }
+                    /* end IS assigned */
+                    else
+                    {
+                        /* delegate IS NOT defined */
+                        /* look it up for ourself */
+                        TPartnerClass[] temp = new TPartnerClass[1];
+
+                        temp[0] = TPartnerClass.UNIT;
+
+                        mDelegateVerified = TServerLookup.TMPartner.VerifyPartner(mPartnerKey,
+                            temp,
+                            out mVerifiedString,
+                            out mPartnerClass,
+                            out mPartnerIsMerged);
+                    }
+
+                    /* end delegate IS NOT defined */
+                    /* OK, now process result */
+                    if (mDelegateVerified == true)
+                    {
+                        /* TLogging.Log('(mDelegateVerified = true)'); */
+                        this.txtAutoPopulated.lblLabel.Text = mVerifiedString;
+                        this.FErrorData.RVerified = true;
+                    }
+                    else
+                    {
+                        /* TLogging.Log('NOT(mDelegateVerified = true))'); */
+                        this.FErrorData.RVerified = false;
+                        this.FVerifiedString = UNIT_NO_DATA_MESSAGE;
+                        this.txtAutoPopulated.lblLabel.Text = UNIT_NO_DATA_MESSAGE;
+                        this.FErrorData.RErrorMessage = "The specified PartnerKey \"" + e.ProposedValue.ToString() + "\" is invalid!";
+                        this.FErrorData.RCaption = "Invalid PartnerKey";
+
+                        mResultSev = TResultSeverity.Resv_Critical;
+                    }
+
+                    /* End TListTableEnum.Conference: */
+                    #endregion
+                    break;
             }
 
             // End "case this.FListTable of"
@@ -1162,7 +1287,9 @@ namespace Ict.Petra.Client.CommonControls
         private void TextHasChanged(System.Object sender, System.EventArgs e)
         {
             if ((FUserControlInitialised == true)
-                && ((this.FListTable == TListTableEnum.PartnerKey) || (this.FListTable == TListTableEnum.Extract)))
+                && ((this.FListTable == TListTableEnum.PartnerKey)
+                    || (this.FListTable == TListTableEnum.Extract)
+                    || (this.FListTable == TListTableEnum.Conference)))
             {
                 // reset timer and start it again
                 timerGetKey.Stop();
@@ -1174,7 +1301,9 @@ namespace Ict.Petra.Client.CommonControls
         private void TimerGetKey_Tick(System.Object sender, System.EventArgs e)
         {
             if ((FUserControlInitialised == true)
-                && ((this.FListTable == TListTableEnum.PartnerKey) || (this.FListTable == TListTableEnum.Extract)))
+                && ((this.FListTable == TListTableEnum.PartnerKey)
+                    || (this.FListTable == TListTableEnum.Extract)
+                    || (this.FListTable == TListTableEnum.Conference)))
             {
                 this.UpdateDisplayedValue();
                 timerGetKey.Stop();
@@ -1340,6 +1469,52 @@ namespace Ict.Petra.Client.CommonControls
                             // End TListTableEnum.Extract:
                             #endregion
                             break;
+
+                        case TListTableEnum.Conference:
+                            #region TListTableEnum.Conference
+
+                            /* If the delegate is defined, the host form will launch a Conference Find dialog for us */
+                            if (TCommonScreensForwarding.OpenConferenceFindScreen != null)
+                            {
+                                /* delegate IS defined */
+                                /* TLogging.Log('OpenConferenceFindDialog is assigned!', [TLoggingType.ToLogfile]); */
+                                try
+                                {
+                                    mDelegateVerified = TCommonScreensForwarding.OpenConferenceFindScreen.Invoke("*", "*",
+                                        out mResultIntTxt,
+                                        out mResultStringLbl,
+                                        this.ParentForm.Handle);
+
+                                    if (mResultIntTxt != -1)
+                                    {
+                                        TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
+                                        LabelStringOut = mResultStringLbl;
+                                    }
+                                    else
+                                    {
+                                        TextBoxStringOut = "";
+                                        LabelStringOut = "";
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TextBoxStringOut = "";
+                                    LabelStringOut = "";
+                                    throw new ApplicationException("Exception occured while calling OpenConferenceFind Delegate!",
+                                        exp);
+                                }
+                            }
+                            /* end IS assigned */
+                            else
+                            {
+                                /* delegate IS NOT defined */
+                                throw new ApplicationException(
+                                    "DEVELOPER ERROR: OpenConferenceFind Delegate must be assigned on this Control to be able to open a Conference find dialog!");
+                            }
+
+                            /* End TListTableEnum.Conference: */
+                            #endregion
+                            break;
                     }
 
                     // End "case this.FListTable of"
@@ -1379,21 +1554,11 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-        /// <summary>
-        /// readonly property for the label
-        /// </summary>
-        public string LabelText
-        {
-            get
-            {
-                return this.txtAutoPopulated.lblLabel.Text;
-            }
-        }
-
         private void TxtAutoPopulated_SetLabel(string ALookUpText, out string ALabelText)
         {
             ALabelText = "";
             bool ServerResult;
+            bool ValidResult = false;
             System.Int64 mPartnerKey;
             String mPartnerShortName;
             String ExtractDescription;
@@ -1474,6 +1639,48 @@ namespace Ict.Petra.Client.CommonControls
                     ALabelText = ExtractDescription;
 
                     // End TListTableEnum.Extract:
+                    #endregion
+                    break;
+
+                case TListTableEnum.Conference:
+                    #region TListTableEnum.Conference
+
+                    mPartnerKey = StringHelper.StrToPartnerKey(ALookUpText);
+
+                    /* TLogging.Log('  Verified String: >' + this.FVerifiedString + '<', [TLoggingType.ToLogfile]); */
+                    if ((ALookUpText != "") && (mPartnerKey != 0))
+                    {
+                        /* now call server lookup class */
+                        ServerResult = TServerLookup.TMPartner.GetPartnerShortName(Convert.ToInt64(
+                                mPartnerKey), out mPartnerShortName, out mPartnerClass, true);
+
+                        if (ServerResult == false)
+                        {
+                            mPartnerShortName = "### ShortName not retrieved ###";
+                        }
+                        else if (mPartnerClass != TPartnerClass.UNIT)
+                        {
+                            mPartnerShortName = "### PartnerKey is not a Conference ###";
+                        }
+                        else
+                        {
+                            ValidResult = true;
+                        }
+                    }
+                    else
+                    {
+                        mPartnerShortName = "";
+                    }
+
+                    if (ConferenceChanged != null)
+                    {
+                        ConferenceChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                    }
+
+                    ALabelText = mPartnerShortName;
+
+
+                    /* End TListTableEnum.Conference: */
                     #endregion
                     break;
             }
@@ -1638,6 +1845,34 @@ namespace Ict.Petra.Client.CommonControls
 
                     // End except block
                     // End try ... except block
+                    #endregion
+                    break;
+
+                case TListTableEnum.Conference:
+                    #region TListTableEnum.Conference
+                    try
+                    {
+                        /* Databinding */
+                        this.txtAutoPopulated.PerformDataBinding(ADataSource, ATextBoxDataMember, TButtonLabelControlMode.FunctionMode);
+                        this.FValueMember = ATextBoxDataMember;
+
+                        /* TLogging.Log('txtAutoPopulatedButtonLabel got DataBound!'); */
+                        /* Monitor changes in the DataSource and verify them */
+                        MonitorDataSourceChanges(ADataSource);
+
+                        /* TLogging.Log('Monitor changes in the DataSource included!!!'); */
+                        this.txtAutoPopulated.UpdateLabelText();
+
+                        /* End try block */
+                    }
+                    catch (Exception E)
+                    {
+                        mExceptionMsg = "Could not databind ConferenceKey!!!" + "\n" + E.ToString();
+                        throw new System.Exception(mExceptionMsg);
+                    }
+
+                    /* End except block */
+                    /* End try ... except block */
                     #endregion
                     break;
             }

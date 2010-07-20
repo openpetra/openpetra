@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../../CommonForms/PetraForm.yaml
-    FormTitle: Select Conference
-    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Conference Find
+    Namespace: Ict.Petra.Client.MConference.Gui
     DatasetType: Ict.Petra.Shared.MConference.Data.SelectConferenceTDS
     FormType: browse
     Template: windowFind
