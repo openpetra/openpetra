@@ -83,7 +83,56 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcquisitionCodeSetup.cs" />
+    <Compile Include="AcquisitionCodeSetup.Designer.cs">
+      <DependentUpon>AcquisitionCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AcquisitionCodeSetup.ManualCode.cs">
+      <DependentUpon>AcquisitionCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddresseeTypeSetup.cs" />
+    <Compile Include="AddresseeTypeSetup.Designer.cs">
+      <DependentUpon>AddresseeTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddresseeTypeSetup.ManualCode.cs">
+      <DependentUpon>AddresseeTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BusinessCodeSetup.cs" />
+    <Compile Include="BusinessCodeSetup.Designer.cs">
+      <DependentUpon>BusinessCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BusinessCodeSetup.ManualCode.cs">
+      <DependentUpon>BusinessCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DenominationCodeSetup.cs" />
+    <Compile Include="DenominationCodeSetup.Designer.cs">
+      <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DenominationCodeSetup.ManualCode.cs">
+      <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MPartner.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="LocationTypeSetup.cs" />
+    <Compile Include="LocationTypeSetup.Designer.cs">
+      <DependentUpon>LocationTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LocationTypeSetup.ManualCode.cs">
+      <DependentUpon>LocationTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MaritalStatusSetup.cs" />
+    <Compile Include="MaritalStatusSetup.Designer.cs">
+      <DependentUpon>MaritalStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MaritalStatusSetup.ManualCode.cs">
+      <DependentUpon>MaritalStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OccupationCodeSetup.cs" />
+    <Compile Include="OccupationCodeSetup.Designer.cs">
+      <DependentUpon>OccupationCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OccupationCodeSetup.ManualCode.cs">
+      <DependentUpon>OccupationCodeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerStatusSetup.cs" />
     <Compile Include="PartnerStatusSetup.Designer.cs">
       <DependentUpon>PartnerStatusSetup.cs</DependentUpon>
@@ -98,11 +147,62 @@
     <Compile Include="PartnerTypeSetup.ManualCode.cs">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="PublicationSetup.cs" />
+    <Compile Include="PublicationSetup.Designer.cs">
+      <DependentUpon>PublicationSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PublicationSetup.ManualCode.cs">
+      <DependentUpon>PublicationSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReasonSubscriptionCancelledSetup.cs" />
+    <Compile Include="ReasonSubscriptionCancelledSetup.Designer.cs">
+      <DependentUpon>ReasonSubscriptionCancelledSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReasonSubscriptionCancelledSetup.ManualCode.cs">
+      <DependentUpon>ReasonSubscriptionCancelledSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReasonSubscriptionGivenSetup.cs" />
+    <Compile Include="ReasonSubscriptionGivenSetup.Designer.cs">
+      <DependentUpon>ReasonSubscriptionGivenSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReasonSubscriptionGivenSetup.ManualCode.cs">
+      <DependentUpon>ReasonSubscriptionGivenSetup.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AcquisitionCodeSetup.resx">
+      <DependentUpon>AcquisitionCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddresseeTypeSetup.resx">
+      <DependentUpon>AddresseeTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BusinessCodeSetup.resx">
+      <DependentUpon>BusinessCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DenominationCodeSetup.resx">
+      <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocationTypeSetup.resx">
+      <DependentUpon>LocationTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MaritalStatusSetup.resx">
+      <DependentUpon>MaritalStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OccupationCodeSetup.resx">
+      <DependentUpon>OccupationCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PartnerStatusSetup.resx">
       <DependentUpon>PartnerStatusSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerTypeSetup.resx">
       <DependentUpon>PartnerTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PublicationSetup.resx">
+      <DependentUpon>PublicationSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReasonSubscriptionCancelledSetup.resx">
+      <DependentUpon>ReasonSubscriptionCancelledSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReasonSubscriptionGivenSetup.resx">
+      <DependentUpon>ReasonSubscriptionGivenSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
