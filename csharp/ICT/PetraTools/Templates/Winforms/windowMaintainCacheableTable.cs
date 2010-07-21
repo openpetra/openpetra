@@ -91,6 +91,12 @@ namespace {#NAMESPACE}
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.{#DETAILTABLE}.Rows.Count == 0) 
+      {
+        ShowDetails(null);
+      }
+      
       {#INITACTIONSTATE}            
       {#DISPLAYFILTERINFORMTITLE}
     }
@@ -169,7 +175,19 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
-        {#SHOWDETAILS}
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            {#SHOWDETAILS}
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
