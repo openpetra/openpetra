@@ -116,6 +116,16 @@ namespace Ict.Petra.Shared.MPartner
         PartnerTypeList,
 
         /// <summary>
+        /// relations between partners
+        /// </summary>
+        RelationList,
+
+        /// <summary>
+        /// categories of relations between partners
+        /// </summary>
+        RelationCategoryList,
+
+        /// <summary>
         /// types of units
         /// </summary>
         UnitTypeList,

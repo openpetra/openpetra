@@ -139,6 +139,12 @@ namespace Ict.Petra.Client.CommonControls
             ReasonSubscriptionGivenList,
 
             /// <summary>todoComment</summary>
+            RelationList,
+            
+            /// <summary>todoComment</summary>
+            RelationCategoryList,
+            
+            /// <summary>todoComment</summary>
             SubscriptionStatus,
 
             /// <summary>todoComment</summary>
@@ -561,6 +567,24 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.RelationList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList),
+                    PRelationTable.GetRelationNameDBName(),
+                    PRelationTable.GetRelationDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.RelationCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationCategoryList),
+                    PRelationCategoryTable.GetCodeDBName(),
+                    PRelationCategoryTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.UnitTypeList:
 
                     InitialiseUserControl(
@@ -804,6 +828,15 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.SubscriptionStatus:
                     cmbAutoPopulated.ColumnWidthCol1 = 110;
+                    break;
+
+                case TListTableEnum.RelationList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 150;
+                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 15;
+                    break;
+
+                case TListTableEnum.RelationCategoryList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 150;
                     break;
 
                 case TListTableEnum.UnitTypeList:

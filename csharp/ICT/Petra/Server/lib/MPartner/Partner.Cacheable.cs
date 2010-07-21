@@ -240,6 +240,16 @@ namespace Ict.Petra.Server.MPartner.Partner
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
+                        case TCacheablePartnerTablesEnum.RelationList:
+                            TmpTable = PRelationAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+
+                        case TCacheablePartnerTablesEnum.RelationCategoryList:
+                            TmpTable = PRelationCategoryAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                            
                         case TCacheablePartnerTablesEnum.UnitTypeList:
                             TmpTable = UUnitTypeAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
@@ -722,7 +732,6 @@ namespace Ict.Petra.Server.MPartner.Partner
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
-// Console.WriteLine("PartnerTypeList changes successfully saved!");
                             }
 
                             break;
@@ -730,6 +739,26 @@ namespace Ict.Petra.Server.MPartner.Partner
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
 
                             if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheablePartnerTablesEnum.RelationList:
+
+                            if (PRelationAccess.SubmitChanges((PRelationTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheablePartnerTablesEnum.RelationCategoryList:
+
+                            if (PRelationCategoryAccess.SubmitChanges((PRelationCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

@@ -1943,6 +1943,8 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
                 case TCacheablePartnerTablesEnum.PartnerTypeList:
                 case TCacheablePartnerTablesEnum.ProposalStatusList:
                 case TCacheablePartnerTablesEnum.ProposalSubmissionTypeList:
+                case TCacheablePartnerTablesEnum.RelationList:
+                case TCacheablePartnerTablesEnum.RelationCategoryList:
                 case TCacheablePartnerTablesEnum.UnitTypeList:
 
                     // Standard Cacheable DataTables
