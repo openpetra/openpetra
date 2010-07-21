@@ -64,6 +64,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPType();
-        }        
+        }
     }
 }
