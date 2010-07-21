@@ -110,7 +110,15 @@
     <Compile Include="AccomodationReport.ManualCode.cs">
       <DependentUpon>AccommodationReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="AgeSummaryReport.cs" />
+    <Compile Include="AgeSummaryReport.Designer.cs">
+      <DependentUpon>AgeSummaryReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="LanguagesReport.cs" />
+    <Compile Include="LanguagesReport.Designer.cs">
+      <DependentUpon>LanguagesReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PresentAttendeeReport.cs" />
     <Compile Include="PresentAttendeeReport.Designer.cs">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
@@ -134,6 +142,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AccommodationReport.resx">
       <DependentUpon>AccommodationReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AgeSummaryReport.resx">
+      <DependentUpon>AgeSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguagesReport.resx">
+      <DependentUpon>LanguagesReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PresentAttendeeReport.resx">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
