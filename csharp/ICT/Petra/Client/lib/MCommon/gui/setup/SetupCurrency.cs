@@ -124,6 +124,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.ACurrency.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
 
       /*
@@ -223,12 +229,23 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
     private void ShowDetails(ACurrencyRow ARow)
     {
-        txtDetailCurrencyCode.Text = ARow.CurrencyCode;
-        txtDetailCurrencyCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailCurrencyName.Text = ARow.CurrencyName;
-        txtDetailCurrencySymbol.Text = ARow.CurrencySymbol;
-        cmbDetailCountryCode.SetSelectedString(ARow.CountryCode);
-        txtDetailDisplayFormat.Text = ARow.DisplayFormat;
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailCurrencyCode.Text = ARow.CurrencyCode;
+            txtDetailCurrencyCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailCurrencyName.Text = ARow.CurrencyName;
+            txtDetailCurrencySymbol.Text = ARow.CurrencySymbol;
+            cmbDetailCountryCode.SetSelectedString(ARow.CountryCode);
+            txtDetailDisplayFormat.Text = ARow.DisplayFormat;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private ACurrencyRow FPreviouslySelectedDetailRow = null;

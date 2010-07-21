@@ -124,6 +124,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.ADailyExchangeRate.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
 
       /*
@@ -223,13 +229,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     private void ShowDetails(ADailyExchangeRateRow ARow)
     {
-        cmbDetailFromCurrencyCode.SetSelectedString(ARow.FromCurrencyCode);
-        cmbDetailFromCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
-        cmbDetailToCurrencyCode.SetSelectedString(ARow.ToCurrencyCode);
-        cmbDetailToCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
-        dtpDetailDateEffectiveFrom.Date = ARow.DateEffectiveFrom;
-        dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
-        txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            cmbDetailFromCurrencyCode.SetSelectedString(ARow.FromCurrencyCode);
+            cmbDetailFromCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
+            cmbDetailToCurrencyCode.SetSelectedString(ARow.ToCurrencyCode);
+            cmbDetailToCurrencyCode.Enabled = (ARow.RowState == DataRowState.Added);
+            dtpDetailDateEffectiveFrom.Date = ARow.DateEffectiveFrom;
+            dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
+            txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private ADailyExchangeRateRow FPreviouslySelectedDetailRow = null;

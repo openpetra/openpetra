@@ -172,6 +172,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PPublication.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -241,49 +247,60 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PPublicationRow ARow)
     {
-        txtDetailPublicationCode.Text = ARow.PublicationCode;
-        txtDetailPublicationCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        if (ARow.IsPublicationDescriptionNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            txtDetailPublicationDescription.Text = String.Empty;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            txtDetailPublicationDescription.Text = ARow.PublicationDescription;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailPublicationCode.Text = ARow.PublicationCode;
+            txtDetailPublicationCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            if (ARow.IsPublicationDescriptionNull())
+            {
+                txtDetailPublicationDescription.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailPublicationDescription.Text = ARow.PublicationDescription;
+            }
+            if (ARow.IsPublicationLabelCodeNull())
+            {
+                txtDetailPublicationLabelCode.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailPublicationLabelCode.Text = ARow.PublicationLabelCode;
+            }
+            if (ARow.IsNumberOfIssuesNull())
+            {
+                txtDetailNumberOfIssues.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailNumberOfIssues.Text = ARow.NumberOfIssues.ToString();
+            }
+            if (ARow.IsNumberOfRemindersNull())
+            {
+                txtDetailNumberOfReminders.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailNumberOfReminders.Text = ARow.NumberOfReminders.ToString();
+            }
+            cmbDetailFrequencyCode.SetSelectedString(ARow.FrequencyCode);
+            if (ARow.IsValidPublicationNull())
+            {
+                chkDetailValidPublication.Checked = false;
+            }
+            else
+            {
+                chkDetailValidPublication.Checked = ARow.ValidPublication;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        if (ARow.IsPublicationLabelCodeNull())
-        {
-            txtDetailPublicationLabelCode.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailPublicationLabelCode.Text = ARow.PublicationLabelCode;
-        }
-        if (ARow.IsNumberOfIssuesNull())
-        {
-            txtDetailNumberOfIssues.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailNumberOfIssues.Text = ARow.NumberOfIssues.ToString();
-        }
-        if (ARow.IsNumberOfRemindersNull())
-        {
-            txtDetailNumberOfReminders.Text = String.Empty;
-        }
-        else
-        {
-            txtDetailNumberOfReminders.Text = ARow.NumberOfReminders.ToString();
-        }
-        cmbDetailFrequencyCode.SetSelectedString(ARow.FrequencyCode);
-        if (ARow.IsValidPublicationNull())
-        {
-            chkDetailValidPublication.Checked = false;
-        }
-        else
-        {
-            chkDetailValidPublication.Checked = ARow.ValidPublication;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PPublicationRow FPreviouslySelectedDetailRow = null;

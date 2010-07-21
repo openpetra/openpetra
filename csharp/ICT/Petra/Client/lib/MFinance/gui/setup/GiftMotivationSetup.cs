@@ -172,6 +172,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.AMotivationDetail.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
       this.Text = this.Text + "   [Ledger = " + FFilter.ToString() + "]";
     }
@@ -242,22 +248,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
     private void ShowDetails(AMotivationDetailRow ARow)
     {
-        txtDetailMotivationGroupCode.Text = ARow.MotivationGroupCode;
-        txtDetailMotivationGroupCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailMotivationDetailCode.Text = ARow.MotivationDetailCode;
-        txtDetailMotivationDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailMotivationDetailDesc.Text = ARow.MotivationDetailDesc;
-        cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
-        cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
-        chkDetailMotivationStatus.Checked = ARow.MotivationStatus;
-        if (ARow.IsReceiptNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailReceipt.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailReceipt.Checked = ARow.Receipt;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailMotivationGroupCode.Text = ARow.MotivationGroupCode;
+            txtDetailMotivationGroupCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailMotivationDetailCode.Text = ARow.MotivationDetailCode;
+            txtDetailMotivationDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailMotivationDetailDesc.Text = ARow.MotivationDetailDesc;
+            cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
+            cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
+            chkDetailMotivationStatus.Checked = ARow.MotivationStatus;
+            if (ARow.IsReceiptNull())
+            {
+                chkDetailReceipt.Checked = false;
+            }
+            else
+            {
+                chkDetailReceipt.Checked = ARow.Receipt;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private AMotivationDetailRow FPreviouslySelectedDetailRow = null;

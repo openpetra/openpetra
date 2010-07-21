@@ -157,6 +157,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PLocationType.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -226,11 +232,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PLocationTypeRow ARow)
     {
-        txtDetailCode.Text = ARow.Code;
-        txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailDescription.Text = ARow.Description;
-        chkDetailAssignable.Checked = ARow.Assignable;
-        chkDetailDeletable.Checked = ARow.Deletable;
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailCode.Text = ARow.Code;
+            txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailDescription.Text = ARow.Description;
+            chkDetailAssignable.Checked = ARow.Assignable;
+            chkDetailDeletable.Checked = ARow.Deletable;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PLocationTypeRow FPreviouslySelectedDetailRow = null;

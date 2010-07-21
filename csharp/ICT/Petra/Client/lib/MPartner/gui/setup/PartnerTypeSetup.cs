@@ -161,6 +161,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PType.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -230,25 +236,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PTypeRow ARow)
     {
-        txtDetailTypeCode.Text = ARow.TypeCode;
-        txtDetailTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailTypeDescription.Text = ARow.TypeDescription;
-        if (ARow.IsValidTypeNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailValidType.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailValidType.Checked = ARow.ValidType;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailTypeCode.Text = ARow.TypeCode;
+            txtDetailTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailTypeDescription.Text = ARow.TypeDescription;
+            if (ARow.IsValidTypeNull())
+            {
+                chkDetailValidType.Checked = false;
+            }
+            else
+            {
+                chkDetailValidType.Checked = ARow.ValidType;
+            }
+            if (ARow.IsTypeDeletableNull())
+            {
+                chkDetailTypeDeletable.Checked = false;
+            }
+            else
+            {
+                chkDetailTypeDeletable.Checked = ARow.TypeDeletable;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        if (ARow.IsTypeDeletableNull())
-        {
-            chkDetailTypeDeletable.Checked = false;
-        }
-        else
-        {
-            chkDetailTypeDeletable.Checked = ARow.TypeDeletable;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PTypeRow FPreviouslySelectedDetailRow = null;

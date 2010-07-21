@@ -164,6 +164,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PPartnerStatus.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -233,26 +239,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PPartnerStatusRow ARow)
     {
-        txtDetailStatusCode.Text = ARow.StatusCode;
-        txtDetailStatusCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailPartnerStatusDescription.Text = ARow.PartnerStatusDescription;
-        if (ARow.IsPartnerIsActiveNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailPartnerIsActive.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailPartnerIsActive.Checked = ARow.PartnerIsActive;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailStatusCode.Text = ARow.StatusCode;
+            txtDetailStatusCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailPartnerStatusDescription.Text = ARow.PartnerStatusDescription;
+            if (ARow.IsPartnerIsActiveNull())
+            {
+                chkDetailPartnerIsActive.Checked = false;
+            }
+            else
+            {
+                chkDetailPartnerIsActive.Checked = ARow.PartnerIsActive;
+            }
+            if (ARow.IsIncludePartnerOnReportNull())
+            {
+                chkDetailIncludePartnerOnReport.Checked = false;
+            }
+            else
+            {
+                chkDetailIncludePartnerOnReport.Checked = ARow.IncludePartnerOnReport;
+            }
+            chkDetailDeletable.Checked = ARow.Deletable;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        if (ARow.IsIncludePartnerOnReportNull())
-        {
-            chkDetailIncludePartnerOnReport.Checked = false;
-        }
-        else
-        {
-            chkDetailIncludePartnerOnReport.Checked = ARow.IncludePartnerOnReport;
-        }
-        chkDetailDeletable.Checked = ARow.Deletable;
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PPartnerStatusRow FPreviouslySelectedDetailRow = null;

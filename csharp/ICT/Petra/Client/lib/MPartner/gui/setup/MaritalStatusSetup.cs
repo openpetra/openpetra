@@ -164,6 +164,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PtMaritalStatus.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -233,19 +239,30 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PtMaritalStatusRow ARow)
     {
-        txtDetailCode.Text = ARow.Code;
-        txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailDescription.Text = ARow.Description;
-        chkDetailAssignableFlag.Checked = ARow.AssignableFlag;
-        if (ARow.IsAssignableDateNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            dtpDetailAssignableDate.Date = null;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            dtpDetailAssignableDate.Date = ARow.AssignableDate;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailCode.Text = ARow.Code;
+            txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailDescription.Text = ARow.Description;
+            chkDetailAssignableFlag.Checked = ARow.AssignableFlag;
+            if (ARow.IsAssignableDateNull())
+            {
+                dtpDetailAssignableDate.Date = null;
+            }
+            else
+            {
+                dtpDetailAssignableDate.Date = ARow.AssignableDate;
+            }
+            chkDetailDeletableFlag.Checked = ARow.DeletableFlag;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        chkDetailDeletableFlag.Checked = ARow.DeletableFlag;
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PtMaritalStatusRow FPreviouslySelectedDetailRow = null;

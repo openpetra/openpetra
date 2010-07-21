@@ -161,6 +161,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PLanguage.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -230,25 +236,36 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
     private void ShowDetails(PLanguageRow ARow)
     {
-        txtDetailLanguageCode.Text = ARow.LanguageCode;
-        txtDetailLanguageCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailLanguageDescription.Text = ARow.LanguageDescription;
-        if (ARow.IsCongressLanguageNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailCongressLanguage.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailCongressLanguage.Checked = ARow.CongressLanguage;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailLanguageCode.Text = ARow.LanguageCode;
+            txtDetailLanguageCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailLanguageDescription.Text = ARow.LanguageDescription;
+            if (ARow.IsCongressLanguageNull())
+            {
+                chkDetailCongressLanguage.Checked = false;
+            }
+            else
+            {
+                chkDetailCongressLanguage.Checked = ARow.CongressLanguage;
+            }
+            if (ARow.IsDeletableNull())
+            {
+                chkDetailDeletable.Checked = false;
+            }
+            else
+            {
+                chkDetailDeletable.Checked = ARow.Deletable;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        if (ARow.IsDeletableNull())
-        {
-            chkDetailDeletable.Checked = false;
-        }
-        else
-        {
-            chkDetailDeletable.Checked = ARow.Deletable;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PLanguageRow FPreviouslySelectedDetailRow = null;

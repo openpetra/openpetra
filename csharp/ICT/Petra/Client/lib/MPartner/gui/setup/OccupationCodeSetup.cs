@@ -161,6 +161,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.POccupation.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -230,18 +236,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(POccupationRow ARow)
     {
-        txtDetailOccupationCode.Text = ARow.OccupationCode;
-        txtDetailOccupationCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailOccupationDescription.Text = ARow.OccupationDescription;
-        if (ARow.IsValidOccupationNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailValidOccupation.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailValidOccupation.Checked = ARow.ValidOccupation;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailOccupationCode.Text = ARow.OccupationCode;
+            txtDetailOccupationCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailOccupationDescription.Text = ARow.OccupationDescription;
+            if (ARow.IsValidOccupationNull())
+            {
+                chkDetailValidOccupation.Checked = false;
+            }
+            else
+            {
+                chkDetailValidOccupation.Checked = ARow.ValidOccupation;
+            }
+            chkDetailDeletable.Checked = ARow.Deletable;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        chkDetailDeletable.Checked = ARow.Deletable;
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private POccupationRow FPreviouslySelectedDetailRow = null;

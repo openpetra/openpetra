@@ -155,6 +155,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PReasonSubscriptionGiven.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -224,9 +230,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PReasonSubscriptionGivenRow ARow)
     {
-        txtDetailCode.Text = ARow.Code;
-        txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailDescription.Text = ARow.Description;
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailCode.Text = ARow.Code;
+            txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailDescription.Text = ARow.Description;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PReasonSubscriptionGivenRow FPreviouslySelectedDetailRow = null;

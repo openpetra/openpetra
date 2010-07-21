@@ -164,6 +164,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
 
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PAcquisition.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
       FPetraUtilsObject.InitActionState();
     }
 
@@ -233,26 +239,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PAcquisitionRow ARow)
     {
-        txtDetailAcquisitionCode.Text = ARow.AcquisitionCode;
-        txtDetailAcquisitionCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        txtDetailAcquisitionDescription.Text = ARow.AcquisitionDescription;
-        if (ARow.IsValidAcquisitionNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            chkDetailValidAcquisition.Checked = false;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            chkDetailValidAcquisition.Checked = ARow.ValidAcquisition;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailAcquisitionCode.Text = ARow.AcquisitionCode;
+            txtDetailAcquisitionCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailAcquisitionDescription.Text = ARow.AcquisitionDescription;
+            if (ARow.IsValidAcquisitionNull())
+            {
+                chkDetailValidAcquisition.Checked = false;
+            }
+            else
+            {
+                chkDetailValidAcquisition.Checked = ARow.ValidAcquisition;
+            }
+            chkDetailDeletable.Checked = ARow.Deletable;
+            if (ARow.IsRecruitingEffortNull())
+            {
+                chkDetailRecruitingEffort.Checked = false;
+            }
+            else
+            {
+                chkDetailRecruitingEffort.Checked = ARow.RecruitingEffort;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        chkDetailDeletable.Checked = ARow.Deletable;
-        if (ARow.IsRecruitingEffortNull())
-        {
-            chkDetailRecruitingEffort.Checked = false;
-        }
-        else
-        {
-            chkDetailRecruitingEffort.Checked = ARow.RecruitingEffort;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PAcquisitionRow FPreviouslySelectedDetailRow = null;
