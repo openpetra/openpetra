@@ -34,10 +34,12 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MConference;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 
 namespace Ict.Petra.Server.MConference.WebConnectors
@@ -203,6 +205,92 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
             return ResultTable;
+        }
+
+        /// <summary>
+        /// Get the earlies arrival and latest departure date of a conference.
+        /// If the conference key is -1 get it from all conferences.
+        /// </summary>
+        /// <param name="AConferenceKey">Unit Key of the conference</param>
+        /// <param name="AEarliestArrivalDate">Earliest arrival date to the conference</param>
+        /// <param name="ALatestDepartureDate">Latest departure date from the conference</param>
+        /// <returns>true if successful</returns>
+        public static bool GetEarliestAndLatestDate(Int64 AConferenceKey, out DateTime AEarliestArrivalDate,
+            out DateTime ALatestDepartureDate)
+        {
+            AEarliestArrivalDate = DateTime.Today;
+            ALatestDepartureDate = DateTime.Today;
+            PmShortTermApplicationTable ShortTermerTable;
+
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetEarliestAndLatestDates called!");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                /* Load data */
+                if (AConferenceKey == -1)
+                {
+                    ShortTermerTable = PmShortTermApplicationAccess.LoadAll(ReadTransaction);
+                }
+                else
+                {
+                    ShortTermerTable = PmShortTermApplicationAccess.LoadViaPUnitStConfirmedOption(AConferenceKey, ReadTransaction);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetEarliestAndLatestDates: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            DateTime TmpEarliestArrivalTime = DateTime.MaxValue;
+            DateTime TmpLatestDepartureTime = DateTime.MinValue;
+
+            foreach (PmShortTermApplicationRow ShortTermerRow in ShortTermerTable.Rows)
+            {
+                if ((!ShortTermerRow.IsArrivalNull())
+                    && (ShortTermerRow.Arrival < TmpEarliestArrivalTime))
+                {
+                    TmpEarliestArrivalTime = ShortTermerRow.Arrival.Value;
+                }
+
+                if ((!ShortTermerRow.IsDepartureNull())
+                    && (ShortTermerRow.Departure > TmpLatestDepartureTime))
+                {
+                    TmpLatestDepartureTime = ShortTermerRow.Departure.Value;
+                }
+            }
+
+            if (TmpEarliestArrivalTime != DateTime.MaxValue)
+            {
+                AEarliestArrivalDate = TmpEarliestArrivalTime;
+            }
+
+            if (TmpLatestDepartureTime != DateTime.MinValue)
+            {
+                ALatestDepartureDate = TmpLatestDepartureTime;
+            }
+
+            return true;
         }
     }
 }

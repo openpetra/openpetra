@@ -457,7 +457,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
                 if (!PersonRow.IsDateOfBirthNull())
                 {
-                    AAge = Calculations.CalculateAge((DateTime)PersonRow.DateOfBirth, AStartDate);
+                    AAge = Calculations.CalculateAge(PersonRow.DateOfBirth.Value, AStartDate);
                 }
 
                 ReturnValue = true;

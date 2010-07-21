@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SelectConferenceForm.yaml
+// auto generated with nant generateWinforms from ConferenceFindForm.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -31,9 +31,9 @@ using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MReporting.Gui.MConference
+namespace Ict.Petra.Client.MConference.Gui
 {
-    partial class TFrmSelectConferenceForm
+    partial class TFrmConferenceFindForm
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmSelectConferenceForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmConferenceFindForm));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -317,7 +317,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmSelectConferenceForm
+            // TFrmConferenceFindForm
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -330,8 +330,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmSelectConferenceForm";
-            this.Text = "Select Conference";
+            this.Name = "TFrmConferenceFindForm";
+            this.Text = "Conference Find";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

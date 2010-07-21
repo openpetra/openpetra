@@ -1,0 +1,94 @@
+RootNode:
+    BaseYaml: ConferenceReportingForm.yaml
+    FormType: report
+    FormTitle: Accommodation Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    TemplateParameters:
+        XMLFILES: [Conference\\\\accommodationreport.xml,Conference\\\\conference.xml]
+        REPORTNAME: Accommodation Report
+        CURRENTREPORT: Accommodation Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: ReadControlsManually(ACalc, AReportAction);
+        SETCONTROLSLOCALVARS: SetControlsManually(AParameters);
+        INITUSERCONTROLS: InitUserControlsManually();
+    Security:
+        ModulePermissionRequired: [CONFERENCE]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoConferenceSelection,grpReportDetail]
+            Order: AlwaysFirst
+        tpgDateSettings:
+            Label: Date Settings
+            Controls:
+                Row1: [pnlConferenceDate]
+                Row2: [pnlArrivalDepartureDates]
+                Row3: [pnlSelectDateRange]
+            Order: AlwaysLast
+        
+        ucoConferenceSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
+            Height: 190
+            Dock: Top
+        grpReportDetail:
+            Label: Report Detail
+            Dock: Top
+            #~ Width: 500
+            #~ Height: 100
+            Controls:
+                Row1: [rbtBriefReport]
+                Row2: [rbtFullReport]
+                Row3: [rbtDetailReport]
+               
+        pnlConferenceDate:
+            Controls: [grpConferenceDate]
+        pnlArrivalDepartureDates:
+            Controls: [grpArrivalDepartureDates]
+        pnlSelectDateRange:
+            Controls: [grpSelectDateRange]
+        grpConferenceDate:
+            Dock: Fill
+            Label: Conference Date
+            Controls:
+                Row1: [lblStartDate,dtpStartDate]
+                Row2: [lblEndDate,dtpEndDate]
+            ColWidths: [0=Fixed:200,1=Fixed:100]
+        grpArrivalDepartureDates:
+            Dock: Fill
+            Label: Arrival / Departure Dates
+            Controls:
+                Row1: [lblEarliestArrival,dtpEarliestArrival]
+                Row2: [lblLatestDeparture,dtpLatestDeparture]
+            ColWidths: [0=Fixed:200,1=Fixed:100]
+        grpSelectDateRange:
+            Dock: Fill
+            Label: Select Date Range
+            Controls:
+                Row1: [lblFrom,dtpFromDate]
+                Row2: [lblTo,dtpToDate]
+            ColWidths: [0=Fixed:200]
+
+        lblStartDate:
+        lblEndDate:
+        lblEarliestArrival:
+        lblLatestDeparture:
+        lblFrom:
+        lblTo:
+        dtpStartDate: {NoLabel=true,ReadOnly=true}
+        dtpEndDate: {NoLabel=true,ReadOnly=true}
+        dtpEarliestArrival: {NoLabel=true,ReadOnly=true}
+        dtpLatestDeparture: {NoLabel=true,ReadOnly=true}
+        dtpFromDate: {NoLabel=true}
+        dtpToDate: {NoLabel=true}
+        
+        rbtBriefReport:
+            Label: Brief Report
+        rbtFullReport:
+            Label: Full Report
+        rbtDetailReport:
+            Label: Detail Report
+        
+    
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}

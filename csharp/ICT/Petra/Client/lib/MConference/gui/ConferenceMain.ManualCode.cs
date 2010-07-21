@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       berndr
 //
 // Copyright 2004-2010 by OM International
 //
@@ -22,21 +22,31 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.MPartner;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Windows.Forms;
+using Mono.Unix;
+using Ict.Common.Controls;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+//using Ict.Petra.Shared.MReporting;
 
-namespace Ict.Petra.Client.CommonControls.Logic
+namespace Ict.Petra.Client.MConference.Gui
 {
-    /// <summary>Delegate for a call to open a Modal Partner Find screen</summary>
-    public delegate bool TDelegateOpenPartnerFindScreen(String ARestrictToPartnerClass,
-        out Int64 APartnerKey,
-        out String AShortName,
-        out TLocationPK ALocationPK,
-        IntPtr AParentFormHandle);
-
-    /// <summary>Delegate for a call to open a Modal Partner Find screen</summary>
-    public delegate bool TDelegateOpenConferenceFindScreen(String AConferenceNamePattern,
-        String ACampaignCodePattern,
-        out Int64 AConferenceKey,
-        out String AConferenceName,
-        IntPtr AParentFormHandle);
+    /// <summary>
+    /// Description of TFrmConferenceMain.ManualCode.
+    /// </summary>
+    public partial class TFrmConferenceMain
+    {
+        private void FindConference(object sender, EventArgs e)
+        {
+            // TODO
+        }
+    }
 }

@@ -750,7 +750,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
                     || (TXMLParser.GetAttribute(curNode, "Type") == "Extract")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Occupation"))
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Occupation")
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Conference"))
                 {
                     return false;
                 }
@@ -1346,6 +1347,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
                 {
                     FButtonLabelType = "OccupationList";
+                    return true;
+                }
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
+                {
+                    FButtonLabelType = "Conference";
                     return true;
                 }
             }

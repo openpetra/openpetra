@@ -39,6 +39,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
 using SplashScreen;
 using PetraClientShutdown;
@@ -547,6 +548,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
 
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
