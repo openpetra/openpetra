@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// constructor
     public TFrmSetupDailyExchangeRate(IntPtr AParentFormHandle) : base()
     {
+      Control[] FoundCheckBoxes;
+
       //
       // Required for Windows Form Designer support
       //
@@ -123,6 +125,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.AutoSizeCells();
 
       FPetraUtilsObject.InitActionState();
+
+      /*
+       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
+       * 'Deletable' flag is true are system records that must not be deleted)
+       */
+      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
+
+      if (FoundCheckBoxes.Length > 0)
+      {
+          FoundCheckBoxes[0].Enabled = false;
+      }
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
