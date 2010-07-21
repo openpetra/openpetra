@@ -140,10 +140,10 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             RelationList,
-            
+
             /// <summary>todoComment</summary>
             RelationCategoryList,
-            
+
             /// <summary>todoComment</summary>
             SubscriptionStatus,
 

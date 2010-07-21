@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AccommodationReport.yaml
+// auto generated with nant generateWinforms from AgeSummaryReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference
 {
-    partial class TFrmAccommodationReport
+    partial class TFrmAgeSummaryReport
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,39 +64,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAccommodationReport));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAgeSummaryReport));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoConferenceSelection = new Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection();
-            this.grpReportDetail = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.rbtBriefReport = new System.Windows.Forms.RadioButton();
-            this.rbtFullReport = new System.Windows.Forms.RadioButton();
-            this.rbtDetailReport = new System.Windows.Forms.RadioButton();
-            this.tpgDateSettings = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.pnlConferenceDate = new System.Windows.Forms.Panel();
-            this.grpConferenceDate = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblStartDate = new System.Windows.Forms.Label();
-            this.dtpStartDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblEndDate = new System.Windows.Forms.Label();
-            this.dtpEndDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.pnlArrivalDepartureDates = new System.Windows.Forms.Panel();
-            this.grpArrivalDepartureDates = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblEarliestArrival = new System.Windows.Forms.Label();
-            this.dtpEarliestArrival = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblLatestDeparture = new System.Windows.Forms.Label();
-            this.dtpLatestDeparture = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.pnlSelectDateRange = new System.Windows.Forms.Panel();
-            this.grpSelectDateRange = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblFrom = new System.Windows.Forms.Label();
-            this.dtpFromDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblTo = new System.Windows.Forms.Label();
-            this.dtpToDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
@@ -132,19 +104,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
-            this.grpReportDetail.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.tpgDateSettings.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
-            this.pnlConferenceDate.SuspendLayout();
-            this.grpConferenceDate.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.pnlArrivalDepartureDates.SuspendLayout();
-            this.grpArrivalDepartureDates.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.pnlSelectDateRange.SuspendLayout();
-            this.grpSelectDateRange.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -155,272 +114,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgGeneralSettings.Location = new System.Drawing.Point(2,2);
             this.tpgGeneralSettings.Name = "tpgGeneralSettings";
             this.tpgGeneralSettings.AutoSize = true;
-            this.tpgGeneralSettings.Controls.Add(this.grpReportDetail);
             this.tpgGeneralSettings.Controls.Add(this.ucoConferenceSelection);
             //
             // ucoConferenceSelection
             //
             this.ucoConferenceSelection.Name = "ucoConferenceSelection";
-            this.ucoConferenceSelection.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ucoConferenceSelection.Size = new System.Drawing.Size(650, 190);
-            //
-            // grpReportDetail
-            //
-            this.grpReportDetail.Name = "grpReportDetail";
-            this.grpReportDetail.Dock = System.Windows.Forms.DockStyle.Top;
-            this.grpReportDetail.AutoSize = true;
-            //
-            // tableLayoutPanel1
-            //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.grpReportDetail.Controls.Add(this.tableLayoutPanel1);
-            //
-            // rbtBriefReport
-            //
-            this.rbtBriefReport.Location = new System.Drawing.Point(2,2);
-            this.rbtBriefReport.Name = "rbtBriefReport";
-            this.rbtBriefReport.AutoSize = true;
-            this.rbtBriefReport.Text = "Brief Report";
-            //
-            // rbtFullReport
-            //
-            this.rbtFullReport.Location = new System.Drawing.Point(2,2);
-            this.rbtFullReport.Name = "rbtFullReport";
-            this.rbtFullReport.AutoSize = true;
-            this.rbtFullReport.Text = "Full Report";
-            //
-            // rbtDetailReport
-            //
-            this.rbtDetailReport.Location = new System.Drawing.Point(2,2);
-            this.rbtDetailReport.Name = "rbtDetailReport";
-            this.rbtDetailReport.AutoSize = true;
-            this.rbtDetailReport.Text = "Detail Report";
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.rbtBriefReport, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.rbtFullReport, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.rbtDetailReport, 0, 2);
-            this.grpReportDetail.Text = "Report Detail";
+            this.ucoConferenceSelection.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            //
-            // tpgDateSettings
-            //
-            this.tpgDateSettings.Location = new System.Drawing.Point(2,2);
-            this.tpgDateSettings.Name = "tpgDateSettings";
-            this.tpgDateSettings.AutoSize = true;
-            //
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.tpgDateSettings.Controls.Add(this.tableLayoutPanel2);
-            //
-            // pnlConferenceDate
-            //
-            this.pnlConferenceDate.Location = new System.Drawing.Point(2,2);
-            this.pnlConferenceDate.Name = "pnlConferenceDate";
-            this.pnlConferenceDate.AutoSize = true;
-            this.pnlConferenceDate.Controls.Add(this.grpConferenceDate);
-            //
-            // grpConferenceDate
-            //
-            this.grpConferenceDate.Name = "grpConferenceDate";
-            this.grpConferenceDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpConferenceDate.AutoSize = true;
-            //
-            // tableLayoutPanel3
-            //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            this.grpConferenceDate.Controls.Add(this.tableLayoutPanel3);
-            //
-            // lblStartDate
-            //
-            this.lblStartDate.Location = new System.Drawing.Point(2,2);
-            this.lblStartDate.Name = "lblStartDate";
-            this.lblStartDate.AutoSize = true;
-            this.lblStartDate.Text = "Start Date:";
-            this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpStartDate
-            //
-            this.dtpStartDate.Location = new System.Drawing.Point(2,2);
-            this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(94, 28);
-            this.dtpStartDate.Enabled = false;
-            //
-            // lblEndDate
-            //
-            this.lblEndDate.Location = new System.Drawing.Point(2,2);
-            this.lblEndDate.Name = "lblEndDate";
-            this.lblEndDate.AutoSize = true;
-            this.lblEndDate.Text = "End Date:";
-            this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpEndDate
-            //
-            this.dtpEndDate.Location = new System.Drawing.Point(2,2);
-            this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(94, 28);
-            this.dtpEndDate.Enabled = false;
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 200));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 100));
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.lblStartDate, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblEndDate, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.dtpStartDate, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.dtpEndDate, 1, 1);
-            this.grpConferenceDate.Text = "Conference Date";
-            //
-            // pnlArrivalDepartureDates
-            //
-            this.pnlArrivalDepartureDates.Location = new System.Drawing.Point(2,2);
-            this.pnlArrivalDepartureDates.Name = "pnlArrivalDepartureDates";
-            this.pnlArrivalDepartureDates.AutoSize = true;
-            this.pnlArrivalDepartureDates.Controls.Add(this.grpArrivalDepartureDates);
-            //
-            // grpArrivalDepartureDates
-            //
-            this.grpArrivalDepartureDates.Name = "grpArrivalDepartureDates";
-            this.grpArrivalDepartureDates.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpArrivalDepartureDates.AutoSize = true;
-            //
-            // tableLayoutPanel4
-            //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.grpArrivalDepartureDates.Controls.Add(this.tableLayoutPanel4);
-            //
-            // lblEarliestArrival
-            //
-            this.lblEarliestArrival.Location = new System.Drawing.Point(2,2);
-            this.lblEarliestArrival.Name = "lblEarliestArrival";
-            this.lblEarliestArrival.AutoSize = true;
-            this.lblEarliestArrival.Text = "Earliest Arrival:";
-            this.lblEarliestArrival.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpEarliestArrival
-            //
-            this.dtpEarliestArrival.Location = new System.Drawing.Point(2,2);
-            this.dtpEarliestArrival.Name = "dtpEarliestArrival";
-            this.dtpEarliestArrival.Size = new System.Drawing.Size(94, 28);
-            this.dtpEarliestArrival.Enabled = false;
-            //
-            // lblLatestDeparture
-            //
-            this.lblLatestDeparture.Location = new System.Drawing.Point(2,2);
-            this.lblLatestDeparture.Name = "lblLatestDeparture";
-            this.lblLatestDeparture.AutoSize = true;
-            this.lblLatestDeparture.Text = "Latest Departure:";
-            this.lblLatestDeparture.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpLatestDeparture
-            //
-            this.dtpLatestDeparture.Location = new System.Drawing.Point(2,2);
-            this.dtpLatestDeparture.Name = "dtpLatestDeparture";
-            this.dtpLatestDeparture.Size = new System.Drawing.Size(94, 28);
-            this.dtpLatestDeparture.Enabled = false;
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 200));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 100));
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblEarliestArrival, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblLatestDeparture, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.dtpEarliestArrival, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.dtpLatestDeparture, 1, 1);
-            this.grpArrivalDepartureDates.Text = "Arrival / Departure Dates";
-            //
-            // pnlSelectDateRange
-            //
-            this.pnlSelectDateRange.Location = new System.Drawing.Point(2,2);
-            this.pnlSelectDateRange.Name = "pnlSelectDateRange";
-            this.pnlSelectDateRange.AutoSize = true;
-            this.pnlSelectDateRange.Controls.Add(this.grpSelectDateRange);
-            //
-            // grpSelectDateRange
-            //
-            this.grpSelectDateRange.Name = "grpSelectDateRange";
-            this.grpSelectDateRange.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpSelectDateRange.AutoSize = true;
-            //
-            // tableLayoutPanel5
-            //
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.AutoSize = true;
-            this.grpSelectDateRange.Controls.Add(this.tableLayoutPanel5);
-            //
-            // lblFrom
-            //
-            this.lblFrom.Location = new System.Drawing.Point(2,2);
-            this.lblFrom.Name = "lblFrom";
-            this.lblFrom.AutoSize = true;
-            this.lblFrom.Text = "From:";
-            this.lblFrom.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpFromDate
-            //
-            this.dtpFromDate.Location = new System.Drawing.Point(2,2);
-            this.dtpFromDate.Name = "dtpFromDate";
-            this.dtpFromDate.Size = new System.Drawing.Size(94, 28);
-            //
-            // lblTo
-            //
-            this.lblTo.Location = new System.Drawing.Point(2,2);
-            this.lblTo.Name = "lblTo";
-            this.lblTo.AutoSize = true;
-            this.lblTo.Text = "To:";
-            this.lblTo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            //
-            // dtpToDate
-            //
-            this.dtpToDate.Location = new System.Drawing.Point(2,2);
-            this.dtpToDate.Name = "dtpToDate";
-            this.dtpToDate.Size = new System.Drawing.Size(94, 28);
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 200));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Controls.Add(this.lblFrom, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.lblTo, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.dtpFromDate, 1, 0);
-            this.tableLayoutPanel5.Controls.Add(this.dtpToDate, 1, 1);
-            this.grpSelectDateRange.Text = "Select Date Range";
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.pnlConferenceDate, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.pnlArrivalDepartureDates, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.pnlSelectDateRange, 0, 2);
-            this.tpgDateSettings.Text = "Date Settings";
-            this.tpgDateSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabReportSettings
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
-            this.tabReportSettings.Controls.Add(this.tpgDateSettings);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // tbbGenerateReport
@@ -677,7 +384,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAccommodationReport
+            // TFrmAgeSummaryReport
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -691,8 +398,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAccommodationReport";
-            this.Text = "Accommodation Report";
+            this.Name = "TFrmAgeSummaryReport";
+            this.Text = "Age Summary Report";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -703,19 +410,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.grpSelectDateRange.ResumeLayout(false);
-            this.pnlSelectDateRange.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.grpArrivalDepartureDates.ResumeLayout(false);
-            this.pnlArrivalDepartureDates.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.grpConferenceDate.ResumeLayout(false);
-            this.pnlConferenceDate.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tpgDateSettings.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.grpReportDetail.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -726,34 +420,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection ucoConferenceSelection;
-        private System.Windows.Forms.GroupBox grpReportDetail;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.RadioButton rbtBriefReport;
-        private System.Windows.Forms.RadioButton rbtFullReport;
-        private System.Windows.Forms.RadioButton rbtDetailReport;
-        private System.Windows.Forms.TabPage tpgDateSettings;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Panel pnlConferenceDate;
-        private System.Windows.Forms.GroupBox grpConferenceDate;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label lblStartDate;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpStartDate;
-        private System.Windows.Forms.Label lblEndDate;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpEndDate;
-        private System.Windows.Forms.Panel pnlArrivalDepartureDates;
-        private System.Windows.Forms.GroupBox grpArrivalDepartureDates;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label lblEarliestArrival;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpEarliestArrival;
-        private System.Windows.Forms.Label lblLatestDeparture;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpLatestDeparture;
-        private System.Windows.Forms.Panel pnlSelectDateRange;
-        private System.Windows.Forms.GroupBox grpSelectDateRange;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.Label lblFrom;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpFromDate;
-        private System.Windows.Forms.Label lblTo;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpToDate;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;

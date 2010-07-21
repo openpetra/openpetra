@@ -249,7 +249,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                             TmpTable = PRelationCategoryAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-                            
+
                         case TCacheablePartnerTablesEnum.UnitTypeList:
                             TmpTable = UUnitTypeAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);

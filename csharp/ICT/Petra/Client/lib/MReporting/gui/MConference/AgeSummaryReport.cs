@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AccommodationReport.yaml
+// auto generated with nant generateWinforms from AgeSummaryReport.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmAccommodationReport: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmAgeSummaryReport: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmAccommodationReport(IntPtr AParentFormHandle) : base()
+    public TFrmAgeSummaryReport(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,21 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.rbtBriefReport.Text = Catalog.GetString("Brief Report");
-      this.rbtFullReport.Text = Catalog.GetString("Full Report");
-      this.rbtDetailReport.Text = Catalog.GetString("Detail Report");
-      this.grpReportDetail.Text = Catalog.GetString("Report Detail");
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.lblStartDate.Text = Catalog.GetString("Start Date:");
-      this.lblEndDate.Text = Catalog.GetString("End Date:");
-      this.grpConferenceDate.Text = Catalog.GetString("Conference Date");
-      this.lblEarliestArrival.Text = Catalog.GetString("Earliest Arrival:");
-      this.lblLatestDeparture.Text = Catalog.GetString("Latest Departure:");
-      this.grpArrivalDepartureDates.Text = Catalog.GetString("Arrival / Departure Dates");
-      this.lblFrom.Text = Catalog.GetString("From:");
-      this.lblTo.Text = Catalog.GetString("To:");
-      this.grpSelectDateRange.Text = Catalog.GetString("Select Date Range");
-      this.tpgDateSettings.Text = Catalog.GetString("Date Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -106,14 +92,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Accommodation Report");
+      this.Text = Catalog.GetString("Age Summary Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Conference\\\\accommodationreport.xml,Conference\\\\conference.xml";
-      FPetraUtilsObject.FReportName = "Accommodation Report";
-      FPetraUtilsObject.FCurrentReport = "Accommodation Report";
+      FPetraUtilsObject.FXMLFiles = "Conference\\\\agesummaryreport.xml,Conference\\\\conference.xml";
+      FPetraUtilsObject.FReportName = "Age Summary Report";
+      FPetraUtilsObject.FCurrentReport = "Age Summary Report";
       FPetraUtilsObject.FSettingsDirectory = "Conference";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -127,7 +113,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      InitUserControlsManually();
 
       FPetraUtilsObject.LoadDefaultSettings();
     }
@@ -164,15 +149,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ReadControlsManually(ACalc, AReportAction);
-
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ACalc.AddParameter("param_dtpStartDate", this.dtpStartDate.Date);
-      ACalc.AddParameter("param_dtpEndDate", this.dtpEndDate.Date);
-      ACalc.AddParameter("param_dtpEarliestArrival", this.dtpEarliestArrival.Date);
-      ACalc.AddParameter("param_dtpLatestDeparture", this.dtpLatestDeparture.Date);
-      ACalc.AddParameter("param_dtpFromDate", this.dtpFromDate.Date);
-      ACalc.AddParameter("param_dtpToDate", this.dtpToDate.Date);
 
     }
 
@@ -182,51 +159,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     */
     public void SetControls(TParameterList AParameters)
     {
-      SetControlsManually(AParameters);
 
       ucoConferenceSelection.SetControls(AParameters);
-      DateTime dtpStartDateDate = AParameters.Get("param_dtpStartDate").ToDate();
-      if ((dtpStartDateDate <= DateTime.MinValue)
-          || (dtpStartDateDate >= DateTime.MaxValue))
-      {
-          dtpStartDateDate = DateTime.Now;
-      }
-      dtpStartDate.Date = dtpStartDateDate;
-      DateTime dtpEndDateDate = AParameters.Get("param_dtpEndDate").ToDate();
-      if ((dtpEndDateDate <= DateTime.MinValue)
-          || (dtpEndDateDate >= DateTime.MaxValue))
-      {
-          dtpEndDateDate = DateTime.Now;
-      }
-      dtpEndDate.Date = dtpEndDateDate;
-      DateTime dtpEarliestArrivalDate = AParameters.Get("param_dtpEarliestArrival").ToDate();
-      if ((dtpEarliestArrivalDate <= DateTime.MinValue)
-          || (dtpEarliestArrivalDate >= DateTime.MaxValue))
-      {
-          dtpEarliestArrivalDate = DateTime.Now;
-      }
-      dtpEarliestArrival.Date = dtpEarliestArrivalDate;
-      DateTime dtpLatestDepartureDate = AParameters.Get("param_dtpLatestDeparture").ToDate();
-      if ((dtpLatestDepartureDate <= DateTime.MinValue)
-          || (dtpLatestDepartureDate >= DateTime.MaxValue))
-      {
-          dtpLatestDepartureDate = DateTime.Now;
-      }
-      dtpLatestDeparture.Date = dtpLatestDepartureDate;
-      DateTime dtpFromDateDate = AParameters.Get("param_dtpFromDate").ToDate();
-      if ((dtpFromDateDate <= DateTime.MinValue)
-          || (dtpFromDateDate >= DateTime.MaxValue))
-      {
-          dtpFromDateDate = DateTime.Now;
-      }
-      dtpFromDate.Date = dtpFromDateDate;
-      DateTime dtpToDateDate = AParameters.Get("param_dtpToDate").ToDate();
-      if ((dtpToDateDate <= DateTime.MinValue)
-          || (dtpToDateDate >= DateTime.MaxValue))
-      {
-          dtpToDateDate = DateTime.Now;
-      }
-      dtpToDate.Date = dtpToDateDate;
     }
 #endregion
 

@@ -82,7 +82,9 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
         bool GetEarliestAndLatestDate(Int64 AConferenceKey,
                                       out DateTime AEarliestArrivalDate,
-                                      out DateTime ALatestDepartureDate);
+                                      out DateTime ALatestDepartureDate,
+                                      out DateTime AStartDate,
+                                      out DateTime AEndDate);
     }
 
 }

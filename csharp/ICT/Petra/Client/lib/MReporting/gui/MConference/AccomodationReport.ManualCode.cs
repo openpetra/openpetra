@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
         private void InitUserControlsManually()
         {
-            ucoConferenceSelection.AddEventHandler(new EventHandler(txtConference_TextChanged));
+            ucoConferenceSelection.AddEventHandler(this.ConferenceChanged);
         }
 
         private void ReadControlsManually(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -78,6 +78,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 ACalc.AddParameter("ColumnWidth", "2.0", ColumnCounter++);
             }
 
+            ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
+
             if (rbtBriefReport.Checked)
             {
                 ACalc.AddParameter("param_report_detail", "Brief");
@@ -86,7 +88,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             {
                 ACalc.AddParameter("param_report_detail", "Full");
             }
-            else if (rbtDetailReport.Checked)
+            else
             {
                 ACalc.AddParameter("param_report_detail", "Detail");
             }
@@ -144,11 +146,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
                     if (PartnerKey == ucoConferenceSelection.ConferenceKey)
                     {
-                        DateTime ResultDate = new DateTime(Convert.ToInt64((String)Row["Start Date"]));
-                        dtpStartDate.Date = ResultDate;
+                        if (!Row.IsStartNull())
+                        {
+                            dtpStartDate.Date = Row.Start.Value;
+                        }
 
-                        ResultDate = new DateTime(Convert.ToInt64((String)Row["End Date"]));
-                        dtpEndDate.Date = ResultDate;
+                        if (!Row.IsEndNull())
+                        {
+                            dtpEndDate.Date = Row.End.Value;
+                        }
+
                         break;
                     }
                 }
@@ -185,19 +192,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <param name="AConferenceKey">Unit key of the conference</param>
         /// <param name="AConferenceName">Name of the conference</param>
         /// <param name="AValidConference">True if we have a valid conference. Otherwise false.</param>
-//        public void txtConference_TextChanged(long AConferenceKey, String AConferenceName, bool AValidConference)
-        public void txtConference_TextChanged(object sender, EventArgs e)
+        public void ConferenceChanged(Int64 AConferenceKey, String AConferenceName, bool AValidConference)
         {
             DateTime EarliestArrivalDate = DateTime.Today;
             DateTime LatestDepartureDate = DateTime.Today;
+            DateTime StartDate = DateTime.Today;
+            DateTime EndDate = DateTime.Today;
 
-            String ConferenceText = ((TextBox)sender).Text;
-
-            Int64 ConferenceKey = Convert.ToInt64(ConferenceText);
-
-            //if (AValidConference)
+            if (AValidConference)
             {
-                TRemote.MConference.WebConnectors.GetEarliestAndLatestDate(ConferenceKey, out EarliestArrivalDate, out LatestDepartureDate);
+                TRemote.MConference.WebConnectors.GetEarliestAndLatestDate(AConferenceKey, out EarliestArrivalDate, out LatestDepartureDate,
+                    out StartDate, out EndDate);
                 SetDateRange();
             }
 
@@ -205,6 +210,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             dtpLatestDeparture.Date = LatestDepartureDate;
             dtpFromDate.Date = EarliestArrivalDate;
             dtpToDate.Date = LatestDepartureDate;
+            dtpStartDate.Date = StartDate;
+            dtpEndDate.Date = EndDate;
         }
     }
 }

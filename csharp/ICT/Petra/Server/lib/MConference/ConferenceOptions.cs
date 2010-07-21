@@ -214,13 +214,18 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AConferenceKey">Unit Key of the conference</param>
         /// <param name="AEarliestArrivalDate">Earliest arrival date to the conference</param>
         /// <param name="ALatestDepartureDate">Latest departure date from the conference</param>
+        /// <param name="AStartDate">Start Date of the Conference</param>
+        /// <param name="AEndDate">End Date of the Conference</param>
         /// <returns>true if successful</returns>
         public static bool GetEarliestAndLatestDate(Int64 AConferenceKey, out DateTime AEarliestArrivalDate,
-            out DateTime ALatestDepartureDate)
+            out DateTime ALatestDepartureDate, out DateTime AStartDate, out DateTime AEndDate)
         {
             AEarliestArrivalDate = DateTime.Today;
             ALatestDepartureDate = DateTime.Today;
+            AStartDate = DateTime.Today;
+            AEndDate = DateTime.Today;
             PmShortTermApplicationTable ShortTermerTable;
+            PcConferenceTable ConferenceTable;
 
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
@@ -242,10 +247,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (AConferenceKey == -1)
                 {
                     ShortTermerTable = PmShortTermApplicationAccess.LoadAll(ReadTransaction);
+                    ConferenceTable = PcConferenceAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {
                     ShortTermerTable = PmShortTermApplicationAccess.LoadViaPUnitStConfirmedOption(AConferenceKey, ReadTransaction);
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
                 }
             }
             finally
@@ -264,6 +271,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             DateTime TmpEarliestArrivalTime = DateTime.MaxValue;
             DateTime TmpLatestDepartureTime = DateTime.MinValue;
+            DateTime TmpStartTime = DateTime.MaxValue;
+            DateTime TmpEndTime = DateTime.MinValue;
 
             foreach (PmShortTermApplicationRow ShortTermerRow in ShortTermerTable.Rows)
             {
@@ -280,6 +289,21 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 }
             }
 
+            foreach (PcConferenceRow ConferenceRow in ConferenceTable.Rows)
+            {
+                if ((!ConferenceRow.IsStartNull())
+                    && (ConferenceRow.Start.Value < TmpStartTime))
+                {
+                    TmpStartTime = ConferenceRow.Start.Value;
+                }
+
+                if ((!ConferenceRow.IsEndNull())
+                    && (ConferenceRow.End.Value > TmpEndTime))
+                {
+                    TmpEndTime = ConferenceRow.End.Value;
+                }
+            }
+
             if (TmpEarliestArrivalTime != DateTime.MaxValue)
             {
                 AEarliestArrivalDate = TmpEarliestArrivalTime;
@@ -288,6 +312,16 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             if (TmpLatestDepartureTime != DateTime.MinValue)
             {
                 ALatestDepartureDate = TmpLatestDepartureTime;
+            }
+
+            if (TmpStartTime != DateTime.MaxValue)
+            {
+                AStartDate = TmpStartTime;
+            }
+
+            if (TmpEndTime != DateTime.MinValue)
+            {
+                AEndDate = TmpEndTime;
             }
 
             return true;
