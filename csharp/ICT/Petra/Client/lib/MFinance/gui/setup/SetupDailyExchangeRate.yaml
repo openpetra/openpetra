@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: Daily Exchange Rate List
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: ADailyExchangeRate
