@@ -80,7 +80,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.lblTo.Text = Catalog.GetString("To:");
       this.grpSelectDateRange.Text = Catalog.GetString("Select Date Range");
       this.tpgDateSettings.Text = Catalog.GetString("Date Settings");
-      this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -125,12 +124,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportColumns.InitUserControl();
       InitUserControlsManually();
 
       FPetraUtilsObject.LoadDefaultSettings();
@@ -177,7 +173,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.AddParameter("param_dtpLatestDeparture", this.dtpLatestDeparture.Date);
       ACalc.AddParameter("param_dtpFromDate", this.dtpFromDate.Date);
       ACalc.AddParameter("param_dtpToDate", this.dtpToDate.Date);
-      ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
 
@@ -232,7 +227,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
           dtpToDateDate = DateTime.Now;
       }
       dtpToDate.Date = dtpToDateDate;
-      ucoReportColumns.SetControls(AParameters);
     }
 #endregion
 
@@ -245,54 +239,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
 
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Arrival Date", 2.2));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Departure Date", 2.2));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Comment", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Date", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Details", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Expected Date", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Expected Time", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Group", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Needs Transport", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Point", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Time", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Type", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Campaign Code", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Charged Office", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Conference Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Conference Role", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Conference Room", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Comment", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Date", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Details", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Expected Date", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Expected Time", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Group", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Needs Transport", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Point", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Time", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Departure Type", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Discovery Group", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Family Key", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fellowship Group", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("First Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Gender", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Group Leader", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Last Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Marital Status", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Nationality", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Key", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Passport Number", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Preferred Name", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
-
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

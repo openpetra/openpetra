@@ -97,8 +97,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.dtpFromDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblTo = new System.Windows.Forms.Label();
             this.dtpToDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.tpgColumns = new System.Windows.Forms.TabPage();
-            this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbGenerateReport = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveSettings = new System.Windows.Forms.ToolStripButton();
@@ -147,7 +145,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.pnlSelectDateRange.SuspendLayout();
             this.grpSelectDateRange.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
-            this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -418,27 +415,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgDateSettings.Text = "Date Settings";
             this.tpgDateSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgColumns
-            //
-            this.tpgColumns.Location = new System.Drawing.Point(2,2);
-            this.tpgColumns.Name = "tpgColumns";
-            this.tpgColumns.AutoSize = true;
-            this.tpgColumns.Controls.Add(this.ucoReportColumns);
-            //
-            // ucoReportColumns
-            //
-            this.ucoReportColumns.Name = "ucoReportColumns";
-            this.ucoReportColumns.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgColumns.Text = "Columns";
-            this.tpgColumns.Dock = System.Windows.Forms.DockStyle.Fill;
-            //
             // tabReportSettings
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
             this.tabReportSettings.Controls.Add(this.tpgDateSettings);
-            this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
             // tbbGenerateReport
@@ -721,7 +703,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tpgColumns.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.grpSelectDateRange.ResumeLayout(false);
             this.pnlSelectDateRange.ResumeLayout(false);
@@ -773,8 +754,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpFromDate;
         private System.Windows.Forms.Label lblTo;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpToDate;
-        private System.Windows.Forms.TabPage tpgColumns;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbGenerateReport;
         private System.Windows.Forms.ToolStripButton tbbSaveSettings;

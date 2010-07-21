@@ -1,5 +1,8 @@
 RootNode:
-    BaseYaml: ConferenceReportingForm.yaml
+    BaseYaml: ../ReportingForm.yaml
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Template: reportwindow
     FormType: report
     FormTitle: Accommodation Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
@@ -13,6 +16,7 @@ RootNode:
         READCONTROLSLOCALVARS: ReadControlsManually(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: SetControlsManually(AParameters);
         INITUSERCONTROLS: InitUserControlsManually();
+        REPORTSETTINGSDIRECTORY: Conference
     Security:
         ModulePermissionRequired: [CONFERENCE]
     Controls:
