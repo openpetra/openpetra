@@ -37,6 +37,7 @@ using SourceGrid.Cells.Editors;
 using SourceGrid.Cells.Models;
 using SourceGrid.Cells.Views;
 using SourceGrid.Cells.Virtual;
+using SourceGrid.Selection;
 using DevAge.ComponentModel.Converter;
 using DevAge.ComponentModel.Validator;
 using DevAge.Windows.Forms;
@@ -554,9 +555,9 @@ namespace Ict.Common.Controls
             this.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.AutoStretchColumnsToFitWidth = true;
             this.MinimumHeight = 19;
-            this.Selection.Border = new DevAge.Drawing.RectangleBorder();
-            this.Selection.BackColor = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
-            this.Selection.FocusBackColor = this.Selection.BackColor;
+            ((SelectionBase)this.Selection).Border = new DevAge.Drawing.RectangleBorder();
+            ((SelectionBase)this.Selection).BackColor = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
+            ((SelectionBase)this.Selection).FocusBackColor = ((SelectionBase)this.Selection).BackColor;
 
             // Default behaviour
             this.TabStop = true;
