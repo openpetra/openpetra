@@ -1938,6 +1938,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
                 case TCacheablePartnerTablesEnum.InterestCategoryList:
                 case TCacheablePartnerTablesEnum.LocationTypeList:
                 case TCacheablePartnerTablesEnum.MaritalStatusList:
+                case TCacheablePartnerTablesEnum.MethodOfContactList:
                 case TCacheablePartnerTablesEnum.OccupationList:
                 case TCacheablePartnerTablesEnum.PartnerStatusList:
                 case TCacheablePartnerTablesEnum.PartnerTypeList:

@@ -101,6 +101,11 @@ namespace Ict.Petra.Shared.MPartner
         MaritalStatusList,
 
         /// <summary>
+        /// list of contact methods
+        /// </summary>
+        MethodOfContactList,
+
+        /// <summary>
         /// occupations
         /// </summary>
         OccupationList,

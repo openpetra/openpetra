@@ -34,6 +34,8 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MSysMan;
@@ -212,6 +214,11 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                         case TCacheablePartnerTablesEnum.MaritalStatusList:
                             TmpTable = PtMaritalStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+
+                        case TCacheablePartnerTablesEnum.MethodOfContactList:
+                            TmpTable = PMethodOfContactAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
 
@@ -709,6 +716,16 @@ namespace Ict.Petra.Server.MPartner.Partner
                         case TCacheablePartnerTablesEnum.MaritalStatusList:
 
                             if (PtMaritalStatusAccess.SubmitChanges((PtMaritalStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheablePartnerTablesEnum.MethodOfContactList:
+
+                            if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
