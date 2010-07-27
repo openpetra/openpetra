@@ -298,6 +298,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     /// auto generated
     public void RunOnceOnActivation()
     {
+        RunOnceOnActivationManual();
     }
 
     /// <summary>
