@@ -338,5 +338,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return 1.0;
         }
+
+        /// <summary>
+        /// cancel a GL Batch
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool CancelGLBatch(out GLBatchTDS MainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            return TGLPosting.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+        }
     }
 }

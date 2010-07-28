@@ -2655,6 +2655,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
+
+        /// generated method from connector
+        public bool CancelGLBatch(out GLBatchTDS MainDS,
+                                  Int32 ALedgerNumber,
+                                  Int32 ABatchNumber,
+                                  out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+        }
     }
 }
 

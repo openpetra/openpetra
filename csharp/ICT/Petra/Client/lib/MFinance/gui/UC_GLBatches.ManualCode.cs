@@ -110,7 +110,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            TVerificationResultCollection Verifications;
+            GLBatchTDS mergeDS;
+
+            if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            {
+                string ErrorMessages = String.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                     verif.ResultTextCaption + ": " +
+                                     verif.ResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Cancel batch failed"));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"));
+                FMainDS.Merge(mergeDS);
+            }
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

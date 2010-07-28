@@ -955,6 +955,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// post a GL Batch
         /// </summary>
+        /// <param name="MainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
@@ -1000,6 +1001,91 @@ namespace Ict.Petra.Server.MFinance.GL
 
             SummarizeDataSimple(ref MainDS, ref PostingLevel);
             return SubmitChanges(ref MainDS, out AVerifications);
+        }
+
+        /// <summary>
+        /// cancel a GL Batch
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool CancelGLBatch(out GLBatchTDS MainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+
+            // get the data from the database into the MainDS
+            if (!LoadData(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            ABatchRow Batch = MainDS.ABatch[0];
+
+            if (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
+            {
+                AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            if (Batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
+            {
+                AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It was already cancelled.")),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            foreach (AJournalRow journal in MainDS.AJournal.Rows)
+            {
+                journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+            }
+
+            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AVerifications);
+
+                if (AVerifications.HasCriticalError())
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
+                }
+                else
+                {
+                    AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AVerifications);
+
+                    if (AVerifications.HasCriticalError())
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AVerifications = new TVerificationResultCollection();
+                AVerifications.Add(new TVerificationResult("error during cancel", e.Message, TResultSeverity.Resv_Critical));
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
+
+            if (AVerifications.HasCriticalError())
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return false;
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+            return true;
         }
     }
 }

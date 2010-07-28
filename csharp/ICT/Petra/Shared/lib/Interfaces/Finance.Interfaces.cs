@@ -601,6 +601,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         double GetDailyExchangeRate(string ACurrencyFrom,
                                     string ACurrencyTo,
                                     DateTime ADateEffective);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors.TGLWebConnectorsNamespace)</summary>
+        bool CancelGLBatch(out GLBatchTDS MainDS,
+                           Int32 ALedgerNumber,
+                           Int32 ABatchNumber,
+                           out TVerificationResultCollection AVerifications);
     }
 
 }
