@@ -64,11 +64,13 @@ class TGenerateSampleData
 
                 // TODO: if partner class is PERSON, need to create both FAMILY and PERSON record, if couples this will create several lines?
 
+                // rename the columns
                 TXMLParser.RenameAttribute(partner, "Country", MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
                 TXMLParser.RenameAttribute(partner, "Family", MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
                 TXMLParser.RenameAttribute(partner, "Address", MPartnerConstants.PARTNERIMPORT_STREETNAME);
                 TXMLParser.RenameAttribute(partner, "PostCode", MPartnerConstants.PARTNERIMPORT_POSTALCODE);
 
+                // calculate first name, using the gender. use male first name or female first name, etc
                 if (partner.Attributes["Gender"].Value == "Male")
                 {
                     partner.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value = partner.Attributes["FirstnameMale"].Value;
@@ -87,6 +89,7 @@ class TGenerateSampleData
                     TXMLParser.SetAttribute(partner, MPartnerConstants.PARTNERIMPORT_TITLE, "Mr and Mrs");
                 }
 
+                // drop unwanted columns
                 partner.Attributes.Remove(partner.Attributes["FirstnameMale"]);
                 partner.Attributes.Remove(partner.Attributes["FirstnameFemale"]);
                 partner.Attributes.Remove(partner.Attributes["Child1"]);
@@ -97,12 +100,7 @@ class TGenerateSampleData
                 partner = partner.NextSibling;
             }
 
-            // rename the columns
-
-            // calculate first name, using the title. use male first name or female first name, etc
-            // generate separate donation import files???
-
-            // drop unwanted columns
+            // TODO generate separate donation import files???
 
             // store csv file with correct column captions, and use local default CSV separator
             string csvOutputFileName = Path.GetDirectoryName(csvInputFileName) +
