@@ -601,9 +601,11 @@ namespace Ict.Petra.Shared.MReporting
 
             element = GetParameter(AParameterId, AColumn, ADepth, AExact);
 
-            if (element != null)
+            while (element != null)
             {
                 parameters.Remove(element);
+
+                element = GetParameter(AParameterId, AColumn, ADepth, AExact);
             }
         }
 
@@ -618,12 +620,29 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// overloaded version of RemoveVariable; uses bestfit
+        /// remove variable completely from list, all occurances
         /// </summary>
         /// <param name="AParameterId"></param>
         public void RemoveVariable(String AParameterId)
         {
-            RemoveVariable(AParameterId, -1, -1, eParameterFit.eBestFit);
+            TParameter toDelete = null;
+
+            do
+            {
+                if (toDelete != null)
+                {
+                    parameters.Remove(toDelete);
+                    toDelete = null;
+                }
+
+                foreach (TParameter element in parameters)
+                {
+                    if (StringHelper.IsSame(element.name, AParameterId))
+                    {
+                        toDelete = element;
+                    }
+                }
+            } while (toDelete != null);
         }
 
         /// <summary>
@@ -818,24 +837,17 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TParameter GetParameter(String parameterId, int column, int depth, eParameterFit exact)
         {
-            TParameter ReturnValue;
-            TParameter columnFit;
-            TParameter allColumnFit;
-            TParameter bestLevelFit;
-            TParameter lowerLevelFit;
-            TParameter commonFit;
-            int closestLevel;
-            int lowerLevel;
             int subreport;
 
-            ReturnValue = null;
-            columnFit = null;
-            commonFit = null;
-            allColumnFit = null;
-            bestLevelFit = null;
-            lowerLevelFit = null;
-            closestLevel = -1;
-            lowerLevel = 20;
+            TParameter ReturnValue = null;
+            TParameter columnFit = null;
+            TParameter commonFit = null;
+            TParameter allColumnFit = null;
+            TParameter bestLevelFit = null;
+            TParameter lowerLevelFit = null;
+            TParameter anyFit = null;
+            int closestLevel = -1;
+            int lowerLevel = 20;
 
             if (parameterId != "CurrentSubReport")
             {
@@ -901,6 +913,12 @@ namespace Ict.Petra.Shared.MReporting
                         lowerLevelFit = element;
                         lowerLevel = element.level;
                     }
+
+                    // we are looking for any occurance
+                    if ((depth == -1) && (column == -1))
+                    {
+                        anyFit = element;
+                    }
                 }
             }
 
@@ -938,6 +956,11 @@ namespace Ict.Petra.Shared.MReporting
             if ((lowerLevelFit != null) && (exact == eParameterFit.eBestFitEvenLowerLevel))
             {
                 return lowerLevelFit;
+            }
+
+            if ((ReturnValue == null) && (exact == eParameterFit.eBestFit) && (anyFit != null))
+            {
+                return anyFit;
             }
 
             return ReturnValue;

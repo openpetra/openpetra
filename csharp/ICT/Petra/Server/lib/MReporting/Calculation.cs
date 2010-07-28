@@ -454,10 +454,6 @@ namespace Ict.Petra.Server.MReporting
             TRptDataCalcLevel rptDataCalcLevel;
             TRptCalculation rptCalculation;
             TRptDataCalcCalculation rptDataCalcCalculation;
-            string strReturns;
-            string strName;
-            string strSql;
-            DataTable tab;
             TRptDataCalcParameter rptDataCalcParameter;
 
             if (!EvaluateCondition(rptLowerLevel.strCondition))
@@ -488,76 +484,8 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 rptDataCalcCalculation = new TRptDataCalcCalculation(this);
-                strSql = rptDataCalcCalculation.Calculate(rptCalculation, rptLowerLevel.rptGrpParameter).ToString();
 
-                if (strSql.Length == 0)
-                {
-                    return;
-                }
-
-                // ShowMessage (query);
-                if (strSql.Substring(0, 4) == "CSV:")
-                {
-                    strSql = strSql.Substring(4, strSql.Length - 4);
-
-                    while (strSql.Length > 0)
-                    {
-                        strReturns = rptCalculation.strReturns;
-
-                        while (strReturns.Length != 0)
-                        {
-                            strName = StringHelper.GetNextCSV(ref strReturns).Trim();
-
-                            // the parameters are stored first
-                            Parameters.Add(strName, StringHelper.GetNextCSV(
-                                    ref strSql).Trim(), -1, Depth + 1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
-                        }
-
-                        rptDataCalcLevel = new TRptDataCalcLevel(this);
-                        rptDataCalcLevel.Depth++;
-                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(rptLowerLevel.strLevel), masterRow);
-                    }
-                }
-                else
-                {
-                    if (strSql.IndexOf("NO-SQL") == 0)
-                    {
-                        // we don't want to execute the result as SQL; this can be used to sequentially execute calculations/functions in a query.
-                        // example: ap_payment_export, Select Payments by Batch Number
-                        if (strSql.ToUpper().IndexOf("SELECT") >= 0)
-                        {
-                            strSql = strSql.ToUpper().Substring(strSql.IndexOf("SELECT"));
-                        }
-                        else
-                        {
-                            strSql = "";
-                        }
-                    }
-
-                    if (strSql.Length > 0)
-                    {
-                        tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
-                        strReturns = rptCalculation.strReturns;
-
-                        if (strReturns.ToLower() == "automatic")
-                        {
-                            strReturns = "";
-
-                            foreach (DataColumn col in tab.Columns)
-                            {
-                                strReturns = StringHelper.AddCSV(strReturns, col.ColumnName);
-                            }
-                        }
-
-                        foreach (DataRow row in tab.Rows)
-                        {
-                            rptDataCalcCalculation.AddResultsToParameter(strReturns, rptCalculation.strReturnsFormat, row, Depth + 1);
-                            rptDataCalcLevel = new TRptDataCalcLevel(this);
-                            rptDataCalcLevel.Depth++;
-                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(rptLowerLevel.strLevel), masterRow);
-                        }
-                    }
-                }
+                rptDataCalcCalculation.EvaluateCalculation(rptCalculation, rptLowerLevel.rptGrpParameter, rptLowerLevel.strLevel, masterRow);
             }
         }
     }
@@ -1227,6 +1155,107 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
+        /// execute sql query, or do any other calculation to get the result
+        /// </summary>
+        /// <param name="rptCalculation"></param>
+        /// <param name="rptGrpParameter"></param>
+        /// <param name="strLowerLevel">can be empty string if there is no lower level to be calculated depending on the result of this query</param>
+        /// <param name="masterRow"></param>
+        public TVariant EvaluateCalculation(TRptCalculation rptCalculation,
+            TRptGrpParameter rptGrpParameter,
+            string strLowerLevel,
+            int masterRow)
+        {
+            // depending on existing lower level, we want the parameters on that level, otherwise on the current level
+            int StoreResultsAtDepth = (strLowerLevel.Length == 0) ? Depth : Depth + 1;
+
+            string strSql = this.Calculate(rptCalculation, rptGrpParameter).ToString();
+
+            if (strSql.Length == 0)
+            {
+                return new TVariant();
+            }
+
+            // ShowMessage (query);
+            if (strSql.Substring(0, 4) == "CSV:")
+            {
+                strSql = strSql.Substring(4, strSql.Length - 4);
+
+                while (strSql.Length > 0)
+                {
+                    string strReturns = rptCalculation.strReturns;
+
+                    while (strReturns.Length != 0)
+                    {
+                        string strName = StringHelper.GetNextCSV(ref strReturns).Trim();
+
+                        // the parameters are stored first
+                        Parameters.Add(strName, StringHelper.GetNextCSV(
+                                ref strSql).Trim(), -1, Depth + 1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    }
+
+                    if (strLowerLevel.Length > 0)
+                    {
+                        TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                        rptDataCalcLevel.Depth++;
+                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                    }
+                }
+            }
+            else
+            {
+                if (strSql.IndexOf("NO-SQL") == 0)
+                {
+                    // we don't want to execute the result as SQL; this can be used to sequentially execute calculations/functions in a query.
+                    // example: ap_payment_export, Select Payments by Batch Number
+                    if (strSql.ToUpper().IndexOf("SELECT") >= 0)
+                    {
+                        strSql = strSql.ToUpper().Substring(strSql.IndexOf("SELECT"));
+                    }
+                    else
+                    {
+                        strSql = "";
+                    }
+                }
+
+                if (strSql.Length > 0)
+                {
+                    DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
+                    string strReturns = rptCalculation.strReturns;
+
+                    if (strReturns.ToLower() == "automatic")
+                    {
+                        strReturns = "";
+
+                        foreach (DataColumn col in tab.Columns)
+                        {
+                            strReturns = StringHelper.AddCSV(strReturns, col.ColumnName);
+                        }
+                    }
+
+                    foreach (DataRow row in tab.Rows)
+                    {
+                        this.AddResultsToParameter(strReturns, rptCalculation.strReturnsFormat, row, StoreResultsAtDepth);
+
+                        if (strLowerLevel != String.Empty)
+                        {
+                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                            rptDataCalcLevel.Depth++;
+                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                        }
+                    }
+                }
+            }
+
+            if (this.Parameters.Exists(rptCalculation.strReturns, -1, StoreResultsAtDepth, eParameterFit.eBestFitEvenLowerLevel))
+            {
+                return this.Parameters.Get(rptCalculation.strReturns, -1, StoreResultsAtDepth, eParameterFit.eBestFitEvenLowerLevel);
+            }
+
+            return new TVariant();
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="calculation"></param>
@@ -1513,6 +1542,12 @@ namespace Ict.Petra.Server.MReporting
                     // only add values that are displayed on the sheet; required for the credit and debit columns on an account detail report; the sum would be wrong
                     if (value.ToFormattedString().Length != 0)
                     {
+                        if (value.IsNil())
+                        {
+                            // eg. Sql Sum should return 0, not null. AStrReturnsFormat is Currency
+                            value = new TVariant(value.ToFormattedString());
+                        }
+
                         Parameters.Add(strName, value, -1, ADepth, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                         ClearParameter = false;
                     }

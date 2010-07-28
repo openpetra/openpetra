@@ -456,7 +456,11 @@ namespace Ict.Petra.Server.MReporting
                 }
             }
 
-            GetParameters().Add("debit_credit_indicator", debit_credit_indicator);
+            if (AUseDebitCreditIndicator)
+            {
+                GetParameters().Add("debit_credit_indicator", debit_credit_indicator);
+            }
+
             return sum;
         }
 
@@ -752,12 +756,12 @@ namespace Ict.Petra.Server.MReporting
                 }
             }
 
-            if ((f == "isnull") || (f == "exists") || (f == "or") || (f == "and") || (f == "iif"))
+            if ((f == "isnull") || (f == "exists") || (f == "or") || (f == "and") || (f == "iif") || (f == "assign"))
             {
+                // need to replace the variables manually
+                // either because we don't want them replaced at all (isnull or exists needs the variable name),
+                // or because we don't want to evaluate the second parameter if the first one already defines the result (e.g. or)
             }
-            // need to replace the variables manually
-            // either because we don't want them replaced at all (isnull or exists needs the variable name),
-            // or because we don't want to evaluate the second parameter if the first one already defines the result (e.g. or)
             else
             {
                 for (counter = 1; counter <= ReportingConsts.MAX_FUNCTION_PARAMETER; counter += 1)
@@ -793,6 +797,10 @@ namespace Ict.Petra.Server.MReporting
             else if (f == "sub")
             {
                 ReturnValue = new TVariant(ops[1].ToDouble() - ops[2].ToDouble());
+            }
+            else if (f == "adddays")
+            {
+                ReturnValue = new TVariant(ops[1].ToDate().AddDays(ops[2].ToDouble()));
             }
             else if (f == "add")
             {
@@ -891,6 +899,30 @@ namespace Ict.Petra.Server.MReporting
                 else
                 {
                     ReturnValue = new TVariant(false);
+                }
+            }
+            else if (f == "log")
+            {
+                if (ops[2] != null)
+                {
+                    ReturnValue = new TVariant(ops[1].ToString() + " " + ops[2].ToString());
+                }
+                else
+                {
+                    if (GetParameters().Exists(ops[1].ToString()))
+                    {
+                        GetParameters().Debug(ops[1].ToString());
+                        ReturnValue = new TVariant();
+                    }
+                    else
+                    {
+                        ReturnValue = ops[1];
+                    }
+                }
+
+                if (!ReturnValue.IsNil())
+                {
+                    TLogging.Log(ReturnValue.ToString());
                 }
             }
             else if (f == "length")
@@ -1029,7 +1061,26 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (f == "assign")
             {
-                GetParameters().Add(ops[1].ToString(), ops[2], -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                string targetVariableName = ops[1].ToString();
+
+                if (targetVariableName.StartsWith("{") && targetVariableName.EndsWith("}"))
+                {
+                    targetVariableName = targetVariableName.Substring(1, targetVariableName.Length - 2);
+                }
+
+                ops[2] = EvaluateOperand(ops[2]);
+                int targetLevel = -1;
+                int targetColumn = -1;
+
+                if (GetParameters().Exists(targetVariableName))
+                {
+                    // we should overwrite the existing variable, not add on another level
+                    TParameter origParameter = GetParameters().GetParameter(targetVariableName);
+                    targetLevel = origParameter.level;
+                    targetColumn = origParameter.column;
+                }
+
+                GetParameters().Add(targetVariableName, ops[2], targetColumn, targetLevel, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 ReturnValue = ops[2];
             }
             else if (f == "exists")
@@ -1193,9 +1244,18 @@ namespace Ict.Petra.Server.MReporting
 
                 if (!FunctionFound)
                 {
-                    // don't print an error if ops[1] is nil; just return f; this is needed e.g. for HasChildRows etc, called from TRptEvaluator.evaluateOperator
-                    if (ops[1] == null)
+                    TRptCalculation calculation = ReportStore.GetCalculation(CurrentReport, f);
+
+                    if (calculation != null)
                     {
+                        TRptDataCalcCalculation calc = new TRptDataCalcCalculation(this);
+                        ReturnValue = calc.EvaluateCalculation(calculation, null, String.Empty, -1);
+                    }
+                    else if (ops[1] == null)
+                    {
+                        // don't print an error if ops[1] is null;
+                        // just return f;
+                        // this is needed e.g. for HasChildRows etc, called from TRptEvaluator.evaluateOperator
                         ReturnValue = null;
                     }
                     else

@@ -26,7 +26,6 @@ using System.Data;
 using System.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using NUnit.Framework.SyntaxHelpers;
 using Ict.Petra.Client.MReporting.Logic;
 using System.IO;
 using System.Threading;
@@ -79,7 +78,7 @@ namespace Tests.Reporting
             TTxtPrinter txtPrinter;
 
             txtPrinter = new TTxtPrinter();
-            reportTxtPrinter = new TReportPrinterLayout(results, parameters, txtPrinter);
+            reportTxtPrinter = new TReportPrinterLayout(results, parameters, txtPrinter, true);
             reportTxtPrinter.PrintReport();
             txtPrinter.WriteToFile(output);
         }
@@ -387,6 +386,12 @@ namespace Tests.Reporting
         public void TestGiftDataExport()
         {
             TestReport("GiftDataExport");
+        }
+
+        [Test]
+        public void TestCurrentAccountsPayable()
+        {
+            TestReport("CurrentAccountsPayable");
         }
 
         /** for testing csv files and printouts

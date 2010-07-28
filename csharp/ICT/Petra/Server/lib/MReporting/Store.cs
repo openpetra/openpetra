@@ -653,7 +653,7 @@ namespace Ict.Petra.Server.MReporting
             {
                 element = (TRptCalculation)rptGrpCalculation.List[counter];
 
-                if (element.strId == name)
+                if (element.strId.ToLower() == name.ToLower())
                 {
                     return element;
                 }

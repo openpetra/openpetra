@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "reports.dtd">
+<reports>
+
+	<report id="Current Accounts Payable">
+		<description>
+			This report shows for a specific date, which invoices have already been posted, but have not been paid yet at that date.
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number"/>
+			<reportparameter name="param_report_date"/>
+            <reportparameter name="param_ap_account"/>
+		</reportparameters>
+		
+		<reportheader/>
+		
+		<pageheader>
+			<field whichfield="title1">
+				<fielddetail>
+                    <value text ="Current Accounts Payable" />
+				</fielddetail>
+			</field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number}})"/>
+			</field>
+			<field whichfield="period2" align="right">
+				<fielddetail>
+                    <value text="AT: "/>
+                    <value variable="param_report_date"/>
+				</fielddetail>
+			</field>
+		</pageheader>
+		
+		<calculations>
+            <calculation id="Select Posted AP Documents before given date" returns="a_ap_number_i, p_partner_key_n, p_partner_short_name_c, 
+                        a_transaction_date_d, a_narrative_c, a_debit_credit_indicator_l, a_batch_number_i, a_document_status_c, a_total_amount_n, a_transaction_amount_n, a_credit_note_flag_l, a_date_issued_d, a_credit_terms_i" returnsFormat="row">
+            <!-- there is a problem: date issued can be in a different year than posting date -->
+
+            <template><queryDetail><value>
+              SELECT PUB_a_ap_document.a_ap_number_i,
+                     PUB_a_ap_document.p_partner_key_n, 
+                     PUB_a_ap_document.a_total_amount_n, 
+                     PUB_p_partner.p_partner_short_name_c,
+                     {{transaction}}.a_transaction_date_d,
+                     {{transaction}}.a_narrative_c,
+                     {{transaction}}.a_debit_credit_indicator_l,
+                     {{transaction}}.a_batch_number_i,
+                     PUB_a_ap_document.a_document_status_c,
+                     {{transaction}}.a_transaction_amount_n,
+                     PUB_a_ap_document.a_credit_note_flag_l,
+                     PUB_a_ap_document.a_date_issued_d,
+                     PUB_a_ap_document.a_credit_terms_i
+              FROM   PUB_a_ap_document, 
+                     {{transaction}},
+                     PUB_p_partner
+              WHERE  PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number}}
+                AND  PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+AND (1=1 or PUB_a_ap_document.a_ap_number_i = 16261 OR PUB_a_ap_document.a_ap_number_i = 12836 OR PUB_a_ap_document.a_ap_number_i = 13043 OR PUB_a_ap_document.a_ap_number_i = 13195  OR PUB_a_ap_document.a_ap_number_i = 16743)              
+                AND  (PUB_a_ap_document.a_document_status_c = 'POSTED' 
+                  OR PUB_a_ap_document.a_document_status_c = 'PAID'
+                  OR PUB_a_ap_document.a_document_status_c = 'PARTPAID')
+                AND  {{transaction}}.a_account_code_c = {param_ap_account}
+                AND  {{transaction}}.a_reference_c = ('AP' + CAST(PUB_a_ap_document.a_ap_number_i AS VARCHAR(10)))
+                AND  {{transaction}}.a_transaction_date_d &lt;= {#param_report_date#}
+                AND  {{transaction}}.a_transaction_date_d &gt;= #2007-01-01#
+                </value></queryDetail>
+<!--               
+
+ AND PUB_a_ap_document.a_date_issued_d = #2001-01-17#
+                AND  {{transaction}}.a_transaction_date_d &lt;= #2008-01-01#
+
+ AND PUB_a_ap_document.a_date_issued_d &gt;= #2009-12-28#
+                AND PUB_a_ap_document.a_date_issued_d &lt;= #2009-12-29# -->
+            </template>
+            <query>
+                <queryDetail>
+                    <parameter name="transaction" value="PUB_a_transaction"/>
+                </queryDetail>
+                <queryDetail>
+                    <value text="UNION "/>
+                    <parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
+                </queryDetail>					
+                <queryDetail>
+                    <value text="UNION "/>
+                    <parameter name="transaction" value="PUB_a_previous_year_transaction"/>
+                </queryDetail>
+                <queryDetail><value>
+                    ORDER BY 1
+                </value>
+                </queryDetail>
+            </query>
+            </calculation> <!-- Select AP Documents -->
+
+            <calculation id="GetAmountPaid" returns="amountpaid" returnsFormat="Currency">
+            <query>
+                <queryDetail>
+                <value>
+              SELECT SUM(PUB_a_ap_document_payment.a_amount_n) AS amountpaid
+              FROM PUB_a_ap_document_payment, PUB_a_ap_payment
+              WHERE PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number}}
+                AND PUB_a_ap_document_payment.a_ap_number_i = {{a_ap_number_i}}
+                AND PUB_a_ap_payment.a_ledger_number_i = PUB_a_ap_document_payment.a_ledger_number_i
+                AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
+                AND PUB_a_ap_payment.a_payment_date_d &lt;= {#param_report_date#}
+                </value>
+                </queryDetail>
+            </query>
+            </calculation>
+
+            <calculation id="IsOutstandingInvoice" returns="outstandinginvoice" returnsFormat="bool">
+            <query>
+                <queryDetail>
+                    <value text="NO-SQL"/>
+                    <value function="assign(amountdue, {a_total_amount_n})"/> 
+                    <value function="assign(amountpaid, GetAmountPaid)"/>
+                    <!-- CreditNote: Document has positive amount, but payments are negative -->
+                    <value function="assign(amountpaid, iif({a_credit_note_flag_l}, mul(-1, {amountpaid}), {amountpaid}))"/>
+                    <value function="assign(amountdue, sub({amountdue}, {amountpaid}))"/>
+                    <!-- there have been mistakes in some databases, ignore if too much has been paid -->
+                    <value function="assign(amountdue, iif(lt({amountdue}, 0), 0, {amountdue}))"/>
+                    <value function="assign(outstandinginvoice,ne({amountdue}, 0))"/>
+                    <!-- return amountdue to negative number, if this is a credit note, also consider reversals. both are debit transactions -->
+                    <value function="assign(amountdue, iif({a_debit_credit_indicator_l}, mul(-1, {amountdue}), {amountdue}))"/>
+                    <value function="assign(a_total_amount_n, iif({a_debit_credit_indicator_l}, mul(-1, {a_total_amount_n}), {a_total_amount_n}))"/>
+                    <value function="assign(a_transaction_amount_n, iif({a_debit_credit_indicator_l}, mul(-1, {a_transaction_amount_n}), {a_transaction_amount_n}))"/>
+                    <value function="assign(a_transaction_amount_n, iif(eq({amountdue},0), 0, {a_transaction_amount_n}))"/>
+                    <value function="assign(a_total_amount_n, iif(eq({amountdue},0), 0, {a_total_amount_n}))"/>
+                    <value function="log(Transaction Date, {a_transaction_date_d})"/>
+                </queryDetail>
+            </query>
+            </calculation>
+
+			<calculation id="APNumber" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="AP Ref"/></caption>
+				<query>
+					<queryDetail><value variable="a_ap_number_i"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="SupplierKey" 
+					returnsFormat="partnerkey" returns="text" align="left">
+				<caption><value text="Supplier"/></caption>
+				<query>
+					<queryDetail><value variable="p_partner_key_n"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="SupplierName" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="Supplier Name"/></caption>
+				<query>
+					<queryDetail><value variable="p_partner_short_name_c"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="InvoiceRef" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="Invoice Code"/></caption>
+				<query>
+					<queryDetail><value variable="a_reference_c"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="DueDate" 
+					returnsFormat="date" returns="text" align="left">
+				<caption><value text="Due Date"/></caption>
+				<query>
+					<queryDetail><value function="addDays({a_date_issued_d}, {a_credit_terms_i})"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="PostingDate" 
+					returnsFormat="date" returns="text" align="left">
+				<caption><value text="Posting Date"/></caption>
+				<query>
+					<queryDetail><value variable="a_transaction_date_d"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="GLBatch" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="GLBatch Number"/></caption>
+				<query>
+					<queryDetail><value variable="a_batch_number_i"/></queryDetail>
+				</query>
+			</calculation>
+            
+			<calculation id="Narrative" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="Transaction Narrative"/></caption>
+				<query>
+					<queryDetail><value variable="a_narrative_c"/></queryDetail>
+				</query>
+			</calculation>
+            
+			<calculation id="Currency" 
+					returnsFormat="text" returns="text" align="left">
+				<caption><value text="Currency"/></caption>
+				<query>
+					<queryDetail><value variable="a_currency_code_c"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="TotalAmount" 
+					returnsFormat="-#,##0.00;#,##0.00; ; ;" returns="amount">
+				<caption><value text="Total Amount"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="a_total_amount_n"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="TransactionAmount" 
+					returnsFormat="-#,##0.00;#,##0.00; ; ;" returns="amount">
+				<caption><value text="Transaction Amount"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="a_transaction_amount_n"/>
+					</queryDetail>
+				</query>
+			</calculation>
+            
+			<calculation id="AmountDue" 
+					returnsFormat="-#,##0.00;#,##0.00; ; ;" returns="amount">
+				<caption><value text="Amount Due"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="AmountDue"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="AmountDueBase" 
+					returnsFormat="-#,##0.00;#,##0.00; ; ;" returns="amount">
+				<caption><value text="Amount Due(Base)"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="AmountDueBase"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+		</calculations>
+		<levels>
+		<level name="main">
+			<detail>
+				<lowerLevelReport level="total"/>
+			</detail>
+		</level> <!-- main -->
+
+		<level name="total">
+			<detail>
+				<lowerLevelReport level="PostedInvoices" calculation="Select Posted AP Documents before given date"/>
+			</detail>
+            <footer>
+				<field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Total:"/></field>
+				<field whichfield="column 9" format="Currency"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+				<field whichfield="column 10" format="Currency"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+				<field whichfield="column 11" format="Currency"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+            </footer>
+		</level> <!-- total -->
+
+		<level name="PostedInvoices" condition="eq({outstandinginvoice},true)">
+			<header>
+			</header>
+			<detail>
+                <field whichfield="columns" calculation="IsOutstandingInvoice"/>
+			</detail>
+			<footer>
+			</footer>
+		</level><!-- PostedInvoices -->
+
+		</levels>
+	</report>
+</reports>
