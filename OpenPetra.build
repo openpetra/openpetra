@@ -84,6 +84,7 @@
         <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
         <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
         <echo message="packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine"/>
+        <echo message="addProject: eg. -D:solution=Testing.sln -D:path=Testing\CodeGeneration -D:namespace=Tests.CodeGeneration or -D:solution=Client.sln -D:namespace=Ict.Petra.Client.MFinance.Gui.Test -D:path=Petra\Client\lib\MFinance\Gui"/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">
@@ -977,4 +978,22 @@
         <delete file="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
         <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>
     </target>
+
+    <target name="addProject">
+       <!--
+        -D:solution=Testing.sln -D:path=Testing\CodeGeneration -D:namespace=Tests.CodeGeneration
+
+        project file name taken from namespace
+        debug output path etc: calculated from path
+        with template: nunit, client dll, server dll, default? automatically from path
+        create also the assembly file
+       -->
+       <property name="Solution.File" value="${OpenPetraRoot.dir}/csharp/ICT/${solution}"/>
+       <property name="Project.Path" value="${OpenPetraRoot.dir}/csharp/ICT/${path}"/>
+       <property name="Project.File" value="${Project.Path}/${namespace}.csproj"/>
+       <property name="Template.Path" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ProjectFiles/"/>
+       
+       <mkdir dir="${Project.Path}"/>
+       <echo message='${script::AddProject(Template.Path, Solution.File, Project.File, namespace)}'/>
+     </target>
 </project>

@@ -413,6 +413,81 @@
         return true;
     }
 
+    [Function("AddProject")]
+    public static string AddProject(string ATemplatePath, string ASolutionFile, string AProjectFile, string ANamespace)
+    {
+        // determine the template that should be used
+        string template = String.Empty;
+        string solutionHomeRef = String.Empty;
+
+        // TODO templates for plugins, shared etc
+        if (ANamespace.StartsWith("Tests."))
+        {
+            template = "nunit.csproj";
+            solutionHomeRef = "ICT/Testing/";
+        }
+        else if (ANamespace.StartsWith("Ict.Petra.Client."))
+        {
+            template = "client.csproj";
+            solutionHomeRef = "ICT/Petra/Client/";
+        }
+        else if (ANamespace.StartsWith("Ict.Petra.Server."))
+        {
+            template = "server.csproj";
+            solutionHomeRef = "ICT/Petra/Server/";
+        }
+
+        if (template == String.Empty)
+        {
+            throw new Exception("There is no automatic way to create project files for this namespace yet");
+        }
+
+        // calculate path from the project file to the solution home, which is the parent of _bin/Debug etc
+        AProjectFile = AProjectFile.Replace("\\", "/");
+        string pathFromSolutionRef = AProjectFile.Substring(AProjectFile.IndexOf(solutionHomeRef) + solutionHomeRef.Length);
+        int countSlashes = pathFromSolutionRef.Length - pathFromSolutionRef.Replace("/", "").Length;
+        string solutionHomeRelPath = String.Empty;
+        for (int counter = 0; counter < countSlashes; counter++)
+        {
+            solutionHomeRelPath = solutionHomeRelPath + "../";
+        }
+
+        // copy will fail if project file already exists. that saves us from more complications
+        System.IO.File.Copy(ATemplatePath + template, AProjectFile);
+        string ProjectGUID = Guid.NewGuid().ToString().ToUpper();
+        ReplaceInFile(AProjectFile, "{#PROJECTGUID}", ProjectGUID);
+        ReplaceInFile(AProjectFile, "{#NAMESPACE}", ANamespace);
+        if (solutionHomeRelPath.EndsWith("/"))
+        {
+            ReplaceInFile(AProjectFile, "{#SOLUTIONHOME}/", solutionHomeRelPath);
+        }
+        ReplaceInFile(AProjectFile, "{#SOLUTIONHOME}", solutionHomeRelPath);
+
+        // create assembly file
+        System.IO.File.Copy(ATemplatePath + "AssemblyInfo.cs", AProjectFile.Replace(".csproj", ".AssemblyInfo.cs"));
+        ReplaceInFile(AProjectFile.Replace(".csproj", ".AssemblyInfo.cs"), "{#NAMESPACE}", ANamespace);
+
+        // add some initial files depending on type of dll
+        if (template == "nunit.csproj")
+        {
+            System.IO.File.Copy(ATemplatePath + "nunit.cs", AProjectFile.Replace(".csproj", ".Test.cs"));
+            ReplaceInFile(AProjectFile, "<Compile Include=\"" + ANamespace + ".AssemblyInfo.cs\" />", 
+                    "<Compile Include=\"" + ANamespace + ".AssemblyInfo.cs\" />" + Environment.NewLine +
+                    "    <Compile Include=\"" + ANamespace + ".Test.cs\" />");
+            ReplaceInFile(AProjectFile.Replace(".csproj", ".Test.cs"), "{#NAMESPACE}", ANamespace);
+        }
+
+        // add to solution
+        ReplaceInFile(ASolutionFile, "RegEx:^Global",
+                "Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"" + ANamespace + "\", \"" + 
+                AProjectFile.Substring(AProjectFile.IndexOf("csharp/ICT/") + ("csharp/ICT/").Length).Replace("/", "\\") + 
+                "\", \"{" + ProjectGUID + "}\"" + Environment.NewLine +
+                "EndProject" + Environment.NewLine + 
+                "Global");
+
+        return AProjectFile + " has been created successfully and was added to the solution";
+    }
+
     [Function("CalculateStandaloneDBUpdateFileName")]
     public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     {
