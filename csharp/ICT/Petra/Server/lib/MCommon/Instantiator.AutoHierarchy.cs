@@ -53,7 +53,7 @@ using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 using Ict.Petra.Server.MCommon.Instantiator.Cacheable;
 using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
 using Ict.Petra.Server.MCommon.Instantiator.DataReader;
-//using Ict.Petra.Server.MCommon.Cacheable;  // this doesn't exist, but gets written by generateGlue...
+//using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MCommon.DataReader;
 

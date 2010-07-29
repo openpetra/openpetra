@@ -30,7 +30,7 @@ using System.IO;
 
 namespace {#NAMESPACE}
 {
-    /// This is a test for the parameter list which is used for reporting.
+    /// TODO write your comment here
     [TestFixture]
     public class TMyTest
     {

@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
@@ -48,13 +49,9 @@ namespace Ict.Tools.CodeGeneration
         public static Int32 CODE_LENGTH_UNCRUSTIFY = 150;
 
         private Int16 indent = 0;
-        private TextWriter tw;
-        private StringCollection originalVersion;
-        private StringCollection BufferTemp = null;
-        private string LastWrittenLine = ""; /// needed for synchronizing
-        private bool Synchronized = false;
-        private bool UsingSync = false;
-        private Int32 CurrentOriginalLine = -1;
+        private List <string>originalVersion;
+        private List <string>newVersion;
+        private List <string>BufferTemp = null;
         private string OutputFile;
 
         /// <summary>
@@ -64,19 +61,7 @@ namespace Ict.Tools.CodeGeneration
         /// </summary>
         public void StartWriteToBuffer()
         {
-            BufferTemp = new StringCollection();
-        }
-
-        /// <summary>
-        /// will clear the buffer
-        /// </summary>
-        /// <returns>the buffer that has been filled until this call</returns>
-        public StringCollection FinishWriteToBuffer()
-        {
-            StringCollection ReturnValue = BufferTemp;
-
-            BufferTemp = null;
-            return ReturnValue;
+            BufferTemp = new List <string>();
         }
 
         public void WriteBuffer(StringCollection ABuffer)
@@ -85,19 +70,6 @@ namespace Ict.Tools.CodeGeneration
             {
                 WriteLine(s);
             }
-        }
-
-        private Int32 SkipEmptyLinesInOriginal(Int32 ACurrentOriginalLine)
-        {
-            while (originalVersion[ACurrentOriginalLine + 1].Trim().Length == 0
-                   && ACurrentOriginalLine + 2 < originalVersion.Count)
-            {
-                // uncrustify sometimes adds empty lines before comments etc.
-                // even before commented lines; therefore skip empty lines if necessary
-                ACurrentOriginalLine++;
-            }
-
-            return ACurrentOriginalLine;
         }
 
         /// <summary>
@@ -149,122 +121,6 @@ namespace Ict.Tools.CodeGeneration
                 formattedLine = "";
             }
 
-            if (UsingSync || (BufferTemp != null))
-            {
-                if (CurrentOriginalLine + 1 >= originalVersion.Count)
-                {
-                    Synchronized = false;
-                }
-                else if (Synchronized)
-                {
-                    CurrentOriginalLine = SkipEmptyLinesInOriginal(CurrentOriginalLine);
-
-                    if (originalVersion[CurrentOriginalLine + 1].Trim().StartsWith("#region ManualCode"))
-                    {
-                        // copy the manual code over to the new document
-                        while (CurrentOriginalLine + 1 < originalVersion.Count
-                               && !originalVersion[CurrentOriginalLine + 1].Trim().StartsWith("#endregion"))
-                        {
-                            tw.WriteLine(originalVersion[CurrentOriginalLine + 1]);
-                            CurrentOriginalLine++;
-                        }
-
-                        if (CurrentOriginalLine + 1 >= originalVersion.Count)
-                        {
-                            throw new Exception("region ManualCode was not closed");
-                        }
-
-                        tw.WriteLine(originalVersion[CurrentOriginalLine + 1]);
-                        CurrentOriginalLine++;
-                    }
-
-                    CurrentOriginalLine = SkipEmptyLinesInOriginal(CurrentOriginalLine);
-
-                    // if line has been commented, comment it again; e.g. for using clauses
-                    if ((originalVersion[CurrentOriginalLine + 1].IndexOf(line.Trim()) != -1)
-                        && originalVersion[CurrentOriginalLine + 1].Trim().StartsWith("//"))
-                    {
-                        line = originalVersion[CurrentOriginalLine + 1];
-                    }
-
-                    if (originalVersion[CurrentOriginalLine + 1].Trim() != line.Trim())
-                    {
-                        // try to find if it is just a longer namespaces; then use the generated version
-                        // eg. "out System.Int64 AMergedIntoPartnerKey," vs "out Int64 AMergedIntoPartnerKey,"
-                        try
-                        {
-                            StringCollection origWords = StringHelper.StrSplit(originalVersion[CurrentOriginalLine + 1].Trim(), " ");
-                            StringCollection newWords = StringHelper.StrSplit(line.Trim(), " ");
-
-                            if ((origWords.Count == newWords.Count)
-                                && (origWords[origWords.Count - 1] == newWords[newWords.Count - 1]))
-                            {
-                                Console.WriteLine("assuming it is the same: ");
-                                Console.WriteLine("   " + originalVersion[CurrentOriginalLine + 1].Trim());
-                                Console.WriteLine("   " + line.Trim());
-                                originalVersion[CurrentOriginalLine + 1] = line;
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            // good try; probably we failed synchronization
-                        }
-                    }
-
-                    // check if we are still synchronized
-                    if (originalVersion[CurrentOriginalLine + 1].Trim() == line.Trim())
-                    {
-                        CurrentOriginalLine++;
-                    }
-                    else
-                    {
-                        // 2 possibilities:
-                        //   A there is new code that needs to be inserted
-                        //   B or there is code that needs to be deleted from the original file
-                        // B has now been implemented as well; it will pick a significant line (more than 5 characters length and try to find it in the original lines)
-                        // A is implemented in the way, that only the first difference is logged.
-                        //   as soon as there is same code again, the synchronization is picked up again.
-                        //   if at the end of the file there is no synchronisation, then the writing fails with an exception
-
-                        Console.WriteLine("not in sync anymore; line in Original file: " + CurrentOriginalLine.ToString());
-                        Console.WriteLine("Original: " + originalVersion[CurrentOriginalLine + 1].Trim());
-                        Console.WriteLine("New Line: " + line.Trim());
-                        Synchronized = false;
-                    }
-                }
-                else // not in sync at the moment
-                {
-                    // we are in sync mode,
-                    // but at the moment we are not synchronized.
-                    // if the new line matches the current line in the original file,
-                    // then we are back in sync
-
-                    // to skip lines, don't try doing it with a line that is too short (empty lines, brackets etc)
-
-                    int skipLines = 0;
-
-                    while (!Synchronized && (skipLines == 0 || line.Trim().Length > 5) && CurrentOriginalLine + 1 + skipLines < originalVersion.Count)
-                    {
-                        // if line has been commented, comment it again; e.g. for using clauses
-                        if ((originalVersion[CurrentOriginalLine + 1 + skipLines].IndexOf(line.Trim()) != -1)
-                            && originalVersion[CurrentOriginalLine + 1 + skipLines].Trim().StartsWith("//"))
-                        {
-                            line = originalVersion[CurrentOriginalLine + 1 + skipLines];
-                        }
-
-                        if (originalVersion[CurrentOriginalLine + 1 + skipLines].Trim() == line.Trim())
-                        {
-                            // situation A: there is new code added to the file
-                            Console.WriteLine("back in sync: {0} {1}", CurrentOriginalLine + skipLines, line.Trim());
-                            Synchronized = true;
-                            CurrentOriginalLine += skipLines + 1;
-                        }
-
-                        skipLines++;
-                    }
-                }
-            }
-
             if (line.Trim().StartsWith("//") && (indent != 0))
             {
                 line = line.Trim();
@@ -276,25 +132,13 @@ namespace Ict.Tools.CodeGeneration
             }
             else
             {
-                tw.WriteLine(formattedLine + line);
+                newVersion.Add(formattedLine + line);
             }
-
-            // to make synchronization possible
-            LastWrittenLine = line;
         }
 
         public void WriteLine()
         {
-            tw.WriteLine();
-
-            if (Synchronized)
-            {
-                if ((CurrentOriginalLine + 1 < originalVersion.Count)
-                    && (originalVersion[CurrentOriginalLine + 1].Trim() == ""))
-                {
-                    CurrentOriginalLine++;
-                }
-            }
+            newVersion.Add(string.Empty);
         }
 
         /// <summary>
@@ -482,10 +326,7 @@ namespace Ict.Tools.CodeGeneration
         public bool OpenFile(string AOutputFile)
         {
             OutputFile = AOutputFile;
-            originalVersion = new StringCollection();
-            UsingSync = false;
-            Synchronized = false;
-            CurrentOriginalLine = -1;
+            originalVersion = new List <string>();
             indent = 0;
 
             if (File.Exists(OutputFile))
@@ -505,8 +346,8 @@ namespace Ict.Tools.CodeGeneration
             }
 
             // open file for writing
-            tw = new StreamWriter(OutputFile + ".new");
-            return tw != null;
+            newVersion = new List <string>();
+            return true;
         }
 
         Int32 FirstContains(StringCollection c, Int32 startIndex, string s)
@@ -527,27 +368,6 @@ namespace Ict.Tools.CodeGeneration
             return -1;
         }
 
-        /** finds the last written line in the original file
-         *  this line should be unique
-         */
-        public void SynchronizeLines()
-        {
-            // only search after the previous CurrentOriginalLine
-            Int32 OrigCurrentOriginalLine = CurrentOriginalLine;
-
-            CurrentOriginalLine = FirstContains(originalVersion, CurrentOriginalLine - 1, LastWrittenLine);
-            Synchronized = (CurrentOriginalLine != -1);
-
-            if ((Synchronized == false) && (originalVersion.Count > 0))
-            {
-                throw new Exception(
-                    "cannot synchronize lines because we cannot find line '" + LastWrittenLine + "' in file '" + OutputFile + ":" +
-                    OrigCurrentOriginalLine.ToString() + "'");
-            }
-
-            UsingSync = true;
-        }
-
         public void Close()
         {
             Close(true);
@@ -555,31 +375,11 @@ namespace Ict.Tools.CodeGeneration
 
         public void Close(bool DoWrite)
         {
-            tw.Close();
-
-            if (UsingSync && !Synchronized && (originalVersion.Count > 0))
-            {
-                throw new AutoGenerationSyncBrokeException("sync broke; please check the file " + OutputFile + ".new " +
-                    "(easiest solution: merge changes from " +
-                    Path.GetFileName(OutputFile) + ".new into " +
-                    Path.GetFileName(OutputFile) + ")");
-            }
-
             if (DoWrite)
             {
-                // only do a backup if the file is not the same
-                if (TTextFile.UpdateFile(OutputFile))
-                {
-                    //Console.WriteLine("Wrote file " + OutputFile);
-                }
+                // Merge the new file with the original file
+                TFileDiffMerge.Merge2Files(OutputFile, newVersion.ToArray());
             }
-        }
-    }
-
-    public class AutoGenerationSyncBrokeException : Exception
-    {
-        public AutoGenerationSyncBrokeException(String msg) : base(msg)
-        {
         }
     }
 }

@@ -1,7 +1,7 @@
-
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-# SharpDevelop 3.2.0.5505
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.2.0.5777
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Reporting", "Testing\Reporting\Tests.Reporting.csproj", "{BA377109-67E1-4E95-BF24-758AE808109F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common", "Testing\Common\Tests.Common.csproj", "{B153A068-F378-4DC5-8936-DF8F26D0C92F}"
@@ -19,6 +19,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.Data", "Testing\Common\Data\Tests.Common.Data.csproj", "{5B46AA48-E3DA-448F-AEED-D6C8782EE8C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "I18N", "Testing\Common\I18N\I18N.csproj", "{C55F6197-9BF5-41BF-A002-0A4A3FC8A0BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.CodeGeneration", "Testing\CodeGeneration\Tests.CodeGeneration.csproj", "{842D40A5-DBFB-4814-BCD4-AE6FBD312A78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,5 +64,9 @@ Global
 		{C55F6197-9BF5-41BF-A002-0A4A3FC8A0BF}.Debug|x86.Build.0 = Debug|x86
 		{C55F6197-9BF5-41BF-A002-0A4A3FC8A0BF}.Release|x86.ActiveCfg = Release|x86
 		{C55F6197-9BF5-41BF-A002-0A4A3FC8A0BF}.Release|x86.Build.0 = Release|x86
+		{842D40A5-DBFB-4814-BCD4-AE6FBD312A78}.Debug|x86.Build.0 = Debug|x86
+		{842D40A5-DBFB-4814-BCD4-AE6FBD312A78}.Debug|x86.ActiveCfg = Debug|x86
+		{842D40A5-DBFB-4814-BCD4-AE6FBD312A78}.Release|x86.Build.0 = Release|x86
+		{842D40A5-DBFB-4814-BCD4-AE6FBD312A78}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

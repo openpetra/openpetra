@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B153089B-B8BF-421C-A6F4-BA672885720A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,6 +58,7 @@
     <Compile Include="CSParser.cs" />
     <Compile Include="CSProjTools.cs" />
     <Compile Include="DataBinding.cs" />
+    <Compile Include="FileDiffMerge.cs" />
     <Compile Include="ParseXAML.cs" />
     <Compile Include="InsertIntoRegion.cs" />
     <Compile Include="ProcessTemplate.cs" />

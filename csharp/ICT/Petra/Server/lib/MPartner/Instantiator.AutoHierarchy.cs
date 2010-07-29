@@ -114,7 +114,7 @@ using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
 //using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
-//using Ict.Petra.Server.MPartner.Partner.ServerLookups;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.PartnerMerge.UIConnectors;
@@ -132,7 +132,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
-using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPartner.Instantiator
 {

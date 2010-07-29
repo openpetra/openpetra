@@ -641,7 +641,6 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("using System.Data;");
         WriteLine("using Ict.Common;");
         WriteLine("using Ict.Common.Verification;");
-        SynchronizeLines();
 
         foreach (TNamespace sn in tn.Children)
         {

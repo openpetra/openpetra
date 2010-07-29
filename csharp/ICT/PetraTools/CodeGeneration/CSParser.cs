@@ -406,6 +406,8 @@ namespace Ict.Tools.CodeGeneration
             //return null;
         }
 
+        private static SortedList <string, List <CSParser>>CSFilesPerProject = new SortedList <string, List <CSParser>>();
+
         /// <summary>
         /// parse the XML csproj file and return a list of parsed cs files
         /// </summary>
@@ -415,6 +417,12 @@ namespace Ict.Tools.CodeGeneration
         {
             if (!File.Exists(AProjName))
             {
+                return;
+            }
+
+            if (CSFilesPerProject.ContainsKey(AProjName))
+            {
+                ACSFiles = CSFilesPerProject[AProjName];
                 return;
             }
 
@@ -463,6 +471,8 @@ namespace Ict.Tools.CodeGeneration
 
                 child = child.NextSibling;
             }
+
+            CSFilesPerProject.Add(AProjName, ACSFiles);
 
             return;
         }

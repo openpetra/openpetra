@@ -69,7 +69,8 @@ class CreateInstantiators : AutoGenerationWriter
             }
         }
 
-        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
+        // TODO log warning once we have given access permissions to most functions. at the moment the warnings are only confusing and not helping
+        // TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
 
         return new ProcessTemplate();
     }
@@ -479,8 +480,6 @@ class CreateInstantiators : AutoGenerationWriter
         ProcessTemplate headerSnippet = Template.GetSnippet("HEADER");
 
         WriteLine(headerSnippet.FinishWriting(true));
-
-        SynchronizeLines();
 
         WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + ';');
 
