@@ -955,7 +955,6 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// post a GL Batch
         /// </summary>
-        /// <param name="MainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
