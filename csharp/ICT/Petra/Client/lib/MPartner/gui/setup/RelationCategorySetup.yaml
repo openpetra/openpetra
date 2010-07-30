@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Relation Categories
+    FormTitle: Maintain Relationship Categories
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PRelationCategory
     CacheableTable: RelationCategoryList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 672
-    WindowHeight: 500
+    WindowWidth: 750
+    WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -25,6 +25,9 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailCode: {Label=Relationship Category Code}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -32,11 +35,11 @@ RootNode:
                 Row0: [txtDetailCode, txtDetailDescription]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailCode: {Label=Marital Status Code, Width=40}
-        txtDetailDescription: {Width=285}
-        chkDetailUnassignableFlag: {Label=Assignable, OnChange=EnableDisableUnassignableDate}
+        txtDetailCode: {Label=Relationship Category Code}
+        txtDetailDescription: {Width=207}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Marital Status Code
+            Label: New Relationship Category

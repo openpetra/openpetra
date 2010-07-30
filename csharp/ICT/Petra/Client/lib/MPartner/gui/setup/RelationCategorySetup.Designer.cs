@@ -184,14 +184,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCode.Name = "txtDetailCode";
-            this.txtDetailCode.Size = new System.Drawing.Size(40, 28);
+            this.txtDetailCode.Size = new System.Drawing.Size(150, 28);
             //
             // lblDetailCode
             //
             this.lblDetailCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailCode.Name = "lblDetailCode";
             this.lblDetailCode.AutoSize = true;
-            this.lblDetailCode.Text = "Marital Status Code:";
+            this.lblDetailCode.Text = "Relationship Category Code:";
             this.lblDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.txtDetailDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailDescription.Name = "txtDetailDescription";
-            this.txtDetailDescription.Size = new System.Drawing.Size(285, 28);
+            this.txtDetailDescription.Size = new System.Drawing.Size(207, 28);
             //
             // lblDetailDescription
             //
@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.lblDetailUnassignableFlag.Location = new System.Drawing.Point(2,2);
             this.lblDetailUnassignableFlag.Name = "lblDetailUnassignableFlag";
             this.lblDetailUnassignableFlag.AutoSize = true;
-            this.lblDetailUnassignableFlag.Text = "Assignable:";
+            this.lblDetailUnassignableFlag.Text = "Unassignable:";
             this.lblDetailUnassignableFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailUnassignableFlag.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailUnassignableFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -298,7 +298,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Marital Status Code";
+            this.tbbNew.Text = "New Relationship Category";
             //
             // tbrMain
             //
@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(672, 500);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -473,7 +473,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmRelationCategorySetup";
-            this.Text = "Maintain Relation Categories";
+            this.Text = "Maintain Relationship Categories";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

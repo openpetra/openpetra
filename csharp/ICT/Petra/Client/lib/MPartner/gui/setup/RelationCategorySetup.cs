@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
 
-  /// auto generated: Maintain Relation Categories
+  /// auto generated: Maintain Relationship Categories
   public partial class TFrmRelationCategorySetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
-      this.lblDetailCode.Text = Catalog.GetString("Marital Status Code:");
+      this.lblDetailCode.Text = Catalog.GetString("Relationship Category Code:");
       this.lblDetailDescription.Text = Catalog.GetString("Description:");
-      this.lblDetailUnassignableFlag.Text = Catalog.GetString("Assignable:");
+      this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Marital Status Code");
+      this.tbbNew.Text = Catalog.GetString("New Relationship Category");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Relation Categories");
+      this.Text = Catalog.GetString("Maintain Relationship Categories");
       #endregion
 
       this.txtDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -151,10 +151,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       FMainDS.PRelationCategory.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Relation Category", FMainDS.PRelationCategory.ColumnCode);
+      grdDetails.AddTextColumn("Relationship Category Code", FMainDS.PRelationCategory.ColumnCode);
       grdDetails.AddTextColumn("Description", FMainDS.PRelationCategory.ColumnDescription);
       grdDetails.AddCheckBoxColumn("Unassignable", FMainDS.PRelationCategory.ColumnUnassignableFlag);
-      grdDetails.AddDateColumn("Date", FMainDS.PRelationCategory.ColumnUnassignableDate);
+      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PRelationCategory.ColumnUnassignableDate);
       grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PRelationCategory.ColumnDeletableFlag);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -163,6 +163,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       grdDetails.AutoSizeCells();
+
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PRelationCategory.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
 
       FPetraUtilsObject.InitActionState();
     }
@@ -233,40 +239,51 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
     private void ShowDetails(PRelationCategoryRow ARow)
     {
-        txtDetailCode.Text = ARow.Code;
-        txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-        if (ARow.IsDescriptionNull())
+        FPetraUtilsObject.DisableDataChangedEvent();
+        if (ARow == null)
         {
-            txtDetailDescription.Text = String.Empty;
+            pnlDetails.Enabled = false;
         }
         else
         {
-            txtDetailDescription.Text = ARow.Description;
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailCode.Text = ARow.Code;
+            txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            if (ARow.IsDescriptionNull())
+            {
+                txtDetailDescription.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailDescription.Text = ARow.Description;
+            }
+            if (ARow.IsUnassignableFlagNull())
+            {
+                chkDetailUnassignableFlag.Checked = false;
+            }
+            else
+            {
+                chkDetailUnassignableFlag.Checked = ARow.UnassignableFlag;
+            }
+            if (ARow.IsUnassignableDateNull())
+            {
+                dtpDetailUnassignableDate.Date = null;
+            }
+            else
+            {
+                dtpDetailUnassignableDate.Date = ARow.UnassignableDate;
+            }
+            if (ARow.IsDeletableFlagNull())
+            {
+                chkDetailDeletableFlag.Checked = false;
+            }
+            else
+            {
+                chkDetailDeletableFlag.Checked = ARow.DeletableFlag;
+            }
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
-        if (ARow.IsUnassignableFlagNull())
-        {
-            chkDetailUnassignableFlag.Checked = false;
-        }
-        else
-        {
-            chkDetailUnassignableFlag.Checked = ARow.UnassignableFlag;
-        }
-        if (ARow.IsUnassignableDateNull())
-        {
-            dtpDetailUnassignableDate.Date = null;
-        }
-        else
-        {
-            dtpDetailUnassignableDate.Date = ARow.UnassignableDate;
-        }
-        if (ARow.IsDeletableFlagNull())
-        {
-            chkDetailDeletableFlag.Checked = false;
-        }
-        else
-        {
-            chkDetailDeletableFlag.Checked = ARow.DeletableFlag;
-        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private PRelationCategoryRow FPreviouslySelectedDetailRow = null;
