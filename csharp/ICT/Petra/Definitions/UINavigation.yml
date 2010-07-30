@@ -66,6 +66,7 @@ OpenPetra:
                         Business:      {Label=Setup Business Codes, Description=Maintain Business Codes, ActionOpenScreen=TFrmBusinessCodeSetup}
                         Occupation:    {Label=Setup Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
                         MaritalStatus: {Label=Setup Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
+                        RelationshipCategory: {Label=Setup Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
                         
                     Subscription-related: 
                         Publications: {Label=Setup Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}

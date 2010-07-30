@@ -168,6 +168,13 @@
     <Compile Include="ReasonSubscriptionGivenSetup.ManualCode.cs">
       <DependentUpon>ReasonSubscriptionGivenSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="RelationCategorySetup.cs" />
+    <Compile Include="RelationCategorySetup.Designer.cs">
+      <DependentUpon>RelationCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RelationCategorySetup.ManualCode.cs">
+      <DependentUpon>RelationCategorySetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AcquisitionCodeSetup.resx">
       <DependentUpon>AcquisitionCodeSetup.cs</DependentUpon>
     </EmbeddedResource>
@@ -203,6 +210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ReasonSubscriptionGivenSetup.resx">
       <DependentUpon>ReasonSubscriptionGivenSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelationCategorySetup.resx">
+      <DependentUpon>RelationCategorySetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
