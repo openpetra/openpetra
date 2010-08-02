@@ -703,6 +703,26 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                             break;
 
+                        case TCacheablePartnerTablesEnum.InterestList:
+
+                            if (PInterestAccess.SubmitChanges((PInterestTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
+                        case TCacheablePartnerTablesEnum.InterestCategoryList:
+
+                            if (PInterestCategoryAccess.SubmitChanges((PInterestCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+
+                            break;
+
                         case TCacheablePartnerTablesEnum.LocationTypeList:
 
                             if (PLocationTypeAccess.SubmitChanges((PLocationTypeTable)ASubmitTable, SubmitChangesTransaction,
