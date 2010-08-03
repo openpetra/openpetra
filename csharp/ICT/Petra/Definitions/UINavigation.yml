@@ -184,8 +184,11 @@ OpenPetra:
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference}
                     Reports:
-                        PressentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+                        AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
+                        AgeSummaryReport: {ActionOpenScreen=TFrmAgeSummaryReport}
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
+                        LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
+                        PressentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}

@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             chkDetailCongressLanguage.Enabled = false;
         }
-    
+
         private void NewRowManual(ref PLanguageRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");

@@ -2617,14 +2617,3 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
     }
 }
-
-/*
- * CVS HISTORY
- *
- * $Log: ConferenceFieldCalculation.cs,v $
- * Revision 1.7  2010/04/13 14:13:50  berndr
- * Add cvs history tag at the end of the file.
- *
- *
- *
- */

@@ -150,6 +150,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

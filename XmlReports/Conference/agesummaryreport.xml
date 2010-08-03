@@ -121,7 +121,7 @@
 				</query>
 			</calculation> <!-- Select Attendee -->
 			
-			<calculation id="CalculateSingleAge" returns="" returnsFormat="internal">
+			<calculation id="CalculateSingleAge" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -130,7 +130,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="ClearAgeTable" returns="" returnsFormat="internal">
+			<calculation id="ClearAgeTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -139,7 +139,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="FinishAgeTable" returns="" returnsFormat="internal">
+			<calculation id="FinishAgeTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>

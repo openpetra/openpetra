@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 DateTime currentDate = dtpFromDate.Date.Value.AddDays(Counter);
 
                 ACalc.AddParameter("param_calculation", "CheckDate", ColumnCounter);
-                ACalc.AddParameter("ColumnWidth", "1.3", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)1.3, ColumnCounter);
                 ACalc.AddParameter("ColumnCaption", currentDate.ToString("MMM-d"), ColumnCounter);
 
                 ColumnCounter++;

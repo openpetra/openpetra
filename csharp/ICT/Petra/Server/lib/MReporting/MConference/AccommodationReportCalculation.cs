@@ -881,17 +881,3 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
     }
 }
-
-/*
- * CVS HISTORY
- *
- * $Log: AccommodationReportCalculation.cs,v $
- * Revision 1.2  2010/03/19 11:00:51  berndr
- * Added calculations for conference field reports.
- *
- * Revision 1.1  2010/02/19 10:02:04  berndr
- * Moved the calculation of the accommodation reports into a seperate class.
- *
- *
- *
- */

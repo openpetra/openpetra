@@ -325,17 +325,3 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
     }
 }
-
-/*
- * CVS HISTORY
- *
- * $Log: NationalitySummaryCalculation.cs,v $
- * Revision 1.2  2010/04/06 13:10:56  berndr
- * Take care of partners who don't have a passport entry in Petra.
- *
- * Revision 1.1  2010/03/03 13:40:19  berndr
- * Add calculations for generating some summary conference reports.
- *
- *
- *
- */

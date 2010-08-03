@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{915250E9-F8AE-4694-8989-3F14165C27DC}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -112,6 +112,9 @@
     </Compile>
     <Compile Include="AgeSummaryReport.cs" />
     <Compile Include="AgeSummaryReport.Designer.cs">
+      <DependentUpon>AgeSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AgeSummaryReport.ManualCode.cs">
       <DependentUpon>AgeSummaryReport.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
