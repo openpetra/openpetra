@@ -286,15 +286,3 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
     }
 }
-
-
-/*
- * CVS HISTORY
- *
- * $Log: AttendanceSummaryCalculation.cs,v $
- * Revision 1.1  2010/03/03 13:40:19  berndr
- * Add calculations for generating some summary conference reports.
- *
- *
- *
- */
