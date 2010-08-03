@@ -121,6 +121,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AvailableControlGenerators.Add(new TreeViewGenerator());
                 AvailableControlGenerators.Add(new TextBoxGenerator());
                 AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
+                AvailableControlGenerators.Add(new TTxtNumericTextBoxGenerator());
                 AvailableControlGenerators.Add(new ComboBoxGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoPopulatedGenerator());
                 AvailableControlGenerators.Add(new TcmbAutoCompleteGenerator());

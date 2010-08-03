@@ -263,6 +263,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
                 }
+                else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
+                {
+                    ((Ict.Common.Controls.TTxtNumericTextBox)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                }
                 /*
                  * The remaining controls are listed in order to be able to
                  * warn the developer if a new control is added to a form

@@ -740,6 +740,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
+                if ((TYml2Xml.GetAttribute(curNode, "Format") != String.Empty))
+                {
+                    return false;
+                }
+
                 if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
                 {
                     if ((TXMLParser.GetAttribute(curNode, "Type") != "PartnerKey"))
@@ -1321,6 +1326,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
+                if ((TYml2Xml.GetAttribute(curNode, "Format") != String.Empty))
+                {
+                    return false;
+                }
+
                 if (TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
                 {
                     FButtonLabelType = "PartnerKey";
@@ -1431,6 +1441,214 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
                 writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
+        }
+    }
+
+    public class TTxtNumericTextBoxGenerator : TControlGenerator
+    {
+        TTxtNumericTextBox.TNumericTextBoxMode FControlMode;
+        Int16 FDecimalPrecision = 2;
+        bool FNullValueAllowed = true;
+
+        public TTxtNumericTextBoxGenerator()
+            : base("txt", "Ict.Common.Controls.TTxtNumericTextBox")
+        {
+            FChangeEventName = "TextChanged";
+            FHasReadOnlyProperty = true;
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            bool ReturnValue = false;
+            string NumberFormat;
+            string PotentialDecimalPrecision;
+            string PotentialNullValue;
+
+//Console.WriteLine("TTxtNumericTextBoxGenerator ControlFitsNode");
+            if (base.ControlFitsNode(curNode))
+            {
+                NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
+
+//Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
+                if (NumberFormat == "Integer")
+                {
+                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
+
+                    ReturnValue = true;
+                }
+
+                if ((NumberFormat == "Decimal")
+                    || (NumberFormat.StartsWith("Decimal(")))
+                {
+                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+
+                    ReturnValue = true;
+                }
+
+                if ((NumberFormat == "Currency")
+                    || (NumberFormat.StartsWith("Currency(")))
+                {
+                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+
+                    ReturnValue = true;
+                }
+
+                if (ReturnValue)
+                {
+                    if ((NumberFormat.StartsWith("Decimal("))
+                        || (NumberFormat.StartsWith("Currency(")))
+                    {
+                        PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
+                            NumberFormat.Length - NumberFormat.IndexOf(')'));
+
+//Console.WriteLine("PotentialDecimalPrecision: " + PotentialDecimalPrecision);
+                        if (PotentialDecimalPrecision != String.Empty)
+                        {
+                            try
+                            {
+                                FDecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
+                            }
+                            catch (System.FormatException)
+                            {
+                                throw new ApplicationException(
+                                    "TextBox with decimal formatting: The specifier for the decimal precision '" + PotentialDecimalPrecision +
+                                    "' is not a number!");
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+                        }
+                    }
+
+                    if (TYml2Xml.HasAttribute(curNode, "NullValueAllowed"))
+                    {
+                        PotentialNullValue = TYml2Xml.GetAttribute(curNode, "NullValueAllowed");
+
+                        if ((PotentialNullValue == "true")
+                            || (PotentialNullValue == "false"))
+                        {
+                            FNullValueAllowed = Convert.ToBoolean(PotentialNullValue);
+                        }
+                        else
+                        {
+                            throw new ApplicationException(
+                                "TextBox with number formatting: Value for 'NullValueAllowed' needs to be either 'true' or 'false', but is '" +
+                                PotentialNullValue + "'.");
+                        }
+                    }
+                }
+
+                FDefaultWidth = 80;
+
+                return ReturnValue;
+            }
+
+            return false;
+        }
+
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
+                    || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
+                {
+                    return ctrl.controlName + ".NumberValueDouble = null;";
+                }
+                else
+                {
+                    return ctrl.controlName + ".NumberValueInt = null;";
+                }
+            }
+            else
+            {
+                if (AFieldTypeDotNet.ToLower().Contains("int"))
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueInt = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueInt = " + AFieldOrNull + ";";
+                }
+                else if (AFieldTypeDotNet.ToLower().Contains("double"))
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueDouble = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueDouble = Convert.ToDouble(" + AFieldOrNull + ");";
+                }
+                else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueDecimal = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
+                }
+                else
+                {
+                    return "?????";
+                }
+            }
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
+                    || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
+                {
+                    return ctrl.controlName + ".NumberValueDouble == null";
+                }
+                else
+                {
+                    return ctrl.controlName + ".NumberValueInt == null";
+                }
+            }
+
+            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "Convert.ToInt64(" + ctrl.controlName + ".NumberValueInt)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int"))
+            {
+                return "Convert.ToInt32(" + ctrl.controlName + ".NumberValueInt)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            {
+                return "Convert.ToDouble(" + ctrl.controlName + ".NumberValueDouble)";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return "Convert.ToDecimal(" + ctrl.controlName + ".NumberValueDecimal)";
+            }
+
+            return ctrl.controlName + ".Text";
+        }
+
+        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        {
+            string ControlName = ctrl.controlName;
+
+            base.SetControlProperties(writer, ctrl);
+
+            if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
+            {
+                writer.SetControlProperty(ControlName, "ShowLabel", "false");
+            }
+
+            // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
+
+            writer.SetControlProperty(ControlName, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." +
+                Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
+            writer.SetControlProperty(ControlName, "DecimalPlaces", FDecimalPrecision.ToString());
+            writer.SetControlProperty(ControlName, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
         }
     }
 
