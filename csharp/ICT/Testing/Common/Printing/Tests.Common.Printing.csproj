@@ -48,8 +48,14 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Printing">
+      <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Printing.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\..\..\..\ThirdParty\PDFSharp\PdfSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -67,11 +73,5 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Printing\Ict.Common.Printing.csproj">
-      <Project>{954F91D9-263A-49F3-942D-6D85A2C13DB8}</Project>
-      <Name>Ict.Common.Printing</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

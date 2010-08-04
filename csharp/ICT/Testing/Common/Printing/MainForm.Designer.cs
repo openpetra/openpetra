@@ -58,6 +58,7 @@ namespace Tests.Common.Printing
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbbPreview = new System.Windows.Forms.ToolStripButton();
             this.tbbSaveTestText = new System.Windows.Forms.ToolStripButton();
+            this.tbbSavePDF = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtHTMLText = new System.Windows.Forms.TextBox();
             this.tabPreview = new System.Windows.Forms.TabControl();
@@ -69,6 +70,7 @@ namespace Tests.Common.Printing
             this.cmbZoom = new System.Windows.Forms.ToolStripComboBox();
             this.tbpHtmlView = new System.Windows.Forms.TabPage();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.tbbPrintPDFToScreen = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,20 +80,20 @@ namespace Tests.Common.Printing
             this.toolStrip2.SuspendLayout();
             this.tbpHtmlView.SuspendLayout();
             this.SuspendLayout();
-
             //
             // toolStrip1
             //
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                     this.tbbPreview,
-                    this.tbbSaveTestText
+                    this.tbbSaveTestText,
+                    this.tbbSavePDF,
+                    this.tbbPrintPDFToScreen
                 });
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(635, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
-
             //
             // tbbPreview
             //
@@ -102,7 +104,6 @@ namespace Tests.Common.Printing
             this.tbbPreview.Size = new System.Drawing.Size(87, 22);
             this.tbbPreview.Text = "Update Preview";
             this.tbbPreview.Click += new System.EventHandler(this.TbbPreviewClick);
-
             //
             // tbbSaveTestText
             //
@@ -113,7 +114,16 @@ namespace Tests.Common.Printing
             this.tbbSaveTestText.Size = new System.Drawing.Size(108, 22);
             this.tbbSaveTestText.Text = "Save HTML Testtext";
             this.tbbSaveTestText.Click += new System.EventHandler(this.TbbSaveTestTextClick);
-
+            //
+            // tbbSavePDF
+            //
+            this.tbbSavePDF.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbbSavePDF.Image = ((System.Drawing.Image)(resources.GetObject("tbbSavePDF.Image")));
+            this.tbbSavePDF.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbSavePDF.Name = "tbbSavePDF";
+            this.tbbSavePDF.Size = new System.Drawing.Size(72, 22);
+            this.tbbSavePDF.Text = "Save To PDF";
+            this.tbbSavePDF.Click += new System.EventHandler(this.TbbSavePDFClick);
             //
             // splitContainer1
             //
@@ -121,12 +131,10 @@ namespace Tests.Common.Printing
             this.splitContainer1.Location = new System.Drawing.Point(0, 25);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-
             //
             // splitContainer1.Panel1
             //
             this.splitContainer1.Panel1.Controls.Add(this.txtHTMLText);
-
             //
             // splitContainer1.Panel2
             //
@@ -134,7 +142,6 @@ namespace Tests.Common.Printing
             this.splitContainer1.Size = new System.Drawing.Size(635, 398);
             this.splitContainer1.SplitterDistance = 59;
             this.splitContainer1.TabIndex = 5;
-
             //
             // txtHTMLText
             //
@@ -145,7 +152,6 @@ namespace Tests.Common.Printing
             this.txtHTMLText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtHTMLText.Size = new System.Drawing.Size(635, 59);
             this.txtHTMLText.TabIndex = 5;
-
             //
             // tabPreview
             //
@@ -157,7 +163,6 @@ namespace Tests.Common.Printing
             this.tabPreview.SelectedIndex = 0;
             this.tabPreview.Size = new System.Drawing.Size(635, 335);
             this.tabPreview.TabIndex = 6;
-
             //
             // tbpPrintPreview
             //
@@ -170,7 +175,6 @@ namespace Tests.Common.Printing
             this.tbpPrintPreview.TabIndex = 0;
             this.tbpPrintPreview.Text = "Print Preview";
             this.tbpPrintPreview.UseVisualStyleBackColor = true;
-
             //
             // printPreviewControl1
             //
@@ -179,7 +183,6 @@ namespace Tests.Common.Printing
             this.printPreviewControl1.Name = "printPreviewControl1";
             this.printPreviewControl1.Size = new System.Drawing.Size(621, 278);
             this.printPreviewControl1.TabIndex = 3;
-
             //
             // toolStrip2
             //
@@ -193,7 +196,6 @@ namespace Tests.Common.Printing
             this.toolStrip2.Size = new System.Drawing.Size(621, 25);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
-
             //
             // tbbPreviousPage
             //
@@ -204,7 +206,6 @@ namespace Tests.Common.Printing
             this.tbbPreviousPage.Size = new System.Drawing.Size(79, 22);
             this.tbbPreviousPage.Text = "Previous Page";
             this.tbbPreviousPage.Click += new System.EventHandler(this.TbbPreviousPageClick);
-
             //
             // tbbNextPage
             //
@@ -215,7 +216,6 @@ namespace Tests.Common.Printing
             this.tbbNextPage.Size = new System.Drawing.Size(61, 22);
             this.tbbNextPage.Text = "Next Page";
             this.tbbNextPage.Click += new System.EventHandler(this.TbbNextPageClick);
-
             //
             // cmbZoom
             //
@@ -228,7 +228,6 @@ namespace Tests.Common.Printing
             this.cmbZoom.Name = "cmbZoom";
             this.cmbZoom.Size = new System.Drawing.Size(121, 25);
             this.cmbZoom.SelectedIndexChanged += new System.EventHandler(this.CmbZoomSelectedIndexChanged);
-
             //
             // tbpHtmlView
             //
@@ -240,7 +239,6 @@ namespace Tests.Common.Printing
             this.tbpHtmlView.TabIndex = 1;
             this.tbpHtmlView.Text = "HTML View";
             this.tbpHtmlView.UseVisualStyleBackColor = true;
-
             //
             // webBrowser1
             //
@@ -250,7 +248,16 @@ namespace Tests.Common.Printing
             this.webBrowser1.Name = "webBrowser1";
             this.webBrowser1.Size = new System.Drawing.Size(621, 303);
             this.webBrowser1.TabIndex = 1;
-
+            //
+            // tbbPrintPDFToScreen
+            //
+            this.tbbPrintPDFToScreen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbbPrintPDFToScreen.Image = ((System.Drawing.Image)(resources.GetObject("tbbPrintPDFToScreen.Image")));
+            this.tbbPrintPDFToScreen.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbPrintPDFToScreen.Name = "tbbPrintPDFToScreen";
+            this.tbbPrintPDFToScreen.Size = new System.Drawing.Size(104, 22);
+            this.tbbPrintPDFToScreen.Text = "Print PDF to Screen";
+            this.tbbPrintPDFToScreen.Click += new System.EventHandler(this.TbbPrintPDFToScreenClick);
             //
             // MainForm
             //
@@ -276,6 +283,9 @@ namespace Tests.Common.Printing
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ToolStripButton tbbPrintPDFToScreen;
+        private System.Windows.Forms.ToolStripButton tbbSavePDF;
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripButton tbbSaveTestText;

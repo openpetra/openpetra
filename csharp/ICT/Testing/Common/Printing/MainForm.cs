@@ -29,6 +29,10 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.Printing;
+using PdfSharp;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace Tests.Common.Printing
 {
@@ -59,7 +63,7 @@ namespace Tests.Common.Printing
 
             cmbZoom.SelectedIndex = 1;
 
-            TbbPreviewClick(null, null);
+            //TbbPreviewClick(null, null);
         }
 
         private Int32 NumberOfPages = 0;
@@ -70,17 +74,54 @@ namespace Tests.Common.Printing
             NumberOfPages = FGfxPrinter.NumberOfPages;
         }
 
+        void TbbSavePDFClick(object sender, EventArgs e)
+        {
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(txtHTMLText.Text,
+                String.Empty,
+                pdfPrinter);
+
+            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            pdfPrinter.SavePDF("test.pdf");
+
+            MessageBox.Show("Please check test.pdf in the Debug directory!");
+        }
+
+        void TbbPrintPDFToScreenClick(object sender, EventArgs e)
+        {
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(txtHTMLText.Text,
+                String.Empty,
+                pdfPrinter);
+
+            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            FGfxPrinter = pdfPrinter;
+
+            doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
+
+            printPreviewControl1.Document = doc;
+            printPreviewControl1.InvalidatePreview();
+
+            printPreviewControl1.Rows = 1;
+        }
+
         void TbbPreviewClick(object sender, EventArgs e)
         {
             webBrowser1.DocumentText = txtHTMLText.Text;
 
             PrintDocument doc = new PrintDocument();
 
-            FGfxPrinter = new TGfxPrinter(doc);
+            FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
             TPrinterHtml htmlPrinter = new TPrinterHtml(txtHTMLText.Text,
                 String.Empty,
                 FGfxPrinter);
-            FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter);
+            FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
             doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
 

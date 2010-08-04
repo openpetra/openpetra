@@ -1,6 +1,6 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
 # SharpDevelop 3.2.0.5777
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Reporting", "Testing\Reporting\Tests.Reporting.csproj", "{BA377109-67E1-4E95-BF24-758AE808109F}"
 EndProject
@@ -11,8 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.IO", "Testing\Common\IO\Tests.Common.IO.csproj", "{CC90C23D-CCF8-4D41-A25B-5D14911845B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.Printing", "Testing\Common\Printing\Tests.Common.Printing.csproj", "{35CC59A5-8FAD-4950-A896-F5823EC85765}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Common.Printing", "Common\Printing\Ict.Common.Printing.csproj", "{954F91D9-263A-49F3-942D-6D85A2C13DB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.DB", "Testing\Common\DB\Tests.Common.DB.csproj", "{15ACA7B7-6AE9-4071-AC47-51E7D8029B6E}"
 EndProject
@@ -48,10 +46,6 @@ Global
 		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Debug|x86.Build.0 = Debug|x86
 		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Release|x86.ActiveCfg = Release|x86
 		{35CC59A5-8FAD-4950-A896-F5823EC85765}.Release|x86.Build.0 = Release|x86
-		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Debug|x86.ActiveCfg = Debug|x86
-		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Debug|x86.Build.0 = Debug|x86
-		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|x86.ActiveCfg = Release|x86
-		{954F91D9-263A-49F3-942D-6D85A2C13DB8}.Release|x86.Build.0 = Release|x86
 		{15ACA7B7-6AE9-4071-AC47-51E7D8029B6E}.Debug|x86.ActiveCfg = Debug|x86
 		{15ACA7B7-6AE9-4071-AC47-51E7D8029B6E}.Debug|x86.Build.0 = Debug|x86
 		{15ACA7B7-6AE9-4071-AC47-51E7D8029B6E}.Release|x86.ActiveCfg = Release|x86
