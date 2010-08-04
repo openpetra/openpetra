@@ -45,6 +45,9 @@
       <HintPath>..\..\..\..\..\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
     </Reference>
@@ -164,6 +167,10 @@
     <ProjectReference Include="..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\app\Formatting\Ict.Petra.Client.App.Formatting.csproj">
       <Project>{03ED55AE-5526-4F37-B4D7-1498877CFB7F}</Project>

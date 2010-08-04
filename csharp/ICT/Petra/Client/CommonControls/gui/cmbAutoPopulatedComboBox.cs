@@ -39,15 +39,20 @@ using Ict.Common.Controls;
 using System.Globalization;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
-    /// A UserControl that consists of a ComboBox with entries coming from a cached
-    /// DataTable and a label to its right that can display a text.
-    ///
-    /// The control fetches its list entries on its own from the Client DataCache!
-    /// The cached DataTable is selected with the ListTable property.
+    /// A UserControl that consists of a ComboBox whose entries come from a DataTable
+    /// whose contents can be coming from: Cacheable DataTables, Static DataTables, and
+    /// DataTables which are loaded on demand.
+    /// Next to the ComboBox sits a label that can display a text (eg. description of a
+    /// code that is selected in the ComboBox).
+    /// <para />
+    /// The that should be displayed is selected with the ListTable property.
+    /// The control fetches its list entries on its own from the source of the data that
+    /// is hard-coded with each ListTable!
     /// </summary>
     public partial class TCmbAutoPopulated : System.Windows.Forms.UserControl
     {
@@ -68,6 +73,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             AddresseeTypeList,
+
+            /// <summary>todoComment</summary>
+            AddressDisplayOrderList,
 
             /// <summary>todoComment</summary>
             AddressLayoutList,
@@ -98,6 +106,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             InterestCategoryList,
+
+            /// <summary>todoComment</summary>
+            InternationalPostalTypeList,
 
             /// <summary>todoComment</summary>
             LanguageCodeList,
@@ -321,6 +332,8 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public void InitialiseUserControl()
         {
+            Ict.Common.Data.TTypedDataTable TypedTable;
+
             if (DesignMode)
             {
                 return;
@@ -354,6 +367,16 @@ namespace Ict.Petra.Client.CommonControls
                     "p_description_c",
                     null);
                     break;
+
+                case TListTableEnum.AddressDisplayOrderList:
+
+                    InitialiseUserControl(
+                    TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.AddressDisplayOrderList),
+                    "AddressDisplayOrder",
+                    "Description",
+                    null);
+                    break;
+
 
                 case TListTableEnum.AddressLayoutList:
 
@@ -446,6 +469,16 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestCategoryList),
                     PInterestCategoryTable.GetCategoryDBName(),
                     PInterestCategoryTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.InternationalPostalTypeList:
+                    TRemote.MCommon.DataReader.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out TypedTable);
+
+                    InitialiseUserControl(
+                    TypedTable,
+                    PInternationalPostalTypeTable.GetInternatPostalTypeCodeDBName(),
+                    PInternationalPostalTypeTable.GetDescriptionDBName(),
                     null);
                     break;
 
@@ -740,6 +773,11 @@ namespace Ict.Petra.Client.CommonControls
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
                     break;
 
+                case TListTableEnum.AddressDisplayOrderList:
+                    cmbAutoPopulated.ColumnWidthCol1 = 50;
+                    cmbAutoPopulated.ColumnWidthCol2 = 150;
+                    break;
+
                 case TListTableEnum.BusinessCodeList:
                     cmbAutoPopulated.ColumnWidthCol2 = 150;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
@@ -782,6 +820,11 @@ namespace Ict.Petra.Client.CommonControls
                     cmbAutoPopulated.ColumnWidthCol1 = 130;
                     cmbAutoPopulated.ColumnWidthCol2 = 230;
                     cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
+                    break;
+
+                case TListTableEnum.InternationalPostalTypeList:
+                    cmbAutoPopulated.ColumnWidthCol1 = 100;
+                    cmbAutoPopulated.ColumnWidthCol2 = 230;
                     break;
 
                 case TListTableEnum.LanguageCodeList:
