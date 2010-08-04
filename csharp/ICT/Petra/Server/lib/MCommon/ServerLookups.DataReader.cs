@@ -85,6 +85,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
+                {
+                    tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);
+                }
                 else
                 {
                     throw new Exception("TCommonDataReader.LoadData: unknown table " + ATablename);
@@ -151,6 +155,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                     {
                         if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
+                    {
+                        if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
