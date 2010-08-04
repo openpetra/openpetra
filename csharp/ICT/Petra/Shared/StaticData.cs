@@ -37,6 +37,11 @@ namespace Ict.Petra.Shared
         AccommodationCodeList,
 
         /// <summary>
+        /// address display order
+        /// </summary>
+        AddressDisplayOrderList,
+
+        /// <summary>
         /// address layouts
         /// </summary>
         AddressLayoutList,
@@ -115,6 +120,10 @@ namespace Ict.Petra.Shared
                             ReturnValue = BuildAccommodationCodeListTable();
                             break;
 
+                        case TStaticPartnerTablesEnum.AddressDisplayOrderList:
+                            ReturnValue = BuildAddressDisplayOrderListTable();
+                            break;
+
                         case TStaticPartnerTablesEnum.AddressLayoutList:
                             ReturnValue = BuildAddressLayoutListTable();
                             break;
@@ -175,6 +184,40 @@ namespace Ict.Petra.Shared
                 ARow = StaticDT.NewRow();
                 ARow[0] = "OTHER";
                 StaticDT.Rows.Add(ARow);
+                StaticDT.PrimaryKey = new DataColumn[] {
+                    StaticDT.Columns[PRIMARYKEYROWNAME]
+                };
+                UStaticDataTablesCacheDS.Tables.Add(StaticDT);
+                return StaticDT;
+            }
+
+            /// <summary>
+            /// build list of address display orders
+            /// </summary>
+            /// <returns></returns>
+            public static DataTable BuildAddressDisplayOrderListTable()
+            {
+                const String PRIMARYKEYROWNAME = "AddressDisplayOrder";
+
+                DataTable StaticDT;
+                DataRow ARow;
+
+                StaticDT = new DataTable(TStaticPartnerTablesEnum.AddressDisplayOrderList.ToString("G"));
+                StaticDT.Columns.Add(PRIMARYKEYROWNAME, System.Type.GetType("System.String"));
+                StaticDT.Columns.Add("Description", System.Type.GetType("System.String"));
+                ARow = StaticDT.NewRow();
+                ARow[0] = "0";
+                ARow[1] = "International";
+                StaticDT.Rows.Add(ARow);
+                ARow = StaticDT.NewRow();
+                ARow[0] = "1";
+                ARow[1] = "European";
+                StaticDT.Rows.Add(ARow);
+                ARow = StaticDT.NewRow();
+                ARow[0] = "2";
+                ARow[1] = "American";
+                StaticDT.Rows.Add(ARow);
+
                 StaticDT.PrimaryKey = new DataColumn[] {
                     StaticDT.Columns[PRIMARYKEYROWNAME]
                 };
