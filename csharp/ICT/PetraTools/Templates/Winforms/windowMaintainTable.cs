@@ -98,6 +98,7 @@ namespace {#NAMESPACE}
     public bool CreateNew{#DETAILTABLE}()
     {
         {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+        {#INITNEWROWMANUAL}
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
         
         FPetraUtilsObject.SetChangedFlag();
