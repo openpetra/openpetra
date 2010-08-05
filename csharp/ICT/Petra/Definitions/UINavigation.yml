@@ -58,6 +58,7 @@ OpenPetra:
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
                     Partner-related:           
+                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
                         PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
                         Acquisition:   {Label=Setup Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
@@ -67,7 +68,7 @@ OpenPetra:
                         Occupation:    {Label=Setup Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
                         MaritalStatus: {Label=Setup Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
                         RelationshipCategory: {Label=Setup Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
-                        
+                                                
                     Subscription-related: 
                         Publications: {Label=Setup Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
                         ReasonSubscriptionGiven: {Label=Setup Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
@@ -76,6 +77,7 @@ OpenPetra:
                     Address-related:  
                         AddreseeTypes: {Label=Setup Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
                         LocationTypes: {Label=Setup Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
+                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
                     
             #MoreFunctions:
                 #SetupPartnerModule:
