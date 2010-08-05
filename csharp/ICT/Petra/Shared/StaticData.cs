@@ -203,7 +203,7 @@ namespace Ict.Petra.Shared
                 DataRow ARow;
 
                 StaticDT = new DataTable(TStaticPartnerTablesEnum.AddressDisplayOrderList.ToString("G"));
-                StaticDT.Columns.Add(PRIMARYKEYROWNAME, System.Type.GetType("System.String"));
+                StaticDT.Columns.Add(PRIMARYKEYROWNAME, System.Type.GetType("System.Int32"));
                 StaticDT.Columns.Add("Description", System.Type.GetType("System.String"));
                 ARow = StaticDT.NewRow();
                 ARow[0] = "0";
