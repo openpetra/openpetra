@@ -1,0 +1,37 @@
+RootNode:
+    BaseYaml: ConferenceReportingForm.yaml
+    FormType: report
+    FormTitle: Children Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    TemplateParameters:
+        XMLFILES: [Conference\\\\childrenreport.xml,Conference\\\\conference.xml]
+        REPORTNAME: Children Report
+        CURRENTREPORT: Children Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK 
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [CONFERENCE]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoConferenceSelection]
+            Order: AlwaysFirst
+        tpgAgeSelection:
+            Controls: [grpAgeRange]
+        
+        ucoConferenceSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
+            Dock: Fill
+        
+        grpAgeRange:
+            Label: Select Age
+            Controls: [txtFromYears, txtToYears]
+        txtFromYears:
+            Label: From
+        txtToYears:
+            Label: To
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+    

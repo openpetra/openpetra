@@ -117,10 +117,64 @@
     <Compile Include="AgeSummaryReport.ManualCode.cs">
       <DependentUpon>AgeSummaryReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ArrivalDepartureGroup.cs" />
+    <Compile Include="ArrivalDepartureGroup.Designer.cs">
+      <DependentUpon>ArrivalDepartureGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ArrivalListingReport.cs" />
+    <Compile Include="ArrivalListingReport.Designer.cs">
+      <DependentUpon>ArrivalListingReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AttendanceSummaryReport.cs" />
+    <Compile Include="AttendanceSummaryReport.Designer.cs">
+      <DependentUpon>AttendanceSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AttendeeReport.cs" />
+    <Compile Include="AttendeeReport.Designer.cs">
+      <DependentUpon>AttendeeReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChildrenReport.cs" />
+    <Compile Include="ChildrenReport.Designer.cs">
+      <DependentUpon>ChildrenReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommentsReport.cs" />
+    <Compile Include="CommentsReport.Designer.cs">
+      <DependentUpon>CommentsReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConferenceRoleReport.cs" />
+    <Compile Include="ConferenceRoleReport.Designer.cs">
+      <DependentUpon>ConferenceRoleReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExtraCostsReport.cs" />
+    <Compile Include="ExtraCostsReport.Designer.cs">
+      <DependentUpon>ExtraCostsReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExtraCostsReport.ManualCode.cs">
+      <DependentUpon>ExtraCostsReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FamilyListingReport.cs" />
+    <Compile Include="FamilyListingReport.Designer.cs">
+      <DependentUpon>FamilyListingReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FamilyListingReport.ManualCode.cs">
+      <DependentUpon>FamilyListingReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldReports.cs" />
+    <Compile Include="FieldReports.Designer.cs">
+      <DependentUpon>FieldReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GroupReports.cs" />
+    <Compile Include="GroupReports.Designer.cs">
+      <DependentUpon>GroupReports.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguagesReport.cs" />
     <Compile Include="LanguagesReport.Designer.cs">
       <DependentUpon>LanguagesReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NationalitySummaryReport.cs" />
+    <Compile Include="NationalitySummaryReport.Designer.cs">
+      <DependentUpon>NationalitySummaryReport.cs</DependentUpon>
     </Compile>
     <Compile Include="PresentAttendeeReport.cs" />
     <Compile Include="PresentAttendeeReport.Designer.cs">
@@ -129,6 +183,13 @@
     <Compile Include="SelectCampaignOption.cs" />
     <Compile Include="SelectCampaignOption.Designer.cs">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransportReport.cs" />
+    <Compile Include="TransportReport.Designer.cs">
+      <DependentUpon>TransportReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransportReport.ManualCode.cs">
+      <DependentUpon>TransportReport.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_ConferenceSelection.cs" />
     <Compile Include="UC_ConferenceSelection.Designer.cs">
@@ -149,14 +210,53 @@
     <EmbeddedResource Include="AgeSummaryReport.resx">
       <DependentUpon>AgeSummaryReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ArrivalDepartureGroup.resx">
+      <DependentUpon>ArrivalDepartureGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ArrivalListingReport.resx">
+      <DependentUpon>ArrivalListingReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AttendanceSummaryReport.resx">
+      <DependentUpon>AttendanceSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AttendeeReport.resx">
+      <DependentUpon>AttendeeReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChildrenReport.resx">
+      <DependentUpon>ChildrenReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommentsReport.resx">
+      <DependentUpon>CommentsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConferenceRoleReport.resx">
+      <DependentUpon>ConferenceRoleReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtraCostsReport.resx">
+      <DependentUpon>ExtraCostsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FamilyListingReport.resx">
+      <DependentUpon>FamilyListingReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldReports.resx">
+      <DependentUpon>FieldReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupReports.resx">
+      <DependentUpon>GroupReports.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LanguagesReport.resx">
       <DependentUpon>LanguagesReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NationalitySummaryReport.resx">
+      <DependentUpon>NationalitySummaryReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PresentAttendeeReport.resx">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SelectCampaignOption.resx">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TransportReport.resx">
+      <DependentUpon>TransportReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_ConferenceSelection.resx">
       <DependentUpon>UC_ConferenceSelection.cs</DependentUpon>
