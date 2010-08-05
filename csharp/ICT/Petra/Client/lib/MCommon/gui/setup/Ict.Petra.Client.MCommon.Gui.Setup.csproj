@@ -80,7 +80,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CountrySetup.cs" />
+    <Compile Include="CountrySetup.Designer.cs">
+      <DependentUpon>CountrySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CountrySetup.ManualCode.cs">
+      <DependentUpon>CountrySetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="InternationalPostalTypeSetup.cs" />
+    <Compile Include="InternationalPostalTypeSetup.Designer.cs">
+      <DependentUpon>InternationalPostalTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InternationalPostalTypeSetup.ManualCode.cs">
+      <DependentUpon>InternationalPostalTypeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguageCodeSetup.cs" />
     <Compile Include="LanguageCodeSetup.Designer.cs">
       <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
@@ -95,6 +109,12 @@
     <Compile Include="SetupCurrency.ManualCode.cs">
       <DependentUpon>SetupCurrency.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CountrySetup.resx">
+      <DependentUpon>CountrySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InternationalPostalTypeSetup.resx">
+      <DependentUpon>InternationalPostalTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LanguageCodeSetup.resx">
       <DependentUpon>LanguageCodeSetup.cs</DependentUpon>
     </EmbeddedResource>

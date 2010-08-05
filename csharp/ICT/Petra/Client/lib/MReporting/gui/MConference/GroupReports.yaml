@@ -1,0 +1,69 @@
+RootNode:
+    BaseYaml: ConferenceReportingForm.yaml
+    FormType: report
+    FormTitle: Group Reports
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    TemplateParameters:
+        XMLFILES: [Conference\\\\groupreports.xml,Conference\\\\conference.xml]
+        REPORTNAME: Group Reports
+        CURRENTREPORT: Group Reports
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK 
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [CONFERENCE]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoConferenceSelection]
+            Order: AlwaysFirst
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
+        tpgColumns:
+            Controls: [ucoReportColumns]
+            Order: AlwaysLast
+        tpgGroups:
+            Label: Groups and Participants
+            Controls: [grpGroups, grpParticipants]
+            
+        ucoReportColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill
+        ucoConferenceSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
+            Dock: Fill
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
+        grpGroups:
+            Label: Select Group
+            Controls: [rbtAllGroups, rbtWorkGroups, rbtFellowshipGroups, rbtDiscoveryGroups]
+        grpParticipants:
+            Label: Select Participants
+            Controls: [rbtParticipantsAll, rbtParticipantsIgnoreNoGroup, rbtParticipantsIgnoreAll]
+            
+        rbtAllGroups:
+            Label: All Groups
+        rbtWorkGroups:
+            Label: Work Groups
+        rbtFellowshipGroups:
+            Label: Fellowship Groups
+        rbtDiscoveryGroups:
+            Label: Discovery Groups
+        rbtParticipantsAll:
+            Label: List all attendees
+        rbtParticipantsIgnoreNoGroup:
+            Label: List only attendees whose role is a participant
+        rbtParticipantsIgnoreAll:
+            Label: List only attendees whose role is a participant and who have a group assigned to it
+        
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para101:
+            Name: Language
+            Parameter: 3.0
+       
+        
+        
