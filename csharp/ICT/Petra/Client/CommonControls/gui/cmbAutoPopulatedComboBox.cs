@@ -325,6 +325,24 @@ namespace Ict.Petra.Client.CommonControls
         {
             return this.cmbAutoPopulated.cmbCombobox.GetSelectedString();
         }
+        /// <summary>
+        /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt32
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt32(System.Int32 ANr)
+        {
+            this.cmbAutoPopulated.cmbCombobox.SetSelectedInt32(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int32 GetSelectedInt32()
+        {
+            return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt32();
+        }
 
         /// <summary>
         /// initialise user controls for specific tables
