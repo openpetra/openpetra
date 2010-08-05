@@ -170,7 +170,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
 
       // Ensure that the Details Panel is disabled if there are no records
       if (FMainDS.AMotivationDetail.Rows.Count == 0)

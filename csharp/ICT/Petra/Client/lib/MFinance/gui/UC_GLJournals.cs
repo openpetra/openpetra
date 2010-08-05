@@ -123,7 +123,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       DataView myDataView = FMainDS.AJournal.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
 
       ShowData();
     }
@@ -198,7 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             myDataView.RowFilter = "a_batch_number_i = " + FBatchNumber.ToString();
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            grdDetails.AutoSizeCells();
             if (myDataView.Count > 0)
             {
                 grdDetails.Selection.ResetSelection(false);

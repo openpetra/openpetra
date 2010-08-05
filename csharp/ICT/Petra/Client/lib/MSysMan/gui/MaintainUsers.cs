@@ -110,7 +110,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
       DataView myDataView = FMainDS.SUser.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
 
       FPetraUtilsObject.InitActionState();
     }
