@@ -1,16 +1,31 @@
+function XmlExtractJSONResponse(response)
+{
+    var xml = response.responseXML;
+    var stringDataNode = xml.getElementsByTagName('string')[0];
+    if(stringDataNode){
+        jsonString = stringDataNode.firstChild.data;
+        jsonData = Ext.util.JSON.decode(jsonString);
+        return jsonData;
+    }
+}
+
+
 Ext.onReady(function(){
     Ext.QuickTips.init();
- 
-	// Create a variable to hold our EXT Form Panel. 
-	// Assign various config options as seen.	 
+
+    // use our own blank image to avoid a call home
+    // Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
+
+    // Create a variable to hold our EXT Form Panel. 
+    // Assign various config options as seen.	 
     var login = new Ext.FormPanel({ 
         labelWidth:80,
         frame:true, 
         title:'Please Login', 
         defaultType:'textfield',
-	monitorValid:true,
-	// Specific attributes for the text fields for username / password. 
-	// The "name" attribute defines the name of variables sent to the server.
+        monitorValid:true,
+        // Specific attributes for the text fields for username / password. 
+        // The "name" attribute defines the name of variables sent to the server.
         items:[{ 
                 id: 'Username',
                 fieldLabel:'Username', 
@@ -22,7 +37,7 @@ Ext.onReady(function(){
                 allowBlank:false 
             }],
  
-	// All the magic happens after the user clicks the button     
+        // All the magic happens after the user clicks the button     
         buttons:[{ 
                 text:'Login',
                 formBind: true,	 
@@ -35,14 +50,18 @@ Ext.onReady(function(){
                             password: Ext.getCmp('Password').getValue()
                         },
                         success: function(response){
-                            if (Ext.util.Format.trim(response.responseText).toLowerCase() == "true")
+                        
+                            // response contains: <?xml version="1.0" encoding="utf-8"?><string xmlns="http://tempuri.org/">[true]</string>
+                            jsonData = XmlExtractJSONResponse(response);
+                            resultMessage = jsonData;
+                            if (resultMessage == "true")
                             {
                                 var redirect = 'test.asp'; 
                                 window.location = redirect;
                             }
                             else
                             {
-                                Ext.Msg.alert('Login Failed!', ">" + Ext.util.Format.trim(response.responseText).toLowerCase() + ">"); 
+                                Ext.Msg.alert('Login Failed!', "Wrong username or password"); 
                             }
                             
                         },
@@ -61,8 +80,8 @@ Ext.onReady(function(){
     });
  
  
-	// This just creates a window to wrap the login form. 
-	// The login object is passed to the items collection.       
+    // This just creates a window to wrap the login form. 
+    // The login object is passed to the items collection.       
     var win = new Ext.Window({
         layout:'fit',
         width:300,
@@ -72,6 +91,6 @@ Ext.onReady(function(){
         plain: true,
         border: false,
         items: [login]
-	});
-	win.show();
+    });
+    win.show();
 });

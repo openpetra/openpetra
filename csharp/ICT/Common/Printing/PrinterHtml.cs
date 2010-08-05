@@ -237,6 +237,13 @@ namespace Ict.Common.Printing
                 if (printer.CurrentPageNr == 1)
                 {
                     printer.FPageWidthAvailable = printer.Width - ((pageRightMargin) + (pageLeftMargin));
+
+                    if (printer.FPageWidthAvailable < 0)
+                    {
+                        // this happens for using HTML renderer with eMarginType.eDefaultMargins instead of eMarginType.ePrintableArea
+                        // printer.FPageWidthAvailable = 3;
+                    }
+
                     printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
                     printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
                     printer.CurrentRelativeFontSize = 0;

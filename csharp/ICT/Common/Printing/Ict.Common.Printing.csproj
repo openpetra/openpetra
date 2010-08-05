@@ -41,11 +41,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="PdfSharp">
+      <HintPath>..\..\..\ThirdParty\PDFSharp\PdfSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PdfPrinter.cs" />
     <Compile Include="PrinterHtml.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Printer.cs" />

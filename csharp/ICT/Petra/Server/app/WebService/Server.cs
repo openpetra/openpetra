@@ -79,9 +79,7 @@ public class TOpenPetraOrg : WebService
         return true;
     }
 
-    /// <summary>Login a user</summary>
-    [WebMethod(EnableSession = true)]
-    public bool Login(string username, string password)
+    private bool LoginInternal(string username, string password)
     {
         Int32 ProcessID;
         bool ASystemEnabled;
@@ -99,8 +97,18 @@ public class TOpenPetraOrg : WebService
         {
             TLogging.Log(e.Message);
             Session["LoggedIn"] = false;
+            Ict.Common.DB.DBAccess.GDBAccessObj.RollbackTransaction();
             return false;
         }
+    }
+
+    /// <summary>Login a user</summary>
+    [WebMethod(EnableSession = true)]
+    public string Login(string username, string password)
+    {
+        bool loggedIn = LoginInternal(username, password);
+
+        return Jayrock.Json.Conversion.JsonConvert.ExportToString(loggedIn);
     }
 
     /// <summary>check if the user has logged in successfully</summary>
@@ -234,6 +242,71 @@ public class TOpenPetraOrg : WebService
         }
 
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
+    }
+
+    /// <summary>
+    /// import data from a web form, ie partners are entering their own data
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AJSONFormData"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string DataImportFromForm(string AFormID, string AJSONFormData)
+    {
+        // user ANONYMOUS, can only write, not read
+        if (!IsUserLoggedIn())
+        {
+            if (!LoginInternal("ANONYMOUS", ""))
+            {
+                TLogging.Log(
+                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions");
+                return "error";
+            }
+        }
+
+        // TLogging.Log(AJSONFormData);
+        return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
+    }
+
+    /// <summary>
+    /// for the partner that wants to edit/update his/her own data.
+    /// this also allows to enter new forms (eg. during application process) without having to reenter some data
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AEmailAddress"></param>
+    /// <param name="APassword"></param>
+    /// <returns></returns>
+    public string GetPreviouslyEnteredData(string AFormID, string AEmailAddress, string APassword)
+    {
+        // TODO: validate email and password. if true, generate a temporary user, which has read access only to his own partner data, identified by the email?
+        // TODO use that temporary user to login to the database. clear user afterwards?
+        // TODO or easier: just get the data of the user and return it as JSON string?
+
+        return "error";
+    }
+
+    /// <summary>
+    /// reset the password of the partner so that he/she can edit their own data
+    /// </summary>
+    /// <param name="AEmailAddress"></param>
+    /// <returns></returns>
+    public string RequestNewPasswordForEmail(string AEmailAddress)
+    {
+        // TODO create a new password and send to the email address, if a partner exists with that email address
+        return "error";
+    }
+
+    /// <summary>
+    /// returns all partner data for records that have been modified on the given date or later.
+    /// this should be called by the office OpenPetra instance, to import the data of the OpenPetra instance running on the web.
+    /// </summary>
+    /// <param name="AUsername">authentication of the user</param>
+    /// <param name="APassword"></param>
+    /// <param name="AEarliestModifiedDate"></param>
+    /// <returns>yml partner export with all data of modified partners</returns>
+    public string SyncModifiedPartnerData(string AUsername, string APassword, DateTime AEarliestModifiedDate)
+    {
+        return "error";
     }
 }
 }

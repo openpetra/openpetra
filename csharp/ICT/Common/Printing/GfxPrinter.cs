@@ -175,7 +175,13 @@ namespace Ict.Common.Printing
             }
         }
 
-        private System.Drawing.Font GetFont(eFont AFont)
+        /// <summary>
+        /// get the font that is associated with the enum value.
+        /// this way we do not need to create a new font each time
+        /// </summary>
+        /// <param name="AFont"></param>
+        /// <returns></returns>
+        protected System.Drawing.Font GetFont(eFont AFont)
         {
             System.Drawing.Font ReturnValue;
             ReturnValue = FDefaultFont;
@@ -205,6 +211,21 @@ namespace Ict.Common.Printing
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// update the biggest last used font for the next line feed
+        /// </summary>
+        /// <param name="AFont"></param>
+        protected virtual bool UpdateBiggestLastUsedFont(eFont AFont)
+        {
+            if (GetFont(AFont).GetHeight(FEv.Graphics) > FBiggestLastUsedFont.GetHeight(FEv.Graphics))
+            {
+                FBiggestLastUsedFont = GetFont(AFont);
+                return true;
+            }
+
+            return false;
         }
 
         private System.Drawing.StringFormat GetStringFormat(eAlignment AAlign)
@@ -483,10 +504,7 @@ namespace Ict.Common.Printing
                     string toPrint = ATxt.Substring(0, length);
                     ATxt = ATxt.Substring(length);
 
-                    if (GetFont(AFont).GetHeight(FEv.Graphics) > FBiggestLastUsedFont.GetHeight(FEv.Graphics))
-                    {
-                        FBiggestLastUsedFont = GetFont(AFont);
-                    }
+                    UpdateBiggestLastUsedFont(AFont);
 
                     if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
                     {
@@ -818,6 +836,34 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// Converts the given value in Point/Pixel to the currently used measurement unit
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public float Point(float AValueInPoint)
+        {
+            float ReturnValue = 0;
+
+            if (FEv != null)
+            {
+                if (FEv.Graphics.PageUnit == GraphicsUnit.Millimeter)
+                {
+                    ReturnValue = AValueInPoint * 0.35277f;
+                }
+                else if (FEv.Graphics.PageUnit == GraphicsUnit.Point)
+                {
+                    ReturnValue = AValueInPoint;
+                }
+                else if (FEv.Graphics.PageUnit == GraphicsUnit.Inch)
+                {
+                    ReturnValue = AValueInPoint / 72.0f;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// 1440 TWIPS = 1 inch = 2.54 cm
         ///
         /// </summary>
@@ -841,7 +887,7 @@ namespace Ict.Common.Printing
         /// The PrintPage event is raised for each page to be printed.
         /// </summary>
         /// <returns>void</returns>
-        void PrintPage(object ASender, PrintPageEventArgs AEv)
+        protected virtual void PrintPage(object ASender, PrintPageEventArgs AEv)
         {
             this.FEv = AEv;
 

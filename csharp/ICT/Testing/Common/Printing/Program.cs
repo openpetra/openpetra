@@ -37,6 +37,7 @@ namespace Tests.Common.Printing
         [STAThread]
         private static void Main(string[] args)
         {
+            new Ict.Common.TLogging("testPrinting.log");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
