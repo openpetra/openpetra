@@ -36,12 +36,30 @@ using Jayrock.Json;
 
 namespace Ict.Petra.Server.MPartner.Import
 {
+    /// <summary>
+    /// collection of data that is entered on the web form
+    /// </summary>
     public class TApplicationFormData
     {
+        /// <summary>
+        /// first name of the partner
+        /// </summary>
         public string firstname;
+        /// <summary>
+        /// last name of the partner
+        /// </summary>
         public string lastname;
+        /// <summary>
+        /// street name and house number
+        /// </summary>
         public string street;
+        /// <summary>
+        /// post code of the city
+        /// </summary>
         public string postcode;
+        /// <summary>
+        /// name of the city
+        /// </summary>
         public string city;
     }
 
@@ -51,6 +69,12 @@ namespace Ict.Petra.Server.MPartner.Import
     /// </summary>
     public class TImportPartnerForm
     {
+        /// <summary>
+        /// method for importing data entered on the web form
+        /// </summary>
+        /// <param name="AFormID"></param>
+        /// <param name="AJSONFormData"></param>
+        /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
         {
             if (AFormID == "Personnel")
