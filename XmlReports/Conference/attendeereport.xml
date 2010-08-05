@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Attendee Report">
+	<description>
+		Report for Conference Attendees
+		depends on conference.xml
+	</description>
+	<reportparameters></reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+	<field whichfield="title1"><value text="Attendee Report"></value></field>
+	<field whichfield="title2"><value function="getSiteName()"></value></field>
+	<field whichfield="descr1">
+		<value text="Sorted by: "></value>
+		<value variable="param_sortby_readable"></value>
+	</field>
+	<field whichfield="descr2">
+		<fielddetail>
+			<value text="Selection: "></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, one attendee)">
+			<value text="Partner: "></value><value variable="param_partnerkey"></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, all attendees)">
+			<value text="All Attendees"></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, from extract)">
+			<value text="Extract: "></value><value variable="param_extractname"></value>
+		</fielddetail>
+	</field>
+	<field whichfield="period1">
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, one conference)">
+				<value text="Selected Conference: "></value>
+				<value variable="param_conferencename"></value>
+			</case></switch>
+		</fielddetail>
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, all conferences)">
+				<value text="All Conferences selected"></value>
+			</case></switch>
+		</fielddetail>
+	</field>
+	<field whichfield="period2">
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, one conference)">
+				<value text="Selected Campaign Options: "></value>
+				<value variable="param_conferenceoptionscode"></value>
+			</case></switch>
+		</fielddetail>
+	</field>
+    </pageheader>
+
+    <calculations>
+	<calculation id="" returns="automatic" returnsFormat="text">
+		<query/>
+	</calculation>
+    </calculations>
+    
+    <levels>    
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Select Attendee Details" level="Attendee Details"></lowerLevelReport>
+		</detail>
+	</level> <!-- main -->
+
+      <level name="Attendee Details" identification="AttendeeKey">
+		<header>
+		</header>
+		<detail>
+			<switch>
+				<default>
+					<field whichfield="Columns" calculation="GetOtherDetails"></field>
+				</default>
+			</switch>
+		</detail>
+       </level><!-- Attendee Details -->
+	
+    </levels>
+  </report>
+</reports>
