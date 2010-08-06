@@ -114,8 +114,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PersonCacheable.cs" />
-    <Compile Include="UnitCacheable.cs" />
+    <Compile Include="Person.Cacheable.cs" />
+    <Compile Include="Unit.Cacheable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\app\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
