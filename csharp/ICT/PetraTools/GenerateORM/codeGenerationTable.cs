@@ -309,11 +309,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.AddToCodelet("NAMESPACE", ANamespaceName);
 
             // load default header with license and copyright
-            StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-            string fileheader = sr.ReadToEnd();
-            sr.Close();
-            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-            Template.AddToCodelet("GPLFILEHEADER", fileheader);
+            Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
 
             foreach (TTable currentTable in AStore.GetTables())
             {

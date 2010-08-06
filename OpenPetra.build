@@ -527,6 +527,11 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Server -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
 
+    <target name="generateORMCachedTables">
+        <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
+    </target>
+    
     <target name="generateORMDatasets">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data -outputFilename:Common.DataSets -StartTableId:5000 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data -outputFilename:Partner.DataSets -StartTableId:5100 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
@@ -539,7 +544,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MConference.Data -outputFilename:Conference.DataSets -StartTableId:5800 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
     
-    <target name="generateORM" depends="generateORMTables,generateORMAccess,generateORMDatasets" description="Generate the typed datastore.">
+    <target name="generateORM" depends="generateORMTables,generateORMAccess,generateORMDatasets,generateORMCachedTables" description="Generate the typed datastore.">
     </target>
     
     <target name="generateGlue" description="Generate the glue between client and server, ie. interfaces and instantiators">

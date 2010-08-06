@@ -766,12 +766,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
             string templateDir = opts.GetValue("TemplateDir", true);
-            StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + ".." +
-                Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-            string fileheader = sr.ReadToEnd();
-            sr.Close();
-            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-            FTemplate.AddToCodelet("GPLFILEHEADER", fileheader);
+            FTemplate.AddToCodelet("GPLFILEHEADER", 
+                ProcessTemplate.LoadEmptyFileComment(templateDir + ".." +
+                    Path.DirectorySeparatorChar));
 
             // init some template variables that can be empty
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");

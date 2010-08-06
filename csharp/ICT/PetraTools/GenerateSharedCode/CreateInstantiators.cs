@@ -471,11 +471,7 @@ class CreateInstantiators : AutoGenerationWriter
         WriteLine("//");
 
         // load default header with license and copyright
-        StreamReader sr = new StreamReader(ATemplateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-        string fileheader = sr.ReadToEnd();
-        sr.Close();
-        fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-        WriteLine(fileheader);
+        WriteLine(ProcessTemplate.LoadEmptyFileComment(ATemplateDir));
 
         ProcessTemplate headerSnippet = Template.GetSnippet("HEADER");
 

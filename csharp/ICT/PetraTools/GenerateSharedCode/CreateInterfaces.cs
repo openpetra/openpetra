@@ -629,11 +629,7 @@ public class CreateInterfaces : AutoGenerationWriter
 
         // load default header with license and copyright
         string templateDir = TAppSettingsManager.GetValueStatic("TemplateDir");
-        StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-        string fileheader = sr.ReadToEnd();
-        sr.Close();
-        fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-        WriteLine(fileheader);
+        WriteLine(ProcessTemplate.LoadEmptyFileComment(templateDir));
 
         WriteLine("using System;");
         WriteLine("using System.Collections;");

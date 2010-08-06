@@ -177,11 +177,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             DataSetTableIdCounter = Convert.ToInt16(opts.GetValue("StartTableId"));
 
             // load default header with license and copyright
-            StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-            string fileheader = sr.ReadToEnd();
-            sr.Close();
-            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-            Template.SetCodelet("GPLFILEHEADER", fileheader);
+            Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
 
             Template.SetCodelet("NAMESPACE", ANameSpace);
 

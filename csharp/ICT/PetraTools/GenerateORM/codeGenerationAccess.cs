@@ -713,11 +713,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.SetCodelet("NAMESPACE", ANamespaceName);
 
             // load default header with license and copyright
-            StreamReader sr = new StreamReader(templateDir + Path.DirectorySeparatorChar + "EmptyFileComment.txt");
-            string fileheader = sr.ReadToEnd();
-            sr.Close();
-            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
-            Template.SetCodelet("GPLFILEHEADER", fileheader);
+            Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
 
             Template.AddToCodelet("USINGNAMESPACES", GetNamespace(strGroup), false);
 

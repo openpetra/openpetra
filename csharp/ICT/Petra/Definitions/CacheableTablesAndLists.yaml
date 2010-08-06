@@ -1,0 +1,64 @@
+# generates the file Cacheable.cs for the Server, and the enums for Shared
+CachedTables:
+    Partner:
+        Partner:
+            DatabaseTables:
+                # most enums are calculated by removing the first letter and adding trailing List (eg. PAddresseeType becomes AddresseeTypeList)
+                # comment is added in the Shared Cacheable.cs for each enum; if no comment is defined, the comment is taken from petra.xml
+                PAddresseeType:
+                PAcquisition: {Comment=how did we get to know this partner, Enum=AcquisitionCodeList}
+                PBusiness: {Enum=BusinessCodeList}
+                ACurrency: {Enum=CurrencyCodeList}
+                PDataLabel:
+                PDataLabelUse:
+                PDataLabelLookupCategory:
+                PDataLabelLookup:
+                PDenomination:
+                PInterest:
+                PInterestCategory:
+                PLocationType:
+                PtMaritalStatus:
+                PMethodOfContact:
+                POccupation:
+                PPartnerStatus:
+                PType: {Enum=PartnerTypeList}
+                PFoundationProposalStatus: {Enum=ProposalStatusList}
+                PProposalSubmissionType:
+                PRelation:
+                PRelationCategory:
+                UUnitType:
+            CalculatedLists:
+                # these lists need a ManualCode section for loading data from the database
+                CountyList: {Comment=list of counties}
+                FoundationOwnerList: {Comment=list of users that are associated with foundations}
+                InstalledSitesList: {Comment=list of installed sites}
+                CountryListFromExistingLocations: {Comment="list of countries that are actually used in the database (smaller than the full country list)"}
+        Mailing:
+            DatabaseTables:
+                PContactAttribute:
+                PContactAttributeDetail:
+                PMethodOfContact:
+                PMergeForm:
+                PMergeField:
+                PPostcodeRegion: {Enum=PostCodeRegionList}
+        Subscriptions:
+            DatabaseTables:
+                PPublicationCost:
+                PPublication: {Comment=available publications}
+                PReasonSubscriptionGiven:
+                PReasonSubscriptionCancelled:
+    Common:
+        Common:
+            DatabaseTables:
+                PCountry:
+                AFrequency: {Comment="List of Frequencies (e.g. of Mailings, Publications, etc.)"}
+                PLanguage: {Enum=LanguageCodeList}
+    Personnel:
+        Unit:
+            CalculatedLists:
+                CampaignList: {Comment=List of all campaigns}
+                ConferenceList: {Comment=List of all conferences}
+        Person:
+            DatabaseTables:
+                PmDocumentType:
+                PmCommitmentStatus:

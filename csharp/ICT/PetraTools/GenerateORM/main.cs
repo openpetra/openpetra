@@ -58,6 +58,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 System.Console.WriteLine("           with parameters: ");
                 System.Console.WriteLine("                 -input:<dataset XML file>");
                 System.Console.WriteLine("                 -outputNamespace:<Namespace of the file>");
+                System.Console.WriteLine("  cachedtables ");
+                System.Console.WriteLine("           with parameters: ");
+                System.Console.WriteLine("                 -cachedef:<dataset XML file>");
+                System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
                 System.Console.WriteLine(
                     "       e.g. GenerateORM -do:dataset -petraxml:U:/sql/datadefinition/petra.xml -input:U:/sql/datadefinition/dataset.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.Dataset");
                 return;
@@ -197,6 +201,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             cmdLine.GetOptValue("outputNamespace").Replace(".Shared.", ".Server."),
                             store, groups,
                             cmdLine.GetOptValue("outputFilename") + ".Access");
+                    }
+
+                    if (cmdLine.GetOptValue("do") == "cachedtables")
+                    {
+                        Ict.Tools.CodeGeneration.CachedTables.TGenerateCachedTables.WriteCachedTables(
+                            store,
+                            cmdLine.GetOptValue("cachedef"),
+                            cmdLine.GetOptValue("outputshared"),
+                            cmdLine.GetOptValue("TemplateDir"));
                     }
                     else
                     {

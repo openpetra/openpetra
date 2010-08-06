@@ -116,6 +116,22 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// load the license and copyright text for the file header
+        /// </summary>
+        /// <param name="ATemplatePath"></param>
+        /// <returns></returns>
+        public static string LoadEmptyFileComment(string ATemplatePath)
+        {
+            StreamReader sr = new StreamReader(ATemplatePath + Path.DirectorySeparatorChar +
+                "EmptyFileComment.txt");
+            string fileheader = sr.ReadToEnd();
+
+            sr.Close();
+            fileheader = fileheader.Replace(">>>> Put your full name or just a shortname here <<<<", "auto generated");
+            return fileheader;
+        }
+
+        /// <summary>
         /// add snippets from another template file
         /// (eg. for writing datasets, we want to reuse the table template for custom tables)
         /// </summary>

@@ -292,6 +292,12 @@ namespace Ict.Tools.CodeGeneration
         /// <returns>returns true if the file was changed</returns>
         public static bool Merge2Files(string AOrigFilename, string[] ANewLines, string ADestinationFilename)
         {
+            if (!File.Exists(AOrigFilename))
+            {
+                File.WriteAllLines(ADestinationFilename, ANewLines);
+                return true;
+            }
+
             string[] sourceLines = File.ReadAllLines(AOrigFilename);
 
             List <string>hashes = new List <string>();
