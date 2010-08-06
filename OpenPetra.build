@@ -561,6 +561,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MPartner/gui/setup ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MPersonnel/gui ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MPersonnel/gui/setup ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPartner ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MReporting/gui/MPersonnel ${generateWinformsParameters}"/>

@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MConferenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MConference.Logic", "Petra\Client\lib\MConference\logic\Ict.Petra.Client.MConference.Logic.csproj", "{E75DB8DE-251F-406E-8026-0737C57E4F5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPersonnel.Gui.Setup", "Petra\Client\lib\MPersonnel\gui\setup\Ict.Petra.Client.MPersonnel.Gui.Setup.csproj", "{34FF59D0-55BE-408F-9849-7177F88C08E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -206,5 +208,9 @@ Global
 		{E75DB8DE-251F-406E-8026-0737C57E4F5C}.Debug|x86.ActiveCfg = Debug|x86
 		{E75DB8DE-251F-406E-8026-0737C57E4F5C}.Release|x86.Build.0 = Release|x86
 		{E75DB8DE-251F-406E-8026-0737C57E4F5C}.Release|x86.ActiveCfg = Release|x86
+		{34FF59D0-55BE-408F-9849-7177F88C08E5}.Debug|x86.Build.0 = Debug|x86
+		{34FF59D0-55BE-408F-9849-7177F88C08E5}.Debug|x86.ActiveCfg = Debug|x86
+		{34FF59D0-55BE-408F-9849-7177F88C08E5}.Release|x86.Build.0 = Release|x86
+		{34FF59D0-55BE-408F-9849-7177F88C08E5}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

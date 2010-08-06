@@ -159,6 +159,14 @@ OpenPetra:
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
             
         Personnel: {Icon=personel_small.ico}
+            # Module
+            Main:
+                # Sub Module
+                Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
+                    General:
+
+                    Application-related:
+                    
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
                     PersonnelReports:
