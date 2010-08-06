@@ -185,7 +185,6 @@ namespace {#NAMESPACE}
 {#ENDIF DETAILTABLEFILTER}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            grdDetails.AutoSizeCells();
             if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
             {
                 grdDetails.SelectRowInGrid(1);

@@ -327,7 +327,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
             DataView myDataView = FMainDS.AApDocumentDetail.DefaultView;
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            grdDetails.AutoSizeCells();
             if (FMainDS.AApDocumentDetail.Rows.Count > 0)
             {
                 grdDetails.SelectRowInGrid(1);

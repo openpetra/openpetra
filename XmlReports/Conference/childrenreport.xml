@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Children Report">
+	<description>
+		Report for Conference Attendees which are younger than 18 at the end of the conference
+		depends on conference.xml
+	</description>
+	<reportparameters></reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+	<field whichfield="title1"><value text="Children Report"></value></field>
+	<field whichfield="title2"><value function="getSiteName()"></value></field>
+	<field whichfield="descr1">
+		<value text="Sorted by: "></value>
+		<value variable="param_sortby_readable"></value>
+	</field>
+	<field whichfield="descr2">
+		<fielddetail>
+			<value text="Selection: "></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, one attendee)">
+			<value text="Partner: "></value><value variable="param_partnerkey"></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, all attendees)">
+			<value text="All Attendees"></value>
+		</fielddetail>
+		<fielddetail condition="eq({param_attendeeselection}, from extract)">
+			<value text="Extract: "></value><value variable="param_extractname"></value>
+		</fielddetail>
+	</field>
+	<field whichfield="period1">
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, one conference)">
+				<value text="Selected Conference: "></value>
+				<value variable="param_conferencename"></value>
+			</case></switch>
+		</fielddetail>
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, all conferences)">
+				<value text="All Conferences selected"></value>
+			</case></switch>
+		</fielddetail>
+	</field>
+	<field whichfield="period2">
+		<fielddetail>
+			<switch><case condition="eq({param_conferenceselection}, one conference)">
+				<value text="Selected Campaign Options: "></value>
+				<value variable="param_conferenceoptionscode"></value>
+			</case></switch>
+		</fielddetail>
+	</field>
+    </pageheader>
+
+    <calculations>
+	
+	<calculation id="GetOtherChildDetails" returns="automatic" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value text="NO-SQL"/>
+				<value function="GetPassport({AttendeeKey})"/>
+				<value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
+				<value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
+				<value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
+						<value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
+				<value function="assign(Age, calculateAge({p_date_of_birth_d}))"/>
+				<value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
+				<value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
+				<value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>
+				<value function="assign(ArrivalNeedsTransport, Yes)" condition="{pm_arrival_transport_needed_l}"/>
+				<value function="assign(ArrivalNeedsTransport, No)" condition="not({pm_arrival_transport_needed_l})"/>
+				<value function="assign(DepartureNeedsTransport, Yes)" condition="{pm_departure_transport_needed_l}"/>
+				<value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
+				<value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
+				<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
+				<!-- Hide the rows where the age is older than 17 -->
+				<value function="ConditionRow(lt(calculateAgeAtDate({p_date_of_birth_d}, {EndDate}), 18))"/>
+				<!-- TODO: make an option to select the age range of the report. e.g. children between 10 and 16 years old -->
+				<!-- use param_txtFromAge and param_txtToAge -->
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+      
+    <levels>    
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Select Attendee Details" level="Attendee Details"></lowerLevelReport>
+		</detail>
+	</level> <!-- main -->
+
+      <level name="Attendee Details" identification="AttendeeKey">
+		<detail>
+			<field whichfield="Columns" calculation="GetOtherChildDetails"></field>
+		</detail>
+       </level><!-- Attendee Details -->
+	
+    </levels>
+  </report>
+</reports>

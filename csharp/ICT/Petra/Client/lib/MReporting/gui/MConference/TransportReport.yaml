@@ -1,0 +1,63 @@
+RootNode:
+    BaseYaml: ConferenceReportingForm.yaml
+    FormType: report
+    FormTitle: Transport Report
+    Namespace: Ict.Petra.Client.MReporting.Gui.MConference
+    TemplateParameters:
+        XMLFILES: [Conference\\\\transportreport.xml,Conference\\\\conference.xml]
+        REPORTNAME: Transport Report
+        CURRENTREPORT: Transport Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK 
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [CONFERENCE]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoConferenceSelection]
+            Order: AlwaysFirst
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
+        tpgColumns:
+            Controls: [ucoReportColumns]
+            Order: AlwaysLast
+        tpgAdditionalSettings:
+            Label: Travel Selection
+            Controls: [grpListing, grpArrivalDeparture]
+            
+        ucoReportColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill
+        ucoConferenceSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
+            Dock: Fill
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
+        grpListing:
+            Label: Listing
+            Controls: [chkIncompleteDetails, chkNeedTransport, chkOnlyTravelDay, dtpTravelDay]
+        grpArrivalDeparture:
+            Label:
+            Controls: [rbtDepartures, rbtArrivals]
+        chkIncompleteDetails:
+            Label: Only list people with incomplete arrival details
+        chkNeedTransport:
+            Label: Only list people that need transport from their arrival point
+        chkOnlyTravelDay:
+            Label: Only list people arriving on this day
+            OnChange: chkTravelDayChanged
+        dtpTravelDay:
+            Label: Select Date
+        rbtDepartures:
+            Label: List Departures
+            OnChange: rbtArrivalDepartureChanged
+        rbtArrivals:
+            Label: List Arrivals
+            
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+    

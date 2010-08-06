@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+	<report id="Conference Role Report">
+		<description>
+			Summary report of the conference roles.
+		</description>
+		<reportparameters>
+		</reportparameters>
+
+		<reportheader></reportheader>
+		
+		<pageheader>
+			<field whichfield="title1">
+				<value text="Conference Role Report"></value>
+			</field>
+			<field whichfield="title2"><value function="getSiteName()"></value></field>
+			
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text="Selection: "></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, one attendee)">
+					<value text="Partner: "></value><value variable="param_partnerkey"></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, all attendees)">
+					<value text="All Attendees"></value>
+				</fielddetail>
+				<fielddetail condition="eq({param_attendeeselection}, from extract)">
+					<value text="Extract: "></value><value variable="param_extractname"></value>
+				</fielddetail>
+			  </field>
+			<field whichfield="period1">
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_conferenceselection}, one conference)">
+							<value text="Selected Conference: "></value>
+							<value variable="param_conferencename"></value>
+						</case>
+					</switch>
+				</fielddetail>
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_conferenceselection}, all conferences)">
+							<value text="All Conferences selected"></value>
+						</case>
+					</switch>
+				</fielddetail>
+			</field>
+			<field whichfield="period2">
+				<fielddetail>
+					<switch><case condition="eq({param_conferenceselection}, one conference)">
+						<value text="Selected Campaign Options: "></value>
+						<value variable="param_conferenceoptionscode"></value>
+					</case></switch>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+			<calculation id="Select Attendees" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail><value>
+						SELECT DISTINCT
+							PUB_p_person.p_partner_key_n,
+							PUB_p_person.p_gender_c AS Gender,
+							PUB_p_person.p_family_key_n AS FamilyKey,
+							PUB_pm_short_term_application.pm_st_congress_code_c AS CongressCode,
+							PUB_pm_short_term_application.pm_st_confirmed_option_n AS OptionCode,
+							PUB_pc_attendee.pc_conference_key_n AS ConferenceKey
+						FROM   
+							PUB_p_person,
+							PUB_pc_attendee,
+							PUB_pc_conference,
+							PUB_pm_general_application,
+							PUB_pm_short_term_application
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+						WHERE 
+							PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
+							AND
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+						WHERE 
+					</value></queryDetail>
+					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+							, PUB_m_extract, PUB_m_extract_master
+						WHERE
+							 PUB_p_person.p_partner_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+							AND
+					</value></queryDetail>
+					<queryDetail><value>
+							PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+					</value></queryDetail>
+					
+					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
+							AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
+							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+					</value></queryDetail>
+					
+					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
+							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
+							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+					</value></queryDetail>
+					
+					<queryDetail><value>
+							AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+							AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+							AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
+							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
+									OR 
+									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
+							ORDER BY  PUB_pm_short_term_application.pm_st_congress_code_c,
+									PUB_pc_attendee.pc_conference_key_n,
+									PUB_p_person.p_family_key_n
+					</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Attendee -->
+			
+			<calculation id="CalculateSingleConferenceRole" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="CalculateSingleConferenceRole({Gender}, {FamilyKey}, {CongressCode}, {ConferenceKey}, {OptionCode})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="ClearConferenceRoleTable" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="ClearConferenceRoleTable()"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="FinishConferenceRoleTable" returns="" returnsFormat="internal">
+				<query>
+					<queryDetail condition="eq({param_conferenceselection}, one conference)">
+						<value text="NO-SQL"/>
+						<value function="FinishConferenceRoleTable({param_conferenceoptions})"/>
+					</queryDetail>
+					
+					<queryDetail condition="eq({param_conferenceselection}, all conferences)">
+						<value text="NO-SQL"/>
+						<value function="FinishConferenceRoleTable( )"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Code" returns="text" returnsFormat="text">
+				<caption><value text="Code"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Code"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Total" returns="text" returnsFormat="text">
+				<caption><value text="Total"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Total"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Female" returns="text" returnsFormat="text">
+				<caption><value text="Female"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Female"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Male" returns="text" returnsFormat="text">
+				<caption><value text="Male"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Male"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Couple" returns="text" returnsFormat="text">
+				<caption><value text="Couple"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Couple"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Family" returns="text" returnsFormat="text">
+				<caption><value text="Family"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="Family"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+		</calculations>
+    
+		<levels> 
+			
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="main2"/>
+				</detail>
+			</level>
+			
+			<level name="main2">
+				<detail>
+					<!-- Use this dummy level to clear any results from any previous accommodation reports -->
+					<lowerLevelReport calculation="ClearConferenceRoleTable" level="Dummy Level"></lowerLevelReport>
+					<lowerLevelReport calculation="Select Attendees" level="Attendance Level"></lowerLevelReport>
+					<!-- Use this dummy level to transfer the calculated values to the report results -->
+					<lowerLevelReport calculation="FinishConferenceRoleTable" level="Dummy Level"></lowerLevelReport>
+				</detail>
+			</level> 
+
+			<level name="Dummy Level">
+				<detail>
+				</detail>
+			</level>
+			
+			<level name="Attendance Level">
+				<header>
+					<field whichfield="left 0" calculation="CalculateSingleConferenceRole"/>
+				</header>
+				<detail>
+				</detail>
+			</level>
+			
+		</levels>
+	</report>
+</reports>

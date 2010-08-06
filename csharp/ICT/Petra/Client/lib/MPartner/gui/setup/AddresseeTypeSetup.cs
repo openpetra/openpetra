@@ -156,7 +156,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       DataView myDataView = FMainDS.PAddresseeType.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-      grdDetails.AutoSizeCells();
 
       // Ensure that the Details Panel is disabled if there are no records
       if (FMainDS.PAddresseeType.Rows.Count == 0)
