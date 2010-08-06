@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,24 +24,29 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
+using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Server.App.ClientDomain;
+
+#region ManualCode
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon;
-
-
+#endregion ManualCode
 namespace Ict.Petra.Server.MPartner.Mailing
 {
     /// <summary>
-    /// Returns DataTables for DB tables in the MPartner.Mailing sub-namespace
+    /// Returns cacheable DataTables for DB tables in the MPartner.Mailing sub-namespace
     /// that can be cached on the Client side.
     ///
     /// Examples of such tables are tables that form entries of ComboBoxes or Lists
@@ -66,9 +74,7 @@ namespace Ict.Petra.Server.MPartner.Mailing
         }
 
 #if DEBUGMODE
-        /// <summary>
         /// destructor
-        /// </summary>
         ~TPartnerCacheable()
         {
             if (TSrvSetting.DL >= 9)
@@ -80,85 +86,104 @@ namespace Ict.Petra.Server.MPartner.Mailing
         }
 #endif
 
-
-
-        /**
-         * Returns a certain cachable DataTable that contains all columns and all
-         * rows of a specified table.
-         *
-         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
-         * once its contents got retrieved from the DB. It returns the cached
-         * DataTable from it on subsequent calls, therefore making more no further DB
-         * queries!
-         *
-         * @comment All DataTables are retrieved as Typed DataTables, but are passed
-         * out as a normal DataTable. However, this DataTable can be cast by the
-         * caller to the appropriate TypedDataTable to have access to the features of
-         * a Typed DataTable!
-         *
-         * @param ACacheableTable Tells what cachable DataTable should be returned.
-         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can
-         * be specified to always get a DataTable back (see @return)
-         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
-         * DB and through that refresh the Table in the Cache with what is now in the
-         * DB (this would be done when it is known that the DB Table has changed).
-         * The CacheableTablesManager will notify other Clients that they need to
-         * retrieve this Cacheable DataTable anew from the PetraServer the next time
-         * the Client accesses the Cacheable DataTable. Otherwise set to false.
-         * @param AType The Type of the DataTable (useful in case it's a
-         * Typed DataTable)
-         * @return DataTable If the Hash that got passed in AHashCode doesn't fit the
-         * Hash that the CacheableTablesManager has for this cacheable DataTable, the
-         * specified DataTable is returned, otherwise nil.
-         *
-         */
-        public DataTable GetStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its contents got retrieved from the DB. It returns the cached
+        /// DataTable from it on subsequent calls, therefore making more no further DB
+        /// queries!
+        ///
+        /// @comment All DataTables are retrieved as Typed DataTables, but are passed
+        /// out as a normal DataTable. However, this DataTable can be cast by the
+        /// caller to the appropriate TypedDataTable to have access to the features of
+        /// a Typed DataTable!
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>
+        /// DataTable If the Hash that got passed in AHashCode doesn't fit the
+        /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
+        /// specified DataTable is returned, otherwise nil.
+        /// </returns>
+        public DataTable GetCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            String TableName;
-            DataTable TmpTable;
+            String TableName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 
-            TableName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable called with ATableName='" + TableName + "'.");
+                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
 #endif
 
             if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Boolean NewTransaction;
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-
                 try
                 {
-                    switch (ACacheableTable)
+
+                    switch(ACacheableTable)
                     {
                         case TCacheableMailingTablesEnum.ContactAttributeList:
-                            TmpTable = PContactAttributeAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = PContactAttributeAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
                         case TCacheableMailingTablesEnum.ContactAttributeDetailList:
-                            TmpTable = PContactAttributeDetailAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = PContactAttributeDetailAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
                         case TCacheableMailingTablesEnum.MethodOfContactList:
-                            TmpTable = PMethodOfContactAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = PMethodOfContactAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
+                        }
+                        case TCacheableMailingTablesEnum.MergeFormList:
+                        {
+                            DataTable TmpTable = PMergeFormAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableMailingTablesEnum.MergeFieldList:
+                        {
+                            DataTable TmpTable = PMergeFieldAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableMailingTablesEnum.PostCodeRegionList:
+                        {
+                            DataTable TmpTable = GetPostCodeRegionListTable(ReadTransaction, TableName);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
 
                         default:
+                            // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                            Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable) + "' is not available as a Standard Cacheable Table");
+                                TableName + "' is not available as a Standard Cacheable Table");
                     }
                 }
                 finally
@@ -169,7 +194,7 @@ namespace Ict.Petra.Server.MPartner.Mailing
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
-                            Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable: commited own transaction.");
+                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
 #endif
                     }
@@ -180,75 +205,132 @@ namespace Ict.Petra.Server.MPartner.Mailing
             return ResultingCachedDataTable(TableName, AHashCode, out AType);
         }
 
-        /**
-         * Returns non-standard cachable table 'PostCodeRegionList'.
-         * DB Table:  p_postcode_region
-         * @comment Used eg. in Report Gift Data Export for finding donors by address.
-         *
-         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
-         * once its contents got retrieved from the DB. It returns the cached
-         * DataTable from it on subsequent calls, therefore making more no more DB
-         * queries.
-         *
-         * @comment The DataTables is no typed at the moment
-         *
-         * @param ATableName TableName that the returned DataTable should have.
-         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can be
-         * specified to always get a DataTable back (see @return)
-         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
-         * DB and through that refresh the Table in the Cache with what is now in the
-         * DB (this would be done when it is known that the DB Table has changed).
-         * Otherwise set to false.
-         * @return DataTable If the Hash passed in in AHashCode doesn't fit the Hash that
-         * the CacheableTablesManager has for this cacheable DataTable, the
-         * 'PostCodeRegionList' DataTable is returned, otherwise nil.
-         *
-         */
-        public DataTable GetPostCodeRegionCacheableTable(String ATableName, String AHashCode, Boolean ARefreshFromDB, out System.Type AType)
+        /// <summary>
+        /// Saves a specific Cachable DataTable. The whole DataTable needs to be submitted,
+        /// not just changes to it!
+        /// </summary>
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+            ref TTypedDataTable ASubmitTable,
+            out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            DataTable TmpTable;
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            string CacheableDTName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetPostCodeRegionCacheableTable called.");
-            }
-#endif
+            // Console.WriteLine("Entering Mailing.SaveChangedStandardCacheableTable...");
+            AVerificationResult = null;
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(ATableName))))
+            // TODO: check write permissions
+
+            if (ASubmitTable != null)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
                 try
                 {
-                    TmpTable = DBAccess.GDBAccessObj.SelectDT(
-                        "SELECT DISTINCT " + PPostcodeRegionTable.GetRegionDBName() + " FROM PUB." + PPostcodeRegionTable.GetTableDBName(),
-                        ATableName,
-                        ReadTransaction);
-                    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, TmpTable, DomainManager.GClientID);
-                }
-                finally
-                {
-                    if (NewTransaction)
+                    switch (ACacheableTable)
+                    {
+                        case TCacheableMailingTablesEnum.ContactAttributeList:
+                            if (PContactAttributeAccess.SubmitChanges((PContactAttributeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableMailingTablesEnum.ContactAttributeDetailList:
+                            if (PContactAttributeDetailAccess.SubmitChanges((PContactAttributeDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableMailingTablesEnum.MethodOfContactList:
+                            if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableMailingTablesEnum.MergeFormList:
+                            if (PMergeFormAccess.SubmitChanges((PMergeFormTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableMailingTablesEnum.MergeFieldList:
+                            if (PMergeFieldAccess.SubmitChanges((PMergeFieldTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        default:
+
+                            throw new Exception(
+                            "TPartnerCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".GetPostCodeRegionCacheableTable: commited own transaction.");
-                        }
-#endif
                     }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(
+                        "TPartnerCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                        CacheableDTName +
+                        "':  Exception " + e.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
                 }
             }
 
-            // Return the DataTable from the Cache only if the Hash is not the same
-            return ResultingCachedDataTable(ATableName, AHashCode, out AType);
+            /*
+            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            /// the next time something in the Client accesses it.
+             */
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            {
+                Type TmpType;
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+            }
+
+            return SubmissionResult;
+        }
+
+        private DataTable GetPostCodeRegionListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            // Used eg. in Report Gift Data Export for finding donors by address.
+            return DBAccess.GDBAccessObj.SelectDT(
+                "SELECT DISTINCT " + PPostcodeRegionTable.GetRegionDBName() + " FROM PUB." + PPostcodeRegionTable.GetTableDBName(),
+                ATableName,
+                AReadTransaction);
+#endregion ManualCode
         }
     }
 }
+

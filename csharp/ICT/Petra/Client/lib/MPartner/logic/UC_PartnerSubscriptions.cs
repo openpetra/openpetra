@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MPartner
             // ############ end of unecessary code ###############
             // Get Publication Cost cacheable DataTable
             FPublicationCostDT = (PPublicationCostTable)TDataCache.TMPartner.GetCacheableSubscriptionsTable(
-                TCacheableSubscriptionsTablesEnum.PublicationCost);
+                TCacheableSubscriptionsTablesEnum.PublicationCostList);
         }
 
         /// <summary>

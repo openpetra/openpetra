@@ -710,13 +710,9 @@ namespace Ict.Tools.CodeGeneration
 
             if (!ACheckTemplateCompletion || CheckTemplateCompletion(FTemplateCode))
             {
-                StreamWriter FWriter = File.CreateText(FDestinationFile + ".new");
-                FWriter.Write(FTemplateCode);
-                FWriter.Close();
-
-                if (TTextFile.UpdateFile(FDestinationFile))
+                if (TFileDiffMerge.Merge2Files(FDestinationFile, FTemplateCode.Replace("\r", "").Split(new char[] { '\n' })))
                 {
-                    Console.WriteLine("Writing " + FDestinationFile);
+                    Console.WriteLine("Writing " + Path.GetFullPath(FDestinationFile));
                 }
 
                 return true;

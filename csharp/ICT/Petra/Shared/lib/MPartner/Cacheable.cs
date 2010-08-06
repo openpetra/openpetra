@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,17 +24,18 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 
 namespace Ict.Petra.Shared.MPartner
 {
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically partner submodule
+    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically Partner submodule
     /// </summary>
     public enum TCacheablePartnerTablesEnum
     {
         /// <summary>
-        /// type of address
+        /// Ex. Fam - Family, SM - Single Male, etc.
         /// </summary>
         AddresseeTypeList,
 
@@ -41,99 +45,108 @@ namespace Ict.Petra.Shared.MPartner
         AcquisitionCodeList,
 
         /// <summary>
-        /// todoComment
+        /// List of businesses with codes
         /// </summary>
         BusinessCodeList,
 
         /// <summary>
-        /// list of currencies
+        /// Unit of money for various countries.
         /// </summary>
         CurrencyCodeList,
 
         /// <summary>
-        /// list of data labels
+        /// This table is used to define data labels for individual use in each office.
         /// </summary>
         DataLabelList,
 
         /// <summary>
-        /// list of how a data label is used
+        /// This table defines where a data label is used and the order the labels appear in.
         /// </summary>
         DataLabelUseList,
 
         /// <summary>
-        /// categories for data label lookup
+        /// This table holds the categories that can be used for data label values.
         /// </summary>
         DataLabelLookupCategoryList,
 
         /// <summary>
-        /// list for data label lookup
+        /// This table holds all lookup values that can be used for data label values.
         /// </summary>
         DataLabelLookupList,
 
         /// <summary>
-        /// list of denominations
+        /// List of denomination codes for churches
         /// </summary>
         DenominationList,
 
         /// <summary>
-        /// list of installed sites
-        /// </summary>
-        InstalledSitesList,
-
-        /// <summary>
-        /// lists of interests
+        /// Area of Interest
         /// </summary>
         InterestList,
 
         /// <summary>
-        /// categories of interest values
+        /// Categories for Area of Interest
         /// </summary>
         InterestCategoryList,
 
         /// <summary>
-        /// type of location
+        /// Types of address e.g. home, business
         /// </summary>
         LocationTypeList,
 
         /// <summary>
-        /// list of marital status values
+        /// This table contains the codes indicating someones marital status.
         /// </summary>
         MaritalStatusList,
 
         /// <summary>
-        /// list of contact methods
+        /// How contacts are made
         /// </summary>
         MethodOfContactList,
 
         /// <summary>
-        /// occupations
+        /// List of occupations with codes
         /// </summary>
         OccupationList,
 
         /// <summary>
-        /// possible status of a partner
+        /// List of statuses for partners
         /// </summary>
         PartnerStatusList,
 
         /// <summary>
-        /// types of partners
+        /// List of all possible special types for a partner.
         /// </summary>
         PartnerTypeList,
 
         /// <summary>
-        /// relations between partners
+        /// Foundation proposal status codes and descriptions
+        /// </summary>
+        ProposalStatusList,
+
+        /// <summary>
+        /// Submission type for foundation proposals e.g. EMAIL, LETTER.
+        /// </summary>
+        ProposalSubmissionTypeList,
+
+        /// <summary>
+        /// List of relationships between partners.  Relations occur in one direction only.   The relation code is used in the p_partner_relationship record.
         /// </summary>
         RelationList,
 
         /// <summary>
-        /// categories of relations between partners
+        /// This table contains the codes that indicate the categories of relations (grouping).
         /// </summary>
         RelationCategoryList,
 
         /// <summary>
-        /// types of units
+        /// General information about the unit such as unit type and entry conference.
         /// </summary>
         UnitTypeList,
+        /// <summary>
+        /// list of counties
+        /// </summary>
+        CountyList,
 
         /// <summary>
         /// list of users that are associated with foundations
@@ -141,71 +154,58 @@ namespace Ict.Petra.Shared.MPartner
         FoundationOwnerList,
 
         /// <summary>
-        /// list of stati for proposal
+        /// list of installed sites
         /// </summary>
-        ProposalStatusList,
-
-        /// <summary>
-        /// list of submission types for proposals
-        /// </summary>
-        ProposalSubmissionTypeList,
-
-        /// <summary>
-        /// list of counties
-        /// </summary>
-        CountyList,
+        InstalledSitesList,
 
         /// <summary>
         /// list of countries that are actually used in the database (smaller than the full country list)
         /// </summary>
         CountryListFromExistingLocations
     };
-
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically mailing submodule
+    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically Mailing submodule
     /// </summary>
     public enum TCacheableMailingTablesEnum
     {
         /// <summary>
-        /// List of all contact attributes
+        /// Possible attributes for partner contacts.  Gives the description of each attribute code.  An attribute is a type of contact that was made or which occurred with a partner.
         /// </summary>
         ContactAttributeList,
 
         /// <summary>
-        /// List of all contact attribute details
+        /// Possible attribute details for each contact attribute.  Breaks down the attribute into more specifice information that applies to a contact with a partner.
         /// </summary>
         ContactAttributeDetailList,
 
         /// <summary>
-        /// List of all contact methods in p_method_of_contact
+        /// How contacts are made
         /// </summary>
         MethodOfContactList,
 
         /// <summary>
-        /// todoComment
+        /// Master record for Mail Merge output creation
         /// </summary>
         MergeFormList,
 
         /// <summary>
-        /// todoComment
+        /// Fields within a Mail Merge Form
         /// </summary>
         MergeFieldList,
-
         /// <summary>
-        /// list of Post code regions
+        /// todoComment
         /// </summary>
-        PostCodeRegionList,
+        PostCodeRegionList
     };
-
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically for subscriptions
+    /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically Subscriptions submodule
     /// </summary>
     public enum TCacheableSubscriptionsTablesEnum
     {
         /// <summary>
-        /// publication costs
+        /// Cost of a publication
         /// </summary>
-        PublicationCost,
+        PublicationCostList,
 
         /// <summary>
         /// available publications
@@ -213,13 +213,14 @@ namespace Ict.Petra.Shared.MPartner
         PublicationList,
 
         /// <summary>
-        /// reasons why someone gets a subscription
+        /// List of reasons for giving a subscription
         /// </summary>
         ReasonSubscriptionGivenList,
 
         /// <summary>
-        /// reasons why someone would cancel a subscription
+        /// List of reasons for cancelling a subscription
         /// </summary>
         ReasonSubscriptionCancelledList
     };
 }
+

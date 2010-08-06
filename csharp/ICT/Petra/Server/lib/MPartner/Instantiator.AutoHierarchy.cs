@@ -1344,39 +1344,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableMailingTablesEnum.PostCodeRegionList:
-                    ReturnValue = FCachePopulator.GetPostCodeRegionCacheableTable(Enum.GetName(typeof(TCacheableMailingTablesEnum),
-                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-                    break;
-                case TCacheableMailingTablesEnum.ContactAttributeList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-                    break;
-                case TCacheableMailingTablesEnum.ContactAttributeDetailList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-                    break;
-                case TCacheableMailingTablesEnum.MethodOfContactList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-
-                    // Ict.Petra.Shared.MPartner.Cacheable.AddresseeTypeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionGivenList(Enum(ACacheableTable).ToString("G"));
-                    // end;
-                    // Ict.Petra.Shared.MPartner.Cacheable.AcquisitionCodeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionCancelledList(Enum(ACacheableTable).ToString("G"));
-                    // end;
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException(
-                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {
@@ -1920,70 +1888,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheablePartnerTablesEnum.AcquisitionCodeList:
-                case TCacheablePartnerTablesEnum.AddresseeTypeList:
-                case TCacheablePartnerTablesEnum.BusinessCodeList:
-                case TCacheablePartnerTablesEnum.CurrencyCodeList:
-                case TCacheablePartnerTablesEnum.DataLabelList:
-                case TCacheablePartnerTablesEnum.DataLabelUseList:
-                case TCacheablePartnerTablesEnum.DataLabelLookupCategoryList:
-                case TCacheablePartnerTablesEnum.DataLabelLookupList:
-                case TCacheablePartnerTablesEnum.DenominationList:
-                case TCacheablePartnerTablesEnum.InterestList:
-                case TCacheablePartnerTablesEnum.InterestCategoryList:
-                case TCacheablePartnerTablesEnum.LocationTypeList:
-                case TCacheablePartnerTablesEnum.MaritalStatusList:
-                case TCacheablePartnerTablesEnum.MethodOfContactList:
-                case TCacheablePartnerTablesEnum.OccupationList:
-                case TCacheablePartnerTablesEnum.PartnerStatusList:
-                case TCacheablePartnerTablesEnum.PartnerTypeList:
-                case TCacheablePartnerTablesEnum.ProposalStatusList:
-                case TCacheablePartnerTablesEnum.ProposalSubmissionTypeList:
-                case TCacheablePartnerTablesEnum.RelationList:
-                case TCacheablePartnerTablesEnum.RelationCategoryList:
-                case TCacheablePartnerTablesEnum.UnitTypeList:
-
-                    // Standard Cacheable DataTables
-                    // FoundationOwnerList,    this is nonstandard (see below)!
-                    // InstalledSitesList,    this is nonstandard (see below)!
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-
-                    // NonStandard Cacheable DataTables
-                    break;
-
-                case TCacheablePartnerTablesEnum.FoundationOwnerList:
-                    ReturnValue = FCachePopulator.GetFoundationOwnerCacheableTable(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-                    break;
-
-                case TCacheablePartnerTablesEnum.InstalledSitesList:
-                    ReturnValue = FCachePopulator.GetInstalledSitesCacheableTable(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-                    break;
-
-                case TCacheablePartnerTablesEnum.CountyList:
-                    ReturnValue = FCachePopulator.GetCountyListCacheableTable(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                        ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-                    break;
-
-                case TCacheablePartnerTablesEnum.CountryListFromExistingLocations:
-                    ReturnValue =
-                        FCachePopulator.GetCountryListFromExistingLocationsCacheableTable(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                                ACacheableTable), AHashCode, ARefreshFromDB, out AType);
-
-                    // Unknown Cacheable DataTable
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                    Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {
@@ -3101,7 +3006,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable FCachePopulator;
+        private Ict.Petra.Server.MPartner.Subscriptions.TPartnerCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TSubscriptionsCacheableNamespace()
@@ -3115,7 +3020,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable();
+            FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.TPartnerCacheable();
             #endregion ManualCode
         }
 
@@ -3191,27 +3096,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableSubscriptionsTablesEnum.PublicationCost:
-                case TCacheableSubscriptionsTablesEnum.PublicationList:
-                case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
-                case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
-
-                    // Standard Cacheable DataTables
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-
-                    // Unknown Cacheable DataTable
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                    Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {

@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,15 +24,15 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 
 namespace Ict.Petra.Shared.MPersonnel
 {
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Personnel Module.
+    /// Enums holding the possible cacheable tables for the Petra Personnel Module, specifically Unit submodule
     /// </summary>
-    [Serializable()]
-    public enum TCacheableUnitsDataElementsTablesEnum
+    public enum TCacheableUnitTablesEnum
     {
         /// <summary>
         /// List of all campaigns
@@ -41,21 +44,20 @@ namespace Ict.Petra.Shared.MPersonnel
         /// </summary>
         ConferenceList
     };
-
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Personnel Module.
+    /// Enums holding the possible cacheable tables for the Petra Personnel Module, specifically Person submodule
     /// </summary>
-    [Serializable()]
-    public enum TCacheablePersonDataElementsTablesEnum
+    public enum TCacheablePersonTablesEnum
     {
         /// <summary>
-        /// List of available document types
+        /// This table contains the codes that indicate the types of documents for a person.
         /// </summary>
         DocumentTypeList,
 
         /// <summary>
-        /// List of available commitment statuses
+        /// This table holds the statuses that are be used for commitments.
         /// </summary>
         CommitmentStatusList
     };
 }
+

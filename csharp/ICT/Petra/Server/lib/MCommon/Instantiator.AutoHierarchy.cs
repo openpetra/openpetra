@@ -417,23 +417,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableCommonTablesEnum.CountryList:
-                case TCacheableCommonTablesEnum.LanguageCodeList:
-				case TCacheableCommonTablesEnum.FrequencyList:
-            		
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-
-                    // Unknown Cacheable DataTable
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                        Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {

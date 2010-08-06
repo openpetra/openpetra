@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         {
             // Get list of commitment statuses
             FCommitmentStatusTable = TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                TCacheablePersonDataElementsTablesEnum.CommitmentStatusList);
+                TCacheablePersonTablesEnum.CommitmentStatusList);
 
             FCommitmentStatusTable.Columns.Add("Selection", System.Type.GetType("System.Boolean"));
 

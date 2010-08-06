@@ -846,7 +846,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
         }
 
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable)
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable)
         {
             #region ManualCode
             return null;
@@ -1059,34 +1059,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
         /// <returns>)
         /// DataTable The desired DataTable
         /// </returns>
-        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable,
+        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheablePersonDataElementsTablesEnum.DocumentTypeList:
-                case TCacheablePersonDataElementsTablesEnum.CommitmentStatusList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-                    break;
-                
-                default:
-                    throw new ECachedDataTableNotImplementedException(
-                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {
-                if (Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                if (Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable) != ReturnValue.TableName)
                 {
                     throw new ECachedDataTableTableNameMismatchException(
                         "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
-                        Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable) + "'");
+                        Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable) + "'");
                 }
             }
 
@@ -1095,7 +1081,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -1808,7 +1794,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
 		#region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPersonnel.Units.TPersonnelCacheable FCachePopulator;
+        private Ict.Petra.Server.MPersonnel.Unit.TPersonnelCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TUnitsDataElementsCacheableNamespace()
@@ -1822,7 +1808,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-			FCachePopulator = new Ict.Petra.Server.MPersonnel.Units.TPersonnelCacheable();
+			FCachePopulator = new Ict.Petra.Server.MPersonnel.Unit.TPersonnelCacheable();
 			#endregion ManualCode
         }
 
@@ -1893,41 +1879,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
         /// <returns>)
         /// DataTable The desired DataTable
         /// </returns>
-        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable,
+        private DataTable GetCacheableTableInternal(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-            	case TCacheableUnitsDataElementsTablesEnum.CampaignList:
-            		ReturnValue = FCachePopulator.GetCampaignUnitsTable(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable),
-            		                                                    AHashCode, ARefreshFromDB, out AType);
-            		break;
-            	case TCacheableUnitsDataElementsTablesEnum.ConferenceList:
-            		ReturnValue = FCachePopulator.GetCoferenceUnitsTable(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable),
-            		                                                    AHashCode, ARefreshFromDB, out AType);
-               		break;
-//                case TCacheableUnitsDataElementsTablesEnum.
-//                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-//                    break;
-                
-                default:
-                    throw new ECachedDataTableNotImplementedException(
-                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {
-                if (Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                if (Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable) != ReturnValue.TableName)
                 {
                     throw new ECachedDataTableTableNameMismatchException(
                         "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
-                        Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable) + "'");
+                        Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable) + "'");
                 }
             }
 
@@ -1936,7 +1901,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {

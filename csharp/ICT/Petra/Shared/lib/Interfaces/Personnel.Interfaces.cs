@@ -152,7 +152,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Application
     public interface IPersonDataElementsApplicationsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable.TPersonDataElementsApplicationsCacheableNamespace)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable);
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable);
     }
 
 }
@@ -180,7 +180,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable
     public interface IPersonDataElementsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.TPersonDataElementsCacheableNamespace)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonDataElementsTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
     }
@@ -298,7 +298,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.Cacheable
     public interface IUnitsDataElementsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.TUnitsDataElementsCacheableNamespace)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitsDataElementsTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
     }

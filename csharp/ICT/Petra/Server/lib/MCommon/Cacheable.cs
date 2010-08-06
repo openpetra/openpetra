@@ -1,8 +1,11 @@
-﻿//
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,6 +24,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections.Specialized;
 using System.Data;
@@ -30,28 +34,29 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Server.App.ClientDomain;
+#region ManualCode
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon;
+#endregion ManualCode
 
 namespace Ict.Petra.Server.MCommon
 {
-    /**
-     * Returns cachable DataTables for DB tables in the MCommon sub-namespace
-     * that can be cached on the Client side.
-     *
-     * Examples of such tables are tables that form entries of ComboBoxes or Lists
-     * and which would be retrieved numerous times from the Server as UI windows
-     * are opened.
-     */
+    /// <summary>
+    /// Returns cacheable DataTables for DB tables in the MCommon sub-namespace
+    /// that can be cached on the Client side.
+    ///
+    /// Examples of such tables are tables that form entries of ComboBoxes or Lists
+    /// and which would be retrieved numerous times from the Server as UI windows
+    /// are opened.
+    /// </summary>
     public class TCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
-
 
         /// <summary>
         /// constructor
@@ -81,85 +86,86 @@ namespace Ict.Petra.Server.MCommon
         }
 #endif
 
-
-
-        /**
-         * Returns a certain cachable DataTable that contains all columns and all
-         * rows of a specified table.
-         *
-         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
-         * once its contents got retrieved from the DB. It returns the cached
-         * DataTable from it on subsequent calls, therefore making more no further DB
-         * queries!
-         *
-         * @comment All DataTables are retrieved as Typed DataTables, but are passed
-         * out as a normal DataTable. However, this DataTable can be cast by the
-         * caller to the appropriate TypedDataTable to have access to the features of
-         * a Typed DataTable!
-         *
-         * @param ACacheableTable Tells what cachable DataTable should be returned.
-         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can
-         * be specified to always get a DataTable back (see @return)
-         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
-         * DB and through that refresh the Table in the Cache with what is now in the
-         * DB (this would be done when it is known that the DB Table has changed).
-         * The CacheableTablesManager will notify other Clients that they need to
-         * retrieve this Cacheable DataTable anew from the PetraServer the next time
-         * the Client accesses the Cacheable DataTable. Otherwise set to false.
-         * @param AType The Type of the DataTable (useful in case it's a
-         * Typed DataTable)
-         * @return DataTable If the Hash that got passed in AHashCode doesn't fit the
-         * Hash that the CacheableTablesManager has for this cacheable DataTable, the
-         * specified DataTable is returned, otherwise nil.
-         *
-         */
-        public DataTable GetStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its contents got retrieved from the DB. It returns the cached
+        /// DataTable from it on subsequent calls, therefore making more no further DB
+        /// queries!
+        ///
+        /// @comment All DataTables are retrieved as Typed DataTables, but are passed
+        /// out as a normal DataTable. However, this DataTable can be cast by the
+        /// caller to the appropriate TypedDataTable to have access to the features of
+        /// a Typed DataTable!
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>
+        /// DataTable If the Hash that got passed in AHashCode doesn't fit the
+        /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
+        /// specified DataTable is returned, otherwise nil.
+        /// </returns>
+        public DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            String TableName;
-            DataTable TmpTable;
+            String TableName = Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable);
 
-            TableName = Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable called with ATableName='" + TableName + "'.");
+                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
 #endif
 
             if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                Boolean NewTransaction;
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                     Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
                 {
-                    switch (ACacheableTable)
+
+                    switch(ACacheableTable)
                     {
                         case TCacheableCommonTablesEnum.CountryList:
-                            TmpTable = PCountryAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = PCountryAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
                         case TCacheableCommonTablesEnum.FrequencyList:
-                            TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
                         case TCacheableCommonTablesEnum.LanguageCodeList:
-                            TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
+                        {
+                            DataTable TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
+                        }
 
                         default:
+                            // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                            Enum.GetName(typeof(TCacheableCommonTablesEnum),
-                                ACacheableTable) + "' is not available as a Standard Cacheable Table");
+                                TableName + "' is not available as a Standard Cacheable Table");
                     }
                 }
                 finally
@@ -170,7 +176,7 @@ namespace Ict.Petra.Server.MCommon
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
-                            Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable: commited own transaction.");
+                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
 #endif
                     }
@@ -205,9 +211,8 @@ namespace Ict.Petra.Server.MCommon
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
             string CacheableDTName = Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable);
-            Type TmpType;
 
-            // Console.WriteLine("Entering SaveChangedStandardCacheableTable...");
+            // Console.WriteLine("Entering Common.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
 
             // TODO: check write permissions
@@ -222,35 +227,26 @@ namespace Ict.Petra.Server.MCommon
                     switch (ACacheableTable)
                     {
                         case TCacheableCommonTablesEnum.CountryList:
-
                             if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         case TCacheableCommonTablesEnum.FrequencyList:
-
                             if (AFrequencyAccess.SubmitChanges((AFrequencyTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         case TCacheableCommonTablesEnum.LanguageCodeList:
-
                             if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         default:
 
                             throw new Exception(
@@ -280,16 +276,18 @@ namespace Ict.Petra.Server.MCommon
             }
 
             /*
-             * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-             * Cache and inform all other Clients that they need to reload this Cacheable DataTable
-             * the next time something in the Client accesses it.
+            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            /// the next time something in the Client accesses it.
              */
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                GetStandardCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+                Type TmpType;
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
             return SubmissionResult;
         }
     }
 }
+

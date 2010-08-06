@@ -89,7 +89,7 @@ namespace {#NAMESPACE}
         /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
         /// specified DataTable is returned, otherwise nil.
         /// </returns>
-        public DataTable GetStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+        public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
@@ -99,7 +99,7 @@ namespace {#NAMESPACE}
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable called for table '" + TableName + "'.");
+                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
 #endif
 
@@ -131,7 +131,7 @@ namespace {#NAMESPACE}
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
-                            Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable: commited own transaction.");
+                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
 #endif
                     }
@@ -219,15 +219,15 @@ namespace {#NAMESPACE}
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
-                GetStandardCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
             return SubmissionResult;
         }
+{#ENDIF SAVETABLE}
         {#GETCALCULATEDLISTFROMDB}
     }
 }
-{#ENDIF SAVETABLE}
 
 {##LOADTABLE}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
@@ -240,14 +240,14 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {##LOADCALCULATEDLIST}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {
-    DataTable TmpTable = Get{#CALCULATEDLISTNAME}Table(ReadTransaction);
-    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, TmpTable, DomainManager.GClientID);
+    DataTable TmpTable = Get{#CALCULATEDLISTNAME}Table(ReadTransaction, TableName);
+    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
     break;
 }
 
 {##GETCALCULATEDLISTFROMDB}
 
-private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction)
+private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction, string ATableName)
 {
 }
 

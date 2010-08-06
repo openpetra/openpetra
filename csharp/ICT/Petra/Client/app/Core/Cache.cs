@@ -386,10 +386,10 @@ namespace Ict.Petra.Client.App.Core
              * @return Chosen DataTable
              *
              */
-            public static DataTable GetCacheablePersonnelTable(TCacheablePersonDataElementsTablesEnum ACacheableTable)
+            public static DataTable GetCacheablePersonnelTable(TCacheablePersonTablesEnum ACacheableTable)
             {
                 //return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheablePersonDataElementsTablesEnum), ACacheableTable));
+                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable));
             }
 
             /**
@@ -399,7 +399,7 @@ namespace Ict.Petra.Client.App.Core
              * @param ACacheableTable The cached DataTable that should be reloaded from DB.
              *
              */
-            public static void RefreshCacheablePersonnelTable(TCacheablePersonDataElementsTablesEnum ACacheableTable)
+            public static void RefreshCacheablePersonnelTable(TCacheablePersonTablesEnum ACacheableTable)
             {
                 // TODO
 //                DataTable TmpDT;
@@ -425,9 +425,9 @@ namespace Ict.Petra.Client.App.Core
              * @return Chosen DataTable
              *
              */
-            public static DataTable GetCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
+            public static DataTable GetCacheableUnitsTable(TCacheableUnitTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableUnitsDataElementsTablesEnum), ACacheableTable));
+                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable));
             }
 
             /**
@@ -437,7 +437,7 @@ namespace Ict.Petra.Client.App.Core
              * @param ACacheableTable The cached DataTable that should be reloaded from DB.
              *
              */
-            public static void RefreshCacheableUnitsTable(TCacheableUnitsDataElementsTablesEnum ACacheableTable)
+            public static void RefreshCacheableUnitsTable(TCacheableUnitTablesEnum ACacheableTable)
             {
 //                DataTable TmpDT;
 // TODO
@@ -645,8 +645,8 @@ namespace Ict.Petra.Client.App.Core
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSysManTablesEnum CacheableMSysManTable;
-            TCacheablePersonDataElementsTablesEnum CacheableMPersonnelPersonTable;
-            TCacheableUnitsDataElementsTablesEnum CacheableMPersonnelUnitsTable;
+            TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
+            TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable;
             ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
@@ -706,10 +706,10 @@ namespace Ict.Petra.Client.App.Core
                 // PetraServer method call
                 ReturnValue = TRemote.MSysMan.Application.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
             }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonDataElementsTablesEnum)), ACacheableTableName) != -1)
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
             {
                 // MSysMan Namespace
-                CacheableMPersonnelPersonTable = (TCacheablePersonDataElementsTablesEnum)Enum.Parse(typeof(TCacheablePersonDataElementsTablesEnum),
+                CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call
@@ -717,10 +717,10 @@ namespace Ict.Petra.Client.App.Core
                     AHashCode,
                     out ACacheableTableSystemType);
             }
-            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitsDataElementsTablesEnum)), ACacheableTableName) != -1)
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitTablesEnum)), ACacheableTableName) != -1)
             {
                 // MSysMan Namespace
-                CacheableMPersonnelUnitsTable = (TCacheableUnitsDataElementsTablesEnum)Enum.Parse(typeof(TCacheableUnitsDataElementsTablesEnum),
+                CacheableMPersonnelUnitsTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call

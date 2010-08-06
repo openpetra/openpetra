@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             DuringInitialization = true;
             // Get list of commitment statuses
             FEventTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                TCacheableUnitsDataElementsTablesEnum.ConferenceList);
+                TCacheableUnitTablesEnum.ConferenceList);
 
             grdEvent.Columns.Clear();
 
@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 // get all the campaigns
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                    TCacheableUnitsDataElementsTablesEnum.CampaignList);
+                    TCacheableUnitTablesEnum.CampaignList);
 
                 AddTableToGrid(TmpTable);
             }
@@ -163,7 +163,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 // get all the conferences
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                    TCacheableUnitsDataElementsTablesEnum.ConferenceList);
+                    TCacheableUnitTablesEnum.ConferenceList);
 
                 AddTableToGrid(TmpTable);
             }

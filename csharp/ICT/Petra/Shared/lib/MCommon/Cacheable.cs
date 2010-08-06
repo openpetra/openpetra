@@ -1,8 +1,11 @@
-﻿//
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,17 +24,18 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 
 namespace Ict.Petra.Shared.MCommon
 {
     /// <summary>
-    /// Enums holding the possible Common cacheable tables
+    /// Enums holding the possible cacheable tables for the Petra Common Module, specifically Common submodule
     /// </summary>
     public enum TCacheableCommonTablesEnum
     {
         /// <summary>
-        /// list of countries
+        /// List of countries with their codes
         /// </summary>
         CountryList,
 
@@ -41,8 +45,9 @@ namespace Ict.Petra.Shared.MCommon
         FrequencyList,
 
         /// <summary>
-        /// list of languages
+        /// List of language codes
         /// </summary>
         LanguageCodeList
     };
 }
+

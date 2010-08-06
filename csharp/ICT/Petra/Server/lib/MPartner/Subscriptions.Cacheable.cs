@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,32 +24,35 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Server.App.ClientDomain;
+
+#region ManualCode
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon;
-
-namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
+#endregion ManualCode
+namespace Ict.Petra.Server.MPartner.Subscriptions
 {
-    /**
-     * Returns DataTables for DB tables in the MPartner.Subscriptions sub-namespace
-     * that can be cached on the Client side.
-     *
-     * Examples of such tables are tables that form entries of ComboBoxes or Lists
-     * and which would be retrieved numerous times from the Server as UI windows
-     * are opened.
-     */
+    /// <summary>
+    /// Returns cacheable DataTables for DB tables in the MPartner.Subscriptions sub-namespace
+    /// that can be cached on the Client side.
+    ///
+    /// Examples of such tables are tables that form entries of ComboBoxes or Lists
+    /// and which would be retrieved numerous times from the Server as UI windows
+    /// are opened.
+    /// </summary>
     public class TPartnerCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
@@ -80,99 +86,92 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
         }
 #endif
 
-
-
-        /**
-         * Returns a certain cachable DataTable that contains all columns and all
-         * rows of a specified table.
-         *
-         * @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
-         * once its contents got retrieved from the DB. It returns the cached
-         * DataTable from it on subsequent calls, therefore making more no further DB
-         * queries!
-         *
-         * @comment All DataTables are retrieved as Typed DataTables, but are passed
-         * out as a normal DataTable. However, this DataTable can be cast by the
-         * caller to the appropriate TypedDataTable to have access to the features of
-         * a Typed DataTable!
-         *
-         * @param ACacheableTable Tells what cachable DataTable should be returned.
-         * @param AHashCode Hash of the cacheable DataTable that the caller has. '' can be
-         * specified to always get a DataTable back (see @return)
-         * @param ARefreshFromDB Set to true to reload the cached DataTable from the
-         * DB and through that refresh the Table in the Cache with what is now in the
-         * DB (this would be done when it is known that the DB Table has changed).
-         * The CacheableTablesManager will notify other Clients that they need to
-         * retrieve this Cacheable DataTable anew from the PetraServer the next time
-         * the Client accesses the Cacheable DataTable. Otherwise set to false.
-         * @param AType The Type of the DataTable (useful in case it's a
-         * Typed DataTable)
-         * @return DataTable If the Hash that got passed in AHashCode doesn't fit the
-         * Hash that the CacheableTablesManager has for this cacheable DataTable, the
-         * specified DataTable is returned, otherwise nil.
-         *
-         */
-        public DataTable GetStandardCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its contents got retrieved from the DB. It returns the cached
+        /// DataTable from it on subsequent calls, therefore making more no further DB
+        /// queries!
+        ///
+        /// @comment All DataTables are retrieved as Typed DataTables, but are passed
+        /// out as a normal DataTable. However, this DataTable can be cast by the
+        /// caller to the appropriate TypedDataTable to have access to the features of
+        /// a Typed DataTable!
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>
+        /// DataTable If the Hash that got passed in AHashCode doesn't fit the
+        /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
+        /// specified DataTable is returned, otherwise nil.
+        /// </returns>
+        public DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            String TableName;
-            DataTable TmpTable;
+            String TableName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
 
-            TableName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable called with ATableName='" + TableName + "'.");
+                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
 #endif
 
             if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Boolean NewTransaction;
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-
                 try
                 {
-                    switch (ACacheableTable)
-                    {
-                        case TCacheableSubscriptionsTablesEnum.PublicationCost:
-                            TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpTable,
-                            DomainManager.GClientID);
-                            break;
 
-                        case TCacheableSubscriptionsTablesEnum.PublicationList:
-                            TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
+                    switch(ACacheableTable)
+                    {
+                        case TCacheableSubscriptionsTablesEnum.PublicationCostList:
+                        {
+                            DataTable TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        {
+                            DataTable TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
-                            TmpTable = PReasonSubscriptionGivenAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpTable,
-                            DomainManager.GClientID);
+                        {
+                            DataTable TmpTable = PReasonSubscriptionGivenAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
-
+                        }
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
-                            TmpTable = PReasonSubscriptionCancelledAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName,
-                            TmpTable,
-                            DomainManager.GClientID);
-
-                            // Unknown Standard Cacheable DataTable
+                        {
+                            DataTable TmpTable = PReasonSubscriptionCancelledAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
+                        }
 
                         default:
+                            // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                            Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum),
-                                ACacheableTable) + "' is not available as a Standard Cacheable Table");
+                                TableName + "' is not available as a Standard Cacheable Table");
                     }
                 }
                 finally
@@ -183,7 +182,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
-                            Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable: commited own transaction.");
+                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
 #endif
                     }
@@ -204,7 +203,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
         /// that they need to reload this Cacheable DataTable the next time something in the
         /// Client accesses it.
         /// </remarks>
-        /// <param name="ACacheableTable">The Cacheable DataTable with changes.</param>
+        /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
         /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
         /// to be submitted, not just changes to it!</param>
         /// <param name="AVerificationResult">Will be filled with any
@@ -218,8 +217,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
             string CacheableDTName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
-            Type TmpType;
 
+            // Console.WriteLine("Entering Subscriptions.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
 
             // TODO: check write permissions
@@ -233,47 +232,34 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheableSubscriptionsTablesEnum.PublicationCost:
-
+                        case TCacheableSubscriptionsTablesEnum.PublicationCostList:
                             if (PPublicationCostAccess.SubmitChanges((PPublicationCostTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         case TCacheableSubscriptionsTablesEnum.PublicationList:
-
                             if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
-
                             if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
-
-                            if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable,
-                                    SubmitChangesTransaction,
+                            if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
-
                             break;
-
                         default:
 
                             throw new Exception(
@@ -294,7 +280,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                     TLogging.Log(
                         "TPartnerCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
                         CacheableDTName +
-                        "':  Exception " + e.Message);
+                        "':  Exception " + e.ToString());
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -303,17 +289,18 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             }
 
             /*
-             * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-             * Cache and inform all other Clients that they need to reload this Cacheable DataTable
-             * the next time something in the Client accesses it.
+            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            /// the next time something in the Client accesses it.
              */
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
-                GetStandardCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+                Type TmpType;
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
             return SubmissionResult;
         }
     }
 }
+

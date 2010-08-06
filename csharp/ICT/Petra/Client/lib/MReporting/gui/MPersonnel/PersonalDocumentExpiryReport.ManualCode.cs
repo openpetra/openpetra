@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         {
             // Get list of documents
             FDocumentTypeTable = (PmDocumentTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                TCacheablePersonDataElementsTablesEnum.DocumentTypeList);
+                TCacheablePersonTablesEnum.DocumentTypeList);
 
             grdDocuments.Columns.Clear();
 

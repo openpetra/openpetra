@@ -40,7 +40,8 @@ CachedTables:
                 PMethodOfContact:
                 PMergeForm:
                 PMergeField:
-                PPostcodeRegion: {Enum=PostCodeRegionList}
+            CalculatedLists:
+                PostCodeRegionList:
         Subscriptions:
             DatabaseTables:
                 PPublicationCost:

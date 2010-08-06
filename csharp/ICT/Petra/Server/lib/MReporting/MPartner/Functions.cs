@@ -1481,7 +1481,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
                     System.Type TypeOfTable;
 
-                    OccupationTable = (POccupationTable)PartnerCacheable.GetStandardCacheableTable(
+                    OccupationTable = (POccupationTable)PartnerCacheable.GetCacheableTable(
                         TCacheablePartnerTablesEnum.OccupationList, "", false, out TypeOfTable);
 
                     DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + OccupationCode + "'");

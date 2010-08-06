@@ -766,7 +766,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
             string templateDir = opts.GetValue("TemplateDir", true);
-            FTemplate.AddToCodelet("GPLFILEHEADER", 
+            FTemplate.AddToCodelet("GPLFILEHEADER",
                 ProcessTemplate.LoadEmptyFileComment(templateDir + ".." +
                     Path.DirectorySeparatorChar));
 

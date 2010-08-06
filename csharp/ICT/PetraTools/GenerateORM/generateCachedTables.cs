@@ -50,6 +50,7 @@ namespace Ict.Tools.CodeGeneration.CachedTables
             while (module != null)
             {
                 XmlNode subModule = module.FirstChild;
+                bool severalSubModules = (subModule != null && subModule.NextSibling != null);
 
                 // write the shared file with the enum definitions
                 ProcessTemplate SharedTemplate = new ProcessTemplate(ATemplateDir + Path.DirectorySeparatorChar +
@@ -73,6 +74,14 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     ServerTemplate.SetCodelet("SUBMODULE", subModule.Name);
                     ServerTemplate.SetCodelet("GETCALCULATEDLISTFROMDB", "");
 
+                    if (!severalSubModules)
+                    {
+                        // for MCommon
+                        ServerTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Server.M" + module.Name);
+                        ServerTemplate.SetCodelet("SUBNAMESPACE", "M" + module.Name);
+                        ServerTemplate.SetCodelet("CACHEABLECLASS", "TCacheable");
+                    }
+
                     ProcessTemplate snippetSubmodule = SharedTemplate.GetSnippet("SUBMODULEENUM");
                     snippetSubmodule.SetCodelet("SUBMODULE", subModule.Name);
                     snippetSubmodule.SetCodelet("MODULE", module.Name);
@@ -87,7 +96,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                         {
                             ProcessTemplate snippetElement = SharedTemplate.GetSnippet("ENUMELEMENT");
 
-                            if (enumElement.NextSibling == null)
+                            if ((enumElement.NextSibling == null)
+                                && ((TableOrListElement.NextSibling == null) || (TableOrListElement.NextSibling.FirstChild == null)))
                             {
                                 snippetElement = SharedTemplate.GetSnippet("ENUMELEMENTLAST");
                             }
