@@ -108,17 +108,17 @@ using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
 //using Ict.Petra.Server.MPartner.Extracts.WebConnectors;
 //using Ict.Petra.Server.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
-//using Ict.Petra.Server.MPartner.Mailing.Cacheable;
+using Ict.Petra.Server.MPartner.Mailing.Cacheable;
 //using Ict.Petra.Server.MPartner.Mailing.UIConnectors;
 using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
-//using Ict.Petra.Server.MPartner.Partner.Cacheable;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.PartnerMerge.UIConnectors;
-//using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
+using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 //using Ict.Petra.Server.MPartner.Subscriptions.UIConnectors;
 //using Ict.Petra.Server.MPartner.TableMaintenance.UIConnectors;
 using Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors;
@@ -1254,7 +1254,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPartner.Mailing.TPartnerCacheable FCachePopulator;
+        private Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TMailingCacheableNamespace()
@@ -1268,7 +1268,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MPartner.Mailing.TPartnerCacheable();
+            FCachePopulator = new Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
 
@@ -1798,7 +1798,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPartner.Partner.TPartnerCacheable FCachePopulator;
+        private Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TPartnerCacheableNamespace()
@@ -1812,7 +1812,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MPartner.Partner.TPartnerCacheable();
+            FCachePopulator = new Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
 
@@ -3006,7 +3006,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPartner.Subscriptions.TPartnerCacheable FCachePopulator;
+        private Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TSubscriptionsCacheableNamespace()
@@ -3020,7 +3020,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.TPartnerCacheable();
+            FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
 

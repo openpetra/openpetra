@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,20 +24,20 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 
 namespace Ict.Petra.Shared.MConference
 {
-    /// Enums holding the possible cacheable tables for the Petra Conference Module.
-    [Serializable()]
+    /// <summary>
+    /// Enums holding the possible cacheable tables for the Petra Conference Module, specifically Conference submodule
+    /// </summary>
     public enum TCacheableConferenceTablesEnum
     {
-        /// No comment
-        NoneYetThere
+        /// <summary>
+        /// Lists types of options that can be used for a conference
+        /// </summary>
+        ConferenceOptionTypeList
     };
-
-    /// Used for referencing Cacheable DataTables for the Petra Conference Module.
-    public class Cacheable
-    {
-    }
 }
+

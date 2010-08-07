@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,24 +24,34 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 
 namespace Ict.Petra.Shared.MFinance
 {
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Finance Module.
+    /// Enums holding the possible cacheable tables for the Petra Finance Module, specifically Finance submodule
     /// </summary>
     public enum TCacheableFinanceTablesEnum
     {
         /// <summary>
-        /// list of budget types
+        /// Used for initial set up of budgets, for how to calculate amounts for each period.  Some possible types are adhoc,same,percentage of annual.
         /// </summary>
         BudgetTypeList,
 
         /// <summary>
-        /// list of cost centre types
+        /// Stores standard and user-defined cost centre types.  For example: Foreign, Local.
         /// </summary>
-        CostCentreTypeList,
+        CostCentreTypesList,
+
+        /// <summary>
+        /// list of motivations (for gifts)
+        /// </summary>
+        MotivationList,
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        AccountingPeriodList,
 
         /// <summary>
         /// names of available ledgers
@@ -51,28 +64,19 @@ namespace Ict.Petra.Shared.MFinance
         LedgerDetails,
 
         /// <summary>
-        /// list of accounting periods
-        /// </summary>
-        AccountingPeriodList,
-
-        /// <summary>
-        /// list of cost centres
+        /// todoComment
         /// </summary>
         CostCentreList,
 
         /// <summary>
-        /// list of accounts
+        /// todoComment
         /// </summary>
         AccountList,
 
         /// <summary>
-        /// list of account hierarchies
+        /// todoComment
         /// </summary>
-        AccountHierarchyList,
-
-        /// <summary>
-        /// list of motivations (for gifts)
-        /// </summary>
-        MotivationList
+        AccountHierarchyList
     };
 }
+

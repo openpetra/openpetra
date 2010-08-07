@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
-namespace Ict.Petra.Server.MPersonnel.Unit
+namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 {
     /// <summary>
     /// Returns cacheable DataTables for DB tables in the MPersonnel.Unit sub-namespace

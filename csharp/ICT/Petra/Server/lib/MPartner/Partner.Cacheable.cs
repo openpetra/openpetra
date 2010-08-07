@@ -50,7 +50,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
 
-namespace Ict.Petra.Server.MPartner.Partner
+namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 {
     /// <summary>
     /// Returns cacheable DataTables for DB tables in the MPartner.Partner sub-namespace

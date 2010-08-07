@@ -75,6 +75,9 @@
     <Reference Include="Ict.Petra.Shared.MConference">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MConference.DataTables">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
@@ -128,6 +131,10 @@
     <ProjectReference Include="..\MCommon\Ict.Petra.Server.MCommon.csproj">
       <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
       <Name>Ict.Petra.Server.MCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MConference.DataAccess.csproj">
+      <Project>{FB826CB1-81C5-47BB-B699-A7EB79CF800A}</Project>
+      <Name>Ict.Petra.Server.MConference.DataAccess</Name>
     </ProjectReference>
     <Compile Include="Cacheable.cs" />
   </ItemGroup>

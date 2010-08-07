@@ -26,6 +26,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Ict.Common.IO;
 
 namespace Ict.Tools.CodeGeneration
 {
@@ -331,7 +332,8 @@ namespace Ict.Tools.CodeGeneration
 
             if (changed)
             {
-                File.WriteAllLines(ADestinationFilename, mergedText);
+                File.WriteAllLines(ADestinationFilename + ".new", mergedText);
+                TTextFile.UpdateFile(ADestinationFilename);
             }
 
             return changed;

@@ -43,7 +43,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
 
-namespace Ict.Petra.Server.MCommon
+namespace Ict.Petra.Server.MCommon.Cacheable
 {
     /// <summary>
     /// Returns cacheable DataTables for DB tables in the MCommon sub-namespace

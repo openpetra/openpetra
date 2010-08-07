@@ -1,8 +1,11 @@
+// auto generated with nant generateORM
+// Do not modify this file manually!
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,33 +24,67 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections.Specialized;
 using System.Data;
-using Ict.Common;
+using System.Data.Odbc;
 using Ict.Common.Data;
+using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Server.App.ClientDomain;
-using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Server.App.ClientDomain;
 
+#region ManualCode
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MConference;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Server.MConference.Data.Access;
+#endregion ManualCode
 namespace Ict.Petra.Server.MConference.Cacheable
 {
     /// <summary>
-    /// Returns DataTables for DB tables in the MConference namespace
+    /// Returns cacheable DataTables for DB tables in the MConference sub-namespace
     /// that can be cached on the Client side.
     ///
     /// Examples of such tables are tables that form entries of ComboBoxes or Lists
-    /// and which would be retrieved numerous times from the Server as UI windows are
-    /// opened.
+    /// and which would be retrieved numerous times from the Server as UI windows
+    /// are opened.
     /// </summary>
-    public class TMConferenceCacheable : TCacheableTablesLoader
+    public class TCacheable : TCacheableTablesLoader
     {
-        /// <summary>time when this object was instantiated</summary>
+        /// time when this object was instantiated
         private DateTime FStartTime;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TCacheable() : base()
+        {
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+#endif
+            FStartTime = DateTime.Now;
+            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+        }
+
+#if DEBUGMODE
+        /// destructor
+        ~TCacheable()
+        {
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+        }
+#endif
 
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
@@ -62,11 +99,11 @@ namespace Ict.Petra.Server.MConference.Cacheable
         /// out as a normal DataTable. However, this DataTable can be cast by the
         /// caller to the appropriate TypedDataTable to have access to the features of
         /// a Typed DataTable!
-        ///
         /// </summary>
-        /// <param name="ACacheableTable">Tells what cachable DataTable should be returned.</param>
-        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can be
-        /// specified to always get a DataTable back (see @return)</param>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
         /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
         /// DB and through that refresh the Table in the Cache with what is now in the
         /// DB (this would be done when it is known that the DB Table has changed).
@@ -75,47 +112,48 @@ namespace Ict.Petra.Server.MConference.Cacheable
         /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
-        /// <returns>)
+        /// <returns>
         /// DataTable If the Hash that got passed in AHashCode doesn't fit the
         /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
         /// specified DataTable is returned, otherwise nil.
         /// </returns>
-        public DataTable GetStandardCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
+        public DataTable GetCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            String TableName;
+            String TableName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
 
-            TableName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
 #if DEBUGMODE
             if (TSrvSetting.DL >= 7)
             {
-                Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable called with ATableName='" + TableName + "'.");
+                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
 #endif
 
             if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                Boolean NewTransaction;
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-
                 try
                 {
-                    switch (ACacheableTable)
-                    {
-                        default:
 
+                    switch(ACacheableTable)
+                    {
+                        case TCacheableConferenceTablesEnum.ConferenceOptionTypeList:
+                        {
+                            DataTable TmpTable = PcConferenceOptionTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+
+                        default:
                             // Unknown Standard Cacheable DataTable
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
-                            Enum.GetName(typeof(TCacheableConferenceTablesEnum),
-                                ACacheableTable) + "' is not available as a Standard Cacheable Table (without ALedgerNumber as an Argument)");
-
-                            //break;
+                                TableName + "' is not available as a Standard Cacheable Table");
                     }
                 }
                 finally
@@ -126,7 +164,7 @@ namespace Ict.Petra.Server.MConference.Cacheable
 #if DEBUGMODE
                         if (TSrvSetting.DL >= 7)
                         {
-                            Console.WriteLine(this.GetType().FullName + ".GetStandardCacheableTable: commited own transaction.");
+                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
 #endif
                     }
@@ -138,34 +176,92 @@ namespace Ict.Petra.Server.MConference.Cacheable
         }
 
         /// <summary>
-        /// constructor
+        /// Saves a specific Cachable DataTable. The whole DataTable needs to be submitted,
+        /// not just changes to it!
         /// </summary>
-        public TMConferenceCacheable() : base()
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
+            ref TTypedDataTable ASubmitTable,
+            out TVerificationResultCollection AVerificationResult)
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            string CacheableDTName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
+
+            // Console.WriteLine("Entering Conference.SaveChangedStandardCacheableTable...");
+            AVerificationResult = null;
+
+            // TODO: check write permissions
+
+            if (ASubmitTable != null)
             {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                try
+                {
+                    switch (ACacheableTable)
+                    {
+                        case TCacheableConferenceTablesEnum.ConferenceOptionTypeList:
+                            if (PcConferenceOptionTypeAccess.SubmitChanges((PcConferenceOptionTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        default:
+
+                            throw new Exception(
+                            "TCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(
+                        "TCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                        CacheableDTName +
+                        "':  Exception " + e.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
             }
-#endif
-            FStartTime = DateTime.Now;
 
-            // FDataCacheDataSet := new DataSet('ServerDataCache');
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
-        }
-
-#if DEBUGMODE
-        /// destructor
-        ~TMConferenceCacheable()
-        {
-            if (TSrvSetting.DL >= 9)
+            /*
+            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            /// the next time something in the Client accesses it.
+             */
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+                Type TmpType;
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
-        }
-#endif
 
+            return SubmissionResult;
+        }
     }
 }
+

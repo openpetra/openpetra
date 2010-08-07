@@ -27,9 +27,9 @@ using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
-
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting
@@ -88,20 +88,15 @@ namespace Ict.Petra.Server.MFinance.Reporting
             out int ACurrentPeriod,
             out int ACurrentYear)
         {
-            System.Data.DataTable CachedDataTable;
-            String whereClause;
-            DataRow[] filteredRows;
-            TMFinanceCacheable CachePopulator;
-
             System.Type typeofTable = null;
-            CachePopulator = new TMFinanceCacheable();
-            CachedDataTable = CachePopulator.GetStandardCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+            TCacheable CachePopulator = new TCacheable();
+            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
                 "",
                 false,
                 FLedgerNr,
                 out typeofTable);
-            whereClause = ALedgerTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString();
-            filteredRows = CachedDataTable.Select(whereClause, ALedgerTable.GetLedgerNumberDBName());
+            string whereClause = ALedgerTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString();
+            DataRow[] filteredRows = CachedDataTable.Select(whereClause, ALedgerTable.GetLedgerNumberDBName());
 
             if (filteredRows.Length > 0)
             {
@@ -172,25 +167,20 @@ namespace Ict.Petra.Server.MFinance.Reporting
         /// <returns></returns>
         public System.DateTime GetPeriodStartDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
         {
-            System.DateTime ReturnValue;
-            DataTable CachedDataTable;
             System.Int32 RealYear = 0;
             System.Int32 RealPeriod = 0;
-            DataRow[] filteredRows;
-            String whereClause;
-            TMFinanceCacheable CachePopulator;
             System.Type typeofTable = null;
-            CachePopulator = new TMFinanceCacheable();
-            ReturnValue = DateTime.Now;
+            TCacheable CachePopulator = new TCacheable();
+            DateTime ReturnValue = DateTime.Now;
             GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            CachedDataTable = CachePopulator.GetStandardCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
                 "",
                 false,
                 FLedgerNr,
                 out typeofTable);
-            whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
+            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
                           AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            filteredRows = CachedDataTable.Select(whereClause);
+            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
 
             if (filteredRows.Length > 0)
             {
@@ -210,25 +200,20 @@ namespace Ict.Petra.Server.MFinance.Reporting
         /// <returns></returns>
         public System.DateTime GetPeriodEndDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
         {
-            System.DateTime ReturnValue;
-            DataTable CachedDataTable;
             System.Int32 RealYear = 0;
             System.Int32 RealPeriod = 0;
-            DataRow[] filteredRows;
-            String whereClause;
-            TMFinanceCacheable CachePopulator;
             System.Type typeofTable = null;
-            CachePopulator = new TMFinanceCacheable();
-            ReturnValue = DateTime.Now;
+            TCacheable CachePopulator = new TCacheable();
+            DateTime ReturnValue = DateTime.Now;
             GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            CachedDataTable = CachePopulator.GetStandardCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
                 "",
                 false,
                 FLedgerNr,
                 out typeofTable);
-            whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
+            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
                           AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            filteredRows = CachedDataTable.Select(whereClause);
+            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
 
             if (filteredRows.Length > 0)
             {

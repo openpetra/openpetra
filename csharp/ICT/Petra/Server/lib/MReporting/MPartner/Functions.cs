@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;

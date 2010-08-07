@@ -974,7 +974,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 
         #region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPersonnel.Person.TPersonnelCacheable FCachePopulator;
+        private Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TPersonDataElementsCacheableNamespace()
@@ -988,7 +988,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             FStartTime = DateTime.Now;
 #endif
 			#region ManualCode
-			FCachePopulator = new Ict.Petra.Server.MPersonnel.Person.TPersonnelCacheable();
+			FCachePopulator = new Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable();
 			#endregion ManualCode
         }
 
@@ -1794,7 +1794,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
 		#region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MPersonnel.Unit.TPersonnelCacheable FCachePopulator;
+        private Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TUnitsDataElementsCacheableNamespace()
@@ -1808,7 +1808,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-			FCachePopulator = new Ict.Petra.Server.MPersonnel.Unit.TPersonnelCacheable();
+			FCachePopulator = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
 			#endregion ManualCode
         }
 

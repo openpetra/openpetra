@@ -63,3 +63,21 @@ CachedTables:
             DatabaseTables:
                 PmDocumentType:
                 PmCommitmentStatus:
+    Finance:
+        Finance:
+            DatabaseTables:
+                ABudgetType:
+                ACostCentreTypes:
+                AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
+            CalculatedLists: {DependsOnLedger=true}
+                AccountingPeriodList:
+                LedgerNameList: {Comment=names of available ledgers}
+                LedgerDetails: {Comment="ledger details (number of accounting periods, current period, etc)"}
+                CostCentreList:
+                AccountList:
+                AccountHierarchyList:
+    Conference:
+        Conference:
+            DatabaseTables:
+                PcConferenceOptionType:
+    #SysMan:

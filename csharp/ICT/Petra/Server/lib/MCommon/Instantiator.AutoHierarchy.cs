@@ -53,7 +53,7 @@ using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 using Ict.Petra.Server.MCommon.Instantiator.Cacheable;
 using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
 using Ict.Petra.Server.MCommon.Instantiator.DataReader;
-//using Ict.Petra.Server.MCommon.Cacheable;
+using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MCommon.DataReader;
 
@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MCommon.TCacheable FCachePopulator;
+        private TCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TCacheableNamespace()
@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MCommon.TCacheable();
+            FCachePopulator = new Ict.Petra.Server.MCommon.Cacheable.TCacheable();
             #endregion ManualCode
         }
 
@@ -678,11 +678,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         private DateTime FStartTime;
 #endif
 
-        #region ManualCode
-
-        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MCommon.TCacheable FCachePopulator;
-        #endregion ManualCode
         /// <summary>Constructor</summary>
         public TDataReaderNamespace()
         {

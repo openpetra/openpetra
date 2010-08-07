@@ -100,7 +100,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors;
 //using Ict.Petra.Server.MFinance.AccountsPayable;
 //using Ict.Petra.Server.MFinance.AccountsReceivable;
 //using Ict.Petra.Server.MFinance.Budget;
-//using Ict.Petra.Server.MFinance.Cacheable;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.ImportExport;
 //using Ict.Petra.Server.MFinance.Gift;
 //using Ict.Petra.Server.MFinance.GL;
@@ -1364,7 +1364,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MFinance.TMFinanceCacheable FCachePopulator;
+        private Ict.Petra.Server.MFinance.Cacheable.TCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TCacheableNamespace()
@@ -1378,7 +1378,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MFinance.TMFinanceCacheable();
+            FCachePopulator = new Ict.Petra.Server.MFinance.Cacheable.TCacheable();
             #endregion ManualCode
         }
 
@@ -1454,26 +1454,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableFinanceTablesEnum.BudgetTypeList:
-                case TCacheableFinanceTablesEnum.CostCentreTypeList:
-                case TCacheableFinanceTablesEnum.LedgerNameList:
-
-                    // Standard Cacheable DataTables (without LedgerNumber)
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-
-                    // Unknown Cacheable DataTable
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable (without LedgerNumber) '" +
-                    Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
 
             if (ReturnValue != null)
             {
@@ -1514,29 +1495,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             System.Int32 ALedgerNumber,
             out System.Type AType)
         {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableFinanceTablesEnum.AccountList:
-                case TCacheableFinanceTablesEnum.AccountHierarchyList:
-                case TCacheableFinanceTablesEnum.AccountingPeriodList:
-                case TCacheableFinanceTablesEnum.CostCentreList:
-                case TCacheableFinanceTablesEnum.MotivationList:
-                case TCacheableFinanceTablesEnum.LedgerDetails:
-
-                    // Standard Cacheable DataTables (with LedgerNumber)
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType);
-
-                    break;
-
-                // Unknown Cacheable DataTable
-                default:
-                    throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable (with LedgerNumber) '" +
-                    Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable) + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType);
 
             if (ReturnValue != null)
             {

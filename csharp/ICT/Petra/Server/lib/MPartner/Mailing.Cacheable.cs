@@ -43,7 +43,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
-namespace Ict.Petra.Server.MPartner.Mailing
+namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
 {
     /// <summary>
     /// Returns cacheable DataTables for DB tables in the MPartner.Mailing sub-namespace

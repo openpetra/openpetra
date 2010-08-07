@@ -68,16 +68,18 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                         "Cacheable.Server.cs");
 
                     ServerTemplate.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(ATemplateDir));
-                    ServerTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Server.M" + module.Name + "." + subModule.Name);
+                    ServerTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Server.M" + module.Name + "." + subModule.Name + ".Cacheable");
                     ServerTemplate.SetCodelet("SUBNAMESPACE", "M" + module.Name + "." + subModule.Name);
                     ServerTemplate.SetCodelet("CACHEABLECLASS", "T" + module.Name + "Cacheable");
                     ServerTemplate.SetCodelet("SUBMODULE", subModule.Name);
                     ServerTemplate.SetCodelet("GETCALCULATEDLISTFROMDB", "");
+                    ServerTemplate.SetCodelet("LEDGERGETCACHEABLE", "");
+                    ServerTemplate.SetCodelet("LEDGERSAVECACHEABLE", "");
 
                     if (!severalSubModules)
                     {
                         // for MCommon
-                        ServerTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Server.M" + module.Name);
+                        ServerTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Server.M" + module.Name + ".Cacheable");
                         ServerTemplate.SetCodelet("SUBNAMESPACE", "M" + module.Name);
                         ServerTemplate.SetCodelet("CACHEABLECLASS", "TCacheable");
                     }
@@ -85,6 +87,9 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     ProcessTemplate snippetSubmodule = SharedTemplate.GetSnippet("SUBMODULEENUM");
                     snippetSubmodule.SetCodelet("SUBMODULE", subModule.Name);
                     snippetSubmodule.SetCodelet("MODULE", module.Name);
+
+                    ProcessTemplate snippetLedgerGetTable = null;
+                    ProcessTemplate snippetLedgerSaveTable = null;
 
                     XmlNode TableOrListElement = subModule.FirstChild;
 
@@ -94,6 +99,25 @@ namespace Ict.Tools.CodeGeneration.CachedTables
 
                         while (enumElement != null)
                         {
+                            bool DependsOnLedger = false;
+
+                            if (TYml2Xml.GetAttributeRecursive(enumElement, "DependsOnLedger") == "true")
+                            {
+                                if (snippetLedgerGetTable == null)
+                                {
+                                    snippetLedgerGetTable = ServerTemplate.GetSnippet("LEDGERGETCACHEABLE");
+                                    snippetLedgerGetTable.SetCodelet("SUBMODULE", subModule.Name);
+                                }
+
+                                if ((snippetLedgerSaveTable == null) && (TableOrListElement.Name == "DatabaseTables"))
+                                {
+                                    snippetLedgerSaveTable = ServerTemplate.GetSnippet("LEDGERSAVECACHEABLE");
+                                    snippetLedgerSaveTable.SetCodelet("SUBMODULE", subModule.Name);
+                                }
+
+                                DependsOnLedger = true;
+                            }
+
                             ProcessTemplate snippetElement = SharedTemplate.GetSnippet("ENUMELEMENT");
 
                             if ((enumElement.NextSibling == null)
@@ -151,24 +175,66 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                             if (TableOrListElement.Name == "DatabaseTables")
                             {
                                 ProcessTemplate snippetLoadTable = ServerTemplate.GetSnippet("LOADTABLE");
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetLoadTable = ServerTemplate.GetSnippet("LOADTABLEVIALEDGER");
+                                }
+
                                 snippetLoadTable.SetCodelet("ENUMNAME", enumName);
                                 snippetLoadTable.SetCodelet("DATATABLENAME", enumElement.Name);
-                                ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadTable);
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetLedgerGetTable.InsertSnippet("LOADTABLESANDLISTS", snippetLoadTable);
+                                }
+                                else
+                                {
+                                    ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadTable);
+                                }
 
                                 ProcessTemplate snippetSaveTable = ServerTemplate.GetSnippet("SAVETABLE");
                                 snippetSaveTable.SetCodelet("ENUMNAME", enumName);
                                 snippetSaveTable.SetCodelet("SUBMODULE", subModule.Name);
                                 snippetSaveTable.SetCodelet("DATATABLENAME", enumElement.Name);
-                                ServerTemplate.InsertSnippet("SAVETABLE", snippetSaveTable);
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetLedgerSaveTable.InsertSnippet("SAVETABLE", snippetSaveTable);
+                                }
+                                else
+                                {
+                                    ServerTemplate.InsertSnippet("SAVETABLE", snippetSaveTable);
+                                }
                             }
                             else
                             {
                                 ProcessTemplate snippetLoadList = ServerTemplate.GetSnippet("LOADCALCULATEDLIST");
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetLoadList = ServerTemplate.GetSnippet("LOADCALCULATEDLISTFORLEDGER");
+                                }
+
                                 snippetLoadList.SetCodelet("ENUMNAME", enumName);
                                 snippetLoadList.SetCodelet("CALCULATEDLISTNAME", enumName);
-                                ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadList);
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetLedgerGetTable.InsertSnippet("LOADTABLESANDLISTS", snippetLoadList);
+                                }
+                                else
+                                {
+                                    ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadList);
+                                }
 
                                 ProcessTemplate snippetManualCodeFunction = ServerTemplate.GetSnippet("GETCALCULATEDLISTFROMDB");
+
+                                if (DependsOnLedger)
+                                {
+                                    snippetManualCodeFunction = ServerTemplate.GetSnippet("GETCALCULATEDLISTLEDGERFROMDB");
+                                }
+
                                 snippetManualCodeFunction.SetCodelet("CALCULATEDLISTNAME", enumName);
                                 ServerTemplate.InsertSnippet("GETCALCULATEDLISTFROMDB", snippetManualCodeFunction);
                             }
@@ -185,6 +251,16 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     }
 
                     SharedTemplate.InsertSnippet("ENUMS", snippetSubmodule);
+
+                    if (snippetLedgerGetTable != null)
+                    {
+                        ServerTemplate.InsertSnippet("LEDGERGETCACHEABLE", snippetLedgerGetTable);
+                    }
+
+                    if (snippetLedgerSaveTable != null)
+                    {
+                        ServerTemplate.InsertSnippet("LEDGERSAVECACHEABLE", snippetLedgerSaveTable);
+                    }
 
                     string path = ASharedPath +
                                   Path.DirectorySeparatorChar + ".." +
