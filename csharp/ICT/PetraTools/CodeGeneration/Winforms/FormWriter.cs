@@ -767,7 +767,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             TAppSettingsManager opts = new TAppSettingsManager(false);
             string templateDir = opts.GetValue("TemplateDir", true);
             FTemplate.AddToCodelet("GPLFILEHEADER",
-                ProcessTemplate.LoadEmptyFileComment(templateDir + ".." +
+                ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
 
             // init some template variables that can be empty
