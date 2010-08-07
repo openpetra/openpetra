@@ -52,9 +52,18 @@ namespace Ict.Common.Controls
         private const int WM_CUT = 0x0300;
         private const int WM_CLEAR = 0x0303;
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public enum TNumberPrecision
         {
+            /// <summary>
+            /// todoComment
+            /// </summary>
             Decimal,
+            /// <summary>
+            /// todoComment
+            /// </summary>
             Double
         }
 
@@ -73,16 +82,34 @@ namespace Ict.Common.Controls
 
         private bool FDecimalPointEntered = true;
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public enum TNumericTextBoxMode
         {
+            /// <summary>
+            /// todoComment
+            /// </summary>
             NormalTextBox,
+            /// <summary>
+            /// todoComment
+            /// </summary>
             Integer,
+            /// <summary>
+            /// todoComment
+            /// </summary>
             Decimal,
+            /// <summary>
+            /// todoComment
+            /// </summary>
             Currency
         }
 
         #region Properties
 
+        /// <summary>
+        /// This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.
+        /// </summary>
         [Description(
              "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
         ]
@@ -102,6 +129,9 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines what input the Control accepts and how it formats it.
+        /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          Browsable(true),
@@ -139,6 +169,9 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines the number of decimal places (valid only for Decimal and Currency ControlModes).
+        /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          DefaultValue(2),
@@ -176,6 +209,9 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines the currency symbol. Will only be shown if ControlMode is 'Currency'.
+        /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          DefaultValue("###"),
@@ -204,6 +240,9 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines where the currency symbol is shown in relation to the value of the control. Only has an effect if ControlMode is 'Currency'.
+        /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          DefaultValue(true),
@@ -234,6 +273,9 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines whether the control allows a null value, or not.
+        /// </summary>
         [Category("NumericTextBox"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          DefaultValue(false),
@@ -253,7 +295,7 @@ namespace Ict.Common.Controls
         }
 
 
-        // This property gets hidden because it doesn't make sense in the Designer!
+        /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0.00)]
         public decimal ? NumberValueDecimal
@@ -315,7 +357,7 @@ namespace Ict.Common.Controls
             }
         }
 
-        // This property gets hidden because it doesn't make sense in the Designer!
+        /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0.00)]
         public double ? NumberValueDouble
@@ -377,7 +419,7 @@ namespace Ict.Common.Controls
             }
         }
 
-        // This property gets hidden because it doesn't make sense in the Designer!
+        /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0)]
         public int ? NumberValueInt
@@ -438,6 +480,9 @@ namespace Ict.Common.Controls
 
         #endregion
 
+        /// <summary>
+        /// constructor
+        /// </summary>
         public TTxtNumericTextBox()
         {
             NumberFormatInfo NfiCurrenThread = System.Globalization.NumberFormatInfo.CurrentInfo;
@@ -509,6 +554,11 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void OnKeyPress(object sender, KeyPressEventArgs e)
         {
             Char chrKeyPressed;
@@ -964,6 +1014,11 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void OnLeave(object sender, EventArgs e)
         {
             if (!(FNullValueAllowed && (this.Text == String.Empty)))
@@ -1043,6 +1098,11 @@ namespace Ict.Common.Controls
 //            OnLeave(this, null);
 //        }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void OnEntering(object sender, EventArgs e)
         {
             this.SelectAll();
