@@ -46,6 +46,10 @@ using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.UIConnectors;
+#region ManualCode
+using Ict.Common.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+#endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MPersonnel
 {
     /// <summary>auto generated</summary>
@@ -183,6 +187,10 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.TPersonDataElementsCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);        
     }
 
 }

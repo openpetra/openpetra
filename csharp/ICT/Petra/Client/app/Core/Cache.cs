@@ -1156,6 +1156,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableCommonTablesEnum CacheableMCommonTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
+            TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
 
             AVerificationResult = null;
 
@@ -1187,6 +1188,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerSubscriptionsTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MPersonnel.Person Namespace
+                CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPersonnel.Person.DataElements.Cacheable.SaveChangedStandardCacheableTable(CacheableMPersonnelPersonTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }

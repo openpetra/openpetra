@@ -94,6 +94,8 @@ using Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors;
 //using Ict.Petra.Server.MPersonnel.Units.DataElements.UIConnectors;
 
 #region ManualCode
+using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MPersonnel;
@@ -1091,6 +1093,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
             return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
             #endregion ManualCode
         }
+        
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode            
+        }
+        
     }
 }
 
