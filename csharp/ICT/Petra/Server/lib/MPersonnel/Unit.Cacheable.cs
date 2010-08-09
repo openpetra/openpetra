@@ -159,6 +159,24 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableUnitTablesEnum.PositionList:
+                        {
+                            DataTable TmpTable = PtPositionAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.JobAssignmentTypeList:
+                        {
+                            DataTable TmpTable = PtAssignmentTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.LeavingCodeList:
+                        {
+                            DataTable TmpTable = PtLeavingCodeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
 
                         default:
                             // Unknown Standard Cacheable DataTable
@@ -183,6 +201,108 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
             // Return the DataTable from the Cache only if the Hash is not the same
             return ResultingCachedDataTable(TableName, AHashCode, out AType);
+        }
+
+        /// <summary>
+        /// Saves a specific Cachable DataTable. The whole DataTable needs to be submitted,
+        /// not just changes to it!
+        /// </summary>
+        /// <remarks>
+        /// Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its saved successfully to the DB, which in turn tells all other Clients
+        /// that they need to reload this Cacheable DataTable the next time something in the
+        /// Client accesses it.
+        /// </remarks>
+        /// <param name="ACacheableTable">Name of the Cacheable DataTable with changes.</param>
+        /// <param name="ASubmitTable">Cacheable DataTable with changes. The whole DataTable needs
+        /// to be submitted, not just changes to it!</param>
+        /// <param name="AVerificationResult">Will be filled with any
+        /// VerificationResults if errors occur.</param>
+        /// <returns>Status of the operation.</returns>
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableUnitTablesEnum ACacheableTable,
+            ref TTypedDataTable ASubmitTable,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            string CacheableDTName = Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable);
+
+            // Console.WriteLine("Entering Unit.SaveChangedStandardCacheableTable...");
+            AVerificationResult = null;
+
+            // TODO: check write permissions
+
+            if (ASubmitTable != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                try
+                {
+                    switch (ACacheableTable)
+                    {
+                        case TCacheableUnitTablesEnum.PositionList:
+                            if (PtPositionAccess.SubmitChanges((PtPositionTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableUnitTablesEnum.JobAssignmentTypeList:
+                            if (PtAssignmentTypeAccess.SubmitChanges((PtAssignmentTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableUnitTablesEnum.LeavingCodeList:
+                            if (PtLeavingCodeAccess.SubmitChanges((PtLeavingCodeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        default:
+
+                            throw new Exception(
+                            "TPersonnelCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(
+                        "TPersonnelCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                        CacheableDTName +
+                        "':  Exception " + e.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            /*
+            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            /// the next time something in the Client accesses it.
+             */
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            {
+                Type TmpType;
+                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+            }
+
+            return SubmissionResult;
         }
 
         private DataTable GetCampaignListTable(TDBTransaction AReadTransaction, string ATableName)

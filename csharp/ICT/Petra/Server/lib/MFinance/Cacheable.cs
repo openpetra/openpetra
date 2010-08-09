@@ -147,6 +147,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
                     switch(ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.AnalysisTypeList:
+                        {
+                            DataTable TmpTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
                         {
                             DataTable TmpTable = ABudgetTypeAccess.LoadAll(ReadTransaction);
@@ -156,6 +162,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.CostCentreTypesList:
                         {
                             DataTable TmpTable = ACostCentreTypesAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.MethodOfGivingList:
+                        {
+                            DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -377,6 +389,13 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.AnalysisTypeList:
+                            if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
                             if (ABudgetTypeAccess.SubmitChanges((ABudgetTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
@@ -386,6 +405,13 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             break;
                         case TCacheableFinanceTablesEnum.CostCentreTypesList:
                             if (ACostCentreTypesAccess.SubmitChanges((ACostCentreTypesTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.MethodOfGivingList:
+                            if (AMethodOfGivingAccess.SubmitChanges((AMethodOfGivingTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

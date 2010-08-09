@@ -146,9 +146,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheablePersonTablesEnum.AbilityAreaList:
+                        case TCacheablePersonTablesEnum.CommitmentStatusList:
                         {
-                            DataTable TmpTable = PtAbilityAreaAccess.LoadAll(ReadTransaction);
+                            DataTable TmpTable = PmCommitmentStatusAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -158,9 +158,117 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheablePersonTablesEnum.CommitmentStatusList:
+                        case TCacheablePersonTablesEnum.DocumentTypeCategoryList:
                         {
-                            DataTable TmpTable = PmCommitmentStatusAccess.LoadAll(ReadTransaction);
+                            DataTable TmpTable = PmDocumentCategoryAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.AbilityAreaList:
+                        {
+                            DataTable TmpTable = PtAbilityAreaAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.AbilityLevelList:
+                        {
+                            DataTable TmpTable = PtAbilityLevelAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.ApplicantStatusList:
+                        {
+                            DataTable TmpTable = PtApplicantStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
+                        {
+                            DataTable TmpTable = PtArrivalPointAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.EventRoleList:
+                        {
+                            DataTable TmpTable = PtCongressCodeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.ContactList:
+                        {
+                            DataTable TmpTable = PtContactAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.DriverStatusList:
+                        {
+                            DataTable TmpTable = PtDriverStatusAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.LanguageLevelList:
+                        {
+                            DataTable TmpTable = PtLanguageLevelAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.LeadershipRatingList:
+                        {
+                            DataTable TmpTable = PtLeadershipRatingAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.PartyTypeList:
+                        {
+                            DataTable TmpTable = PtPartyTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.PassportTypeList:
+                        {
+                            DataTable TmpTable = PtPassportTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.TransportTypeList:
+                        {
+                            DataTable TmpTable = PtTravelTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.QualificationAreaList:
+                        {
+                            DataTable TmpTable = PtQualificationAreaAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.QualificationLevelList:
+                        {
+                            DataTable TmpTable = PtQualificationLevelAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.ValuableItemList:
+                        {
+                            DataTable TmpTable = PtValuableItemAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.VisionAreaList:
+                        {
+                            DataTable TmpTable = PtVisionAreaAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.VisionLevelList:
+                        {
+                            DataTable TmpTable = PtVisionLevelAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.XyzTbdPreferenceLevelList:
+                        {
+                            DataTable TmpTable = PtXyzTbdPreferenceLevelAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -229,8 +337,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheablePersonTablesEnum.AbilityAreaList:
-                            if (PtAbilityAreaAccess.SubmitChanges((PtAbilityAreaTable)ASubmitTable, SubmitChangesTransaction,
+                        case TCacheablePersonTablesEnum.CommitmentStatusList:
+                            if (PmCommitmentStatusAccess.SubmitChanges((PmCommitmentStatusTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
@@ -243,8 +351,134 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
                             break;
-                        case TCacheablePersonTablesEnum.CommitmentStatusList:
-                            if (PmCommitmentStatusAccess.SubmitChanges((PmCommitmentStatusTable)ASubmitTable, SubmitChangesTransaction,
+                        case TCacheablePersonTablesEnum.DocumentTypeCategoryList:
+                            if (PmDocumentCategoryAccess.SubmitChanges((PmDocumentCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.AbilityAreaList:
+                            if (PtAbilityAreaAccess.SubmitChanges((PtAbilityAreaTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.AbilityLevelList:
+                            if (PtAbilityLevelAccess.SubmitChanges((PtAbilityLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.ApplicantStatusList:
+                            if (PtApplicantStatusAccess.SubmitChanges((PtApplicantStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
+                            if (PtArrivalPointAccess.SubmitChanges((PtArrivalPointTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.EventRoleList:
+                            if (PtCongressCodeAccess.SubmitChanges((PtCongressCodeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.ContactList:
+                            if (PtContactAccess.SubmitChanges((PtContactTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.DriverStatusList:
+                            if (PtDriverStatusAccess.SubmitChanges((PtDriverStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.LanguageLevelList:
+                            if (PtLanguageLevelAccess.SubmitChanges((PtLanguageLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.LeadershipRatingList:
+                            if (PtLeadershipRatingAccess.SubmitChanges((PtLeadershipRatingTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.PartyTypeList:
+                            if (PtPartyTypeAccess.SubmitChanges((PtPartyTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.PassportTypeList:
+                            if (PtPassportTypeAccess.SubmitChanges((PtPassportTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.TransportTypeList:
+                            if (PtTravelTypeAccess.SubmitChanges((PtTravelTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.QualificationAreaList:
+                            if (PtQualificationAreaAccess.SubmitChanges((PtQualificationAreaTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.QualificationLevelList:
+                            if (PtQualificationLevelAccess.SubmitChanges((PtQualificationLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.ValuableItemList:
+                            if (PtValuableItemAccess.SubmitChanges((PtValuableItemTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.VisionAreaList:
+                            if (PtVisionAreaAccess.SubmitChanges((PtVisionAreaTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.VisionLevelList:
+                            if (PtVisionLevelAccess.SubmitChanges((PtVisionLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.XyzTbdPreferenceLevelList:
+                            if (PtXyzTbdPreferenceLevelAccess.SubmitChanges((PtXyzTbdPreferenceLevelTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

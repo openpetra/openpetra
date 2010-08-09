@@ -35,6 +35,11 @@ namespace Ict.Petra.Shared.MFinance
     public enum TCacheableFinanceTablesEnum
     {
         /// <summary>
+        /// Contains types of analysis attributes
+        /// </summary>
+        AnalysisTypeList,
+
+        /// <summary>
         /// Used for initial set up of budgets, for how to calculate amounts for each period.  Some possible types are adhoc,same,percentage of annual.
         /// </summary>
         BudgetTypeList,
@@ -43,6 +48,11 @@ namespace Ict.Petra.Shared.MFinance
         /// Stores standard and user-defined cost centre types.  For example: Foreign, Local.
         /// </summary>
         CostCentreTypesList,
+
+        /// <summary>
+        /// Special payment programs the donor may give money through. (ie, Gift Aid in the UK)
+        /// </summary>
+        MethodOfGivingList,
 
         /// <summary>
         /// list of motivations (for gifts)
