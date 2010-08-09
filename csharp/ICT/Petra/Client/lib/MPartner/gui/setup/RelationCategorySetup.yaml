@@ -38,7 +38,7 @@ RootNode:
         txtDetailCode: {Label=Relationship Category Code}
         txtDetailDescription: {Width=207}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

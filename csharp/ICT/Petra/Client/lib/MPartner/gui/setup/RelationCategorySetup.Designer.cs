@@ -235,6 +235,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             //
             this.dtpDetailUnassignableDate.Location = new System.Drawing.Point(2,2);
             this.dtpDetailUnassignableDate.Name = "dtpDetailUnassignableDate";
+            this.dtpDetailUnassignableDate.Enabled = false;
             this.dtpDetailUnassignableDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailUnassignableDate
