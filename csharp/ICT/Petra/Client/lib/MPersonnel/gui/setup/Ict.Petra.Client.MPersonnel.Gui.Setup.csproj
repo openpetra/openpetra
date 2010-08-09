@@ -71,7 +71,7 @@
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataSets">
-      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
