@@ -192,17 +192,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.ABatch.DefaultView.RowFilter = "";
             }
-            else if (rbtEditable.Checked)
+            else if (rbtEditing.Checked)
             {
                 FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
-            else if (rbtPosted.Checked)
+            else if (rbtPosting.Checked)
             {
-                FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                FMainDS.ABatch.DefaultView.RowFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
                     ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED);
+                    MFinanceConstants.BATCH_UNPOSTED,
+                    ABatchTable.GetBatchCreditTotalDBName(),
+                    ABatchTable.GetBatchDebitTotalDBName(),
+                    ABatchTable.GetBatchControlTotalDBName());
             }
         }
 

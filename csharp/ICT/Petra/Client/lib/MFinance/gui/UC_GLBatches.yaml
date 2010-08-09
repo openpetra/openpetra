@@ -20,10 +20,10 @@ RootNode:
             Controls: [pnlLedgerInfo, rgrShowBatches]
             Dock: Top
         rgrShowBatches: 
-            Label: Show batches
+            Label: Show batches available for
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
-            OptionalValues: [Posted, =Editable, All]
+            OptionalValues: [Posting, =Editing, All]
             OnChange: ChangeBatchFilter
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
