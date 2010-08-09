@@ -69,6 +69,12 @@ namespace Ict.Tools.CodeGeneration
                     }
                 }
 
+                if (currentlyInManualCodeBlock)
+                {
+                    // avoid mixing generated code and manual code
+                    hash = "MANUALCODE" + hash;
+                }
+
                 if (hash.Length > 16)
                 {
                     hash = System.BitConverter.ToString(hasher.ComputeHash(Encoding.Default.GetBytes(hash)));
@@ -332,6 +338,9 @@ namespace Ict.Tools.CodeGeneration
 
             if (changed)
             {
+                // for debugging merge bugs: store the original and the generated file:
+                // File.WriteAllLines(ADestinationFilename + ".orig", sourceLines);
+                // File.WriteAllLines(ADestinationFilename + ".generated", ANewLines);
                 File.WriteAllLines(ADestinationFilename + ".new", mergedText);
                 TTextFile.UpdateFile(ADestinationFilename);
             }
