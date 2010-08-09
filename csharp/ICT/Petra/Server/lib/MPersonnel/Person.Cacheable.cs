@@ -146,6 +146,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
 
                     switch(ACacheableTable)
                     {
+                        case TCacheablePersonTablesEnum.AbilityAreaList:
+                        {
+                            DataTable TmpTable = PtAbilityAreaAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheablePersonTablesEnum.DocumentTypeList:
                         {
                             DataTable TmpTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
@@ -223,6 +229,13 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheablePersonTablesEnum.AbilityAreaList:
+                            if (PtAbilityAreaAccess.SubmitChanges((PtAbilityAreaTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
                         case TCacheablePersonTablesEnum.DocumentTypeList:
                             if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))

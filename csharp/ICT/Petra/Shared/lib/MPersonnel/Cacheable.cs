@@ -50,6 +50,11 @@ namespace Ict.Petra.Shared.MPersonnel
     public enum TCacheablePersonTablesEnum
     {
         /// <summary>
+        /// Contains the codes that indicate the areas of ability for a Person
+        /// </summary>
+        AbilityAreaList,
+
+        /// <summary>
         /// This table contains the codes that indicate the types of documents for a person.
         /// </summary>
         DocumentTypeList,

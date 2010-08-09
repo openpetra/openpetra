@@ -61,6 +61,7 @@ CachedTables:
                 ConferenceList: {Comment=List of all conferences}
         Person:
             DatabaseTables:
+                PtAbilityArea: {Comment=Contains the codes that indicate the areas of ability for a Person}
                 PmDocumentType:
                 PmCommitmentStatus:
     Finance:
