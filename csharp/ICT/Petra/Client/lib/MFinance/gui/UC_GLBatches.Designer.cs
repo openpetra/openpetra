@@ -75,8 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber = new System.Windows.Forms.Label();
             this.rgrShowBatches = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.rbtPosting = new System.Windows.Forms.RadioButton();
-            this.rbtEditing = new System.Windows.Forms.RadioButton();
+            this.rbtPosted = new System.Windows.Forms.RadioButton();
+            this.rbtEditable = new System.Windows.Forms.RadioButton();
             this.rbtAll = new System.Windows.Forms.RadioButton();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
@@ -192,22 +192,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.AutoSize = true;
             this.rgrShowBatches.Controls.Add(this.tableLayoutPanel3);
             //
-            // rbtPosting
+            // rbtPosted
             //
-            this.rbtPosting.Location = new System.Drawing.Point(2,2);
-            this.rbtPosting.Name = "rbtPosting";
-            this.rbtPosting.AutoSize = true;
-            this.rbtPosting.Tag = "SuppressChangeDetection";
-            this.rbtPosting.Text = "Posting";
-            this.rbtPosting.Checked = true;
+            this.rbtPosted.Location = new System.Drawing.Point(2,2);
+            this.rbtPosted.Name = "rbtPosted";
+            this.rbtPosted.AutoSize = true;
+            this.rbtPosted.Tag = "SuppressChangeDetection";
+            this.rbtPosted.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
+            this.rbtPosted.Text = "Posted";
             //
-            // rbtEditing
+            // rbtEditable
             //
-            this.rbtEditing.Location = new System.Drawing.Point(2,2);
-            this.rbtEditing.Name = "rbtEditing";
-            this.rbtEditing.AutoSize = true;
-            this.rbtEditing.Tag = "SuppressChangeDetection";
-            this.rbtEditing.Text = "Editing";
+            this.rbtEditable.Location = new System.Drawing.Point(2,2);
+            this.rbtEditable.Name = "rbtEditable";
+            this.rbtEditable.AutoSize = true;
+            this.rbtEditable.Tag = "SuppressChangeDetection";
+            this.rbtEditable.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
+            this.rbtEditable.Text = "Editable";
+            this.rbtEditable.Checked = true;
             //
             // rbtAll
             //
@@ -215,6 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtAll.Name = "rbtAll";
             this.rbtAll.AutoSize = true;
             this.rbtAll.Tag = "SuppressChangeDetection";
+            this.rbtAll.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtAll.Text = "All";
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -222,10 +225,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtPosting, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtEditing, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtPosted, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtEditable, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.rbtAll, 2, 0);
-            this.rgrShowBatches.Text = "Show batches available for";
+            this.rgrShowBatches.Text = "Show batches";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
@@ -477,8 +480,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblLedgerNumber;
         private System.Windows.Forms.GroupBox rgrShowBatches;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.RadioButton rbtPosting;
-        private System.Windows.Forms.RadioButton rbtEditing;
+        private System.Windows.Forms.RadioButton rbtPosted;
+        private System.Windows.Forms.RadioButton rbtEditable;
         private System.Windows.Forms.RadioButton rbtAll;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

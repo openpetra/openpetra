@@ -31,6 +31,7 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -52,6 +53,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // TODO: more criteria: state of batch, period, etc
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(ALedgerNumber));
+            SetBatchFilter();
 
             ShowData();
 
@@ -171,6 +173,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // TODO: refresh the grid, to reflect that the batch has been posted
                 LoadBatches(FLedgerNumber);
+            }
+        }
+
+        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
+        {
+            SetBatchFilter();
+        }
+
+        private void SetBatchFilter()
+        {
+            if ((FMainDS == null) || (FMainDS.ABatch == null))
+            {
+                return;
+            }
+
+            if (rbtAll.Checked)
+            {
+                FMainDS.ABatch.DefaultView.RowFilter = "";
+            }
+            else if (rbtEditable.Checked)
+            {
+                FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    ABatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if (rbtPosted.Checked)
+            {
+                FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    ABatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_POSTED);
             }
         }
 

@@ -64,10 +64,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
-      this.rbtPosting.Text = Catalog.GetString("Posting");
-      this.rbtEditing.Text = Catalog.GetString("Editing");
+      this.rbtPosted.Text = Catalog.GetString("Posted");
+      this.rbtEditable.Text = Catalog.GetString("Editable");
       this.rbtAll.Text = Catalog.GetString("All");
-      this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
+      this.rgrShowBatches.Text = Catalog.GetString("Show batches");
       this.btnNew.Text = Catalog.GetString("&Add");
       this.btnDelete.Text = Catalog.GetString("&Cancel");
       this.btnPostBatch.Text = Catalog.GetString("&Post Batch");
