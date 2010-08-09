@@ -138,6 +138,7 @@ namespace Tests.CodeGeneration
                 "diff of HelloWorld and HelloWOrld");
 
             Assert.AreEqual(TestHelperMerge("orig.txt", "rewrite.txt", "result.txt"), true, "merging orig.txt and rewrite.txt");
+            Assert.AreEqual(TestHelperMerge("orig2.txt", "rewrite2.txt", "result2.txt"), true, "merging orig2.txt and rewrite2.txt");
         }
     }
 }
