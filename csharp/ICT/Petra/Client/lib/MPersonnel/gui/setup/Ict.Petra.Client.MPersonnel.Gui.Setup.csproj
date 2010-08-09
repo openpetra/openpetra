@@ -1,11 +1,11 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{34FF59D0-55BE-408F-9849-7177F88C08E5}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ict.Petra.Client.MFinance.Gui.Setup</RootNamespace>
-    <AssemblyName>Ict.Petra.Client.MFinance.Gui.Setup</AssemblyName>
+    <RootNamespace>Ict.Petra.Client.MPersonnel.Gui.Setup</RootNamespace>
+    <AssemblyName>Ict.Petra.Client.MPersonnel.Gui.Setup</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\christiank\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
@@ -93,6 +93,34 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbilityAreaSetup.cs" />
+    <Compile Include="AbilityAreaSetup.Designer.cs">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AbilityAreaSetup.ManualCode.cs">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
+    <EmbeddedResource Include="AbilityAreaSetup.resx">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
+      <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
+      <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -164,7 +164,7 @@ OpenPetra:
                 # Sub Module
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
-
+                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}   
                     Application-related:
                     
             Reports:
