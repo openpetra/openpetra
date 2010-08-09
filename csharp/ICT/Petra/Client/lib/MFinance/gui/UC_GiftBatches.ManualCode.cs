@@ -208,13 +208,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (rbtEditing.Checked)
             {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0}={1}",
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
             else if (rbtPosted.Checked)
             {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0}={1}",
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_POSTED);
             }

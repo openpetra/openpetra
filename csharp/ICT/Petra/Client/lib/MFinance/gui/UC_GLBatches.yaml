@@ -23,7 +23,8 @@ RootNode:
             Label: Show batches available for
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
-            OptionalValues: [Posting, Editing, All]
+            OptionalValues: [Posting, =Editing, All]
+            OnChange: ChangeBatchFilter
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}

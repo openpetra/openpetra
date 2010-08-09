@@ -198,8 +198,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtPosting.Name = "rbtPosting";
             this.rbtPosting.AutoSize = true;
             this.rbtPosting.Tag = "SuppressChangeDetection";
+            this.rbtPosting.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtPosting.Text = "Posting";
-            this.rbtPosting.Checked = true;
             //
             // rbtEditing
             //
@@ -207,7 +207,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtEditing.Name = "rbtEditing";
             this.rbtEditing.AutoSize = true;
             this.rbtEditing.Tag = "SuppressChangeDetection";
+            this.rbtEditing.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtEditing.Text = "Editing";
+            this.rbtEditing.Checked = true;
             //
             // rbtAll
             //
@@ -215,6 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.rbtAll.Name = "rbtAll";
             this.rbtAll.AutoSize = true;
             this.rbtAll.Tag = "SuppressChangeDetection";
+            this.rbtAll.CheckedChanged += new System.EventHandler(this.ChangeBatchFilter);
             this.rbtAll.Text = "All";
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
