@@ -80,10 +80,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.lblDetailAcquisitionDescription = new System.Windows.Forms.Label();
             this.chkDetailValidAcquisition = new System.Windows.Forms.CheckBox();
             this.lblDetailValidAcquisition = new System.Windows.Forms.Label();
-            this.chkDetailDeletable = new System.Windows.Forms.CheckBox();
-            this.lblDetailDeletable = new System.Windows.Forms.Label();
             this.chkDetailRecruitingEffort = new System.Windows.Forms.CheckBox();
             this.lblDetailRecruitingEffort = new System.Windows.Forms.Label();
+            this.chkDetailDeletable = new System.Windows.Forms.CheckBox();
+            this.lblDetailDeletable = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -230,24 +230,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.lblDetailValidAcquisition.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailValidAcquisition.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // chkDetailDeletable
-            //
-            this.chkDetailDeletable.Location = new System.Drawing.Point(2,2);
-            this.chkDetailDeletable.Name = "chkDetailDeletable";
-            this.chkDetailDeletable.Size = new System.Drawing.Size(30, 28);
-            this.chkDetailDeletable.Text = "";
-            this.chkDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            //
-            // lblDetailDeletable
-            //
-            this.lblDetailDeletable.Location = new System.Drawing.Point(2,2);
-            this.lblDetailDeletable.Name = "lblDetailDeletable";
-            this.lblDetailDeletable.AutoSize = true;
-            this.lblDetailDeletable.Text = "Deletable:";
-            this.lblDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailDeletable.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailDeletable.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
             // chkDetailRecruitingEffort
             //
             this.chkDetailRecruitingEffort.Location = new System.Drawing.Point(2,2);
@@ -265,6 +247,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.lblDetailRecruitingEffort.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailRecruitingEffort.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailRecruitingEffort.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // chkDetailDeletable
+            //
+            this.chkDetailDeletable.Location = new System.Drawing.Point(2,2);
+            this.chkDetailDeletable.Name = "chkDetailDeletable";
+            this.chkDetailDeletable.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailDeletable.Text = "";
+            this.chkDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblDetailDeletable
+            //
+            this.lblDetailDeletable.Location = new System.Drawing.Point(2,2);
+            this.lblDetailDeletable.Name = "lblDetailDeletable";
+            this.lblDetailDeletable.AutoSize = true;
+            this.lblDetailDeletable.Text = "Deletable:";
+            this.lblDetailDeletable.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailDeletable.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailDeletable.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -276,14 +276,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailAcquisitionCode, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailValidAcquisition, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailRecruitingEffort, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletable, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailAcquisitionCode, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailValidAcquisition, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailRecruitingEffort, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailAcquisitionDescription, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletable, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailRecruitingEffort, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailAcquisitionDescription, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailRecruitingEffort, 3, 1);
             //
             // tbbSave
             //
@@ -510,10 +510,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private System.Windows.Forms.Label lblDetailAcquisitionDescription;
         private System.Windows.Forms.CheckBox chkDetailValidAcquisition;
         private System.Windows.Forms.Label lblDetailValidAcquisition;
-        private System.Windows.Forms.CheckBox chkDetailDeletable;
-        private System.Windows.Forms.Label lblDetailDeletable;
         private System.Windows.Forms.CheckBox chkDetailRecruitingEffort;
         private System.Windows.Forms.Label lblDetailRecruitingEffort;
+        private System.Windows.Forms.CheckBox chkDetailDeletable;
+        private System.Windows.Forms.Label lblDetailDeletable;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;
@@ -539,3 +539,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+

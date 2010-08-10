@@ -30,7 +30,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailLanguageCode, txtDetailLanguageDescription]
-                Row1: [chkDetailCongressLanguage, chkDetailDeletable]
+                Row1: [chkDetailCongressLanguage]
+                Row2: [chkDetailDeletable]
         txtDetailLanguageCode: {Label=Language Code}
         txtDetailLanguageDescription: {Width=145}
         chkDetailCongressLanguage: 

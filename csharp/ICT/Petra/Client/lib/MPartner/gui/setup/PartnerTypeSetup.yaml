@@ -30,7 +30,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailTypeCode, txtDetailTypeDescription]
-                Row1: [chkDetailValidType, chkDetailTypeDeletable]
+                Row1: [chkDetailValidType]
+                Row2: [chkDetailTypeDeletable]
         txtDetailTypeCode: {Label=Type Code}
         txtDetailTypeDescription: {Label=Description, Width=255}
         chkDetailValidType: {Label=Assignable}

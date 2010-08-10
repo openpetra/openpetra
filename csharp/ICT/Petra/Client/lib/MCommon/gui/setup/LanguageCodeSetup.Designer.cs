@@ -250,17 +250,18 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageCode, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailCongressLanguage, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletable, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageCode, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailCongressLanguage, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageDescription, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletable, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageDescription, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletable, 3, 1);
             //
             // tbbSave
             //
@@ -514,3 +515,4 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+

@@ -30,7 +30,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailOccupationCode, txtDetailOccupationDescription]
-                Row1: [chkDetailValidOccupation, chkDetailDeletable]
+                Row1: [chkDetailValidOccupation]
+                Row2: [chkDetailDeletable]
         txtDetailOccupationCode: {Label=Occupation Code}
         txtDetailOccupationDescription: {Width=155}
         chkDetailValidOccupation: {Label=Assignable}

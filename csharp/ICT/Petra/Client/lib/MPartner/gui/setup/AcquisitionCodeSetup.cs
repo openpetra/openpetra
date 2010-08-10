@@ -72,8 +72,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.lblDetailAcquisitionCode.Text = Catalog.GetString("Acquisition Code:");
       this.lblDetailAcquisitionDescription.Text = Catalog.GetString("Acquisition Description:");
       this.lblDetailValidAcquisition.Text = Catalog.GetString("Assignable:");
-      this.lblDetailDeletable.Text = Catalog.GetString("Deletable:");
       this.lblDetailRecruitingEffort.Text = Catalog.GetString("Recruiting Mission:");
+      this.lblDetailDeletable.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Acquisition Code");
@@ -102,8 +102,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailAcquisitionCode, Catalog.GetString("How has this Partner entered this system? By which Dept?"));
       FPetraUtilsObject.SetStatusBarText(txtDetailAcquisitionDescription, Catalog.GetString("Enter the code description of how the partner was acquired"));
       FPetraUtilsObject.SetStatusBarText(chkDetailValidAcquisition, Catalog.GetString("Select if this Acquisition Code is still in Use"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailDeletable, Catalog.GetString("This code is Required for System operation by other code"));
       FPetraUtilsObject.SetStatusBarText(chkDetailRecruitingEffort, Catalog.GetString("Indicates if acquisition code represents a recruiting effort."));
+      FPetraUtilsObject.SetStatusBarText(chkDetailDeletable, Catalog.GetString("This code is Required for System operation by other code"));
 
       /*
        * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
@@ -257,7 +257,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 chkDetailValidAcquisition.Checked = ARow.ValidAcquisition;
             }
-            chkDetailDeletable.Checked = ARow.Deletable;
             if (ARow.IsRecruitingEffortNull())
             {
                 chkDetailRecruitingEffort.Checked = false;
@@ -266,6 +265,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 chkDetailRecruitingEffort.Checked = ARow.RecruitingEffort;
             }
+            chkDetailDeletable.Checked = ARow.Deletable;
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -292,8 +292,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ARow.AcquisitionCode = txtDetailAcquisitionCode.Text;
             ARow.AcquisitionDescription = txtDetailAcquisitionDescription.Text;
             ARow.ValidAcquisition = chkDetailValidAcquisition.Checked;
-            ARow.Deletable = chkDetailDeletable.Checked;
             ARow.RecruitingEffort = chkDetailRecruitingEffort.Checked;
+            ARow.Deletable = chkDetailDeletable.Checked;
         }
     }
 
@@ -522,3 +522,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 #endregion
   }
 }
+

@@ -30,7 +30,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailDenominationCode, txtDetailDenominationName]
-                Row1: [chkDetailValidDenomination, chkDetailDeletable]
+                Row1: [chkDetailValidDenomination]
+                Row2: [chkDetailDeletable]
         txtDetailDenominationCode: {Label=Denomination Code}
         txtDetailDenominationName: {Width=155}
         chkDetailValidDenomination: {Label=Assignable}

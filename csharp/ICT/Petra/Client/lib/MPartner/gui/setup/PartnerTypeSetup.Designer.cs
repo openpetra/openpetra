@@ -250,17 +250,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeCode, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailValidType, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDeletable, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailTypeCode, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailValidType, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailTypeDeletable, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDescription, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailTypeDeletable, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailTypeDescription, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailTypeDeletable, 3, 1);
             //
             // tbbSave
             //
@@ -514,3 +515,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+
