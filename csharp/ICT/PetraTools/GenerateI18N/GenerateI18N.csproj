@@ -60,11 +60,15 @@
       <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
       <Name>Ict.Common.IO</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CodeGeneration\GenericFormsGenerator\Ict.Tools.CodeGeneration.GenericFormsGenerator.csproj">
+      <Project>{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}</Project>
+      <Name>Ict.Tools.CodeGeneration.GenericFormsGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CodeGeneration\Ict.Tools.CodeGeneration.csproj">
       <Project>{B153089B-B8BF-421C-A6F4-BA672885720A}</Project>
       <Name>Ict.Tools.CodeGeneration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.WinformsGenerator.csproj">
+    <ProjectReference Include="..\CodeGeneration\WinformsGenerator\Ict.Tools.CodeGeneration.WinformsGenerator.csproj">
       <Project>{4034693D-4D16-4123-9FCC-C990448E63F3}</Project>
       <Name>Ict.Tools.CodeGeneration.WinformsGenerator</Name>
     </ProjectReference>

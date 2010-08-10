@@ -27,11 +27,11 @@ namespace Ict.Tools.CodeGeneration
 {
     public interface IControlGenerator
     {
-        void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode);
-        void GenerateDeclaration(IFormWriter writer, TControlDef ctrl);
-        void SetControlProperties(IFormWriter writer, TControlDef container);
-        void OnChangeDataType(IFormWriter writer, XmlNode curNode);
-        void OnChangeDataType(IFormWriter writer, XmlNode curNode, string controlName);
+        void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode);
+        void GenerateDeclaration(TFormWriter writer, TControlDef ctrl);
+        void SetControlProperties(TFormWriter writer, TControlDef container);
+        void OnChangeDataType(TFormWriter writer, XmlNode curNode);
+        void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName);
         bool ControlFitsNode(XmlNode curNode);
 
         /// <summary>
@@ -62,40 +62,6 @@ namespace Ict.Tools.CodeGeneration
         bool AddControlToContainer
         {
             set;
-            get;
-        }
-    }
-
-    public interface IFormWriter
-    {
-        void CreateCode(TCodeStorage AStorage, string AXamlFilename, string ATemplate);
-        void CreateResourceFile(string AResourceFile, string AResourceTemplate);
-        bool WriteFile(string ADestinationFile, string ATemplate);
-        bool WriteFile(string ADestinationFile);
-        void SetControlProperty(string AControlName, string APropertyName, string APropertyValue);
-        void SetControlProperty(TControlDef ACtrl, string APropertyName);
-        void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode);
-        IControlGenerator FindControlGenerator(TControlDef ACtrlDef);
-        void CallControlFunction(string AControlName, string AFunctionCall);
-        void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod);
-        void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation);
-        void AddContainer(string AControlName);
-        void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon);
-        void InitialiseDataSource(XmlNode curNode, string AControlName);
-
-
-        TCodeStorage CodeStorage
-        {
-            get;
-        }
-
-        ProcessTemplate Template
-        {
-            get;
-        }
-
-        bool IsUserControlTemplate
-        {
             get;
         }
     }

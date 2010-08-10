@@ -63,7 +63,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return "lbl" + controlName.Substring(3);
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             string labelText = "";
@@ -97,7 +97,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -117,7 +117,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FAutoSize = true;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string CntrlNameWithoutPrefix = ctrl.controlName.Substring(3);
             string CntrlVaribleNameWithoutPrefix;
@@ -301,7 +301,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
 /*
- *  public void CreateCode(IFormWriter writer, TControlDef ctrl)
+ *  public void CreateCode(TFormsWriter writer, TControlDef ctrl)
  *  {
  *    // add page control itself
  *    GenerateDeclaration(writer, ctrl);
@@ -342,7 +342,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FChangeEventName = "CheckedChanged";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CheckForOtherControls(ctrl);
 
@@ -392,7 +392,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
         }
@@ -421,7 +421,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -457,7 +457,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
@@ -548,7 +548,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".GetSelected" + AFieldTypeDotNet + "()";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -594,7 +594,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             this.FChangeEventName = "CheckedChanged";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CheckForOtherControls(ctrl);
 
@@ -668,7 +668,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FDefaultHeight = 100;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "FixedRows", "0");
@@ -692,12 +692,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
         }
 
-        public override StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
+        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             // add the toolbar and the print preview control
             TControlDef ctrl = writer.CodeStorage.FindOrCreateControl(curNode.Name, null);
@@ -811,7 +811,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
@@ -855,7 +855,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        protected void CreateCode(IFormWriter writer, TControlDef ATextControl)
+        protected void CreateCode(TFormWriter writer, TControlDef ATextControl)
         {
             writer.Template.AddToCodelet("ASSIGNFONTATTRIBUTES",
                 "this." + ATextControl.controlName + ".Font = TAppSettingsManager.GetDefaultBoldFont();" + Environment.NewLine);
@@ -890,7 +890,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".Value";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -934,7 +934,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        private void AddColumnToGrid(IFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
+        private void AddColumnToGrid(TFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
             string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
@@ -959,7 +959,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AColumnName + ");" + Environment.NewLine);
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -1142,7 +1142,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -1402,7 +1402,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
             Int32 buttonWidth = 40;
@@ -1632,7 +1632,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
 
@@ -1670,7 +1670,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate snippetDynamicTabPage = null;
             ProcessTemplate snippetTabPageSelectionChanged = null;
@@ -1752,7 +1752,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        protected void CreateCode(IFormWriter writer, TControlDef ATabControl)
+        protected void CreateCode(TFormWriter writer, TControlDef ATabControl)
         {
             ArrayList tabPages = new ArrayList();
 
@@ -1801,7 +1801,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public virtual StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
+        public virtual StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection controlNamesCollection;
             XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
@@ -1859,7 +1859,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return controlNamesCollection;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
             {
@@ -2001,7 +2001,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
+        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection optionalValues =
                 TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "OptionalValues"));
@@ -2099,7 +2099,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override StringCollection FindContainedControls(IFormWriter writer, XmlNode curNode)
+        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection Controls =
                 TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
@@ -2148,7 +2148,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             writer.AddContainer(ctrl.controlName + ".Panel1");
             writer.AddContainer(ctrl.controlName + ".Panel2");
@@ -2212,7 +2212,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = base.FPrefix + ctrl.controlName.Substring(3);
 
@@ -2280,7 +2280,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FDocking = "Bottom";
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = ctrl.controlName;
 
@@ -2296,7 +2296,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FRequiresChildren = true;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = ctrl.controlName;
 
@@ -2316,7 +2316,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
             TControlDef hostedCtrl = FCodeStorage.FindOrCreateControl(hostedControlName, ctrl.controlName);
@@ -2342,7 +2342,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl") + ");" + Environment.NewLine);
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // first create the hosted control
             string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
@@ -2381,7 +2381,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -2413,7 +2413,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -2465,7 +2465,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = ctrl.controlName;
 
@@ -2494,7 +2494,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 

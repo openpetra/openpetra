@@ -52,13 +52,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return "tableLayoutPanel" + countTableLayoutPanel.ToString();
         }
 
-        public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);
             writer.AddContainer(ctrl.controlName);
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ctrl.SetAttribute("Dock", "Fill");
             base.SetControlProperties(writer, ctrl);
@@ -110,7 +110,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// optimise the table layout, and write it;
         /// Mono has some problems with columnspan and autosize columns (https://bugzilla.novell.com/show_bug.cgi?id=531591)
         /// </summary>
-        public void WriteTableLayout(IFormWriter writer, string ctrlname)
+        public void WriteTableLayout(TFormWriter writer, string ctrlname)
         {
             List <int>SkippedColumns = new List <int>();
 
@@ -356,7 +356,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="ANewWidth"></param>
         /// <param name="ANewHeight"></param>
         /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
-        public string CreateLayout(IFormWriter writer, string parentContainerName, StringCollection controls, Int32 ANewWidth, Int32 ANewHeight)
+        public string CreateLayout(TFormWriter writer, string parentContainerName, StringCollection controls, Int32 ANewWidth, Int32 ANewHeight)
         {
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
@@ -509,7 +509,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FTlpName;
         }
 
-        public void CreateCode(IFormWriter writer, TControlDef ctrl)
+        public void CreateCode(TFormWriter writer, TControlDef ctrl)
         {
             XmlNode curNode = ctrl.xmlNode;
             IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
