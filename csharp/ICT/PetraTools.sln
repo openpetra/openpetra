@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateGTK", "PetraTools\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWinForms", "PetraTools\GenerateWinForms\GenerateWinForms.csproj", "{7E7116B0-32F1-4EF3-AFC9-80707F88EB62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.WinformsGenerator", "PetraTools\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.WinformsGenerator.csproj", "{4034693D-4D16-4123-9FCC-C990448E63F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.WinformsGenerator", "PetraTools\CodeGeneration\WinformsGenerator\Ict.Tools.CodeGeneration.WinformsGenerator.csproj", "{4034693D-4D16-4123-9FCC-C990448E63F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixProjectFiles", "PetraTools\FixProjectFiles\FixProjectFiles.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}"
 EndProject
