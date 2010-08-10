@@ -112,6 +112,19 @@ namespace Ict.Tools.CodeGeneration
             AvailableControlGenerators.Add(AControlGeneratorType);
         }
 
+        System.Type FBaseControlGeneratorType = null;
+
+        /// <summary>
+        /// this is the type of TControlGenerator. FindControlGenerator uses this base type to generate a generic control generator
+        /// </summary>
+        public System.Type BaseControlGeneratorType
+        {
+            set
+            {
+                FBaseControlGeneratorType = value;
+            }
+        }
+
         /// <summary>
         /// get the correct control generator for the control, depending on the prefix of the name, and other parameters
         /// </summary>
@@ -146,12 +159,14 @@ namespace Ict.Tools.CodeGeneration
             if ((fittingGenerator == null)
                 && (!ACtrlDef.controlName.StartsWith("Empty")))
             {
-/* TODO???
- *              if (TYml2Xml.HasAttribute(ACtrlDef.xmlNode, "Type"))
- *              {
- *                  return new TControlGenerator(ACtrlDef.xmlNode.Name.Substring(0, 3), TYml2Xml.GetAttribute(ACtrlDef.xmlNode, "Type"));
- *              }
- */
+                if (TYml2Xml.HasAttribute(ACtrlDef.xmlNode, "Type") && (FBaseControlGeneratorType != null))
+                {
+                    return (IControlGenerator)Activator.CreateInstance(FBaseControlGeneratorType, new Object[] { ACtrlDef.xmlNode.Name.Substring(0,
+                                                                                                                     3),
+                                                                                                                 TYml2Xml.GetAttribute(ACtrlDef.
+                                                                                                                     xmlNode, "Type") });
+                }
+
                 throw new Exception("Error: cannot find a generator for control with name " + ACtrlDef.xmlNode.Name);
             }
 

@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.Ge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.ExtJsFormsGenerator", "PetraTools\CodeGeneration\ExtJsFormsGenerator\Ict.Tools.CodeGeneration.ExtJsFormsGenerator.csproj", "{C9EA4F78-6272-4A8D-938B-DF23F2614675}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateExtJsForms", "PetraTools\GenerateExtJsForms\GenerateExtJsForms.csproj", "{FA46C9BE-2830-4F81-A57E-AF29D07A2E99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -140,5 +142,9 @@ Global
 		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Debug|x86.ActiveCfg = Debug|x86
 		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Release|x86.Build.0 = Release|x86
 		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Release|x86.ActiveCfg = Release|x86
+		{FA46C9BE-2830-4F81-A57E-AF29D07A2E99}.Debug|x86.Build.0 = Debug|x86
+		{FA46C9BE-2830-4F81-A57E-AF29D07A2E99}.Debug|x86.ActiveCfg = Debug|x86
+		{FA46C9BE-2830-4F81-A57E-AF29D07A2E99}.Release|x86.Build.0 = Release|x86
+		{FA46C9BE-2830-4F81-A57E-AF29D07A2E99}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

@@ -118,7 +118,18 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// using the code generators that have been loaded
         public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
         {
-            // TODO
+            FCodeStorage = ACodeStorage;
+            TControlGenerator.FCodeStorage = ACodeStorage;
+            FTemplate = new ProcessTemplate(ATemplateFile);
+
+            // load default header with license and copyright
+            TAppSettingsManager opts = new TAppSettingsManager(false);
+            string templateDir = opts.GetValue("TemplateDir", true);
+            FTemplate.AddToCodelet("GPLFILEHEADER",
+                ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
+                    Path.DirectorySeparatorChar));
+
+            InsertCodeIntoTemplate(AXAMLFilename);
         }
 
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)

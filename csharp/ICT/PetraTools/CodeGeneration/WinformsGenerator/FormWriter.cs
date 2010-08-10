@@ -61,6 +61,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             XmlElement root = FImageResources.CreateElement("root");
             FImageResources.AppendChild(root);
 
+            BaseControlGeneratorType = typeof(TControlGenerator);
+
             if (AFormType == "report")
             {
                 AddControlGenerator(new TabControlGenerator());

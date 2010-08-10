@@ -1,0 +1,45 @@
+RootNode:
+    BaseClass: Dummy
+    FormTitle: Application form
+    FormType: SubmitForm
+    Template: submitForm
+    Controls:
+        pnlContent:
+            Controls: [pnlNameAndAddress]
+            buttons: [btnSave, btnCancel]
+        # implemented as xtype fieldset
+        pnlNameAndAddress:
+            title: Name and Address
+            Controls:
+                Row0: [txtFirstName, txtLastName]
+                Row1: [txtStreet]
+                Row2: [txtPostcode, txtCity]
+                Row4: [txtPhone]
+                Row5: [txtEmail]
+                Row6: [txtPassword]
+                Row7: [txtPasswordConfirm]
+        txtFirstName: {Help="Please enter the first name", Label=First name}
+        txtLastName:
+        txtStreet:
+        # lowercase attributes are directly for ext.js?
+        txtPostcode: {xtype=numberfield, maxLength=5, minLength=5, columnWidth=.4}
+        txtCity: {columnWidth=.6}
+        txtPhone: {allowBlank=true}
+        txtEmail: {vtype=email}
+        txtPassword: {inputType=password}
+        txtPasswordConfirm: {inputType=password, vtype=password, otherPasswordField=txtPassword}
+        btnSave:
+            Validation: true
+            ValidationErrorTitle: "Input Error"
+            ValidationErrorMessage: "Please check the flagged controls!"
+            AjaxRequest:
+                SendingMessageTitle: "Please wait"
+                SendingMessage: "Data are being sent to the server"
+                SuccessMessageTitle:"Success"
+                SuccessMessage: "Your application has been successful. You will receive an email with a PDF file. Please print the PDF file, sign it, and send it to us via post"
+                FailureMessageTitle:"Failure"
+                FailureMessage:"Something did not work on the server."
+                Url: DataImportFromForm
+                Parameters:
+                    AFormID: EFSAnmeldung
+        btnCancel:
