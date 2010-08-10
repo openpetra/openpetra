@@ -54,16 +54,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AutoGenerationWriter.cs" />
-    <Compile Include="CodeStorage.cs" />
     <Compile Include="CSParser.cs" />
     <Compile Include="CSProjTools.cs" />
-    <Compile Include="DataBinding.cs" />
     <Compile Include="FileDiffMerge.cs" />
-    <Compile Include="ParseYAMLFormsDefinition.cs" />
     <Compile Include="InsertIntoRegion.cs" />
     <Compile Include="ProcessTemplate.cs" />
-    <Compile Include="ProcessYAMLForms.cs" />
-    <Compile Include="WriterInterfaces.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Ict.Common.csproj">

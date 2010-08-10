@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateGTK", "PetraTools\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateWinForms", "PetraTools\GenerateWinForms\GenerateWinForms.csproj", "{7E7116B0-32F1-4EF3-AFC9-80707F88EB62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.Winforms", "PetraTools\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.Winforms.csproj", "{4034693D-4D16-4123-9FCC-C990448E63F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.WinformsGenerator", "PetraTools\CodeGeneration\Winforms\Ict.Tools.CodeGeneration.WinformsGenerator.csproj", "{4034693D-4D16-4123-9FCC-C990448E63F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixProjectFiles", "PetraTools\FixProjectFiles\FixProjectFiles.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A6111}"
 EndProject
@@ -41,6 +41,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertExtToCSV", "PetraTools\ConvertExtToCSV\ConvertExtToCSV.csproj", "{252FBC9E-4B7E-4EB0-84EB-D60B922A1231}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateSampleData", "PetraTools\GenerateSampleData\GenerateSampleData.csproj", "{1CA035A1-A879-46CC-B367-84C2BD25F4D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.GenericFormsGenerator", "PetraTools\CodeGeneration\GenericFormsGenerator\Ict.Tools.CodeGeneration.GenericFormsGenerator.csproj", "{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Tools.CodeGeneration.ExtJsFormsGenerator", "PetraTools\CodeGeneration\ExtJsFormsGenerator\Ict.Tools.CodeGeneration.ExtJsFormsGenerator.csproj", "{C9EA4F78-6272-4A8D-938B-DF23F2614675}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,5 +132,13 @@ Global
 		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Debug|x86.ActiveCfg = Debug|x86
 		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Release|x86.Build.0 = Release|x86
 		{1CA035A1-A879-46CC-B367-84C2BD25F4D2}.Release|x86.ActiveCfg = Release|x86
+		{C9EA4F78-6272-4A8D-938B-DF23F2614675}.Debug|x86.Build.0 = Debug|x86
+		{C9EA4F78-6272-4A8D-938B-DF23F2614675}.Debug|x86.ActiveCfg = Debug|x86
+		{C9EA4F78-6272-4A8D-938B-DF23F2614675}.Release|x86.Build.0 = Release|x86
+		{C9EA4F78-6272-4A8D-938B-DF23F2614675}.Release|x86.ActiveCfg = Release|x86
+		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Debug|x86.Build.0 = Debug|x86
+		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Debug|x86.ActiveCfg = Debug|x86
+		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Release|x86.Build.0 = Release|x86
+		{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal
