@@ -171,6 +171,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.LedgerNameList:
+                        {
+                            DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
 
                         default:
                             // Unknown Standard Cacheable DataTable
@@ -286,12 +292,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.AccountingPeriodList:
                         {
                             DataTable TmpTable = GetAccountingPeriodListTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
-                            break;
-                        }
-                        case TCacheableFinanceTablesEnum.LedgerNameList:
-                        {
-                            DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, ALedgerNumber, TableName);
                             DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
@@ -568,7 +568,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 #endregion ManualCode
         }
 
-        private DataTable GetLedgerNameListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
+        private DataTable GetLedgerNameListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
             return TALedgerNameAggregate.GetData(ATableName, AReadTransaction);
@@ -647,4 +647,3 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         }
     }
 }
-
