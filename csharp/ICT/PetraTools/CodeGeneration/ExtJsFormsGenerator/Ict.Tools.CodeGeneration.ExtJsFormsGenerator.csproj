@@ -45,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ControlGenerator.cs" />
+    <Compile Include="ControlGeneratorBase.cs" />
+    <Compile Include="FormWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../../Common/Ict.Common.csproj">
@@ -54,6 +57,18 @@
     <ProjectReference Include="../../../Common/IO/Ict.Common.IO.csproj">
       <Project>{31A5F128-F78F-4957-AA0E-B0F6005A2614}</Project>
       <Name>Ict.Common.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PetraXMLProcessor\Ict.Tools.DBXML.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Tools.DBXML</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenericFormsGenerator\Ict.Tools.CodeGeneration.GenericFormsGenerator.csproj">
+      <Project>{62CBAAC9-DF39-4745-BE3E-DCFCF42F687A}</Project>
+      <Name>Ict.Tools.CodeGeneration.GenericFormsGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ict.Tools.CodeGeneration.csproj">
+      <Project>{B153089B-B8BF-421C-A6F4-BA672885720A}</Project>
+      <Name>Ict.Tools.CodeGeneration</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

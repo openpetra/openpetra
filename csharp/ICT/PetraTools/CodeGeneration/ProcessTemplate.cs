@@ -701,7 +701,7 @@ namespace Ict.Tools.CodeGeneration
             FTemplateCode = BeautifyCode(FTemplateCode);
 
             // just one line break at the end
-            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' }) + Environment.NewLine;
+            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' });
 
             FDestinationFile = System.IO.Path.GetDirectoryName(AXAMLFilename) +
                                System.IO.Path.DirectorySeparatorChar +

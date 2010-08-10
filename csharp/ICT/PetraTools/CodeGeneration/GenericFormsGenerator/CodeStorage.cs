@@ -79,11 +79,22 @@ namespace Ict.Tools.CodeGeneration
 
         private string FManualCodeFileContent = "";
 
-        public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes, string AManualCodeFilename)
+        public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes)
         {
             FXmlDocument = AXmlDocument;
             FXmlNodes = AXmlNodes;
-            FManualCodeFilename = AManualCodeFilename;
+        }
+
+        /// <summary>
+        /// set the path to the file containing manual code for the form;
+        /// insert calls to manual functions which would not be called if they do not exist
+        /// </summary>
+        public string ManualCodeFilename
+        {
+            set
+            {
+                FManualCodeFilename = value;
+            }
         }
 
         /// <summary>
@@ -558,15 +569,6 @@ namespace Ict.Tools.CodeGeneration
             FReportParameterList.Add(AParsedNode.Name, result);
 
             return result;
-        }
-
-        public void UpdateLanguageFile()
-        {
-            // todo: update the .po file with any text from yaml and the source code (edited by designer)
-        }
-
-        public void HouseKeeping()
-        {
         }
     }
 

@@ -142,7 +142,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return SimplePrefixMatch(curNode);
         }
 
-        public virtual void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        public virtual void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             string localControlType = ControlType;
 
@@ -190,12 +190,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="ctrl"></param>
         /// <param name="AEvent">Click or DoubleClick or other</param>
         /// <param name="ActionToPerform"></param>
-        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string ActionToPerform)
+        public void AssignEventHandlerToControl(TFormWriter writer, TControlDef ctrl, string AEvent, string ActionToPerform)
         {
             AssignEventHandlerToControl(writer, ctrl, AEvent, "System.EventHandler", ActionToPerform);
         }
 
-        public void AssignEventHandlerToControl(IFormWriter writer, TControlDef ctrl, string AEvent, string AEventHandlerType, string ActionToPerform)
+        public void AssignEventHandlerToControl(TFormWriter writer, TControlDef ctrl, string AEvent, string AEventHandlerType, string ActionToPerform)
         {
             if ((AEvent == null) || (AEvent.Length == 0))
             {
@@ -241,7 +241,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public void AddToActionEnabledEvent(IFormWriter writer, string ActionCondition, string ControlName)
+        public void AddToActionEnabledEvent(TFormWriter writer, string ActionCondition, string ControlName)
         {
             writer.Template.AddToCodelet(
                 "ENABLEDEPENDINGACTIONS_" + ActionCondition,
@@ -265,7 +265,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FChangeEventHandlerType;
         }
 
-        public virtual void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public virtual void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
                 "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
@@ -781,7 +781,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="ctrl"></param>
-        private void LinkControlPartnerShortNameLookup(IFormWriter writer, TControlDef ctrl)
+        private void LinkControlPartnerShortNameLookup(TFormWriter writer, TControlDef ctrl)
         {
             string PartnerShortNameLookup = ctrl.GetAttribute("PartnerShortNameLookup");
             bool IsDetailNotMaster;
@@ -808,7 +808,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("SHOWDATA", showData);
         }
 
-        private void LinkControlDataField(IFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
+        private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
             if (AField == null)
             {
@@ -891,7 +891,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="writer"></param>
         /// <param name="ctrl"></param>
         /// <param name="AActionHandler"></param>
-        public virtual void SetControlActionProperties(IFormWriter writer, TControlDef ctrl, TActionHandler AActionHandler)
+        public virtual void SetControlActionProperties(TFormWriter writer, TControlDef ctrl, TActionHandler AActionHandler)
         {
             if (AActionHandler.actionImage.Length > 0)
             {
@@ -910,12 +910,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public virtual void OnChangeDataType(IFormWriter writer, XmlNode curNode)
+        public virtual void OnChangeDataType(TFormWriter writer, XmlNode curNode)
         {
             OnChangeDataType(writer, curNode, curNode.Name);
         }
 
-        public virtual void OnChangeDataType(IFormWriter writer, XmlNode curNode, string controlName)
+        public virtual void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName)
         {
             // the selection of this control triggers the available options in other controls
             if (TYml2Xml.HasAttribute(curNode, "OnChangeDataType"))
@@ -956,7 +956,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         // e.g. used for controls on Reports (readparameter, etc)
-        public virtual void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public virtual void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
         }
     }
@@ -974,7 +974,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FAddControlToContainer = false;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef ctrl)
+        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // don't call base, because it should not have size, location, or name
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
@@ -993,13 +993,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);
             writer.AddContainer(ctrl.controlName);
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef container)
+        public override void SetControlProperties(TFormWriter writer, TControlDef container)
         {
             base.SetControlProperties(writer, container);
 
@@ -1036,13 +1036,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FDefaultWidth = 10;
         }
 
-        public override void GenerateDeclaration(IFormWriter writer, TControlDef ctrl)
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);
             writer.AddContainer(ctrl.controlName);
         }
 
-        public static string GetListOfChildren(IFormWriter writer, TControlDef container)
+        public static string GetListOfChildren(TFormWriter writer, TControlDef container)
         {
             // add all the children
             string addChildren = "";
@@ -1111,7 +1111,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return addChildren;
         }
 
-        public override void SetControlProperties(IFormWriter writer, TControlDef container)
+        public override void SetControlProperties(TFormWriter writer, TControlDef container)
         {
             string controlName = container.controlName;
 

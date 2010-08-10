@@ -42,7 +42,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
      * but it is not aware of the content and the origin of the content
      * the code generators that are loaded have the knowledge to generate proper code
      */
-    public class TWinFormsWriter : IFormWriter
+    public class TWinFormsWriter : TFormWriter
     {
         public String FInterfaceControlHookup = "";
         public String FInterfaceRunOnce = "";
@@ -61,185 +61,94 @@ namespace Ict.Tools.CodeGeneration.Winforms
             XmlElement root = FImageResources.CreateElement("root");
             FImageResources.AppendChild(root);
 
+            BaseControlGeneratorType = typeof(TControlGenerator);
+
             if (AFormType == "report")
             {
-                AvailableControlGenerators.Add(new TabControlGenerator());
-                AvailableControlGenerators.Add(new TabPageGenerator());
-                AvailableControlGenerators.Add(new MenuGenerator());
-                AvailableControlGenerators.Add(new MenuItemGenerator());
-                AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
-                AvailableControlGenerators.Add(new ToolbarButtonGenerator());
-                AvailableControlGenerators.Add(new ToolbarComboBoxGenerator());
-                AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
-                AvailableControlGenerators.Add(new StatusBarGenerator());
+                AddControlGenerator(new TabControlGenerator());
+                AddControlGenerator(new TabPageGenerator());
+                AddControlGenerator(new MenuGenerator());
+                AddControlGenerator(new MenuItemGenerator());
+                AddControlGenerator(new MenuItemSeparatorGenerator());
+                AddControlGenerator(new ToolbarButtonGenerator());
+                AddControlGenerator(new ToolbarComboBoxGenerator());
+                AddControlGenerator(new ToolbarSeparatorGenerator());
+                AddControlGenerator(new StatusBarGenerator());
 
-                //			AvailableControlGenerators.Add(new StatusBarTextGenerator());
-                AvailableControlGenerators.Add(new ToolBarGenerator());
-                AvailableControlGenerators.Add(new GroupBoxGenerator());
-                AvailableControlGenerators.Add(new LabelGenerator());
-                AvailableControlGenerators.Add(new ButtonGenerator());
-                AvailableControlGenerators.Add(new RangeGenerator());
-                AvailableControlGenerators.Add(new PanelGenerator());
-                AvailableControlGenerators.Add(new CheckBoxReportGenerator());
-                AvailableControlGenerators.Add(new TClbVersatileReportGenerator());
-                AvailableControlGenerators.Add(new DateTimePickerReportGenerator());
-                AvailableControlGenerators.Add(new TextBoxReportGenerator());
-                AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
-                AvailableControlGenerators.Add(new ComboBoxReportGenerator());
-                AvailableControlGenerators.Add(new TcmbAutoPopulatedReportGenerator());
-                AvailableControlGenerators.Add(new RadioGroupComplexReportGenerator());
-                AvailableControlGenerators.Add(new RadioGroupSimpleReportGenerator());
-                AvailableControlGenerators.Add(new RadioButtonReportGenerator());
-                AvailableControlGenerators.Add(new UserControlReportGenerator());
-                AvailableControlGenerators.Add(new SourceGridReportGenerator());
+                //			AddControlGenerator(new StatusBarTextGenerator());
+                AddControlGenerator(new ToolBarGenerator());
+                AddControlGenerator(new GroupBoxGenerator());
+                AddControlGenerator(new LabelGenerator());
+                AddControlGenerator(new ButtonGenerator());
+                AddControlGenerator(new RangeGenerator());
+                AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new CheckBoxReportGenerator());
+                AddControlGenerator(new TClbVersatileReportGenerator());
+                AddControlGenerator(new DateTimePickerReportGenerator());
+                AddControlGenerator(new TextBoxReportGenerator());
+                AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
+                AddControlGenerator(new ComboBoxReportGenerator());
+                AddControlGenerator(new TcmbAutoPopulatedReportGenerator());
+                AddControlGenerator(new RadioGroupComplexReportGenerator());
+                AddControlGenerator(new RadioGroupSimpleReportGenerator());
+                AddControlGenerator(new RadioButtonReportGenerator());
+                AddControlGenerator(new UserControlReportGenerator());
+                AddControlGenerator(new SourceGridReportGenerator());
             }
             else
             {
-                AvailableControlGenerators.Add(new TabControlGenerator());
-                AvailableControlGenerators.Add(new TabPageGenerator());
-                AvailableControlGenerators.Add(new MenuGenerator());
-                AvailableControlGenerators.Add(new MenuItemGenerator());
-                AvailableControlGenerators.Add(new MenuItemSeparatorGenerator());
-                AvailableControlGenerators.Add(new ToolbarControlHostGenerator());
-                AvailableControlGenerators.Add(new ToolbarTextBoxGenerator());
-                AvailableControlGenerators.Add(new ToolbarLabelGenerator());
-                AvailableControlGenerators.Add(new ToolbarButtonGenerator());
-                AvailableControlGenerators.Add(new ToolbarComboBoxGenerator());
-                AvailableControlGenerators.Add(new ToolbarSeparatorGenerator());
-                AvailableControlGenerators.Add(new StatusBarGenerator());
-                AvailableControlGenerators.Add(new ToolBarGenerator());
-                AvailableControlGenerators.Add(new GroupBoxGenerator());
-                AvailableControlGenerators.Add(new RangeGenerator());
-                AvailableControlGenerators.Add(new PanelGenerator());
-                AvailableControlGenerators.Add(new SplitContainerGenerator());
-                AvailableControlGenerators.Add(new UserControlGenerator());
-                AvailableControlGenerators.Add(new LabelGenerator());
-                AvailableControlGenerators.Add(new ButtonGenerator());
-                AvailableControlGenerators.Add(new CheckBoxGenerator());
-                AvailableControlGenerators.Add(new TClbVersatileGenerator());
-                AvailableControlGenerators.Add(new DateTimePickerGenerator());
-                AvailableControlGenerators.Add(new TreeViewGenerator());
-                AvailableControlGenerators.Add(new TextBoxGenerator());
-                AvailableControlGenerators.Add(new TTxtAutoPopulatedButtonLabelGenerator());
-                AvailableControlGenerators.Add(new TTxtNumericTextBoxGenerator());
-                AvailableControlGenerators.Add(new ComboBoxGenerator());
-                AvailableControlGenerators.Add(new TcmbAutoPopulatedGenerator());
-                AvailableControlGenerators.Add(new TcmbAutoCompleteGenerator());
-                AvailableControlGenerators.Add(new TCmbVersatileGenerator());
-                AvailableControlGenerators.Add(new PrintPreviewGenerator());
-                AvailableControlGenerators.Add(new PrintPreviewWithToolbarGenerator());
-                AvailableControlGenerators.Add(new RadioGroupComplexGenerator());
-                AvailableControlGenerators.Add(new RadioGroupSimpleGenerator());
-                AvailableControlGenerators.Add(new RadioGroupNoBorderGenerator());
-                AvailableControlGenerators.Add(new RadioButtonGenerator());
-                AvailableControlGenerators.Add(new NumericUpDownGenerator());
-                AvailableControlGenerators.Add(new WinformsGridGenerator());
-                AvailableControlGenerators.Add(new SourceGridGenerator());
+                AddControlGenerator(new TabControlGenerator());
+                AddControlGenerator(new TabPageGenerator());
+                AddControlGenerator(new MenuGenerator());
+                AddControlGenerator(new MenuItemGenerator());
+                AddControlGenerator(new MenuItemSeparatorGenerator());
+                AddControlGenerator(new ToolbarControlHostGenerator());
+                AddControlGenerator(new ToolbarTextBoxGenerator());
+                AddControlGenerator(new ToolbarLabelGenerator());
+                AddControlGenerator(new ToolbarButtonGenerator());
+                AddControlGenerator(new ToolbarComboBoxGenerator());
+                AddControlGenerator(new ToolbarSeparatorGenerator());
+                AddControlGenerator(new StatusBarGenerator());
+                AddControlGenerator(new ToolBarGenerator());
+                AddControlGenerator(new GroupBoxGenerator());
+                AddControlGenerator(new RangeGenerator());
+                AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new SplitContainerGenerator());
+                AddControlGenerator(new UserControlGenerator());
+                AddControlGenerator(new LabelGenerator());
+                AddControlGenerator(new ButtonGenerator());
+                AddControlGenerator(new CheckBoxGenerator());
+                AddControlGenerator(new TClbVersatileGenerator());
+                AddControlGenerator(new DateTimePickerGenerator());
+                AddControlGenerator(new TreeViewGenerator());
+                AddControlGenerator(new TextBoxGenerator());
+                AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
+                AddControlGenerator(new TTxtNumericTextBoxGenerator());
+                AddControlGenerator(new ComboBoxGenerator());
+                AddControlGenerator(new TcmbAutoPopulatedGenerator());
+                AddControlGenerator(new TcmbAutoCompleteGenerator());
+                AddControlGenerator(new TCmbVersatileGenerator());
+                AddControlGenerator(new PrintPreviewGenerator());
+                AddControlGenerator(new PrintPreviewWithToolbarGenerator());
+                AddControlGenerator(new RadioGroupComplexGenerator());
+                AddControlGenerator(new RadioGroupSimpleGenerator());
+                AddControlGenerator(new RadioGroupNoBorderGenerator());
+                AddControlGenerator(new RadioButtonGenerator());
+                AddControlGenerator(new NumericUpDownGenerator());
+                AddControlGenerator(new WinformsGridGenerator());
+                AddControlGenerator(new SourceGridGenerator());
             }
         }
 
-        public TCodeStorage CodeStorage
+        public override string CodeFileExtension
         {
             get
             {
-                return FCodeStorage;
+                return ".cs";
             }
         }
 
-        #region ControlGenerators
-
-        // List of all available controls, with prefix and
-        //    function to find out if this fits (e.g. same prefixes for same control)
-        // ArrayList of ControlGenerator
-        public ArrayList AvailableControlGenerators = new ArrayList();
-        public IControlGenerator FindControlGenerator(TControlDef ACtrlDef)
-        {
-            IControlGenerator fittingGenerator = null;
-
-            if (ACtrlDef.controlGenerator != null)
-            {
-                return ACtrlDef.controlGenerator;
-            }
-
-            foreach (IControlGenerator generator in AvailableControlGenerators)
-            {
-                if (generator.ControlFitsNode(ACtrlDef.xmlNode))
-                {
-                    if (fittingGenerator != null)
-                    {
-                        throw new Exception(
-                            "Error: control with name " + ACtrlDef.xmlNode.Name + " does fit both control generators " +
-                            fittingGenerator.ControlType +
-                            " and " +
-                            generator.ControlType);
-                    }
-
-                    fittingGenerator = generator;
-                }
-            }
-
-            if ((fittingGenerator == null)
-                && (!ACtrlDef.controlName.StartsWith("Empty")))
-            {
-                if (TYml2Xml.HasAttribute(ACtrlDef.xmlNode, "Type"))
-                {
-                    return new TControlGenerator(ACtrlDef.xmlNode.Name.Substring(0, 3), TYml2Xml.GetAttribute(ACtrlDef.xmlNode, "Type"));
-                }
-
-                throw new Exception("Error: cannot find a generator for control with name " + ACtrlDef.xmlNode.Name);
-            }
-
-            ACtrlDef.controlGenerator = fittingGenerator;
-
-            return fittingGenerator;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// check if the label should be translated;
-        /// e.g. separators for menu items and empty strings cannot be translated;
-        /// special workarounds for linebreaks are required;
-        /// also called by GenerateI18N, class TGenerateCatalogStrings
-        /// </summary>
-        /// <param name="ALabelText">the label in english</param>
-        /// <returns>true if this is a proper string</returns>
-        public static bool ProperI18NCatalogGetString(string ALabelText)
-        {
-            // if there is MANUALTRANSLATION then don't translate; that is a workaround for \r\n in labels;
-            // see eg. Client\lib\MPartner\gui\UC_PartnerInfo.Designer.cs, lblLoadingPartnerLocation.Text
-            if (ALabelText.Contains("MANUALTRANSLATION"))
-            {
-                return false;
-            }
-
-            if (ALabelText.Trim().Length == 0)
-            {
-                return false;
-            }
-
-            if (ALabelText.Trim() == "-")
-            {
-                // menu separators etc
-                return false;
-            }
-
-            if (StringHelper.TryStrToInt32(ALabelText, -1).ToString() == ALabelText)
-            {
-                // don't translate digits?
-                return false;
-            }
-
-            // careful with \n and \r in the string; that is not allowed by gettext
-            if (ALabelText.Contains("\\r") || ALabelText.Contains("\\n"))
-            {
-                throw new Exception("Problem with \\r or \\n");
-            }
-
-            return true;
-        }
-
-        public void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
+        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
         {
             if (APropertyName == "Dock")
             {
@@ -262,21 +171,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        /// <summary>
-        /// check if the control has an attribute with the property name in the xml definition
-        /// if such an attribute exists, then set it
-        /// </summary>
-        /// <param name="ACtrl"></param>
-        /// <param name="APropertyName"></param>
-        public void SetControlProperty(TControlDef ACtrl, string APropertyName)
-        {
-            if (TYml2Xml.HasAttribute(ACtrl.xmlNode, APropertyName))
-            {
-                SetControlProperty(ACtrl.controlName, APropertyName, TYml2Xml.GetAttribute(ACtrl.xmlNode, APropertyName));
-            }
-        }
-
-        public void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
+        public override void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
         {
             string CodeletName = "CONTROLINITIALISATION";
 
@@ -294,7 +189,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ");" + Environment.NewLine);
         }
 
-        public void SetEventHandlerForForm(TEventHandler handler)
+        private void SetEventHandlerForForm(TEventHandler handler)
         {
             string localname = handler.eventHandler;
 
@@ -313,7 +208,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation)
+        public override void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation)
         {
             string EventArgsType = "EventArgs";
 
@@ -334,7 +229,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 "}" + Environment.NewLine + Environment.NewLine;
         }
 
-        public void AddReportParameterImplementaion(TReportParameter AReportParameter)
+        private void AddReportParameterImplementaion(TReportParameter AReportParameter)
         {
             FCodeStorage.FReportParametersImplementation +=
                 "FPetraUtilsObject.AddAvailableFunction(new " +
@@ -344,7 +239,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Environment.NewLine;
         }
 
-        public void AddActionHandlerImplementation(TActionHandler AAction)
+        private void AddActionHandlerImplementation(TActionHandler AAction)
         {
             // the actual call what happens when the action is executed
             // only create an action handler for calls to FPetraUtilsObject, because that would not work in the designer
@@ -378,7 +273,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="AControlName">the name how the image is addressed from the resources</param>
         /// <param name="AImageName">the full file name of the image</param>
         /// <param name="AImageOrIcon">this is a bitmap or an icon</param>
-        public void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon)
+        public override void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon)
         {
             if (AImageName.Length < 1)
             {
@@ -501,13 +396,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// Creates from the template resource file and the generated resource data
         /// a new resource file
         /// </summary>
-        /// <param name="AResourceFile">The file to be created</param>
-        /// <param name="AResourceTemplate">The template resource file</param>
-        public void CreateResourceFile(string AResourceFile, string AResourceTemplate)
+        /// <param name="AYamlFilename">The path of the yaml file is used to calculate the name of the resource file</param>
+        /// <param name="ATemplateDir">The path to the templates</param>
+        public override void CreateResourceFile(string AYamlFilename, string ATemplateDir)
         {
+            string ResourceFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
+                                  System.IO.Path.DirectorySeparatorChar +
+                                  System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                                  ".resx";
+
+            string ResourceTemplate = ATemplateDir + Path.DirectorySeparatorChar + "resources.resx";
+
             XmlDocument DestinationDoc = new XmlDocument();
 
-            DestinationDoc.Load(AResourceTemplate);
+            DestinationDoc.Load(ResourceTemplate);
             XmlNode DestinationNode = DestinationDoc.LastChild;
 
             XmlNode ParentNode = FImageResources.FirstChild;
@@ -518,25 +420,44 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DestinationNode.AppendChild(NewNode);
             }
 
-            DestinationDoc.Save(AResourceFile + ".new");
-            TTextFile.UpdateFile(AResourceFile);
+            DestinationDoc.Save(ResourceFile + ".new");
+            TTextFile.UpdateFile(ResourceFile);
         }
 
-        public void CallControlFunction(string AControlName, string AFunctionCall)
+        /// write the designer code using the definitions in the yaml file
+        public override void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir)
+        {
+            string DesignerFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
+                                  System.IO.Path.DirectorySeparatorChar +
+                                  System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                                  ".Designer.cs";
+
+            string designerTemplate = String.Empty;
+
+            if (TYml2Xml.HasAttribute(ARootNode, "DesignerTemplate"))
+            {
+                designerTemplate = TYml2Xml.GetAttribute(ARootNode, "DesignerTemplate") + ".cs";
+            }
+            else
+            {
+                designerTemplate = "designer.cs";
+            }
+
+            designerTemplate = ATemplateDir + Path.DirectorySeparatorChar + designerTemplate;
+
+            WriteFile(DesignerFile, designerTemplate);
+        }
+
+        public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
             FTemplate.AddToCodelet("CONTROLINITIALISATION",
                 "this." + AControlName + "." + AFunctionCall + ";" + Environment.NewLine);
         }
 
-        public void AddContainer(string AControlName)
+        public override void AddContainer(string AControlName)
         {
             FSuspendLayout += "this." + AControlName + ".SuspendLayout();" + Environment.NewLine;
             FResumePerformLayout = "this." + AControlName + ".ResumeLayout(false);" + Environment.NewLine + FResumePerformLayout;
-        }
-
-        public virtual void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode)
-        {
-            generator.ApplyDerivedFunctionality(this, curNode);
         }
 
         // returns the initialiseCode, see e.g. ProcessReportForm
@@ -547,7 +468,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         public SortedList FControlDataTypes = new SortedList();
-        public void InitialiseDataSource(XmlNode curNode, string AControlName)
+        public override void InitialiseDataSource(XmlNode curNode, string AControlName)
         {
             string InitialiseCodelet = ProcessDataSource(curNode, AControlName);
 
@@ -607,18 +528,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             TableLayoutPanelGenerator.countTableLayoutPanel = 0;
         }
 
-        public TCodeStorage FCodeStorage = null;
-        public ProcessTemplate FTemplate;
-
-        public ProcessTemplate Template
-        {
-            get
-            {
-                return FTemplate;
-            }
-        }
-
-        public bool IsUserControlTemplate
+        public override bool IsUserControlTemplate
         {
             get
             {
@@ -752,11 +662,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        /*
-         * based on the code model, create the code;
-         * using the code generators that have been loaded
-         */
-        public virtual void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
+        /// based on the code model, create the code;
+        /// using the code generators that have been loaded
+        public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
         {
             ResetAllValues();
             FCodeStorage = ACodeStorage;
@@ -1144,20 +1052,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // but need to be updated in the main code file; need to use special regions
             //string autoActionSection = designWriter.CreateAutoActionSection();
             //writer.ReplaceRegion("CodeGenerator Managed Code", autoActionSection);
-        }
-
-        public bool WriteFile(string ADestinationFile)
-        {
-            return FTemplate.FinishWriting(ADestinationFile, ".cs", true);
-        }
-
-        public bool WriteFile(string ADestinationFile, string ATemplateFile)
-        {
-            ProcessTemplate LocalTemplate = new ProcessTemplate(ATemplateFile);
-
-            // reuse the codelets that have been generated by CreateCode
-            LocalTemplate.FCodelets = FTemplate.FCodelets;
-            return LocalTemplate.FinishWriting(ADestinationFile, ".cs", true);
         }
     }
 }

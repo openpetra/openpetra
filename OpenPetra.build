@@ -73,6 +73,7 @@
         <echo message="generateGTK: generates the User Interface using GTK"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
+        <echo message="generateWeb: generates the User Interface using the Ext.js AJAX framework"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
@@ -556,7 +557,7 @@
     </target>
 
     <target name="generateWinforms" description="Generate Winforms User Interface">
-        <!-- todo: go through all yaml files that have FormType different from abstract -->
+        <!-- go through all yaml files that have FormType different from abstract -->
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient ${generateWinformsParameters}"/>
@@ -589,6 +590,12 @@
         <call target="startPetraClient"/>
     </target>
 
+    <target name="generateWeb" description="Generate Web browser User Interface">
+        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
+        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
+    </target>
+	
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>

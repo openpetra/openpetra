@@ -53,7 +53,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return result;
         }
 
-        public static void GenerateReadSetControls(IFormWriter writer, XmlNode curNode, ProcessTemplate ATargetTemplate, string ATemplateControlType)
+        public static void GenerateReadSetControls(TFormWriter writer, XmlNode curNode, ProcessTemplate ATargetTemplate, string ATemplateControlType)
         {
             string controlName = curNode.Name;
 
@@ -85,14 +85,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
     public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCMBAUTOPOPULATED");
         }
     }
     public class ComboBoxReportGenerator : ComboBoxGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "COMBOBOX");
         }
@@ -100,14 +100,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class CheckBoxReportGenerator : CheckBoxGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "CHECKBOX");
         }
     }
     public class TextBoxReportGenerator : TextBoxGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TEXTBOX");
         }
@@ -115,7 +115,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class TClbVersatileReportGenerator : TClbVersatileGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCLBVERSATILE");
         }
@@ -123,7 +123,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class DateTimePickerReportGenerator : DateTimePickerGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TTXTPETRADATE");
         }
@@ -131,7 +131,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class RadioGroupSimpleReportGenerator : RadioGroupSimpleGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
 
@@ -162,7 +162,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class RadioGroupComplexReportGenerator : RadioGroupComplexGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
 
@@ -261,7 +261,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class RadioButtonReportGenerator : RadioButtonGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             // no writing or reading of parameters, should be done in RadioGroup
         }
@@ -269,7 +269,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class UserControlReportGenerator : UserControlGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string controlName = curNode.Name;
 
@@ -293,7 +293,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class SourceGridReportGenerator : SourceGridGenerator
     {
-        public override void ApplyDerivedFunctionality(IFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string controlName = curNode.Name;
 

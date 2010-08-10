@@ -50,6 +50,7 @@
     <Compile Include="CodeStorage.cs" />
     <Compile Include="DataBinding.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FormWriter.cs" />
     <Compile Include="ParseYAMLFormsDefinition.cs" />
     <Compile Include="ProcessYAMLForms.cs" />
     <Compile Include="WriterInterfaces.cs" />

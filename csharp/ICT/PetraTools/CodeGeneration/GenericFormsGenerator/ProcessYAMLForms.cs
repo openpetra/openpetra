@@ -67,7 +67,7 @@ namespace Ict.Tools.CodeGeneration
         /// </summary>
         /// <param name="AFormType"></param>
         /// <returns></returns>
-        private IFormWriter GetWriter(String AFormType)
+        private TFormWriter GetWriter(String AFormType)
         {
             Int32 index = FFormTypes.IndexOfKey(AFormType);
 
@@ -83,7 +83,7 @@ namespace Ict.Tools.CodeGeneration
                 throw new Exception("cannot find form processor \"" + AFormType + "\"");
             }
 
-            return (IFormWriter)Activator.CreateInstance(formTypeClass, new Object[] { AFormType });
+            return (TFormWriter)Activator.CreateInstance(formTypeClass, new Object[] { AFormType });
         }
 
         public Boolean ProcessDocument()
@@ -98,29 +98,11 @@ namespace Ict.Tools.CodeGeneration
             {
                 TAppSettingsManager opts = new TAppSettingsManager(false);
 
-                string destinationFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                         System.IO.Path.DirectorySeparatorChar +
-                                         System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                         ".cs";
-                string manualCodeFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                        System.IO.Path.DirectorySeparatorChar +
-                                        System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                        ".ManualCode.cs";
-                string designerFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                      System.IO.Path.DirectorySeparatorChar +
-                                      System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                      ".Designer.cs";
-                string templateDir = opts.GetValue("TemplateDir", true);
-                string ResourceFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                      System.IO.Path.DirectorySeparatorChar +
-                                      System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                      ".resx";
-
                 //******************
                 //* parsing *******
                 //******************
                 XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
-                TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes, manualCodeFile);
+                TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes);
                 TParseYAMLFormsDefinition yamlParser = new TParseYAMLFormsDefinition(ref codeStorage);
 
                 codeStorage.FTargetWinforms = opts.GetValue("TargetPlatform", "net-2.0");
@@ -128,35 +110,13 @@ namespace Ict.Tools.CodeGeneration
                 // should not need to be specific to special forms
                 yamlParser.LoadRecursively(FYamlFilename, FSelectedLocalisation);
 
-                // todo: parse the existing cs file as well and merge into existing data from YAML file
-                // load the existing file if it exists
-                if (File.Exists(designerFile))
-                {
-                    // find the output file, and parse it
-// TODO          CSParser csharpfile = new CSParser(designerFile);
-                    // todo: make safety copy???
-// TODO          TParseDesignerCode.ParseDesignerSection(csharpfile, codeStorage);
-                }
-
-                //******************
-                //* maintain *******
-                //******************
-                codeStorage.HouseKeeping();
-
-                codeStorage.FXmlDocument.Save(FYamlFilename + ".xml");
-
-
-                codeStorage.UpdateLanguageFile();
-
-                // todo: update the yaml file
-                //       this could also write back changes in labels, etc.
-                //       what about keeping comments in the yaml file?
-                //       write new added controls/menuitems/etc back to the yaml file???
+                // for debugging purposes, we can write the xml file that has been parsed from the yaml file
+                // codeStorage.FXmlDocument.Save(FYamlFilename + ".xml");
 
                 //****************
                 //* output *******
                 //****************
-                IFormWriter writer = null;
+                TFormWriter writer = null;
 
                 // get the appropriate derived class from IFormWriter (e.g. TFrmReportWriter)
                 XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
@@ -178,50 +138,33 @@ namespace Ict.Tools.CodeGeneration
                     return false;
                 }
 
+                string extension = writer.CodeFileExtension;
+
+                string templateDir = opts.GetValue("TemplateDir", true);
                 string template = TYml2Xml.GetAttribute(rootNode, "Template");
 
                 if (template.Length > 0)
                 {
-                    template = templateDir + Path.DirectorySeparatorChar + template + ".cs";
+                    template = templateDir + Path.DirectorySeparatorChar + template + extension;
                 }
 
-/*        else if (File.Exists(destinationFile))
- *      {
- *        // if file exists, load it as the template
- *        template = destinationFile;
- *      }
- */
+                string destinationFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
+                                         System.IO.Path.DirectorySeparatorChar +
+                                         System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
+                                         extension;
+                string manualCodeFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
+                                        ".ManualCode" + extension;
+
+                // need to know the path to the manual code file in order to call manual functions which would not be called if they do not exist
+                codeStorage.ManualCodeFilename = manualCodeFile;
 
                 writer.CreateCode(codeStorage, FYamlFilename, template);
 
-                // Create the resource file...
-                string ResourceTemplate = templateDir + Path.DirectorySeparatorChar + "resources.resx";
-                writer.CreateResourceFile(ResourceFile, ResourceTemplate);
+                writer.CreateResourceFile(FYamlFilename, templateDir);
 
-                // use TXMLParser.GetAttribute in order to not use the base value
-                // TODO we disabled the base classes, so we can't check for "abstract"
-                // if (TXMLParser.GetAttribute(rootNode, "ClassType") != "abstract")
-                {
-                    // only write the designer file if the file is not an abstract base class
-                    // write the designer code
-                    // that is merged from the existing code
-                    // and the definitions in the yaml file
-
-                    string designerTemplate = String.Empty;
-
-                    if (TYml2Xml.HasAttribute(rootNode, "DesignerTemplate"))
-                    {
-                        designerTemplate = TYml2Xml.GetAttribute(rootNode, "DesignerTemplate") + ".cs";
-                    }
-                    else
-                    {
-                        designerTemplate = "designer.cs";
-                    }
-
-                    designerTemplate = templateDir + Path.DirectorySeparatorChar + designerTemplate;
-
-                    writer.WriteFile(designerFile, designerTemplate);
-                }
+                writer.CreateDesignerFile(FYamlFilename, rootNode, templateDir);
 
                 return writer.WriteFile(destinationFile);
             }
