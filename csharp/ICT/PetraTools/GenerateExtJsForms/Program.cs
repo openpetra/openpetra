@@ -49,7 +49,14 @@ class Program
         {
             TAppSettingsManager opts = new TAppSettingsManager(false);
 
-            new TLogging("generateextjsforms.log");
+            if (Directory.Exists("log"))
+            {
+                new TLogging("log/generateextjsforms.log");
+            }
+            else
+            {
+                new TLogging("generateextjsforms.log");
+            }
 
             if (!opts.HasValue("ymlfile"))
             {

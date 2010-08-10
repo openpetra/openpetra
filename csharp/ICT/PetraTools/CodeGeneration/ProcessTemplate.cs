@@ -193,6 +193,28 @@ namespace Ict.Tools.CodeGeneration
 
         /// <summary>
         /// insert the snippet into the current template, into the given codelet.
+        /// use separator to separate from previous items inserted into that codelet
+        /// </summary>
+        /// <param name="ACodeletName"></param>
+        /// <param name="ASnippet"></param>
+        /// <param name="ASeparator"></param>
+        public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet, string ASeparator)
+        {
+            ASnippet.ReplaceCodelets();
+            ASnippet.FTemplateCode = ASnippet.RemoveUndefinedIFDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ActivateUndefinedIFNDEFs(ASnippet.FTemplateCode);
+
+            if (FCodelets.ContainsKey(ACodeletName)
+                && (((string)FCodelets[ACodeletName]).Length > 0))
+            {
+                AddToCodelet(ACodeletName, ASeparator);
+            }
+
+            AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
+        }
+
+        /// <summary>
+        /// insert the snippet into the current template, into the given codelet.
         /// add new text in front of the text that has already been added to the codelet
         /// </summary>
         /// <param name="ACodeletName"></param>

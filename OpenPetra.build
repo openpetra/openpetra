@@ -73,7 +73,7 @@
         <echo message="generateGTK: generates the User Interface using GTK"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
-        <echo message="generateWeb: generates the User Interface using the Ext.js AJAX framework"/>
+        <echo message="generateWebforms: generates the User Interface using the Ext.js AJAX framework"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
@@ -590,7 +590,7 @@
         <call target="startPetraClient"/>
     </target>
 
-    <target name="generateWeb" description="Generate Web browser User Interface">
+    <target name="generateWebforms" description="Generate Web browser User Interface">
         <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>

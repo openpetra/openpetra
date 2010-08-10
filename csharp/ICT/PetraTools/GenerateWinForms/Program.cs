@@ -57,7 +57,14 @@ class Program
         {
             TAppSettingsManager opts = new TAppSettingsManager(false);
 
-            new TLogging("generatewinforms.log");
+            if (Directory.Exists("log"))
+            {
+                new TLogging("log/generatewinforms.log");
+            }
+            else
+            {
+                new TLogging("generatewinforms.log");
+            }
 
             if (!opts.HasValue("ymlfile"))
             {

@@ -50,6 +50,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             TAppSettingsManager settings = new TAppSettingsManager(false);
 
             AddControlGenerator(new TextFieldGenerator());
+            AddControlGenerator(new FieldSetGenerator());
         }
 
         public override string CodeFileExtension
@@ -114,6 +115,61 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        private void InsertControl(TControlDef ACtrl)
+        {
+            IControlGenerator generator = FindControlGenerator(ACtrl);
+
+            XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Controls");
+
+            List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
+
+            if ((childNodes.Count > 0) && childNodes[0].Name.StartsWith("Row"))
+            {
+                foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
+                {
+                    // this will get the pnlContent control, which is implemented as a fieldset control in ext.js
+                    ProcessTemplate snippetRowDefinition = FTemplate.GetSnippet("ROWDEFINITION");
+
+                    StringCollection children = TYml2Xml.GetElements(controlsNode, row.Name);
+
+                    foreach (string child in children)
+                    {
+                        ProcessTemplate snippetControl = FTemplate.GetSnippet("ITEMDEFINITION");
+                        TControlDef childCtrl = FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
+                        //snippetControl.SetCodelet("XTYPE", childCtrl.controlType);
+                        snippetControl.SetCodelet("XTYPE", "textfield");
+                        snippetControl.SetCodelet("LABEL", childCtrl.Label);
+                        snippetControl.SetCodelet("HELP", "TODO");
+                        snippetControl.SetCodelet("COLUMNWIDTH", (1.0 / children.Count).ToString().Replace(",", "."));
+                        snippetControl.SetCodelet("ITEMNAME", childCtrl.controlName);
+
+                        snippetRowDefinition.InsertSnippet("ITEMS", snippetControl, ",");
+                    }
+
+                    FTemplate.InsertSnippet("FORMITEMSDEFINITION", snippetRowDefinition, ",");
+                }
+            }
+            else
+            {
+                StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Controls");
+
+                foreach (string child in children)
+                {
+                    InsertControl(FCodeStorage.FindOrCreateControl(child, ACtrl.controlName));
+                }
+            }
+        }
+
+        private void AddRootControl(string prefix)
+        {
+            TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
+
+            InsertControl(ctrl);
+
+            // TODO insert buttons
+            FTemplate.AddToCodelet("BUTTONS", "{text: 'Cancel'}");
+        }
+
         /// based on the code model, create the code;
         /// using the code generators that have been loaded
         public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
@@ -129,12 +185,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
 
+            // find the first control that is a panel or groupbox or tab control
+            if (FCodeStorage.HasRootControl("content"))
+            {
+                AddRootControl("content");
+            }
+
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
-            // TODO
+            FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
+            FTemplate.SetCodelet("LABELWIDTH", "140");
+            FTemplate.SetCodelet("FORMNAME", Path.GetFileNameWithoutExtension(AXAMLFilename));
         }
     }
 }

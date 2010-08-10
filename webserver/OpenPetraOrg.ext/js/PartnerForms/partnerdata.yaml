@@ -3,6 +3,7 @@ RootNode:
     FormTitle: Application form
     FormType: SubmitForm
     Template: submitForm
+    WindowWidth: 650
     Controls:
         pnlContent:
             Controls: [pnlNameAndAddress]

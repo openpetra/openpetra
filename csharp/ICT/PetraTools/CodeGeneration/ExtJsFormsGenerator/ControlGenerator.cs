@@ -39,4 +39,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
         }
     }
+    public class FieldSetGenerator : TControlGenerator
+    {
+        public FieldSetGenerator()
+            : base("pnl", "fieldset")
+        {
+        }
+    }
 }
