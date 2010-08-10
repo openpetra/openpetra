@@ -31,28 +31,42 @@ using Ict.Common.IO;
 namespace Ict.Tools.CodeGeneration
 {
     /// <summary>
-    /// This class is responsible of parsing the XAML file,
-    /// optionally merging it with the existing c# file,
-    /// and writing the resulting c# file
+    /// This class is responsible of parsing the YML file,
+    /// and writing the resulting forms file
     /// </summary>
-    public class ProcessXAML
+    public class TProcessYAMLForms
     {
-        String FXamlFilename;
+        String FYamlFilename;
         String FSelectedLocalisation = null;
         SortedList FFormTypes = new SortedList();
         public SortedList FXmlNodes;
 
-        public ProcessXAML(string AFilename, string ASelectedLocalisation)
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AFilename"></param>
+        /// <param name="ASelectedLocalisation"></param>
+        public TProcessYAMLForms(string AFilename, string ASelectedLocalisation)
         {
-            FXamlFilename = AFilename;
+            FYamlFilename = AFilename;
             FSelectedLocalisation = ASelectedLocalisation;
         }
 
+        /// <summary>
+        /// this tool can work with several writers, eg. winforms, winform for reports, ext.js
+        /// </summary>
+        /// <param name="AFormType"></param>
+        /// <param name="AFormProcessor"></param>
         public void AddWriter(String AFormType, System.Type AFormProcessor)
         {
             FFormTypes.Add(AFormType, AFormProcessor);
         }
 
+        /// <summary>
+        /// get a specific writer
+        /// </summary>
+        /// <param name="AFormType"></param>
+        /// <returns></returns>
         private IFormWriter GetWriter(String AFormType)
         {
             Int32 index = FFormTypes.IndexOfKey(AFormType);
@@ -76,30 +90,30 @@ namespace Ict.Tools.CodeGeneration
         {
             string baseyaml;
 
-            if (!TYml2Xml.ReadHeader(FXamlFilename, out baseyaml))
+            if (!TYml2Xml.ReadHeader(FYamlFilename, out baseyaml))
             {
-                Console.WriteLine("ProcessXAML: cannot recognise type of form");
+                Console.WriteLine("ProcessYAML: cannot recognise type of form");
             }
             else
             {
                 TAppSettingsManager opts = new TAppSettingsManager(false);
 
-                string destinationFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
+                string destinationFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
                                          System.IO.Path.DirectorySeparatorChar +
-                                         System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
+                                         System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
                                          ".cs";
-                string manualCodeFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
+                string manualCodeFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
                                         System.IO.Path.DirectorySeparatorChar +
-                                        System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
+                                        System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
                                         ".ManualCode.cs";
-                string designerFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
+                string designerFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
                                       System.IO.Path.DirectorySeparatorChar +
-                                      System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
+                                      System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
                                       ".Designer.cs";
                 string templateDir = opts.GetValue("TemplateDir", true);
-                string ResourceFile = System.IO.Path.GetDirectoryName(FXamlFilename) +
+                string ResourceFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
                                       System.IO.Path.DirectorySeparatorChar +
-                                      System.IO.Path.GetFileNameWithoutExtension(FXamlFilename) +
+                                      System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
                                       ".resx";
 
                 //******************
@@ -107,12 +121,12 @@ namespace Ict.Tools.CodeGeneration
                 //******************
                 XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
                 TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes, manualCodeFile);
-                TParseXAML yamlParser = new TParseXAML(ref codeStorage);
+                TParseYAMLFormsDefinition yamlParser = new TParseYAMLFormsDefinition(ref codeStorage);
 
                 codeStorage.FTargetWinforms = opts.GetValue("TargetPlatform", "net-2.0");
 
                 // should not need to be specific to special forms
-                yamlParser.LoadRecursively(FXamlFilename, FSelectedLocalisation);
+                yamlParser.LoadRecursively(FYamlFilename, FSelectedLocalisation);
 
                 // todo: parse the existing cs file as well and merge into existing data from YAML file
                 // load the existing file if it exists
@@ -129,7 +143,7 @@ namespace Ict.Tools.CodeGeneration
                 //******************
                 codeStorage.HouseKeeping();
 
-                codeStorage.FXmlDocument.Save(FXamlFilename + ".xml");
+                codeStorage.FXmlDocument.Save(FYamlFilename + ".xml");
 
 
                 codeStorage.UpdateLanguageFile();
@@ -145,12 +159,12 @@ namespace Ict.Tools.CodeGeneration
                 IFormWriter writer = null;
 
                 // get the appropriate derived class from IFormWriter (e.g. TFrmReportWriter)
-                XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
+                XmlNode rootNode = (XmlNode)yamlParser.FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
                 string formType = TYml2Xml.GetAttribute(rootNode, "FormType");
 
                 if (formType == "abstract")
                 {
-                    Console.WriteLine("Ignore yaml file because it has the formtype abstract: " + FXamlFilename);
+                    Console.WriteLine("Ignore yaml file because it has the formtype abstract: " + FYamlFilename);
                     return true;
                 }
 
@@ -178,7 +192,7 @@ namespace Ict.Tools.CodeGeneration
  *      }
  */
 
-                writer.CreateCode(codeStorage, FXamlFilename, template);
+                writer.CreateCode(codeStorage, FYamlFilename, template);
 
                 // Create the resource file...
                 string ResourceTemplate = templateDir + Path.DirectorySeparatorChar + "resources.resx";

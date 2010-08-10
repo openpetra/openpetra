@@ -36,7 +36,7 @@ class Program
 {
     private static void ProcessFile(string filename, string ASelectedLocalisation)
     {
-        ProcessXAML processor = new ProcessXAML(filename, ASelectedLocalisation);
+        TProcessYAMLForms processor = new TProcessYAMLForms(filename, ASelectedLocalisation);
 
         // report is at the moment the only real different type of screen,
         // because it uses different controls

@@ -33,15 +33,12 @@ using Ict.Common;
 
 namespace Ict.Tools.CodeGeneration
 {
-    /*
-     * This class generally parses an XAML file independent of the kind of winform (report, etc)
-     * The code is stored in TCodeModel
-     * @see http://ict.om.org/PetraWiki/current/index.php/ICTYaml
-     */
-    public class TParseXAML
+    /// This class generally parses an YAML file independent of the kind of winform (report, etc)
+    /// The code is stored in TCodeStorage
+    public class TParseYAMLFormsDefinition
     {
         public TCodeStorage FCodeStorage = null;
-        public TParseXAML(ref TCodeStorage ACodeStorage)
+        public TParseYAMLFormsDefinition(ref TCodeStorage ACodeStorage)
         {
             this.FCodeStorage = ACodeStorage;
         }
@@ -108,9 +105,9 @@ namespace Ict.Tools.CodeGeneration
             // todo
         }
 
-        public Boolean LoadRecursively(string AXamlFilename, string ASelectedLocalisation)
+        public Boolean LoadRecursively(string AYamlFilename, string ASelectedLocalisation)
         {
-            return LoadRecursively(AXamlFilename, ASelectedLocalisation, false, 0);
+            return LoadRecursively(AYamlFilename, ASelectedLocalisation, false, 0);
         }
 
         /**
@@ -118,7 +115,7 @@ namespace Ict.Tools.CodeGeneration
          * it supports inheritance, base elements are overwritten
          * @param depth 0 is the last file that is derived from all base files
          */
-        protected Boolean LoadRecursively(string AXamlFilename,
+        protected Boolean LoadRecursively(string AYamlFilename,
             string ASelectedLocalisation,
             bool AAlreadyGotLocalisation,
             Int32 depth)
@@ -128,8 +125,8 @@ namespace Ict.Tools.CodeGeneration
 
             if ((ASelectedLocalisation != null) && !AAlreadyGotLocalisation)
             {
-                localisedFile = Path.GetDirectoryName(AXamlFilename) + Path.DirectorySeparatorChar +
-                                Path.GetFileNameWithoutExtension(AXamlFilename) + "." + ASelectedLocalisation + ".yaml";
+                localisedFile = Path.GetDirectoryName(AYamlFilename) + Path.DirectorySeparatorChar +
+                                Path.GetFileNameWithoutExtension(AYamlFilename) + "." + ASelectedLocalisation + ".yaml";
 
                 // first check if there is such a file
                 if (!File.Exists(localisedFile))
@@ -140,7 +137,7 @@ namespace Ict.Tools.CodeGeneration
 
             if (localisedFile == null)
             {
-                localisedFile = AXamlFilename;
+                localisedFile = AYamlFilename;
             }
 
             string baseyaml;
@@ -152,11 +149,11 @@ namespace Ict.Tools.CodeGeneration
 
             if ((baseyaml.Length > 0) && baseyaml.EndsWith(".yaml"))
             {
-                LoadRecursively(System.IO.Path.GetDirectoryName(AXamlFilename) +
+                LoadRecursively(System.IO.Path.GetDirectoryName(AYamlFilename) +
                     System.IO.Path.DirectorySeparatorChar +
                     baseyaml,
                     ASelectedLocalisation,
-                    localisedFile != AXamlFilename,
+                    localisedFile != AYamlFilename,
                     depth - 1);
             }
 
@@ -165,7 +162,7 @@ namespace Ict.Tools.CodeGeneration
             if ((depth == 0) && (FCodeStorage.FXmlNodes != null))
             {
                 // apply the tag, so that we know which things have been changed by the last yml file
-                TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML]);
+                TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML]);
             }
 
             TYml2Xml yml2xml = new TYml2Xml(localisedFile);
@@ -175,16 +172,16 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FXmlDocument.Save(localisedFile + ".xml");
 
             FCodeStorage.FXmlNodes = TYml2Xml.ReferenceNodes(FCodeStorage.FXmlDocument);
-            FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
+            FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
 
             if (baseyaml.Length == 0)
             {
                 if (FCodeStorage.FXmlNodes[TYml2Xml.ROOTNODEINTERNAL] == null)
                 {
-                    throw new Exception("TParseXAML.LoadRecursively: YML Document could not be properly parsed");
+                    throw new Exception("TParseYAMLFormsDefinition.LoadRecursively: YML Document could not be properly parsed");
                 }
 
-                if (TXMLParser.GetAttribute((XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML], "BaseYaml").Length > 0)
+                if (TXMLParser.GetAttribute((XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML], "BaseYaml").Length > 0)
                 {
                     throw new Exception("The BaseYaml attribute must come first!");
                 }
@@ -192,7 +189,7 @@ namespace Ict.Tools.CodeGeneration
 
             if (depth == 0)
             {
-                FCodeStorage.FFilename = AXamlFilename;
+                FCodeStorage.FFilename = AYamlFilename;
                 LoadData(FCodeStorage.FXmlNodes);
             }
 
@@ -204,7 +201,7 @@ namespace Ict.Tools.CodeGeneration
 
         protected void LoadData(SortedList nodes)
         {
-            LoadFormProperties((XmlNode)nodes[TParseXAML.ROOTNODEYML]);
+            LoadFormProperties((XmlNode)nodes[TParseYAMLFormsDefinition.ROOTNODEYML]);
             LoadTemplateParameters((XmlNode)nodes["TemplateParameters"]);
             LoadSecurity((XmlNode)nodes["Security"]);
             LoadControls((XmlNode)nodes["Controls"]);
@@ -239,7 +236,7 @@ namespace Ict.Tools.CodeGeneration
                 FMenuSeparatorCount++;
             }
 
-            if (curNode.ParentNode.Name == TParseXAML.ROOTNODEYML)
+            if (curNode.ParentNode.Name == TParseYAMLFormsDefinition.ROOTNODEYML)
             {
                 // add each menu, but obviously not the "Menu" tag
                 XmlNode menuNode = curNode;

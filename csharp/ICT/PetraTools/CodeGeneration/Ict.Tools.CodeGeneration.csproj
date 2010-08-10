@@ -59,10 +59,10 @@
     <Compile Include="CSProjTools.cs" />
     <Compile Include="DataBinding.cs" />
     <Compile Include="FileDiffMerge.cs" />
-    <Compile Include="ParseXAML.cs" />
+    <Compile Include="ParseYAMLFormsDefinition.cs" />
     <Compile Include="InsertIntoRegion.cs" />
     <Compile Include="ProcessTemplate.cs" />
-    <Compile Include="ProcessXAML.cs" />
+    <Compile Include="ProcessYAMLForms.cs" />
     <Compile Include="WriterInterfaces.cs" />
   </ItemGroup>
   <ItemGroup>

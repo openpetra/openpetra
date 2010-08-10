@@ -1008,7 +1008,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddReportParameterImplementaion(ReportPara);
             }
 
-            XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseXAML.ROOTNODEYML];
+            XmlNode rootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
 
             if (TYml2Xml.HasAttribute(rootNode, "UIConnectorType") && TYml2Xml.HasAttribute(rootNode, "UIConnectorCreate"))
             {
