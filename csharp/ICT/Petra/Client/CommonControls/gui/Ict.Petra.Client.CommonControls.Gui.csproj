@@ -59,6 +59,9 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

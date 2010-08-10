@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
@@ -450,7 +451,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.DocumentTypeCategoryList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonnelTablesEnum.DocumentTypeCategoryList),
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeCategoryList),
                     "pm_code_c",
                     "pm_description_c",
                     null);
