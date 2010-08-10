@@ -84,7 +84,7 @@
         <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
         <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
         <echo message="packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine"/>
-        <echo message="addProject: eg. -D:solution=Testing.sln -D:path=Testing\CodeGeneration -D:namespace=Tests.CodeGeneration or -D:solution=Client.sln -D:namespace=Ict.Petra.Client.MFinance.Gui.Test -D:path=Petra\Client\lib\MFinance\Gui"/>
+        <echo message="addProject: eg. -D:solution=Testing.sln -D:path=Testing\CodeGeneration -D:namespace=Tests.CodeGeneration or -D:solution=Client.sln -D:namespace=Ict.Petra.Client.MFinance.Gui.Test -D:path=Petra\Client\lib\MFinance\Gui; for plugins use namespace starting with ClientPlugin. or ServerPlugin.; for PetraTools: Ict.Tools."/>
     </target>
     
     <target name="compilePetraTools" description="compile the PetraTools">

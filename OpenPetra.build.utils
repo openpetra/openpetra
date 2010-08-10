@@ -420,7 +420,6 @@
         string template = String.Empty;
         string solutionHomeRef = String.Empty;
 
-        // TODO templates for plugins, shared etc
         if (ANamespace.StartsWith("Tests."))
         {
             template = "nunit.csproj";
@@ -435,6 +434,26 @@
         {
             template = "server.csproj";
             solutionHomeRef = "ICT/Petra/Server/";
+        }
+        else if (ANamespace.StartsWith("Ict.Petra.Shared."))
+        {
+            template = "shared.csproj";
+            solutionHomeRef = "ICT/Petra/Shared/";
+        }
+        else if (ANamespace.StartsWith("ClientPlugin."))
+        {
+            template = "clientplugin.csproj";
+            solutionHomeRef = "ICT/Petra/ClientPlugins/";
+        }
+        else if (ANamespace.StartsWith("ServerPlugin."))
+        {
+            template = "serverplugin.csproj";
+            solutionHomeRef = "ICT/Petra/ServerPlugins/";
+        }
+        else if (ANamespace.StartsWith("Ict.Tools."))
+        {
+            template = "petratools.csproj";
+            solutionHomeRef = "ICT/PetraTools/";
         }
 
         if (template == String.Empty)
