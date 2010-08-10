@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{11E82D0E-6AC3-4D48-A584-A36B5208B496}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -87,6 +87,13 @@
     <Compile Include="CountrySetup.ManualCode.cs">
       <DependentUpon>CountrySetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrequencySetup.cs" />
+    <Compile Include="FrequencySetup.Designer.cs">
+      <DependentUpon>FrequencySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrequencySetup.ManualCode.cs">
+      <DependentUpon>FrequencySetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MCommon.Gui.Setup.AssemblyInfo.cs" />
     <Compile Include="InternationalPostalTypeSetup.cs" />
     <Compile Include="InternationalPostalTypeSetup.Designer.cs">
@@ -111,6 +118,9 @@
     </Compile>
     <EmbeddedResource Include="CountrySetup.resx">
       <DependentUpon>CountrySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrequencySetup.resx">
+      <DependentUpon>FrequencySetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InternationalPostalTypeSetup.resx">
       <DependentUpon>InternationalPostalTypeSetup.cs</DependentUpon>

@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5EB278CF-DB6B-49BB-8200-4665043831A3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -104,6 +104,13 @@
     <Compile Include="BusinessCodeSetup.ManualCode.cs">
       <DependentUpon>BusinessCodeSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="ContactMethodSetup.cs" />
+    <Compile Include="ContactMethodSetup.Designer.cs">
+      <DependentUpon>ContactMethodSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ContactMethodSetup.ManualCode.cs">
+      <DependentUpon>ContactMethodSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="DenominationCodeSetup.cs" />
     <Compile Include="DenominationCodeSetup.Designer.cs">
       <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
@@ -112,6 +119,20 @@
       <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="Ict.Petra.Client.MPartner.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="InterestCategorySetup.cs" />
+    <Compile Include="InterestCategorySetup.Designer.cs">
+      <DependentUpon>InterestCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InterestCategorySetup.ManualCode.cs">
+      <DependentUpon>InterestCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InterestSetup.cs" />
+    <Compile Include="InterestSetup.Designer.cs">
+      <DependentUpon>InterestSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InterestSetup.ManualCode.cs">
+      <DependentUpon>InterestSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="LocationTypeSetup.cs" />
     <Compile Include="LocationTypeSetup.Designer.cs">
       <DependentUpon>LocationTypeSetup.cs</DependentUpon>
@@ -184,8 +205,17 @@
     <EmbeddedResource Include="BusinessCodeSetup.resx">
       <DependentUpon>BusinessCodeSetup.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ContactMethodSetup.resx">
+      <DependentUpon>ContactMethodSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DenominationCodeSetup.resx">
       <DependentUpon>DenominationCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InterestCategorySetup.resx">
+      <DependentUpon>InterestCategorySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InterestSetup.resx">
+      <DependentUpon>InterestSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LocationTypeSetup.resx">
       <DependentUpon>LocationTypeSetup.cs</DependentUpon>

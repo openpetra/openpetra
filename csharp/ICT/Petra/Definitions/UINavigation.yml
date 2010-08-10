@@ -60,6 +60,7 @@ OpenPetra:
                     Partner-related:           
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
+                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
                         PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
                         Acquisition:   {Label=Setup Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
                         SpecialTypes:  {Label=Setup Special Types, Description=Maintain Special Types, ActionOpenScreen=TFrmPartnerTypeSetup}
@@ -68,6 +69,9 @@ OpenPetra:
                         Occupation:    {Label=Setup Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
                         MaritalStatus: {Label=Setup Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
                         RelationshipCategory: {Label=Setup Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
+                        ContactMethod: {Label=Setup Contact Methods, Description=Maintain Contact Methods, ActionOpenScreen=TFrmContactMethodSetup}   
+                        InterestCategory: {Label=Setup Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
+                        Interest: {Label=Setup Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
                                                 
                     Subscription-related: 
                         Publications: {Label=Setup Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
