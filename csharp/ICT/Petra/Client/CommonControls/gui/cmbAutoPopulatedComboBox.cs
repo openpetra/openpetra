@@ -94,6 +94,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             DenominationList,
+            
+            /// <summary>todoComment</summary>
+            DocumentTypeCategoryList,
 
             /// <summary>todoComment</summary>
             FrequencyList,
@@ -441,6 +444,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DenominationList),
                     "p_denomination_code_c",
                     "p_denomination_name_c",
+                    null);
+                    break;
+
+                case TListTableEnum.DocumentTypeCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonnelTablesEnum.DocumentTypeCategoryList),
+                    "pm_code_c",
+                    "pm_description_c",
                     null);
                     break;
 
@@ -813,6 +825,10 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.DenominationList:
                     cmbAutoPopulated.ColumnWidthCol2 = 330;
+                    break;
+
+                case TListTableEnum.DocumentTypeCategoryList:
+                    cmbAutoPopulated.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.FoundationOwnerList:
