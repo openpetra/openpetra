@@ -46,6 +46,7 @@ RootNode:
             Controls: [rbtDepartures, rbtArrivals]
         chkIncompleteDetails:
             Label: Only list people with incomplete arrival details
+            CheckBoxAttachedLabel: Right
         chkNeedTransport:
             Label: Only list people that need transport from their arrival point
         chkOnlyTravelDay:

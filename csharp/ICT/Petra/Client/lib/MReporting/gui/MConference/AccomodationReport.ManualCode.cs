@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
         private void InitUserControlsManually()
         {
-            ucoConferenceSelection.AddEventHandler(this.ConferenceChanged);
+            ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceChanged);
         }
 
         private void ReadControlsManually(TRptCalculator ACalc, TReportActionEnum AReportAction)

@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Arrival Date", 2.2));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Departure Date", 2.2));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 1.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Comment", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Details", 3.0));
