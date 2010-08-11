@@ -36,6 +36,7 @@ using Ict.Petra.Shared.Interfaces.MConference.WebConnectors;
 #region ManualCode
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MConference;
 #endregion
 namespace Ict.Petra.Shared.Interfaces.MConference
 {
@@ -85,6 +86,11 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
                                       out DateTime ALatestDepartureDate,
                                       out DateTime AStartDate,
                                       out DateTime AEndDate);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
+        bool GetFieldUnits(Int64 AConferenceKey,
+                           TUnitTypeEnum AUnitType,
+                           out DataTable AFieldList,
+                           out String AConferencePrefix);
     }
 
 }

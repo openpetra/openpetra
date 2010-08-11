@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F1A7A1DF-BF17-4E23-87AD-95C38EC25D03}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -95,6 +95,10 @@
     <ProjectReference Include="..\MConference\data\Ict.Petra.Shared.MConference.DataSets.csproj">
       <Project>{7CB1FE91-B2F8-4A1A-81C3-D449A4EFD4AB}</Project>
       <Name>Ict.Petra.Shared.MConference.DataSets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MConference\Ict.Petra.Shared.MConference.csproj">
+      <Project>{E188325F-2EED-4B03-BD27-7D87764500A0}</Project>
+      <Name>Ict.Petra.Shared.MConference</Name>
     </ProjectReference>
     <ProjectReference Include="..\MFinance\data\Ict.Petra.Shared.MFinance.DataSets.csproj">
       <Project>{B8AACF21-2B9B-4CA3-8232-3DCE1E73C5C1}</Project>

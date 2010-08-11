@@ -57,6 +57,7 @@ using Ict.Petra.Server.MConference.WebConnectors;
 #region ManualCode
 using Ict.Petra.Shared .MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MConference;
 #endregion
 namespace Ict.Petra.Server.MConference.Instantiator
 {
@@ -439,6 +440,16 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
                                              out DateTime AEndDate)
         {
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate, out AStartDate, out AEndDate);
+        }
+        
+
+        /// generated method from connector
+        public bool GetFieldUnits(Int64 AConferenceKey,
+                                  TUnitTypeEnum AUnitType,
+                                  out DataTable AFieldList,
+                                  out String AConferencePrefix)
+        {
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AUnitType, out AFieldList, out AConferencePrefix);
         }
     }
 }

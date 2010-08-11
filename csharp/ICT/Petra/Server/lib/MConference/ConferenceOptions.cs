@@ -49,6 +49,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
     /// </summary>
     public class TConferenceOptions
     {
+        private const int SELECTION = 0;
+        private const int UNIT_KEY = 1;
+        private const int UNIT_NAME = 2;
+        private const int CAMPAIGN_CODE = 3;
+        private const int USED_IN_CONFERENCE = 4;
+
         /// <summary>
         /// Get the units which start with the same campaign code as the given unit.
         /// </summary>
@@ -81,14 +87,13 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     String ConferenceCode = ((PUnitRow)UnitTable.Rows[0]).XyzTbdCode;
                     ConferenceCodePrefix = ConferenceCode.Substring(0, 5) + "%";
+
+                    StringCollection operators = new StringCollection();
+                    operators.Add("LIKE");
+                    TemplateRow.XyzTbdCode = ConferenceCodePrefix;
+
+                    UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, operators, null, ReadTransaction);
                 }
-
-                StringCollection operators = new StringCollection();
-                operators.Add("LIKE");
-                TemplateRow.XyzTbdCode = ConferenceCodePrefix;
-
-                UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, operators, null, ReadTransaction);
-                //null, 0, 0);
             }
             finally
             {
@@ -325,6 +330,794 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Get the units which start with the same campaign code as given with the prefix.
+        /// </summary>
+        /// <param name="AUnitKey">Partner Key of the unit from which the campaign options are retrieved</param>
+        /// <param name="AConferenceTable">A table with all the units</param>
+        /// <returns></returns>
+        public static System.Boolean GetCampaignOptions(long AUnitKey,
+            out System.Data.DataTable AConferenceTable)
+        {
+            AConferenceTable = new DataTable();
+            AConferenceTable.Columns.Add("Partner Key", Type.GetType("System.Int64"));
+            AConferenceTable.Columns.Add("Campaign Code");
+            AConferenceTable.Columns.Add("Unit Name");
+
+            String ConferenceCodePrefix = "";
+            PUnitTable UnitTable = new PUnitTable();
+            PUnitRow TemplateRow = UnitTable.NewRowTyped(false);
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetCampaignOptions called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                /* Load data */
+                UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, ReadTransaction);
+
+                if (UnitTable.Rows.Count > 0)
+                {
+                    ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).XyzTbdCode.Substring(0, 5);
+
+                    UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, ReadTransaction,
+                        null, 0, 0);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetCampaignOptions: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            foreach (PUnitRow UnitRow in UnitTable.Rows)
+            {
+                if (!UnitRow.XyzTbdCode.StartsWith(ConferenceCodePrefix, true, null))
+                {
+                    continue;
+                }
+
+                DataRow NewRow = AConferenceTable.NewRow();
+
+                NewRow["Partner Key"] = UnitRow.PartnerKey;
+                NewRow["Campaign Code"] = UnitRow.XyzTbdCode;
+                NewRow["Unit Name"] = UnitRow.UnitName;
+
+                AConferenceTable.Rows.Add(NewRow);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Get specific fields which are related to a conference. AFieldTypes defines which
+        /// fields to retrieve.
+        /// </summary>
+        /// <param name="AConferenceKey">Unit Key of the conference. If it is -1
+        /// all fields will be returned that relate to any confernce.</param>
+        /// <param name="AFieldTypes">Defines the type of the fields to retrieve</param>
+        /// <param name="AFieldsTable">A list of units that relate in to the conference.
+        /// Column 0 is the Unit key
+        /// Column 1 is the Unit name
+        /// Column 2 is the Campaign Code
+        /// Column 3 indicates if the unit is directly used by the current conference</param>
+        /// <param name="AConferencePrefix">The prefix code of the conference</param>
+        /// <returns>True if successful. Otherwise false</returns>
+        public static bool GetFieldUnits(Int64 AConferenceKey, TUnitTypeEnum AFieldTypes, out DataTable AFieldsTable, out String AConferencePrefix)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+            AFieldsTable = new DataTable("Field Units");
+            AConferencePrefix = "";
+            PUnitTable UnitTable;
+            DataTable TmpTable;
+
+            PmShortTermApplicationTable ShortTermerTable = new PmShortTermApplicationTable();
+            PmShortTermApplicationRow TemplateRow = (PmShortTermApplicationRow)ShortTermerTable.NewRow();
+
+            AFieldsTable.Columns.Add("Selection", System.Type.GetType("System.Boolean"));
+            AFieldsTable.Columns.Add("Unit Key", System.Type.GetType("System.Int64"));
+            AFieldsTable.Columns.Add("Unit Name", System.Type.GetType("System.String"));
+            AFieldsTable.Columns.Add("Campaign Code", System.Type.GetType("System.String"));
+            AFieldsTable.Columns.Add("Used_in_Conference", System.Type.GetType("System.Boolean"));
+
+            AConferencePrefix = TConferenceOptions.GetConferencePrefix(AConferenceKey);
+
+            switch (AFieldTypes)
+            {
+                case TUnitTypeEnum.utSendingFields:
+                    return TConferenceOptions.GetSendingFields(AConferenceKey, ref AFieldsTable);
+
+                case TUnitTypeEnum.utReceivingFields:
+                    return TConferenceOptions.GetReceivingFields(AConferenceKey, ref AFieldsTable);
+
+                case TUnitTypeEnum.utCampaignOptions:
+
+                    if (TConferenceOptions.GetCampaignOptions(AConferenceKey, out TmpTable))
+                    {
+                        foreach (DataRow Row in TmpTable.Rows)
+                        {
+                            DataRow NewRow = AFieldsTable.NewRow();
+
+                            NewRow[SELECTION] = false;
+                            NewRow[UNIT_KEY] = Row["Partner Key"];
+                            NewRow[UNIT_NAME] = Row["Unit Name"];
+                            NewRow[CAMPAIGN_CODE] = Row["Campaign Code"];
+                            NewRow[USED_IN_CONFERENCE] = true;
+
+                            AFieldsTable.Rows.Add(NewRow);
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+
+                default:
+                    break;
+            }
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetFieldUnits called!");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                StringCollection FieldList = new StringCollection();
+                FieldList.Add(PmShortTermApplicationTable.GetStFieldChargedDBName());
+                FieldList.Add(PmShortTermApplicationTable.GetConfirmedOptionCodeDBName());
+                FieldList.Add(PmShortTermApplicationTable.GetRegistrationOfficeDBName());
+
+                ShortTermerTable = PmShortTermApplicationAccess.LoadAll(FieldList, ReadTransaction);
+
+                long LastUnitKey = 0;
+                long NewUnitKey = 0;
+                bool IsUsedInOneConference = false;
+
+                String ConfirmedOptionCode = "";
+                System.Type StringType = System.Type.GetType("System.String");
+
+                String SearchedColumnName = "";
+
+                switch (AFieldTypes)
+                {
+                    case TUnitTypeEnum.utChargedFields:
+                        SearchedColumnName = PmShortTermApplicationTable.GetStFieldChargedDBName();
+                        break;
+
+                    case TUnitTypeEnum.utRegisteringFields:
+                        SearchedColumnName = PmShortTermApplicationTable.GetRegistrationOfficeDBName();
+                        break;
+
+                    default:
+                        break;
+                }
+
+                foreach (DataRow ShortTermerRow in ShortTermerTable.Select("", SearchedColumnName))
+                {
+                    if ((ShortTermerRow[SearchedColumnName] != null)
+                        && (ShortTermerRow[SearchedColumnName].ToString().Length > 0))
+                    {
+                        NewUnitKey = (long)ShortTermerRow[SearchedColumnName];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (LastUnitKey != NewUnitKey)
+                    {
+                        if ((AFieldsTable.Rows.Count > 0)
+                            && (IsUsedInOneConference))
+                        {
+                            AFieldsTable.Rows[AFieldsTable.Rows.Count - 1][USED_IN_CONFERENCE] = true;
+                        }
+
+                        IsUsedInOneConference = false;
+                    }
+
+                    // We have to check from every shorttermer if the charged field is used
+                    // in this conference
+                    if (IsUsedInOneConference)
+                    {
+                        continue;
+                    }
+
+                    if (ShortTermerRow[PmShortTermApplicationTable.GetConfirmedOptionCodeDBName()].GetType() == StringType)
+                    {
+                        ConfirmedOptionCode = (string)ShortTermerRow[PmShortTermApplicationTable.GetConfirmedOptionCodeDBName()];
+                    }
+                    else
+                    {
+                        ConfirmedOptionCode = "";
+                    }
+
+                    if (ConfirmedOptionCode.StartsWith(AConferencePrefix))
+                    {
+                        IsUsedInOneConference = true;
+                    }
+
+                    if (LastUnitKey == NewUnitKey)
+                    {
+                        continue;
+                    }
+
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(NewUnitKey, ReadTransaction);
+
+                    if (UnitTable.Rows.Count > 0)
+                    {
+                        DataRow ResultRow = AFieldsTable.NewRow();
+
+                        ResultRow[SELECTION] = false;
+                        ResultRow[UNIT_KEY] = NewUnitKey;
+                        ResultRow[UNIT_NAME] = UnitTable[0][PUnitTable.GetUnitNameDBName()];
+                        ResultRow[CAMPAIGN_CODE] = ConfirmedOptionCode;
+                        ResultRow[USED_IN_CONFERENCE] = IsUsedInOneConference;
+
+                        AFieldsTable.Rows.Add(ResultRow);
+                        LastUnitKey = NewUnitKey;
+                    }
+                }
+
+                // Check for the previous entry the "IsUsedInConference" field
+                if ((AFieldsTable.Rows.Count > 0)
+                    && (IsUsedInOneConference))
+                {
+                    AFieldsTable.Rows[AFieldsTable.Rows.Count - 1][USED_IN_CONFERENCE] = true;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetFieldUnits: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        private static bool GetSendingFields(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            if (AConferenceKey == -1)
+            {
+                return GetAllSendingFields(AConferenceKey, ref AFieldsTable);
+            }
+
+            return GetSendingFieldsForOneConference(AConferenceKey, ref AFieldsTable);
+        }
+
+        private static bool GetSendingFieldsForOneConference(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PUnitTable UnitTable;
+
+            PcAttendeeTable AttendeeTable = new PcAttendeeTable();
+            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetSendingFieldsForOneConference called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                StringCollection FieldList = new StringCollection();
+                FieldList.Add(PcAttendeeTable.GetHomeOfficeKeyDBName());
+
+                AttendeeTable = PcAttendeeAccess.LoadViaPcConference(AConferenceKey, FieldList, ReadTransaction);
+
+                long LastUnitKey = 0;
+                long NewUnitKey = 0;
+
+                String HomeOfficeColumnName = PcAttendeeTable.GetHomeOfficeKeyDBName();
+
+                foreach (DataRow AttendeeRow in AttendeeTable.Select("", HomeOfficeColumnName))
+                {
+                    if (AttendeeRow[HomeOfficeColumnName] != null)
+                    {
+                        NewUnitKey = (long)AttendeeRow[HomeOfficeColumnName];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (LastUnitKey == NewUnitKey)
+                    {
+                        continue;
+                    }
+
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(NewUnitKey, ReadTransaction);
+
+                    if (UnitTable.Rows.Count > 0)
+                    {
+                        DataRow ResultRow = AFieldsTable.NewRow();
+
+                        ResultRow[SELECTION] = false;
+                        ResultRow[UNIT_KEY] = NewUnitKey;
+                        ResultRow[UNIT_NAME] = UnitTable[0][PUnitTable.GetUnitNameDBName()];
+                        ResultRow[USED_IN_CONFERENCE] = true;
+
+                        AFieldsTable.Rows.Add(ResultRow);
+                        LastUnitKey = NewUnitKey;
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetSendingFieldsForOneConference: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        private static bool GetAllSendingFields(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PUnitTable UnitTable;
+
+            PcAttendeeTable AttendeeTable = new PcAttendeeTable();
+            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetAllSendingFields called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                StringCollection FieldList = new StringCollection();
+                FieldList.Add(PcAttendeeTable.GetHomeOfficeKeyDBName());
+
+                AttendeeTable = PcAttendeeAccess.LoadAll(FieldList, ReadTransaction);
+
+                long LastUnitKey = 0;
+                long NewUnitKey = 0;
+
+                String HomeOfficeColumnName = PcAttendeeTable.GetHomeOfficeKeyDBName();
+
+                foreach (DataRow AttendeeRow in AttendeeTable.Select("", HomeOfficeColumnName))
+                {
+                    if (AttendeeRow[HomeOfficeColumnName] != null)
+                    {
+                        NewUnitKey = (long)AttendeeRow[HomeOfficeColumnName];
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (LastUnitKey == NewUnitKey)
+                    {
+                        continue;
+                    }
+
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(NewUnitKey, ReadTransaction);
+
+                    if (UnitTable.Rows.Count > 0)
+                    {
+                        DataRow ResultRow = AFieldsTable.NewRow();
+
+                        ResultRow[SELECTION] = false;
+                        ResultRow[UNIT_KEY] = NewUnitKey;
+                        ResultRow[UNIT_NAME] = UnitTable[0][PUnitTable.GetUnitNameDBName()];
+                        ResultRow[USED_IN_CONFERENCE] = true;
+
+                        AFieldsTable.Rows.Add(ResultRow);
+                        LastUnitKey = NewUnitKey;
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetAllSendingFields: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        private static bool GetReceivingFields(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            if (AConferenceKey == -1)
+            {
+                return GetAllReceivingFields(AConferenceKey, ref AFieldsTable);
+            }
+
+            return GetReceivingFieldsForOneConference(AConferenceKey, ref AFieldsTable);
+        }
+
+        private static bool GetReceivingFieldsForOneConference(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetReceivingFieldsForOneConference called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                String PartnerKeyDBName = PcAttendeeTable.GetPartnerKeyDBName();
+                PcAttendeeTable AttendeeTable;
+                StringCollection FieldList = new StringCollection();
+                FieldList.Add(PartnerKeyDBName);
+                AttendeeTable = PcAttendeeAccess.LoadViaPcConference(AConferenceKey, FieldList, ReadTransaction);
+
+                foreach (DataRow Row in AttendeeTable.Rows)
+                {
+                    long PartnerKey = (long)Row[PartnerKeyDBName];
+
+                    GetReceivingFieldFromPartnerTable(PartnerKey, ref AFieldsTable);
+                    GetReceivingFieldFromShortTermTable(PartnerKey, ref AFieldsTable);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetReceivingFieldsForOneConference: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        private static bool GetAllReceivingFields(long AConferenceKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetReceivingFields called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                OdbcParameter[] ParametersArray;
+
+                ParametersArray = new OdbcParameter[0];
+
+                DataSet TmpDS = DBAccess.GDBAccessObj.Select(
+                    "SELECT PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetPartnerKeyDBName() +
+                    ", PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetUnitNameDBName() +
+                    " FROM PUB_" + PUnitTable.GetTableDBName() +
+                    ", PUB_" + PPartnerTable.GetTableDBName() + ", " +
+                    "PUB_" + PPartnerTypeTable.GetTableDBName() +
+                    " WHERE PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetPartnerKeyDBName() +
+                    " = PUB_" + PPartnerTable.GetTableDBName() + '.' + PPartnerTable.GetPartnerKeyDBName() +
+                    " AND PUB_" + PPartnerTypeTable.GetTableDBName() + '.' + PPartnerTypeTable.GetPartnerKeyDBName() +
+                    " = PUB_" + PPartnerTable.GetTableDBName() + '.' + PPartnerTable.GetPartnerKeyDBName() +
+                    " AND PUB_" + PPartnerTable.GetTableDBName() + '.' + PPartnerTable.GetStatusCodeDBName() + " = \"ACTIVE\"" +
+                    " AND PUB_" + PPartnerTypeTable.GetTableDBName() + '.' + PPartnerTypeTable.GetTypeCodeDBName() + " = \"LEDGER\"" +
+                    " ORDER BY PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetUnitNameDBName() + " ASC",
+                    "TempTable", ReadTransaction, ParametersArray);
+
+                DataTable ResultTale = TmpDS.Tables[0];
+
+                for (int Counter = 0; Counter < ResultTale.Rows.Count; ++Counter)
+                {
+                    DataRow NewRow = AFieldsTable.NewRow();
+
+                    NewRow[SELECTION] = false;
+                    NewRow[UNIT_KEY] = ResultTale.Rows[Counter][PUnitTable.GetPartnerKeyDBName()];
+                    NewRow[UNIT_NAME] = ResultTale.Rows[Counter][PUnitTable.GetUnitNameDBName()];
+                    NewRow[USED_IN_CONFERENCE] = true;
+
+                    AFieldsTable.Rows.Add(NewRow);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetReceivingFields: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the OMer field from the person and family record of the partner
+        /// to the data table if it is not already there.
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AFieldsTable"></param>
+        /// <returns></returns>
+        private static bool GetReceivingFieldFromPartnerTable(long APartnerKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetReceivingFieldFromPartnerTable called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PFamilyTable FamilyTable;
+                PPersonTable PersonTable;
+
+                PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                if (PersonTable.Rows.Count > 0)
+                {
+                    PPersonRow PersonRow = (PPersonRow)PersonTable[0];
+
+                    if (!PersonRow.IsFieldKeyNull())
+                    {
+                        AddFieldToTable(PersonRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
+                    }
+
+                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(PersonRow.FamilyKey, ReadTransaction);
+
+                    if (FamilyTable.Rows.Count > 0)
+                    {
+                        PFamilyRow FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
+
+                        if (!FamilyRow.IsFieldKeyNull())
+                        {
+                            AddFieldToTable(FamilyRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetReceivingFieldFromPartnerTable: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Adds the confirmed option code to the data table, using the values
+        /// from the shorttermtable of the current partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AFieldsTable"></param>
+        /// <returns></returns>
+        private static bool GetReceivingFieldFromShortTermTable(long APartnerKey, ref DataTable AFieldsTable)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 9)
+            {
+                Console.WriteLine("GetReceivingFieldFromShortTermTable called!");
+            }
+#endif
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PmShortTermApplicationTable ShortTermTable;
+
+                ShortTermTable = PmShortTermApplicationAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
+
+                foreach (PmShortTermApplicationRow Row in ShortTermTable.Rows)
+                {
+                    if (!Row.IsStConfirmedOptionNull())
+                    {
+                        AddFieldToTable(Row.StConfirmedOption, ref AFieldsTable, ref ReadTransaction);
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetReceivingFieldFromShortTermTable: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return true;
+        }
+
+        private static bool AddFieldToTable(long AFieldKey, ref DataTable AFieldsTable, ref TDBTransaction ATransaction)
+        {
+            // First check if the unit is already in the table
+            foreach (DataRow Row in AFieldsTable.Rows)
+            {
+                if ((long)Row[UNIT_KEY] == AFieldKey)
+                {
+                    return true;
+                }
+            }
+
+            bool IsLedger = false;
+
+            PUnitTable UnitTable;
+            PPartnerTypeTable PartnerTypeTable;
+
+            StringCollection FieldList = new StringCollection();
+
+            FieldList.Add(PUnitTable.GetUnitNameDBName());
+
+            UnitTable = PUnitAccess.LoadByPrimaryKey(AFieldKey, FieldList, ATransaction);
+            PartnerTypeTable = PPartnerTypeAccess.LoadViaPPartner(AFieldKey, ATransaction);
+
+            foreach (PPartnerTypeRow PartnerTypeRow in PartnerTypeTable.Rows)
+            {
+                if (PartnerTypeRow.TypeCode == "LEDGER")
+                {
+                    IsLedger = true;
+                    break;
+                }
+            }
+
+            if (!IsLedger)
+            {
+                return false;
+            }
+
+            if (UnitTable.Rows.Count > 0)
+            {
+                DataRow NewRow = AFieldsTable.NewRow();
+
+                NewRow[SELECTION] = false;
+                NewRow[UNIT_KEY] = AFieldKey;
+                NewRow[UNIT_NAME] = UnitTable.Rows[0][PUnitTable.GetUnitNameDBName()];
+                NewRow[USED_IN_CONFERENCE] = true;
+
+                AFieldsTable.Rows.Add(NewRow);
+            }
+
+            return true;
+        }
+
+        private static String GetConferencePrefix(long AConferenceKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            String ConferencePrefix = "";
+            PUnitTable UnitTable;
+
+#if DEBUGMODE
+            if (TSrvSetting.DL >= 7)
+            {
+                Console.WriteLine("GetCampaignPrefix: called.");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                UnitTable = PUnitAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+
+                if (UnitTable.Rows.Count > 0)
+                {
+                    ConferencePrefix = (string)UnitTable.Rows[0][PUnitTable.GetXyzTbdCodeDBName()];
+
+                    if (ConferencePrefix.Length > 5)
+                    {
+                        ConferencePrefix = ConferencePrefix.Substring(0, 5);
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TSrvSetting.DL >= 7)
+                    {
+                        Console.WriteLine("GetCampaignPrefix: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return ConferencePrefix;
         }
     }
 }

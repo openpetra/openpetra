@@ -757,7 +757,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                 if ((StaffDataRow.StartOfCommitment < DateTime.Today)
                     && (StaffDataRow.IsEndOfCommitmentNull()
                         || (!StaffDataRow.IsEndOfCommitmentNull()
-                            && (StaffDataRow.EndOfCommitment > DateTime.Today))))
+                            && (StaffDataRow.EndOfCommitment > DateTime.Today)))
+                    && !StaffDataRow.IsReceivingFieldNull())
                 {
                     if (ATargetFieldList.Contains(StaffDataRow.ReceivingField.ToString()))
                     {
