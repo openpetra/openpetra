@@ -47,6 +47,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Cacheable.cs" />
-    <Compile Include="Types..cs" />
+    <Compile Include="Types.cs" />
   </ItemGroup>
 </Project>
