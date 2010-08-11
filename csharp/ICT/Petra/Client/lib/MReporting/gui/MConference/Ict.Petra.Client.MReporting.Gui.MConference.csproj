@@ -48,6 +48,9 @@
     <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MConference">
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MConference.DataSets">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataSets.dll</HintPath>
     </Reference>
@@ -134,6 +137,8 @@
     <Compile Include="AttendeeReport.Designer.cs">
       <DependentUpon>AttendeeReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="CampaignReport.cs" />
+    <Compile Include="ChargedFieldReport.cs" />
     <Compile Include="ChildrenReport.cs" />
     <Compile Include="ChildrenReport.Designer.cs">
       <DependentUpon>ChildrenReport.cs</DependentUpon>
@@ -164,6 +169,9 @@
     <Compile Include="FieldReports.Designer.cs">
       <DependentUpon>FieldReports.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldReports.ManualCode.cs">
+      <DependentUpon>FieldReports.cs</DependentUpon>
+    </Compile>
     <Compile Include="GroupReports.cs" />
     <Compile Include="GroupReports.Designer.cs">
       <DependentUpon>GroupReports.cs</DependentUpon>
@@ -180,10 +188,13 @@
     <Compile Include="PresentAttendeeReport.Designer.cs">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ReceivingFieldReport.cs" />
+    <Compile Include="RegisteringFieldReport.cs" />
     <Compile Include="SelectCampaignOption.cs" />
     <Compile Include="SelectCampaignOption.Designer.cs">
       <DependentUpon>SelectCampaignOption.cs</DependentUpon>
     </Compile>
+    <Compile Include="SendingFieldReport.cs" />
     <Compile Include="TransportReport.cs" />
     <Compile Include="TransportReport.Designer.cs">
       <DependentUpon>TransportReport.cs</DependentUpon>

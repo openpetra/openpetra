@@ -69,8 +69,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoConferenceSelection = new Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection();
-            this.tpgReportSorting = new System.Windows.Forms.TabPage();
-            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
+            this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
+            this.grpSelectFields = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.grdFields = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.pnlButtons = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnSelectAll = new System.Windows.Forms.Button();
+            this.btnDeselectAll = new System.Windows.Forms.Button();
+            this.grpMode = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtFull = new System.Windows.Forms.RadioButton();
+            this.rbtSummaries = new System.Windows.Forms.RadioButton();
+            this.grpOptions = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.chkFinancialReport = new System.Windows.Forms.CheckBox();
+            this.lblFinancialReport = new System.Windows.Forms.Label();
+            this.chkAcceptedApplications = new System.Windows.Forms.CheckBox();
+            this.lblAcceptedApplications = new System.Windows.Forms.Label();
+            this.chkExtraCosts = new System.Windows.Forms.CheckBox();
+            this.lblExtraCosts = new System.Windows.Forms.Label();
+            this.cmbSignOffLines = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblSignOffLines = new System.Windows.Forms.Label();
+            this.grpChargedFields = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbChargedFields = new Ict.Common.Controls.TCmbAutoComplete();
+            this.lblChargedFields = new System.Windows.Forms.Label();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -108,7 +132,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
-            this.tpgReportSorting.SuspendLayout();
+            this.tpgAdditionalSettings.SuspendLayout();
+            this.grpSelectFields.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.pnlButtons.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.grpMode.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.grpOptions.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.grpChargedFields.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -129,19 +163,255 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgReportSorting
+            // tpgAdditionalSettings
             //
-            this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
-            this.tpgReportSorting.Name = "tpgReportSorting";
-            this.tpgReportSorting.AutoSize = true;
-            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
+            this.tpgAdditionalSettings.Location = new System.Drawing.Point(2,2);
+            this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
+            this.tpgAdditionalSettings.AutoSize = true;
+            this.tpgAdditionalSettings.Controls.Add(this.grpChargedFields);
+            this.tpgAdditionalSettings.Controls.Add(this.grpOptions);
+            this.tpgAdditionalSettings.Controls.Add(this.grpMode);
+            this.tpgAdditionalSettings.Controls.Add(this.grpSelectFields);
             //
-            // ucoReportSorting
+            // grpSelectFields
             //
-            this.ucoReportSorting.Name = "ucoReportSorting";
-            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgReportSorting.Text = "Sorting";
-            this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grpSelectFields.Name = "grpSelectFields";
+            this.grpSelectFields.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpSelectFields.AutoSize = true;
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.grpSelectFields.Controls.Add(this.tableLayoutPanel1);
+            //
+            // grdFields
+            //
+            this.grdFields.Location = new System.Drawing.Point(2,2);
+            this.grdFields.Name = "grdFields";
+            this.grdFields.Size = new System.Drawing.Size(500, 120);
+            this.grdFields.DoubleClick += new System.EventHandler(this.grdFieldDoubleClick);
+            //
+            // pnlButtons
+            //
+            this.pnlButtons.Location = new System.Drawing.Point(2,2);
+            this.pnlButtons.Name = "pnlButtons";
+            this.pnlButtons.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.pnlButtons.Controls.Add(this.tableLayoutPanel2);
+            //
+            // btnSelectAll
+            //
+            this.btnSelectAll.Location = new System.Drawing.Point(2,2);
+            this.btnSelectAll.Name = "btnSelectAll";
+            this.btnSelectAll.AutoSize = true;
+            this.btnSelectAll.Click += new System.EventHandler(this.SelectAll);
+            this.btnSelectAll.Text = "Select All";
+            //
+            // btnDeselectAll
+            //
+            this.btnDeselectAll.Location = new System.Drawing.Point(2,2);
+            this.btnDeselectAll.Name = "btnDeselectAll";
+            this.btnDeselectAll.AutoSize = true;
+            this.btnDeselectAll.Click += new System.EventHandler(this.DeselectAll);
+            this.btnDeselectAll.Text = "Deselect All";
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.btnSelectAll, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDeselectAll, 1, 0);
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.grdFields, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pnlButtons, 0, 1);
+            this.grpSelectFields.Text = "Select Fields";
+            //
+            // grpMode
+            //
+            this.grpMode.Name = "grpMode";
+            this.grpMode.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpMode.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.grpMode.Controls.Add(this.tableLayoutPanel3);
+            //
+            // rbtFull
+            //
+            this.rbtFull.Location = new System.Drawing.Point(2,2);
+            this.rbtFull.Name = "rbtFull";
+            this.rbtFull.AutoSize = true;
+            this.rbtFull.Text = "Full";
+            //
+            // rbtSummaries
+            //
+            this.rbtSummaries.Location = new System.Drawing.Point(2,2);
+            this.rbtSummaries.Name = "rbtSummaries";
+            this.rbtSummaries.AutoSize = true;
+            this.rbtSummaries.Text = "Summaries";
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rbtFull, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtSummaries, 0, 1);
+            this.grpMode.Text = "Mode";
+            //
+            // grpOptions
+            //
+            this.grpOptions.Name = "grpOptions";
+            this.grpOptions.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpOptions.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.grpOptions.Controls.Add(this.tableLayoutPanel4);
+            //
+            // chkFinancialReport
+            //
+            this.chkFinancialReport.Location = new System.Drawing.Point(2,2);
+            this.chkFinancialReport.Name = "chkFinancialReport";
+            this.chkFinancialReport.Size = new System.Drawing.Size(30, 28);
+            this.chkFinancialReport.Text = "";
+            this.chkFinancialReport.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblFinancialReport
+            //
+            this.lblFinancialReport.Location = new System.Drawing.Point(2,2);
+            this.lblFinancialReport.Name = "lblFinancialReport";
+            this.lblFinancialReport.AutoSize = true;
+            this.lblFinancialReport.Text = "Financial Report:";
+            this.lblFinancialReport.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblFinancialReport.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblFinancialReport.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // chkAcceptedApplications
+            //
+            this.chkAcceptedApplications.Location = new System.Drawing.Point(2,2);
+            this.chkAcceptedApplications.Name = "chkAcceptedApplications";
+            this.chkAcceptedApplications.Size = new System.Drawing.Size(30, 28);
+            this.chkAcceptedApplications.Text = "";
+            this.chkAcceptedApplications.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblAcceptedApplications
+            //
+            this.lblAcceptedApplications.Location = new System.Drawing.Point(2,2);
+            this.lblAcceptedApplications.Name = "lblAcceptedApplications";
+            this.lblAcceptedApplications.AutoSize = true;
+            this.lblAcceptedApplications.Text = "Accepted Applications Only:";
+            this.lblAcceptedApplications.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblAcceptedApplications.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblAcceptedApplications.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // chkExtraCosts
+            //
+            this.chkExtraCosts.Location = new System.Drawing.Point(2,2);
+            this.chkExtraCosts.Name = "chkExtraCosts";
+            this.chkExtraCosts.Size = new System.Drawing.Size(30, 28);
+            this.chkExtraCosts.Text = "";
+            this.chkExtraCosts.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblExtraCosts
+            //
+            this.lblExtraCosts.Location = new System.Drawing.Point(2,2);
+            this.lblExtraCosts.Name = "lblExtraCosts";
+            this.lblExtraCosts.AutoSize = true;
+            this.lblExtraCosts.Text = "List Extra Costs:";
+            this.lblExtraCosts.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExtraCosts.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblExtraCosts.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // cmbSignOffLines
+            //
+            this.cmbSignOffLines.Location = new System.Drawing.Point(2,2);
+            this.cmbSignOffLines.Name = "cmbSignOffLines";
+            this.cmbSignOffLines.Size = new System.Drawing.Size(150, 28);
+            this.cmbSignOffLines.Items.AddRange(new object[] {"no Sign Off Lines","print Financial Sign Off Lines","print Attendance Sign Off Lines"});
+            //
+            // lblSignOffLines
+            //
+            this.lblSignOffLines.Location = new System.Drawing.Point(2,2);
+            this.lblSignOffLines.Name = "lblSignOffLines";
+            this.lblSignOffLines.AutoSize = true;
+            this.lblSignOffLines.Text = "Sign Off Lines:";
+            this.lblSignOffLines.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblSignOffLines.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblSignOffLines.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 4;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.lblFinancialReport, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblAcceptedApplications, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.lblExtraCosts, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.lblSignOffLines, 0, 3);
+            this.tableLayoutPanel4.Controls.Add(this.chkFinancialReport, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkAcceptedApplications, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.chkExtraCosts, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.cmbSignOffLines, 1, 3);
+            this.grpOptions.Text = "Options";
+            //
+            // grpChargedFields
+            //
+            this.grpChargedFields.Name = "grpChargedFields";
+            this.grpChargedFields.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpChargedFields.AutoSize = true;
+            //
+            // tableLayoutPanel5
+            //
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.grpChargedFields.Controls.Add(this.tableLayoutPanel5);
+            //
+            // cmbChargedFields
+            //
+            this.cmbChargedFields.Location = new System.Drawing.Point(2,2);
+            this.cmbChargedFields.Name = "cmbChargedFields";
+            this.cmbChargedFields.Size = new System.Drawing.Size(150, 28);
+            this.cmbChargedFields.Items.AddRange(new object[] {"leave data as it is","charge Sending Field","charge Receiving Field","charge Registering Field"});
+            //
+            // lblChargedFields
+            //
+            this.lblChargedFields.Location = new System.Drawing.Point(2,2);
+            this.lblChargedFields.Name = "lblChargedFields";
+            this.lblChargedFields.AutoSize = true;
+            this.lblChargedFields.Text = "If charged field is not set:";
+            this.lblChargedFields.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblChargedFields.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblChargedFields.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.lblChargedFields, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.cmbChargedFields, 1, 0);
+            this.grpChargedFields.Text = "Charged Fields";
+            this.tpgAdditionalSettings.Text = "Additional Settings";
+            this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgColumns
             //
@@ -162,7 +432,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
-            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
+            this.tabReportSettings.Controls.Add(this.tpgAdditionalSettings);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
@@ -425,7 +695,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(700, 500);
+            this.ClientSize = new System.Drawing.Size(700, 550);
 
             this.Controls.Add(this.tabReportSettings);
             this.Controls.Add(this.tbrMain);
@@ -435,7 +705,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmFieldReports";
-            this.Text = "Charged Field Report";
+            this.Text = "";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -447,7 +717,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
-            this.tpgReportSorting.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.grpChargedFields.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.grpOptions.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.grpMode.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlButtons.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.grpSelectFields.ResumeLayout(false);
+            this.tpgAdditionalSettings.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -458,8 +738,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection ucoConferenceSelection;
-        private System.Windows.Forms.TabPage tpgReportSorting;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
+        private System.Windows.Forms.TabPage tpgAdditionalSettings;
+        private System.Windows.Forms.GroupBox grpSelectFields;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private Ict.Common.Controls.TSgrdDataGridPaged grdFields;
+        private System.Windows.Forms.Panel pnlButtons;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Button btnSelectAll;
+        private System.Windows.Forms.Button btnDeselectAll;
+        private System.Windows.Forms.GroupBox grpMode;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.RadioButton rbtFull;
+        private System.Windows.Forms.RadioButton rbtSummaries;
+        private System.Windows.Forms.GroupBox grpOptions;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.CheckBox chkFinancialReport;
+        private System.Windows.Forms.Label lblFinancialReport;
+        private System.Windows.Forms.CheckBox chkAcceptedApplications;
+        private System.Windows.Forms.Label lblAcceptedApplications;
+        private System.Windows.Forms.CheckBox chkExtraCosts;
+        private System.Windows.Forms.Label lblExtraCosts;
+        private Ict.Common.Controls.TCmbAutoComplete cmbSignOffLines;
+        private System.Windows.Forms.Label lblSignOffLines;
+        private System.Windows.Forms.GroupBox grpChargedFields;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private Ict.Common.Controls.TCmbAutoComplete cmbChargedFields;
+        private System.Windows.Forms.Label lblChargedFields;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

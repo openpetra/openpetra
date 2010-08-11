@@ -1,12 +1,13 @@
 RootNode:
     BaseYaml: ConferenceReportingForm.yaml
     FormType: report
-    FormTitle: Charged Field Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
-    TemplateParameters:
-        XMLFILES: [Conference\\\\chargedfieldreport.xml,Conference\\\\conference.xml]
-        REPORTNAME: Charged Field Report
-        CURRENTREPORT: Charged Field Report
+    WindowHeight: 550
+    TemplateParameters:   
+        #~ REPORTNAME  and CURRENTREPORT and XMLFILES will be defined in derived classes (SendingFieldReport, ReceivingFieldReport, ...)
+        XMLFILES: BLANK
+        REPORTNAME: BLANK
+        CURRENTREPORT: BLANK
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -14,50 +15,88 @@ RootNode:
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [CONFERENCE]
+    Actions:
+        actSelectAll:
+            ActionClick: SelectAll
+        actDeselectAll:
+            ActionClick: DeselectAll
     Controls:
         tpgGeneralSettings:
             Label: General Settings
             Controls: [ucoConferenceSelection]
             Order: AlwaysFirst
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
-        tpgColumns:
-            Controls: [ucoReportColumns]
+        tpgAdditionalSettings:
+            Label: Additional Settings
+            Controls: [grpSelectFields, grpMode, grpOptions, grpChargedFields]
             Order: AlwaysLast
-        #~ tpgAdditionalSettings:
-            #~ Label: Travel Selection
-            #~ Controls: [grpListing, grpArrivalDeparture]
-            
-        ucoReportColumns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
+        
         ucoConferenceSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-        #~ grpListing:
-            #~ Label: Listing
-            #~ Controls: [chkIncompleteDetails, chkNeedTransport, chkOnlyTravelDay, dtpTravelDay]
-        #~ grpArrivalDeparture:
-            #~ Label:
-            #~ Controls: [rbtDepartures, rbtArrivals]
-        #~ chkIncompleteDetails:
-            #~ Label: Only list people with incomplete arrival details
-        #~ chkNeedTransport:
-            #~ Label: Only list people that need transport from their arrival point
-        #~ chkOnlyTravelDay:
-            #~ Label: Only list people arriving on this day
-            #~ OnChange: chkTravelDayChanged
-        #~ dtpTravelDay:
-            #~ Label: Select Date
-        #~ rbtDepartures:
-            #~ Label: List Departures
-            #~ OnChange: rbtArrivalDepartureChanged
-        #~ rbtArrivals:
-            #~ Label: List Arrivals
+        
+        grpSelectFields:
+            Dock: Top
+            Label: Select Fields
+            Controls: [grdFields, pnlButtons]
+        grpMode:
+            Dock: Top
+            Label: Mode
+            Controls: [rbtFull, rbtSummaries]
+        grpOptions:
+            Dock: Top
+            Label: Options
+            Controls: [chkFinancialReport, chkAcceptedApplications, chkExtraCosts, cmbSignOffLines]
+        grpChargedFields:
+            Dock: Top
+            Label: Charged Fields
+            Controls: [cmbChargedFields]
+        grdFields:
+            Height: 120
+            Width: 500
+            ActionDoubleClick: grdFieldDoubleClick
+        pnlButtons:
+            Controls:
+                Row1: [btnSelectAll, btnDeselectAll]
+                
+        btnSelectAll:
+            Label: Select All
+            Action: actSelectAll
+        btnDeselectAll:
+            Label: Deselect All
+            Action: actDeselectAll
+        rbtFull:
+            Label: Full
+        rbtSummaries:
+            Label: Summaries
+        chkFinancialReport:
+            Label: Financial Report
+        chkAcceptedApplications:
+            Label: Accepted Applications Only
+        chkExtraCosts:
+            Label: List Extra Costs
+        cmbSignOffLines:
+            Label: Sign Off Lines
+            #~ If the OptionalValues are changed, they need to be changed as well in chargedfieldreports.xml, receivingfieldreport.xml, registeringfieldreport.xml, sendingfieldreport.xml and campaignreport.xml
+            OptionalValues: [no Sign Off Lines, print Financial Sign Off Lines, print Attendance Sign Off Lines]
+        cmbChargedFields:
+            Label: If charged field is not set
+            #~ If the OptionalValues are changed, they need to be changed as well in chargedfieldreports.xml, receivingfieldreport.xml, registeringfieldreport.xml, sendingfieldreport.xml and campaignreport.xml
+            OptionalValues: [leave data as it is, charge Sending Field, charge Receiving Field, charge Registering Field]
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-    
+        Para101:
+            Name: Accommodation
+            Parameter: 3.0
+        Para102:
+            Name: Application Status
+            Parameter: 1.0
+        Para103:
+            Name: Driver Status
+            Parameter: 3.0
+        Para104:
+            Name: Finance Details
+            Parameter: 3.0
+        Para105:
+            Name: Missing Information
+            Parameter: 3.0
+        

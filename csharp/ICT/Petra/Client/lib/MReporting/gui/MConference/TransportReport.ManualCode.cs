@@ -45,27 +45,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmTransportReport
     {
-        private const String ARRIVAL_DATE_TEXT = "Only list people arriving on this day";
-        private const String ARRIVAL_NEED_TRANSPORT_TEXT = "Only list people that need transport from their arrival point";
-        private const String ARRIVAL_INCOMPLETE_TEXT = "Only list people with incomplete arrival details";
-        private const String DEPARTURE_DATE_TEXT = "Only list people departing on this day";
-        private const String DEPARTURE_NEED_TRANSPORT_TEXT = "Only list people that need transport to their departing point";
-        private const String DEPARTURE_INCOMPLETE_TEXT = "Only list people with incomplete departure details";
-
         private void rbtArrivalDepartureChanged(System.Object sender, EventArgs e)
         {
             if (rbtArrivals.Checked)
             {
-                chkOnlyTravelDay.Text = ARRIVAL_DATE_TEXT;
-                chkNeedTransport.Text = ARRIVAL_NEED_TRANSPORT_TEXT;
-                chkIncompleteDetails.Text = ARRIVAL_INCOMPLETE_TEXT;
+                chkOnlyTravelDay.Text = Catalog.GetString("Only list people arriving on this day");
+                chkNeedTransport.Text = Catalog.GetString("Only list people that need transport from their arrival point");
+                chkIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete arrival details");
             }
 
             if (rbtDepartures.Checked)
             {
-                chkOnlyTravelDay.Text = DEPARTURE_DATE_TEXT;
-                chkNeedTransport.Text = DEPARTURE_NEED_TRANSPORT_TEXT;
-                chkIncompleteDetails.Text = DEPARTURE_INCOMPLETE_TEXT;
+                chkOnlyTravelDay.Text = Catalog.GetString("Only list people departing on this day");
+                chkNeedTransport.Text = Catalog.GetString("Only list people that need transport to their departing point");
+                chkIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete departure details");
             }
         }
 

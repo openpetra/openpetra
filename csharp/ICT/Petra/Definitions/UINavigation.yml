@@ -198,11 +198,29 @@ OpenPetra:
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference}
                     Reports:
+                        AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
                         AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
                         AgeSummaryReport: {ActionOpenScreen=TFrmAgeSummaryReport}
-                        AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
+                        ArrivalDepartureGroupReport: {ActionOpenScreen=TFrmArrivalDepartureGroupReport}
+                        ArrivalListingReport: {ActionOpenScreen=TFrmArrivalListingReport}
+                        AttendanceSummaryReport: {ActionOpenScreen=TFrmAttendanceSummaryReport}
+                        AttendeeReport: {ActionOpenScreen=TFrmAttendeeReport}
+                        ChildrenReport: {ActionOpenScreen=TFrmChildrenReport}
+                        CommentsReport: {ActionOpenScreen=TFrmCommentsReport}
+                        ConferenceRoleReport: {ActionOpenScreen=TFrmConferenceRoleReport}
+                        ExtraCostsReport: {ActionOpenScreen=TFrmExtraCostsReport}
+                        FamilyListingReport: {ActionOpenScreen=TFrmFamilyListingReport}
+                        GroupReports: {ActionOpenScreen=TFrmGroupReports}
                         LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
+                        NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
                         PressentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+                        TransportReport: {ActionOpenScreen=TFrmTransportReport}
+                    FieldReports:
+                        ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
+                        SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}
+                        ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
+                        RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
+                        CampaignReport: {ActionOpenScreen=TFrmCampaignReport}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}

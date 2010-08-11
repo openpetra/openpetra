@@ -350,6 +350,16 @@ namespace Ict.Petra.Client.MReporting.Logic
         }
 
         /// <summary>
+        /// Add explicit a string parameter before the report calculation
+        /// </summary>
+        /// <param name="paramederId">name of the parameter</param>
+        /// <param name="value">the value of the parameter</param>
+        public void AddStringParameter(String paramederId, String value)
+        {
+            Parameters.Add(paramederId, new TVariant(value, true), -1);
+        }
+
+        /// <summary>
         /// Removes one parameter from the parameter list
         /// </summary>
         /// <param name="parameterId">name of the parameter</param>

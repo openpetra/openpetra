@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
       this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.lblIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete arrival details:");
+      this.chkIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete arrival details");
       this.lblNeedTransport.Text = Catalog.GetString("Only list people that need transport from their arrival point:");
       this.lblOnlyTravelDay.Text = Catalog.GetString("Only list people arriving on this day:");
       this.lblTravelDay.Text = Catalog.GetString("Select Date:");
@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Arrival Date", 2.2));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Departure Date", 2.2));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 1.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Comment", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Details", 3.0));

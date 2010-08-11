@@ -66,7 +66,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
+      this.btnSelectAll.Text = Catalog.GetString("Select All");
+      this.btnDeselectAll.Text = Catalog.GetString("Deselect All");
+      this.grpSelectFields.Text = Catalog.GetString("Select Fields");
+      this.rbtFull.Text = Catalog.GetString("Full");
+      this.rbtSummaries.Text = Catalog.GetString("Summaries");
+      this.grpMode.Text = Catalog.GetString("Mode");
+      this.lblFinancialReport.Text = Catalog.GetString("Financial Report:");
+      this.lblAcceptedApplications.Text = Catalog.GetString("Accepted Applications Only:");
+      this.lblExtraCosts.Text = Catalog.GetString("List Extra Costs:");
+      this.lblSignOffLines.Text = Catalog.GetString("Sign Off Lines:");
+      this.grpOptions.Text = Catalog.GetString("Options");
+      this.lblChargedFields.Text = Catalog.GetString("If charged field is not set:");
+      this.grpChargedFields.Text = Catalog.GetString("Charged Fields");
+      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -94,14 +107,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Charged Field Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Conference\\\\chargedfieldreport.xml,Conference\\\\conference.xml";
-      FPetraUtilsObject.FReportName = "Charged Field Report";
-      FPetraUtilsObject.FCurrentReport = "Charged Field Report";
+      FPetraUtilsObject.FXMLFiles = "";
+      FPetraUtilsObject.FReportName = "";
+      FPetraUtilsObject.FCurrentReport = "";
       FPetraUtilsObject.FSettingsDirectory = "Conference";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -112,13 +124,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
+      grdFields_InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
 
@@ -158,7 +168,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      grdFields_ReadControls(ACalc, AReportAction);
+      ACalc.AddParameter("param_chkFinancialReport", this.chkFinancialReport.Checked);
+      ACalc.AddParameter("param_chkAcceptedApplications", this.chkAcceptedApplications.Checked);
+      ACalc.AddParameter("param_chkExtraCosts", this.chkExtraCosts.Checked);
+      if (this.cmbSignOffLines.SelectedItem != null)
+      {
+          ACalc.AddParameter("param_cmbSignOffLines", this.cmbSignOffLines.SelectedItem.ToString());
+      }
+      else
+      {
+          ACalc.AddParameter("param_cmbSignOffLines", "");
+      }
+      if (this.cmbChargedFields.SelectedItem != null)
+      {
+          ACalc.AddParameter("param_cmbChargedFields", this.cmbChargedFields.SelectedItem.ToString());
+      }
+      else
+      {
+          ACalc.AddParameter("param_cmbChargedFields", "");
+      }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -171,7 +200,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
 
       ucoConferenceSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
+      grdFields_SetControls(AParameters);
+      chkFinancialReport.Checked = AParameters.Get("param_chkFinancialReport").ToBool();
+      chkAcceptedApplications.Checked = AParameters.Get("param_chkAcceptedApplications").ToBool();
+      chkExtraCosts.Checked = AParameters.Get("param_chkExtraCosts").ToBool();
+      cmbSignOffLines.SelectedValue = AParameters.Get("param_cmbSignOffLines").ToString();
+      cmbChargedFields.SelectedValue = AParameters.Get("param_cmbChargedFields").ToString();
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -187,7 +221,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Arrival Date", 2.2));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Actual Departure Date", 2.2));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Age", 1.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Comment", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Arrival Details", 3.0));
@@ -230,9 +264,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Preferred Name", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Accommodation", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Application Status", 1.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Driver Status", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Finance Details", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Missing Information", 3.0));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }

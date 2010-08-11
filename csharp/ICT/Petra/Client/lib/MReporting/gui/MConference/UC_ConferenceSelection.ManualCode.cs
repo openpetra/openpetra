@@ -69,6 +69,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             }
         }
 
+        /// <summary>True to show the select campaign options dialog during "ReadControls"
+        /// if the current conference has several options. </summary>
+        public bool FShowSelectCampaignOptionsDialog;
+
         /// <summary>
         /// Initialisation
         /// </summary>
@@ -78,6 +82,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             rbtAllAttendees.Checked = true;
             txtExtract.Enabled = false;
+            FShowSelectCampaignOptionsDialog = true;
         }
 
         /// <summary>
@@ -154,9 +159,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
-            bool ShowSelectCampaignOptionsDialog = true;
-
-            if (ShowSelectCampaignOptionsDialog
+            if (FShowSelectCampaignOptionsDialog
                 && (AReportAction == TReportActionEnum.raGenerate)
                 && (rbtConference.Checked)
                 && (FPetraUtilsObject.GetVerificationResultCount() == 0))
@@ -196,7 +199,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                     CampaignOptionsCode = txtConference.LabelText;
                 }
 
-                ACalculator.AddParameter("param_conferenceoptions", CampaignOptions);
+                ACalculator.AddStringParameter("param_conferenceoptions", CampaignOptions);
                 ACalculator.AddParameter("param_conferenceoptionscode", CampaignOptionsCode);
             }
         }
@@ -242,6 +245,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         }
 
         /// <summary>
+        /// Enables or disables the radio button "All Conferences"
+        /// </summary>
+        /// <param name="ADisable">true to disable the button.</param>
+        public void DisableRadioButtonAllConferences(bool ADisable)
+        {
+            if (ADisable && rbtAllConferences.Checked)
+            {
+                rbtConference.Checked = true;
+            }
+
+            rbtAllConferences.Enabled = !ADisable;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="sender"></param>
@@ -267,9 +284,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// Adds an event to the txtAutoPopulatedButtonLabel
         /// </summary>
         /// <param name="AEventHandler">Conference changed event handler</param>
-        public void AddEventHandler(Ict.Petra.Client.CommonControls.TDelegateConferenceChanged AEventHandler)
+        public void AddConfernceKeyChangedEventHandler(Ict.Petra.Client.CommonControls.TDelegateConferenceChanged AEventHandler)
         {
             txtConference.ConferenceChanged += AEventHandler;
+        }
+
+        /// <summary>
+        /// Add an event handler to the radio button "all conferences"
+        /// </summary>
+        /// <param name="AEventHandler"></param>
+        public void AddConferenceSelectionChangedEventHandler(EventHandler AEventHandler)
+        {
+            rbtAllConferences.CheckedChanged += AEventHandler;
         }
     }
 }

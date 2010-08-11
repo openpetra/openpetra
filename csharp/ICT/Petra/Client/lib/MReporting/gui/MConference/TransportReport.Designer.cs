@@ -76,7 +76,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.grpListing = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.chkIncompleteDetails = new System.Windows.Forms.CheckBox();
-            this.lblIncompleteDetails = new System.Windows.Forms.Label();
             this.chkNeedTransport = new System.Windows.Forms.CheckBox();
             this.lblNeedTransport = new System.Windows.Forms.Label();
             this.chkOnlyTravelDay = new System.Windows.Forms.CheckBox();
@@ -195,19 +194,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             this.chkIncompleteDetails.Location = new System.Drawing.Point(2,2);
             this.chkIncompleteDetails.Name = "chkIncompleteDetails";
-            this.chkIncompleteDetails.Size = new System.Drawing.Size(30, 28);
-            this.chkIncompleteDetails.Text = "";
-            this.chkIncompleteDetails.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            //
-            // lblIncompleteDetails
-            //
-            this.lblIncompleteDetails.Location = new System.Drawing.Point(2,2);
-            this.lblIncompleteDetails.Name = "lblIncompleteDetails";
-            this.lblIncompleteDetails.AutoSize = true;
-            this.lblIncompleteDetails.Text = "Only list people with incomplete arrival details:";
-            this.lblIncompleteDetails.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblIncompleteDetails.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblIncompleteDetails.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.chkIncompleteDetails.AutoSize = true;
+            this.chkIncompleteDetails.Text = "Only list people with incomplete arrival details";
+            this.chkIncompleteDetails.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkIncompleteDetails.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkNeedTransport
             //
@@ -269,11 +259,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblIncompleteDetails, 0, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.chkIncompleteDetails, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkIncompleteDetails, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblNeedTransport, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblOnlyTravelDay, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblTravelDay, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.chkIncompleteDetails, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkNeedTransport, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.chkOnlyTravelDay, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.dtpTravelDay, 1, 3);
@@ -653,7 +643,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private System.Windows.Forms.GroupBox grpListing;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.CheckBox chkIncompleteDetails;
-        private System.Windows.Forms.Label lblIncompleteDetails;
         private System.Windows.Forms.CheckBox chkNeedTransport;
         private System.Windows.Forms.Label lblNeedTransport;
         private System.Windows.Forms.CheckBox chkOnlyTravelDay;

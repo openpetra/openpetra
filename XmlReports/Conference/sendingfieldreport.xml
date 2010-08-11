@@ -11,11 +11,12 @@
 		<reportparameter name="param_chargedfields"/>
 		<reportparameter name="param_selectedfieldkeys"/>
 		<reportparameter name="param_report_detail"/>
-		<reportparameter name="param_financial_report"/>
-		<reportparameter name="param_accepted_only"/>
-		<reportparameter name="param_list_extra_costs"/>
-		<reportparameter name="param_sign_off_lines"/>
+		<reportparameter name="param_chkFinancialReport"/>
+		<reportparameter name="param_chkAcceptedApplications"/>
+		<reportparameter name="param_chkExtraCosts"/>
+		<reportparameter name="param_cmbSignOffLines"/>
 		<reportparameter name="param_selected_keys_csv"/>
+		<reportparameter name="param_cmbChargedFields"/>
 	</reportparameters>
 
     <reportheader></reportheader>
@@ -98,7 +99,7 @@
 					</queryDetail>
 					
 					<!-- get only the fields that are selected -->
-					<queryDetail><value> 
+					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value> 
 								AND
 					</value></queryDetail>
 					<queryDetail>
@@ -109,10 +110,10 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_accepted_only}, true))"><value>
+					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
 							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
 									OR 
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
@@ -179,7 +180,7 @@
 							PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
 							PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
 					
-							PUB_pc_attendee.pc_campaign_type_c AS CampaignType,
+							PUB_pc_attendee.pc_xyz_tbd_type_c AS CampaignType,
 							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
 							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
@@ -231,10 +232,10 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_accepted_only}, true))"><value>
+					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
 							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
 									OR 
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
@@ -291,7 +292,7 @@
 			
 			<calculation id="PrintFieldFinancialCosts" returns="automatic" returnsFormat="text">
 				<query>
-					<queryDetail condition="eq({param_financial_report}, true)">
+					<queryDetail condition="eq({param_chkFinancialReport}, true)">
 						<value text="NO-SQL"/>
 						<value function="PrintFieldFinancialCosts({HomeOfficeName})"/>
 					</queryDetail>
@@ -309,11 +310,11 @@
 			
 			<calculation id="PrintSignOffLines" returns="automatic" returnsFormat="text">
 				<query>
-					<queryDetail condition="eq({param_sign_off_lines}, financial)">
+					<queryDetail condition="eq({param_cmbSignOffLines}, print Financial Sign Off Lines)">
 						<value text="NO-SQL"/>
 						<value function="PrintFinancialSignOffLines({HomeOfficeName})"/>
 					</queryDetail>
-					<queryDetail condition="eq({param_sign_off_lines}, attendance)">
+					<queryDetail condition="eq({param_cmbSignOffLines}, print Attendance Sign Off Lines)">
 						<value text="NO-SQL"/>
 						<value function="PrintAttendanceSignOffLines({HomeOfficeName})"/>
 					</queryDetail>
@@ -322,7 +323,7 @@
 			
 			<calculation id="PrintFinalLines" returns="automatic" returnsFormat="text">
 				<query>
-					<queryDetail condition="eq({param_financial_report}, true)">
+					<queryDetail condition="eq({param_chkFinancialReport}, true)">
 						<value text="NO-SQL"/>
 						<value function="PrintFieldFinancialCosts(REPORT SUMMARY)"/>
 					</queryDetail>
@@ -687,8 +688,8 @@
 	<level name="main3">
 		<detail>
 			<lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel"></lowerLevelReport>
-			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_list_extra_costs}, false)"></lowerLevelReport>
-			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_list_extra_costs}, true)"></lowerLevelReport>
+			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_chkExtraCosts}, false)"></lowerLevelReport>
+			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_chkExtraCosts}, true)"></lowerLevelReport>
 		</detail>
 		<footer>
 			<!-- footer for the financial part of the report -->
