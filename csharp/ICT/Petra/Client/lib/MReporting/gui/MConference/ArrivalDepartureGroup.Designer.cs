@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoConferenceSelection = new Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection();
-            this.tpgReportSorting = new System.Windows.Forms.TabPage();
-            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAdditionalSettigns = new System.Windows.Forms.TabPage();
+            this.rgrGroupType = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.grpGroupType = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtArrival = new System.Windows.Forms.RadioButton();
             this.rbtDeparture = new System.Windows.Forms.RadioButton();
+            this.grpOtherSettings = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.chkIncludeNoGroups = new System.Windows.Forms.CheckBox();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -114,10 +114,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
-            this.tpgReportSorting.SuspendLayout();
             this.tpgAdditionalSettigns.SuspendLayout();
+            this.rgrGroupType.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpGroupType.SuspendLayout();
+            this.grpOtherSettings.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
@@ -139,45 +139,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgReportSorting
-            //
-            this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
-            this.tpgReportSorting.Name = "tpgReportSorting";
-            this.tpgReportSorting.AutoSize = true;
-            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
-            //
-            // ucoReportSorting
-            //
-            this.ucoReportSorting.Name = "ucoReportSorting";
-            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tpgReportSorting.Text = "Sorting";
-            this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
-            //
             // tpgAdditionalSettigns
             //
             this.tpgAdditionalSettigns.Location = new System.Drawing.Point(2,2);
             this.tpgAdditionalSettigns.Name = "tpgAdditionalSettigns";
             this.tpgAdditionalSettigns.AutoSize = true;
+            this.tpgAdditionalSettigns.Controls.Add(this.grpOtherSettings);
+            this.tpgAdditionalSettigns.Controls.Add(this.rgrGroupType);
+            //
+            // rgrGroupType
+            //
+            this.rgrGroupType.Name = "rgrGroupType";
+            this.rgrGroupType.Dock = System.Windows.Forms.DockStyle.Top;
+            this.rgrGroupType.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.tpgAdditionalSettigns.Controls.Add(this.tableLayoutPanel1);
-            //
-            // grpGroupType
-            //
-            this.grpGroupType.Location = new System.Drawing.Point(2,2);
-            this.grpGroupType.Name = "grpGroupType";
-            this.grpGroupType.AutoSize = true;
-            //
-            // tableLayoutPanel2
-            //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.grpGroupType.Controls.Add(this.tableLayoutPanel2);
+            this.rgrGroupType.Controls.Add(this.tableLayoutPanel1);
             //
             // rbtArrival
             //
@@ -185,6 +166,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.rbtArrival.Name = "rbtArrival";
             this.rbtArrival.AutoSize = true;
             this.rbtArrival.Text = "Arrival Group";
+            this.rbtArrival.Checked = true;
             //
             // rbtDeparture
             //
@@ -192,20 +174,43 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.rbtDeparture.Name = "rbtDeparture";
             this.rbtDeparture.AutoSize = true;
             this.rbtDeparture.Text = "Departure Group";
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.rbtArrival, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtDeparture, 0, 1);
-            this.grpGroupType.Text = "Select Group";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.grpGroupType, 0, 0);
-            this.tpgAdditionalSettigns.Text = "Report Type";
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rbtArrival, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.rbtDeparture, 0, 1);
+            this.rgrGroupType.Text = "Select Group";
+            //
+            // grpOtherSettings
+            //
+            this.grpOtherSettings.Name = "grpOtherSettings";
+            this.grpOtherSettings.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpOtherSettings.AutoSize = true;
+            //
+            // tableLayoutPanel2
+            //
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.grpOtherSettings.Controls.Add(this.tableLayoutPanel2);
+            //
+            // chkIncludeNoGroups
+            //
+            this.chkIncludeNoGroups.Location = new System.Drawing.Point(2,2);
+            this.chkIncludeNoGroups.Name = "chkIncludeNoGroups";
+            this.chkIncludeNoGroups.AutoSize = true;
+            this.chkIncludeNoGroups.Text = "Include people that are not assigned to a group";
+            this.chkIncludeNoGroups.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkIncludeNoGroups.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.chkIncludeNoGroups, 0, 0);
+            this.grpOtherSettings.Text = "Other Settings";
+            this.tpgAdditionalSettigns.Text = "Group Settings";
             this.tpgAdditionalSettigns.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgColumns
@@ -227,7 +232,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
-            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
             this.tabReportSettings.Controls.Add(this.tpgAdditionalSettigns);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
@@ -514,10 +518,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.grpGroupType.ResumeLayout(false);
+            this.grpOtherSettings.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.rgrGroupType.ResumeLayout(false);
             this.tpgAdditionalSettigns.ResumeLayout(false);
-            this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -528,14 +532,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection ucoConferenceSelection;
-        private System.Windows.Forms.TabPage tpgReportSorting;
-        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAdditionalSettigns;
+        private System.Windows.Forms.GroupBox rgrGroupType;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.GroupBox grpGroupType;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.RadioButton rbtArrival;
         private System.Windows.Forms.RadioButton rbtDeparture;
+        private System.Windows.Forms.GroupBox grpOtherSettings;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.CheckBox chkIncludeNoGroups;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

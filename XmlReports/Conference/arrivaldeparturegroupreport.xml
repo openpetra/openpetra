@@ -2,7 +2,7 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-  <report id="Arrival Departure Group Report">
+  <report id="Arrival Departure Group">
 	<description>
 		Report for conference arrival groups / departure groups
 		depends on conference.xml
@@ -12,10 +12,10 @@
     <reportheader></reportheader>
 	<pageheader>
 		<field whichfield="title1">
-			<fielddetail condition="eq({param_rbtArrival}, true)">
+			<fielddetail condition="eq({param_rgrGroupType}, ArrivalGroup)">
 				<value text="Arrival Groups Report"/>
 			</fielddetail>
-			<fielddetail condition="eq({param_rbtDeparture}, true)">
+			<fielddetail condition="eq({param_rgrGroupType}, DepartureGroup)">
 				<value text="Departure Groups Report"/>
 			</fielddetail>
 		</field>
@@ -66,10 +66,10 @@
 						SELECT DISTINCT
 							PUB_pc_attendee.pc_conference_key_n,
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtDeparture}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroupType}, DepartureGroup)"><value>
 							PUB_pc_attendee.pc_departure_group_c AS DepartureGroup
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtArrival}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroupType}, ArrivalGroup)"><value>
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup
 					</value></queryDetail>
 					<queryDetail><value>
@@ -123,17 +123,17 @@
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
 					</value></queryDetail>
 					
-					<queryDetail condition="and(eq({param_rbtArrival}, true), eq({param_includeNoGroups}, false))"><value>
+					<queryDetail condition="and(eq({param_rgrGroupType}, ArrivalGroup), eq({param_chkIncludeNoGroups}, false))"><value>
 							AND NOT PUB_pc_attendee.pc_arrival_group_c = ''
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtDeparture}, true), eq({param_includeNoGroups}, false))"><value>
+					<queryDetail condition="and(eq({param_rgrGroupType}, DepartureGroup), eq({param_chkIncludeNoGroups}, false))"><value>
 							AND NOT PUB_pc_attendee.pc_departure_group_c = ''
 					</value></queryDetail>
 				
-					<queryDetail condition="eq({param_rbtDeparture}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroupType}, DepartureGroup)"><value>
 							ORDER BY DepartureGroup
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtArrival}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroupType}, ArrivalGroup)"><value>
 							ORDER BY ArrivalGroup
 					</value></queryDetail>
 				</query>
@@ -196,10 +196,10 @@
 							PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate,
 							
 						</value></queryDetail>
-						<queryDetail condition="eq({param_rbtArrival}, true)"><value>
+						<queryDetail condition="eq({param_rgrGroupType}, ArrivalGroup)"><value>
 							PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
 						</value></queryDetail>
-						<queryDetail condition="eq({param_rbtDeparture}, true)"><value>
+						<queryDetail condition="eq({param_rgrGroupType}, DepartureGroup)"><value>
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
 						</value></queryDetail>
 						<queryDetail><value>
@@ -265,12 +265,22 @@
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_rbtArrival}, true)"><value>
+					<queryDetail condition="and(eq({param_rgrGroupType}, ArrivalGroup), gt(length({ArrivalGroup}), 0))"><value>
 							AND PUB_pc_attendee.pc_arrival_group_c = {ArrivalGroup}
 							ORDER BY AttendeeName
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtDeparture}, true)"><value>
+					<queryDetail condition="and(eq({param_rgrGroupType}, ArrivalGroup), lt(length({ArrivalGroup}), 1))"><value>
+							AND (	PUB_pc_attendee.pc_arrival_group_c = {ArrivalGroup}
+									OR PUB_pc_attendee.pc_arrival_group_c IS NULL )
+							ORDER BY AttendeeName
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroupType}, DepartureGroup), gt(length({DepartureGroup}), 0))"><value>
 							AND PUB_pc_attendee.pc_departure_group_c = {DepartureGroup}
+							ORDER BY AttendeeName
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroupType}, DepartureGroup), lt(length({DepartureGroup}), 1))"><value>
+							AND (	PUB_pc_attendee.pc_arrival_group_c = {DepartureGroup}
+									OR PUB_pc_attendee.pc_departure_group_c IS NULL )
 							ORDER BY AttendeeName
 					</value></queryDetail>
 					
@@ -317,13 +327,13 @@
 	<level name="Group Level">
 		<header>
 			<switch>
-				<case condition="eq({param_rbtArrival}, true)">
+				<case condition="eq({param_rgrGroupType}, ArrivalGroup)">
 					<field whichfield="header 1" pos="0cm" width="5cm" calculation="CheckArrivalGroupName">
 						<value text="Arrival Group: "/>
 						<value variable="VisibleGroup"/>
 					</field>
 				</case>
-				<case condition="eq({param_rbtDeparture}, true)">
+				<case condition="eq({param_rgrGroupType}, DepartureGroup)">
 					<field whichfield="header 1" pos="0cm" width="5cm" calculation="CheckDepartureGroupName">
 						<value text="Departure Group: "/>
 						<value variable="VisibleGroup"/>

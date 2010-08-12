@@ -201,7 +201,7 @@ OpenPetra:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
                         AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
                         AgeSummaryReport: {ActionOpenScreen=TFrmAgeSummaryReport}
-                        ArrivalDepartureGroupReport: {ActionOpenScreen=TFrmArrivalDepartureGroupReport}
+                        ArrivalDepartureGroupReport: {ActionOpenScreen=TFrmArrivalDepartureGroup}
                         ArrivalListingReport: {ActionOpenScreen=TFrmArrivalListingReport}
                         AttendanceSummaryReport: {ActionOpenScreen=TFrmAttendanceSummaryReport}
                         AttendeeReport: {ActionOpenScreen=TFrmAttendeeReport}

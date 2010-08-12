@@ -5,7 +5,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
     TemplateParameters:
         XMLFILES: [Conference\\\\arrivaldeparturegroupreport.xml,Conference\\\\conference.xml]
-        REPORTNAME: Arrival Departure Group Report
+        REPORTNAME: Arrival Departure Group
         CURRENTREPORT: Arrival Departure Group
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
@@ -19,15 +19,12 @@ RootNode:
             Label: General Settings
             Controls: [ucoConferenceSelection]
             Order: AlwaysFirst
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast
         tpgAdditionalSettigns:
-            Label: Report Type
-            Controls: [grpGroupType]
+            Label: Group Settings
+            Controls: [rgrGroupType, grpOtherSettings]
             
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
@@ -35,16 +32,21 @@ RootNode:
         ucoConferenceSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-        grpGroupType:
+        rgrGroupType:
+            Dock: Top
             Label: Select Group
             Controls: [rbtArrival, rbtDeparture]
+        grpOtherSettings:
+            Dock: Top
+            Label: Other Settings
+            Controls: [chkIncludeNoGroups]
         rbtArrival:
             Label: Arrival Group
         rbtDeparture:
             Label: Departure Group
+        chkIncludeNoGroups:
+            Label: Include people that are not assigned to a group
+            CheckBoxAttachedLabel: Right
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
     

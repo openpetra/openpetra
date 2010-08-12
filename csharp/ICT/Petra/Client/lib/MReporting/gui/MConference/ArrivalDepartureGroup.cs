@@ -66,11 +66,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
       this.rbtArrival.Text = Catalog.GetString("Arrival Group");
       this.rbtDeparture.Text = Catalog.GetString("Departure Group");
-      this.grpGroupType.Text = Catalog.GetString("Select Group");
-      this.tpgAdditionalSettigns.Text = Catalog.GetString("Report Type");
+      this.rgrGroupType.Text = Catalog.GetString("Select Group");
+      this.chkIncludeNoGroups.Text = Catalog.GetString("Include people that are not assigned to a group");
+      this.grpOtherSettings.Text = Catalog.GetString("Other Settings");
+      this.tpgAdditionalSettigns.Text = Catalog.GetString("Group Settings");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -104,7 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "Conference\\\\arrivaldeparturegroupreport.xml,Conference\\\\conference.xml";
-      FPetraUtilsObject.FReportName = "Arrival Departure Group Report";
+      FPetraUtilsObject.FReportName = "Arrival Departure Group";
       FPetraUtilsObject.FCurrentReport = "Arrival Departure Group";
       FPetraUtilsObject.FSettingsDirectory = "Conference";
 
@@ -116,13 +117,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
 
@@ -162,7 +160,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      if (rbtArrival.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroupType", "ArrivalGroup");
+      }
+      if (rbtDeparture.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroupType", "DepartureGroup");
+      }
+      ACalc.AddParameter("param_chkIncludeNoGroups", this.chkIncludeNoGroups.Checked);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -175,7 +181,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
 
       ucoConferenceSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
+      rbtArrival.Checked = AParameters.Get("param_rgrGroupType").ToString() == "ArrivalGroup";
+      rbtDeparture.Checked = AParameters.Get("param_rgrGroupType").ToString() == "DepartureGroup";
+      chkIncludeNoGroups.Checked = AParameters.Get("param_chkIncludeNoGroups").ToBool();
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -236,7 +244,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
