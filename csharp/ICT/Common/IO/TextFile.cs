@@ -61,9 +61,10 @@ namespace Ict.Common.IO
         {
             StreamReader sr = new StreamReader(filename);
             string lines = sr.ReadToEnd();
+            Encoding oldEncoding = sr.CurrentEncoding;
 
             sr.Close();
-            StreamWriter sw = new StreamWriter(filename);
+            StreamWriter sw = new StreamWriter(filename, false, oldEncoding);
             sw.Write(lines.Replace("\r", ""));
             sw.Close();
         }
@@ -73,9 +74,10 @@ namespace Ict.Common.IO
         {
             StreamReader sr = new StreamReader(filename);
             string lines = sr.ReadToEnd();
+            Encoding oldEncoding = sr.CurrentEncoding;
 
             sr.Close();
-            StreamWriter sw = new StreamWriter(filename);
+            StreamWriter sw = new StreamWriter(filename, false, oldEncoding);
             sw.Write(lines.Replace("\r", "").Replace("\n", "\r\n"));
             sw.Close();
         }

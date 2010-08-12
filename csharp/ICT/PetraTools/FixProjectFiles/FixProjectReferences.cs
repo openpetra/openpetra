@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
@@ -155,7 +156,8 @@ public class TFixProjectReferences : TCSProjTools
 
                         if ((child2.FirstChild != null) && (child2.FirstChild.Name == "HintPath"))
                         {
-                            if (child2.FirstChild.InnerText.Contains("..\\_bin"))
+                            if (child2.FirstChild.InnerText.Contains("..\\_bin")
+                                || child2.FirstChild.InnerText.Contains("\\csharp\\ICT\\"))
                             {
                                 Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                             }
@@ -193,7 +195,9 @@ public class TFixProjectReferences : TCSProjTools
             xmlString = xmlString.Replace("'$(Platform)' == 'AnyCPU'", "'$(Platform)' == 'x86'");
         }
 
-        StreamWriter sw = new StreamWriter(AFilename + ".new");
+        // see also discussions at http://community.sharpdevelop.net/forums/p/1225/6962.aspx#6962
+        // about UTF8 with BOM, MonoDevelop stores without BOM.
+        StreamWriter sw = new StreamWriter(AFilename + ".new", false, new UTF8Encoding(true));
         sw.Write(xmlString);
         sw.Close();
 
