@@ -137,7 +137,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail><value>
@@ -152,7 +152,7 @@
 				</query>
 			</calculation> <!-- Select Attendee -->
 			
-			<calculation id="CalculateSingleAttendance" returns="" returnsFormat="internal">
+			<calculation id="CalculateSingleAttendance" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -162,7 +162,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="ClearAttendanceTable" returns="" returnsFormat="internal">
+			<calculation id="ClearAttendanceTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -171,7 +171,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="FinishAttendanceTable" returns="" returnsFormat="internal">
+			<calculation id="FinishAttendanceTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>

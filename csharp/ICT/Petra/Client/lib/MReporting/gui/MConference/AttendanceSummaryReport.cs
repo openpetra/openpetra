@@ -66,14 +66,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
       this.lblStartDate.Text = Catalog.GetString("Start Date:");
       this.lblEndDate.Text = Catalog.GetString("End Date:");
-      this.lblFromDate.Text = Catalog.GetString("From:");
-      this.lblToDate.Text = Catalog.GetString("To:");
-      this.grpReportDate.Text = Catalog.GetString("Report Date");
-      this.tpgReportDate.Text = Catalog.GetString("Report Date");
-      this.tpgColumns.Text = Catalog.GetString("Columns");
+      this.grpConferenceDate.Text = Catalog.GetString("Conference Date");
+      this.lblEarliestArrival.Text = Catalog.GetString("Earliest Arrival:");
+      this.lblLatestDeparture.Text = Catalog.GetString("Latest Departure:");
+      this.grpArrivalDepartureDates.Text = Catalog.GetString("Arrival / Departure Dates");
+      this.lblFrom.Text = Catalog.GetString("From:");
+      this.lblTo.Text = Catalog.GetString("To:");
+      this.grpSelectDateRange.Text = Catalog.GetString("Select Date Range");
+      this.tpgDateSettings.Text = Catalog.GetString("Date Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -118,15 +120,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
-      ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportSorting.InitUserControl();
-      ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportColumns.InitUserControl();
+      InitUserControlsManually();
 
       FPetraUtilsObject.LoadDefaultSettings();
     }
@@ -164,12 +161,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
-      ACalc.AddParameter("param_dtpStartDate", this.dtpStartDate.Date);
-      ACalc.AddParameter("param_dtpEndDate", this.dtpEndDate.Date);
+      ACalc.AddParameter("param_dtpConferenceStartDate", this.dtpConferenceStartDate.Date);
+      ACalc.AddParameter("param_dtpConferenceEndDate", this.dtpConferenceEndDate.Date);
+      ACalc.AddParameter("param_dtpEarliestArrivalDate", this.dtpEarliestArrivalDate.Date);
+      ACalc.AddParameter("param_dtpLatestDepartureDate", this.dtpLatestDepartureDate.Date);
       ACalc.AddParameter("param_dtpFromDate", this.dtpFromDate.Date);
       ACalc.AddParameter("param_dtpToDate", this.dtpToDate.Date);
-      ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 
@@ -181,21 +179,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
 
       ucoConferenceSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
-      DateTime dtpStartDateDate = AParameters.Get("param_dtpStartDate").ToDate();
-      if ((dtpStartDateDate <= DateTime.MinValue)
-          || (dtpStartDateDate >= DateTime.MaxValue))
+      DateTime dtpConferenceStartDateDate = AParameters.Get("param_dtpConferenceStartDate").ToDate();
+      if ((dtpConferenceStartDateDate <= DateTime.MinValue)
+          || (dtpConferenceStartDateDate >= DateTime.MaxValue))
       {
-          dtpStartDateDate = DateTime.Now;
+          dtpConferenceStartDateDate = DateTime.Now;
       }
-      dtpStartDate.Date = dtpStartDateDate;
-      DateTime dtpEndDateDate = AParameters.Get("param_dtpEndDate").ToDate();
-      if ((dtpEndDateDate <= DateTime.MinValue)
-          || (dtpEndDateDate >= DateTime.MaxValue))
+      dtpConferenceStartDate.Date = dtpConferenceStartDateDate;
+      DateTime dtpConferenceEndDateDate = AParameters.Get("param_dtpConferenceEndDate").ToDate();
+      if ((dtpConferenceEndDateDate <= DateTime.MinValue)
+          || (dtpConferenceEndDateDate >= DateTime.MaxValue))
       {
-          dtpEndDateDate = DateTime.Now;
+          dtpConferenceEndDateDate = DateTime.Now;
       }
-      dtpEndDate.Date = dtpEndDateDate;
+      dtpConferenceEndDate.Date = dtpConferenceEndDateDate;
+      DateTime dtpEarliestArrivalDateDate = AParameters.Get("param_dtpEarliestArrivalDate").ToDate();
+      if ((dtpEarliestArrivalDateDate <= DateTime.MinValue)
+          || (dtpEarliestArrivalDateDate >= DateTime.MaxValue))
+      {
+          dtpEarliestArrivalDateDate = DateTime.Now;
+      }
+      dtpEarliestArrivalDate.Date = dtpEarliestArrivalDateDate;
+      DateTime dtpLatestDepartureDateDate = AParameters.Get("param_dtpLatestDepartureDate").ToDate();
+      if ((dtpLatestDepartureDateDate <= DateTime.MinValue)
+          || (dtpLatestDepartureDateDate >= DateTime.MaxValue))
+      {
+          dtpLatestDepartureDateDate = DateTime.Now;
+      }
+      dtpLatestDepartureDate.Date = dtpLatestDepartureDateDate;
       DateTime dtpFromDateDate = AParameters.Get("param_dtpFromDate").ToDate();
       if ((dtpFromDateDate <= DateTime.MinValue)
           || (dtpFromDateDate >= DateTime.MaxValue))
@@ -210,7 +221,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
           dtpToDateDate = DateTime.Now;
       }
       dtpToDate.Date = dtpToDateDate;
-      ucoReportColumns.SetControls(AParameters);
     }
 #endregion
 
@@ -224,8 +234,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

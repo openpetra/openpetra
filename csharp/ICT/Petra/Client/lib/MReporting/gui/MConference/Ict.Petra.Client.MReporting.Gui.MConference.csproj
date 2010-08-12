@@ -136,6 +136,9 @@
     <Compile Include="AttendanceSummaryReport.Designer.cs">
       <DependentUpon>AttendanceSummaryReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="AttendanceSummaryReport.ManualCode.cs">
+      <DependentUpon>AttendanceSummaryReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="AttendeeReport.cs" />
     <Compile Include="AttendeeReport.Designer.cs">
       <DependentUpon>AttendeeReport.cs</DependentUpon>

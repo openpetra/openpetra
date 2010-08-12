@@ -14,45 +14,59 @@ RootNode:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
-        READCONTROLSLOCALVARS: BLANK 
+        READCONTROLSLOCALVARS: 
         SETCONTROLSLOCALVARS: BLANK
+        INITUSERCONTROLS: InitUserControlsManually();
     Security:
         ModulePermissionRequired: [CONFERENCE]
     Controls:
         tpgGeneralSettings:
             Label: General Settings
             Controls: [ucoConferenceSelection]
-            Order: AlwaysFirst
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
-        tpgColumns:
-            Controls: [ucoReportColumns]
-            Order: AlwaysLast
-        tpgReportDate:
-            Label: Report Date
-            Controls: [grpReportDate]
-            
-        ucoReportColumns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
+        tpgDateSettings:
+            Label: Date Settings
+            Controls: 
+                Row1: [grpConferenceDate]
+                Row2: [grpArrivalDepartureDates]
+                Rpw3: [grpSelectDateRange]
+        
         ucoConferenceSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-        grpReportDate:
-            Label: Report Date
-            Controls: [dtpStartDate, dtpEndDate, dtpFromDate, dtpToDate]
-        dtpStartDate:
-            Label: Start Date
-        dtpEndDate:
-            Label: End Date
-        dtpFromDate:
-            Label: From
-        dtpToDate:
-            Label: To
+        
+        grpConferenceDate:
+            Dock: Top
+            Label: Conference Date
+            Controls:
+                Row1: [lblStartDate,dtpConferenceStartDate]
+                Row2: [lblEndDate,dtpConferenceEndDate]
+            ColWidths: [0=Fixed:200,1=Fixed:100]
+        grpArrivalDepartureDates:
+            Dock: Top
+            Label: Arrival / Departure Dates
+            Controls:
+                Row1: [lblEarliestArrival,dtpEarliestArrivalDate]
+                Row2: [lblLatestDeparture,dtpLatestDepartureDate]
+            ColWidths: [0=Fixed:200,1=Fixed:100]
+        grpSelectDateRange:
+            Dock: Top
+            Label: Select Date Range
+            Controls:
+                Row1: [lblFrom,dtpFromDate]
+                Row2: [lblTo,dtpToDate]
+            ColWidths: [0=Fixed:200]
+        lblStartDate:
+        lblEndDate:
+        lblEarliestArrival:
+        lblLatestDeparture:
+        lblFrom:
+        lblTo:
+        dtpConferenceStartDate: {NoLabel=true,ReadOnly=true}
+        dtpConferenceEndDate: {NoLabel=true,ReadOnly=true}
+        dtpEarliestArrivalDate: {NoLabel=true,ReadOnly=true}
+        dtpLatestDepartureDate: {NoLabel=true,ReadOnly=true}
+        dtpFromDate: {NoLabel=true}
+        dtpToDate: {NoLabel=true}
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
     
