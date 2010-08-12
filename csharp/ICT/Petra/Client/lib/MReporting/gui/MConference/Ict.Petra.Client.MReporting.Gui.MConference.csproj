@@ -149,6 +149,9 @@
     <Compile Include="ChildrenReport.Designer.cs">
       <DependentUpon>ChildrenReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChildrenReport.ManualCode.cs">
+      <DependentUpon>ChildrenReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="CommentsReport.cs" />
     <Compile Include="CommentsReport.Designer.cs">
       <DependentUpon>CommentsReport.cs</DependentUpon>

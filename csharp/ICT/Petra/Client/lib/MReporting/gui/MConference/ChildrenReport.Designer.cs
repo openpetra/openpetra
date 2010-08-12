@@ -69,6 +69,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.ucoConferenceSelection = new Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection();
+            this.tpgReportSorting = new System.Windows.Forms.TabPage();
+            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAgeSelection = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grpAgeRange = new System.Windows.Forms.GroupBox();
@@ -114,6 +116,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
+            this.tpgReportSorting.SuspendLayout();
             this.tpgAgeSelection.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.grpAgeRange.SuspendLayout();
@@ -137,6 +140,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.ucoConferenceSelection.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgReportSorting
+            //
+            this.tpgReportSorting.Location = new System.Drawing.Point(2,2);
+            this.tpgReportSorting.Name = "tpgReportSorting";
+            this.tpgReportSorting.AutoSize = true;
+            this.tpgReportSorting.Controls.Add(this.ucoReportSorting);
+            //
+            // ucoReportSorting
+            //
+            this.ucoReportSorting.Name = "ucoReportSorting";
+            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgReportSorting.Text = "Sorting";
+            this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgAgeSelection
             //
@@ -233,6 +250,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
+            this.tabReportSettings.Controls.Add(this.tpgReportSorting);
             this.tabReportSettings.Controls.Add(this.tpgAgeSelection);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
@@ -522,6 +540,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.grpAgeRange.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgAgeSelection.ResumeLayout(false);
+            this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -532,6 +551,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
         private Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection ucoConferenceSelection;
+        private System.Windows.Forms.TabPage tpgReportSorting;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAgeSelection;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpAgeRange;

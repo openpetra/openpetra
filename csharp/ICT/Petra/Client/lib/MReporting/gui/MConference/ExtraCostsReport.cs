@@ -235,6 +235,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Preferred Name", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Birthday", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Amount", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Authorising Field", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Authorising Field Key", 2.5));

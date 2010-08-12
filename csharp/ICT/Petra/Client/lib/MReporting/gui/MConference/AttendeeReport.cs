@@ -230,6 +230,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Preferred Name", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Birthday", 2.0));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());

@@ -92,7 +92,7 @@
 							PUB_p_partner.p_partner_class_c AS AttendeeClass,
 							
 							PUB_p_person.p_gender_c AS Gender,
-							PUB_p_person.p_date_of_birth_d,
+							PUB_p_person.p_date_of_birth_d AS Birthday,
 							PUB_p_person.p_first_name_c AS FirstName,
 							PUB_p_person.p_prefered_name_c AS PreferredName,
 							PUB_p_person.p_family_name_c AS LastName,
@@ -290,7 +290,7 @@
 						<value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
 						<value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
 						<value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
-						<value function="assign(Age, calculateAge({p_date_of_birth_d}))"/>
+						<value function="assign(Age, calculateAge({Birthday}))"/>
 						<value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
 						<value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
 						<value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>

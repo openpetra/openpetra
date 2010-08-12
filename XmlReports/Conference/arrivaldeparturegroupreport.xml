@@ -148,7 +148,7 @@
 							PUB_p_partner.p_partner_class_c AS AttendeeClass,
 							
 							PUB_p_person.p_gender_c AS Gender,
-							PUB_p_person.p_date_of_birth_d,
+							PUB_p_person.p_date_of_birth_d AS Birthday,
 							PUB_p_person.p_first_name_c AS FirstName,
 							PUB_p_person.p_prefered_name_c AS PreferredName,
 							PUB_p_person.p_family_name_c AS LastName,
