@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             DenominationList,
-            
+
             /// <summary>todoComment</summary>
             DocumentTypeCategoryList,
 
@@ -329,6 +329,7 @@ namespace Ict.Petra.Client.CommonControls
         {
             return this.cmbAutoPopulated.cmbCombobox.GetSelectedString();
         }
+
         /// <summary>
         /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
         /// uses TCmbVersatile.SetSelectedInt32

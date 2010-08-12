@@ -8,8 +8,7 @@
 		depends on conference.xml
 	</description>
 	<reportparameters>
-		<reportparameter name="param_rbtArrival"/>
-		<reportparameter name="param_rbtDeparture"/>
+		<reportparameter name="param_reportday"/>
 		<reportparameter name="param_dtpReportDate"/>
 	</reportparameters>
 
@@ -24,10 +23,10 @@
 	<field whichfield="descr2">
 		<fielddetail>
 			<switch>
-				<case condition="eq({param_rbtArrival}, true)">
+				<case condition="eq({param_reportday}, Arrival)">
 					<value text="Arrival Date: "/>
 				</case>
-				<case condition="eq({param_rbtDeparture}, true)">
+				<case condition="eq({param_reportday}, Departure)">
 					<value text="Departure Date: "/>
 				</case>
 			</switch>
@@ -173,13 +172,13 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_rbtArrival}, true)"><value>
+					<queryDetail condition="eq({param_reportday}, Arrival)"><value>
 							AND PUB_pm_short_term_application.pm_arrival_d = {#param_dtpReportDate#}
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtDeparture}, true)"><value>
+					<queryDetail condition="eq({param_reportday}, Departure)"><value>
 							AND PUB_pm_short_term_application.pm_departure_d = {#param_dtpReportDate#}
 					</value></queryDetail>
 					<queryDetail><value>

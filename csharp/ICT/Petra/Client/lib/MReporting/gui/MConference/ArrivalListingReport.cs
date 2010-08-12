@@ -166,6 +166,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ucoReportSorting.ReadControls(ACalc, AReportAction);
       ACalc.AddParameter("param_dtpReportDate", this.dtpReportDate.Date);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 
@@ -186,6 +187,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       }
       dtpReportDate.Date = dtpReportDateDate;
       ucoReportColumns.SetControls(AParameters);
+      SetControlsManual(AParameters);
     }
 #endregion
 

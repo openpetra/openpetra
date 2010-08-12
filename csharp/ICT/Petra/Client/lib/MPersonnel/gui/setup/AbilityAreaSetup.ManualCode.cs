@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             ARow.RequirementAreaDescr = "";
         }
 
-        
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
             dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
