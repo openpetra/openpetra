@@ -948,7 +948,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             DBAccess.GDBAccessObj.CommitTransaction();
-
+            AMainDS.AcceptChanges();
             return true;
         }
 
@@ -1005,11 +1005,11 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// cancel a GL Batch
         /// </summary>
-        /// <param name="MainDS"></param>
+        /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        public static bool CancelGLBatch(out GLBatchTDS MainDS,
+        public static bool CancelGLBatch(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
@@ -1017,12 +1017,12 @@ namespace Ict.Petra.Server.MFinance.GL
             AVerifications = new TVerificationResultCollection();
 
             // get the data from the database into the MainDS
-            if (!LoadData(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
-            ABatchRow Batch = MainDS.ABatch[0];
+            ABatchRow Batch = AMainDS.ABatch[0];
 
             if (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
             {
@@ -1042,16 +1042,16 @@ namespace Ict.Petra.Server.MFinance.GL
                 return false;
             }
 
-            foreach (AJournalRow journal in MainDS.AJournal.Rows)
+            foreach (AJournalRow journal in AMainDS.AJournal.Rows)
             {
                 journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
             }
 
-            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+            AMainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AVerifications);
+                ABatchAccess.SubmitChanges(AMainDS.ABatch, Transaction, out AVerifications);
 
                 if (AVerifications.HasCriticalError())
                 {
@@ -1060,7 +1060,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
                 else
                 {
-                    AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AVerifications);
+                    AJournalAccess.SubmitChanges(AMainDS.AJournal, Transaction, out AVerifications);
 
                     if (AVerifications.HasCriticalError())
                     {
@@ -1084,6 +1084,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             DBAccess.GDBAccessObj.CommitTransaction();
+            AMainDS.AcceptChanges();
             return true;
         }
     }
