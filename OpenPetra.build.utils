@@ -375,6 +375,9 @@
             ReplaceInFile(filename, "_bin\\Debug", "_bin\\Release");
             ReplaceInFile(filename, "Server_Client\\Debug", "Server_Client\\Release");
             ReplaceInFile(filename, "Server_ServerAdmin\\Debug", "Server_ServerAdmin\\Release");
+            ReplaceInFile(filename, "_bin/Debug", "_bin/Release");
+            ReplaceInFile(filename, "Server_Client/Debug", "Server_Client/Release");
+            ReplaceInFile(filename, "Server_ServerAdmin/Debug", "Server_ServerAdmin/Release");
 
             // we need to compile for 32 bit, otherwise there is a problem with the Mono.Posix.dll
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=116
