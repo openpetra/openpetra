@@ -156,8 +156,13 @@ public class TFixProjectReferences : TCSProjTools
 
                         if ((child2.FirstChild != null) && (child2.FirstChild.Name == "HintPath"))
                         {
-                            if (child2.FirstChild.InnerText.Contains("..\\_bin")
-                                || child2.FirstChild.InnerText.Contains("\\csharp\\ICT\\"))
+                            if (child2.FirstChild.InnerText.Contains("csharp"))
+                            {
+                                Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
+                                throw new Exception("no absolute paths, no paths containing csharp or openpetraorg");
+                            }
+                            else if (child2.FirstChild.InnerText.Contains("..\\_bin")
+                                     || child2.FirstChild.InnerText.Contains("\\csharp\\ICT\\"))
                             {
                                 Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                             }
