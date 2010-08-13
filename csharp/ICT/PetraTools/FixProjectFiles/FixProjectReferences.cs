@@ -141,6 +141,13 @@ public class TFixProjectReferences : TCSProjTools
                                     Console.WriteLine("missing referencedProject " + referencedProject);
                                 }
 
+                                if (!File.Exists(Path.GetDirectoryName(AFilename) + Path.DirectorySeparatorChar + child2.Attributes["Include"].Value))
+                                {
+                                    Console.WriteLine(Path.GetFullPath(Path.GetDirectoryName(AFilename) + Path.DirectorySeparatorChar +
+                                            child2.Attributes["Include"].Value) + " does not exist");
+                                    throw new Exception("problem with referenced dll");
+                                }
+
                                 if (child3.InnerText != FProjectGUIDs[referencedProject])
                                 {
                                     Console.WriteLine("fixing " + child3.InnerText);
