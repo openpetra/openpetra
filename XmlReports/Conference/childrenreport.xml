@@ -193,10 +193,6 @@
 				<value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
 				<value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
 				<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
-				<!-- Hide the rows where the age is older than 17 -->
-				<!--value function="ConditionRow(lt(calculateAgeAtDate({p_date_of_birth_d}, {EndDate}), 15))"/--> 
-				<!-- TODO: make an option to select the age range of the report. e.g. children between18   10 and 16 years old -->
-				<!-- use param_txtFromAge and param_txtToAge -->
 			</queryDetail>
 		</query>
 	</calculation>

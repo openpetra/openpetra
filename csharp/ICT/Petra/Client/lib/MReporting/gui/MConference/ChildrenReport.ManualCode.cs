@@ -40,12 +40,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-        	int MinAge = Convert.ToInt32(txtFromYears.Text); // 0
-        	int MaxAge = Convert.ToInt32(txtToYears.Text); // 17
-        	DateTime EarliestBirthday;
-        	DateTime LatestBirthday;
-        	
-        	DateTime StartDate = DateTime.Today;
+            int MinAge = Convert.ToInt32(txtFromYears.Text);     // 0
+            int MaxAge = Convert.ToInt32(txtToYears.Text);     // 17
+            DateTime EarliestBirthday;
+            DateTime LatestBirthday;
+
+            DateTime StartDate = DateTime.Today;
             DateTime EndDate = DateTime.Today;
             DateTime EarliestArrivalDate = DateTime.Today;
             DateTime LatestDepartureDate = DateTime.Today;
@@ -66,11 +66,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             if (IsSuccessful)
             {
-            	EarliestBirthday = StartDate.AddYears(-MaxAge);
-            	LatestBirthday = EndDate.AddYears(-MinAge);
-            	
-            	ACalc.AddParameter("param_earliest_birthday", EarliestBirthday.Date);
-            	ACalc.AddParameter("param_latest_birthday", LatestBirthday.Date);
+                EarliestBirthday = StartDate.AddYears(-MaxAge - 1);
+                LatestBirthday = EndDate.AddYears(-MinAge);
+
+                ACalc.AddParameter("param_earliest_birthday", EarliestBirthday.Date);
+                ACalc.AddParameter("param_latest_birthday", LatestBirthday.Date);
             }
         }
     }

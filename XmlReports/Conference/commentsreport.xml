@@ -196,7 +196,7 @@
 						<value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
 						<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
 						<!-- Hide the rows that have no comment when the user sets this option -->
-						<value function="ConditionRow(not(and(eq({param_chkHideNoComment}, hide), lt(length({GeneralComment}), 1))))"/>
+						<value function="ConditionRow(not(and(eq({param_chkHideNoComment}, true), lt(length({GeneralComment}), 1))))"/>
 					</queryDetail>
 				</query>
 			</calculation>

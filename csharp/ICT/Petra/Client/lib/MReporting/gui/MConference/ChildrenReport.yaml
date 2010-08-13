@@ -37,7 +37,10 @@ RootNode:
             Controls: [txtFromYears, txtToYears]
         txtFromYears:
             Label: From
+            Format: Integer
         txtToYears:
             Label: To
+            Format: Integer
+        
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
     

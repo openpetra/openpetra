@@ -113,6 +113,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    public class TTxtNumericTextBoxReportGenerator : TTxtNumericTextBoxGenerator
+    {
+        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        {
+            TControlDef ctrl = writer.CodeStorage.GetControl(curNode.Name);
+            string numericType = ctrl.GetAttribute("Format");
+
+            if (numericType == "Integer")
+            {
+                ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "INTEGERTEXTBOX");
+            }
+            else if ((numericType == "Decimal") || (numericType == "Currency"))
+            {
+                ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "DECIMALTEXTBOX");
+            }
+        }
+    }
+
     public class TClbVersatileReportGenerator : TClbVersatileGenerator
     {
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)

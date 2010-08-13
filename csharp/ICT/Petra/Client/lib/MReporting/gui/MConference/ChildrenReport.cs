@@ -101,9 +101,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.Text = Catalog.GetString("Children Report");
       #endregion
 
-      this.txtFromYears.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtToYears.Font = TAppSettingsManager.GetDefaultBoldFont();
-
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "Conference\\\\childrenreport.xml,Conference\\\\conference.xml";
@@ -182,8 +179,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.SetControls(AParameters);
       ucoReportSorting.SetControls(AParameters);
-      txtFromYears.Text = AParameters.Get("param_txtFromYears").ToString();
-      txtToYears.Text = AParameters.Get("param_txtToYears").ToString();
+      txtFromYears.NumberValueInt = AParameters.Get("param_txtFromYears").ToInt32();
+      txtToYears.NumberValueInt = AParameters.Get("param_txtToYears").ToInt32();
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
