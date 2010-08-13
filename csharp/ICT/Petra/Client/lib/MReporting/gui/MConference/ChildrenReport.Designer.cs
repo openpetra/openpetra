@@ -75,9 +75,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grpAgeRange = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtFromYears = new System.Windows.Forms.TextBox();
+            this.txtFromYears = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblFromYears = new System.Windows.Forms.Label();
-            this.txtToYears = new System.Windows.Forms.TextBox();
+            this.txtToYears = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblToYears = new System.Windows.Forms.Label();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
@@ -185,7 +185,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             this.txtFromYears.Location = new System.Drawing.Point(2,2);
             this.txtFromYears.Name = "txtFromYears";
-            this.txtFromYears.Size = new System.Drawing.Size(150, 28);
+            this.txtFromYears.Size = new System.Drawing.Size(80, 28);
+            this.txtFromYears.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
+            this.txtFromYears.DecimalPlaces = 2;
+            this.txtFromYears.NullValueAllowed = true;
             //
             // lblFromYears
             //
@@ -201,7 +204,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             //
             this.txtToYears.Location = new System.Drawing.Point(2,2);
             this.txtToYears.Name = "txtToYears";
-            this.txtToYears.Size = new System.Drawing.Size(150, 28);
+            this.txtToYears.Size = new System.Drawing.Size(80, 28);
+            this.txtToYears.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
+            this.txtToYears.DecimalPlaces = 2;
+            this.txtToYears.NullValueAllowed = true;
             //
             // lblToYears
             //
@@ -557,9 +563,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpAgeRange;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtFromYears;
+        private Ict.Common.Controls.TTxtNumericTextBox txtFromYears;
         private System.Windows.Forms.Label lblFromYears;
-        private System.Windows.Forms.TextBox txtToYears;
+        private Ict.Common.Controls.TTxtNumericTextBox txtToYears;
         private System.Windows.Forms.Label lblToYears;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;

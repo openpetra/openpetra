@@ -289,6 +289,18 @@ ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
 {##TEXTBOXSETCONTROLS}
 {#CONTROLNAME}.Text = AParameters.Get("{#PARAMNAME}").ToString();
 
+{##INTEGERTEXTBOXREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
+
+{##INTEGERTEXTBOXSETCONTROLS}
+{#CONTROLNAME}.NumberValueInt = AParameters.Get("{#PARAMNAME}").ToInt32();
+
+{##DECIMALTEXTBOXREADCONTROLS}
+ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
+
+{##DECIMALTEXTBOXSETCONTROLS}
+{#CONTROLNAME}.NumberValueDouble = AParameters.Get("{#PARAMNAME}").ToDouble();
+
 {##TCLBVERSATILEREADCONTROLS}
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());
 
