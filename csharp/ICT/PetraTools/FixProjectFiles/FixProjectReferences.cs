@@ -156,13 +156,15 @@ public class TFixProjectReferences : TCSProjTools
 
                         if ((child2.FirstChild != null) && (child2.FirstChild.Name == "HintPath"))
                         {
-                            if (child2.FirstChild.InnerText.Contains("csharp"))
+                            string hintPath = child2.FirstChild.InnerText;
+
+                            if (hintPath.Contains("csharp"))
                             {
                                 Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                                 throw new Exception("no absolute paths, no paths containing csharp or openpetraorg");
                             }
-                            else if (child2.FirstChild.InnerText.Contains("..\\_bin")
-                                     || child2.FirstChild.InnerText.Contains("\\csharp\\ICT\\"))
+                            else if (hintPath.Contains("..\\_bin")
+                                     || hintPath.Contains("\\csharp\\ICT\\"))
                             {
                                 Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                             }
@@ -170,7 +172,6 @@ public class TFixProjectReferences : TCSProjTools
                             {
                                 // more complicated case:
                                 // eg for a project in Shared, which refers to ..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll
-                                string hintPath = child2.FirstChild.InnerText;
 
                                 if (hintPath.StartsWith(".."))
                                 {
@@ -181,6 +182,14 @@ public class TFixProjectReferences : TCSProjTools
                                 {
                                     Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                                 }
+                            }
+
+                            // check if the path exists (this works even before any dlls have been compiled)
+                            if (!Directory.Exists(Path.GetDirectoryName(hintPath)))
+                            {
+                                Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
+                                Console.WriteLine("directory does not exist: " + Path.GetDirectoryName(Path.GetFullPath(hintPath)));
+                                throw new Exception("path error");
                             }
                         }
                     }

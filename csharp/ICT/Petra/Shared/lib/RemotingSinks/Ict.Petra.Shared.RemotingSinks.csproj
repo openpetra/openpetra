@@ -62,18 +62,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
-    <Reference Include="System">
-      <HintPath>..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.dll</HintPath>
-      <Private />
-    </Reference>
-    <Reference Include="System.Data">
-      <HintPath>..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll</HintPath>
-      <Private />
-    </Reference>
-    <Reference Include="System.Xml">
-      <HintPath>..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll</HintPath>
-      <Private />
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
