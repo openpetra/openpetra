@@ -71,7 +71,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.ucoConferenceSelection = new Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection();
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
-            this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
+            this.tpgComment = new System.Windows.Forms.TabPage();
+            this.grpHideNoComment = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.chkHideNoComment = new System.Windows.Forms.CheckBox();
+            this.lblHideNoComment = new System.Windows.Forms.Label();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -110,7 +114,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
             this.tpgReportSorting.SuspendLayout();
-            this.tpgAdditionalSettings.SuspendLayout();
+            this.tpgComment.SuspendLayout();
+            this.grpHideNoComment.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -145,13 +151,53 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgReportSorting.Text = "Sorting";
             this.tpgReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
             //
-            // tpgAdditionalSettings
+            // tpgComment
             //
-            this.tpgAdditionalSettings.Location = new System.Drawing.Point(2,2);
-            this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
-            this.tpgAdditionalSettings.AutoSize = true;
-            this.tpgAdditionalSettings.Text = "Additional Settings";
-            this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgComment.Location = new System.Drawing.Point(2,2);
+            this.tpgComment.Name = "tpgComment";
+            this.tpgComment.AutoSize = true;
+            this.tpgComment.Controls.Add(this.grpHideNoComment);
+            //
+            // grpHideNoComment
+            //
+            this.grpHideNoComment.Name = "grpHideNoComment";
+            this.grpHideNoComment.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpHideNoComment.AutoSize = true;
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.grpHideNoComment.Controls.Add(this.tableLayoutPanel1);
+            //
+            // chkHideNoComment
+            //
+            this.chkHideNoComment.Location = new System.Drawing.Point(2,2);
+            this.chkHideNoComment.Name = "chkHideNoComment";
+            this.chkHideNoComment.Size = new System.Drawing.Size(30, 28);
+            this.chkHideNoComment.Text = "";
+            this.chkHideNoComment.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblHideNoComment
+            //
+            this.lblHideNoComment.Location = new System.Drawing.Point(2,2);
+            this.lblHideNoComment.Name = "lblHideNoComment";
+            this.lblHideNoComment.AutoSize = true;
+            this.lblHideNoComment.Text = "Hide persons with no comments:";
+            this.lblHideNoComment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblHideNoComment.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblHideNoComment.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblHideNoComment, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.chkHideNoComment, 1, 0);
+            this.grpHideNoComment.Text = "Comments";
+            this.tpgComment.Text = "Comments";
+            this.tpgComment.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgColumns
             //
@@ -173,7 +219,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
             this.tabReportSettings.Controls.Add(this.tpgReportSorting);
-            this.tabReportSettings.Controls.Add(this.tpgAdditionalSettings);
+            this.tabReportSettings.Controls.Add(this.tpgComment);
             this.tabReportSettings.Controls.Add(this.tpgColumns);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
@@ -458,7 +504,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
-            this.tpgAdditionalSettings.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.grpHideNoComment.ResumeLayout(false);
+            this.tpgComment.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
@@ -472,7 +520,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection ucoConferenceSelection;
         private System.Windows.Forms.TabPage tpgReportSorting;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
-        private System.Windows.Forms.TabPage tpgAdditionalSettings;
+        private System.Windows.Forms.TabPage tpgComment;
+        private System.Windows.Forms.GroupBox grpHideNoComment;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.CheckBox chkHideNoComment;
+        private System.Windows.Forms.Label lblHideNoComment;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

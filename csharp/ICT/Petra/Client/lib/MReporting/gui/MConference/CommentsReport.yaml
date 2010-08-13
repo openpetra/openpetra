@@ -25,9 +25,9 @@ RootNode:
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: grpHideNoComment
+        tpgComment:
+            Label: Comments
+            Controls: [grpHideNoComment]
             
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
@@ -39,12 +39,13 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         grpHideNoComment:
-            Label:
+            Dock: Top
+            Label: Comments
             Controls: [chkHideNoComment]
         chkHideNoComment:
-            Label: Hide attendees which have no comment
+            Label: Hide persons with no comments
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         paramComments:
             Name: Comments
-            Parameter: 6
+            Parameter: 10

@@ -67,7 +67,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
       this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
+      this.lblHideNoComment.Text = Catalog.GetString("Hide persons with no comments:");
+      this.grpHideNoComment.Text = Catalog.GetString("Comments");
+      this.tpgComment.Text = Catalog.GetString("Comments");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -160,6 +162,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
       ucoReportSorting.ReadControls(ACalc, AReportAction);
+      ACalc.AddParameter("param_chkHideNoComment", this.chkHideNoComment.Checked);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -173,6 +176,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.SetControls(AParameters);
       ucoReportSorting.SetControls(AParameters);
+      chkHideNoComment.Checked = AParameters.Get("param_chkHideNoComment").ToBool();
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -232,7 +236,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Birthday", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Comments", 6));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Comments", 10));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
