@@ -624,4 +624,3 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
-

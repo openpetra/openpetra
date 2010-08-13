@@ -540,12 +540,35 @@ namespace Ict.Tools.CodeGeneration
             string ModuleName = AServerNamespace.Split('.')[3];
 
             List <CSParser>CSFiles = new List <CSParser>();
-            CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
-                ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj",
-                ref CSFiles);
-            CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
-                ModuleName + "/setup/Ict.Petra.Server." + ModuleName + ".Setup.WebConnectors.csproj",
-                ref CSFiles);
+
+            if (!File.Exists(ICTPath + "/Petra/Server/lib/" +
+                    ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj")
+                && Directory.Exists(ICTPath + "/Petra/Server/lib/" + ModuleName))
+            {
+                // any class in the module can contain a webconnector
+                string[] filePaths = Directory.GetFiles(ICTPath + "/Petra/Server/lib/" +
+                    ModuleName, "*.csproj",
+                    SearchOption.AllDirectories);
+
+                foreach (string filePath in filePaths)
+                {
+                    // excluding the directories data and connect
+                    if (!filePath.Replace("\\", "/").Contains("/data/")
+                        && !filePath.Replace("\\", "/").Contains("/connect/"))
+                    {
+                        CSParser.GetCSFilesInProject(filePath, ref CSFiles);
+                    }
+                }
+            }
+            else
+            {
+                CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+                    ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj",
+                    ref CSFiles);
+                CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
+                    ModuleName + "/setup/Ict.Petra.Server." + ModuleName + ".Setup.WebConnectors.csproj",
+                    ref CSFiles);
+            }
 
             return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
         }
