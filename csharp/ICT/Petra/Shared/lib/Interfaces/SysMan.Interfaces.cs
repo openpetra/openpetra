@@ -52,7 +52,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 #region ManualCode
 using System.Xml;
 using Ict.Petra.Shared.MSysMan.Data;
-#endregion
+#endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
     /// <summary>auto generated</summary>

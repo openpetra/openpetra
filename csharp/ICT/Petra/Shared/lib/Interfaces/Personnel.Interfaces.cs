@@ -190,7 +190,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.TPersonDataElementsCacheableNamespace)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
-                                                               out TVerificationResultCollection AVerificationResult);        
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

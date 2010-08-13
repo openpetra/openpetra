@@ -438,12 +438,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGiftWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
-        GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
-        TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-                                                   out TVerificationResultCollection AVerificationResult);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
         Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
                                     Int64 ARecipientKey,
                                     DateTime AStartDate,
@@ -465,6 +460,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                         DateTime AStartDate,
                                         DateTime AEndDate,
                                         string AHTMLTemplate);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
+        TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                   out TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors.TGiftWebConnectorsNamespace)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                       DateTime ADateEffective);
@@ -751,7 +751,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
     /// <summary>auto generated</summary>
     public interface ISetupWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors.TSetupWebConnectorsNamespace)</summary>
         TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
     }

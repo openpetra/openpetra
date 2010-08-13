@@ -756,7 +756,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
         {
             #region ManualCode
             return TSysManServerLookups.GetDBVersion(out APetraDBVersion);
-            #endregion
+            #endregion ManualCode
         }
 
         /// generated method from interface
@@ -764,7 +764,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
         {
             #region ManualCode
             return TSysManServerLookups.GetInstalledPatches(out APatchLogDT);
-            #endregion
+            #endregion ManualCode
         }
     }
 }

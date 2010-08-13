@@ -125,10 +125,10 @@ namespace Tests.CodeGeneration
         }
 
         /// <summary>
-        /// testing the diff and merge of text files
+        /// testing the diff and merge of simple strings
         /// </summary>
         [Test]
-        public void TestDiffMergeTool()
+        public void TestDiffMergeStrings()
         {
             // see console output for readable diff
             Assert.AreEqual(TestHelperStrings("1ac", "abc"), "- 1\r\n  a\r\n+ b\r\n  c\r\n", "diff of 1ac and abc");
@@ -136,9 +136,33 @@ namespace Tests.CodeGeneration
             Assert.AreEqual(TestHelperStrings("HelloWorld",
                     "HelloWOrld"), "  H\r\n  e\r\n  l\r\n  l\r\n  o\r\n  W\r\n- o\r\n+ O\r\n  r\r\n  l\r\n  d\r\n",
                 "diff of HelloWorld and HelloWOrld");
+        }
 
+        /// <summary>
+        /// testing the diff and merge of text files
+        /// </summary>
+        [Test]
+        public void TestDiffMergeTool1()
+        {
             Assert.AreEqual(TestHelperMerge("orig.txt", "rewrite.txt", "result.txt"), true, "merging orig.txt and rewrite.txt");
+        }
+
+        /// <summary>
+        /// testing the diff and merge of text files
+        /// </summary>
+        [Test]
+        public void TestDiffMergeTool2()
+        {
             Assert.AreEqual(TestHelperMerge("orig2.txt", "rewrite2.txt", "result2.txt"), true, "merging orig2.txt and rewrite2.txt");
+        }
+
+        /// <summary>
+        /// testing the diff and merge of text files
+        /// </summary>
+        [Test]
+        public void TestDiffMergeTool3()
+        {
+            Assert.AreEqual(TestHelperMerge("orig3.txt", "rewrite3.txt", "result3.txt"), true, "merging orig3.txt and rewrite3.txt");
         }
     }
 }

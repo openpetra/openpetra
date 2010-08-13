@@ -46,6 +46,7 @@ namespace Ict.Tools.CodeGeneration
 
             Int32[] indexes = new Int32[ASourceLines.Length];
             bool currentlyInManualCodeBlock = false;
+            Int32 ManualCodeLastStartLine = -1;
 
             for (int count = 0; count < ASourceLines.Length; count++)
             {
@@ -53,6 +54,13 @@ namespace Ict.Tools.CodeGeneration
 
                 if (ASourceLines[count].Trim().StartsWith("#region ManualCode"))
                 {
+                    if (currentlyInManualCodeBlock)
+                    {
+                        throw new Exception(
+                            "missing proper closing of ManualCode region: #endregion ManualCode. see line: " + ManualCodeLastStartLine.ToString());
+                    }
+
+                    ManualCodeLastStartLine = count;
                     currentlyInManualCodeBlock = true;
                 }
                 else if (ASourceLines[count].Trim().StartsWith("#endregion ManualCode"))
@@ -228,17 +236,21 @@ namespace Ict.Tools.CodeGeneration
             {
                 if (AList1[x] == AList2[y])
                 {
+                    // lines are equal in both files
                     result.Add(AOrigLines[AList1[x]]);
                     x++;
                     y++;
                 }
                 else if (AMatrix[x, y + 1] > AMatrix[x + 1, y])
                 {
+                    // the second file has new lines
                     result.Add(AOrigLines[AList2[y]]);
                     y++;
                 }
                 else
                 {
+                    // there are lines from the first file missing in the second file
+                    // only add old lines from first file if manual code
                     if (AOrigLines[AList1[x]].Trim().StartsWith("#region ManualCode"))
                     {
                         currentlyInManualCodeBlock = true;
@@ -260,6 +272,7 @@ namespace Ict.Tools.CodeGeneration
 
             if (x < AList1.Length)
             {
+                // there are more lines in the first file than in the second file
                 for (int i = x; i < AList1.Length; i++)
                 {
                     if (AOrigLines[AList1[i]].Trim().StartsWith("#region ManualCode"))
@@ -280,6 +293,7 @@ namespace Ict.Tools.CodeGeneration
             }
             else if (y < AList2.Length)
             {
+                // there are more lines in the second file than in the first file
                 for (int j = y; j < AList2.Length; j++)
                 {
                     result.Add(AOrigLines[AList2[j]]);
@@ -305,47 +319,54 @@ namespace Ict.Tools.CodeGeneration
                 return true;
             }
 
-            string[] sourceLines = File.ReadAllLines(AOrigFilename);
-
-            List <string>hashes = new List <string>();
-            List <string>origLines = new List <string>();
-
-            // the order of calculation hashes is important to keep commmented lines commented
-            Int32[] file1Indexes = TFileDiffMerge.CalculateHashes(sourceLines, ref hashes, ref origLines, true);
-            Int32[] file2Indexes = TFileDiffMerge.CalculateHashes(ANewLines, ref hashes, ref origLines, false);
-
-            // calculate matrix for the indexes of the hashes
-            int[, ] matrix = TFileDiffMerge.GetLongestCommonSubsequenceMatrix(file1Indexes, file2Indexes);
-
-            string[] mergedText = TFileDiffMerge.MergeSecondFileIntoFirst(matrix, file1Indexes, file2Indexes, origLines);
-
-            bool changed = false;
-
-            if (mergedText.Length != sourceLines.Length)
+            try
             {
-                changed = true;
-            }
-            else
-            {
-                for (int counter = 0; counter < mergedText.Length && !changed; counter++)
+                string[] sourceLines = File.ReadAllLines(AOrigFilename);
+
+                List <string>hashes = new List <string>();
+                List <string>origLines = new List <string>();
+
+                // the order of calculation hashes is important to keep commmented lines commented
+                Int32[] file1Indexes = TFileDiffMerge.CalculateHashes(sourceLines, ref hashes, ref origLines, true);
+                Int32[] file2Indexes = TFileDiffMerge.CalculateHashes(ANewLines, ref hashes, ref origLines, false);
+
+                // calculate matrix for the indexes of the hashes
+                int[, ] matrix = TFileDiffMerge.GetLongestCommonSubsequenceMatrix(file1Indexes, file2Indexes);
+
+                string[] mergedText = TFileDiffMerge.MergeSecondFileIntoFirst(matrix, file1Indexes, file2Indexes, origLines);
+
+                bool changed = false;
+
+                if (mergedText.Length != sourceLines.Length)
                 {
-                    if (mergedText[counter].CompareTo(sourceLines[counter]) != 0)
+                    changed = true;
+                }
+                else
+                {
+                    for (int counter = 0; counter < mergedText.Length && !changed; counter++)
                     {
-                        changed = true;
+                        if (mergedText[counter].CompareTo(sourceLines[counter]) != 0)
+                        {
+                            changed = true;
+                        }
                     }
                 }
-            }
 
-            if (changed)
+                if (changed)
+                {
+                    // for debugging merge bugs: store the original and the generated file:
+                    File.WriteAllLines(ADestinationFilename + ".orig", sourceLines);
+                    File.WriteAllLines(ADestinationFilename + ".generated", ANewLines);
+                    File.WriteAllLines(ADestinationFilename + ".new", mergedText);
+                    TTextFile.UpdateFile(ADestinationFilename);
+                }
+
+                return changed;
+            }
+            catch (Exception e)
             {
-                // for debugging merge bugs: store the original and the generated file:
-                // File.WriteAllLines(ADestinationFilename + ".orig", sourceLines);
-                // File.WriteAllLines(ADestinationFilename + ".generated", ANewLines);
-                File.WriteAllLines(ADestinationFilename + ".new", mergedText);
-                TTextFile.UpdateFile(ADestinationFilename);
+                throw new Exception(String.Format("Problems merging file {0}: {1}", AOrigFilename, e.Message));
             }
-
-            return changed;
         }
 
         /// <summary>

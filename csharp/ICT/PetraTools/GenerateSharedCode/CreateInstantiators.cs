@@ -267,17 +267,20 @@ class CreateInstantiators : AutoGenerationWriter
         List <CSParser>CSFiles = new List <CSParser>();
         string module = AFullNamespace.Split('.')[3];
 
-        if (!AFullNamespace.Contains(".Setup."))
+        if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/" + module))
         {
-            CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
-                module + "/Ict.Petra.Server." + module + ".WebConnectors.csproj",
-                ref CSFiles);
-        }
-        else
-        {
-            CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Server/lib/" +
-                module + "/setup/Ict.Petra.Server." + module + ".Setup.WebConnectors.csproj",
-                ref CSFiles);
+            // any class in the module can contain a webconnector
+            string[] filePaths = Directory.GetFiles(CSParser.ICTPath + "/Petra/Server/lib/" + module, "*.csproj",
+                SearchOption.AllDirectories);
+
+            foreach (string filePath in filePaths)
+            {
+                // excluding the data directory
+                if (!filePath.Replace("\\", "/").Contains("/data/"))
+                {
+                    CSParser.GetCSFilesInProject(filePath, ref CSFiles);
+                }
+            }
         }
 
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
@@ -458,6 +461,14 @@ class CreateInstantiators : AutoGenerationWriter
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
+
+        if (Directory.Exists(AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
+                Path.DirectorySeparatorChar + "connect"))
+        {
+            OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
+                         Path.DirectorySeparatorChar + "connect" +
+                         Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
+        }
 
         Console.WriteLine("working on " + OutputFile);
 

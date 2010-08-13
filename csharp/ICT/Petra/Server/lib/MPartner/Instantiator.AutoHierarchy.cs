@@ -1940,7 +1940,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
         {
             #region ManualCode
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
-            #endregion ManualCode            
+            #endregion ManualCode
         }
     }
 }
@@ -2327,7 +2327,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         {
             #region ManualCode
             return TPartnerServerLookups.GetExtractDescription(AExtractName, out AExtractDescription);
-            #endregion
+            #endregion ManualCode
         }
 
         /// generated method from interface
@@ -2336,7 +2336,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         {
             #region ManualCode
             return TPartnerServerLookups.GetPartnerFoundationStatus(APartnerKey, out AIsFoundation);
-            #endregion
+            #endregion ManualCode
         }
 
         /// generated method from interface

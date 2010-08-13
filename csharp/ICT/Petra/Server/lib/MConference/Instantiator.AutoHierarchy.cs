@@ -58,7 +58,7 @@ using Ict.Petra.Server.MConference.WebConnectors;
 using Ict.Petra.Shared .MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference;
-#endregion
+#endregion ManualCode
 namespace Ict.Petra.Server.MConference.Instantiator
 {
     /// <summary>
@@ -441,15 +441,21 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         {
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate, out AStartDate, out AEndDate);
         }
-        
+
+        /// generated method from connector
+        public System.Boolean GetCampaignOptions(long AUnitKey,
+                                                 out System.Data.DataTable AConferenceTable)
+        {
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey, out AConferenceTable);
+        }
 
         /// generated method from connector
         public bool GetFieldUnits(Int64 AConferenceKey,
-                                  TUnitTypeEnum AUnitType,
-                                  out DataTable AFieldList,
+                                  TUnitTypeEnum AFieldTypes,
+                                  out DataTable AFieldsTable,
                                   out String AConferencePrefix)
         {
-            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AUnitType, out AFieldList, out AConferencePrefix);
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AFieldTypes, out AFieldsTable, out AConferencePrefix);
         }
     }
 }

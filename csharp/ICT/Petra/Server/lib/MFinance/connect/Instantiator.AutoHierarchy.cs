@@ -2087,6 +2087,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                          out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
                                            Int64 ARecipientKey,
                                            DateTime AStartDate,
@@ -2122,19 +2135,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                                string AHTMLTemplate)
         {
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector.CreateAnnualGiftReceipts(ALedgerNumber, AStartDate, AEndDate, AHTMLTemplate);
-        }
-
-        /// generated method from connector
-        public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-                                                          out TVerificationResultCollection AVerificationResult)
-        {
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector

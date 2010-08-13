@@ -37,7 +37,7 @@ using Ict.Petra.Shared.Interfaces.MConference.WebConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference;
-#endregion
+#endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MConference
 {
     /// <summary>auto generated</summary>
@@ -87,9 +87,12 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
                                       out DateTime AStartDate,
                                       out DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
+        System.Boolean GetCampaignOptions(long AUnitKey,
+                                          out System.Data.DataTable AConferenceTable);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
         bool GetFieldUnits(Int64 AConferenceKey,
-                           TUnitTypeEnum AUnitType,
-                           out DataTable AFieldList,
+                           TUnitTypeEnum AFieldTypes,
+                           out DataTable AFieldsTable,
                            out String AConferencePrefix);
     }
 
