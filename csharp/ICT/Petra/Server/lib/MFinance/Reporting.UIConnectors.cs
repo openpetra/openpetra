@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 FLedgerNr,
                 out typeofTable);
             string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                          AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
+                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
             DataRow[] filteredRows = CachedDataTable.Select(whereClause);
 
             if (filteredRows.Length > 0)
@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 FLedgerNr,
                 out typeofTable);
             string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                          AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
+                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
             DataRow[] filteredRows = CachedDataTable.Select(whereClause);
 
             if (filteredRows.Length > 0)

@@ -150,5 +150,39 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Transactions);
         }
+
+        /// <summary>
+        /// remove journals
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void RemoveRow(System.Object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+//          to do: Set Journal to cancelled, delete underlying Transactions
+//            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
+//            FPreviouslySelectedDetailRow.Delete();
+//            FPetraUtilsObject.SetChangedFlag();
+//
+//            if (rowIndex == grdDetails.Rows.Count)
+//            {
+//                rowIndex--;
+//            }
+//
+//            if (grdDetails.Rows.Count > 1)
+//            {
+//                grdDetails.Selection.SelectRow(rowIndex, true);
+//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//                ShowDetails(FPreviouslySelectedDetailRow);
+//            }
+//            else
+//            {
+//                FPreviouslySelectedDetailRow = null;
+//            }
+        }
     }
 }

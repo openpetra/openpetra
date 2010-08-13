@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblBatchNumber.Text = Catalog.GetString("Batch:");
       this.lblJournalNumber.Text = Catalog.GetString("Journal:");
       this.btnNew.Text = Catalog.GetString("&Add");
-      this.btnRemove.Text = Catalog.GetString("Remove");
+      this.btnRemove.Text = Catalog.GetString("&Remove");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre Code:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Account Code:");
       this.lblDetailNarrative.Text = Catalog.GetString("Narrative:");
@@ -371,6 +371,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         if (e.ActionName == "actNew")
         {
             btnNew.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actRemove")
+        {
+            btnRemove.Enabled = e.Enabled;
         }
     }
 

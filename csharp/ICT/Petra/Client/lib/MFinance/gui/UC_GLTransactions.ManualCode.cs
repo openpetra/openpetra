@@ -263,5 +263,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
             }
         }
+
+        /// <summary>
+        /// remove transactions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void RemoveRow(System.Object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
+            FPreviouslySelectedDetailRow.Delete();
+            FPetraUtilsObject.SetChangedFlag();
+
+            if (rowIndex == grdDetails.Rows.Count)
+            {
+                rowIndex--;
+            }
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+        }
     }
 }

@@ -259,7 +259,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnRemove.Location = new System.Drawing.Point(2,2);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.AutoSize = true;
-            this.btnRemove.Text = "Remove";
+            this.btnRemove.Click += new System.EventHandler(this.RemoveRow);
+            this.btnRemove.Text = "&Remove";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 2;
