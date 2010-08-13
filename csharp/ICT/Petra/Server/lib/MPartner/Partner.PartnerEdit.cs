@@ -3074,7 +3074,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public Boolean HasPartnerCostCentreLink(out String ACostCentreCode)
         {
-            return Ict.Petra.Server.MFinance.Setup.Main.HasPartnerCostCentreLink(FPartnerKey, out ACostCentreCode);
+            return Ict.Petra.Server.MFinance.Common.HasPartnerCostCentreLink(FPartnerKey, out ACostCentreCode);
         }
 
         /// <summary>
@@ -3085,7 +3085,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public Boolean HasPartnerCostCentreLink(System.Int64 APartnerKey, out String ACostCentreCode)
         {
-            return Ict.Petra.Server.MFinance.Setup.Main.HasPartnerCostCentreLink(APartnerKey, out ACostCentreCode);
+            return Ict.Petra.Server.MFinance.Common.HasPartnerCostCentreLink(APartnerKey, out ACostCentreCode);
         }
 
         /// <summary>

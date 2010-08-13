@@ -29,7 +29,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
-namespace Ict.Petra.Server.MFinance.Setup
+namespace Ict.Petra.Server.MFinance
 {
     /// <summary>
     /// Contains Finance Module Setup-Subnamespace Business Logic.

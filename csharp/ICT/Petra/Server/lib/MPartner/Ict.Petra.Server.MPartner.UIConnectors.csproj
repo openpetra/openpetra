@@ -120,9 +120,13 @@
       <Project>{76E4431D-7374-41A6-9708-59104F895D51}</Project>
       <Name>Ict.Petra.Server.MCommon.UIConnectors</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MFinance\Ict.Petra.Server.MFinance.csproj">
-      <Project>{9571C77F-4E2B-4C19-B573-40E61918197C}</Project>
-      <Name>Ict.Petra.Server.MFinance</Name>
+    <ProjectReference Include="..\MFinance\Common\Ict.Petra.Server.MFinance.Common.csproj">
+      <Project>{073910BE-E121-4C07-B849-3F073847DEB1}</Project>
+      <Name>Ict.Petra.Server.MFinance.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MFinance\Gift\Ict.Petra.Server.MFinance.Gift.csproj">
+      <Project>{B08BAEC4-52F3-462B-9102-3F668246F00A}</Project>
+      <Name>Ict.Petra.Server.MFinance.Gift</Name>
     </ProjectReference>
     <ProjectReference Include="..\MFinance\setup\Ict.Petra.Server.MFinance.Setup.csproj">
       <Project>{BB9EA65E-790F-4E3C-BFE4-23D01791F4A9}</Project>

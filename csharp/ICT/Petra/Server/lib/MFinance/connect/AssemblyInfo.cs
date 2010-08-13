@@ -1,10 +1,8 @@
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
-// @Description:
-//       Contains Finance Module Business Objects and a class that returns cacheable data.
 // @Authors:
-//       christiank
+//       auto generated
 //
 // Copyright 2004-2010 by OM International
 //
@@ -23,18 +21,22 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+#region Using directives
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#endregion
+
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Petra Server Finance Module Library")]
+[assembly: AssemblyTitle("Ict.Petra.Server.MFinance.Instantiator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ICT")]
-[assembly: AssemblyProduct("Petra Server")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Ict.Petra.Server.MFinance.Instantiator")]
 [assembly: AssemblyCopyright("(c) OM International 2004-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

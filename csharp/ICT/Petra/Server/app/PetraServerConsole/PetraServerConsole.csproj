@@ -86,7 +86,7 @@
       <Name>Ict.Petra.Server.MCommon.Instantiator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MFinance\Ict.Petra.Server.MFinance.Instantiator.csproj">
-      <Project>{637D2388-7922-42C1-BDD6-8DD578B62833}</Project>
+      <Project>{1D1F527D-D7B6-43C9-B500-D2BE1CD41F29}</Project>
       <Name>Ict.Petra.Server.MFinance.Instantiator</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lib\MHospitality\Ict.Petra.Server.MHospitality.Instantiator.csproj">

@@ -6,16 +6,16 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Server.MFinance.DataAggregates</RootNamespace>
     <AssemblyName>Ict.Petra.Server.MFinance.DataAggregates</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\_bin\objcode\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\_bin\objcode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MFinance.DataAggregates.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Server.MFinance.DataAggregates.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\_bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\_bin\Release\</OutputPath>
+    <OutputPath>..\..\..\_bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ALedgerName.cs" />
+    <Compile Include="DataAggregates.ALedgerName.cs" />
     <Compile Include="DataAggregates.AssemblyInfo.cs" />
   </ItemGroup>
 </Project>
