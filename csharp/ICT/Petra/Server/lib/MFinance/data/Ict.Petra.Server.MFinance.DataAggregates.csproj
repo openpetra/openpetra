@@ -40,15 +40,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Ict.Common">
-      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common.Data">
-      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common.DB">
-      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
+      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
