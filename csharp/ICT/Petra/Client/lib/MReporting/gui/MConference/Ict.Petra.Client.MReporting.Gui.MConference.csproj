@@ -160,6 +160,9 @@
     <Compile Include="ConferenceRoleReport.Designer.cs">
       <DependentUpon>ConferenceRoleReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConferenceRoleReport.ManualCode.cs">
+      <DependentUpon>ConferenceRoleReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExtraCostsReport.cs" />
     <Compile Include="ExtraCostsReport.Designer.cs">
       <DependentUpon>ExtraCostsReport.cs</DependentUpon>
