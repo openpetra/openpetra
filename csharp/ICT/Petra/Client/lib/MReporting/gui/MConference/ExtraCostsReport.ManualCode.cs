@@ -46,90 +46,117 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmExtraCostsReport
     {
-    	private DataTable FFieldTable;
-    	private long FLastConferenceKey;
+        private DataTable FFieldTable;
+        private long FLastConferenceKey;
 
         private void grdChargedFields_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
         {
-        	FLastConferenceKey = long.MinValue;
-        	ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceKeyChanged);
+            FLastConferenceKey = long.MinValue;
+            ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceKeyChanged);
             ucoConferenceSelection.AddConferenceSelectionChangedEventHandler(this.ConferenceSelectionChanged);
         }
 
         private void grdChargedFields_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-        	String SelectedFieldKeys = "";
-        	
-        	if ((FFieldTable != null) &&
-        	    rbtSelectedFields.Checked)
-        	{
-	        	foreach (DataRow Row in FFieldTable.Rows)
-	       		{
-	        		if (((bool)Row["Selection"]) &&
-	        			(ucoConferenceSelection.AllConferenceSelected ||
-	        		     (!ucoConferenceSelection.AllConferenceSelected  && (bool)Row["Used_in_Conference"])))
-	       			{
-	       				SelectedFieldKeys = SelectedFieldKeys + Row["Unit Key"].ToString() + ',';
-	       			}
-	       		}
-        	}
-       		
-        	if (SelectedFieldKeys.Length > 0)
-        	{
-        		// Remove the last comma
-        		SelectedFieldKeys = SelectedFieldKeys.Remove(SelectedFieldKeys.Length - 1);
-        	}
-        		
-        	ACalc.AddStringParameter("param_selectedfieldkeys", SelectedFieldKeys);
-        	
-        	if (rbtSelectedFields.Checked)
-        	{
-	        	ACalc.AddParameter("param_chargedfields", "Selected Fields");
-	        	
-	        	if ((SelectedFieldKeys.Length == 0) &&
-	        	    (AReportAction == TReportActionEnum.raGenerate))
-	        	{
-	        		TVerificationResult VerificationResult = new TVerificationResult(
-	        			Catalog.GetString("Select at least one field to calculate the extra costs."),
-	        			Catalog.GetString("No field was selected!"),
-	                    TResultSeverity.Resv_Critical);
-	                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-	        	}
-        	}
-        	else
-        	{
-        		ACalc.AddParameter("param_chargedfields", "All Fields");
-        	}
+            String SelectedFieldKeys = "";
+
+            if ((FFieldTable != null)
+                && rbtSelectedFields.Checked)
+            {
+                foreach (DataRow Row in FFieldTable.Rows)
+                {
+                    if (((bool)Row["Selection"])
+                        && (ucoConferenceSelection.AllConferenceSelected
+                            || (!ucoConferenceSelection.AllConferenceSelected && (bool)Row["Used_in_Conference"])))
+                    {
+                        SelectedFieldKeys = SelectedFieldKeys + Row["Unit Key"].ToString() + ',';
+                    }
+                }
+            }
+
+            if (SelectedFieldKeys.Length > 0)
+            {
+                // Remove the last comma
+                SelectedFieldKeys = SelectedFieldKeys.Remove(SelectedFieldKeys.Length - 1);
+            }
+
+            ACalc.AddStringParameter("param_selectedfieldkeys", SelectedFieldKeys);
+
+            if (rbtSelectedFields.Checked)
+            {
+                ACalc.AddParameter("param_chargedfields", "Selected Fields");
+
+                if ((SelectedFieldKeys.Length == 0)
+                    && (AReportAction == TReportActionEnum.raGenerate))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Select at least one field to calculate the extra costs."),
+                        Catalog.GetString("No field was selected!"),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+            }
+            else
+            {
+                ACalc.AddParameter("param_chargedfields", "All Fields");
+            }
         }
 
         private void grdChargedFields_SetControls(TParameterList AParameters)
         {
-        	rbtSelectedFields.Checked = AParameters.Get("param_chargedfields").ToString() == "Selected Fields";
-        	rbtAllFields.Checked = AParameters.Get("param_chargedfields").ToString() == "All Fields";
-        	
-        	UpdateFieldData();
-        	
-        	String SelectedFieldKeys = AParameters.Get("param_selectedfieldkeys").ToString();
-        	
-        	foreach (DataRow Row in FFieldTable.Rows)
-        	{
-        		String CurrentKey = Row["Unit Key"].ToString();
-        		if (SelectedFieldKeys.Contains(CurrentKey))
-        		{
-        			Row["Selection"] = true;
-        		}
-        	}
+            rbtSelectedFields.Checked = AParameters.Get("param_chargedfields").ToString() == "Selected Fields";
+            rbtAllFields.Checked = AParameters.Get("param_chargedfields").ToString() == "All Fields";
+
+            UpdateFieldData();
+
+            String SelectedFieldKeys = AParameters.Get("param_selectedfieldkeys").ToString();
+
+            SelectedFieldKeys = AddMissingZeros(SelectedFieldKeys);
+
+            foreach (DataRow Row in FFieldTable.Rows)
+            {
+                String CurrentKey = Row["Unit Key"].ToString();
+
+                if (SelectedFieldKeys.Contains(CurrentKey))
+                {
+                    Row["Selection"] = true;
+                }
+            }
         }
-        
+
         private void FieldSelectionChanged(System.Object sender, EventArgs e)
         {
-        	grdChargedFields.Enabled = rbtSelectedFields.Checked;
+            grdChargedFields.Enabled = rbtSelectedFields.Checked;
         }
-        
+
+        /// <summary>
+        /// Add zeros at the end of the last field key in the string. The string might be "1030002,299"
+        /// but should be "1030002,29900000"
+        /// </summary>
+        /// <param name="AFieldKeys">The comma separated list with partner keys</param>
+        /// <returns></returns>
+        private String AddMissingZeros(String AFieldKeys)
+        {
+            if (AFieldKeys.Length == 0)
+            {
+                return AFieldKeys;
+            }
+
+            int StartIndex = AFieldKeys.LastIndexOf(',') + 1;
+
+            String LastKey = AFieldKeys.Substring(StartIndex, AFieldKeys.Length - StartIndex);
+
+            int NumberMissingZeros = 10 - LastKey.Length;
+
+            String MissingZeros = new String('0', NumberMissingZeros);
+
+            return AFieldKeys + MissingZeros;
+        }
+
         private void UpdateFieldData()
         {
-        	String ConferencePrefix;
-        	long ConferenceKey = Convert.ToInt64(ucoConferenceSelection.ConferenceKey);
+            String ConferencePrefix;
+            long ConferenceKey = Convert.ToInt64(ucoConferenceSelection.ConferenceKey);
 
             if (ucoConferenceSelection.AllConferenceSelected)
             {
@@ -137,31 +164,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 // The conference key must be set to -1
                 ConferenceKey = -1;
             }
-            
-            if ((FLastConferenceKey == long.MinValue) ||
-                (FLastConferenceKey != ConferenceKey))
+
+            if ((FLastConferenceKey == long.MinValue)
+                || (FLastConferenceKey != ConferenceKey))
             {
-            	FLastConferenceKey = ConferenceKey;
-            
-	            TRemote.MConference.WebConnectors.GetFieldUnits(ConferenceKey, TUnitTypeEnum.utChargedFields, out FFieldTable, out ConferencePrefix);
-	            
-	            if (grdChargedFields.Columns.Count == 0)
-	            {
-		            grdChargedFields.AddCheckBoxColumn("", FFieldTable.Columns["Selection"]);
-		            grdChargedFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns["Unit Key"]);
-		            grdChargedFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns["Unit Name"]);
-	            }
-	            
-	            FFieldTable.DefaultView.AllowNew = false;
-	            FFieldTable.DefaultView.AllowEdit = true;
-	            FFieldTable.DefaultView.AllowDelete = false;
-	
-	            grdChargedFields.DataSource = new DevAge.ComponentModel.BoundDataView(FFieldTable.DefaultView);
-	
-	            grdChargedFields.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-	            grdChargedFields.AutoSizeCells();
+                FLastConferenceKey = ConferenceKey;
+
+                TRemote.MConference.WebConnectors.GetFieldUnits(ConferenceKey, TUnitTypeEnum.utChargedFields, out FFieldTable, out ConferencePrefix);
+
+                if (grdChargedFields.Columns.Count == 0)
+                {
+                    grdChargedFields.AddCheckBoxColumn("", FFieldTable.Columns["Selection"]);
+                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns["Unit Key"]);
+                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns["Unit Name"]);
+                }
+
+                FFieldTable.DefaultView.AllowNew = false;
+                FFieldTable.DefaultView.AllowEdit = true;
+                FFieldTable.DefaultView.AllowDelete = false;
+
+                grdChargedFields.DataSource = new DevAge.ComponentModel.BoundDataView(FFieldTable.DefaultView);
+
+                grdChargedFields.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+                grdChargedFields.AutoSizeCells();
             }
-            
+
             if (ucoConferenceSelection.AllConferenceSelected)
             {
                 FFieldTable.DefaultView.RowFilter = "";
@@ -171,7 +198,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 FFieldTable.DefaultView.RowFilter = "Used_in_Conference = true";
             }
         }
-        
+
         /// <summary>
         /// Event called when the text of "select conference button" has changed.
         /// Updates the Dates of the conference.
@@ -194,7 +221,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <param name="e"></param>
         public void ConferenceSelectionChanged(System.Object sender, EventArgs e)
         {
-        	UpdateFieldData();
+            UpdateFieldData();
         }
     }
 }
