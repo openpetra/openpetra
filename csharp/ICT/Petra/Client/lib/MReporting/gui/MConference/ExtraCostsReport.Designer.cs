@@ -72,9 +72,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgReportSorting = new System.Windows.Forms.TabPage();
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAdditionalSettigns = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.grpChargedFields = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtAllFields = new System.Windows.Forms.RadioButton();
+            this.rbtSelectedFields = new System.Windows.Forms.RadioButton();
             this.grdChargedFields = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
@@ -115,9 +116,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgGeneralSettings.SuspendLayout();
             this.tpgReportSorting.SuspendLayout();
             this.tpgAdditionalSettigns.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.grpChargedFields.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
@@ -157,43 +157,51 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgAdditionalSettigns.Location = new System.Drawing.Point(2,2);
             this.tpgAdditionalSettigns.Name = "tpgAdditionalSettigns";
             this.tpgAdditionalSettigns.AutoSize = true;
+            this.tpgAdditionalSettigns.Controls.Add(this.grpChargedFields);
+            //
+            // grpChargedFields
+            //
+            this.grpChargedFields.Name = "grpChargedFields";
+            this.grpChargedFields.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpChargedFields.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.tpgAdditionalSettigns.Controls.Add(this.tableLayoutPanel1);
+            this.grpChargedFields.Controls.Add(this.tableLayoutPanel1);
             //
-            // grpChargedFields
+            // rbtAllFields
             //
-            this.grpChargedFields.Location = new System.Drawing.Point(2,2);
-            this.grpChargedFields.Name = "grpChargedFields";
-            this.grpChargedFields.AutoSize = true;
+            this.rbtAllFields.Location = new System.Drawing.Point(2,2);
+            this.rbtAllFields.Name = "rbtAllFields";
+            this.rbtAllFields.AutoSize = true;
+            this.rbtAllFields.CheckedChanged += new System.EventHandler(this.FieldSelectionChanged);
+            this.rbtAllFields.Text = "All Fields";
             //
-            // tableLayoutPanel2
+            // rbtSelectedFields
             //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.grpChargedFields.Controls.Add(this.tableLayoutPanel2);
+            this.rbtSelectedFields.Location = new System.Drawing.Point(2,2);
+            this.rbtSelectedFields.Name = "rbtSelectedFields";
+            this.rbtSelectedFields.AutoSize = true;
+            this.rbtSelectedFields.Text = "Selected Fields";
             //
             // grdChargedFields
             //
             this.grdChargedFields.Location = new System.Drawing.Point(2,2);
             this.grdChargedFields.Name = "grdChargedFields";
-            this.grdChargedFields.Size = new System.Drawing.Size(200, 300);
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.grdChargedFields, 0, 0);
-            this.grpChargedFields.Text = "Charged Fields";
+            this.grdChargedFields.Size = new System.Drawing.Size(450, 250);
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.grpChargedFields, 0, 0);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.rbtAllFields, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.rbtSelectedFields, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.grdChargedFields, 0, 2);
+            this.grpChargedFields.Text = "Select Fields";
             this.tpgAdditionalSettigns.Text = "Charged Fields";
             this.tpgAdditionalSettigns.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -502,9 +510,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.grpChargedFields.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.grpChargedFields.ResumeLayout(false);
             this.tpgAdditionalSettigns.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
@@ -520,9 +527,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private System.Windows.Forms.TabPage tpgReportSorting;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAdditionalSettigns;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox grpChargedFields;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.RadioButton rbtAllFields;
+        private System.Windows.Forms.RadioButton rbtSelectedFields;
         private Ict.Common.Controls.TSgrdDataGridPaged grdChargedFields;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;

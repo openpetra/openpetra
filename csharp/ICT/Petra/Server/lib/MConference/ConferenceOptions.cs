@@ -1075,7 +1075,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-            String ConferencePrefix = "";
+            String ConferencePrefix = "-----";
             PUnitTable UnitTable;
 
 #if DEBUGMODE

@@ -39,12 +39,18 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         grpChargedFields:
-            Label: Charged Fields
-            Controls: [grdChargedFields]
+            Dock: Top
+            Label: Select Fields
+            Controls: [rbtAllFields, rbtSelectedFields, grdChargedFields]
         grdChargedFields:
-            Height: 300
-            Width: 200
-        
+            Height: 250
+            Width: 450
+        rbtAllFields:
+            Label: All Fields
+            OnChange: FieldSelectionChanged
+        rbtSelectedFields:
+            Label: Selected Fields
+            
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para101:
             Name: Amount

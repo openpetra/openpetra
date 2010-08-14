@@ -67,7 +67,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
       this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.grpChargedFields.Text = Catalog.GetString("Charged Fields");
+      this.rbtAllFields.Text = Catalog.GetString("All Fields");
+      this.rbtSelectedFields.Text = Catalog.GetString("Selected Fields");
+      this.grpChargedFields.Text = Catalog.GetString("Select Fields");
       this.tpgAdditionalSettigns.Text = Catalog.GetString("Charged Fields");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");

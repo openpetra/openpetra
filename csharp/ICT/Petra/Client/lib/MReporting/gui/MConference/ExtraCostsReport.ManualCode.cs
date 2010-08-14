@@ -35,6 +35,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -45,20 +46,155 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmExtraCostsReport
     {
-        /// <summary>
-        /// Initialisation
-        /// </summary>
+    	private DataTable FFieldTable;
+    	private long FLastConferenceKey;
 
         private void grdChargedFields_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
         {
+        	FLastConferenceKey = long.MinValue;
+        	ucoConferenceSelection.AddConfernceKeyChangedEventHandler(this.ConferenceKeyChanged);
+            ucoConferenceSelection.AddConferenceSelectionChangedEventHandler(this.ConferenceSelectionChanged);
         }
 
         private void grdChargedFields_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+        	String SelectedFieldKeys = "";
+        	
+        	if ((FFieldTable != null) &&
+        	    rbtSelectedFields.Checked)
+        	{
+	        	foreach (DataRow Row in FFieldTable.Rows)
+	       		{
+	        		if (((bool)Row["Selection"]) &&
+	        			(ucoConferenceSelection.AllConferenceSelected ||
+	        		     (!ucoConferenceSelection.AllConferenceSelected  && (bool)Row["Used_in_Conference"])))
+	       			{
+	       				SelectedFieldKeys = SelectedFieldKeys + Row["Unit Key"].ToString() + ',';
+	       			}
+	       		}
+        	}
+       		
+        	if (SelectedFieldKeys.Length > 0)
+        	{
+        		// Remove the last comma
+        		SelectedFieldKeys = SelectedFieldKeys.Remove(SelectedFieldKeys.Length - 1);
+        	}
+        		
+        	ACalc.AddStringParameter("param_selectedfieldkeys", SelectedFieldKeys);
+        	
+        	if (rbtSelectedFields.Checked)
+        	{
+	        	ACalc.AddParameter("param_chargedfields", "Selected Fields");
+	        	
+	        	if ((SelectedFieldKeys.Length == 0) &&
+	        	    (AReportAction == TReportActionEnum.raGenerate))
+	        	{
+	        		TVerificationResult VerificationResult = new TVerificationResult(
+	        			Catalog.GetString("Select at least one field to calculate the extra costs."),
+	        			Catalog.GetString("No field was selected!"),
+	                    TResultSeverity.Resv_Critical);
+	                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+	        	}
+        	}
+        	else
+        	{
+        		ACalc.AddParameter("param_chargedfields", "All Fields");
+        	}
         }
 
         private void grdChargedFields_SetControls(TParameterList AParameters)
         {
+        	rbtSelectedFields.Checked = AParameters.Get("param_chargedfields").ToString() == "Selected Fields";
+        	rbtAllFields.Checked = AParameters.Get("param_chargedfields").ToString() == "All Fields";
+        	
+        	UpdateFieldData();
+        	
+        	String SelectedFieldKeys = AParameters.Get("param_selectedfieldkeys").ToString();
+        	
+        	foreach (DataRow Row in FFieldTable.Rows)
+        	{
+        		String CurrentKey = Row["Unit Key"].ToString();
+        		if (SelectedFieldKeys.Contains(CurrentKey))
+        		{
+        			Row["Selection"] = true;
+        		}
+        	}
+        }
+        
+        private void FieldSelectionChanged(System.Object sender, EventArgs e)
+        {
+        	grdChargedFields.Enabled = rbtSelectedFields.Checked;
+        }
+        
+        private void UpdateFieldData()
+        {
+        	String ConferencePrefix;
+        	long ConferenceKey = Convert.ToInt64(ucoConferenceSelection.ConferenceKey);
+
+            if (ucoConferenceSelection.AllConferenceSelected)
+            {
+                // if all conferences are seleced we get the relevant fields of all conferences
+                // The conference key must be set to -1
+                ConferenceKey = -1;
+            }
+            
+            if ((FLastConferenceKey == long.MinValue) ||
+                (FLastConferenceKey != ConferenceKey))
+            {
+            	FLastConferenceKey = ConferenceKey;
+            
+	            TRemote.MConference.WebConnectors.GetFieldUnits(ConferenceKey, TUnitTypeEnum.utChargedFields, out FFieldTable, out ConferencePrefix);
+	            
+	            if (grdChargedFields.Columns.Count == 0)
+	            {
+		            grdChargedFields.AddCheckBoxColumn("", FFieldTable.Columns["Selection"]);
+		            grdChargedFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns["Unit Key"]);
+		            grdChargedFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns["Unit Name"]);
+	            }
+	            
+	            FFieldTable.DefaultView.AllowNew = false;
+	            FFieldTable.DefaultView.AllowEdit = true;
+	            FFieldTable.DefaultView.AllowDelete = false;
+	
+	            grdChargedFields.DataSource = new DevAge.ComponentModel.BoundDataView(FFieldTable.DefaultView);
+	
+	            grdChargedFields.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+	            grdChargedFields.AutoSizeCells();
+            }
+            
+            if (ucoConferenceSelection.AllConferenceSelected)
+            {
+                FFieldTable.DefaultView.RowFilter = "";
+            }
+            else
+            {
+                FFieldTable.DefaultView.RowFilter = "Used_in_Conference = true";
+            }
+        }
+        
+        /// <summary>
+        /// Event called when the text of "select conference button" has changed.
+        /// Updates the Dates of the conference.
+        /// </summary>
+        /// <param name="AConferenceKey">Unit key of the conference</param>
+        /// <param name="AConferenceName">Name of the conference</param>
+        /// <param name="AValidConference">True if we have a valid conference. Otherwise false.</param>
+        public void ConferenceKeyChanged(Int64 AConferenceKey, String AConferenceName, bool AValidConference)
+        {
+            if (AValidConference)
+            {
+                UpdateFieldData();
+            }
+        }
+
+        /// <summary>
+        /// Event called when the conference selection has changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ConferenceSelectionChanged(System.Object sender, EventArgs e)
+        {
+        	UpdateFieldData();
         }
     }
 }
