@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: ConferenceReportingForm.yaml
     FormType: report
-    FormTitle: Extra Costs Report
+    FormTitle: Family Listing Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
     TemplateParameters:
         XMLFILES: [Conference\\\\familylistingreport.xml,Conference\\\\conference.xml]
@@ -19,36 +19,16 @@ RootNode:
             Label: General Settings
             Controls: [ucoConferenceSelection]
             Order: AlwaysFirst
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast
-        tpgAdditionalSettigns:
-            Label: Charged Fields
-            Controls: [grpChargedFields]
-            
+        
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
         ucoConferenceSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-        grpChargedFields:
-            Label: Charged Fields
-            Controls: [grdChargedFields]
-        grdChargedFields:
-            Height: 300
-            Width: 200
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para101:
-            Name: Family Key
-            Parameter: 2.0
-       
-        
         

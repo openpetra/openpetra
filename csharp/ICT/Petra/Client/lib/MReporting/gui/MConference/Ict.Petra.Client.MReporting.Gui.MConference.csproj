@@ -174,9 +174,6 @@
     <Compile Include="FamilyListingReport.Designer.cs">
       <DependentUpon>FamilyListingReport.cs</DependentUpon>
     </Compile>
-    <Compile Include="FamilyListingReport.ManualCode.cs">
-      <DependentUpon>FamilyListingReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="FieldReports.cs" />
     <Compile Include="FieldReports.Designer.cs">
       <DependentUpon>FieldReports.cs</DependentUpon>

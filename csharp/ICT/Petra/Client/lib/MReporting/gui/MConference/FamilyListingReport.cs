@@ -66,9 +66,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.grpChargedFields.Text = Catalog.GetString("Charged Fields");
-      this.tpgAdditionalSettigns.Text = Catalog.GetString("Charged Fields");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
@@ -96,7 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Extra Costs Report");
+      this.Text = Catalog.GetString("Family Listing Report");
       #endregion
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
@@ -114,14 +111,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
-      grdChargedFields_InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
 
@@ -161,8 +154,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
-      grdChargedFields_ReadControls(ACalc, AReportAction);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -175,8 +166,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
 
       ucoConferenceSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
-      grdChargedFields_SetControls(AParameters);
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -236,10 +225,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Registration Date", 2.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Work Group", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Birthday", 2.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Family Key", 2.0));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
