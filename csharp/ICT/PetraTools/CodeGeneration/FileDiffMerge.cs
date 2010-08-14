@@ -313,6 +313,9 @@ namespace Ict.Tools.CodeGeneration
         /// <returns>returns true if the file was changed</returns>
         public static bool Merge2Files(string AOrigFilename, string[] ANewLines, string ADestinationFilename)
         {
+            AOrigFilename = AOrigFilename.Replace('\\', Path.DirectorySeparatorChar);
+            ADestinationFilename = ADestinationFilename.Replace('\\', Path.DirectorySeparatorChar);
+
             if (!File.Exists(AOrigFilename))
             {
                 File.WriteAllLines(ADestinationFilename, ANewLines);
