@@ -422,7 +422,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             DestinationDoc.Save(ResourceFile + ".new");
-            TTextFile.UpdateFile(ResourceFile);
+            TTextFile.UpdateFile(ResourceFile, true);
         }
 
         /// write the designer code using the definitions in the yaml file

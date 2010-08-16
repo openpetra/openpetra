@@ -128,7 +128,8 @@ namespace Ict.Tools.CodeGeneration
             pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("Client/lib") + "Client/lib".Length);
 
             // use only last part of namespace after Ict.Petra.Client
-            ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length).Replace(".Gui.", ".gui.");
+            ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length).Replace(".Gui.", ".gui.").Replace(".Setup.",
+                ".setup.");
             pathAndName += ANamespaceAndClassname.Substring(0, ANamespaceAndClassname.LastIndexOf(".")).Replace(".", "/");
 
             // get the file name without TFrm prefix
@@ -138,7 +139,8 @@ namespace Ict.Tools.CodeGeneration
             if (!System.IO.File.Exists(pathAndName + filename + ".cs"))
             {
                 // try to use path name without the last part of the namespace
-                // eg Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency is in MFinance/Gui/SetupCurrency.cs
+                // was eg Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency is
+                // in MFinance/Gui/SetupCurrency.cs, but now that file has gone into a subdirectory anyways
 
                 pathAndName = pathAndName.Substring(0, pathAndName.LastIndexOf("/"));
             }

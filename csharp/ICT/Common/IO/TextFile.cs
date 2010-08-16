@@ -180,12 +180,13 @@ namespace Ict.Common.IO
         /// the intention is to generate code, but not to touch it for VCS if not necessary
         /// </summary>
         /// <param name="AOrigFilename">the original name of the file</param>
+        /// <param name="AIgnoreNewLine">should ignore line break character differences</param>
         /// <returns></returns>
-        public static bool UpdateFile(String AOrigFilename)
+        public static bool UpdateFile(String AOrigFilename, bool AIgnoreNewLine)
         {
             string NewFilename = AOrigFilename + ".new";
 
-            if (SameContent(AOrigFilename, NewFilename, false) == true)
+            if (SameContent(AOrigFilename, NewFilename, AIgnoreNewLine) == true)
             {
                 System.IO.File.Delete(NewFilename);
                 return false;
@@ -217,6 +218,22 @@ namespace Ict.Common.IO
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// this will compare the original file with the file that has the same name but an extension .new additionally at the end
+        /// if the files have identical content, the new file is dropped
+        /// otherwise the original file is backed up, and the new file is renamed to the original file name
+        ///
+        /// the intention is to generate code, but not to touch it for VCS if not necessary.
+        ///
+        /// this overload will compare line endings as well.
+        /// </summary>
+        /// <param name="AOrigFilename"></param>
+        /// <returns></returns>
+        public static bool UpdateFile(String AOrigFilename)
+        {
+            return UpdateFile(AOrigFilename, false);
         }
 
         /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
