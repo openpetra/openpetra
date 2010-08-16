@@ -197,13 +197,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
                 FLoadedData = TFinanceBatchFilterEnum.fbfAll;
             }
-            else if (rbtEditing.Checked && (FLoadedData & TFinanceBatchFilterEnum.fbfEditing == 0))
+            else if (rbtEditing.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfEditing) == 0))
             {
                 // TODO: more criteria: period, etc
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing));
                 FLoadedData |= TFinanceBatchFilterEnum.fbfEditing;
             }
-            else if (rbtPosting.Checked && (FLoadedData & TFinanceBatchFilterEnum.fbfReadyForPosting == 0))
+            else if (rbtPosting.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfReadyForPosting) == 0))
             {
                 // TODO: more criteria: period, etc
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting));
@@ -466,6 +466,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RefBatch.BatchDebitTotal = sumDebits;
 
             // TODO: RefBatch.BatchRunningTotal
+        }
+
+        private void ImportBatches(object sender, EventArgs e)
+        {
+            ImportBatches();
         }
     }
 }

@@ -12,6 +12,7 @@ RootNode:
         actDelete: {Label=&Cancel, ActionClick=CancelRow}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
+        actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
     Controls:
         pnlContent:
             Dock: Fill
@@ -60,6 +61,8 @@ RootNode:
             Label: &Batch
             mniPost: {Action=actPostBatch}
             mniImportFromSpreadSheet:
+            mniImportBatches:
     Toolbar:
         tbbPostBatch:
         tbbImportFromSpreadSheet:
+        tbbImportBatches:

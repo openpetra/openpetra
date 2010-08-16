@@ -97,10 +97,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrTabPage = new System.Windows.Forms.ToolStrip();
             this.tbbPostBatch = new System.Windows.Forms.ToolStripButton();
             this.tbbImportFromSpreadSheet = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportBatches = new System.Windows.Forms.ToolStripButton();
             this.mnuTabPage = new System.Windows.Forms.MenuStrip();
             this.mniBatch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPost = new System.Windows.Forms.ToolStripMenuItem();
             this.mniImportFromSpreadSheet = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniImportBatches = new System.Windows.Forms.ToolStripMenuItem();
 
             this.pnlContent.SuspendLayout();
             this.pnlInfo.SuspendLayout();
@@ -397,6 +399,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbImportFromSpreadSheet.Click += new System.EventHandler(this.ImportFromSpreadSheet);
             this.tbbImportFromSpreadSheet.Text = "Import From Spread Sheet";
             //
+            // tbbImportBatches
+            //
+            this.tbbImportBatches.Name = "tbbImportBatches";
+            this.tbbImportBatches.AutoSize = true;
+            this.tbbImportBatches.Click += new System.EventHandler(this.ImportBatches);
+            this.tbbImportBatches.Text = "&Import Batches";
+            //
             // tbrTabPage
             //
             this.tbrTabPage.Name = "tbrTabPage";
@@ -404,7 +413,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrTabPage.AutoSize = true;
             this.tbrTabPage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbPostBatch,
-                        tbbImportFromSpreadSheet});
+                        tbbImportFromSpreadSheet,
+                        tbbImportBatches});
             //
             // mniPost
             //
@@ -420,13 +430,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniImportFromSpreadSheet.Click += new System.EventHandler(this.ImportFromSpreadSheet);
             this.mniImportFromSpreadSheet.Text = "Import From Spread Sheet";
             //
+            // mniImportBatches
+            //
+            this.mniImportBatches.Name = "mniImportBatches";
+            this.mniImportBatches.AutoSize = true;
+            this.mniImportBatches.Click += new System.EventHandler(this.ImportBatches);
+            this.mniImportBatches.Text = "&Import Batches";
+            //
             // mniBatch
             //
             this.mniBatch.Name = "mniBatch";
             this.mniBatch.AutoSize = true;
             this.mniBatch.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniPost,
-                        mniImportFromSpreadSheet});
+                        mniImportFromSpreadSheet,
+                        mniImportBatches});
             this.mniBatch.Text = "&Batch";
             //
             // mnuTabPage
@@ -502,9 +520,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.ToolStrip tbrTabPage;
         private System.Windows.Forms.ToolStripButton tbbPostBatch;
         private System.Windows.Forms.ToolStripButton tbbImportFromSpreadSheet;
+        private System.Windows.Forms.ToolStripButton tbbImportBatches;
         private System.Windows.Forms.MenuStrip mnuTabPage;
         private System.Windows.Forms.ToolStripMenuItem mniBatch;
         private System.Windows.Forms.ToolStripMenuItem mniPost;
         private System.Windows.Forms.ToolStripMenuItem mniImportFromSpreadSheet;
+        private System.Windows.Forms.ToolStripMenuItem mniImportBatches;
     }
 }
