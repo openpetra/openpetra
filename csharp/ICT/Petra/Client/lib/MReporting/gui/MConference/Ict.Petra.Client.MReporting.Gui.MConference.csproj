@@ -196,6 +196,9 @@
     <Compile Include="NationalitySummaryReport.Designer.cs">
       <DependentUpon>NationalitySummaryReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="NationalitySummaryReport.ManualCode.cs">
+      <DependentUpon>NationalitySummaryReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="PresentAttendeeReport.cs" />
     <Compile Include="PresentAttendeeReport.Designer.cs">
       <DependentUpon>PresentAttendeeReport.cs</DependentUpon>

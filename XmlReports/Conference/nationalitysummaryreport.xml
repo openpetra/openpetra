@@ -124,7 +124,7 @@
 				</query>
 			</calculation> <!-- Select Attendee -->
 			
-			<calculation id="CalculateSingleNationality" returns="" returnsFormat="internal">
+			<calculation id="CalculateSingleNationality" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -133,7 +133,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="ClearNationalityTable" returns="" returnsFormat="internal">
+			<calculation id="ClearNationalityTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
@@ -142,7 +142,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="FinishNationalityTable" returns="" returnsFormat="internal">
+			<calculation id="FinishNationalityTable" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
