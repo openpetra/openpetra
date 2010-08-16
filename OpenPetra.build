@@ -21,6 +21,7 @@
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
+    <property name="WebConfigFile" value="${WebServerInstall.dir}/web.config"/>
     <property name="ClientConfigFile" value="${OpenPetraRoot.dir}/etc/Client.config"/>
     <property name="ServerConfigFile" value="${OpenPetraRoot.dir}/etc/Server.config"/>
     <property name="ServerAdminConfigFile" value="${OpenPetraRoot.dir}/etc/ServerAdmin.config"/>
@@ -499,10 +500,9 @@
                 <exclude name="intl.dll" />
             </fileset>
         </copy>
-        <property name="webconfigfile" value="${WebServerInstall.dir}/web.config"/>
-        <if test="${not file::exists(webconfigfile)}">
-            <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/web-sample-${DBMS.Type}.config"
-                tofile="${webconfigfile}" overwrite="true"/>
+        <if test="${not file::exists(WebConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/web-${DBMS.Type}.config.sample"
+                tofile="${WebConfigFile}" overwrite="true"/>
         </if>
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
