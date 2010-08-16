@@ -12,10 +12,10 @@
     <reportheader></reportheader>
 	<pageheader>
 		<field whichfield="title1">
-			<fielddetail condition="eq({param_rbtArrivals}, true)">
+			<fielddetail condition="eq({param_rgrArrivalDeparture}, ListArrivals)">
 				<value text="Arrival Transport Report"/>
 			</fielddetail>
-			<fielddetail condition="eq({param_rbtDepartures}, true)">
+			<fielddetail condition="eq({param_rgrArrivalDeparture}, ListDepartures)">
 				<value text="Departure Transport Report"/>
 			</fielddetail>
 		</field>
@@ -178,7 +178,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail><value>
@@ -193,27 +193,31 @@
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
 					</value></queryDetail>
 					
-					<queryDetail condition="and(eq({param_rbtArrivals}, true), eq({param_chkNeedTransport}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListArrivals), eq({param_chkNeedTransport}, true))"><value>
 							AND PUB_pm_short_term_application.pm_arrival_transport_needed_l = 1
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtArrivals}, true), eq({param_chkIncompleteDetails}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListArrivals), eq({param_chkIncompleteDetails}, true))"><value>
 							AND ( PUB_pm_short_term_application.pt_arrival_point_code_c = ''
+								  OR  PUB_pm_short_term_application.pt_arrival_point_code_c IS NULL
 								  OR pm_short_term_application.pt_travel_type_to_cong_code_c = ''
+								  OR pm_short_term_application.pt_travel_type_to_cong_code_c IS NULL
 								  OR pm_short_term_application.pm_arrival_d IS NULL )
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtArrivals}, true), eq({param_chkOnlyTravelDay}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListArrivals), eq({param_chkOnlyTravelDay}, true))"><value>
 							AND PUB_pm_short_term_application.pm_arrival_d = {#param_dtpTravelDay#}
 					</value></queryDetail>
 					
-					<queryDetail condition="and(eq({param_rbtDepartures}, true), eq({param_chkNeedTransport}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListDepartures), eq({param_chkNeedTransport}, true))"><value>
 							AND PUB_pm_short_term_application.pm_departure_transport_needed_l = 1
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtDepartures}, true), eq({param_chkIncompleteDetails}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListDepartures), eq({param_chkIncompleteDetails}, true))"><value>
 							AND ( PUB_pm_short_term_application.pt_departure_point_code_c = ''
+								  OR PUB_pm_short_term_application.pt_departure_point_code_c IS NULL
 								  OR pm_short_term_application.pt_travel_type_from_cong_code_c = ''
+								  OR pm_short_term_application.pt_travel_type_from_cong_code_c IS NULL
 								  OR pm_short_term_application.pm_departure_d IS NULL )
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtDepartures}, true), eq({param_chkOnlyTravelDay}, true))"><value>
+					<queryDetail condition="and(eq({param_rgrArrivalDeparture}, ListDepartures), eq({param_chkOnlyTravelDay}, true))"><value>
 							AND PUB_pm_short_term_application.pm_departure_d = {#param_dtpTravelDay#}
 					</value></queryDetail>
 					

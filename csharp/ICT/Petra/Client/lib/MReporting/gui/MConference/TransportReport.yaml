@@ -10,8 +10,9 @@ RootNode:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
-        READCONTROLSLOCALVARS: BLANK 
+        READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
+        INITUSERCONTROLS: InitUserControlsManually();
     Security:
         ModulePermissionRequired: [CONFERENCE]
     Controls:
@@ -27,7 +28,7 @@ RootNode:
             Order: AlwaysLast
         tpgAdditionalSettings:
             Label: Travel Selection
-            Controls: [grpListing, grpArrivalDeparture]
+            Controls: [rgrArrivalDeparture, grpListing]
             
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
@@ -40,20 +41,25 @@ RootNode:
             Dock: Fill
         grpListing:
             Label: Listing
-            Controls: [chkIncompleteDetails, chkNeedTransport, chkOnlyTravelDay, dtpTravelDay]
-        grpArrivalDeparture:
+            Controls: 
+                Row1: [chkOnlyTravelDay, dtpTravelDay]
+                Row2: [chkNeedTransport]
+                Row3: [chkIncompleteDetails]
+        rgrArrivalDeparture:
             Label:
-            Controls: [rbtDepartures, rbtArrivals]
+            Controls: [rbtArrivals, rbtDepartures]
         chkIncompleteDetails:
             Label: Only list people with incomplete arrival details
             CheckBoxAttachedLabel: Right
         chkNeedTransport:
             Label: Only list people that need transport from their arrival point
+            CheckBoxAttachedLabel: Right
         chkOnlyTravelDay:
             Label: Only list people arriving on this day
             OnChange: chkTravelDayChanged
+            CheckBoxAttachedLabel: Right
         dtpTravelDay:
-            Label: Select Date
+            NoLabel: true
         rbtDepartures:
             Label: List Departures
             OnChange: rbtArrivalDepartureChanged

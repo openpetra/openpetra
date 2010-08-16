@@ -22,21 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference
 {
@@ -45,6 +37,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     /// </summary>
     public partial class TFrmTransportReport
     {
+        private void InitUserControlsManually()
+        {
+            rbtArrivals.Checked = true;
+            chkOnlyTravelDay.Checked = false;
+            dtpTravelDay.Enabled = false;
+        }
+
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (chkOnlyTravelDay.Checked)
+            {
+                if (!dtpTravelDay.ValidDate(false))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Please insert a valid date in the \"Travel Selection\" Settings."),
+                        Catalog.GetString("No valid date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+
+                ACalc.AddParameter("param_dtpTravelDay", this.dtpTravelDay.Date);
+            }
+        }
+
         private void rbtArrivalDepartureChanged(System.Object sender, EventArgs e)
         {
             if (rbtArrivals.Checked)

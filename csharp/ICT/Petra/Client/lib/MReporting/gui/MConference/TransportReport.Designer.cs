@@ -73,19 +73,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.grpListing = new System.Windows.Forms.GroupBox();
+            this.rgrArrivalDeparture = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.chkIncompleteDetails = new System.Windows.Forms.CheckBox();
-            this.chkNeedTransport = new System.Windows.Forms.CheckBox();
-            this.lblNeedTransport = new System.Windows.Forms.Label();
-            this.chkOnlyTravelDay = new System.Windows.Forms.CheckBox();
-            this.lblOnlyTravelDay = new System.Windows.Forms.Label();
-            this.dtpTravelDay = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblTravelDay = new System.Windows.Forms.Label();
-            this.grpArrivalDeparture = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.rbtDepartures = new System.Windows.Forms.RadioButton();
             this.rbtArrivals = new System.Windows.Forms.RadioButton();
+            this.rbtDepartures = new System.Windows.Forms.RadioButton();
+            this.grpListing = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.chkOnlyTravelDay = new System.Windows.Forms.CheckBox();
+            this.dtpTravelDay = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
+            this.chkNeedTransport = new System.Windows.Forms.CheckBox();
+            this.chkIncompleteDetails = new System.Windows.Forms.CheckBox();
             this.tpgColumns = new System.Windows.Forms.TabPage();
             this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -126,9 +123,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tpgReportSorting.SuspendLayout();
             this.tpgAdditionalSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpListing.SuspendLayout();
+            this.rgrArrivalDeparture.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.grpArrivalDeparture.SuspendLayout();
+            this.grpListing.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tpgColumns.SuspendLayout();
             this.tbrMain.SuspendLayout();
@@ -177,18 +174,80 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tableLayoutPanel1.AutoSize = true;
             this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel1);
             //
-            // grpListing
+            // rgrArrivalDeparture
             //
-            this.grpListing.Location = new System.Drawing.Point(2,2);
-            this.grpListing.Name = "grpListing";
-            this.grpListing.AutoSize = true;
+            this.rgrArrivalDeparture.Location = new System.Drawing.Point(2,2);
+            this.rgrArrivalDeparture.Name = "rgrArrivalDeparture";
+            this.rgrArrivalDeparture.AutoSize = true;
             //
             // tableLayoutPanel2
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.AutoSize = true;
-            this.grpListing.Controls.Add(this.tableLayoutPanel2);
+            this.rgrArrivalDeparture.Controls.Add(this.tableLayoutPanel2);
+            //
+            // rbtArrivals
+            //
+            this.rbtArrivals.Location = new System.Drawing.Point(2,2);
+            this.rbtArrivals.Name = "rbtArrivals";
+            this.rbtArrivals.AutoSize = true;
+            this.rbtArrivals.Text = "List Arrivals";
+            this.rbtArrivals.Checked = true;
+            //
+            // rbtDepartures
+            //
+            this.rbtDepartures.Location = new System.Drawing.Point(2,2);
+            this.rbtDepartures.Name = "rbtDepartures";
+            this.rbtDepartures.AutoSize = true;
+            this.rbtDepartures.CheckedChanged += new System.EventHandler(this.rbtArrivalDepartureChanged);
+            this.rbtDepartures.Text = "List Departures";
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.rbtArrivals, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.rbtDepartures, 0, 1);
+            this.rgrArrivalDeparture.Text = "Arrival Departure";
+            //
+            // grpListing
+            //
+            this.grpListing.Location = new System.Drawing.Point(2,2);
+            this.grpListing.Name = "grpListing";
+            this.grpListing.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.grpListing.Controls.Add(this.tableLayoutPanel3);
+            //
+            // chkOnlyTravelDay
+            //
+            this.chkOnlyTravelDay.Location = new System.Drawing.Point(2,2);
+            this.chkOnlyTravelDay.Name = "chkOnlyTravelDay";
+            this.chkOnlyTravelDay.AutoSize = true;
+            this.chkOnlyTravelDay.CheckedChanged += new System.EventHandler(this.chkTravelDayChanged);
+            this.chkOnlyTravelDay.Text = "Only list people arriving on this day";
+            this.chkOnlyTravelDay.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkOnlyTravelDay.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            //
+            // dtpTravelDay
+            //
+            this.dtpTravelDay.Location = new System.Drawing.Point(2,2);
+            this.dtpTravelDay.Name = "dtpTravelDay";
+            this.dtpTravelDay.Size = new System.Drawing.Size(94, 28);
+            //
+            // chkNeedTransport
+            //
+            this.chkNeedTransport.Location = new System.Drawing.Point(2,2);
+            this.chkNeedTransport.Name = "chkNeedTransport";
+            this.chkNeedTransport.AutoSize = true;
+            this.chkNeedTransport.Text = "Only list people that need transport from their arrival point";
+            this.chkNeedTransport.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkNeedTransport.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
             //
             // chkIncompleteDetails
             //
@@ -198,119 +257,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.chkIncompleteDetails.Text = "Only list people with incomplete arrival details";
             this.chkIncompleteDetails.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.chkIncompleteDetails.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
-            //
-            // chkNeedTransport
-            //
-            this.chkNeedTransport.Location = new System.Drawing.Point(2,2);
-            this.chkNeedTransport.Name = "chkNeedTransport";
-            this.chkNeedTransport.Size = new System.Drawing.Size(30, 28);
-            this.chkNeedTransport.Text = "";
-            this.chkNeedTransport.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            //
-            // lblNeedTransport
-            //
-            this.lblNeedTransport.Location = new System.Drawing.Point(2,2);
-            this.lblNeedTransport.Name = "lblNeedTransport";
-            this.lblNeedTransport.AutoSize = true;
-            this.lblNeedTransport.Text = "Only list people that need transport from their arrival point:";
-            this.lblNeedTransport.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblNeedTransport.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblNeedTransport.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // chkOnlyTravelDay
-            //
-            this.chkOnlyTravelDay.Location = new System.Drawing.Point(2,2);
-            this.chkOnlyTravelDay.Name = "chkOnlyTravelDay";
-            this.chkOnlyTravelDay.Size = new System.Drawing.Size(30, 28);
-            this.chkOnlyTravelDay.CheckedChanged += new System.EventHandler(this.chkTravelDayChanged);
-            this.chkOnlyTravelDay.Text = "";
-            this.chkOnlyTravelDay.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            //
-            // lblOnlyTravelDay
-            //
-            this.lblOnlyTravelDay.Location = new System.Drawing.Point(2,2);
-            this.lblOnlyTravelDay.Name = "lblOnlyTravelDay";
-            this.lblOnlyTravelDay.AutoSize = true;
-            this.lblOnlyTravelDay.Text = "Only list people arriving on this day:";
-            this.lblOnlyTravelDay.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblOnlyTravelDay.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblOnlyTravelDay.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // dtpTravelDay
-            //
-            this.dtpTravelDay.Location = new System.Drawing.Point(2,2);
-            this.dtpTravelDay.Name = "dtpTravelDay";
-            this.dtpTravelDay.Size = new System.Drawing.Size(94, 28);
-            //
-            // lblTravelDay
-            //
-            this.lblTravelDay.Location = new System.Drawing.Point(2,2);
-            this.lblTravelDay.Name = "lblTravelDay";
-            this.lblTravelDay.AutoSize = true;
-            this.lblTravelDay.Text = "Select Date:";
-            this.lblTravelDay.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblTravelDay.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblTravelDay.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.SetColumnSpan(this.chkIncompleteDetails, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkIncompleteDetails, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblNeedTransport, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblOnlyTravelDay, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblTravelDay, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.chkNeedTransport, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkOnlyTravelDay, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.dtpTravelDay, 1, 3);
-            this.grpListing.Text = "Listing";
-            //
-            // grpArrivalDeparture
-            //
-            this.grpArrivalDeparture.Location = new System.Drawing.Point(2,2);
-            this.grpArrivalDeparture.Name = "grpArrivalDeparture";
-            this.grpArrivalDeparture.AutoSize = true;
-            //
-            // tableLayoutPanel3
-            //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            this.grpArrivalDeparture.Controls.Add(this.tableLayoutPanel3);
-            //
-            // rbtDepartures
-            //
-            this.rbtDepartures.Location = new System.Drawing.Point(2,2);
-            this.rbtDepartures.Name = "rbtDepartures";
-            this.rbtDepartures.AutoSize = true;
-            this.rbtDepartures.CheckedChanged += new System.EventHandler(this.rbtArrivalDepartureChanged);
-            this.rbtDepartures.Text = "List Departures";
-            //
-            // rbtArrivals
-            //
-            this.rbtArrivals.Location = new System.Drawing.Point(2,2);
-            this.rbtArrivals.Name = "rbtArrivals";
-            this.rbtArrivals.AutoSize = true;
-            this.rbtArrivals.Text = "List Arrivals";
-            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 3;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtDepartures, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtArrivals, 0, 1);
-            this.grpArrivalDeparture.Text = "Arrival Departure";
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.chkOnlyTravelDay, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.chkNeedTransport, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.chkIncompleteDetails, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.dtpTravelDay, 1, 0);
+            this.grpListing.Text = "Listing";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.grpListing, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.grpArrivalDeparture, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.rgrArrivalDeparture, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grpListing, 0, 1);
             this.tpgAdditionalSettings.Text = "Travel Selection";
             this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -620,9 +585,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.tbrMain.ResumeLayout(false);
             this.tpgColumns.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
-            this.grpArrivalDeparture.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
             this.grpListing.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.rgrArrivalDeparture.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgAdditionalSettings.ResumeLayout(false);
             this.tpgReportSorting.ResumeLayout(false);
@@ -640,19 +605,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAdditionalSettings;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.GroupBox grpListing;
+        private System.Windows.Forms.GroupBox rgrArrivalDeparture;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.CheckBox chkIncompleteDetails;
-        private System.Windows.Forms.CheckBox chkNeedTransport;
-        private System.Windows.Forms.Label lblNeedTransport;
-        private System.Windows.Forms.CheckBox chkOnlyTravelDay;
-        private System.Windows.Forms.Label lblOnlyTravelDay;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpTravelDay;
-        private System.Windows.Forms.Label lblTravelDay;
-        private System.Windows.Forms.GroupBox grpArrivalDeparture;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.RadioButton rbtDepartures;
         private System.Windows.Forms.RadioButton rbtArrivals;
+        private System.Windows.Forms.RadioButton rbtDepartures;
+        private System.Windows.Forms.GroupBox grpListing;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.CheckBox chkOnlyTravelDay;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpTravelDay;
+        private System.Windows.Forms.CheckBox chkNeedTransport;
+        private System.Windows.Forms.CheckBox chkIncompleteDetails;
         private System.Windows.Forms.TabPage tpgColumns;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
         private System.Windows.Forms.ToolStrip tbrMain;

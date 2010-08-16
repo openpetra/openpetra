@@ -67,14 +67,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
       this.tpgReportSorting.Text = Catalog.GetString("Sorting");
-      this.chkIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete arrival details");
-      this.lblNeedTransport.Text = Catalog.GetString("Only list people that need transport from their arrival point:");
-      this.lblOnlyTravelDay.Text = Catalog.GetString("Only list people arriving on this day:");
-      this.lblTravelDay.Text = Catalog.GetString("Select Date:");
-      this.grpListing.Text = Catalog.GetString("Listing");
-      this.rbtDepartures.Text = Catalog.GetString("List Departures");
       this.rbtArrivals.Text = Catalog.GetString("List Arrivals");
-      this.grpArrivalDeparture.Text = Catalog.GetString("Arrival Departure");
+      this.rbtDepartures.Text = Catalog.GetString("List Departures");
+      this.rgrArrivalDeparture.Text = Catalog.GetString("Arrival Departure");
+      this.chkOnlyTravelDay.Text = Catalog.GetString("Only list people arriving on this day");
+      this.chkNeedTransport.Text = Catalog.GetString("Only list people that need transport from their arrival point");
+      this.chkIncompleteDetails.Text = Catalog.GetString("Only list people with incomplete arrival details");
+      this.grpListing.Text = Catalog.GetString("Listing");
       this.tpgAdditionalSettings.Text = Catalog.GetString("Travel Selection");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
@@ -130,6 +129,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
+      InitUserControlsManually();
 
       FPetraUtilsObject.LoadDefaultSettings();
     }
@@ -168,11 +168,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
       ucoReportSorting.ReadControls(ACalc, AReportAction);
-      ACalc.AddParameter("param_chkIncompleteDetails", this.chkIncompleteDetails.Checked);
-      ACalc.AddParameter("param_chkNeedTransport", this.chkNeedTransport.Checked);
+      if (rbtArrivals.Checked)
+      {
+          ACalc.AddParameter("param_rgrArrivalDeparture", "ListArrivals");
+      }
+      if (rbtDepartures.Checked)
+      {
+          ACalc.AddParameter("param_rgrArrivalDeparture", "ListDepartures");
+      }
       ACalc.AddParameter("param_chkOnlyTravelDay", this.chkOnlyTravelDay.Checked);
       ACalc.AddParameter("param_dtpTravelDay", this.dtpTravelDay.Date);
+      ACalc.AddParameter("param_chkNeedTransport", this.chkNeedTransport.Checked);
+      ACalc.AddParameter("param_chkIncompleteDetails", this.chkIncompleteDetails.Checked);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 
@@ -185,8 +194,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       ucoConferenceSelection.SetControls(AParameters);
       ucoReportSorting.SetControls(AParameters);
-      chkIncompleteDetails.Checked = AParameters.Get("param_chkIncompleteDetails").ToBool();
-      chkNeedTransport.Checked = AParameters.Get("param_chkNeedTransport").ToBool();
+      rbtArrivals.Checked = AParameters.Get("param_rgrArrivalDeparture").ToString() == "ListArrivals";
+      rbtDepartures.Checked = AParameters.Get("param_rgrArrivalDeparture").ToString() == "ListDepartures";
       chkOnlyTravelDay.Checked = AParameters.Get("param_chkOnlyTravelDay").ToBool();
       DateTime dtpTravelDayDate = AParameters.Get("param_dtpTravelDay").ToDate();
       if ((dtpTravelDayDate <= DateTime.MinValue)
@@ -195,6 +204,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
           dtpTravelDayDate = DateTime.Now;
       }
       dtpTravelDay.Date = dtpTravelDayDate;
+      chkNeedTransport.Checked = AParameters.Get("param_chkNeedTransport").ToBool();
+      chkIncompleteDetails.Checked = AParameters.Get("param_chkIncompleteDetails").ToBool();
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
