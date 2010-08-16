@@ -185,6 +185,9 @@
     <Compile Include="GroupReports.Designer.cs">
       <DependentUpon>GroupReports.cs</DependentUpon>
     </Compile>
+    <Compile Include="GroupReports.ManualCode.cs">
+      <DependentUpon>GroupReports.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguagesReport.cs" />
     <Compile Include="LanguagesReport.Designer.cs">
       <DependentUpon>LanguagesReport.cs</DependentUpon>

@@ -66,16 +66,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
-      this.tpgReportSorting.Text = Catalog.GetString("Sorting");
       this.rbtAllGroups.Text = Catalog.GetString("All Groups");
       this.rbtWorkGroups.Text = Catalog.GetString("Work Groups");
       this.rbtFellowshipGroups.Text = Catalog.GetString("Fellowship Groups");
       this.rbtDiscoveryGroups.Text = Catalog.GetString("Discovery Groups");
-      this.grpGroups.Text = Catalog.GetString("Select Group");
+      this.rgrGroups.Text = Catalog.GetString("Select Group");
       this.rbtParticipantsAll.Text = Catalog.GetString("List all attendees");
       this.rbtParticipantsIgnoreNoGroup.Text = Catalog.GetString("List only attendees whose role is a participant");
       this.rbtParticipantsIgnoreAll.Text = Catalog.GetString("List only attendees whose role is a participant and who have a group assigned to it");
-      this.grpParticipants.Text = Catalog.GetString("Select Participants");
+      this.rgrParticipants.Text = Catalog.GetString("Select Participants");
       this.tpgGroups.Text = Catalog.GetString("Groups and Participants");
       this.tpgColumns.Text = Catalog.GetString("Columns");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
@@ -122,13 +121,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       this.SetAvailableFunctions();
 
       ucoConferenceSelection.InitialiseData(FPetraUtilsObject);
-      ucoReportSorting.InitialiseData(FPetraUtilsObject);
       ucoReportColumns.InitialiseData(FPetraUtilsObject);
 
       ucoConferenceSelection.PetraUtilsObject = FPetraUtilsObject;
       ucoConferenceSelection.InitUserControl();
-      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
-      ucoReportSorting.InitUserControl();
       ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
       ucoReportColumns.InitUserControl();
 
@@ -168,7 +164,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
       ucoConferenceSelection.ReadControls(ACalc, AReportAction);
-      ucoReportSorting.ReadControls(ACalc, AReportAction);
+      if (rbtAllGroups.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroups", "AllGroups");
+      }
+      if (rbtWorkGroups.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroups", "WorkGroups");
+      }
+      if (rbtFellowshipGroups.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroups", "FellowshipGroups");
+      }
+      if (rbtDiscoveryGroups.Checked)
+      {
+          ACalc.AddParameter("param_rgrGroups", "DiscoveryGroups");
+      }
+      if (rbtParticipantsAll.Checked)
+      {
+          ACalc.AddParameter("param_rgrParticipants", "ListAllAttendees");
+      }
+      if (rbtParticipantsIgnoreNoGroup.Checked)
+      {
+          ACalc.AddParameter("param_rgrParticipants", "ListOnlyAttendeesWhoseRoleIsAParticipant");
+      }
+      if (rbtParticipantsIgnoreAll.Checked)
+      {
+          ACalc.AddParameter("param_rgrParticipants", "ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt");
+      }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
 
     }
@@ -181,7 +204,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
 
       ucoConferenceSelection.SetControls(AParameters);
-      ucoReportSorting.SetControls(AParameters);
+      rbtAllGroups.Checked = AParameters.Get("param_rgrGroups").ToString() == "AllGroups";
+      rbtWorkGroups.Checked = AParameters.Get("param_rgrGroups").ToString() == "WorkGroups";
+      rbtFellowshipGroups.Checked = AParameters.Get("param_rgrGroups").ToString() == "FellowshipGroups";
+      rbtDiscoveryGroups.Checked = AParameters.Get("param_rgrGroups").ToString() == "DiscoveryGroups";
+      rbtParticipantsAll.Checked = AParameters.Get("param_rgrParticipants").ToString() == "ListAllAttendees";
+      rbtParticipantsIgnoreNoGroup.Checked = AParameters.Get("param_rgrParticipants").ToString() == "ListOnlyAttendeesWhoseRoleIsAParticipant";
+      rbtParticipantsIgnoreAll.Checked = AParameters.Get("param_rgrParticipants").ToString() == "ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt";
       ucoReportColumns.SetControls(AParameters);
     }
 #endregion
@@ -244,7 +273,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Language", 3.0));
 
       ucoConferenceSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
-      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }

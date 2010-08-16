@@ -19,15 +19,12 @@ RootNode:
             Label: General Settings
             Controls: [ucoConferenceSelection]
             Order: AlwaysFirst
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
         tpgColumns:
             Controls: [ucoReportColumns]
             Order: AlwaysLast
         tpgGroups:
             Label: Groups and Participants
-            Controls: [grpGroups, grpParticipants]
+            Controls: [rgrGroups, rgrParticipants]
             
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
@@ -35,24 +32,25 @@ RootNode:
         ucoConferenceSelection:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-        grpGroups:
+        rgrGroups:
             Label: Select Group
             Controls: [rbtAllGroups, rbtWorkGroups, rbtFellowshipGroups, rbtDiscoveryGroups]
-        grpParticipants:
+        rgrParticipants:
             Label: Select Participants
             Controls: [rbtParticipantsAll, rbtParticipantsIgnoreNoGroup, rbtParticipantsIgnoreAll]
             
         rbtAllGroups:
             Label: All Groups
+            OnChange: GroupSelectionChanged
         rbtWorkGroups:
             Label: Work Groups
+            OnChange: GroupSelectionChanged
         rbtFellowshipGroups:
             Label: Fellowship Groups
+            OnChange: GroupSelectionChanged
         rbtDiscoveryGroups:
             Label: Discovery Groups
+            OnChange: GroupSelectionChanged
         rbtParticipantsAll:
             Label: List all attendees
         rbtParticipantsIgnoreNoGroup:

@@ -2,19 +2,14 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-  <report id="Group Report">
+  <report id="Group Reports">
 	<description>
 		Report for Conference Groups (discovery, fellowship or work group)
 		depends on conference.xml
 	</description>
-	<reportparameters>
-	  <reportparameter name="param_rbtAllGroups"></reportparameter>
-	  <reportparameter name="param_rbtWorkGroups"></reportparameter>
-	  <reportparameter name="param_rbtFellowshipGroups"></reportparameter>
-	  <reportparameter name="param_rbtDiscoveryGroups"></reportparameter>
-	  <reportparameter name="param_rbtParticipantsAll"></reportparameter>
-	  <reportparameter name="param_rbtParticipantsIgnoreNoGroup"></reportparameter>
-	  <reportparameter name="param_rbtParticipantsIgnoreAll"></reportparameter>
+	<reportparameters> 
+	  <reportparameter name="param_rgrGroups"></reportparameter>
+	  <reportparameter name="param_rgrParticipants"></reportparameter>
 	</reportparameters>
 
     <reportheader></reportheader>
@@ -22,16 +17,16 @@
 	<field whichfield="title1">
 		<fielddetail>
 			<switch>
-				<case condition="eq({param_rbtAllGroups}, true)">
+				<case condition="eq({param_rgrGroups}, AllGroups)">
 					<value text="All Group Report"/>
 				</case>
-				<case condition="eq({param_rbtWorkGroups}, true)">
+				<case condition="eq({param_rgrGroups}, WorkGroups)">
 					<value text="Work Group Report"/>
 				</case>
-				<case condition="eq({param_rbtFellowshipGroups}, true)">
+				<case condition="eq({param_rgrGroups}, FellowshipGroups)">
 					<value text="Fellowship Group Report"/>
 				</case>
-				<case condition="eq({param_rbtDiscoveryGroups}, true)">
+				<case condition="eq({param_rgrGroups}, DiscoveryGroups)">
 					<value text="Discovery Group Report"/>
 				</case>
 			</switch>
@@ -41,7 +36,7 @@
       <field whichfield="descr1">
 	  <fielddetail>
 		<switch>
-			<case condition="not(eq({param_rbtAllGroups}, true))">
+			<case condition="not(eq({param_rgrGroups}, AllGroups))">
 				<value text="Sorted by: Group, Last Name"></value>
 			</case>
 			<default>
@@ -95,13 +90,13 @@
 						SELECT DISTINCT
 							PUB_pc_conference.pc_conference_key_n AS CurrentConferenceKey
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtFellowshipGroups}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroups}, FellowshipGroups)"><value>
 							, PUB_pm_short_term_application.pm_st_fg_code_c AS CurrentGroup
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtDiscoveryGroups}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroups}, DiscoveryGroups)"><value>
 							, PUB_pc_attendee.pc_discovery_group_c AS CurrentGroup
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtWorkGroups}, true)"><value>
+					<queryDetail condition="eq({param_rgrGroups}, WorkGroups)"><value>
 							, PUB_pc_attendee.pc_work_group_c AS CurrentGroup
 					</value></queryDetail>
 					<queryDetail><value>
@@ -112,7 +107,7 @@
 							PUB_pm_general_application,
 							PUB_pm_short_term_application
 					</value></queryDetail>
-					<queryDetail condition="or(eq({param_rbtParticipantsAll}, true), eq({param_rbtParticipantsIgnoreNoGroup}, true))"><value>
+					<queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
 							, PUB_pt_congress_code
 					</value></queryDetail>
 					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
@@ -151,7 +146,7 @@
 							AND PUB_pc_conference.pc_campaign_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
-					<queryDetail condition="or(eq({param_rbtParticipantsAll}, true), eq({param_rbtParticipantsIgnoreNoGroup}, true))"><value>
+					<queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
 							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
 							AND PUB_pt_congress_code.pt_participant_l = 1
 					</value></queryDetail>
@@ -167,7 +162,22 @@
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
 					</value></queryDetail>
 					
-					<queryDetail condition="not(eq({param_rbtAllGroups}, true))"><value>
+					<!-- Don't select the group if the group name is empty or null and the selection is set
+						to "show only attendees with a group assigned to it -->
+					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+							AND NOT (( PUB_pm_short_term_application.pm_st_fg_code_c IS NULL)
+								OR PUB_pm_short_term_application.pm_st_fg_code_c = "")
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+							AND NOT (( PUB_pc_attendee.pc_discovery_group_c IS NULL)
+								OR PUB_pc_attendee.pc_discovery_group_c = "")
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+							AND NOT (( PUB_pc_attendee.pc_work_group_c IS NULL)
+								OR PUB_pc_attendee.pc_work_group_c = "")
+					</value></queryDetail>
+					
+					<queryDetail condition="not(eq({param_rgrGroups}, AllGroups))"><value>
 							ORDER BY CurrentGroup
 					</value></queryDetail>
 				</query>
@@ -287,24 +297,39 @@
 									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_rbtParticipantsAll}, true)"><value>
+					<queryDetail condition="eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt)"><value>
 							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
 							AND PUB_pt_congress_code.pt_participant_l = 1
 					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rbtParticipantsIgnoreNoGroup}, true), lt(length({CurrentGroup}),1))"><value>
+					<queryDetail condition="and(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant), lt(length({CurrentGroup}),1))"><value>
 							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
 							AND PUB_pt_congress_code.pt_participant_l = 1
 					</value></queryDetail>
 					
-					<queryDetail condition="eq({param_rbtFellowshipGroups}, true)"><value>
+					
+					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), gt(length({CurrentGroup}), 0))"><value>
 							AND PUB_pm_short_term_application.pm_st_fg_code_c = {CurrentGroup}
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtDiscoveryGroups}, true)"><value>
+					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), gt(length({CurrentGroup}), 0))"><value>
 							AND PUB_pc_attendee.pc_discovery_group_c = {CurrentGroup}
 					</value></queryDetail>
-					<queryDetail condition="eq({param_rbtWorkGroups}, true)"><value>
+					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), gt(length({CurrentGroup}), 0))"><value>
 							AND PUB_pc_attendee.pc_work_group_c = {CurrentGroup}
 					</value></queryDetail>
+					
+					
+					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), lt(length({CurrentGroup}), 1))"><value>
+							AND PUB_pm_short_term_application.pm_st_fg_code_c IS NULL
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), lt(length({CurrentGroup}), 1))"><value>
+							AND PUB_pc_attendee.pc_discovery_group_c IS NULL
+					</value></queryDetail>
+					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), lt(length({CurrentGroup}), 1))"><value>
+							AND PUB_pc_attendee.pc_work_group_c IS NULL
+					</value></queryDetail>
+					
+					
+					
 					<queryDetail><value>
 							ORDER BY LastName
 					</value></queryDetail>
@@ -412,7 +437,7 @@
 						<value variable="CurrentGroup"/>
 					</field>
 				</case>
-				<case condition="eq({param_rbtAllGroups}, true)">
+				<case condition="eq({param_rgrGroups}, AllGroups)">
 				</case>
 				<default>
 					<field whichfield="header 1" pos="0cm" width="8cm">
@@ -426,7 +451,7 @@
 		</detail>
 		<footer space="below">
 			<switch>
-				<case condition="eq({param_rbtAllGroups}, true)">
+				<case condition="eq({param_rgrGroups}, AllGroups)">
 				</case>
 				<default>
 					<field whichfield="left 0" pos="0cm" width="4cm">
