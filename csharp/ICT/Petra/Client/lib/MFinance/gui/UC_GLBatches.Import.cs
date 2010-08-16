@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
+using System.Globalization;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
@@ -52,11 +53,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator();
+                TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(false);
                 dlgSeparator.CSVFileName = dialog.FileName;
 
                 if (dlgSeparator.ShowDialog() == DialogResult.OK)
                 {
+                    CultureInfo culture = new CultureInfo("en-GB");
+                    culture.DateTimeFormat.ShortDatePattern = dlgSeparator.DateFormat;
+
                     StreamReader sr = new StreamReader(dialog.FileName);
                     ABatchRow NewBatch = null;
                     AJournalRow NewJournal = null;
@@ -85,7 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     Message = Catalog.GetString("Parsing the hash value of the batch");
                                     NewBatch.BatchControlTotal = Convert.ToDouble(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
                                     Message = Catalog.GetString("Parsing the date effective of the batch");
-                                    NewBatch.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
+                                    NewBatch.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line,
+                                            dlgSeparator.SelectedSeparator), culture);
                                 }
                                 else if (RowType == "J")
                                 {
@@ -112,7 +117,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     Message = Catalog.GetString("Parsing the exchange rate of the journal");
                                     NewJournal.ExchangeRateToBase = Convert.ToDouble(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
                                     Message = Catalog.GetString("Parsing the date effective of the journal");
-                                    NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
+                                    NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line,
+                                            dlgSeparator.SelectedSeparator), culture);
                                 }
                                 else if (RowType == "T")
                                 {
@@ -140,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewTransaction.Reference = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
                                     Message = Catalog.GetString("Parsing the transaction date");
                                     NewTransaction.TransactionDate =
-                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
+                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator), culture);
 
                                     Message = Catalog.GetString("Parsing the debit amount of the transaction");
                                     string DebitAmountString = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);

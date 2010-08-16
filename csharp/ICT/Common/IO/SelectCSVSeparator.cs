@@ -36,6 +36,7 @@ namespace Ict.Common.IO
     public partial class TDlgSelectCSVSeparator : Form
     {
         private string FSeparator;
+        private bool FFileHasCaption;
         private List <String>FCSVRows = null;
 
         /// <summary>
@@ -50,10 +51,25 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// constructor
+        /// read the date format that the user has selected
         /// </summary>
-        public TDlgSelectCSVSeparator()
+        public string DateFormat
         {
+            get
+            {
+                return txtDateFormat.Text;
+            }
+        }
+
+        /// <summary>
+        /// constructor
+        /// TODO: also select date format?
+        /// TODO: select if first row contains captions? or use a parameter to avoid or request captions?
+        /// </summary>
+        public TDlgSelectCSVSeparator(bool AFileHasCaption)
+        {
+            FFileHasCaption = AFileHasCaption;
+
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
@@ -61,6 +77,8 @@ namespace Ict.Common.IO
 
             FSeparator = TAppSettingsManager.GetValueStatic("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+
+            txtDateFormat.Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
 
             if (FSeparator == ";")
             {
@@ -126,27 +144,41 @@ namespace Ict.Common.IO
             {
                 DataTable table = new DataTable();
                 string line = FCSVRows[0];
+                int counter = 0;
 
-                while (line.Length > 0)
+                if (FFileHasCaption)
                 {
-                    string header = StringHelper.GetNextCSV(ref line, FSeparator);
-
-                    if (header.StartsWith("#"))
+                    while (line.Length > 0)
                     {
-                        header = header.Substring(1);
+                        string header = StringHelper.GetNextCSV(ref line, FSeparator);
+
+                        if (header.StartsWith("#"))
+                        {
+                            header = header.Substring(1);
+                        }
+
+                        table.Columns.Add(header);
                     }
 
-                    table.Columns.Add(header);
+                    counter++;
                 }
 
-                for (int counter = 1; counter < FCSVRows.Count; counter++)
+                char columnCounter = (char)('A' + table.Columns.Count);
+
+                for (; counter < FCSVRows.Count; counter++)
                 {
                     line = FCSVRows[counter];
                     DataRow row = table.NewRow();
                     int countColumns = 0;
 
-                    while (line.Length > 0 && countColumns < table.Columns.Count)
+                    while (line.Length > 0)
                     {
+                        if (countColumns + 1 > table.Columns.Count)
+                        {
+                            table.Columns.Add(columnCounter.ToString());
+                            columnCounter++;
+                        }
+
                         row[countColumns] = StringHelper.GetNextCSV(ref line, FSeparator);
                         countColumns++;
                     }

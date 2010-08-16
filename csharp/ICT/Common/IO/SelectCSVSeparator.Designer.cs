@@ -62,12 +62,14 @@ namespace Ict.Common.IO
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.grdPreview = new System.Windows.Forms.DataGrid();
+            this.lblDateFormat = new System.Windows.Forms.Label();
+            this.txtDateFormat = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.grdPreview)).BeginInit();
             this.SuspendLayout();
             //
             // rbtComma
             //
-            this.rbtComma.Location = new System.Drawing.Point(12, 20);
+            this.rbtComma.Location = new System.Drawing.Point(12, 11);
             this.rbtComma.Name = "rbtComma";
             this.rbtComma.Size = new System.Drawing.Size(104, 24);
             this.rbtComma.TabIndex = 1;
@@ -78,7 +80,7 @@ namespace Ict.Common.IO
             //
             // rbtTabulator
             //
-            this.rbtTabulator.Location = new System.Drawing.Point(238, 20);
+            this.rbtTabulator.Location = new System.Drawing.Point(238, 11);
             this.rbtTabulator.Name = "rbtTabulator";
             this.rbtTabulator.Size = new System.Drawing.Size(104, 24);
             this.rbtTabulator.TabIndex = 2;
@@ -89,7 +91,7 @@ namespace Ict.Common.IO
             //
             // rbtOther
             //
-            this.rbtOther.Location = new System.Drawing.Point(12, 64);
+            this.rbtOther.Location = new System.Drawing.Point(11, 38);
             this.rbtOther.Name = "rbtOther";
             this.rbtOther.Size = new System.Drawing.Size(104, 24);
             this.rbtOther.TabIndex = 3;
@@ -100,7 +102,7 @@ namespace Ict.Common.IO
             //
             // rbtSemicolon
             //
-            this.rbtSemicolon.Location = new System.Drawing.Point(113, 20);
+            this.rbtSemicolon.Location = new System.Drawing.Point(113, 11);
             this.rbtSemicolon.Name = "rbtSemicolon";
             this.rbtSemicolon.Size = new System.Drawing.Size(104, 24);
             this.rbtSemicolon.TabIndex = 4;
@@ -111,7 +113,7 @@ namespace Ict.Common.IO
             //
             // txtOtherSeparator
             //
-            this.txtOtherSeparator.Location = new System.Drawing.Point(160, 67);
+            this.txtOtherSeparator.Location = new System.Drawing.Point(117, 41);
             this.txtOtherSeparator.Name = "txtOtherSeparator";
             this.txtOtherSeparator.Size = new System.Drawing.Size(48, 20);
             this.txtOtherSeparator.TabIndex = 5;
@@ -148,11 +150,28 @@ namespace Ict.Common.IO
             this.grdPreview.Size = new System.Drawing.Size(533, 169);
             this.grdPreview.TabIndex = 9;
             //
+            // lblDateFormat
+            //
+            this.lblDateFormat.Location = new System.Drawing.Point(11, 77);
+            this.lblDateFormat.Name = "lblDateFormat";
+            this.lblDateFormat.Size = new System.Drawing.Size(100, 23);
+            this.lblDateFormat.TabIndex = 10;
+            this.lblDateFormat.Text = "Date format:";
+            //
+            // txtDateFormat
+            //
+            this.txtDateFormat.Location = new System.Drawing.Point(117, 74);
+            this.txtDateFormat.Name = "txtDateFormat";
+            this.txtDateFormat.Size = new System.Drawing.Size(100, 20);
+            this.txtDateFormat.TabIndex = 11;
+            //
             // TDlgSelectCSVSeparator
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 288);
+            this.Controls.Add(this.txtDateFormat);
+            this.Controls.Add(this.lblDateFormat);
             this.Controls.Add(this.grdPreview);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnCancel);
@@ -167,6 +186,9 @@ namespace Ict.Common.IO
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.TextBox txtDateFormat;
+        private System.Windows.Forms.Label lblDateFormat;
 
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;

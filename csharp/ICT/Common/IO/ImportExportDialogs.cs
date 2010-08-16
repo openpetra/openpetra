@@ -181,7 +181,7 @@ namespace Ict.Common.IO
                 if (DialogOpen.FileName.ToLower().EndsWith("csv"))
                 {
                     // select separator, make sure there is a header line with the column captions/names
-                    TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator();
+                    TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
                     dlgSeparator.CSVFileName = DialogOpen.FileName;
 
                     if (dlgSeparator.ShowDialog() == DialogResult.OK)
