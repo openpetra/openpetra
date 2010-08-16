@@ -275,7 +275,14 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     }
                     else
                     {
-                        path += subModule.Name + "." + "Cacheable.cs";
+                        if (File.Exists(path + "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable.cs"))
+                        {
+                            path += "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable.cs";
+                        }
+                        else
+                        {
+                            path += subModule.Name + "." + "Cacheable.cs";
+                        }
                     }
 
                     ServerTemplate.FinishWriting(path, ".cs", true);
