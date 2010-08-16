@@ -50,5 +50,6 @@
     <Compile Include="Cacheable.cs" />
     <Compile Include="CommonRoutines.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Types.cs" />
   </ItemGroup>
 </Project>

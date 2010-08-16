@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
+        private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
         private DateTime DefaultDate;
 
         /// <summary>
@@ -51,8 +52,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FLedgerNumber = ALedgerNumber;
 
-            // TODO: more criteria: state of batch, period, etc
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(ALedgerNumber));
+            rbtEditing.Checked = true;
+
+            // this will load the batches from the server
             SetBatchFilter();
 
             ShowData();
@@ -183,9 +185,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetBatchFilter()
         {
-            if ((FMainDS == null) || (FMainDS.ABatch == null))
+            if (FMainDS == null)
             {
                 return;
+            }
+
+            // load data from database, if it has not been loaded yet
+            if (rbtAll.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfAll) == 0))
+            {
+                // TODO: more criteria: period, etc
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
+                FLoadedData = TFinanceBatchFilterEnum.fbfAll;
+            }
+            else if (rbtEditing.Checked && (FLoadedData & TFinanceBatchFilterEnum.fbfEditing == 0))
+            {
+                // TODO: more criteria: period, etc
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing));
+                FLoadedData |= TFinanceBatchFilterEnum.fbfEditing;
+            }
+            else if (rbtPosting.Checked && (FLoadedData & TFinanceBatchFilterEnum.fbfReadyForPosting == 0))
+            {
+                // TODO: more criteria: period, etc
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting));
+                FLoadedData |= TFinanceBatchFilterEnum.fbfReadyForPosting;
             }
 
             if (rbtAll.Checked)

@@ -2455,6 +2455,99 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
+                                          out DateTime AStartDate,
+                                          out DateTime AEndDate)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
+        }
+
+        /// generated method from connector
+        public bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                                out DateTime AStartDateCurrentPeriod,
+                                                out DateTime AEndDateLastForwardingPeriod)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
+        }
+
+        /// generated method from connector
+        public bool GetPeriodDates(Int32 ALedgerNumber,
+                                   Int32 AYearNumber,
+                                   Int32 ADiffPeriod,
+                                   Int32 APeriodNumber,
+                                   out DateTime AStartDatePeriod,
+                                   out DateTime AEndDatePeriod)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadABatch(Int32 ALedgerNumber,
+                                     TFinanceBatchFilterEnum AFilterBatchStatus)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber, AFilterBatchStatus);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
+                                       Int32 ABatchNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadAJournal(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
+        public GLBatchTDS LoadATransaction(Int32 ALedgerNumber,
+                                           Int32 ABatchNumber,
+                                           Int32 AJournalNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
+                                                   out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public bool PostGLBatch(Int32 ALedgerNumber,
+                                Int32 ABatchNumber,
+                                out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public string GetStandardCostCentre(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public double GetDailyExchangeRate(string ACurrencyFrom,
+                                           string ACurrencyTo,
+                                           DateTime ADateEffective)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+        }
+
+        /// generated method from connector
+        public bool CancelGLBatch(out GLBatchTDS MainDS,
+                                  Int32 ALedgerNumber,
+                                  Int32 ABatchNumber,
+                                  out TVerificationResultCollection AVerifications)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
         public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
@@ -2530,98 +2623,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public ALedgerTable GetAvailableLedgers()
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
-        }
-
-        /// generated method from connector
-        public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
-                                          out DateTime AStartDate,
-                                          out DateTime AEndDate)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
-        }
-
-        /// generated method from connector
-        public bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-                                                out DateTime AStartDateCurrentPeriod,
-                                                out DateTime AEndDateLastForwardingPeriod)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
-        }
-
-        /// generated method from connector
-        public bool GetPeriodDates(Int32 ALedgerNumber,
-                                   Int32 AYearNumber,
-                                   Int32 ADiffPeriod,
-                                   Int32 APeriodNumber,
-                                   out DateTime AStartDatePeriod,
-                                   out DateTime AEndDatePeriod)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
-        }
-
-        /// generated method from connector
-        public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public GLBatchTDS LoadABatch(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
-                                       Int32 ABatchNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadAJournal(ALedgerNumber, ABatchNumber);
-        }
-
-        /// generated method from connector
-        public GLBatchTDS LoadATransaction(Int32 ALedgerNumber,
-                                           Int32 ABatchNumber,
-                                           Int32 AJournalNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber);
-        }
-
-        /// generated method from connector
-        public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
-                                                   out TVerificationResultCollection AVerificationResult)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref AInspectDS, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public bool PostGLBatch(Int32 ALedgerNumber,
-                                Int32 ABatchNumber,
-                                out TVerificationResultCollection AVerifications)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
-        }
-
-        /// generated method from connector
-        public string GetStandardCostCentre(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public double GetDailyExchangeRate(string ACurrencyFrom,
-                                           string ACurrencyTo,
-                                           DateTime ADateEffective)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
-        }
-
-        /// generated method from connector
-        public bool CancelGLBatch(out GLBatchTDS MainDS,
-                                  Int32 ALedgerNumber,
-                                  Int32 ABatchNumber,
-                                  out TVerificationResultCollection AVerifications)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
     }
 }
