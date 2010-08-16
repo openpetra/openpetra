@@ -50,4 +50,3 @@ namespace Ict.Petra.Shared.MCommon
         LanguageCodeList
     };
 }
-

@@ -223,4 +223,3 @@ namespace Ict.Petra.Shared.MPartner
         ReasonSubscriptionCancelledList
     };
 }
-

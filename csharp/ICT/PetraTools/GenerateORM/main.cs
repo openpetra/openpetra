@@ -202,8 +202,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             store, groups,
                             cmdLine.GetOptValue("outputFilename") + ".Access");
                     }
-
-                    if (cmdLine.GetOptValue("do") == "cachedtables")
+                    else if (cmdLine.GetOptValue("do") == "cachedtables")
                     {
                         Ict.Tools.CodeGeneration.CachedTables.TGenerateCachedTables.WriteCachedTables(
                             store,

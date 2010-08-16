@@ -169,4 +169,3 @@ namespace Ict.Petra.Shared.MPersonnel
         XyzTbdPreferenceLevelList
     };
 }
-

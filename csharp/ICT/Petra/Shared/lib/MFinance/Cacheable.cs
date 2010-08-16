@@ -89,4 +89,3 @@ namespace Ict.Petra.Shared.MFinance
         AccountHierarchyList
     };
 }
-

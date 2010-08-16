@@ -40,4 +40,3 @@ namespace Ict.Petra.Shared.MConference
         ConferenceOptionTypeList
     };
 }
-
