@@ -171,13 +171,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+            {
+                ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            }
+
+            if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            {
+                ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            }
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
