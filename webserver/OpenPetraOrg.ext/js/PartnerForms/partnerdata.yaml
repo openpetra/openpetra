@@ -19,6 +19,15 @@ RootNode:
                 Row5: [txtEmail]
                 Row6: [txtPassword]
                 Row7: [txtPasswordConfirm]
+                Row8: [rgrEmploymentStatus]
+                Row8a: [txtProfession]
+                Row9: [txtKontoinhaber]
+                Row10: [txtKontonummer]
+                Row11: [txtIban]
+                Row12: [txtKreditinstitut]
+                Row13: [txtOrt]
+                
+
         txtFirstName: {Help="Please enter the first name", Label=First name}
         txtLastName:
         txtStreet:
@@ -29,6 +38,14 @@ RootNode:
         txtEmail: {vtype=email}
         txtPassword: {inputType=password}
         txtPasswordConfirm: {inputType=password, vtype=password, otherPasswordField=txtPassword}
+        rgrEmploymentStatus:  
+            OptionalValues:[Pupil, Student, Unemployed]
+        txtProfession: 
+        txtKontoinhaber:
+        txtKontonummer:
+        txtIban:
+        txtKreditinstitut:
+        txtOrt:
         btnSave:
             Validation: true
             ValidationErrorTitle: "Input Error"

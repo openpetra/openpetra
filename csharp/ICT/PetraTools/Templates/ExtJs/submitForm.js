@@ -29,15 +29,34 @@ Ext.onReady(function(){
     buttons: [{#BUTTONS}]
     });
     
-    {#FORMNAME}.render(document.body);    
+    {#FORMNAME}.render('{#FORMNAME}');
 })
 
+{##ROWDEFINITION}
+{
+    layout:'column',
+    border:false,
+    items: [{#ITEMS}]
+}
+
+{##CELLDEFINITION}
+{
+    columnWidth:{#COLUMNWIDTH},
+    layout: 'form',
+    border:false,
+    items: [{#ITEM}]
+    }
+
+{##RADIOGROUPDEFINITION}
+{
+    xtype: 'fieldset',
+    columnWidth: 1.0,
+    border:false,
+    items: [{#ITEMS}]
+    }
+    
 {##ITEMDEFINITION}
 {
-columnWidth:{#COLUMNWIDTH},
-layout: 'form',
-border:false,
-items: [{
     xtype: '{#XTYPE}',
 {#IFDEF VTYPE}
     vtype: '{#VTYPE}',
@@ -64,18 +83,36 @@ items: [{
 {#IFDEF COLUMNWIDTH}
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
+{#IFDEF WIDTH}
+    Width: {#WIDTH},
+{#ENDIF WIDTH}
     emptyText:'{#HELP}',
     name: '{#ITEMNAME}',
     anchor: '95%'
-    }]
-}
+    }
 
-{##ROWDEFINITION}
+{##CHECKBOXDEFINITION}
 {
-    layout:'column',
-    border:false,
-    items: [{#ITEMS}]
-}
+    xtype: '{#XTYPE}',
+{#IFDEF VTYPE}
+    vtype: '{#VTYPE}',
+{#ENDIF VTYPE}
+{#IFDEF BOXLABEL}
+    boxLabel: '{#BOXLABEL}',
+{#ENDIF BOXLABEL}
+    fieldLabel: '{#LABEL}',
+{#IFDEF ALLOWBLANK}
+    allowBlank: {#ALLOWBLANK},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    allowBlank: true,
+{#ENDIFN ALLOWBLANK}
+{#IFDEF COLUMNWIDTH}
+    columnWidth: {#COLUMNWIDTH},
+{#ENDIF COLUMNWIDTH}
+    name: '{#ITEMNAME}',
+    anchor: '95%'
+    }
 
 {##SUBMITBUTTONDEFINITION}
 {

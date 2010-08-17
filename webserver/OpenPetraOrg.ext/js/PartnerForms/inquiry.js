@@ -14,31 +14,291 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Full Name',
+            allowBlank: true,
+            Width: -1,
+            emptyText:'TODO',
+            name: 'txtFullName',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Einsatzort',
+            allowBlank: true,
+            Width: -1,
+            emptyText:'TODO',
+            name: 'txtEinsatzort',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'datefield',
+            fieldLabel: 'Einsatzbeginn',
+            allowBlank: true,
+            Width: 175,
+            emptyText:'TODO',
+            name: 'dtpEinsatzbeginn',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'datefield',
+            fieldLabel: 'Einsatzdauer',
+            allowBlank: true,
+            Width: 175,
+            emptyText:'TODO',
+            name: 'dtpEinsatzdauer',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Long- Term Plans',
+            allowBlank: true,
+            Width: -1,
+            emptyText:'TODO',
+            name: 'txtLong-TermPlans',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Global Action',
+            allowBlank: true,
+            name: 'chkGlobalAction',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Global Service',
+            allowBlank: true,
+            name: 'chkGlobalService',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Fsj',
+            allowBlank: true,
+            name: 'chkFsj',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Im Ausland',
+            allowBlank: true,
+            name: 'chkImAusland',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Im Inland',
+            allowBlank: true,
+            name: 'chkImInland',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Als Ersatzzum Zivildienst',
+            allowBlank: true,
+            name: 'chkAlsErsatzzumZivildienst',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Afdia',
+            allowBlank: true,
+            name: 'chkAfdia',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Sozialversicherungspflichtige Anstellung',
+            allowBlank: true,
+            name: 'chkSozialversicherungspflichtigeAnstellung',
+            anchor: '95%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:0.5,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Requestmore Informationabout',
+            allowBlank: true,
+            name: 'chkRequestmoreInformationabout',
+            anchor: '95%'
+            }
+        ]
+            }
+        ,{
             columnWidth:0.5,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'First name',
+            fieldLabel: 'Text',
             allowBlank: true,
             Width: -1,
             emptyText:'TODO',
-            name: 'txtFirstName',
+            name: 'txtText',
             anchor: '95%'
             }
         ]
             }
+        ]
+        }
         ,{
-            columnWidth:0.5,
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
             layout: 'form',
             border:false,
             items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Last Name',
+            xtype: 'checkbox',
+            fieldLabel: 'AmregisteredfortheEFS',
             allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtLastName',
+            name: 'chkAmregisteredfortheEFS',
             anchor: '95%'
             }
         ]
@@ -54,46 +314,11 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Street',
+            fieldLabel: 'Whatareyoulookingfor',
             allowBlank: true,
             Width: -1,
             emptyText:'TODO',
-            name: 'txtStreet',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:0.5,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Postcode',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtPostcode',
-            anchor: '95%'
-            }
-        ]
-            }
-        ,{
-            columnWidth:0.5,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'City',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtCity',
+            name: 'txtWhatareyoulookingfor',
             anchor: '95%'
             }
         ]
@@ -109,11 +334,11 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Phone',
+            fieldLabel: 'Vision',
             allowBlank: true,
             Width: -1,
             emptyText:'TODO',
-            name: 'txtPhone',
+            name: 'txtVision',
             anchor: '95%'
             }
         ]
@@ -129,11 +354,11 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Email',
+            fieldLabel: 'Team',
             allowBlank: true,
             Width: -1,
             emptyText:'TODO',
-            name: 'txtEmail',
+            name: 'txtTeam',
             anchor: '95%'
             }
         ]
@@ -149,186 +374,11 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Password',
+            fieldLabel: 'Expectations',
             allowBlank: true,
             Width: -1,
             emptyText:'TODO',
-            name: 'txtPassword',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Password Confirm',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtPasswordConfirm',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            xtype: 'fieldset',
-            columnWidth: 1.0,
-            border:false,
-            items: [{
-            xtype: 'radio',
-            boxLabel: 'Pupil',
-            fieldLabel: 'Employment Status',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '95%'
-            }
-        ,{
-            xtype: 'radio',
-            boxLabel: 'Student',
-            fieldLabel: '',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '95%'
-            }
-        ,{
-            xtype: 'radio',
-            boxLabel: 'Unemployed',
-            fieldLabel: '',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Profession',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtProfession',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kontoinhaber',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtKontoinhaber',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kontonummer',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtKontonummer',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Iban',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtIban',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kreditinstitut',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtKreditinstitut',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Ort',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtOrt',
+            name: 'txtExpectations',
             anchor: '95%'
             }
         ]
@@ -337,10 +387,10 @@ Ext.onReady(function(){
         }
         ]}
 
-    var partnerdata = new Ext.FormPanel({
+    var inquiry = new Ext.FormPanel({
         frame: true,
         // monitorValid:true,
-        title: 'partnerdata',
+        title: 'inquiry',
         bodyStyle: 'padding:5px',
         width: 650,
         labelWidth: 140,
@@ -353,5 +403,5 @@ Ext.onReady(function(){
     buttons: [{text: 'Cancel'}]
     });
 
-    partnerdata.render('partnerdata');
+    inquiry.render('inquiry');
 })

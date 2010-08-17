@@ -265,7 +265,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FChangeEventHandlerType;
         }
 
-        public virtual void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
                 "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
@@ -730,6 +730,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "false");
                 }
             }
+
+            return writer.Template;
         }
 
         /// <summary>
@@ -974,11 +976,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FAddControlToContainer = false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // don't call base, because it should not have size, location, or name
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
                 "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
+
+            return writer.FTemplate;
         }
     }
     public class ContainerGenerator : TControlGenerator
@@ -999,7 +1003,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.AddContainer(ctrl.controlName);
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef container)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
         {
             base.SetControlProperties(writer, container);
 
@@ -1022,6 +1026,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "Controls.Add(this." +
                     child.controlName + ")");
             }
+
+            return writer.FTemplate;
         }
     }
     public class ToolStripGenerator : TControlGenerator
@@ -1111,7 +1117,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return addChildren;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef container)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
         {
             string controlName = container.controlName;
 
@@ -1143,6 +1149,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
              * this.menuStrip1.Text = "menuStrip1";
              * this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuStrip1ItemClicked);
              */
+
+            return writer.FTemplate;
         }
     }
 }

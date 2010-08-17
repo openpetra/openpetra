@@ -63,7 +63,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return "lbl" + controlName.Substring(3);
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             string labelText = "";
@@ -85,6 +85,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right");
                 writer.SetControlProperty(ctrl.controlName, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
+
+            return writer.FTemplate;
         }
     }
 
@@ -97,7 +99,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -107,6 +109,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+
+            return writer.FTemplate;
         }
     }
     public class TabPageGenerator : GroupBoxGenerator
@@ -117,7 +121,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FAutoSize = true;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string CntrlNameWithoutPrefix = ctrl.controlName.Substring(3);
             string CntrlVaribleNameWithoutPrefix;
@@ -298,6 +302,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             #endregion
+
+            return writer.FTemplate;
         }
 
 /*
@@ -342,7 +348,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FChangeEventName = "CheckedChanged";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CheckForOtherControls(ctrl);
 
@@ -355,6 +361,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "Checked",
                     TXMLParser.GetAttribute(ctrl.xmlNode, "RadioChecked"));
             }
+
+            return writer.FTemplate;
         }
     }
     public class DateTimePickerGenerator : TControlGenerator
@@ -391,11 +399,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
-
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            base.SetControlProperties(writer, ctrl);
-        }
     }
     public class TreeViewGenerator : TControlGenerator
     {
@@ -421,7 +424,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -436,6 +439,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITUSERCONTROLS",
                     "FPetraUtilsObject.LoadComboBoxHistory(" + ctrl.controlName + ");" + Environment.NewLine);
             }
+
+            return writer.FTemplate;
         }
     }
     public class TcmbAutoPopulatedGenerator : ComboBoxGenerator
@@ -457,7 +462,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
@@ -472,6 +477,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // eg UC_GLJournals.ManualCode.cs, BeforeShowDetailsManual
                 // or UC_GLTransactions.ManualCode.cs, LoadTransactions
             }
+
+            return writer.FTemplate;
         }
     }
     public class TCmbVersatileGenerator : ComboBoxGenerator
@@ -548,7 +555,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".GetSelected" + AFieldTypeDotNet + "()";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -584,6 +591,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl.controlName, "Text", "\"" + defaultValue + "\"");
                 }
             }
+
+            return writer.FTemplate;
         }
     }
     public class CheckBoxGenerator : TControlGenerator
@@ -594,7 +603,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             this.FChangeEventName = "CheckedChanged";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CheckForOtherControls(ctrl);
 
@@ -638,6 +647,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
                 writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 0, 3, 0)");
             }
+
+            return writer.FTemplate;
         }
 
         protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
@@ -668,10 +679,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FDefaultHeight = 100;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl.controlName, "FixedRows", "0");
+            return writer.FTemplate;
         }
     }
 
@@ -690,11 +702,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public PrintPreviewWithToolbarGenerator()
             : base("pre")
         {
-        }
-
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            base.SetControlProperties(writer, ctrl);
         }
 
         public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
@@ -811,7 +818,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
@@ -853,6 +860,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl.controlName, "UseSystemPasswordChar", "true");
             }
+
+            return writer.FTemplate;
         }
 
         protected void CreateCode(TFormWriter writer, TControlDef ATextControl)
@@ -890,7 +899,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return "(" + AFieldTypeDotNet + ")" + ctrl.controlName + ".Value";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -910,6 +919,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "\", " + ctrl.controlName + ".Value > 0));" + Environment.NewLine +
                     "}" + Environment.NewLine + Environment.NewLine;
             }
+
+            return writer.FTemplate;
         }
     }
 
@@ -959,7 +970,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AColumnName + ");" + Environment.NewLine);
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -1119,6 +1130,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
                 }
             }
+
+            return writer.FTemplate;
         }
     }
     public class WinformsGridGenerator : TControlGenerator
@@ -1142,7 +1155,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
@@ -1310,6 +1323,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
                 }
             }
+
+            return writer.FTemplate;
         }
     }
 
@@ -1402,7 +1417,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
             Int32 buttonWidth = 40;
@@ -1441,6 +1456,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
                 writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
+
+            return writer.FTemplate;
         }
     }
 
@@ -1632,7 +1649,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Text";
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string ControlName = ctrl.controlName;
 
@@ -1649,6 +1666,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
             writer.SetControlProperty(ControlName, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ControlName, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
+
+            return writer.FTemplate;
         }
     }
 
@@ -1670,7 +1689,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate snippetDynamicTabPage = null;
             ProcessTemplate snippetTabPageSelectionChanged = null;
@@ -1750,6 +1769,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SelectedIndex = 0;" + Environment.NewLine);
                 writer.Template.AddToCodelet("INITMANUALCODE", "TabSelectionChanged(null, null);" + Environment.NewLine);
             }
+
+            return writer.FTemplate;
         }
 
         protected void CreateCode(TFormWriter writer, TControlDef ATabControl)
@@ -1859,7 +1880,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return controlNamesCollection;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
             {
@@ -1969,6 +1990,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ControlName, "Text", "\"" + ctrl.Label + "\"");
             }
+
+            return writer.FTemplate;
         }
     }
 
@@ -2148,7 +2171,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             writer.AddContainer(ctrl.controlName + ".Panel1");
             writer.AddContainer(ctrl.controlName + ".Panel2");
@@ -2184,6 +2207,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
+
+            return writer.FTemplate;
         }
     }
 
@@ -2212,7 +2237,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = base.FPrefix + ctrl.controlName.Substring(3);
 
@@ -2240,6 +2265,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
 
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+
+            return writer.FTemplate;
         }
     }
 
@@ -2279,13 +2306,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FDocking = "Bottom";
         }
-
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            string controlName = ctrl.controlName;
-
-            base.SetControlProperties(writer, ctrl);
-        }
     }
 
     public class ToolBarGenerator : ToolStripGenerator
@@ -2294,15 +2314,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("tbr", typeof(System.Windows.Forms.ToolStrip))
         {
             FRequiresChildren = true;
-        }
-
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            string controlName = ctrl.controlName;
-
-            base.SetControlProperties(writer, ctrl);
-
-            // todo: toolbar properties
         }
     }
 
@@ -2342,7 +2353,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl") + ");" + Environment.NewLine);
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // first create the hosted control
             string hostedControlName = TYml2Xml.GetAttribute(ctrl.xmlNode, "HostedControl");
@@ -2356,7 +2367,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrlGenerator.SetControlProperties(writer, hostedCtrl);
             }
 
-            base.SetControlProperties(writer, ctrl);
+            return base.SetControlProperties(writer, ctrl);
         }
     }
 
@@ -2381,11 +2392,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+
+            return writer.FTemplate;
         }
     }
     public class ToolbarButtonGenerator : TControlGenerator
@@ -2413,11 +2426,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
 
             writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+
+            return writer.FTemplate;
         }
     }
 
@@ -2465,7 +2480,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FGenerateLabel = false;
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string controlName = ctrl.controlName;
 
@@ -2484,6 +2499,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".InitUserControl();" + Environment.NewLine);
+
+            return writer.FTemplate;
         }
     }
 #if TODO
@@ -2492,13 +2509,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public StatusBarTextGenerator()
             : base("sbt", typeof(EWSoftware.StatusBarText.StatusBarTextProvider))
         {
-        }
-
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            base.SetControlProperties(writer, ctrl);
-
-            // todo: add properties for StatusBarTextProvider?
         }
     }
 #endif

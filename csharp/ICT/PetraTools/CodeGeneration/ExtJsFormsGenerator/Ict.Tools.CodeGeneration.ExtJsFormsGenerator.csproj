@@ -47,6 +47,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ControlGenerator.cs" />
     <Compile Include="ControlGeneratorBase.cs" />
+    <Compile Include="ControlGroupGenerator.cs" />
     <Compile Include="FormWriter.cs" />
   </ItemGroup>
   <ItemGroup>

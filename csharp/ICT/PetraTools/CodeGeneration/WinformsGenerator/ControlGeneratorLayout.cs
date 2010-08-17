@@ -58,10 +58,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.AddContainer(ctrl.controlName);
         }
 
-        public override void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ctrl.SetAttribute("Dock", "Fill");
-            base.SetControlProperties(writer, ctrl);
+            return base.SetControlProperties(writer, ctrl);
         }
 
         /// <summary>

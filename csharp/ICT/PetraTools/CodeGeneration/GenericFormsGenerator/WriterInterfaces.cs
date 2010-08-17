@@ -29,7 +29,7 @@ namespace Ict.Tools.CodeGeneration
     {
         void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode);
         void GenerateDeclaration(TFormWriter writer, TControlDef ctrl);
-        void SetControlProperties(TFormWriter writer, TControlDef container);
+        ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container);
         void OnChangeDataType(TFormWriter writer, XmlNode curNode);
         void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName);
         bool ControlFitsNode(XmlNode curNode);

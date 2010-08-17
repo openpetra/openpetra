@@ -533,6 +533,12 @@ namespace Ict.Common.IO
             {
                 string nodeName, nodeContent;
 
+                // strip end of line comment, starting with #, that is not inside a quotation
+                if (line.LastIndexOf('#') > line.LastIndexOf('"'))
+                {
+                    line = line.Substring(0, line.LastIndexOf('#'));
+                }
+
                 if (SplitNode(line, out nodeName, out nodeContent))
                 {
                     // check if the node already exists

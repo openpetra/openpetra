@@ -44,8 +44,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public bool FHasReadOnlyProperty = false;
         public bool FAddControlToContainer = true;
         public bool FRequiresChildren = false;
-        public Int32 FDefaultWidth = 150;
+        public Int32 FDefaultWidth = 300;
         public Int32 FDefaultHeight = 28;
+        public string FControlDefinitionSnippetName = "ITEMDEFINITION";
 
         public static TCodeStorage FCodeStorage;
 
@@ -129,9 +130,22 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             // TODO
         }
 
-        public virtual void SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        /// <summary>
+        /// fill in the attributes for the control
+        /// </summary>
+        /// <param name="ASnippetControl"></param>
+        /// <param name="ctrl"></param>
+        public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
         {
-            // TODO
+            ProcessTemplate snippetControl = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
+
+            snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
+            snippetControl.SetCodelet("XTYPE", FControlType);
+            snippetControl.SetCodelet("LABEL", ACtrl.Label);
+            snippetControl.SetCodelet("HELP", "TODO");
+            snippetControl.SetCodelet("WIDTH", FDefaultWidth.ToString());
+
+            return snippetControl;
         }
 
         public virtual void OnChangeDataType(TFormWriter writer, XmlNode curNode)

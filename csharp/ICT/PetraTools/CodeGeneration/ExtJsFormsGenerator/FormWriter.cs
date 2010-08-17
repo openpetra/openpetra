@@ -51,6 +51,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             AddControlGenerator(new TextFieldGenerator());
             AddControlGenerator(new FieldSetGenerator());
+            AddControlGenerator(new CheckboxGenerator());
+            AddControlGenerator(new DateTimePickerGenerator());
+            AddControlGenerator(new RadioGroupSimpleGenerator());
+            AddControlGenerator(new RadioButtonGenerator());
         }
 
         public override string CodeFileExtension
@@ -127,23 +131,29 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             {
                 foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
                 {
-                    // this will get the pnlContent control, which is implemented as a fieldset control in ext.js
                     ProcessTemplate snippetRowDefinition = FTemplate.GetSnippet("ROWDEFINITION");
 
                     StringCollection children = TYml2Xml.GetElements(controlsNode, row.Name);
 
                     foreach (string child in children)
                     {
-                        ProcessTemplate snippetControl = FTemplate.GetSnippet("ITEMDEFINITION");
                         TControlDef childCtrl = FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
-                        //snippetControl.SetCodelet("XTYPE", childCtrl.controlType);
-                        snippetControl.SetCodelet("XTYPE", "textfield");
-                        snippetControl.SetCodelet("LABEL", childCtrl.Label);
-                        snippetControl.SetCodelet("HELP", "TODO");
-                        snippetControl.SetCodelet("COLUMNWIDTH", (1.0 / children.Count).ToString().Replace(",", "."));
-                        snippetControl.SetCodelet("ITEMNAME", childCtrl.controlName);
+                        IControlGenerator ctrlGen = FindControlGenerator(childCtrl);
+                        ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(this, childCtrl);
+                        ProcessTemplate snippetCellDefinition = FTemplate.GetSnippet("CELLDEFINITION");
 
-                        snippetRowDefinition.InsertSnippet("ITEMS", snippetControl, ",");
+                        if ((children.Count == 1) && ctrlGen is RadioGroupSimpleGenerator)
+                        {
+                            // do not use the ROWDEFINITION, but insert control directly
+                            // this helps with aligning the label for the group radio buttons
+                            snippetRowDefinition.InsertSnippet("ITEMS", ctrlSnippet, ",");
+                        }
+                        else
+                        {
+                            snippetCellDefinition.SetCodelet("COLUMNWIDTH", (1.0 / children.Count).ToString().Replace(",", "."));
+                            snippetCellDefinition.InsertSnippet("ITEM", ctrlSnippet);
+                            snippetRowDefinition.InsertSnippet("ITEMS", snippetCellDefinition, ",");
+                        }
                     }
 
                     FTemplate.InsertSnippet("FORMITEMSDEFINITION", snippetRowDefinition, ",");
