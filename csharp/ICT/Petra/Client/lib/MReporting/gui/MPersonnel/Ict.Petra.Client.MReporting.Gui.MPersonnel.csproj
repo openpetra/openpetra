@@ -157,6 +157,13 @@
     <Compile Include="ProgressReport.Designer.cs">
       <DependentUpon>ProgressReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="RelationshipReport.cs" />
+    <Compile Include="RelationshipReport.Designer.cs">
+      <DependentUpon>RelationshipReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RelationshipReport.ManualCode.cs">
+      <DependentUpon>RelationshipReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShortTerm\AbilitiesReport.cs" />
     <Compile Include="ShortTerm\AbilitiesReport.Designer.cs">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
@@ -240,6 +247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressReport.resx">
       <DependentUpon>ProgressReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RelationshipReport.resx">
+      <DependentUpon>RelationshipReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShortTerm\AbilitiesReport.resx">
       <DependentUpon>AbilitiesReport.cs</DependentUpon>
