@@ -58,6 +58,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new GroupBoxGenerator());
             AddControlGenerator(new LabelGenerator());
             AddControlGenerator(new CompositeGenerator());
+            AddControlGenerator(new ButtonGenerator());
         }
 
         public override string CodeFileExtension
@@ -179,7 +180,6 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public static void InsertControl(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
         {
-            Console.WriteLine("InsertControl> " + ACtrl.controlName);
             XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Controls");
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
@@ -243,14 +243,35 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        public static void InsertButtons(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
+        {
+            XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Buttons");
+
+            List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
+
+            StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Buttons");
+
+            foreach (string child in children)
+            {
+                TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
+                IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
+
+                ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(AWriter, childCtrl);
+                ProcessTemplate snippetCellDefinition = AWriter.FTemplate.GetSnippet("CELLDEFINITION");
+
+                LayoutCellInForm(childCtrl, -1, ctrlSnippet, snippetCellDefinition);
+
+                ATemplate.InsertSnippet(AItemsPlaceholder, ctrlSnippet, ",");
+            }
+        }
+
         private void AddRootControl(string prefix)
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
 
             InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", this);
 
-            // TODO insert buttons
-            FTemplate.AddToCodelet("BUTTONS", "{text: 'Cancel'}");
+            InsertButtons(ctrl, FTemplate, "BUTTONS", this);
         }
 
         /// based on the code model, create the code;

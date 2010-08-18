@@ -55,6 +55,46 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
         }
     }
+    public class ButtonGenerator : TControlGenerator
+    {
+        public ButtonGenerator()
+            : base("btn", "button")
+        {
+            FControlDefinitionSnippetName = "SUBMITBUTTONDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            ctrlSnippet.SetCodelet("VALIDATIONERRORTITLE", ctrl.GetAttribute("ValidationErrorTitle"));
+            ctrlSnippet.SetCodelet("VALIDATIONERRORMESSAGE", ctrl.GetAttribute("ValidationErrorMessage"));
+            ctrlSnippet.SetCodelet("SENDINGDATATITLE", ctrl.GetAttribute("SendingMessageTitle"));
+            ctrlSnippet.SetCodelet("SENDINGDATAMESSAGE", ctrl.GetAttribute("SendingMessage"));
+            ctrlSnippet.SetCodelet("REQUESTSUCCESSTITLE", ctrl.GetAttribute("SuccessMessageTitle"));
+            ctrlSnippet.SetCodelet("REQUESTSUCCESSMESSAGE", ctrl.GetAttribute("SuccessMessage"));
+            ctrlSnippet.SetCodelet("REQUESTFAILURETITLE", ctrl.GetAttribute("FailureMessageTitle"));
+            ctrlSnippet.SetCodelet("REQUESTFAILUREMESSAGE", ctrl.GetAttribute("FailureMessage"));
+
+            ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
+
+            XmlNode AjaxParametersNode = TXMLParser.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
+
+            if (AjaxParametersNode != null)
+            {
+                string ParameterString = String.Empty;
+
+                foreach (XmlAttribute attr in AjaxParametersNode.Attributes)
+                {
+                    ParameterString += attr.Name + ": '" + attr.Value + "', ";
+                }
+
+                ctrlSnippet.SetCodelet("REQUESTPARAMETERS", ParameterString);
+            }
+
+            return ctrlSnippet;
+        }
+    }
     public class CheckboxGenerator : TControlGenerator
     {
         public CheckboxGenerator()

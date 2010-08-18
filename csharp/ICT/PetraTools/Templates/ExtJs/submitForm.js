@@ -151,11 +151,12 @@ Ext.onReady(function(){
 
 {##SUBMITBUTTONDEFINITION}
 {
-text: '{#BUTTONTEXT}',
-formBind: true,
+text: '{#LABEL}'
+{#IFDEF REQUESTURL}
+,formBind: true,
 handler: function () {
     // to display missing/invalid fields
-    if (!contactForm.getForm().isValid())
+    if (!{#FORMNAME}.getForm().isValid())
     {
         Ext.Msg.show({
             title: '{#VALIDATIONERRORTITLE}',
@@ -172,7 +173,7 @@ handler: function () {
         Ext.Ajax.request({
             url: '/server.asmx/{#REQUESTURL}',
             params:{
-                {#REQUESTPARAMETERS},
+                {#REQUESTPARAMETERS}
                 AJSONFormData: Ext.encode({#FORMNAME}.getForm().getValues())
             },
             success: function () {
@@ -196,4 +197,5 @@ handler: function () {
         });
     }
   }    
+{#ENDIF REQUESTURL}
 }

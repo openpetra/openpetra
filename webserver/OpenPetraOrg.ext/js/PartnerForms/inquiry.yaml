@@ -7,7 +7,7 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlNameAndAddress]
-            buttons: [btnSave, btnCancel]
+            Buttons: [btnSave, btnCancel]
         # implemented as xtype fieldset
         pnlNameAndAddress:
             title: Name and Address

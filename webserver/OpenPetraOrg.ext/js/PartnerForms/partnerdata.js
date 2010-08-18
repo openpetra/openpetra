@@ -279,7 +279,7 @@ Ext.onReady(function(){
         ,{
             xtype: 'displayfield',
             hideLabel: true,
-            value: 'Euro from this bank acount:'
+            value: 'Euro from this bank account:'
         }
         ]
             }
@@ -419,7 +419,57 @@ Ext.onReady(function(){
         },
         items: ItemsOnForm
         }],
-    buttons: [{text: 'Cancel'}]
+    buttons: [{
+text: 'Save'
+,formBind: true,
+handler: function () {
+    // to display missing/invalid fields
+    if (!partnerdata.getForm().isValid())
+    {
+        Ext.Msg.show({
+            title: '"Input Error"',
+            msg: '"Please check the flagged controls!"',
+            modal: true,
+            icon: Ext.Msg.ERROR,
+            buttons: Ext.Msg.OK
+        });
+    }
+    else
+    {
+        Ext.MessageBox.wait('"Data are being sent to the server"', '"Please wait"');
+
+        Ext.Ajax.request({
+            url: '/server.asmx/DataImportFromForm',
+            params:{
+                depth: '0', AFormID: 'EFSAnmeldung',
+                AJSONFormData: Ext.encode(partnerdata.getForm().getValues())
+            },
+            success: function () {
+                Ext.Msg.show({
+                    title: '"Success"',
+                    msg: '"Your application has been successful. You will receive an email with a PDF file. Please print the PDF file, sign it, and send it to us via post"',
+                    modal: true,
+                    icon: Ext.Msg.INFO,
+                    buttons: Ext.Msg.OK
+                });
+            },
+            failure: function () {
+                Ext.Msg.show({
+                    title: '"Failure"',
+                    msg: '"Something did not work on the server."',
+                    modal: true,
+                    icon: Ext.Msg.ERROR,
+                    buttons: Ext.Msg.OK
+                });
+            }
+        });
+    }
+  }
+}
+,{
+text: 'Cancel'
+}
+]
     });
 
     partnerdata.render('partnerdata');

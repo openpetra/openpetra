@@ -394,7 +394,13 @@ Ext.onReady(function(){
         },
         items: ItemsOnForm
         }],
-    buttons: [{text: 'Cancel'}]
+    buttons: [{
+text: 'Save'
+}
+,{
+text: 'Cancel'
+}
+]
     });
 
     inquiry.render('inquiry');
