@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -358,6 +358,10 @@ namespace Ict.Plugins.Finance.SwiftParser
             line = line.Replace("š", "Ü");
             line = line.Replace("Ž", "Ä");
             line = line.Replace("á", "ß");
+            line = line.Replace("\\", "Ö");
+            line = line.Replace("]", "Ü");
+            line = line.Replace("[", "Ä");
+            line = line.Replace("~", "ß");
             return line;
         }
 
