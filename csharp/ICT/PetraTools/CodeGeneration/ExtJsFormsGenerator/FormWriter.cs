@@ -55,6 +55,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new DateTimePickerGenerator());
             AddControlGenerator(new RadioGroupSimpleGenerator());
             AddControlGenerator(new RadioButtonGenerator());
+            AddControlGenerator(new GroupBoxGenerator());
+            AddControlGenerator(new LabelGenerator());
+            AddControlGenerator(new CompositeGenerator());
         }
 
         public override string CodeFileExtension
@@ -119,10 +122,64 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
-        private void InsertControl(TControlDef ACtrl)
-        {
-            IControlGenerator generator = FindControlGenerator(ACtrl);
+        /// <summary>
+        /// default anchor
+        /// </summary>
+        private static string ANCHOR_DEFAULT_COLUMN = "95%";
 
+        /// <summary>
+        /// anchor used for column span, just one column in row
+        /// </summary>
+        private static string ANCHOR_SINGLE_COLUMN = "97.5%";
+
+        /// <summary>
+        /// anchor used for column with no label
+        /// </summary>
+        private static string ANCHOR_HIDDEN_LABEL = "96.25%";
+
+        private static void LayoutCellInForm(TControlDef ACtrl,
+            Int32 AChildrenCount,
+            ProcessTemplate ACtrlSnippet,
+            ProcessTemplate ASnippetCellDefinition)
+        {
+            if (ACtrl.HasAttribute("labelWidth"))
+            {
+                ASnippetCellDefinition.SetCodelet("LABELWIDTH", ACtrl.GetAttribute("labelWidth"));
+            }
+
+            if (ACtrl.HasAttribute("columnWidth"))
+            {
+                ASnippetCellDefinition.SetCodelet("COLUMNWIDTH", ACtrl.GetAttribute("columnWidth").Replace(",", "."));
+            }
+            else
+            {
+                ASnippetCellDefinition.SetCodelet("COLUMNWIDTH", (1.0 / AChildrenCount).ToString().Replace(",", "."));
+            }
+
+            string Anchor = ANCHOR_DEFAULT_COLUMN;
+
+            if (AChildrenCount == 1)
+            {
+                Anchor = ANCHOR_SINGLE_COLUMN;
+            }
+
+            if (ACtrl.HasAttribute("columnWidth"))
+            {
+                Anchor = "94%";
+            }
+
+            if (ACtrl.GetAttribute("hideLabel") == "true")
+            {
+                ACtrlSnippet.SetCodelet("HIDELABEL", "true");
+                Anchor = ANCHOR_HIDDEN_LABEL;
+            }
+
+            ACtrlSnippet.SetCodelet("ANCHOR", Anchor);
+        }
+
+        public static void InsertControl(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
+        {
+            Console.WriteLine("InsertControl> " + ACtrl.controlName);
             XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Controls");
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
@@ -131,16 +188,18 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             {
                 foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
                 {
-                    ProcessTemplate snippetRowDefinition = FTemplate.GetSnippet("ROWDEFINITION");
+                    ProcessTemplate snippetRowDefinition = AWriter.FTemplate.GetSnippet("ROWDEFINITION");
 
                     StringCollection children = TYml2Xml.GetElements(controlsNode, row.Name);
 
                     foreach (string child in children)
                     {
-                        TControlDef childCtrl = FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
-                        IControlGenerator ctrlGen = FindControlGenerator(childCtrl);
-                        ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(this, childCtrl);
-                        ProcessTemplate snippetCellDefinition = FTemplate.GetSnippet("CELLDEFINITION");
+                        TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
+                        IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
+                        ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(AWriter, childCtrl);
+                        ProcessTemplate snippetCellDefinition = AWriter.FTemplate.GetSnippet("CELLDEFINITION");
+
+                        LayoutCellInForm(childCtrl, children.Count, ctrlSnippet, snippetCellDefinition);
 
                         if ((children.Count == 1) && ctrlGen is RadioGroupSimpleGenerator)
                         {
@@ -150,13 +209,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                         }
                         else
                         {
-                            snippetCellDefinition.SetCodelet("COLUMNWIDTH", (1.0 / children.Count).ToString().Replace(",", "."));
                             snippetCellDefinition.InsertSnippet("ITEM", ctrlSnippet);
                             snippetRowDefinition.InsertSnippet("ITEMS", snippetCellDefinition, ",");
                         }
                     }
 
-                    FTemplate.InsertSnippet("FORMITEMSDEFINITION", snippetRowDefinition, ",");
+                    ATemplate.InsertSnippet(AItemsPlaceholder, snippetRowDefinition, ",");
                 }
             }
             else
@@ -165,7 +223,22 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
                 foreach (string child in children)
                 {
-                    InsertControl(FCodeStorage.FindOrCreateControl(child, ACtrl.controlName));
+                    TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
+                    IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
+
+                    if (ctrlGen is FieldSetGenerator)
+                    {
+                        InsertControl(AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName), ATemplate, AItemsPlaceholder, AWriter);
+                    }
+                    else
+                    {
+                        ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(AWriter, childCtrl);
+                        ProcessTemplate snippetCellDefinition = AWriter.FTemplate.GetSnippet("CELLDEFINITION");
+
+                        LayoutCellInForm(childCtrl, -1, ctrlSnippet, snippetCellDefinition);
+
+                        ATemplate.InsertSnippet(AItemsPlaceholder, ctrlSnippet, ",");
+                    }
                 }
             }
         }
@@ -174,7 +247,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
 
-            InsertControl(ctrl);
+            InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", this);
 
             // TODO insert buttons
             FTemplate.AddToCodelet("BUTTONS", "{text: 'Cancel'}");

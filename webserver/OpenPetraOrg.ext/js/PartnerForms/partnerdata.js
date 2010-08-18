@@ -20,9 +20,8 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'First name',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'Please enter first name',
             name: 'txtFirstName',
             anchor: '95%'
             }
@@ -30,14 +29,14 @@ Ext.onReady(function(){
             }
         ,{
             columnWidth:0.5,
+            labelWidth: 80,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Last Name',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtLastName',
             anchor: '95%'
             }
@@ -55,11 +54,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Street',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'Streetname and house number',
             name: 'txtStreet',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -69,32 +67,31 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
-            columnWidth:0.5,
+            columnWidth:.4,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Postcode',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            fieldLabel: 'Postcode and City',
+            allowBlank: false,
+            emptyText:'Postcode',
             name: 'txtPostcode',
-            anchor: '95%'
+            anchor: '94%'
             }
         ]
             }
         ,{
-            columnWidth:0.5,
+            columnWidth:.6,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
             fieldLabel: 'City',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            hideLabel: true,
+            allowBlank: false,
+            emptyText:'City',
             name: 'txtCity',
-            anchor: '95%'
+            anchor: '96.25%'
             }
         ]
             }
@@ -104,17 +101,16 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
-            columnWidth:1,
+            columnWidth:.6,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Phone',
             allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            emptyText:'',
             name: 'txtPhone',
-            anchor: '95%'
+            anchor: '94%'
             }
         ]
             }
@@ -124,17 +120,17 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
-            columnWidth:1,
+            columnWidth:.6,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
+            vtype: 'email',
             fieldLabel: 'Email',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtEmail',
-            anchor: '95%'
+            anchor: '94%'
             }
         ]
             }
@@ -144,17 +140,17 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
-            columnWidth:1,
+            columnWidth:.6,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
+            inputType: 'password',
             fieldLabel: 'Password',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtPassword',
-            anchor: '95%'
+            anchor: '94%'
             }
         ]
             }
@@ -164,17 +160,19 @@ Ext.onReady(function(){
             layout:'column',
             border:false,
             items: [{
-            columnWidth:1,
+            columnWidth:.6,
             layout: 'form',
             border:false,
             items: [{
             xtype: 'textfield',
+            vtype: 'password',
+            inputType: 'password',
             fieldLabel: 'Password Confirm',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            otherPasswordField: 'txtPassword',
+            emptyText:'',
             name: 'txtPasswordConfirm',
-            anchor: '95%'
+            anchor: '94%'
             }
         ]
             }
@@ -193,15 +191,16 @@ Ext.onReady(function(){
             fieldLabel: 'Employment Status',
             allowBlank: true,
             name: 'rgrEmploymentStatus',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ,{
             xtype: 'radio',
+            checked: true,
             boxLabel: 'Student',
             fieldLabel: '',
             allowBlank: true,
             name: 'rgrEmploymentStatus',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ,{
             xtype: 'radio',
@@ -209,7 +208,15 @@ Ext.onReady(function(){
             fieldLabel: '',
             allowBlank: true,
             name: 'rgrEmploymentStatus',
-            anchor: '95%'
+            anchor: '97.5%'
+            }
+        ,{
+            xtype: 'radio',
+            boxLabel: 'Employed',
+            fieldLabel: '',
+            allowBlank: true,
+            name: 'rgrEmploymentStatus',
+            anchor: '97.5%'
             }
         ]
             }
@@ -224,12 +231,57 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Profession',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            fieldLabel: 'Degree/Profession',
+            allowBlank: false,
+            emptyText:'Enter your school degree or profession',
             name: 'txtProfession',
+            anchor: '97.5%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'fieldset',
+            title: 'Bank Details',
+            autoHeight: true,
+            items: [{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'compositefield',
+            fieldLabel: 'Direct Debit Permission',
+            hideLabel: true,
+            items: [{
+            xtype: 'displayfield',
+            hideLabel: true,
+            value: 'Hereby I give permission to xyz to do a direct debit of'
+        }
+        ,{
+            xtype: 'textfield',
+            fieldLabel: 'Conference Fee',
+            allowBlank: false,
+            emptyText:'',
+            name: 'txtConferenceFee',
             anchor: '95%'
+            }
+        ,{
+            xtype: 'displayfield',
+            hideLabel: true,
+            value: 'Euro from this bank acount:'
+        }
+        ]
             }
         ]
             }
@@ -245,11 +297,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Kontoinhaber',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtKontoinhaber',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -265,11 +316,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Kontonummer',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtKontonummer',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -285,11 +335,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Iban',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtIban',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -305,11 +354,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Kreditinstitut',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtKreditinstitut',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -324,12 +372,33 @@ Ext.onReady(function(){
             border:false,
             items: [{
             xtype: 'textfield',
-            fieldLabel: 'Ort',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
-            name: 'txtOrt',
-            anchor: '95%'
+            fieldLabel: 'Bank Ort',
+            allowBlank: false,
+            emptyText:'',
+            name: 'txtBankOrt',
+            anchor: '97.5%'
+            }
+        ]
+            }
+        ]
+        }
+        ,{
+            layout:'column',
+            border:false,
+            items: [{
+            columnWidth:1,
+            layout: 'form',
+            border:false,
+            items: [{
+            xtype: 'displayfield',
+            hideLabel: true,
+            value: 'After submitting the form, you will print a PDF, and you (and for minors also their parents) have to sign this'
+        }
+        ]
+            }
+        ]
+        }
+        ]
             }
         ]
             }

@@ -20,32 +20,41 @@ RootNode:
                 Row6: [txtPassword]
                 Row7: [txtPasswordConfirm]
                 Row8: [rgrEmploymentStatus]
-                Row8a: [txtProfession]
-                Row9: [txtKontoinhaber]
-                Row10: [txtKontonummer]
-                Row11: [txtIban]
-                Row12: [txtKreditinstitut]
-                Row13: [txtOrt]
-                
-
-        txtFirstName: {Help="Please enter the first name", Label=First name}
-        txtLastName:
-        txtStreet:
+                Row9: [txtProfession]
+                Row10: [grpBankDetails]
+        grpBankDetails:
+            Controls:
+                Row0: [cmpDirectDebitPermission]
+                Row1: [txtKontoinhaber]
+                Row2: [txtKontonummer]
+                Row3: [txtIban]
+                Row4: [txtKreditinstitut]
+                Row5: [txtBankOrt]
+                Row6: [lblBankDetailsSignature]
+        cmpDirectDebitPermission: {hideLabel=true}
+            Controls: [lblReasonBankDetails1, txtConferenceFee, lblReasonBankDetails2]
+        lblReasonBankDetails1: {Label="Hereby I give permission to xyz to do a direct debit of"}
+        txtConferenceFee:
+        lblReasonBankDetails2: {Label="Euro from this bank acount:"}
+        lblBankDetailsSignature: {Label="After submitting the form, you will print a PDF, and you (and for minors also their parents) have to sign this"}
+        txtFirstName: {Help="Please enter first name", Label=First name}
+        txtLastName: {labelWidth=80}
+        txtStreet: {Help=Streetname and house number}
         # lowercase attributes are directly for ext.js?
-        txtPostcode: {xtype=numberfield, maxLength=5, minLength=5, columnWidth=.4}
-        txtCity: {columnWidth=.6}
-        txtPhone: {allowBlank=true}
-        txtEmail: {vtype=email}
-        txtPassword: {inputType=password}
-        txtPasswordConfirm: {inputType=password, vtype=password, otherPasswordField=txtPassword}
+        txtPostcode: {xtype=numberfield, maxLength=5, minLength=5, columnWidth=.4, Label="Postcode and City", Help="Postcode"}
+        txtCity: {columnWidth=.6, hideLabel=true, Help="City"}
+        txtPhone: {allowBlank=true, columnWidth=.6}
+        txtEmail: {vtype=email, columnWidth=.6}
+        txtPassword: {inputType=password, columnWidth=.6}
+        txtPasswordConfirm: {inputType=password, columnWidth=.6, vtype=password, otherPasswordField=txtPassword}
         rgrEmploymentStatus:  
-            OptionalValues:[Pupil, Student, Unemployed]
-        txtProfession: 
+            OptionalValues:[Pupil, =Student, Unemployed, Employed]
+        txtProfession: {Label="Degree/Profession", Help="Enter your school degree or profession"}
         txtKontoinhaber:
         txtKontonummer:
         txtIban:
         txtKreditinstitut:
-        txtOrt:
+        txtBankOrt:
         btnSave:
             Validation: true
             ValidationErrorTitle: "Input Error"

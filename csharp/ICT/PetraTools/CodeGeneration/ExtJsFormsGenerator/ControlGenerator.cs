@@ -40,6 +40,14 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FDefaultWidth = -1;
         }
     }
+    public class LabelGenerator : TControlGenerator
+    {
+        public LabelGenerator()
+            : base("lbl", "displayfield")
+        {
+            FControlDefinitionSnippetName = "LABELDEFINITION";
+        }
+    }
     public class FieldSetGenerator : TControlGenerator
     {
         public FieldSetGenerator()
@@ -83,14 +91,46 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public DateTimePickerGenerator()
             : base("dtp", "datefield")
         {
-            FDefaultWidth = 175;
+            FDefaultWidth = -1;
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
+
+            // TODO: adjust date format to localisation? see http://dev.sencha.com/deploy/dev/docs/?class=Date
+            ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", "format: 'd.m.Y'," +
+                Environment.NewLine +
+                "boxMaxWidth: 175,");
+
+            return ctrlSnippet;
         }
     }
-    public class RadioGroupSimpleGenerator : GroupBoxGenerator
+
+    public class CompositeGenerator : GroupBoxBaseGenerator
+    {
+        public CompositeGenerator()
+            : base("cmp")
+        {
+            FControlDefinitionSnippetName = "COMPOSITEDEFINITION";
+        }
+    }
+
+    public class GroupBoxGenerator : GroupBoxBaseGenerator
+    {
+        public GroupBoxGenerator()
+            : base("grp")
+        {
+            FControlDefinitionSnippetName = "GROUPBOXDEFINITION";
+        }
+    }
+
+    public class RadioGroupSimpleGenerator : GroupBoxBaseGenerator
     {
         public RadioGroupSimpleGenerator()
             : base("rgr")
         {
+            FControlDefinitionSnippetName = "RADIOGROUPDEFINITION";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)

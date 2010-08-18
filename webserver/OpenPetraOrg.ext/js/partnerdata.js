@@ -62,17 +62,17 @@
                 }]
             }]
         },{
-        layout: 'form',
-        border:false,
+            layout: 'form',
+            border:false,
         items: [{
-    
+        
                 xtype: 'textfield',
                 fieldLabel: 'Stra&szlig;e + Hausnummer',
                 allowBlank: false,
                 emptyText: 'Straßennamen eingeben',
                 name: 'street',
-                anchor: '95%'
-            }]
+                anchor: '97.5%'
+                }]
         },{
         layout:'column',
         border:false,
@@ -100,7 +100,7 @@
                 emptyText:'Stadt eingeben',
                 allowBlank: false,
                 name: 'city',
-                anchor: '95%'
+                anchor: '96.25%'
                 }]
             }]
         },{
@@ -206,6 +206,6 @@
     });
     
     
-    contactForm.render(document.body);    
+    contactForm.render("contactform");    
 
 })

@@ -20,11 +20,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Full Name',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtFullName',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -40,11 +39,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Einsatzort',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtEinsatzort',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -60,11 +58,12 @@ Ext.onReady(function(){
             items: [{
             xtype: 'datefield',
             fieldLabel: 'Einsatzbeginn',
-            allowBlank: true,
-            Width: 175,
-            emptyText:'TODO',
+            allowBlank: false,
+            format: 'd.m.Y',
+            boxMaxWidth: 175,
+            emptyText:'',
             name: 'dtpEinsatzbeginn',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -80,11 +79,12 @@ Ext.onReady(function(){
             items: [{
             xtype: 'datefield',
             fieldLabel: 'Einsatzdauer',
-            allowBlank: true,
-            Width: 175,
-            emptyText:'TODO',
+            allowBlank: false,
+            format: 'd.m.Y',
+            boxMaxWidth: 175,
+            emptyText:'',
             name: 'dtpEinsatzdauer',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -100,11 +100,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Long- Term Plans',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtLong-TermPlans',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -122,7 +121,7 @@ Ext.onReady(function(){
             fieldLabel: 'Global Action',
             allowBlank: true,
             name: 'chkGlobalAction',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -140,7 +139,7 @@ Ext.onReady(function(){
             fieldLabel: 'Global Service',
             allowBlank: true,
             name: 'chkGlobalService',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -158,7 +157,7 @@ Ext.onReady(function(){
             fieldLabel: 'Fsj',
             allowBlank: true,
             name: 'chkFsj',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -176,7 +175,7 @@ Ext.onReady(function(){
             fieldLabel: 'Im Ausland',
             allowBlank: true,
             name: 'chkImAusland',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -194,7 +193,7 @@ Ext.onReady(function(){
             fieldLabel: 'Im Inland',
             allowBlank: true,
             name: 'chkImInland',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -212,7 +211,7 @@ Ext.onReady(function(){
             fieldLabel: 'Als Ersatzzum Zivildienst',
             allowBlank: true,
             name: 'chkAlsErsatzzumZivildienst',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -230,7 +229,7 @@ Ext.onReady(function(){
             fieldLabel: 'Afdia',
             allowBlank: true,
             name: 'chkAfdia',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -248,7 +247,7 @@ Ext.onReady(function(){
             fieldLabel: 'Sozialversicherungspflichtige Anstellung',
             allowBlank: true,
             name: 'chkSozialversicherungspflichtigeAnstellung',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -277,9 +276,8 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Text',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtText',
             anchor: '95%'
             }
@@ -299,7 +297,7 @@ Ext.onReady(function(){
             fieldLabel: 'AmregisteredfortheEFS',
             allowBlank: true,
             name: 'chkAmregisteredfortheEFS',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -315,11 +313,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Whatareyoulookingfor',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtWhatareyoulookingfor',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -335,11 +332,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Vision',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtVision',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -355,11 +351,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Team',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtTeam',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }
@@ -375,11 +370,10 @@ Ext.onReady(function(){
             items: [{
             xtype: 'textfield',
             fieldLabel: 'Expectations',
-            allowBlank: true,
-            Width: -1,
-            emptyText:'TODO',
+            allowBlank: false,
+            emptyText:'',
             name: 'txtExpectations',
-            anchor: '95%'
+            anchor: '97.5%'
             }
         ]
             }

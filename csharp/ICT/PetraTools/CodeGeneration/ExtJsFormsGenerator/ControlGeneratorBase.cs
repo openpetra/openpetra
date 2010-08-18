@@ -142,8 +142,34 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
             snippetControl.SetCodelet("XTYPE", FControlType);
             snippetControl.SetCodelet("LABEL", ACtrl.Label);
-            snippetControl.SetCodelet("HELP", "TODO");
-            snippetControl.SetCodelet("WIDTH", FDefaultWidth.ToString());
+            snippetControl.SetCodelet("HELP", ACtrl.GetAttribute("Help"));
+
+            if (ACtrl.HasAttribute("allowBlank"))
+            {
+                snippetControl.SetCodelet("ALLOWBLANK", ACtrl.GetAttribute("allowBlank"));
+            }
+
+            if (ACtrl.HasAttribute("inputType"))
+            {
+                snippetControl.SetCodelet("INPUTTYPE", ACtrl.GetAttribute("inputType"));
+            }
+
+            if (ACtrl.HasAttribute("vtype"))
+            {
+                snippetControl.SetCodelet("VTYPE", ACtrl.GetAttribute("vtype"));
+            }
+
+            if (ACtrl.HasAttribute("otherPasswordField"))
+            {
+                snippetControl.SetCodelet("OTHERPASSWORDFIELD", ACtrl.GetAttribute("otherPasswordField"));
+            }
+
+            if (FDefaultWidth != -1)
+            {
+                snippetControl.SetCodelet("WIDTH", FDefaultWidth.ToString());
+            }
+
+            snippetControl.SetCodelet("CUSTOMATTRIBUTES", "");
 
             return snippetControl;
         }

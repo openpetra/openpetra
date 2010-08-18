@@ -32,14 +32,14 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.ExtJs
 {
-    public class GroupBoxGenerator : TControlGenerator
+    public class GroupBoxBaseGenerator : TControlGenerator
     {
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="prefix"></param>
         /// <param name="type"></param>
-        public GroupBoxGenerator(string prefix)
+        public GroupBoxBaseGenerator(string prefix)
             : base(prefix, "none")
         {
             FGenerateLabel = false;
@@ -63,26 +63,39 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ProcessTemplate snippetRowDefinition = writer.FTemplate.GetSnippet("RADIOGROUPDEFINITION");
+            ProcessTemplate snippetRowDefinition = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
+
+            snippetRowDefinition.SetCodelet("LABEL", ctrl.Label);
 
             StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
 
-            foreach (string ChildControlName in Controls)
+            snippetRowDefinition.AddToCodelet("ITEMS", "");
+
+            if (Controls.Count > 0)
             {
-                TControlDef childCtrl = FCodeStorage.FindOrCreateControl(ChildControlName, ctrl.controlName);
-                IControlGenerator ctrlGen = writer.FindControlGenerator(childCtrl);
-                ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(writer, childCtrl);
-
-                ctrlSnippet.SetCodelet("COLUMNWIDTH", "");
-
-                ctrlSnippet.SetCodelet("ITEMNAME", ctrl.controlName);
-
-                if (ChildControlName == Controls[0])
+                // used for radiogroupbox
+                foreach (string ChildControlName in Controls)
                 {
-                    ctrlSnippet.SetCodelet("LABEL", ctrl.Label);
-                }
+                    TControlDef childCtrl = FCodeStorage.FindOrCreateControl(ChildControlName, ctrl.controlName);
+                    IControlGenerator ctrlGen = writer.FindControlGenerator(childCtrl);
+                    ProcessTemplate ctrlSnippet = ctrlGen.SetControlProperties(writer, childCtrl);
 
-                snippetRowDefinition.InsertSnippet("ITEMS", ctrlSnippet, ",");
+                    ctrlSnippet.SetCodelet("COLUMNWIDTH", "");
+
+                    ctrlSnippet.SetCodelet("ITEMNAME", ctrl.controlName);
+
+                    if (ChildControlName == Controls[0])
+                    {
+                        ctrlSnippet.SetCodelet("LABEL", ctrl.Label);
+                    }
+
+                    snippetRowDefinition.InsertSnippet("ITEMS", ctrlSnippet, ",");
+                }
+            }
+            else
+            {
+                // used for GroupBox, and Composite
+                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", writer);
             }
 
             return snippetRowDefinition;

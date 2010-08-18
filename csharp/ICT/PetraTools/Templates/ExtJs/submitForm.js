@@ -42,6 +42,9 @@ Ext.onReady(function(){
 {##CELLDEFINITION}
 {
     columnWidth:{#COLUMNWIDTH},
+{#IFDEF LABELWIDTH}
+    labelWidth: {#LABELWIDTH},
+{#ENDIF LABELWIDTH}
     layout: 'form',
     border:false,
     items: [{#ITEM}]
@@ -54,7 +57,25 @@ Ext.onReady(function(){
     border:false,
     items: [{#ITEMS}]
     }
-    
+
+{##GROUPBOXDEFINITION}
+{
+    xtype: 'fieldset',
+    title: '{#LABEL}',
+    autoHeight: true,
+    items: [{#ITEMS}]
+    }
+
+{##COMPOSITEDEFINITION}
+{
+    xtype: 'compositefield',
+    fieldLabel: '{#LABEL}',
+{#IFDEF HIDELABEL}
+    hideLabel: {#HIDELABEL},
+{#ENDIF HIDELABEL}
+    items: [{#ITEMS}]
+    }
+
 {##ITEMDEFINITION}
 {
     xtype: '{#XTYPE}',
@@ -65,11 +86,14 @@ Ext.onReady(function(){
     inputType: '{#INPUTTYPE}',
 {#ENDIF INPUTTYPE}    
     fieldLabel: '{#LABEL}',
+{#IFDEF HIDELABEL}
+    hideLabel: {#HIDELABEL},
+{#ENDIF HIDELABEL}
 {#IFDEF ALLOWBLANK}
     allowBlank: {#ALLOWBLANK},
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
-    allowBlank: true,
+    allowBlank: false,
 {#ENDIFN ALLOWBLANK}
 {#IFDEF OTHERPASSWORDFIELD}
     otherPasswordField: '{#OTHERPASSWORDFIELD}',
@@ -84,12 +108,20 @@ Ext.onReady(function(){
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
 {#IFDEF WIDTH}
-    Width: {#WIDTH},
+    width: {#WIDTH},
 {#ENDIF WIDTH}
+    {#CUSTOMATTRIBUTES}
     emptyText:'{#HELP}',
     name: '{#ITEMNAME}',
-    anchor: '95%'
+    anchor: '{#ANCHOR}'
     }
+
+{##LABELDEFINITION}
+{
+    xtype: '{#XTYPE}',
+    hideLabel: true,
+    value: '{#LABEL}'
+}
 
 {##CHECKBOXDEFINITION}
 {
@@ -97,6 +129,9 @@ Ext.onReady(function(){
 {#IFDEF VTYPE}
     vtype: '{#VTYPE}',
 {#ENDIF VTYPE}
+{#IFDEF CHECKED}
+    checked: {#CHECKED},
+{#ENDIF CHECKED}
 {#IFDEF BOXLABEL}
     boxLabel: '{#BOXLABEL}',
 {#ENDIF BOXLABEL}
@@ -111,7 +146,7 @@ Ext.onReady(function(){
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
     name: '{#ITEMNAME}',
-    anchor: '95%'
+    anchor: '{#ANCHOR}'
     }
 
 {##SUBMITBUTTONDEFINITION}
