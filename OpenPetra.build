@@ -221,6 +221,11 @@
     
     <target name="deleteBakFiles" description="delete all backup files">
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/**.bak" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/**.error" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/**.yaml.xml" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/webserver/**.bak" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/webserver/**.error" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/webserver/**.yaml.xml" /></fileset></delete>
     </target>
     
     <target name="cleanPetra" description="remove all compiled code of Petra">
