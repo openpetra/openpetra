@@ -634,6 +634,13 @@ namespace Ict.Common.IO
                             // scalar
                             // this should not be an element, but an attribute of the parent
                             parent.RemoveChild(newElement);
+                            nodeContent = nodeContent.Trim();
+
+                            if (nodeContent.StartsWith("\"") && nodeContent.EndsWith("\""))
+                            {
+                                nodeContent = nodeContent.Substring(1, nodeContent.Length - 2);
+                            }
+
                             TYml2Xml.SetAttribute(parent, nodeName, nodeContent);
                         }
                     }

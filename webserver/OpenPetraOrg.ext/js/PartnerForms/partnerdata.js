@@ -1,434 +1,485 @@
-Ext.onReady(function(){
-    Ext.QuickTips.init();
-
-    // use our own blank image to avoid a call home
-    // Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
-
-    Ext.form.Field.prototype.msgTarget = 'side';
-
-    CreateCustomValidationTypePassword();
-
-    var ItemsOnForm = {
-    items:[
-        {
-            layout:'column',
-            border:false,
+partnerdataForm = Ext.extend(Ext.FormPanel, {
+    pnlContentFORMCAPTION:'Application form',
+    txtFirstNameLABEL:'First name',
+    txtFirstNameHELP:'Please enter first name',
+    txtLastNameLABEL:'Last Name',
+    txtLastNameHELP:'',
+    txtStreetLABEL:'Street',
+    txtStreetHELP:'Streetname and house number',
+    txtPostcodeLABEL:'Postcode and City',
+    txtPostcodeHELP:'Postcode',
+    txtCityLABEL:'City',
+    txtCityHELP:'City',
+    txtPhoneLABEL:'Phone',
+    txtPhoneHELP:'',
+    txtEmailLABEL:'Email',
+    txtEmailHELP:'',
+    txtPasswordLABEL:'Password',
+    txtPasswordHELP:'',
+    txtPasswordConfirmLABEL:'Password Confirm',
+    txtPasswordConfirmHELP:'',
+    rgrEmploymentStatusLABEL:'Employment Status',
+    rbtPupilLABEL:'Pupil',
+    rbtPupilHELP:'',
+    rgrEmploymentStatusLABEL:'Employment Status',
+    rbtStudentLABEL:'Student',
+    rbtStudentHELP:'',
+    rbtUnemployedLABEL:'Unemployed',
+    rbtUnemployedHELP:'',
+    rbtEmployedLABEL:'Employed',
+    rbtEmployedHELP:'',
+    txtProfessionLABEL:'Degree/Profession',
+    txtProfessionHELP:'Enter your school degree or profession',
+    grpBankDetailsLABEL:'Bank Details',
+    cmpDirectDebitPermissionLABEL:'Direct Debit Permission',
+    lblReasonBankDetails1LABEL:'Hereby I give permission to xyz to do a direct debit of',
+    lblReasonBankDetails1HELP:'',
+    txtConferenceFeeLABEL:'Conference Fee',
+    txtConferenceFeeHELP:'',
+    lblReasonBankDetails2LABEL:'Euro from this bank account:',
+    lblReasonBankDetails2HELP:'',
+    txtKontoinhaberLABEL:'Kontoinhaber',
+    txtKontoinhaberHELP:'',
+    txtKontonummerLABEL:'Kontonummer',
+    txtKontonummerHELP:'',
+    txtIbanLABEL:'Iban',
+    txtIbanHELP:'',
+    txtKreditinstitutLABEL:'Kreditinstitut',
+    txtKreditinstitutHELP:'',
+    txtBankOrtLABEL:'Bank Ort',
+    txtBankOrtHELP:'',
+    lblBankDetailsSignatureLABEL:'After submitting the form, you will print a PDF, and you (and for minors also their parents) have to sign this',
+    lblBankDetailsSignatureHELP:'',
+    btnSaveLABEL:'Save',
+    btnSaveHELP:'',
+    btnSaveVALIDATIONERRORTITLE:'Input Error',
+    btnSaveVALIDATIONERRORMESSAGE:'Please check the flagged controls!',
+    btnSaveSENDINGDATATITLE:'Please wait',
+    btnSaveSENDINGDATAMESSAGE:'Data are being sent to the server',
+    btnSaveREQUESTSUCCESSTITLE:'Success',
+    btnSaveREQUESTSUCCESSMESSAGE:'Your application has been successful. You will receive an email with a PDF file. Please print the PDF file, sign it, and send it to us via post',
+    btnSaveREQUESTFAILURETITLE:'Failure',
+    btnSaveREQUESTFAILUREMESSAGE:'Something did not work on the server.',
+    btnCancelLABEL:'Cancel',
+    btnCancelHELP:'',
+    initComponent : function(config) {
+        Ext.apply(this, {
+            frame: true,
+            // monitorValid:true,
+            title: this.pnlContentFORMCAPTION,
+            bodyStyle: 'padding:5px',
+            width: 650,
+            labelWidth: 140,
             items: [{
-            columnWidth:0.5,
-            layout: 'form',
-            border:false,
+                bodyStyle: {
+                margin: '0px 0px 15px 0px'
+            },
             items: [{
-            xtype: 'textfield',
-            fieldLabel: 'First name',
-            allowBlank: false,
-            emptyText:'Please enter first name',
-            name: 'txtFirstName',
-            anchor: '95%'
-            }
-        ]
-            }
-        ,{
-            columnWidth:0.5,
-            labelWidth: 80,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Last Name',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtLastName',
-            anchor: '95%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Street',
-            allowBlank: false,
-            emptyText:'Streetname and house number',
-            name: 'txtStreet',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:.4,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Postcode and City',
-            allowBlank: false,
-            emptyText:'Postcode',
-            name: 'txtPostcode',
-            anchor: '94%'
-            }
-        ]
-            }
-        ,{
-            columnWidth:.6,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'City',
-            hideLabel: true,
-            allowBlank: false,
-            emptyText:'City',
-            name: 'txtCity',
-            anchor: '96.25%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:.6,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Phone',
-            allowBlank: true,
-            emptyText:'',
-            name: 'txtPhone',
-            anchor: '94%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:.6,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            vtype: 'email',
-            fieldLabel: 'Email',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtEmail',
-            anchor: '94%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:.6,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            inputType: 'password',
-            fieldLabel: 'Password',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtPassword',
-            anchor: '94%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:.6,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            vtype: 'password',
-            inputType: 'password',
-            fieldLabel: 'Password Confirm',
-            allowBlank: false,
-            otherPasswordField: 'txtPassword',
-            emptyText:'',
-            name: 'txtPasswordConfirm',
-            anchor: '94%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            xtype: 'fieldset',
-            columnWidth: 1.0,
-            border:false,
-            items: [{
-            xtype: 'radio',
-            boxLabel: 'Pupil',
-            fieldLabel: 'Employment Status',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '97.5%'
-            }
-        ,{
-            xtype: 'radio',
-            checked: true,
-            boxLabel: 'Student',
-            fieldLabel: '',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '97.5%'
-            }
-        ,{
-            xtype: 'radio',
-            boxLabel: 'Unemployed',
-            fieldLabel: '',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '97.5%'
-            }
-        ,{
-            xtype: 'radio',
-            boxLabel: 'Employed',
-            fieldLabel: '',
-            allowBlank: true,
-            name: 'rgrEmploymentStatus',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Degree/Profession',
-            allowBlank: false,
-            emptyText:'Enter your school degree or profession',
-            name: 'txtProfession',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'fieldset',
-            title: 'Bank Details',
-            autoHeight: true,
-            items: [{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'compositefield',
-            fieldLabel: 'Direct Debit Permission',
-            hideLabel: true,
-            items: [{
-            xtype: 'displayfield',
-            hideLabel: true,
-            value: 'Hereby I give permission to xyz to do a direct debit of'
-        }
-        ,{
-            xtype: 'textfield',
-            fieldLabel: 'Conference Fee',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtConferenceFee',
-            anchor: '95%'
-            }
-        ,{
-            xtype: 'displayfield',
-            hideLabel: true,
-            value: 'Euro from this bank account:'
-        }
-        ]
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kontoinhaber',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtKontoinhaber',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kontonummer',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtKontonummer',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Iban',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtIban',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Kreditinstitut',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtKreditinstitut',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Bank Ort',
-            allowBlank: false,
-            emptyText:'',
-            name: 'txtBankOrt',
-            anchor: '97.5%'
-            }
-        ]
-            }
-        ]
-        }
-        ,{
-            layout:'column',
-            border:false,
-            items: [{
-            columnWidth:1,
-            layout: 'form',
-            border:false,
-            items: [{
-            xtype: 'displayfield',
-            hideLabel: true,
-            value: 'After submitting the form, you will print a PDF, and you (and for minors also their parents) have to sign this'
-        }
-        ]
-            }
-        ]
-        }
-        ]
-            }
-        ]
-            }
-        ]
-        }
-        ]}
-
-    var partnerdata = new Ext.FormPanel({
-        frame: true,
-        // monitorValid:true,
-        title: 'partnerdata',
-        bodyStyle: 'padding:5px',
-        width: 650,
-        labelWidth: 140,
-        items: [{
-            bodyStyle: {
-            margin: '0px 0px 15px 0px'
-        },
-        items: ItemsOnForm
-        }],
-    buttons: [{
-text: 'Save'
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:0.5,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtFirstNameLABEL,
+    allowBlank: false,
+    emptyText: this.txtFirstNameHELP,
+    name: 'txtFirstName',
+    anchor: '95%'
+    }
+]
+    }
+,{
+    columnWidth:0.5,
+    labelWidth: 80,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtLastNameLABEL,
+    allowBlank: false,
+    emptyText: this.txtLastNameHELP,
+    name: 'txtLastName',
+    anchor: '95%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtStreetLABEL,
+    allowBlank: false,
+    emptyText: this.txtStreetHELP,
+    name: 'txtStreet',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:.4,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtPostcodeLABEL,
+    allowBlank: false,
+    emptyText: this.txtPostcodeHELP,
+    name: 'txtPostcode',
+    anchor: '94%'
+    }
+]
+    }
+,{
+    columnWidth:.6,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtCityLABEL,
+    hideLabel: true,
+    allowBlank: false,
+    emptyText: this.txtCityHELP,
+    name: 'txtCity',
+    anchor: '96.25%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:.6,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtPhoneLABEL,
+    allowBlank: true,
+    emptyText: this.txtPhoneHELP,
+    name: 'txtPhone',
+    anchor: '94%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:.6,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    vtype: 'email',
+    fieldLabel: this.txtEmailLABEL,
+    allowBlank: false,
+    emptyText: this.txtEmailHELP,
+    name: 'txtEmail',
+    anchor: '94%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:.6,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    inputType: 'password',
+    fieldLabel: this.txtPasswordLABEL,
+    allowBlank: false,
+    emptyText: this.txtPasswordHELP,
+    name: 'txtPassword',
+    anchor: '94%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:.6,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    vtype: 'password',
+    inputType: 'password',
+    fieldLabel: this.txtPasswordConfirmLABEL,
+    allowBlank: false,
+    otherPasswordField: 'txtPassword',
+    emptyText: this.txtPasswordConfirmHELP,
+    name: 'txtPasswordConfirm',
+    anchor: '94%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    xtype: 'fieldset',
+    columnWidth: 1.0,
+    border:false,
+    items: [{
+    xtype: 'radio',
+    boxLabel: this.rbtPupilLABEL,
+    fieldLabel: this.rgrEmploymentStatusLABEL,
+    allowBlank: true,
+    name: 'rgrEmploymentStatus',
+    anchor: '97.5%'
+    }
+,{
+    xtype: 'radio',
+    checked: true,
+    boxLabel: this.rbtStudentLABEL,
+    fieldLabel: '',
+    allowBlank: true,
+    name: 'rgrEmploymentStatus',
+    anchor: '97.5%'
+    }
+,{
+    xtype: 'radio',
+    boxLabel: this.rbtUnemployedLABEL,
+    fieldLabel: '',
+    allowBlank: true,
+    name: 'rgrEmploymentStatus',
+    anchor: '97.5%'
+    }
+,{
+    xtype: 'radio',
+    boxLabel: this.rbtEmployedLABEL,
+    fieldLabel: '',
+    allowBlank: true,
+    name: 'rgrEmploymentStatus',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtProfessionLABEL,
+    allowBlank: false,
+    emptyText: this.txtProfessionHELP,
+    name: 'txtProfession',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'fieldset',
+    title: this.grpBankDetailsLABEL,
+    autoHeight: true,
+    items: [{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'compositefield',
+    fieldLabel: this.cmpDirectDebitPermissionLABEL,
+    hideLabel: true,
+    items: [{
+    xtype: 'displayfield',
+    hideLabel: true,
+    value: this.lblReasonBankDetails1LABEL
+}
+,{
+    xtype: 'textfield',
+    fieldLabel: this.txtConferenceFeeLABEL,
+    allowBlank: false,
+    emptyText: this.txtConferenceFeeHELP,
+    name: 'txtConferenceFee',
+    anchor: '95%'
+    }
+,{
+    xtype: 'displayfield',
+    hideLabel: true,
+    value: this.lblReasonBankDetails2LABEL
+}
+]
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtKontoinhaberLABEL,
+    allowBlank: false,
+    emptyText: this.txtKontoinhaberHELP,
+    name: 'txtKontoinhaber',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtKontonummerLABEL,
+    allowBlank: false,
+    emptyText: this.txtKontonummerHELP,
+    name: 'txtKontonummer',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtIbanLABEL,
+    allowBlank: false,
+    emptyText: this.txtIbanHELP,
+    name: 'txtIban',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtKreditinstitutLABEL,
+    allowBlank: false,
+    emptyText: this.txtKreditinstitutHELP,
+    name: 'txtKreditinstitut',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'textfield',
+    fieldLabel: this.txtBankOrtLABEL,
+    allowBlank: false,
+    emptyText: this.txtBankOrtHELP,
+    name: 'txtBankOrt',
+    anchor: '97.5%'
+    }
+]
+    }
+]
+}
+,{
+    layout:'column',
+    border:false,
+    items: [{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+    xtype: 'displayfield',
+    hideLabel: true,
+    value: this.lblBankDetailsSignatureLABEL
+}
+]
+    }
+]
+}
+]
+    }
+]
+    }
+]
+}
+]
+            }],
+        buttons: [{
+text: this.btnSaveLABEL
 ,formBind: true,
 handler: function () {
     // to display missing/invalid fields
     if (!partnerdata.getForm().isValid())
     {
         Ext.Msg.show({
-            title: '"Input Error"',
-            msg: '"Please check the flagged controls!"',
+            title: this.btnSaveVALIDATIONERRORTITLE,
+            msg: this.btnSaveVALIDATIONERRORMESSAGE,
             modal: true,
             icon: Ext.Msg.ERROR,
             buttons: Ext.Msg.OK
@@ -436,7 +487,7 @@ handler: function () {
     }
     else
     {
-        Ext.MessageBox.wait('"Data are being sent to the server"', '"Please wait"');
+        Ext.MessageBox.wait(this.btnSaveSENDINGDATAMESSAGE, this.btnSaveSENDINGDATATITLE);
 
         Ext.Ajax.request({
             url: '/server.asmx/DataImportFromForm',
@@ -446,8 +497,8 @@ handler: function () {
             },
             success: function () {
                 Ext.Msg.show({
-                    title: '"Success"',
-                    msg: '"Your application has been successful. You will receive an email with a PDF file. Please print the PDF file, sign it, and send it to us via post"',
+                    title: this.btnSaveREQUESTSUCCESSTITLE,
+                    msg: this.btnSaveREQUESTSUCCESSMESSAGE,
                     modal: true,
                     icon: Ext.Msg.INFO,
                     buttons: Ext.Msg.OK
@@ -455,8 +506,8 @@ handler: function () {
             },
             failure: function () {
                 Ext.Msg.show({
-                    title: '"Failure"',
-                    msg: '"Something did not work on the server."',
+                    title: this.btnSaveREQUESTFAILURETITLE,
+                    msg: this.btnSaveREQUESTFAILUREMESSAGE,
                     modal: true,
                     icon: Ext.Msg.ERROR,
                     buttons: Ext.Msg.OK
@@ -467,10 +518,11 @@ handler: function () {
   }
 }
 ,{
-text: 'Cancel'
+text: this.btnCancelLABEL
 }
-]
-    });
 
-    partnerdata.render('partnerdata');
-})
+        ]
+        });
+        partnerdataForm.superclass.initComponent.apply(this, arguments);
+    }
+});

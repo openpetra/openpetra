@@ -123,6 +123,17 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        private ProcessTemplate FLanguageFileTemplate = null;
+
+        public void AddResourceString(ProcessTemplate ACtrlSnippet, string APlaceHolder, TControlDef ACtrl, string AText)
+        {
+            ACtrlSnippet.SetCodelet(APlaceHolder, "this." + ACtrl.controlName + APlaceHolder);
+            FTemplate.AddToCodelet("RESOURCESTRINGS", ACtrl.controlName + APlaceHolder + ":'" + AText + "'," + Environment.NewLine);
+
+            // write to app-lang-en.js file
+            FLanguageFileTemplate.AddToCodelet("RESOURCESTRINGS", ACtrl.controlName + APlaceHolder + ":'" + AText + "'," + Environment.NewLine);
+        }
+
         /// <summary>
         /// default anchor
         /// </summary>
@@ -269,6 +280,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
 
+            AddResourceString(FTemplate, "FORMCAPTION", ctrl, FCodeStorage.FFormTitle);
+
             InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", this);
 
             InsertButtons(ctrl, FTemplate, "BUTTONS", this);
@@ -289,6 +302,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
 
+            FLanguageFileTemplate = FTemplate.GetSnippet("LANGUAGEFILE");
+
             // find the first control that is a panel or groupbox or tab control
             if (FCodeStorage.HasRootControl("content"))
             {
@@ -296,6 +311,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);
+
+            string languagefilepath = Path.GetDirectoryName(AXAMLFilename) + Path.DirectorySeparatorChar +
+                                      Path.GetFileNameWithoutExtension(AXAMLFilename) + "-lang-en.js";
+            File.WriteAllText(languagefilepath, FLanguageFileTemplate.FinishWriting(true));
         }
 
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
@@ -303,6 +322,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
             FTemplate.SetCodelet("LABELWIDTH", "140");
             FTemplate.SetCodelet("FORMNAME", Path.GetFileNameWithoutExtension(AXAMLFilename));
+            FLanguageFileTemplate.SetCodelet("FORMNAME", Path.GetFileNameWithoutExtension(AXAMLFilename));
         }
     }
 }

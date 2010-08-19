@@ -16,7 +16,7 @@ RootNode:
                 Row1: [txtEinsatzort]
                 Row2: [dtpEinsatzbeginn]
                 Row4: [dtpEinsatzdauer]
-                Row5: [txtLong-TermPlans]
+                Row5: [txtLongTermPlans]
                 Row6: [chkGlobalAction]
                 Row6a: [chkGlobalService]
                 Row7: [chkFsj]
@@ -82,7 +82,7 @@ RootNode:
         txtEinsatzort:
         dtpEinsatzbeginn:
         dtpEinsatzdauer:
-        txtLong-TermPlans:
+        txtLongTermPlans:
         chkGlobalAction:
         chkGlobalService:        
         txtFsj:

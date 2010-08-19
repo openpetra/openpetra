@@ -65,7 +65,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate snippetRowDefinition = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
 
-            snippetRowDefinition.SetCodelet("LABEL", ctrl.Label);
+            ((TExtJsFormsWriter)writer).AddResourceString(snippetRowDefinition, "LABEL", ctrl, ctrl.Label);
 
             StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
 
@@ -86,7 +86,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
                     if (ChildControlName == Controls[0])
                     {
-                        ctrlSnippet.SetCodelet("LABEL", ctrl.Label);
+                        ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "LABEL", ctrl, ctrl.Label);
                     }
 
                     snippetRowDefinition.InsertSnippet("ITEMS", ctrlSnippet, ",");

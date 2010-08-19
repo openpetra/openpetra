@@ -1,3 +1,25 @@
+<%@ Page Language="C#" %>
+
+<script runat="server">
+private string GetPreferredLanguage()
+{
+    if (HttpContext.Current.Request.Params["lang"] != null)
+    {
+        return HttpContext.Current.Request.Params["lang"];
+    }
+    
+    try
+    {
+        return HttpContext.Current.Request.UserLanguages[0].Trim().Split(new char[]{'-'})[0];
+    }
+    catch (ArgumentException)
+    {
+    }
+    
+    return "en";
+}
+</script>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
@@ -7,11 +29,11 @@
     <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css"/>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js"></script>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js"></script>
-    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-de.js"></script>
+    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
     
     <script type="text/javascript" src="js/commonOpenPetra.js"></script>
     <script type="text/javascript" src="js/PartnerForms/partnerdata.js"></script>
-    <script type="text/javascript" src="js/PartnerForms/partnerdata-lang-de.js"></script>
+    <script type="text/javascript" src="js/PartnerForms/partnerdata-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
     <script type="text/javascript" src="js/partnerdata.js"></script>
     <script type="text/javascript" src="js/PartnerForms/inquiry.js"></script>
 
@@ -30,7 +52,8 @@
 
         });
     -->
-</script>
+</script>    
+
     <style type="text/css">
     <!--
     body {

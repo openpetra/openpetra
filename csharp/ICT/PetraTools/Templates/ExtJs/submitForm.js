@@ -1,37 +1,26 @@
-Ext.onReady(function(){
-    Ext.QuickTips.init();
-
-    // use our own blank image to avoid a call home
-    // Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
+{#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
+    {#RESOURCESTRINGS}
+    initComponent : function(config) {
+        Ext.apply(this, {    
+            frame: true,
+            // monitorValid:true,
+            title: {#FORMCAPTION},
+            bodyStyle: 'padding:5px',
+            width: {#FORMWIDTH},
+            labelWidth: {#LABELWIDTH},
+            items: [{
+                bodyStyle: {
+                margin: '0px 0px 15px 0px'
+            },
+            items: [{#FORMITEMSDEFINITION}]
+            }],
+        buttons: [{#BUTTONS}
+        ]
+        });
+        {#FORMNAME}Form.superclass.initComponent.apply(this, arguments);
+    }
+});
     
-    Ext.form.Field.prototype.msgTarget = 'side';
-
-    CreateCustomValidationTypePassword();
-
-    var ItemsOnForm = {
-    items:[
-        {#FORMITEMSDEFINITION}
-        ]}
-    
-    var {#FORMNAME} = new Ext.FormPanel({
-        frame: true,
-        // monitorValid:true,
-        title: '{#FORMNAME}',
-        bodyStyle: 'padding:5px',
-        width: {#FORMWIDTH},
-        labelWidth: {#LABELWIDTH},
-        items: [{
-            bodyStyle: {
-            margin: '0px 0px 15px 0px'
-        },
-        items: ItemsOnForm
-        }],
-    buttons: [{#BUTTONS}]
-    });
-    
-    {#FORMNAME}.render('{#FORMNAME}');
-})
-
 {##ROWDEFINITION}
 {
     layout:'column',
@@ -61,7 +50,7 @@ Ext.onReady(function(){
 {##GROUPBOXDEFINITION}
 {
     xtype: 'fieldset',
-    title: '{#LABEL}',
+    title: {#LABEL},
     autoHeight: true,
     items: [{#ITEMS}]
     }
@@ -69,7 +58,7 @@ Ext.onReady(function(){
 {##COMPOSITEDEFINITION}
 {
     xtype: 'compositefield',
-    fieldLabel: '{#LABEL}',
+    fieldLabel: {#LABEL},
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
@@ -85,7 +74,7 @@ Ext.onReady(function(){
 {#IFDEF INPUTTYPE}
     inputType: '{#INPUTTYPE}',
 {#ENDIF INPUTTYPE}    
-    fieldLabel: '{#LABEL}',
+    fieldLabel: {#LABEL},
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
@@ -111,7 +100,7 @@ Ext.onReady(function(){
     width: {#WIDTH},
 {#ENDIF WIDTH}
     {#CUSTOMATTRIBUTES}
-    emptyText:'{#HELP}',
+    emptyText: {#HELP},
     name: '{#ITEMNAME}',
     anchor: '{#ANCHOR}'
     }
@@ -120,7 +109,7 @@ Ext.onReady(function(){
 {
     xtype: '{#XTYPE}',
     hideLabel: true,
-    value: '{#LABEL}'
+    value: {#LABEL}
 }
 
 {##CHECKBOXDEFINITION}
@@ -133,9 +122,9 @@ Ext.onReady(function(){
     checked: {#CHECKED},
 {#ENDIF CHECKED}
 {#IFDEF BOXLABEL}
-    boxLabel: '{#BOXLABEL}',
+    boxLabel: {#BOXLABEL},
 {#ENDIF BOXLABEL}
-    fieldLabel: '{#LABEL}',
+    fieldLabel: {#LABEL},
 {#IFDEF ALLOWBLANK}
     allowBlank: {#ALLOWBLANK},
 {#ENDIF ALLOWBLANK}
@@ -151,7 +140,7 @@ Ext.onReady(function(){
 
 {##SUBMITBUTTONDEFINITION}
 {
-text: '{#LABEL}'
+text: {#LABEL}
 {#IFDEF REQUESTURL}
 ,formBind: true,
 handler: function () {
@@ -159,8 +148,8 @@ handler: function () {
     if (!{#FORMNAME}.getForm().isValid())
     {
         Ext.Msg.show({
-            title: '{#VALIDATIONERRORTITLE}',
-            msg: '{#VALIDATIONERRORMESSAGE}',
+            title: {#VALIDATIONERRORTITLE},
+            msg: {#VALIDATIONERRORMESSAGE},
             modal: true,
             icon: Ext.Msg.ERROR,
             buttons: Ext.Msg.OK
@@ -168,7 +157,7 @@ handler: function () {
     }
     else
     {
-        Ext.MessageBox.wait('{#SENDINGDATAMESSAGE}', '{#SENDINGDATATITLE}');
+        Ext.MessageBox.wait({#SENDINGDATAMESSAGE}, {#SENDINGDATATITLE});
 
         Ext.Ajax.request({
             url: '/server.asmx/{#REQUESTURL}',
@@ -178,8 +167,8 @@ handler: function () {
             },
             success: function () {
                 Ext.Msg.show({
-                    title: '{#REQUESTSUCCESSTITLE}',
-                    msg: '{#REQUESTSUCCESSMESSAGE}',
+                    title: {#REQUESTSUCCESSTITLE},
+                    msg: {#REQUESTSUCCESSMESSAGE},
                     modal: true,
                     icon: Ext.Msg.INFO,
                     buttons: Ext.Msg.OK
@@ -187,8 +176,8 @@ handler: function () {
             },
             failure: function () {
                 Ext.Msg.show({
-                    title: '{#REQUESTFAILURETITLE}',
-                    msg: '{#REQUESTFAILUREMESSAGE}',
+                    title: {#REQUESTFAILURETITLE},
+                    msg: {#REQUESTFAILUREMESSAGE},
                     modal: true,
                     icon: Ext.Msg.ERROR,
                     buttons: Ext.Msg.OK
@@ -198,4 +187,11 @@ handler: function () {
     }
   }    
 {#ENDIF REQUESTURL}
+}
+
+{##LANGUAGEFILE}
+if({#FORMNAME}Form) {
+    Ext.apply({#FORMNAME}Form.prototype, {
+    {#RESOURCESTRINGS}
+   });
 }

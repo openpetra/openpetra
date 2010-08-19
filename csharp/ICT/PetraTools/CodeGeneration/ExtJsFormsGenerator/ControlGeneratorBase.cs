@@ -141,8 +141,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
             snippetControl.SetCodelet("XTYPE", FControlType);
-            snippetControl.SetCodelet("LABEL", ACtrl.Label);
-            snippetControl.SetCodelet("HELP", ACtrl.GetAttribute("Help"));
+            ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "LABEL", ACtrl, ACtrl.Label);
+            ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "HELP", ACtrl, ACtrl.GetAttribute("Help"));
 
             if (ACtrl.HasAttribute("allowBlank"))
             {

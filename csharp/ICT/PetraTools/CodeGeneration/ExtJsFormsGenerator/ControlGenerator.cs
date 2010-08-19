@@ -67,14 +67,17 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            ctrlSnippet.SetCodelet("VALIDATIONERRORTITLE", ctrl.GetAttribute("ValidationErrorTitle"));
-            ctrlSnippet.SetCodelet("VALIDATIONERRORMESSAGE", ctrl.GetAttribute("ValidationErrorMessage"));
-            ctrlSnippet.SetCodelet("SENDINGDATATITLE", ctrl.GetAttribute("SendingMessageTitle"));
-            ctrlSnippet.SetCodelet("SENDINGDATAMESSAGE", ctrl.GetAttribute("SendingMessage"));
-            ctrlSnippet.SetCodelet("REQUESTSUCCESSTITLE", ctrl.GetAttribute("SuccessMessageTitle"));
-            ctrlSnippet.SetCodelet("REQUESTSUCCESSMESSAGE", ctrl.GetAttribute("SuccessMessage"));
-            ctrlSnippet.SetCodelet("REQUESTFAILURETITLE", ctrl.GetAttribute("FailureMessageTitle"));
-            ctrlSnippet.SetCodelet("REQUESTFAILUREMESSAGE", ctrl.GetAttribute("FailureMessage"));
+            if (ctrl.HasAttribute("AjaxRequestUrl"))
+            {
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORTITLE", ctrl, ctrl.GetAttribute("ValidationErrorTitle"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORMESSAGE", ctrl, ctrl.GetAttribute("ValidationErrorMessage"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATATITLE", ctrl, ctrl.GetAttribute("SendingMessageTitle"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATAMESSAGE", ctrl, ctrl.GetAttribute("SendingMessage"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSTITLE", ctrl, ctrl.GetAttribute("SuccessMessageTitle"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSMESSAGE", ctrl, ctrl.GetAttribute("SuccessMessage"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILURETITLE", ctrl, ctrl.GetAttribute("FailureMessageTitle"));
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILUREMESSAGE", ctrl, ctrl.GetAttribute("FailureMessage"));
+            }
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
 
@@ -121,7 +124,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
 
             ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
-            ctrlSnippet.SetCodelet("LABEL", "");
+            ctrlSnippet.SetCodelet("LABEL", "''");
 
             return ctrlSnippet;
         }
