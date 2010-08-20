@@ -165,19 +165,19 @@
       <Project>{B2C1226E-B8B1-44E5-9BBB-D8C4CB620B00}</Project>
       <Name>Ict.Petra.Client.MConference.Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\lib\MFinance\Gui\AP\Ict.Petra.Client.MFinance.Gui.AP.csproj">
+    <ProjectReference Include="..\..\lib\MFinance\gui\AP\Ict.Petra.Client.MFinance.Gui.AP.csproj">
       <Project>{CF799F57-0C78-4FAB-B9FE-985D6EB184D3}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui.AP</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\lib\MFinance\Gui\Common\Ict.Petra.Client.MFinance.Gui.Common.csproj">
+    <ProjectReference Include="..\..\lib\MFinance\gui\Common\Ict.Petra.Client.MFinance.Gui.Common.csproj">
       <Project>{99EB38F7-5CF9-48DE-B944-D2A9B60DACF5}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\lib\MFinance\Gui\Gift\Ict.Petra.Client.MFinance.Gui.Gift.csproj">
+    <ProjectReference Include="..\..\lib\MFinance\gui\Gift\Ict.Petra.Client.MFinance.Gui.Gift.csproj">
       <Project>{8392E7BD-7533-4C34-BFFC-30C310DEE447}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui.Gift</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\lib\MFinance\Gui\GL\Ict.Petra.Client.MFinance.Gui.GL.csproj">
+    <ProjectReference Include="..\..\lib\MFinance\gui\GL\Ict.Petra.Client.MFinance.Gui.GL.csproj">
       <Project>{F597DDD3-2705-40EE-9721-D082D3EFB7AE}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui.GL</Name>
     </ProjectReference>

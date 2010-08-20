@@ -70,13 +70,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MConferenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MPersonnel.Gui.Setup", "Petra\Client\lib\MPersonnel\gui\setup\Ict.Petra.Client.MPersonnel.Gui.Setup.csproj", "{34FF59D0-55BE-408F-9849-7177F88C08E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.Gift", "Petra\Client\lib\MFinance\Gui\Gift\Ict.Petra.Client.MFinance.Gui.Gift.csproj", "{8392E7BD-7533-4C34-BFFC-30C310DEE447}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.Gift", "Petra\Client\lib\MFinance\gui\Gift\Ict.Petra.Client.MFinance.Gui.Gift.csproj", "{8392E7BD-7533-4C34-BFFC-30C310DEE447}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.GL", "Petra\Client\lib\MFinance\Gui\GL\Ict.Petra.Client.MFinance.Gui.GL.csproj", "{F597DDD3-2705-40EE-9721-D082D3EFB7AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.GL", "Petra\Client\lib\MFinance\gui\GL\Ict.Petra.Client.MFinance.Gui.GL.csproj", "{F597DDD3-2705-40EE-9721-D082D3EFB7AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.AP", "Petra\Client\lib\MFinance\Gui\AP\Ict.Petra.Client.MFinance.Gui.AP.csproj", "{CF799F57-0C78-4FAB-B9FE-985D6EB184D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.AP", "Petra\Client\lib\MFinance\gui\AP\Ict.Petra.Client.MFinance.Gui.AP.csproj", "{CF799F57-0C78-4FAB-B9FE-985D6EB184D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.Common", "Petra\Client\lib\MFinance\Gui\Common\Ict.Petra.Client.MFinance.Gui.Common.csproj", "{99EB38F7-5CF9-48DE-B944-D2A9B60DACF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.Common", "Petra\Client\lib\MFinance\gui\Common\Ict.Petra.Client.MFinance.Gui.Common.csproj", "{99EB38F7-5CF9-48DE-B944-D2A9B60DACF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
