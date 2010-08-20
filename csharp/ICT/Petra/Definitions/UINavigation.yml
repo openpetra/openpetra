@@ -87,33 +87,33 @@ OpenPetra:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
-            GiftProcessing:
+            GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
                 SearchBoxes: [Donor, Recipient]
                 Main:
                     GiftEntry:
-                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, ActionOpenScreen=TFrmBankStatementImport}
-                        GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=Gift.TFrmGiftBatch}
+                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                        GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=TFrmGiftBatch}
                         #AddGifts:
                         #ImportGifts:
                         #EditExistingGifts:
                         #EditLastUnpostedGiftBatch:
                         #PostGiftBatch:
                     GiftReceipting:
-                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=Gift.TFrmGiftReceiptPrinting}
+                        PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
                         #PrintSingleReceipt:
                     FormLetters:
-                        PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=Gift.TFrmGiftNewDonorLetter}
+                        PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                     Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
-            AccountsPayable:
+            AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                 Main:
-                    AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=AccountsPayable.TFrmAPMain}
-            GeneralLedger:
+                    AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
+            GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                 Main:
                     SearchBoxes: [Transaction, Batch]
                     General:
-                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, ActionOpenScreen=TFrmBankStatementImport}
-                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=GL.TFrmGLBatch}
+                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:

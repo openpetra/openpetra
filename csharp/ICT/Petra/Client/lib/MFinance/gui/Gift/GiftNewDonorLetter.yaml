@@ -1,5 +1,5 @@
 ﻿RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: Subscriptions for new Donors
     Comment: this screen allows to send letters to new donors to tell them that they will receive a free newsletter/magazine
     # TODO: extend to send small amount (a few cents) to donors with incomplete address and tell them to contact us

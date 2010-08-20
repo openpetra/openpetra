@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPPayment
     {

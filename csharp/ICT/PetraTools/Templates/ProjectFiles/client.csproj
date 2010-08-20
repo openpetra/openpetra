@@ -21,7 +21,7 @@
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE;SHOWCHANGES</DefineConstants>
-    <IntermediateOutputPath>{#SOLUTIONHOME}/_bin/Debug/</IntermediateOutputPath>
+    <IntermediateOutputPath>{#SOLUTIONHOME}/_bin/Debug\</IntermediateOutputPath>
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -31,7 +31,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>False</Optimize>
-    <IntermediateOutputPath>{#SOLUTIONHOME}/_bin/Release/</IntermediateOutputPath>
+    <IntermediateOutputPath>{#SOLUTIONHOME}/_bin/Release\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

@@ -43,7 +43,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.AP.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
 
   /// auto generated: AP Supplier Edit

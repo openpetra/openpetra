@@ -41,7 +41,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPMain
     {

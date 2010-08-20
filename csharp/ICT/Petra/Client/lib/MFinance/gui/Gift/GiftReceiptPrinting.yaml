@@ -1,5 +1,5 @@
 ﻿RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: Print Annual Gift Receipts
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     FormType: browse

@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.Common
 {
     /// manual methods for the generated window
     public partial class TFrmBankStatementImport

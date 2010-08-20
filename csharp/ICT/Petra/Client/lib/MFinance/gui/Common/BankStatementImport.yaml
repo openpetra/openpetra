@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: Import Bank Statements
-    Namespace: Ict.Petra.Client.MFinance.Gui
+    Namespace: Ict.Petra.Client.MFinance.Gui.Common
     FormType: browse
     Template: window
     WindowWidth: 754

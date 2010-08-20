@@ -28,7 +28,7 @@ using System.Data;
 using Mono.Unix;
 using Ict.Petra.Client.MFinance.Logic;
 
-namespace Ict.Petra.Client.MFinance.Gui
+namespace Ict.Petra.Client.MFinance.Gui.Common
 {
     /// <summary>
     /// Select the ledger to work with

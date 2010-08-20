@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: Accounts Payable
-    Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP
     FormType: browse
     Template: windowFind
     WindowWidth: 754

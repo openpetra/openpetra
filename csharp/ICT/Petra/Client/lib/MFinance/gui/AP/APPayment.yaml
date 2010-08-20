@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraForm.yaml
     FormTitle: AP Payment
-    Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApSupplier
     DetailTable: AApDocumentPayment
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS

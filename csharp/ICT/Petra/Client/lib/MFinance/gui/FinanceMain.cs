@@ -274,7 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     protected void OpenScreenImportBankStatements(object sender, EventArgs e)
     {
-        Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport frm = new Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport(this.Handle);
+        Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport frm = new Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport(this.Handle);
         frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     /// auto generated
     protected void OpenScreenAccountsPayable(object sender, EventArgs e)
     {
-        Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain frm = new Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain(this.Handle);
+        Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain frm = new Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain(this.Handle);
         frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }

@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Document Edit
-    Namespace: Ict.Petra.Client.MFinance.Gui.AccountsPayable
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApDocument
     DetailTable: AApDocumentDetail
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS

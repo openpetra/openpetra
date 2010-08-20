@@ -43,7 +43,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MFinance.Logic;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditSupplier
     {

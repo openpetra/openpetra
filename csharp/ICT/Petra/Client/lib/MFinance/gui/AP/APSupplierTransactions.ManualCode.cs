@@ -42,7 +42,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Gui.GL;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPSupplierTransactions
     {

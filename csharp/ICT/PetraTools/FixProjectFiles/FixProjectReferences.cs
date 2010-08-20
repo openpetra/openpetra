@@ -101,6 +101,17 @@ public class TFixProjectReferences : TCSProjTools
                         containsTargetPlatform = true;
                         child2.InnerText = "v2.0";
                     }
+
+                    if (child2.Name == "IntermediateOutputPath")
+                    {
+                        // it seems we get problems with "unreferenced" resource files.
+                        // looking at such a dll with Reflector, there is a strange relative path to the resource file.
+                        // the trailing backslash prevents this
+                        if (!child2.InnerText.EndsWith("\\") && AFilename.Contains("/Client/"))
+                        {
+                            child2.InnerText = child2.InnerText.Substring(0, child2.InnerText.Length - 1) + "\\";
+                        }
+                    }
                 }
 
                 if (firstPropertyGroup && !containsTargetPlatform)

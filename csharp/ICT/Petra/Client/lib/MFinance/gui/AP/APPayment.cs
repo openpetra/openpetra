@@ -41,7 +41,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
 
   /// auto generated: AP Payment

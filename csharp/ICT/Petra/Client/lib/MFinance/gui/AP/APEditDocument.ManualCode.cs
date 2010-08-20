@@ -35,7 +35,7 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 
-namespace Ict.Petra.Client.MFinance.Gui.AccountsPayable
+namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {

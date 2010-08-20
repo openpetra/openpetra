@@ -40,7 +40,7 @@ RootNode:
            mniSeparator: {Label=-}
            mniGiftReceipting:
                Label: &Gift Receipting
-               mniImportBankStatements: {Label=Import &Bank statements, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.TFrmBankStatementImport}
+               mniImportBankStatements: {Label=Import &Bank statements, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport}
                mniGiftBatch: {Label=&Gift Batch}
                mniRecurringGiftBatch: {Label=&Recurring Gift Batch}
                mniSeparator: {Label=-}
@@ -48,7 +48,7 @@ RootNode:
                mniGiftExport: {Label=Gift E&xport}
                mniSeparator: {Label=-}
                mniGiftReceipts: {Label=&Print Receipts}
-           mniAccountsPayable: {Label=&Accounts Payable, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.AccountsPayable.TFrmAPMain}
+           mniAccountsPayable: {Label=&Accounts Payable, ActionOpenScreen=Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain}
            mniBudget: {Label=&Budget}
            mniClearingHouse:
                Label: &Clearing House
