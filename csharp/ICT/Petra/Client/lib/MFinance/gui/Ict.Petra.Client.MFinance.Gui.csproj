@@ -48,9 +48,6 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Common.Printing">
-      <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Printing.dll</HintPath>
-    </Reference>
     <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
@@ -162,53 +159,27 @@
       <Project>{45767519-3EC2-4143-B0CC-252033363D35}</Project>
       <Name>Ict.Petra.Client.MFinance.Logic</Name>
     </ProjectReference>
+    <ProjectReference Include="AP\Ict.Petra.Client.MFinance.Gui.AP.csproj">
+      <Project>{CF799F57-0C78-4FAB-B9FE-985D6EB184D3}</Project>
+      <Name>Ict.Petra.Client.MFinance.Gui.AP</Name>
+    </ProjectReference>
+    <ProjectReference Include="Common\Ict.Petra.Client.MFinance.Gui.Common.csproj">
+      <Project>{99EB38F7-5CF9-48DE-B944-D2A9B60DACF5}</Project>
+      <Name>Ict.Petra.Client.MFinance.Gui.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="Gift\Ict.Petra.Client.MFinance.Gui.Gift.csproj">
+      <Project>{8392E7BD-7533-4C34-BFFC-30C310DEE447}</Project>
+      <Name>Ict.Petra.Client.MFinance.Gui.Gift</Name>
+    </ProjectReference>
+    <ProjectReference Include="GL\Ict.Petra.Client.MFinance.Gui.GL.csproj">
+      <Project>{F597DDD3-2705-40EE-9721-D082D3EFB7AE}</Project>
+      <Name>Ict.Petra.Client.MFinance.Gui.GL</Name>
+    </ProjectReference>
     <ProjectReference Include="setup\Ict.Petra.Client.MFinance.Gui.Setup.csproj">
       <Project>{AFEFBB50-D2A7-4CA2-A513-1FDA1F3156C6}</Project>
       <Name>Ict.Petra.Client.MFinance.Gui.Setup</Name>
     </ProjectReference>
-    <Compile Include="APEditDocument.cs" />
-    <Compile Include="APEditDocument.Designer.cs">
-      <DependentUpon>APEditDocument.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APEditDocument.ManualCode.cs">
-      <DependentUpon>APEditDocument.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APEditSupplier.cs" />
-    <Compile Include="APEditSupplier.Designer.cs">
-      <DependentUpon>APEditSupplier.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APEditSupplier.ManualCode.cs">
-      <DependentUpon>APEditSupplier.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APMain.cs" />
-    <Compile Include="APMain.Designer.cs">
-      <DependentUpon>APMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APMain.ManualCode.cs">
-      <DependentUpon>APMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APPayment.cs" />
-    <Compile Include="APPayment.Designer.cs">
-      <DependentUpon>APPayment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APPayment.ManualCode.cs">
-      <DependentUpon>APPayment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APSupplierTransactions.cs" />
-    <Compile Include="APSupplierTransactions.Designer.cs">
-      <DependentUpon>APSupplierTransactions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="APSupplierTransactions.ManualCode.cs">
-      <DependentUpon>APSupplierTransactions.cs</DependentUpon>
-    </Compile>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="BankStatementImport.cs" />
-    <Compile Include="BankStatementImport.Designer.cs">
-      <DependentUpon>BankStatementImport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BankStatementImport.ManualCode.cs">
-      <DependentUpon>BankStatementImport.cs</DependentUpon>
-    </Compile>
     <Compile Include="FinanceMain.cs" />
     <Compile Include="FinanceMain.Designer.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
@@ -216,143 +187,8 @@
     <Compile Include="FinanceMain.ManualCode.cs">
       <DependentUpon>FinanceMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="GiftBatch.cs" />
-    <Compile Include="GiftBatch.Designer.cs">
-      <DependentUpon>GiftBatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftBatch.ManualCode.cs">
-      <DependentUpon>GiftBatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftFieldAdjustment.cs" />
-    <Compile Include="GiftFieldAdjustment.Designer.cs">
-      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftFieldAdjustment.ManualCode.cs">
-      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftNewDonorLetter.cs" />
-    <Compile Include="GiftNewDonorLetter.Designer.cs">
-      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftNewDonorLetter.ManualCode.cs">
-      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftReceiptPrinting.cs" />
-    <Compile Include="GiftReceiptPrinting.Designer.cs">
-      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GiftReceiptPrinting.ManualCode.cs">
-      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GLBatch.cs" />
-    <Compile Include="GLBatch.Designer.cs">
-      <DependentUpon>GLBatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GLBatch.ManualCode.cs">
-      <DependentUpon>GLBatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GLEnterDateEffective.cs" />
-    <Compile Include="GLEnterDateEffective.Designer.cs">
-      <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LedgerSelection.cs" />
-    <Compile Include="LedgerSelection.Designer.cs">
-      <DependentUpon>LedgerSelection.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GiftBatches.cs" />
-    <Compile Include="UC_GiftBatches.Designer.cs">
-      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GiftBatches.ManualCode.cs">
-      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GiftTransactions.cs" />
-    <Compile Include="UC_GiftTransactions.Designer.cs">
-      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GiftTransactions.ManualCode.cs">
-      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLBatches.cs" />
-    <Compile Include="UC_GLBatches.Designer.cs">
-      <DependentUpon>UC_GLBatches.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLBatches.Import.cs">
-      <DependentUpon>UC_GLBatches.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLBatches.ManualCode.cs">
-      <DependentUpon>UC_GLBatches.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLJournals.cs" />
-    <Compile Include="UC_GLJournals.Designer.cs">
-      <DependentUpon>UC_GLJournals.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLJournals.ManualCode.cs">
-      <DependentUpon>UC_GLJournals.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLTransactions.cs" />
-    <Compile Include="UC_GLTransactions.Designer.cs">
-      <DependentUpon>UC_GLTransactions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UC_GLTransactions.ManualCode.cs">
-      <DependentUpon>UC_GLTransactions.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="APEditDocument.resx">
-      <DependentUpon>APEditDocument.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="APEditSupplier.resx">
-      <DependentUpon>APEditSupplier.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="APMain.resx">
-      <DependentUpon>APMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="APPayment.resx">
-      <DependentUpon>APPayment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="APSupplierTransactions.resx">
-      <DependentUpon>APSupplierTransactions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BankStatementImport.resx">
-      <DependentUpon>BankStatementImport.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FinanceMain.resx">
       <DependentUpon>FinanceMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GiftBatch.resx">
-      <DependentUpon>GiftBatch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GiftFieldAdjustment.resx">
-      <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GiftNewDonorLetter.resx">
-      <DependentUpon>GiftNewDonorLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GiftReceiptPrinting.resx">
-      <DependentUpon>GiftReceiptPrinting.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GLBatch.resx">
-      <DependentUpon>GLBatch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GLEnterDateEffective.resx">
-      <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LedgerSelection.resx">
-      <DependentUpon>LedgerSelection.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_GiftBatches.resx">
-      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_GiftTransactions.resx">
-      <DependentUpon>UC_GiftTransactions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_GLBatches.resx">
-      <DependentUpon>UC_GLBatches.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_GLJournals.resx">
-      <DependentUpon>UC_GLJournals.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UC_GLTransactions.resx">
-      <DependentUpon>UC_GLTransactions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
