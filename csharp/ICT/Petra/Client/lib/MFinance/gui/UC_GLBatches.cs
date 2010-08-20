@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.rbtAll.Text = Catalog.GetString("All");
       this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
       this.btnNew.Text = Catalog.GetString("&Add");
-      this.btnDelete.Text = Catalog.GetString("&Cancel");
+      this.btnCancel.Text = Catalog.GetString("&Cancel");
       this.btnPostBatch.Text = Catalog.GetString("&Post Batch");
       this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
       this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
@@ -327,9 +327,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnNew.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actDelete")
+        if (e.ActionName == "actCancel")
         {
-            btnDelete.Enabled = e.Enabled;
+            btnCancel.Enabled = e.Enabled;
         }
         if (e.ActionName == "actPostBatch")
         {

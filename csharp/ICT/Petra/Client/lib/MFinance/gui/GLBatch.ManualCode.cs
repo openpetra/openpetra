@@ -123,6 +123,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// directly access the batches control
+        /// </summary>
+        public TUC_GLBatches GetBatchControl()
+        {
+            return ucoBatches;
+        }
+
+        /// <summary>
         /// directly access the journals control
         /// </summary>
         public TUC_GLJournals GetJournalsControl()
@@ -130,7 +138,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ucoJournals;
         }
 
+        /// <summary>
         /// directly access the transactions control
+        /// </summary>
         public TUC_GLTransactions GetTransactionsControl()
         {
             return ucoTransactions;

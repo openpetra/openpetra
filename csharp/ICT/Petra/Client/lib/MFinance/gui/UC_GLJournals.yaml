@@ -9,9 +9,9 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actRemove:
-            Label: &Remove
-            ActionClick: RemoveRow
+        actCancel:
+            Label: &Cancel
+            ActionClick: CancelRow
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -27,9 +27,9 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAdd, btnRemove]
+            Controls: [btnAdd, btnCancel]
         btnAdd: {Action=actNew}
-        btnRemove: {Action=actRemove}
+        btnCancel: {Action=actCancel}
         grdDetails:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]

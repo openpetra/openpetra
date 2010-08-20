@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Cancel, ActionClick=CancelRow}
+        actCancel: {Label=&Cancel, ActionClick=CancelRow}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
@@ -34,9 +34,9 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete, btnPostBatch]
+            Controls: [btnNew, btnCancel, btnPostBatch]
         btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnCancel: {Action=actCancel}
         btnPostBatch: {Action=actPostBatch}
         grdDetails:
             Dock: Fill

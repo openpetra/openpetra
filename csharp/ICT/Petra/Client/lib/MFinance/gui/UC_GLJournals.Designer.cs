@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnAdd = new System.Windows.Forms.Button();
-            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailJournalDescription = new System.Windows.Forms.TextBox();
@@ -209,20 +209,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnAdd.Click += new System.EventHandler(this.NewRow);
             this.btnAdd.Text = "&Add";
             //
-            // btnRemove
+            // btnCancel
             //
-            this.btnRemove.Location = new System.Drawing.Point(2,2);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.AutoSize = true;
-            this.btnRemove.Click += new System.EventHandler(this.RemoveRow);
-            this.btnRemove.Text = "&Remove";
+            this.btnCancel.Location = new System.Drawing.Point(2,2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.AutoSize = true;
+            this.btnCancel.Click += new System.EventHandler(this.CancelRow);
+            this.btnCancel.Text = "&Cancel";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.btnAdd, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnRemove, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.btnCancel, 0, 1);
             //
             // pnlDetails
             //
@@ -397,7 +397,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Panel pnlDetailButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnRemove;
+        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtDetailJournalDescription;

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
@@ -61,6 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPreviouslySelectedDetailRow = null;
 
             DataView view = new DataView(FMainDS.ATransaction);
+            view.RowStateFilter = DataViewRowState.CurrentRows | DataViewRowState.Deleted;
 
             // only load from server if there are no transactions loaded yet for this journal
             // otherwise we would overwrite transactions that have already been modified
@@ -276,25 +278,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                || (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have choosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
+                            FPreviouslySelectedDetailRow.TransactionNumber), Catalog.GetString("Confirm Delete"),
+                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
 
-            if (rowIndex == grdDetails.Rows.Count)
-            {
-                rowIndex--;
-            }
+                if (rowIndex == grdDetails.Rows.Count)
+                {
+                    rowIndex--;
+                }
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                if (grdDetails.Rows.Count > 1)
+                {
+                    grdDetails.Selection.SelectRow(rowIndex, true);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow = null;
+                }
             }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
+        }
+
+        /// <summary>
+        /// clear the current selection
+        /// </summary>
+        public void ClearCurrentSelection()
+        {
+            this.FPreviouslySelectedDetailRow = null;
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnNew = new System.Windows.Forms.Button();
-            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.btnPostBatch = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
@@ -275,13 +275,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnNew.Click += new System.EventHandler(this.NewRow);
             this.btnNew.Text = "&Add";
             //
-            // btnDelete
+            // btnCancel
             //
-            this.btnDelete.Location = new System.Drawing.Point(2,2);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.AutoSize = true;
-            this.btnDelete.Click += new System.EventHandler(this.CancelRow);
-            this.btnDelete.Text = "&Cancel";
+            this.btnCancel.Location = new System.Drawing.Point(2,2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.AutoSize = true;
+            this.btnCancel.Click += new System.EventHandler(this.CancelRow);
+            this.btnCancel.Text = "&Cancel";
             //
             // btnPostBatch
             //
@@ -297,7 +297,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.Controls.Add(this.btnNew, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.btnDelete, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.btnCancel, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.btnPostBatch, 0, 2);
             //
             // pnlDetails
@@ -506,7 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Panel pnlDetailButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button btnNew;
-        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnPostBatch;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;

@@ -1042,49 +1042,63 @@ namespace Ict.Petra.Server.MFinance.GL
                 return false;
             }
 
-            foreach (AJournalRow journal in AMainDS.AJournal.Rows)
-            {
-                journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-            }
+//            foreach (ATransactionRow transaction in AMainDS.ATransaction.Rows)
+//            {
+//              transaction.Delete();
+//            }
+//            foreach (AJournalRow journal in AMainDS.AJournal.Rows)
+//            {
+//                journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+//                journal.JournalCreditTotal =0;
+//                journal.JournalDebitTotal =0;
+//            }
+//
+//            AMainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+//            AMainDS.ABatch[0].BatchCreditTotal =0;
+//            AMainDS.ABatch[0].BatchDebitTotal =0;
+//            AMainDS.ABatch[0].BatchControlTotal =0;
 
-            AMainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                ABatchAccess.SubmitChanges(AMainDS.ABatch, Transaction, out AVerifications);
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
-                if (AVerifications.HasCriticalError())
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
-                else
-                {
-                    AJournalAccess.SubmitChanges(AMainDS.AJournal, Transaction, out AVerifications);
-
-                    if (AVerifications.HasCriticalError())
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                AVerifications = new TVerificationResultCollection();
-                AVerifications.Add(new TVerificationResult("error during cancel", e.Message, TResultSeverity.Resv_Critical));
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
-
-            if (AVerifications.HasCriticalError())
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
-
-            DBAccess.GDBAccessObj.CommitTransaction();
-            AMainDS.AcceptChanges();
+            /*
+             * try
+             * {
+             *  TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+             *  ABatchAccess.SubmitChanges(AMainDS.ABatch, Transaction, out AVerifications);
+             *
+             *  if (AVerifications.HasCriticalError())
+             *  {
+             *      DBAccess.GDBAccessObj.RollbackTransaction();
+             *      return false;
+             *  }
+             *  else
+             *  {
+             *      AJournalAccess.SubmitChanges(AMainDS.AJournal, Transaction, out AVerifications);
+             *
+             *      if (AVerifications.HasCriticalError())
+             *      {
+             *          DBAccess.GDBAccessObj.RollbackTransaction();
+             *          return false;
+             *      }
+             *  }
+             * }
+             * catch (Exception e)
+             * {
+             *  AVerifications = new TVerificationResultCollection();
+             *  AVerifications.Add(new TVerificationResult("error during cancel", e.Message, TResultSeverity.Resv_Critical));
+             *  TLogging.Log(e.Message);
+             *  TLogging.Log(e.StackTrace);
+             * }
+             *
+             * if (AVerifications.HasCriticalError())
+             * {
+             *  DBAccess.GDBAccessObj.RollbackTransaction();
+             *  return false;
+             * }
+             *
+             * DBAccess.GDBAccessObj.CommitTransaction();
+             * AMainDS.AcceptChanges();
+             */
             return true;
         }
     }

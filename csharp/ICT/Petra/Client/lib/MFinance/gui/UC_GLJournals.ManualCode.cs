@@ -23,9 +23,11 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -53,8 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
 
-            this.btnAdd.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-            this.btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
             FPreviouslySelectedDetailRow = null;
 
@@ -70,6 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
+            updateChangeableStatus();
         }
 
         /// <summary>
@@ -83,6 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
+            updateChangeableStatus();
+
             if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
@@ -152,37 +155,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void updateChangeableStatus()
+        {
+            this.btnAdd.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
+                                 && (FPreviouslySelectedDetailRow != null)
+                                 && (FPreviouslySelectedDetailRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+            this.btnCancel.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
+        }
+
+        /// <summary>
         /// remove journals
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void RemoveRow(System.Object sender, EventArgs e)
+        public void CancelRow(System.Object sender, EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
             }
 
-//          to do: Set Journal to cancelled, delete underlying Transactions
-//            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-//            FPreviouslySelectedDetailRow.Delete();
-//            FPetraUtilsObject.SetChangedFlag();
-//
-//            if (rowIndex == grdDetails.Rows.Count)
-//            {
-//                rowIndex--;
-//            }
-//
-//            if (grdDetails.Rows.Count > 1)
-//            {
-//                grdDetails.Selection.SelectRow(rowIndex, true);
-//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-//                ShowDetails(FPreviouslySelectedDetailRow);
-//            }
-//            else
-//            {
-//                FPreviouslySelectedDetailRow = null;
-//            }
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                || (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have choosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
+                            FPreviouslySelectedDetailRow.JournalNumber),
+                        Catalog.GetString("Confirm Cancel"),
+                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+                ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+                batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
+                batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
+
+                if (batchrow.BatchControlTotal != 0)
+                {
+                    batchrow.BatchControlTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
+                }
+
+                FPreviouslySelectedDetailRow.JournalCreditTotal = 0;
+                FPreviouslySelectedDetailRow.JournalDebitTotal = 0;
+
+                foreach (ATransactionRow transaction in FMainDS.ATransaction.Rows)     //alle? ist das richtig?
+                {
+                    transaction.Delete();
+                }
+
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                FPetraUtilsObject.SetChangedFlag();
+                updateChangeableStatus();
+            }
         }
     }
 }

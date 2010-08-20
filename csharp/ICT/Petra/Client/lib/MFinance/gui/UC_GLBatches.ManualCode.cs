@@ -25,6 +25,8 @@ using System;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
+using System.Data;
+using System.Diagnostics;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
@@ -77,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
+            updateChangeableStatus();
             FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
             ((TFrmGLBatch)ParentForm).LoadJournals(
                 ARow.LedgerNumber,
@@ -114,26 +117,73 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            TVerificationResultCollection Verifications;
-            GLBatchTDS mergeDS;
-
-            if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            if (FPreviouslySelectedDetailRow == null)
             {
-                string ErrorMessages = String.Empty;
+                return;
+            }
 
-                foreach (TVerificationResult verif in Verifications)
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                ||
+                (MessageBox.Show(String.Format(Catalog.GetString("You have choosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
+                         FSelectedBatchNumber),
+                     Catalog.GetString("Confirm Cancel"),
+                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                TVerificationResultCollection Verifications;
+                GLBatchTDS mergeDS;
+                //save the position of the actual row
+                int rowIndex = currentRowIndex();
+
+                if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Cancel batch failed"));
+                    return;
+                }
+                else
+                {
+                    FMainDS.Merge(mergeDS);
+                    FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+                    foreach (AJournalRow journal in FMainDS.AJournal.Rows)
+                    {
+                        if (journal.BatchNumber == FSelectedBatchNumber)
+                        {
+                            journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+                            journal.JournalCreditTotal = 0;
+                            journal.JournalDebitTotal = 0;
+                        }
+                    }
+
+                    FPreviouslySelectedDetailRow.BatchCreditTotal = 0;
+                    FPreviouslySelectedDetailRow.BatchDebitTotal = 0;
+                    FPreviouslySelectedDetailRow.BatchControlTotal = 0;
+                    DataView transactionDV = new DataView(FMainDS.ATransaction, String.Format("{0} = {1}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            FSelectedBatchNumber), "", DataViewRowState.CurrentRows);
+
+                    while (transactionDV.Count > 0)
+                    {
+                        transactionDV[0].Delete();
+                    }
+
+                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"));
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    FPetraUtilsObject.SetChangedFlag();
+
+                    SelectByIndex(rowIndex);
                 }
 
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Cancel batch failed"));
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"));
-                FMainDS.Merge(mergeDS);
+                updateChangeableStatus();
             }
         }
 
@@ -180,7 +230,45 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
         {
+            int rowIndex = currentRowIndex();
+
             SetBatchFilter();
+            // TODO Select the actual row again in updated
+            SelectByIndex(rowIndex);
+            updateChangeableStatus();
+        }
+
+        private int currentRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        private void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
         }
 
         private void SetBatchFilter()
@@ -466,6 +554,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RefBatch.BatchDebitTotal = sumDebits;
 
             // TODO: RefBatch.BatchRunningTotal
+        }
+
+        /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void updateChangeableStatus()
+        {
+            Boolean changeable = (FPreviouslySelectedDetailRow != null)
+                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            this.btnCancel.Enabled = changeable;
+            this.btnPostBatch.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
         }
 
         private void ImportBatches(object sender, EventArgs e)
