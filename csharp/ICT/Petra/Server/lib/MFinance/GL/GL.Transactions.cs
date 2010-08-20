@@ -170,6 +170,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AFilterBatchStatus"></param>
         /// <returns></returns>
         public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
