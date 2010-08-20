@@ -44,11 +44,11 @@ private string GetPreferredLanguage()
         Ext.QuickTips.init();
         Ext.form.Field.prototype.msgTarget = 'side';
         CreateCustomValidationTypePassword();
-        var partnerdata = new partnerdataForm();
-        partnerdata.render('partnerdata');
+        partnerdata = new partnerdataForm();
+        partnerdata.render('partnerdataDiv');
 
-        var inquiry = new inquiryForm();
-        inquiry.render('inquiry');
+        inquiry = new inquiryForm();
+        inquiry.render('inquiryDiv');
 
         });
     -->
@@ -67,12 +67,12 @@ private string GetPreferredLanguage()
 
 TODO: enter email and password to edit your own data that you have entered previously
 <br/> TODO
-<div id="partnerdata"></div>
+<div id="partnerdataDiv"></div>
 <br/><br/>
 <div id="contactform">
 </div>
 <br/><br/>
-<div id="inquiry"></div>
+<div id="inquiryDiv"></div>
 
 
 <font size="-2">This form was created with <a href="http://www.openpetra.org">OpenPetra</a>, the free software for the administration of charities.</font>

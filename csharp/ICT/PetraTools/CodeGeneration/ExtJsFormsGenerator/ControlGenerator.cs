@@ -124,7 +124,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
 
             ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
-            ctrlSnippet.SetCodelet("LABEL", "''");
+            ctrlSnippet.SetCodelet("LABEL", "strEmpty");
 
             return ctrlSnippet;
         }

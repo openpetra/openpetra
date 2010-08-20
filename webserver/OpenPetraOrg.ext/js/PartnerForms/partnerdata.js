@@ -1,3 +1,4 @@
+var partnerdata = null;
 partnerdataForm = Ext.extend(Ext.FormPanel, {
     pnlContentFORMCAPTION:'Application form',
     txtFirstNameLABEL:'First name',
@@ -62,6 +63,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     btnSaveREQUESTFAILUREMESSAGE:'Something did not work on the server.',
     btnCancelLABEL:'Cancel',
     btnCancelHELP:'',
+    strEmpty:'',
     initComponent : function(config) {
         Ext.apply(this, {
             frame: true,
@@ -261,7 +263,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     xtype: 'radio',
     checked: true,
     boxLabel: this.rbtStudentLABEL,
-    fieldLabel: '',
+    fieldLabel: this.strEmpty,
     allowBlank: true,
     name: 'rgrEmploymentStatus',
     anchor: '97.5%'
@@ -269,7 +271,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
 ,{
     xtype: 'radio',
     boxLabel: this.rbtUnemployedLABEL,
-    fieldLabel: '',
+    fieldLabel: this.strEmpty,
     allowBlank: true,
     name: 'rgrEmploymentStatus',
     anchor: '97.5%'
@@ -277,7 +279,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
 ,{
     xtype: 'radio',
     boxLabel: this.rbtEmployedLABEL,
-    fieldLabel: '',
+    fieldLabel: this.strEmpty,
     allowBlank: true,
     name: 'rgrEmploymentStatus',
     anchor: '97.5%'
@@ -478,8 +480,8 @@ handler: function () {
     if (!partnerdata.getForm().isValid())
     {
         Ext.Msg.show({
-            title: this.btnSaveVALIDATIONERRORTITLE,
-            msg: this.btnSaveVALIDATIONERRORMESSAGE,
+            title: partnerdata.btnSaveVALIDATIONERRORTITLE,
+            msg: partnerdata.btnSaveVALIDATIONERRORMESSAGE,
             modal: true,
             icon: Ext.Msg.ERROR,
             buttons: Ext.Msg.OK
@@ -487,7 +489,7 @@ handler: function () {
     }
     else
     {
-        Ext.MessageBox.wait(this.btnSaveSENDINGDATAMESSAGE, this.btnSaveSENDINGDATATITLE);
+        Ext.MessageBox.wait(partnerdata.btnSaveSENDINGDATAMESSAGE, partnerdata.btnSaveSENDINGDATATITLE);
 
         Ext.Ajax.request({
             url: '/server.asmx/DataImportFromForm',
@@ -497,8 +499,8 @@ handler: function () {
             },
             success: function () {
                 Ext.Msg.show({
-                    title: this.btnSaveREQUESTSUCCESSTITLE,
-                    msg: this.btnSaveREQUESTSUCCESSMESSAGE,
+                    title: partnerdata.btnSaveREQUESTSUCCESSTITLE,
+                    msg: partnerdata.btnSaveREQUESTSUCCESSMESSAGE,
                     modal: true,
                     icon: Ext.Msg.INFO,
                     buttons: Ext.Msg.OK
@@ -506,8 +508,8 @@ handler: function () {
             },
             failure: function () {
                 Ext.Msg.show({
-                    title: this.btnSaveREQUESTFAILURETITLE,
-                    msg: this.btnSaveREQUESTFAILUREMESSAGE,
+                    title: partnerdata.btnSaveREQUESTFAILURETITLE,
+                    msg: partnerdata.btnSaveREQUESTFAILUREMESSAGE,
                     modal: true,
                     icon: Ext.Msg.ERROR,
                     buttons: Ext.Msg.OK

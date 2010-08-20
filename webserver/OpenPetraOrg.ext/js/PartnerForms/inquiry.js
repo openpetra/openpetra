@@ -1,3 +1,4 @@
+var inquiry = null;
 inquiryForm = Ext.extend(Ext.FormPanel, {
     pnlContentFORMCAPTION:'Application form',
     txtFullNameLABEL:'Full Name',
@@ -44,6 +45,7 @@ inquiryForm = Ext.extend(Ext.FormPanel, {
     btnSaveHELP:'',
     btnCancelLABEL:'Cancel',
     btnCancelHELP:'',
+    strEmpty:'',
     initComponent : function(config) {
         Ext.apply(this, {
             frame: true,

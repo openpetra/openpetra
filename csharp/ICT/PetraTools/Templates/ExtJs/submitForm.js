@@ -1,10 +1,12 @@
+var {#FORMNAME} = null;
 {#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
     {#RESOURCESTRINGS}
+    strEmpty:'',
     initComponent : function(config) {
         Ext.apply(this, {    
             frame: true,
             // monitorValid:true,
-            title: {#FORMCAPTION},
+            title: this.{#FORMCAPTION},
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},
             labelWidth: {#LABELWIDTH},
@@ -50,7 +52,7 @@
 {##GROUPBOXDEFINITION}
 {
     xtype: 'fieldset',
-    title: {#LABEL},
+    title: this.{#LABEL},
     autoHeight: true,
     items: [{#ITEMS}]
     }
@@ -58,7 +60,7 @@
 {##COMPOSITEDEFINITION}
 {
     xtype: 'compositefield',
-    fieldLabel: {#LABEL},
+    fieldLabel: this.{#LABEL},
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
@@ -74,7 +76,7 @@
 {#IFDEF INPUTTYPE}
     inputType: '{#INPUTTYPE}',
 {#ENDIF INPUTTYPE}    
-    fieldLabel: {#LABEL},
+    fieldLabel: this.{#LABEL},
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
@@ -100,7 +102,7 @@
     width: {#WIDTH},
 {#ENDIF WIDTH}
     {#CUSTOMATTRIBUTES}
-    emptyText: {#HELP},
+    emptyText: this.{#HELP},
     name: '{#ITEMNAME}',
     anchor: '{#ANCHOR}'
     }
@@ -109,7 +111,7 @@
 {
     xtype: '{#XTYPE}',
     hideLabel: true,
-    value: {#LABEL}
+    value: this.{#LABEL}
 }
 
 {##CHECKBOXDEFINITION}
@@ -122,9 +124,9 @@
     checked: {#CHECKED},
 {#ENDIF CHECKED}
 {#IFDEF BOXLABEL}
-    boxLabel: {#BOXLABEL},
+    boxLabel: this.{#BOXLABEL},
 {#ENDIF BOXLABEL}
-    fieldLabel: {#LABEL},
+    fieldLabel: this.{#LABEL},
 {#IFDEF ALLOWBLANK}
     allowBlank: {#ALLOWBLANK},
 {#ENDIF ALLOWBLANK}
@@ -140,7 +142,7 @@
 
 {##SUBMITBUTTONDEFINITION}
 {
-text: {#LABEL}
+text: this.{#LABEL}
 {#IFDEF REQUESTURL}
 ,formBind: true,
 handler: function () {
@@ -148,8 +150,8 @@ handler: function () {
     if (!{#FORMNAME}.getForm().isValid())
     {
         Ext.Msg.show({
-            title: {#VALIDATIONERRORTITLE},
-            msg: {#VALIDATIONERRORMESSAGE},
+            title: {#FORMNAME}.{#VALIDATIONERRORTITLE},
+            msg: {#FORMNAME}.{#VALIDATIONERRORMESSAGE},
             modal: true,
             icon: Ext.Msg.ERROR,
             buttons: Ext.Msg.OK
@@ -157,7 +159,7 @@ handler: function () {
     }
     else
     {
-        Ext.MessageBox.wait({#SENDINGDATAMESSAGE}, {#SENDINGDATATITLE});
+        Ext.MessageBox.wait({#FORMNAME}.{#SENDINGDATAMESSAGE}, {#FORMNAME}.{#SENDINGDATATITLE});
 
         Ext.Ajax.request({
             url: '/server.asmx/{#REQUESTURL}',
@@ -167,8 +169,8 @@ handler: function () {
             },
             success: function () {
                 Ext.Msg.show({
-                    title: {#REQUESTSUCCESSTITLE},
-                    msg: {#REQUESTSUCCESSMESSAGE},
+                    title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
+                    msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
                     modal: true,
                     icon: Ext.Msg.INFO,
                     buttons: Ext.Msg.OK
@@ -176,8 +178,8 @@ handler: function () {
             },
             failure: function () {
                 Ext.Msg.show({
-                    title: {#REQUESTFAILURETITLE},
-                    msg: {#REQUESTFAILUREMESSAGE},
+                    title: {#FORMNAME}.{#REQUESTFAILURETITLE},
+                    msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE},
                     modal: true,
                     icon: Ext.Msg.ERROR,
                     buttons: Ext.Msg.OK

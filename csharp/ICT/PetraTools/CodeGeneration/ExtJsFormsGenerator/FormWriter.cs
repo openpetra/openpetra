@@ -41,6 +41,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
      */
     public class TExtJsFormsWriter : TFormWriter
     {
+        private string FFormName = "";
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -127,7 +129,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public void AddResourceString(ProcessTemplate ACtrlSnippet, string APlaceHolder, TControlDef ACtrl, string AText)
         {
-            ACtrlSnippet.SetCodelet(APlaceHolder, "this." + ACtrl.controlName + APlaceHolder);
+            ACtrlSnippet.SetCodelet(APlaceHolder, ACtrl.controlName + APlaceHolder);
             FTemplate.AddToCodelet("RESOURCESTRINGS", ACtrl.controlName + APlaceHolder + ":'" + AText + "'," + Environment.NewLine);
 
             // write to app-lang-en.js file
@@ -294,6 +296,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FCodeStorage = ACodeStorage;
             TControlGenerator.FCodeStorage = ACodeStorage;
             FTemplate = new ProcessTemplate(ATemplateFile);
+            FFormName = Path.GetFileNameWithoutExtension(AXAMLFilename);
 
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
@@ -313,7 +316,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             InsertCodeIntoTemplate(AXAMLFilename);
 
             string languagefilepath = Path.GetDirectoryName(AXAMLFilename) + Path.DirectorySeparatorChar +
-                                      Path.GetFileNameWithoutExtension(AXAMLFilename) + "-lang-en.js";
+                                      Path.GetFileNameWithoutExtension(AXAMLFilename) + "-lang-template.js";
             File.WriteAllText(languagefilepath, FLanguageFileTemplate.FinishWriting(true));
         }
 
@@ -321,8 +324,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
             FTemplate.SetCodelet("LABELWIDTH", "140");
-            FTemplate.SetCodelet("FORMNAME", Path.GetFileNameWithoutExtension(AXAMLFilename));
-            FLanguageFileTemplate.SetCodelet("FORMNAME", Path.GetFileNameWithoutExtension(AXAMLFilename));
+            FTemplate.SetCodelet("FORMNAME", FFormName);
+            FLanguageFileTemplate.SetCodelet("FORMNAME", FFormName);
         }
     }
 }
