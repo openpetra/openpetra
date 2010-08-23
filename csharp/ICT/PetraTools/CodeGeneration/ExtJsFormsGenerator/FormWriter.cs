@@ -129,11 +129,22 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public void AddResourceString(ProcessTemplate ACtrlSnippet, string APlaceHolder, TControlDef ACtrl, string AText)
         {
-            ACtrlSnippet.SetCodelet(APlaceHolder, ACtrl.controlName + APlaceHolder);
-            FTemplate.AddToCodelet("RESOURCESTRINGS", ACtrl.controlName + APlaceHolder + ":'" + AText + "'," + Environment.NewLine);
+            string strName;
+
+            if (ACtrl == null)
+            {
+                strName = APlaceHolder;
+            }
+            else
+            {
+                strName = ACtrl.controlName + APlaceHolder;
+            }
+
+            ACtrlSnippet.SetCodelet(APlaceHolder, strName);
+            FTemplate.AddToCodelet("RESOURCESTRINGS", strName + ":'" + AText + "'," + Environment.NewLine);
 
             // write to app-lang-en.js file
-            FLanguageFileTemplate.AddToCodelet("RESOURCESTRINGS", ACtrl.controlName + APlaceHolder + ":'" + AText + "'," + Environment.NewLine);
+            FLanguageFileTemplate.AddToCodelet("RESOURCESTRINGS", strName + ":'" + AText + "'," + Environment.NewLine);
         }
 
         /// <summary>

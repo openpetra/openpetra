@@ -1,4 +1,5 @@
 var inquiry = null;
+
 inquiryForm = Ext.extend(Ext.FormPanel, {
     pnlContentFORMCAPTION:'Application form',
     txtFullNameLABEL:'Full Name',

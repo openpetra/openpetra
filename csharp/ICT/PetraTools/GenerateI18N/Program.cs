@@ -75,6 +75,8 @@ class Program
                     TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerGettextFile);
                 }
 
+                // TODO: collect strings from webforms. LABEL, MESSAGE, TITLE, HELP
+
                 writerGettextFile.Close();
 
                 // delete the file if it is empty

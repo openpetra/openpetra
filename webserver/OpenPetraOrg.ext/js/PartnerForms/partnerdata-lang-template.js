@@ -19,6 +19,8 @@ if(partnerdataForm) {
     txtPasswordHELP:'',
     txtPasswordConfirmLABEL:'Password Confirm',
     txtPasswordConfirmHELP:'',
+    strErrorPasswordLength:'Passwords must be at least 5 characters',
+    strErrorPasswordNoMatch:'Confirmation does not match your first password entry.',
     rgrEmploymentStatusLABEL:'Employment Status',
     rbtPupilLABEL:'Pupil',
     rbtPupilHELP:'',

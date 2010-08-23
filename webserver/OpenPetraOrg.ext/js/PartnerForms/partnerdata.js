@@ -1,4 +1,32 @@
 var partnerdata = null;
+
+Ext.onReady(function() {
+    /// validation method for checking a password has been entered twice correctly, and is at least 5 characters
+    Ext.apply(Ext.form.VTypes, {
+       password: function(value, field)
+       {
+          var f;
+
+          if ((f = partnerdata.getForm().findField(field.otherPasswordField)))
+          {
+             this.passwordText = partnerdata.strErrorPasswordNoMatch;
+             if (f.getValue().length > 0 && value != f.getValue())
+             {
+                return false;
+             }
+          }
+
+          this.passwordText = partnerdata.strErrorPasswordLength;
+
+          var hasLength = (value.length >= 5);
+
+          return (hasLength);
+       },
+
+       passwordText: partnerdata.strErrorPasswordLength,
+    });
+});
+
 partnerdataForm = Ext.extend(Ext.FormPanel, {
     pnlContentFORMCAPTION:'Application form',
     txtFirstNameLABEL:'First name',
@@ -19,6 +47,8 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     txtPasswordHELP:'',
     txtPasswordConfirmLABEL:'Password Confirm',
     txtPasswordConfirmHELP:'',
+    strErrorPasswordLength:'Passwords must be at least 5 characters',
+    strErrorPasswordNoMatch:'Confirmation does not match your first password entry.',
     rgrEmploymentStatusLABEL:'Employment Status',
     rbtPupilLABEL:'Pupil',
     rbtPupilHELP:'',
@@ -137,9 +167,11 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     layout: 'form',
     border:false,
     items: [{
-    xtype: 'textfield',
+    xtype: 'numberfield',
     fieldLabel: this.txtPostcodeLABEL,
     allowBlank: false,
+    minLength: 5,
+    maxLength: 5,
     emptyText: this.txtPostcodeHELP,
     name: 'txtPostcode',
     anchor: '94%'
@@ -335,7 +367,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     value: this.lblReasonBankDetails1LABEL
 }
 ,{
-    xtype: 'textfield',
+    xtype: 'numberfield',
     fieldLabel: this.txtConferenceFeeLABEL,
     allowBlank: false,
     emptyText: this.txtConferenceFeeHELP,

@@ -9,10 +9,8 @@
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js"></script>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-de.js"></script>
     
-    <script type="text/javascript" src="js/commonOpenPetra.js"></script>
     <script type="text/javascript" src="js/PartnerForms/partnerdata.js"></script>
     <script type="text/javascript" src="js/PartnerForms/partnerdata-lang-de.js"></script>
-    <script type="text/javascript" src="js/partnerdata.js"></script>
     <script type="text/javascript" src="js/PartnerForms/inquiry.js"></script>
 
 <script type="text/javascript">
@@ -21,7 +19,6 @@
     Ext.onReady(function() {
         Ext.QuickTips.init();
         Ext.form.Field.prototype.msgTarget = 'side';
-        CreateCustomValidationTypePassword();
         partnerdata = new partnerdataForm();
         partnerdata.render('partnerdataDiv');
 

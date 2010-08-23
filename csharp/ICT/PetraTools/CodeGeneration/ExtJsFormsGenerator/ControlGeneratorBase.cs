@@ -141,6 +141,22 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
             snippetControl.SetCodelet("XTYPE", FControlType);
+
+            if (ACtrl.HasAttribute("xtype"))
+            {
+                snippetControl.SetCodelet("XTYPE", ACtrl.GetAttribute("xtype"));
+            }
+
+            if (ACtrl.HasAttribute("maxLength"))
+            {
+                snippetControl.SetCodelet("MAXLENGTH", ACtrl.GetAttribute("maxLength"));
+            }
+
+            if (ACtrl.HasAttribute("minLength"))
+            {
+                snippetControl.SetCodelet("MINLENGTH", ACtrl.GetAttribute("minLength"));
+            }
+
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "LABEL", ACtrl, ACtrl.Label);
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "HELP", ACtrl, ACtrl.GetAttribute("Help"));
 
@@ -162,6 +178,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             if (ACtrl.HasAttribute("otherPasswordField"))
             {
                 snippetControl.SetCodelet("OTHERPASSWORDFIELD", ACtrl.GetAttribute("otherPasswordField"));
+                writer.FTemplate.SetCodelet("PASSWORDTWICE", "yes");
+                ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "strErrorPasswordLength", null,
+                    ACtrl.GetAttribute("ValidationErrorLength"));
+                ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "strErrorPasswordNoMatch", null,
+                    ACtrl.GetAttribute("ValidationErrorMatching"));
             }
 
             if (FDefaultWidth != -1)

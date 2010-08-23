@@ -119,6 +119,10 @@ class Program
             {
                 ProcessFile(ymlfileParam, SelectedLocalisation);
             }
+
+            // TODO: generate localised versions
+            // TODO: generate minified version. either using YUICompressor, or simple string operation?
+            // Or should the xsp server do that? generate js files on the fly? figure out the language of the client? cache files?
         }
         catch (Exception e)
         {

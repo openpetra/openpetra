@@ -34,7 +34,7 @@ RootNode:
         cmpDirectDebitPermission: {hideLabel=true}
             Controls: [lblReasonBankDetails1, txtConferenceFee, lblReasonBankDetails2]
         lblReasonBankDetails1: {Label="Hereby I give permission to xyz to do a direct debit of"}
-        txtConferenceFee:
+        txtConferenceFee: {xtype=numberfield}
         lblReasonBankDetails2: {Label="Euro from this bank account:"}
         lblBankDetailsSignature: {Label="After submitting the form, you will print a PDF, and you (and for minors also their parents) have to sign this"}
         txtFirstName: {Help="Please enter first name", Label=First name}
@@ -47,6 +47,8 @@ RootNode:
         txtEmail: {vtype=email, columnWidth=.6}
         txtPassword: {inputType=password, columnWidth=.6}
         txtPasswordConfirm: {inputType=password, columnWidth=.6, vtype=password, otherPasswordField=txtPassword}
+            ValidationErrorLength: "Passwords must be at least 5 characters"
+            ValidationErrorMatching: "Confirmation does not match your first password entry."
         rgrEmploymentStatus:  
             OptionalValues:[Pupil, =Student, Unemployed, Employed]
         txtProfession: {Label="Degree/Profession", Help="Enter your school degree or profession"}
