@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -47,6 +47,15 @@ namespace Ict.Petra.Client.CommonDialogs
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnCreateExtract.Text = Catalog.GetString("Create Extract");
+            this.lblExtractName.Text = Catalog.GetString("Extract Name:");
+            this.lblDescription.Text = Catalog.GetString("Description:");
+            this.btnCancel.Text = Catalog.GetString("Cancel");
+            this.Text = Catalog.GetString("Create Extract");
+            #endregion
         }
 
         private BestAddressTDSLocationTable FBestAddress = null;

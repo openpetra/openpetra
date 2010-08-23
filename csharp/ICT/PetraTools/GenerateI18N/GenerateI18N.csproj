@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DropUnwantedStrings.cs" />
     <Compile Include="GenerateCatalogStrings.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>

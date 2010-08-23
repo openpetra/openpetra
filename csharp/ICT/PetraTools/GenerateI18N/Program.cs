@@ -38,7 +38,15 @@ class Program
 
         try
         {
-            if (settings.HasValue("file"))
+            if (settings.HasValue("do") && (settings.GetValue("do") == "removeDoNotTranslate"))
+            {
+                string doNotTranslatePath = settings.GetValue("dntFile");
+                string poFilePath = settings.GetValue("poFile");
+
+                // remove all strings from po file that are listed in the "Do Not Translate" file
+                TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
+            }
+            else if (settings.HasValue("file"))
             {
                 TGenerateCatalogStrings.Execute(settings.GetValue("file"), null, null);
             }
@@ -74,8 +82,6 @@ class Program
                 {
                     TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerGettextFile);
                 }
-
-                // TODO: collect strings from webforms. LABEL, MESSAGE, TITLE, HELP
 
                 writerGettextFile.Close();
 

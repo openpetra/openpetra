@@ -1,0 +1,157 @@
+msgid "0000000000"
+msgstr "do not translate"
+
+msgid "PERSON Panel"
+msgstr "do not translate"
+
+msgid "FAMILY Panel"
+msgstr "do not translate"
+
+msgid "OTHER Panel"
+msgstr "do not translate"
+
+msgid "01-JAN-9999"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel (pnlAddresses) "
+"in P"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl that corresponds to the PartnerClass of the Partner is added "
+"dyna"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel "
+"(pnlSubscriptions) "
+msgstr "do not translate "
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel "
+"(pnlPartnerTypes) i"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel "
+"(pnlFamilyMembers) "
+msgstr "do not translate "
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel (pnlInterests) "
+"in P"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel "
+"(pnlPartnerNotes) i"
+msgstr "do not translate"
+
+"The UserControl is added dynamically at runtime to this Panel (pnlContacts) "
+"in Pr"
+msgstr "do not translate"
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel "
+"(pnlRelationships) "
+msgstr "do not translate "
+
+msgid ""
+"The UserControl is added dynamically at runtime to this Panel (pnlReminders) "
+"in P"
+msgstr "do not translate"
+
+msgid "v"
+msgstr "do not translate"
+
+msgid "/"
+msgstr "do not translate"
+
+msgid "..."
+msgstr "do not translate"
+
+msgid "SplitButtonBase1"
+msgstr "do not translate"
+
+msgid "btnButton"
+msgstr "do not translate"
+
+msgid "lblLabel"
+msgstr "do not translate"
+
+msgid "txtTextBox"
+msgstr "do not translate"
+
+msgid "Resize Button"
+msgstr "Größe verändern"
+
+msgid "    LowerButton"
+msgstr "    do not translate"
+
+msgid "       MiddleButton"
+msgstr "       do not translate"
+
+msgid "        UpperButton"
+msgstr "        do not translate"
+
+msgid "RecentSettings"
+msgstr "do not translate"
+
+msgid "PayFullOutstandingAmount"
+msgstr "do not translate"
+
+msgid "PayAPartialAmount"
+msgstr "do not translate"
+
+msgid "hans-peter@testinger.com"
+msgstr "do not translate"
+
+msgid "0732 / 2345678"
+msgstr "do not translate"
+
+msgid "0699 / 107223892"
+msgstr "do not translate"
+
+msgid "0732 / 12345 Ext. 78"
+msgstr "do not translate"
+
+msgid "31-JUL-2000"
+msgstr "do not translate"
+
+msgid "http://www.testinger.com"
+msgstr "do not translate"
+
+msgid "GLOBAL, INDIA, CURRENTS, MONTHLY, VERWER"
+msgstr "do not translate"
+
+msgid "0732 / 12345 Ext. 56"
+msgstr "do not translate"
+
+msgid "WORKER, AIRMILES"
+msgstr "do not translate"
+
+msgid "30-DEC-2008"
+msgstr "do not translate"
+
+msgid "Central European Area"
+msgstr "do not translate"
+
+msgid "This is a Very Important Partner. Very pleasant to speak to."
+msgstr ""
+"do not translate. this is only test data and should not be part of the client"
+
+msgid "31-JUN-2008"
+msgstr "do not translate"
+
+msgid "31-JUN-2000"
+msgstr "do not translate"
+
+msgid "Testinger, A   [0123456789]"
+msgstr "do not translate"
+
+msgid "Markus' World"
+msgstr "do not translate"
+
+msgid "PRIVATE {MARLENE}"
+msgstr "do not translate"

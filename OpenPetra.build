@@ -20,6 +20,7 @@
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
     <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
     <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
+    <property name="DoNotTranslatePofileWithPath" value="${OpenPetraRoot.dir}/i18n/doNotTranslate.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
     <property name="WebConfigFile" value="${WebServerInstall.dir}/web.config"/>
     <property name="ClientConfigFile" value="${OpenPetraRoot.dir}/etc/Client.config"/>
@@ -660,6 +661,9 @@
         <call target="translationTemplate"/>
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
+
+        <!-- remove all strings that should not be translated: demo labels, etc -->
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate -dntFile:${DoNotTranslatePofileWithPath}  -poFile:${TargetLanguage.PofileWithPath}"/>
 
         <call target="translationCompilePOFile"/>
     </target>
