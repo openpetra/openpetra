@@ -98,12 +98,64 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+    public class ComboboxGenerator : TControlGenerator
+    {
+        public ComboboxGenerator()
+            : base("cmb", "checkbox")
+        {
+            FControlDefinitionSnippetName = "COMBOBOXDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            string valuesArray = "[";
+            StringCollection optionalValues =
+                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
+
+            // DefaultValue with = sign before control name
+            for (int counter = 0; counter < optionalValues.Count; counter++)
+            {
+                if (optionalValues[counter].StartsWith("="))
+                {
+                    optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
+                }
+
+                if (counter > 0)
+                {
+                    valuesArray += ", ";
+                }
+
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, optionalValues[counter]);
+
+                string strName = "this." + ctrl.controlName + "OPTION" + counter.ToString();
+
+                valuesArray += "[" + strName + ", " + strName + "]";
+            }
+
+            valuesArray += "]";
+
+            ctrlSnippet.SetCodelet("OPTIONALVALUESARRAY", valuesArray);
+
+            return ctrlSnippet;
+        }
+    }
     public class CheckboxGenerator : TControlGenerator
     {
         public CheckboxGenerator()
             : base("chk", "checkbox")
         {
             FControlDefinitionSnippetName = "CHECKBOXDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
+            ctrlSnippet.SetCodelet("LABEL", "strEmpty");
+            return ctrlSnippet;
         }
     }
     public class RadioButtonGenerator : TControlGenerator

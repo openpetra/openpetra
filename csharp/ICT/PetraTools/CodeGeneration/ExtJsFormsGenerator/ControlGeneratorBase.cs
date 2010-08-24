@@ -185,6 +185,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     ACtrl.GetAttribute("ValidationErrorMatching"));
             }
 
+            if (ACtrl.GetAttribute("vtype") == "forcetick")
+            {
+                writer.FTemplate.SetCodelet("FORCECHECKBOX", "true");
+                ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "strErrorCheckboxRequired", null,
+                    ACtrl.GetAttribute("ErrorCheckboxRequired"));
+            }
+
             if (FDefaultWidth != -1)
             {
                 snippetControl.SetCodelet("WIDTH", FDefaultWidth.ToString());

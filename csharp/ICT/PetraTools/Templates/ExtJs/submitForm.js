@@ -24,10 +24,30 @@ Ext.onReady(function() {
           return (hasLength);
        },
      
-       passwordText: {#FORMNAME}.strErrorPasswordLength,
+       passwordText: '',
     });
 });
 {#ENDIF PASSWORDTWICE}
+
+{#IFDEF FORCECHECKBOX}
+Ext.onReady(function() {
+    /// validation method for checking if a checkbox has been ticked
+    Ext.form.Checkbox.prototype.validate = function()
+    {
+        if (this.vtype == "forcetick")
+        {
+            if (!this.checked) 
+            {
+                Ext.form.Field.prototype.markInvalid.call(this, {#FORMNAME}.strErrorCheckboxRequired); 
+            }
+            else 
+            {
+                Ext.form.Field.prototype.clearInvalid.call(this);
+            }
+        }
+    };    
+});
+{#ENDIF FORCECHECKBOX}
 
 {#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
     {#RESOURCESTRINGS}
@@ -40,14 +60,8 @@ Ext.onReady(function() {
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},
             labelWidth: {#LABELWIDTH},
-            items: [{
-                bodyStyle: {
-                margin: '0px 0px 15px 0px'
-            },
-            items: [{#FORMITEMSDEFINITION}]
-            }],
-        buttons: [{#BUTTONS}
-        ]
+            items: [{#FORMITEMSDEFINITION}],
+            buttons: [{#BUTTONS}]
         });
         {#FORMNAME}Form.superclass.initComponent.apply(this, arguments);
     }
@@ -69,7 +83,7 @@ Ext.onReady(function() {
     layout: 'form',
     border:false,
     items: [{#ITEM}]
-    }
+}
 
 {##RADIOGROUPDEFINITION}
 {
@@ -77,7 +91,7 @@ Ext.onReady(function() {
     columnWidth: 1.0,
     border:false,
     items: [{#ITEMS}]
-    }
+}
 
 {##GROUPBOXDEFINITION}
 {
@@ -85,7 +99,7 @@ Ext.onReady(function() {
     title: this.{#LABEL},
     autoHeight: true,
     items: [{#ITEMS}]
-    }
+}
 
 {##COMPOSITEDEFINITION}
 {
@@ -95,7 +109,7 @@ Ext.onReady(function() {
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
     items: [{#ITEMS}]
-    }
+}
 
 {##ITEMDEFINITION}
 {
@@ -135,7 +149,7 @@ Ext.onReady(function() {
     emptyText: this.{#HELP},
     name: '{#ITEMNAME}',
     anchor: '{#ANCHOR}'
-    }
+}
 
 {##LABELDEFINITION}
 {
@@ -156,68 +170,89 @@ Ext.onReady(function() {
 {#IFDEF BOXLABEL}
     boxLabel: this.{#BOXLABEL},
 {#ENDIF BOXLABEL}
+{#IFDEF HIDELABEL}
+    hideLabel: {#HIDELABEL},
+{#ENDIF HIDELABEL}
     fieldLabel: this.{#LABEL},
-{#IFDEF ALLOWBLANK}
-    allowBlank: {#ALLOWBLANK},
-{#ENDIF ALLOWBLANK}
-{#IFNDEF ALLOWBLANK}
-    allowBlank: true,
-{#ENDIFN ALLOWBLANK}
 {#IFDEF COLUMNWIDTH}
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
     name: '{#ITEMNAME}',
     anchor: '{#ANCHOR}'
-    }
+}
+
+{##COMBOBOXDEFINITION}
+new Ext.form.ComboBox({
+    fieldLabel: this.{#LABEL},
+    hiddenName:'{#ITEMNAME}',
+    store: new Ext.data.ArrayStore({
+        fields: ['value', 'display'],
+        data : {#OPTIONALVALUESARRAY}
+    }),
+    valueField:'value',
+    displayField:'display',
+    typeAhead: true,
+    mode: 'local',
+    triggerAction: 'all',
+    emptyText: this.{#HELP},
+{#IFDEF ALLOWBLANK}
+    allowBlank: {#ALLOWBLANK},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    allowBlank: false,
+{#ENDIFN ALLOWBLANK}
+    selectOnFocus:true,
+    width:190
+})
 
 {##SUBMITBUTTONDEFINITION}
 {
-text: this.{#LABEL}
+    text: this.{#LABEL}
 {#IFDEF REQUESTURL}
-,formBind: true,
-handler: function () {
-    // to display missing/invalid fields
-    if (!{#FORMNAME}.getForm().isValid())
-    {
-        Ext.Msg.show({
-            title: {#FORMNAME}.{#VALIDATIONERRORTITLE},
-            msg: {#FORMNAME}.{#VALIDATIONERRORMESSAGE},
-            modal: true,
-            icon: Ext.Msg.ERROR,
-            buttons: Ext.Msg.OK
-        });
-    }
-    else
-    {
-        Ext.MessageBox.wait({#FORMNAME}.{#SENDINGDATAMESSAGE}, {#FORMNAME}.{#SENDINGDATATITLE});
+    ,formBind: true,
+    handler: function () {
+        // to display missing/invalid fields
+        if (!{#FORMNAME}.getForm().isValid())
+        {
+            Ext.Msg.show({
+                title: {#FORMNAME}.{#VALIDATIONERRORTITLE},
+                msg: {#FORMNAME}.{#VALIDATIONERRORMESSAGE},
+                modal: true,
+                icon: Ext.Msg.ERROR,
+                buttons: Ext.Msg.OK
+            });
+        }
+        else
+        {
+            Ext.MessageBox.wait({#FORMNAME}.{#SENDINGDATAMESSAGE}, {#FORMNAME}.{#SENDINGDATATITLE});
 
-        Ext.Ajax.request({
-            url: '/server.asmx/{#REQUESTURL}',
-            params:{
-                {#REQUESTPARAMETERS}
-                AJSONFormData: Ext.encode({#FORMNAME}.getForm().getValues())
-            },
-            success: function () {
-                Ext.Msg.show({
-                    title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
-                    msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
-                    modal: true,
-                    icon: Ext.Msg.INFO,
-                    buttons: Ext.Msg.OK
-                });
-            },
-            failure: function () {
-                Ext.Msg.show({
-                    title: {#FORMNAME}.{#REQUESTFAILURETITLE},
-                    msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE},
-                    modal: true,
-                    icon: Ext.Msg.ERROR,
-                    buttons: Ext.Msg.OK
-                });
-            }
-        });
-    }
-  }    
+            Ext.Ajax.request({
+                url: '/server.asmx/{#REQUESTURL}',
+                params:{
+                    {#REQUESTPARAMETERS}
+                    AJSONFormData: Ext.encode({#FORMNAME}.getForm().getValues())
+                },
+                success: function () {
+                    Ext.Msg.show({
+                        title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
+                        msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
+                        modal: true,
+                        icon: Ext.Msg.INFO,
+                        buttons: Ext.Msg.OK
+                    });
+                },
+                failure: function () {
+                    Ext.Msg.show({
+                        title: {#FORMNAME}.{#REQUESTFAILURETITLE},
+                        msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE},
+                        modal: true,
+                        icon: Ext.Msg.ERROR,
+                        buttons: Ext.Msg.OK
+                    });
+                }
+            });
+        }
+    }    
 {#ENDIF REQUESTURL}
 }
 

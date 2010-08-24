@@ -56,388 +56,382 @@ inquiryForm = Ext.extend(Ext.FormPanel, {
             width: 650,
             labelWidth: 140,
             items: [{
-                bodyStyle: {
-                margin: '0px 0px 15px 0px'
-            },
-            items: [{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtFullNameLABEL,
-    allowBlank: false,
-    emptyText: this.txtFullNameHELP,
-    name: 'txtFullName',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtEinsatzortLABEL,
-    allowBlank: false,
-    emptyText: this.txtEinsatzortHELP,
-    name: 'txtEinsatzort',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'datefield',
-    fieldLabel: this.dtpEinsatzbeginnLABEL,
-    allowBlank: false,
-    format: 'd.m.Y',
-    boxMaxWidth: 175,
-    emptyText: this.dtpEinsatzbeginnHELP,
-    name: 'dtpEinsatzbeginn',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'datefield',
-    fieldLabel: this.dtpEinsatzdauerLABEL,
-    allowBlank: false,
-    format: 'd.m.Y',
-    boxMaxWidth: 175,
-    emptyText: this.dtpEinsatzdauerHELP,
-    name: 'dtpEinsatzdauer',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtLongTermPlansLABEL,
-    allowBlank: false,
-    emptyText: this.txtLongTermPlansHELP,
-    name: 'txtLongTermPlans',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkGlobalActionLABEL,
-    allowBlank: true,
-    name: 'chkGlobalAction',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkGlobalServiceLABEL,
-    allowBlank: true,
-    name: 'chkGlobalService',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkFsjLABEL,
-    allowBlank: true,
-    name: 'chkFsj',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkImAuslandLABEL,
-    allowBlank: true,
-    name: 'chkImAusland',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkImInlandLABEL,
-    allowBlank: true,
-    name: 'chkImInland',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkAlsErsatzzumZivildienstLABEL,
-    allowBlank: true,
-    name: 'chkAlsErsatzzumZivildienst',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkAfdiaLABEL,
-    allowBlank: true,
-    name: 'chkAfdia',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkSozialversicherungspflichtigeAnstellungLABEL,
-    allowBlank: true,
-    name: 'chkSozialversicherungspflichtigeAnstellung',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:0.5,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkRequestmoreInformationaboutLABEL,
-    allowBlank: true,
-    name: 'chkRequestmoreInformationabout',
-    anchor: '95%'
-    }
-]
-    }
-,{
-    columnWidth:0.5,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtTextLABEL,
-    allowBlank: false,
-    emptyText: this.txtTextHELP,
-    name: 'txtText',
-    anchor: '95%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'checkbox',
-    fieldLabel: this.chkAmregisteredfortheEFSLABEL,
-    allowBlank: true,
-    name: 'chkAmregisteredfortheEFS',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtWhatareyoulookingforLABEL,
-    allowBlank: false,
-    emptyText: this.txtWhatareyoulookingforHELP,
-    name: 'txtWhatareyoulookingfor',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtVisionLABEL,
-    allowBlank: false,
-    emptyText: this.txtVisionHELP,
-    name: 'txtVision',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtTeamLABEL,
-    allowBlank: false,
-    emptyText: this.txtTeamHELP,
-    name: 'txtTeam',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-,{
-    layout:'column',
-    border:false,
-    items: [{
-    columnWidth:1,
-    layout: 'form',
-    border:false,
-    items: [{
-    xtype: 'textfield',
-    fieldLabel: this.txtExpectationsLABEL,
-    allowBlank: false,
-    emptyText: this.txtExpectationsHELP,
-    name: 'txtExpectations',
-    anchor: '97.5%'
-    }
-]
-    }
-]
-}
-]
-            }],
-        buttons: [{
-text: this.btnSaveLABEL
-}
-,{
-text: this.btnCancelLABEL
-}
-
-        ]
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtFullNameLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtFullNameHELP,
+                                                name: 'txtFullName',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtEinsatzortLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtEinsatzortHELP,
+                                                name: 'txtEinsatzort',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'datefield',
+                                                fieldLabel: this.dtpEinsatzbeginnLABEL,
+                                                allowBlank: false,
+                                                format: 'd.m.Y',
+                                                boxMaxWidth: 175,
+                                                emptyText: this.dtpEinsatzbeginnHELP,
+                                                name: 'dtpEinsatzbeginn',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'datefield',
+                                                fieldLabel: this.dtpEinsatzdauerLABEL,
+                                                allowBlank: false,
+                                                format: 'd.m.Y',
+                                                boxMaxWidth: 175,
+                                                emptyText: this.dtpEinsatzdauerHELP,
+                                                name: 'dtpEinsatzdauer',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtLongTermPlansLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtLongTermPlansHELP,
+                                                name: 'txtLongTermPlans',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkGlobalActionLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkGlobalAction',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkGlobalServiceLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkGlobalService',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkFsjLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkFsj',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkImAuslandLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkImAusland',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkImInlandLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkImInland',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkAlsErsatzzumZivildienstLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkAlsErsatzzumZivildienst',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkAfdiaLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkAfdia',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkSozialversicherungspflichtigeAnstellungLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkSozialversicherungspflichtigeAnstellung',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:0.5,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkRequestmoreInformationaboutLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkRequestmoreInformationabout',
+                                                anchor: '95%'
+                                            }
+                                            ]
+                                },
+                                {
+                                    columnWidth:0.5,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtTextLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtTextHELP,
+                                                name: 'txtText',
+                                                anchor: '95%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'checkbox',
+                                                boxLabel: this.chkAmregisteredfortheEFSLABEL,
+                                                fieldLabel: this.strEmpty,
+                                                name: 'chkAmregisteredfortheEFS',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtWhatareyoulookingforLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtWhatareyoulookingforHELP,
+                                                name: 'txtWhatareyoulookingfor',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtVisionLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtVisionHELP,
+                                                name: 'txtVision',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtTeamLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtTeamHELP,
+                                                name: 'txtTeam',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    },
+                    {
+                        layout:'column',
+                        border:false,
+                        items: [{
+                                    columnWidth:1,
+                                    layout: 'form',
+                                    border:false,
+                                    items: [{
+                                                xtype: 'textfield',
+                                                fieldLabel: this.txtExpectationsLABEL,
+                                                allowBlank: false,
+                                                emptyText: this.txtExpectationsHELP,
+                                                name: 'txtExpectations',
+                                                anchor: '97.5%'
+                                            }
+                                            ]
+                                }
+                                ]
+                    }
+                    ],
+            buttons: [{
+                          text: this.btnSaveLABEL
+                      },
+                      {
+                          text: this.btnCancelLABEL
+                      }
+                      ]
         });
         inquiryForm.superclass.initComponent.apply(this, arguments);
     }

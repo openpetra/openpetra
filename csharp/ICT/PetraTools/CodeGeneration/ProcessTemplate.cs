@@ -207,7 +207,7 @@ namespace Ict.Tools.CodeGeneration
             if (FCodelets.ContainsKey(ACodeletName)
                 && (((string)FCodelets[ACodeletName]).Length > 0))
             {
-                AddToCodelet(ACodeletName, ASeparator);
+                AddSeparatorToCodelet(ACodeletName, ASeparator);
             }
 
             AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
@@ -437,6 +437,30 @@ namespace Ict.Tools.CodeGeneration
             return FCodelets.GetByIndex(index).ToString();
         }
 
+        /// add separator to codelet at the end of the previous row
+        public string AddSeparatorToCodelet(string APlaceholder, string ASeparator)
+        {
+            if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
+            {
+                return String.Empty;
+            }
+
+            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
+            string Codelet = FCodelets.GetByIndex(index).ToString();
+
+            if (Codelet.EndsWith(Environment.NewLine))
+            {
+                Codelet = Codelet.Substring(0, Codelet.Length - Environment.NewLine.Length) + ASeparator + Environment.NewLine;
+            }
+            else
+            {
+                Codelet += ASeparator;
+            }
+
+            FCodelets.SetByIndex(index, Codelet);
+            return Codelet;
+        }
+
         /// add code to existing code that will be replaced later.
         /// the new code is added before the existing code.
         /// this overload allows duplicates to be added
@@ -653,6 +677,18 @@ namespace Ict.Tools.CodeGeneration
                 else
                 {
                     // replace just the placeholder
+
+                    // insert indenting whitespaces if AValue has several lines
+                    if (AValue.Contains(Environment.NewLine))
+                    {
+                        int posNewline = FTemplateCode.Substring(0, posPlaceholder).LastIndexOf(Environment.NewLine);
+                        int countWhitespaces =
+                            FTemplateCode.Substring(posNewline, posPlaceholder - posNewline).Replace("\t",
+                                "    ").Length - Environment.NewLine.Length;
+                        string Whitespaces = Environment.NewLine + "".PadLeft(countWhitespaces);
+                        AValue = AValue.Replace(Environment.NewLine, Whitespaces);
+                    }
+
                     FTemplateCode = FTemplateCode.Replace("{#" + APlaceholder + "}", AValue);
                 }
 

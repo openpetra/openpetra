@@ -6,9 +6,26 @@ RootNode:
     WindowWidth: 650
     Controls:
         pnlContent:
-            Controls: [pnlNameAndAddress]
+            Controls: [pnlRegistration, pnlNameAndAddress]
             Buttons: [btnSave, btnCancel]
         # implemented as xtype fieldset
+        pnlRegistration:
+            title: Registration
+            Controls:
+                Row0: [cmpRegistration]
+                Row2: [lblRegistration3]
+                Row1: [chkAgreement]
+        cmpRegistration: {hideLabel=true}
+            Controls: [lblRegistration1, cmbEvent, lblRegistration2]
+        lblRegistration1: {Label="I hereby register for the event"}
+        lblRegistration2: {Label="and allow my address to be published"}
+        lblRegistration3: {Label="to other participants for setting up shared travel."}
+        cmbEvent:
+            OptionalValues: [March 2010, June 2010, October 2010]
+            Help: Select an event
+        chkAgreement: {vtype=forcetick, hideLabel=true}
+            Label: "I have seen the conditions of xyz for events at http and will later print and sign the PDF"
+            ErrorCheckboxRequired: "You have to tick this and sign the document later"
         pnlNameAndAddress:
             title: Name and Address
             Controls:

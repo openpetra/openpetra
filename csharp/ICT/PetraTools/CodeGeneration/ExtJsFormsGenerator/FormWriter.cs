@@ -61,6 +61,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new LabelGenerator());
             AddControlGenerator(new CompositeGenerator());
             AddControlGenerator(new ButtonGenerator());
+            AddControlGenerator(new ComboboxGenerator());
         }
 
         public override string CodeFileExtension
