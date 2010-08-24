@@ -682,11 +682,15 @@ namespace Ict.Tools.CodeGeneration
                     if (AValue.Contains(Environment.NewLine))
                     {
                         int posNewline = FTemplateCode.Substring(0, posPlaceholder).LastIndexOf(Environment.NewLine);
-                        int countWhitespaces =
-                            FTemplateCode.Substring(posNewline, posPlaceholder - posNewline).Replace("\t",
-                                "    ").Length - Environment.NewLine.Length;
-                        string Whitespaces = Environment.NewLine + "".PadLeft(countWhitespaces);
-                        AValue = AValue.Replace(Environment.NewLine, Whitespaces);
+
+                        if (posNewline >= 0)
+                        {
+                            int countWhitespaces =
+                                FTemplateCode.Substring(posNewline, posPlaceholder - posNewline).Replace("\t",
+                                    "    ").Length - Environment.NewLine.Length;
+                            string Whitespaces = Environment.NewLine + "".PadLeft(countWhitespaces);
+                            AValue = AValue.Replace(Environment.NewLine, Whitespaces);
+                        }
                     }
 
                     FTemplateCode = FTemplateCode.Replace("{#" + APlaceholder + "}", AValue);
