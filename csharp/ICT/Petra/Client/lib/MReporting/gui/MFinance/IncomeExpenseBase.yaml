@@ -1,0 +1,48 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    InterfaceName: IFrmReporting
+    Template: reportwindow
+    #don't generate this file with designer code, because it should not have the menuitems and toolbar
+    FormType: abstract
+    WindowWidth: 680
+    WindowHeight: 480
+    TemplateParameters:
+        REPORTSETTINGSDIRECTORY: Finance
+        
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [uco_GeneralSettings]
+        uco_GeneralSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
+        
+        tpgCostCentres:
+            Label: CostCentre Settings
+            Controls: [uco_CostCentreSettings]
+        uco_CostCentreSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings
+
+        tpgColumnSettings:
+            Label: Column Settings
+            Controls: [uco_FinanceColumns]
+        uco_FinanceColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns
+            Dock: Fill
+        
+        tpgAdditionalSettings:
+            Label: Additional Settings
+            Controls: [rgrFormatCurrency]
+        rgrFormatCurrency:
+            ParameterName: param_currency_format
+            Label: Format currency numbers:
+            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
+        rbtCurrencyComplete:
+            Label: Complete
+            ParameterValue: CurrencyComplete
+        rbtCurrencyWithoutDecimals:
+            Label: Without decimals
+            ParameterValue: CurrencyWithoutDecimals
+        rbtCurrencyThousands:
+            Label: Only Thousands
+            ParameterValue: CurrencyThousands
+        

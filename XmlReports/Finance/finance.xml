@@ -45,7 +45,7 @@
 					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c,
 						a_cost_centre_name_c AS cost_centre_name FROM
 					PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}} AND (
-					</value><value function = "csv" text="a_cost_centre_code_c" variable="param_cost_centre_codes"/>
+					</value><value function = "csv" text="a_cost_centre_code_c" variable="param_cost_centre_codes" format="Text"/>
 					<value text=")"/></queryDetail>
 				</query>
 			</calculation>

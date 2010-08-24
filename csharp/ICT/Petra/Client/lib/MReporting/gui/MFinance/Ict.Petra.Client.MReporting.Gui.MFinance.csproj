@@ -41,6 +41,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Petra.Shared.MFinance">
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -120,6 +129,27 @@
     <Compile Include="IncomeExpenseStmt.Designer.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_CostCentreSettings.cs" />
+    <Compile Include="UC_CostCentreSettings.Designer.cs">
+      <DependentUpon>UC_CostCentreSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_CostCentreSettings.ManualCode.cs">
+      <DependentUpon>UC_CostCentreSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_FinanceColumns.cs" />
+    <Compile Include="UC_FinanceColumns.Designer.cs">
+      <DependentUpon>UC_FinanceColumns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_FinanceColumns.ManualCode.cs">
+      <DependentUpon>UC_FinanceColumns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GeneralSettings.cs" />
+    <Compile Include="UC_GeneralSettings.Designer.cs">
+      <DependentUpon>UC_GeneralSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GeneralSettings.ManualCode.cs">
+      <DependentUpon>UC_GeneralSettings.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AccountDetail.resx">
       <DependentUpon>AccountDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -131,6 +161,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_CostCentreSettings.resx">
+      <DependentUpon>UC_CostCentreSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_FinanceColumns.resx">
+      <DependentUpon>UC_FinanceColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GeneralSettings.resx">
+      <DependentUpon>UC_GeneralSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

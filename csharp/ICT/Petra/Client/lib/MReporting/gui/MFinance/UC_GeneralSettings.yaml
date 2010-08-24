@@ -1,0 +1,69 @@
+RootNode:
+    BaseClass: UserControl
+    UtilObjectClass: TFrmPetraReportingUtils
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    
+    Controls:
+        pnlContent:
+            Controls: [grpLedger, grpCurrency, grpPeriodRange]
+        grpLedger:
+            Label: Ledger Details
+            Dock: Top
+            Controls: [txtLedger, cmbAccountHierarchy]
+            ControlsOrientation: horizontal
+        grpCurrency:
+            Controls: [cmbCurrency]
+            Dock: Top
+        txtLedger: 
+            ReadOnly: true
+            NoParameter: true
+        cmbAccountHierarchy:
+            List: UserDefinedList
+            ParameterName: param_account_hierarchy_c
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International, Transaction]
+        grpPeriodRange:
+            Controls: [rbtPeriod, rbtQuarter, rbtDate]
+        rbtPeriod:
+            ControlsOrientation: horizontal
+            Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
+        txtStartPeriod:
+            Label: from
+            ParameterName: param_start_period_i
+            Width: 30
+        txtEndPeriod:
+            Label: to
+            ParameterName: param_end_period_i
+            Width: 30
+        cmbPeriodYear: 
+            Label: Year
+            List: UserDefinedList
+            ParameterName: param_year_i
+        
+        rbtQuarter:
+            ControlsOrientation: horizontal
+            Controls: [txtQuarter, cmbQuarterYear]
+            NoParameter: true
+        txtQuarter:
+            Label: from
+            Width: 30
+            NoParameter: true
+        cmbQuarterYear: 
+            Label: Year
+            List: UserDefinedList
+            ParameterName: param_year_i
+    
+        rbtDate:
+            ControlsOrientation: horizontal
+            Controls: [dtpStartDate, dtpEndDate]
+            NoParameter: true
+        dtpStartDate:
+            NoParameter: true
+            Label: From
+        dtpEndDate:
+            NoParameter: true
+            Label: To

@@ -24,6 +24,7 @@
 using System;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -40,15 +41,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-
-                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                // if there is only one hierarchy, disable the control
-                this.cmbAccountHierarchy.Enabled = (this.cmbAccountHierarchy.Count > 1);
-                clbCostCentres.SetCheckedStringList("");
+                uco_CostCentreSettings.InitialiseCostCentreList(FLedgerNumber);
+                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
@@ -57,10 +51,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_ytd", true);
-            ACalc.AddParameter("param_cost_centre_summary", false);
-            ACalc.AddParameter("param_cost_centre_breakdown", false);
-            ACalc.AddParameter("param_quarter", false);
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
         }
     }
 }

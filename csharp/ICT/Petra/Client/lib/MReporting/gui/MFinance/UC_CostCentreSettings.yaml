@@ -1,0 +1,47 @@
+RootNode:
+    BaseClass: UserControl
+    UtilObjectClass: TFrmPetraReportingUtils
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actUnselectAll:
+            ActionClick: UnselectAll
+    Controls:
+        pnlContent:
+            Controls: [rgrCostCentreOptions, chkCostCentreBreakdown, rgrDepth]
+            Dock: Fill
+        rgrCostCentreOptions: 
+            ParameterName: param_costcentreoptions
+            Controls: [rbtSelectedCostCentres, rbtAllCostCentres, rbtAllActiveCostCentres, rbtAccountLevel, chkExcludeInactiveCostCentres]
+        rbtSelectedCostCentres:
+            Controls: [clbCostCentres, btnUnselectAllCostCentres]
+            ControlsOrientation: horizontal
+        rbtAllCostCentres:
+        rbtAllActiveCostCentres:
+        rbtAccountLevel:
+        chkExcludeInactiveCostCentres:
+            Label: Exclude inactive Cost Centres
+            CheckBoxAttachedLabel: right
+            ParameterName: param_ExcludeInactiveCostCentres
+            OnChange: chkExcludeCostCentresChanged
+        clbCostCentres: 
+            List: UserDefinedList
+            NoLabel:true
+            Dock: Fill
+            ParameterName: param_cost_centre_codes
+            Width: 365
+        btnUnselectAllCostCentres: 
+            Label: Unselect All
+            Action: actUnselectAll
+        chkCostCentreBreakdown: 
+            ParameterName: param_cost_centre_breakdown
+            Help: group not by costcentre but by account
+            CheckBoxAttachedLabel: right
+        rgrDepth:
+            Dock: Top
+            ParameterName: param_depth
+            OptionalValues: [detail, standard, summary]
+            
+     

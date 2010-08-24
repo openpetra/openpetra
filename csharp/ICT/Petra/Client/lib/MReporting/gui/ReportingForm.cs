@@ -1114,6 +1114,54 @@ namespace Ict.Petra.Client.MReporting.Gui
     }
 
     /// <summary>
+    /// Column function for partner module
+    /// </summary>
+    public class TFinanceColumnFunction : TColumnFunction
+    {
+        /// <summary>Show YTD </summary>
+        public bool FDisplayYTD;
+        /// <summary>Default value to show YTD </summary>
+        public bool FDefaultYTD;
+
+        #region TFinanceColumnFunction Implementation
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription"></param>
+        public TFinanceColumnFunction(String ADescription) : base(ADescription)
+        {
+            FDisplayYTD = true;
+            FDefaultYTD = false;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription"></param>
+        /// <param name="ANumberColumns"></param>
+        public TFinanceColumnFunction(String ADescription, System.Int32 ANumberColumns)
+            : base(ADescription, ANumberColumns)
+        {
+            FDisplayYTD = true;
+            FDefaultYTD = false;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ADescription"></param>
+        /// <param name="ADisplayYTD"></param>
+        /// <param name="ADefaultYTD"></param>
+        public TFinanceColumnFunction(String ADescription, bool ADisplayYTD, bool ADefaultYTD) : base(ADescription)
+        {
+            FDisplayYTD = ADisplayYTD;
+            FDefaultYTD = ADefaultYTD;
+        }
+
+        #endregion
+    }
+
+    /// <summary>
     /// a delegate for running the report preview window
     /// </summary>
     public delegate void TMyUpdateDelegate();
