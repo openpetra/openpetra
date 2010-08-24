@@ -1477,6 +1477,10 @@ namespace Ict.Common
                         format = format.Substring(0, format.IndexOf("9.99")) + format.Substring(format.IndexOf("9.99") + 4);
                     }
                 }
+                else if (IsSame(AGeneralFormatString, "CurrencyComplete"))
+                {
+                    format = "#,##0.00;(#,##0.00);0.00;0";
+                }
                 else if (IsSame(AVariantFormatString, "currency"))
                 {
                     // this is needed to format the values for the debit/credit columns, when applying e.g. #,##0.00; ; ; ;

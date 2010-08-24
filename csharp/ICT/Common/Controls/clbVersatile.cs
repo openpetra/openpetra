@@ -225,6 +225,31 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// This function returns the comma separated list of all row,
+        /// identified by their codes (using FKeyColumn)
+        ///
+        /// </summary>
+        /// <returns>String</returns>
+        public String GetAllStringList()
+        {
+            String ReturnValue;
+
+            ReturnValue = "";
+
+            if (FDataView != null)
+            {
+                foreach (DataRowView Row in FDataView)
+                {
+                    // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
+                    // eg. motivation group and detail
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, Row[FKeyColumn].ToString());
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Clear the checked state for all items
         ///
         /// </summary>
