@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
-            updateChangeableStatus();
+            UpdateChangeableStatus();
             FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
             ((TFrmGLBatch)ParentForm).LoadJournals(
                 ARow.LedgerNumber,
@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TVerificationResultCollection Verifications;
                 GLBatchTDS mergeDS;
                 //save the position of the actual row
-                int rowIndex = currentRowIndex();
+                int rowIndex = CurrentRowIndex();
 
                 if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SelectByIndex(rowIndex);
                 }
 
-                updateChangeableStatus();
+                UpdateChangeableStatus();
             }
         }
 
@@ -205,40 +205,46 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
+                        FSelectedBatchNumber),
+                    Catalog.GetString("Question"),
+                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                string ErrorMessages = String.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
+                if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
                 }
+                else
+                {
+                    // TODO: print reports on successfully posted batch
+                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
 
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
-            }
-            else
-            {
-                // TODO: print reports on successfully posted batch
-                MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-
-                // TODO: refresh the grid, to reflect that the batch has been posted
-                LoadBatches(FLedgerNumber);
+                    // TODO: refresh the grid, to reflect that the batch has been posted
+                    LoadBatches(FLedgerNumber);
+                }
             }
         }
 
         private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
         {
-            int rowIndex = currentRowIndex();
+            int rowIndex = CurrentRowIndex();
 
             SetBatchFilter();
             // TODO Select the actual row again in updated
             SelectByIndex(rowIndex);
-            updateChangeableStatus();
+            UpdateChangeableStatus();
         }
 
-        private int currentRowIndex()
+        private int CurrentRowIndex()
         {
             int rowIndex = -1;
 
@@ -559,7 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// enable or disable the buttons
         /// </summary>
-        public void updateChangeableStatus()
+        public void UpdateChangeableStatus()
         {
             Boolean changeable = (FPreviouslySelectedDetailRow != null)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);

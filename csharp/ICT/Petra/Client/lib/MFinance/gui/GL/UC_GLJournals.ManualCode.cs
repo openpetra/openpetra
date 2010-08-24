@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            updateChangeableStatus();
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
-            updateChangeableStatus();
+            UpdateChangeableStatus();
 
             if (ARow == null)
             {
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// enable or disable the buttons
         /// </summary>
-        public void updateChangeableStatus()
+        public void UpdateChangeableStatus()
         {
             this.btnAdd.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
-                updateChangeableStatus();
+                UpdateChangeableStatus();
             }
         }
     }
