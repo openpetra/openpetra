@@ -896,7 +896,11 @@ namespace Ict.Petra.Server.MReporting
                                 string valuePair = value;
                                 listText = rptValue.strText;
                                 string calculationText = rptValue.strCalculation;
+
+                                // if the format is defined in the xml file, it overwrites the value we get from (new TVariant(value).TypeVariant == eVariantTypes.xxx
                                 bool ValueIsNumber = (rptValue.strFormat == "Number");
+                                bool ValueIsText = (rptValue.strFormat == "Text");
+
                                 ReturnValue.Add(new TVariant('('));
 
                                 while (listText.Length != 0)
@@ -927,7 +931,7 @@ namespace Ict.Petra.Server.MReporting
                                     //todo: allow integer as well; problem with motivation detail codes that are just numbers;
                                     //todo: specify type with text, variable names and type
                                     //if (new TVariant(value).TypeVariant == eVariantTypes.eString)
-                                    if (!ValueIsNumber)
+                                    if (!ValueIsNumber || ValueIsText)
                                     {
                                         ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = \""));
                                         ReturnValue.Add(new TVariant(value));
@@ -945,7 +949,12 @@ namespace Ict.Petra.Server.MReporting
                             }
                             else
                             {
-                                if (new TVariant(value).TypeVariant == eVariantTypes.eString)
+                                // if the format is defined in the xml file, it overwrites the value we get from (new TVariant(value).TypeVariant == eVariantTypes.xxx
+                                bool ValueIsNumber = (rptValue.strFormat == "Number");
+                                bool ValueIsText = (rptValue.strFormat == "Text");
+
+                                if ((ValueIsText || (new TVariant(value).TypeVariant == eVariantTypes.eString))
+                                    && !ValueIsNumber)
                                 {
                                     ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = \""));
                                     ReturnValue.Add(new TVariant(value));

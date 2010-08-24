@@ -279,7 +279,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return 1.0;
             }
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             ADailyExchangeRateRow fittingRate = null;
 
@@ -333,7 +334,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             if (fittingRate != null)
             {
