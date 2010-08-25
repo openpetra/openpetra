@@ -13,7 +13,7 @@ if(partnerdataForm) {
     lblRegistration2HELP:'',
     lblRegistration3LABEL:'to other participants for setting up shared travel.',
     lblRegistration3HELP:'',
-    chkAgreementLABEL:'I have seen the conditions of xyz for events at http and will later print and sign the PDF',
+    chkAgreementLABEL:'I have seen the <a href="test.html">conditions of xyz for events</a> and will later print and sign the PDF',
     chkAgreementHELP:'',
     strErrorCheckboxRequired:'You have to tick this and sign the document later',
     txtFirstNameLABEL:'First name',

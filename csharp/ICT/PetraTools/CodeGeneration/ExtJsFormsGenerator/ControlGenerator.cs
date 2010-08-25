@@ -89,10 +89,15 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
                 foreach (XmlAttribute attr in AjaxParametersNode.Attributes)
                 {
-                    ParameterString += attr.Name + ": '" + attr.Value + "', ";
+                    if (!attr.Name.Equals("depth"))
+                    {
+                        Console.WriteLine(attr.Name);
+                        ParameterString += attr.Name + ": '" + attr.Value + "', ";
+                    }
                 }
 
                 ctrlSnippet.SetCodelet("REQUESTPARAMETERS", ParameterString);
+                writer.FTemplate.SetCodelet("REQUESTPARAMETERS", "true");
             }
 
             return ctrlSnippet;

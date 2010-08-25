@@ -175,5 +175,9 @@
       <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>
       <Name>Ict.Petra.Server.MPersonnel.DataAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MPartner.DatasetAccess.csproj">
+      <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157F2}</Project>
+      <Name>Ict.Petra.Server.MPartner.DatasetAccess</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

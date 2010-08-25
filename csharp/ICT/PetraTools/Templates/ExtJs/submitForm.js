@@ -39,15 +39,31 @@ Ext.onReady(function() {
             if (!this.checked) 
             {
                 Ext.form.Field.prototype.markInvalid.call(this, {#FORMNAME}.strErrorCheckboxRequired); 
+                return false;
             }
             else 
             {
                 Ext.form.Field.prototype.clearInvalid.call(this);
             }
         }
+
+        return true;
     };    
 });
 {#ENDIF FORCECHECKBOX}
+
+{#IFDEF REQUESTPARAMETERS}
+function XmlExtractJSONResponse(response)
+{
+    var xml = response.responseXML;
+    var stringDataNode = xml.getElementsByTagName('string')[0];
+    if(stringDataNode){
+        jsonString = stringDataNode.firstChild.data;
+        jsonData = Ext.util.JSON.decode(jsonString);
+        return jsonData;
+    }
+}
+{#ENDIF REQUESTPARAMETERS}
 
 {#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
     {#RESOURCESTRINGS}
@@ -232,14 +248,28 @@ new Ext.form.ComboBox({
                     {#REQUESTPARAMETERS}
                     AJSONFormData: Ext.encode({#FORMNAME}.getForm().getValues())
                 },
-                success: function () {
-                    Ext.Msg.show({
-                        title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
-                        msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
-                        modal: true,
-                        icon: Ext.Msg.INFO,
-                        buttons: Ext.Msg.OK
-                    });
+                success: function (response) {
+                    jsonData = XmlExtractJSONResponse(response);
+                    if (jsonData.failure == true)
+                    {
+                          Ext.Msg.show({
+                              title: partnerdata.btnSaveREQUESTFAILURETITLE,
+                              msg: partnerdata.btnSaveREQUESTFAILUREMESSAGE + "<br/>" + jsonData.data.result,
+                              modal: true,
+                              icon: Ext.Msg.ERROR,
+                              buttons: Ext.Msg.OK
+                          });
+                    }
+                    else
+                    {
+                        Ext.Msg.show({
+                            title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
+                            msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
+                            modal: true,
+                            icon: Ext.Msg.INFO,
+                            buttons: Ext.Msg.OK
+                        });
+                    }
                 },
                 failure: function () {
                     Ext.Msg.show({

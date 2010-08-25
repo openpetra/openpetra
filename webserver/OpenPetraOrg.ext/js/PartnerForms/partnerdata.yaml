@@ -24,7 +24,7 @@ RootNode:
             OptionalValues: [March 2010, June 2010, October 2010]
             Help: Select an event
         chkAgreement: {vtype=forcetick, hideLabel=true}
-            Label: "I have seen the conditions of xyz for events at http and will later print and sign the PDF"
+            Label: "I have seen the <a href="test.html">conditions of xyz for events</a> and will later print and sign the PDF"
             ErrorCheckboxRequired: "You have to tick this and sign the document later"
         pnlNameAndAddress:
             title: Name and Address

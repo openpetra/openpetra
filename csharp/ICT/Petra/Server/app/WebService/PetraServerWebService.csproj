@@ -133,6 +133,10 @@
       <Project>{4F3F60C9-AC5E-4023-922A-FB616B53A2C0}</Project>
       <Name>Ict.Petra.Server.App.ClientDomain.CallForwarder</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ClientDomain\Ict.Petra.Server.App.ClientDomain.csproj">
+      <Project>{DC487150-0555-4C05-A13F-91588D9D750D}</Project>
+      <Name>Ict.Petra.Server.App.ClientDomain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Ict.Petra.Server.App.Core.csproj">
       <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
       <Name>Ict.Petra.Server.App.Core</Name>

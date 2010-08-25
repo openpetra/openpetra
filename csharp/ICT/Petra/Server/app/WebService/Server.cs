@@ -26,6 +26,8 @@ using System.Web.Services;
 using System.Data;
 using Ict.Common;
 using Ict.Petra.Server.App.Main;
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
 using Ict.Common.Verification;
@@ -68,6 +70,9 @@ public class TOpenPetraOrg : WebService
             try
             {
                 TheServerManager.EstablishDBConnection();
+
+                DomainManager.GSystemDefaultsCache = new TSystemDefaultsCache();
+                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
             }
             catch (Exception e)
             {
@@ -258,13 +263,22 @@ public class TOpenPetraOrg : WebService
         {
             if (!LoginInternal("ANONYMOUS", ""))
             {
-                TLogging.Log(
-                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions");
-                return "error";
+                string message =
+                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
+                TLogging.Log(message);
+
+#if DEBUGMODE
+#else
+                // do not disclose errors on production version
+                message = "";
+#endif
+
+                return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
         }
 
-        // TLogging.Log(AJSONFormData);
+        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"");
+
         return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
     }
 

@@ -36,14 +36,28 @@ Ext.onReady(function() {
             if (!this.checked)
             {
                 Ext.form.Field.prototype.markInvalid.call(this, partnerdata.strErrorCheckboxRequired);
+                return false;
             }
             else
             {
                 Ext.form.Field.prototype.clearInvalid.call(this);
             }
         }
+
+        return true;
     };
 });
+
+function XmlExtractJSONResponse(response)
+{
+    var xml = response.responseXML;
+    var stringDataNode = xml.getElementsByTagName('string')[0];
+    if(stringDataNode){
+        jsonString = stringDataNode.firstChild.data;
+        jsonData = Ext.util.JSON.decode(jsonString);
+        return jsonData;
+    }
+}
 
 partnerdataForm = Ext.extend(Ext.FormPanel, {
     pnlContentFORMCAPTION:'Application form',
@@ -59,7 +73,7 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
     lblRegistration2HELP:'',
     lblRegistration3LABEL:'to other participants for setting up shared travel.',
     lblRegistration3HELP:'',
-    chkAgreementLABEL:'I have seen the conditions of xyz for events at http and will later print and sign the PDF',
+    chkAgreementLABEL:'I have seen the <a href="test.html">conditions of xyz for events</a> and will later print and sign the PDF',
     chkAgreementHELP:'',
     strErrorCheckboxRequired:'You have to tick this and sign the document later',
     txtFirstNameLABEL:'First name',
@@ -630,17 +644,31 @@ partnerdataForm = Ext.extend(Ext.FormPanel, {
                                   Ext.Ajax.request({
                                       url: '/server.asmx/DataImportFromForm',
                                       params:{
-                                          depth: '0', AFormID: 'EFSAnmeldung',
+                                          AFormID: 'EFSAnmeldung',
                                           AJSONFormData: Ext.encode(partnerdata.getForm().getValues())
                                       },
-                                      success: function () {
-                                          Ext.Msg.show({
-                                              title: partnerdata.btnSaveREQUESTSUCCESSTITLE,
-                                              msg: partnerdata.btnSaveREQUESTSUCCESSMESSAGE,
-                                              modal: true,
-                                              icon: Ext.Msg.INFO,
-                                              buttons: Ext.Msg.OK
-                                          });
+                                      success: function (response) {
+                                          jsonData = XmlExtractJSONResponse(response);
+                                          if (jsonData.failure == true)
+                                          {
+                                                Ext.Msg.show({
+                                                    title: partnerdata.btnSaveREQUESTFAILURETITLE,
+                                                    msg: partnerdata.btnSaveREQUESTFAILUREMESSAGE + "<br/>" + jsonData.data.result,
+                                                    modal: true,
+                                                    icon: Ext.Msg.ERROR,
+                                                    buttons: Ext.Msg.OK
+                                                });
+                                          }
+                                          else
+                                          {
+                                              Ext.Msg.show({
+                                                  title: partnerdata.btnSaveREQUESTSUCCESSTITLE,
+                                                  msg: partnerdata.btnSaveREQUESTSUCCESSMESSAGE,
+                                                  modal: true,
+                                                  icon: Ext.Msg.INFO,
+                                                  buttons: Ext.Msg.OK
+                                              });
+                                          }
                                       },
                                       failure: function () {
                                           Ext.Msg.show({

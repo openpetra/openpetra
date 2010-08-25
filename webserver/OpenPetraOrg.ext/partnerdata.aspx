@@ -31,10 +31,8 @@ private string GetPreferredLanguage()
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js"></script>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
     
-    <script type="text/javascript" src="js/commonOpenPetra.js"></script>
     <script type="text/javascript" src="js/PartnerForms/partnerdata.js"></script>
     <script type="text/javascript" src="js/PartnerForms/partnerdata-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
-    <script type="text/javascript" src="js/partnerdata.js"></script>
     <script type="text/javascript" src="js/PartnerForms/inquiry.js"></script>
 
 <script type="text/javascript">
@@ -43,7 +41,7 @@ private string GetPreferredLanguage()
     Ext.onReady(function() {
         Ext.QuickTips.init();
         Ext.form.Field.prototype.msgTarget = 'side';
-        CreateCustomValidationTypePassword();
+
         partnerdata = new partnerdataForm();
         partnerdata.render('partnerdataDiv');
 

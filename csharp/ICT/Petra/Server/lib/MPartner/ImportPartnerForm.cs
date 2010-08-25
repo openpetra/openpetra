@@ -28,10 +28,13 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Jayrock.Json;
 
 namespace Ict.Petra.Server.MPartner.Import
@@ -41,6 +44,10 @@ namespace Ict.Petra.Server.MPartner.Import
     /// </summary>
     public class TApplicationFormData
     {
+        /// <summary>
+        /// title for the partner
+        /// </summary>
+        public string title;
         /// <summary>
         /// first name of the partner
         /// </summary>
@@ -61,6 +68,26 @@ namespace Ict.Petra.Server.MPartner.Import
         /// name of the city
         /// </summary>
         public string city;
+        /// <summary>
+        /// county/state
+        /// </summary>
+        public string county;
+        /// <summary>
+        /// country
+        /// </summary>
+        public string country;
+        /// <summary>
+        /// land line phone number
+        /// </summary>
+        public string phone;
+        /// <summary>
+        /// mobile phone number
+        /// </summary>
+        public string mobilephone;
+        /// <summary>
+        /// email address
+        /// </summary>
+        public string email;
     }
 
     /// <summary>
@@ -69,6 +96,70 @@ namespace Ict.Petra.Server.MPartner.Import
     /// </summary>
     public class TImportPartnerForm
     {
+        private static Int64 CreateFamily(ref PartnerEditTDS AMainDS, TApplicationFormData APartnerData)
+        {
+            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
+            Int64 SiteKey = DomainManager.GSiteKey;
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(SiteKey);
+                TNewPartnerKey.SubmitNewPartnerKey(SiteKey, newPartnerKey, ref newPartnerKey);
+                newPartner.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            // TODO: new status UNAPPROVED?
+            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            AMainDS.PPartner.Rows.Add(newPartner);
+
+            PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
+            newFamily.PartnerKey = newPartner.PartnerKey;
+            newFamily.FamilyName = APartnerData.lastname;
+            newFamily.FirstName = APartnerData.firstname;
+            newFamily.Title = APartnerData.title;
+            AMainDS.PFamily.Rows.Add(newFamily);
+
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+            newPartner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
+
+            newPartner.PartnerShortName =
+                Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
+            return newPartnerKey;
+        }
+
+        private static void CreateAddress(ref PartnerEditTDS AMainDS, TApplicationFormData APartnerData, Int64 ANewPartnerKey)
+        {
+            // the webform prevents adding empty addresses
+
+            // TODO: avoid duplicate addresses, reuse existing locations
+            PLocationRow location = AMainDS.PLocation.NewRowTyped(true);
+
+            location.LocationKey = (AMainDS.PLocation.Rows.Count + 1) * -1;
+            location.SiteKey = 0;
+
+            location.CountryCode = APartnerData.country;
+            location.County = APartnerData.county;
+            location.StreetName = APartnerData.street;
+            location.City = APartnerData.city;
+            location.PostalCode = APartnerData.postcode;
+            AMainDS.PLocation.Rows.Add(location);
+
+            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+            partnerlocation.SiteKey = 0;
+            partnerlocation.LocationKey = location.LocationKey;
+            partnerlocation.PartnerKey = ANewPartnerKey;
+            partnerlocation.SendMail = true;
+            partnerlocation.DateEffective = DateTime.Now;
+            partnerlocation.LocationType = "HOME";
+            partnerlocation.EmailAddress = APartnerData.email;
+            partnerlocation.TelephoneNumber = APartnerData.phone;
+            partnerlocation.MobileNumber = APartnerData.mobilephone;
+            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+        }
+
         /// <summary>
         /// method for importing data entered on the web form
         /// </summary>
@@ -77,29 +168,46 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
         {
-            if (AFormID == "Personnel")
+            if (AFormID == "EFSAnmeldung")
             {
                 try
                 {
                     TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
                         AJSONFormData);
 
-                    TLogging.Log(data.firstname);
-                    TLogging.Log(data.street);
+                    PartnerEditTDS MainDS = new PartnerEditTDS();
 
                     // TODO: check that email is unique. do not allow email to be associated with 2 records. this would cause trouble with authentication
+                    // TODO: create a user for this partner
 
-                    // TODO send email, create PDF
+                    Int64 NewPartnerKey = CreateFamily(ref MainDS, data);
+                    CreateAddress(ref MainDS, data, NewPartnerKey);
+
+                    TVerificationResultCollection VerificationResult;
+                    PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+                    if (VerificationResult.HasCriticalError())
+                    {
+                        TLogging.Log(VerificationResult.BuildVerificationResultString());
+                        string message = "There is some critical error when saving to the database";
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+
+                    // TODO create PDF, send email
                 }
                 catch (Exception e)
                 {
                     TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
                 }
 
-                return "success";
+                return "{\"success\":true}";
             }
-
-            return "error";
+            else
+            {
+                string message = "The server does not know about a form called " + AFormID;
+                return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+            }
         }
     }
 }
