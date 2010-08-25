@@ -1,20 +1,20 @@
 ﻿RootNode:
     BaseYaml: IncomeExpenseBase.yaml
     FormType: report
-    FormTitle: Income Expense Statement
+    FormTitle: Income Expense Statement (Multi Ledger)
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\incomeexpensestatement.xml,Finance\\\\finance.xml,common.xml]
-        REPORTNAME: Income Expense Statement
-        CURRENTREPORT: Income Expense Statement
+        REPORTNAME: Inc Exp Multi Ledger
+        CURRENTREPORT: Income Expense Statement 
         SETAVAILABLEFUNCTIONS:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION:BLANK
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
-        #~ show the YTD Checkbox (true) and hide the Ledger selection grid (false)
-        INITUSERCONTROLS: uco_FinanceColumns.SetVisibility(true, false);
+        #~ show the YTD Checkbox (true) and show the Ledger selection grid (true)
+        INITUSERCONTROLS: uco_FinanceColumns.SetVisibility(true, true);
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Controls:
@@ -41,16 +41,5 @@
         Para6:
             Name: Account % INC/EXP
             Parameter: 1
-        Para7:
-            Name: Budget Previous Year
-            Parameter: 0
-        Para8:
-            Name: Budget Selected Year
-            Parameter: 0
-        Para9:
-            Name: Budget Whole Selected Year
-            Parameter: false, true
-        Para10:
-            Name: Budget Next Year
-            Parameter: 0
+            
             

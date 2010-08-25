@@ -711,16 +711,16 @@ namespace Ict.Petra.Server.MReporting.MFinance
             AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(pv_ledger_number_i,
                 pv_period_i,
                 databaseConnection.Transaction);
-            
+
             if (AccountingPeriodTable.Rows.Count < 1)
             {
-            	return -1;
+                return -1;
             }
-            
+
             DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
 
             endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
-            
+
             // get the daily exchange rate between base and intl currency for the period
             return TTransactionWebConnector.GetDailyExchangeRate(ledgerTable[0].IntlCurrency, ledgerTable[0].BaseCurrency, endOfPeriod);
         }

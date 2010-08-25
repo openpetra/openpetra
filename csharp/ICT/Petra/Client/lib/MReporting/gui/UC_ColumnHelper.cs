@@ -284,6 +284,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             for (int Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
             {
                 ACalculator.GetParameters().Copy(AColumnParameters, Counter, -1, eParameterFit.eExact, Counter);
+
+                if (!ACalculator.GetParameters().Exists("param_ytd", Counter))
+                {
+                    // if param_ytd is not set for the column then add it.
+                    ACalculator.GetParameters().Add("param_ytd", new TVariant(false), Counter);
+                }
             }
 
             ACalculator.SetMaxDisplayColumns(MaxDisplayColumns);

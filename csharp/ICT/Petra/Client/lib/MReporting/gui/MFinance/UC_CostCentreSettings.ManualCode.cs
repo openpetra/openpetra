@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             clbCostCentres.SelectionMode = SourceGrid.GridSelectionMode.Column;
+            FCostCenterCodesDuringLoad = "";
         }
 
         #region Parameter/Settings Handling
@@ -73,7 +74,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
-            if (rbtSelectedCostCentres.Checked && (clbCostCentres.GetCheckedStringList().Length == 0))
+            if (rbtSelectedCostCentres.Checked
+                && (clbCostCentres.GetCheckedStringList().Length == 0)
+                && (AReportAction == TReportActionEnum.raGenerate))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(Catalog.GetString("Selected Cost Centres"),
                     Catalog.GetString("No cost centre was selected!"),

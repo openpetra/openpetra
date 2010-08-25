@@ -166,6 +166,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         #endregion
+
+        /// <summary>
+        /// Hide all Period Range selcection elements except of the year selection
+        /// </summary>
+        public void ShowOnlyYearSelection()
+        {
+            bool IsVisible = false;
+
+            rbtPeriod.Visible = IsVisible;
+            rbtQuarter.Visible = IsVisible;
+            rbtDate.Visible = IsVisible;
+            lblStartPeriod.Visible = IsVisible;
+            lblEndPeriod.Visible = IsVisible;
+            lblQuarter.Visible = IsVisible;
+            lblQuarterYear.Visible = IsVisible;
+            lblStartDate.Visible = IsVisible;
+            lblEndDate.Visible = IsVisible;
+            txtStartPeriod.Visible = IsVisible;
+            txtEndPeriod.Visible = IsVisible;
+            txtQuarter.Visible = IsVisible;
+            cmbQuarterYear.Visible = IsVisible;
+            dtpStartDate.Visible = IsVisible;
+            dtpEndDate.Visible = IsVisible;
+            cmbPeriodYear.Enabled = true;
+            cmbPeriodYear.Visible = true;
+        }
+
         private void UnselectAll(System.Object sender, System.EventArgs e)
         {
         }

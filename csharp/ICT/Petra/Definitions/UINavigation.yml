@@ -129,6 +129,8 @@ OpenPetra:
                             #RepeatLastReport:
                             #MyFancyBalanceSheetWithCoolGraph:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
+                        IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                        IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:

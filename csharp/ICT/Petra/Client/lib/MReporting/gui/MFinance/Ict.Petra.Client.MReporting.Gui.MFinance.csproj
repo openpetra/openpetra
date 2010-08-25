@@ -122,6 +122,20 @@
     <Compile Include="BalanceSheet.ManualCode.cs">
       <DependentUpon>BalanceSheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="IncomeExpenseMultiLedger.cs" />
+    <Compile Include="IncomeExpenseMultiLedger.Designer.cs">
+      <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IncomeExpenseMultiLedger.ManualCode.cs">
+      <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IncomeExpenseMultiPeriod.cs" />
+    <Compile Include="IncomeExpenseMultiPeriod.Designer.cs">
+      <DependentUpon>IncomeExpenseMultiPeriod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IncomeExpenseMultiPeriod.ManualCode.cs">
+      <DependentUpon>IncomeExpenseMultiPeriod.cs</DependentUpon>
+    </Compile>
     <Compile Include="IncomeExpenseStmt.ManualCode.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
@@ -158,6 +172,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BalanceSheet.resx">
       <DependentUpon>BalanceSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IncomeExpenseMultiLedger.resx">
+      <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IncomeExpenseMultiPeriod.resx">
+      <DependentUpon>IncomeExpenseMultiPeriod.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>

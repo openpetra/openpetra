@@ -78,10 +78,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             FPetraUtilsObject = APetraUtilsObject;
 
-//             this.MI_DifferentFinancialYear.Checked = FFinanceDataHandler.GetDisplayDifferentFinancialYear();
-
-//			InitialiseLedger((Int32)StringHelper.TryStrToInt(AReportParameter, -1));
-
             FColumnParameters = new TParameterList();
             FColumnParameters.Add("MaxDisplayColumns", 0);
             FPetraUtilsObject.FMaxDisplayColumns = 0;
@@ -197,6 +193,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             MaxDisplayColumns = TUC_ColumnHelper.ReadControls(ref FColumnParameters, ref ACalculator);
 
             FPetraUtilsObject.FMaxDisplayColumns = MaxDisplayColumns;
+
+            for (int Counter = 0; Counter <= FColumnParameters.Get("MaxDisplayColumns").ToInt() - 1; Counter += 1)
+            {
+                String SelectedLedgers = FColumnParameters.Get("param_selected_ledgers", Counter).ToString(false);
+
+                if (SelectedLedgers.Length != 0)
+                {
+                    ACalculator.AddColumnFunctionLedgers(Counter, "add",
+                        StringHelper.StrSplit(SelectedLedgers, ","),
+                        FColumnParameters.Get("param_calculation", Counter).ToString(), FColumnParameters.Get("param_ytd", Counter).ToBool());
+                }
+            }
 
             // set the global param_ytd; that is needed for formatting the header of some reports
             String ytdMixed = "";
