@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             FLedgerNumber = ALedgerNumber;
 
-            TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, ALedgerNumber, false, chkExcludeInactiveCostCentres.Checked, false, true);
+            TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, ALedgerNumber, false, false, chkExcludeInactiveCostCentres.Checked, true);
 
             if (FCostCenterCodesDuringLoad.Length > 0)
             {

@@ -719,7 +719,18 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
 
-            endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
+            try
+            {
+                endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                if ((endOfPeriod.Month == 2) && (endOfPeriod.Day == 29))
+                {
+                    // try again with 28 days
+                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day - 1);
+                }
+            }
 
             // get the daily exchange rate between base and intl currency for the period
             return TTransactionWebConnector.GetDailyExchangeRate(ledgerTable[0].IntlCurrency, ledgerTable[0].BaseCurrency, endOfPeriod);

@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtPeriod.Checked = true;
             dtpStartDate.Enabled = false;
             dtpEndDate.Enabled = false;
+            rbtDate.Enabled = false;
             txtQuarter.Enabled = false;
             cmbQuarterYear.Enabled = false;
         }
