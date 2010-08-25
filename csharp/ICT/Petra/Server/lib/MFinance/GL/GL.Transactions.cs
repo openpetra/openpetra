@@ -324,7 +324,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     // sort rates by date, look for rate just before the date we are looking for
                     rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
-                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "< '" +
+                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
                                                   ADateEffective.ToString("dd/MM/yyyy") + "'";
 
                     if (rates.DefaultView.Count > 0)
