@@ -27,7 +27,7 @@ using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmBalanceSheetStandard
+    public partial class TFrmBalanceSheetMultiLedger
     {
         private Int32 FLedgerNumber;
 

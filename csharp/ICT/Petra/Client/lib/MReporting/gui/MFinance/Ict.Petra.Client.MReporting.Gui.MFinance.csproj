@@ -115,6 +115,13 @@
       <DependentUpon>ARConferencePayments.cs</DependentUpon>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BalanceSheetMultiLedger.cs" />
+    <Compile Include="BalanceSheetMultiLedger.Designer.cs">
+      <DependentUpon>BalanceSheetMultiLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BalanceSheetMultiLedger.ManualCode.cs">
+      <DependentUpon>BalanceSheetMultiLedger.cs</DependentUpon>
+    </Compile>
     <Compile Include="BalanceSheetStandard.cs" />
     <Compile Include="BalanceSheetStandard.Designer.cs">
       <DependentUpon>BalanceSheetStandard.cs</DependentUpon>
@@ -169,6 +176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ARConferencePayments.resx">
       <DependentUpon>ARConferencePayments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BalanceSheetMultiLedger.resx">
+      <DependentUpon>BalanceSheetMultiLedger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BalanceSheetStandard.resx">
       <DependentUpon>BalanceSheetStandard.cs</DependentUpon>

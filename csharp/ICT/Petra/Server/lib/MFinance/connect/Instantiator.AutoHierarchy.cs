@@ -2455,6 +2455,84 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadCostCentreHierarchy(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public string ExportAccountHierarchy(Int32 ALedgerNumber,
+                                             string AAccountHierarchyName)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName);
+        }
+
+        /// generated method from connector
+        public string ExportCostCentreHierarchy(Int32 ALedgerNumber)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportCostCentreHierarchy(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public bool ImportAccountHierarchy(Int32 ALedgerNumber,
+                                           string AHierarchyName,
+                                           string AXmlAccountHierarchy)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
+        }
+
+        /// generated method from connector
+        public bool ImportCostCentreHierarchy(Int32 ALedgerNumber,
+                                              string AXmlHierarchy)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportCostCentreHierarchy(ALedgerNumber, AXmlHierarchy);
+        }
+
+        /// generated method from connector
+        public bool ImportNewLedger(Int32 ALedgerNumber,
+                                    string AXmlLedgerDetails,
+                                    string AXmlAccountHierarchy,
+                                    string AXmlCostCentreHierarchy,
+                                    string AXmlMotivationDetails)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlLedgerDetails, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlMotivationDetails);
+        }
+
+        /// generated method from connector
+        public bool CanDeleteAccount(Int32 ALedgerNumber,
+                                     string AAccountCode)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CanDeleteAccount(ALedgerNumber, AAccountCode);
+        }
+
+        /// generated method from connector
+        public bool CreateNewLedger(Int32 ALedgerNumber,
+                                    String ALedgerName,
+                                    String ACountryCode,
+                                    String ABaseCurrency,
+                                    String AIntlCurrency,
+                                    DateTime ACalendarStartDate,
+                                    Int32 ANumberOfPeriods,
+                                    Int32 ACurrentPeriod,
+                                    Int32 ANumberOfFwdPostingPeriods,
+                                    out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public ALedgerTable GetAvailableLedgers()
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
+        }
+
+        /// generated method from connector
         public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)
@@ -2539,90 +2617,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public double GetCorporateExchangeRate(string ACurrencyFrom,
+                                               string ACurrencyTo,
+                                               DateTime AStartDate,
+                                               DateTime AEndDate)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
+        }
+
+        /// generated method from connector
         public bool CancelGLBatch(out GLBatchTDS MainDS,
                                   Int32 ALedgerNumber,
                                   Int32 ABatchNumber,
                                   out TVerificationResultCollection AVerifications)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
-        }
-
-        /// generated method from connector
-        public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.LoadCostCentreHierarchy(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public string ExportAccountHierarchy(Int32 ALedgerNumber,
-                                             string AAccountHierarchyName)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName);
-        }
-
-        /// generated method from connector
-        public string ExportCostCentreHierarchy(Int32 ALedgerNumber)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ExportCostCentreHierarchy(ALedgerNumber);
-        }
-
-        /// generated method from connector
-        public bool ImportAccountHierarchy(Int32 ALedgerNumber,
-                                           string AHierarchyName,
-                                           string AXmlAccountHierarchy)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
-        }
-
-        /// generated method from connector
-        public bool ImportCostCentreHierarchy(Int32 ALedgerNumber,
-                                              string AXmlHierarchy)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportCostCentreHierarchy(ALedgerNumber, AXmlHierarchy);
-        }
-
-        /// generated method from connector
-        public bool ImportNewLedger(Int32 ALedgerNumber,
-                                    string AXmlLedgerDetails,
-                                    string AXmlAccountHierarchy,
-                                    string AXmlCostCentreHierarchy,
-                                    string AXmlMotivationDetails)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlLedgerDetails, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlMotivationDetails);
-        }
-
-        /// generated method from connector
-        public bool CanDeleteAccount(Int32 ALedgerNumber,
-                                     string AAccountCode)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CanDeleteAccount(ALedgerNumber, AAccountCode);
-        }
-
-        /// generated method from connector
-        public bool CreateNewLedger(Int32 ALedgerNumber,
-                                    String ALedgerName,
-                                    String ACountryCode,
-                                    String ABaseCurrency,
-                                    String AIntlCurrency,
-                                    DateTime ACalendarStartDate,
-                                    Int32 ANumberOfPeriods,
-                                    Int32 ACurrentPeriod,
-                                    Int32 ANumberOfFwdPostingPeriods,
-                                    out TVerificationResultCollection AVerificationResult)
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public ALedgerTable GetAvailableLedgers()
-        {
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
         }
     }
 }
