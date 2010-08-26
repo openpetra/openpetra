@@ -717,23 +717,24 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 return -1;
             }
 
+            DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
             DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
 
-            try
+            startOfPeriod = new DateTime(startOfPeriod.Year - (currentFinancialYear - pv_year_i), startOfPeriod.Month, startOfPeriod.Day);
+
+            if ((endOfPeriod.Month == 2) && (endOfPeriod.Day == 29)
+                && (((currentFinancialYear - pv_year_i)) % 4 != 0))
             {
-                endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                if ((endOfPeriod.Month == 2) && (endOfPeriod.Day == 29))
-                {
-                    // try again with 28 days
-                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day - 1);
-                }
+                endOfPeriod = endOfPeriod.AddDays(-1);
             }
 
-            // get the daily exchange rate between base and intl currency for the period
-            return TTransactionWebConnector.GetDailyExchangeRate(ledgerTable[0].IntlCurrency, ledgerTable[0].BaseCurrency, endOfPeriod);
+            endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
+
+            // get the corporate exchange rate between base and intl currency for the period
+            return TTransactionWebConnector.GetCorporateExchangeRate(ledgerTable[0].IntlCurrency,
+                ledgerTable[0].BaseCurrency,
+                startOfPeriod,
+                endOfPeriod);
         }
 
         /// <summary>

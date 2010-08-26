@@ -355,6 +355,195 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// get corporate exchange rate for the given currencies and date;
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="AStartDate"></param>
+        /// <param name="AEndDate"></param>
+        /// <returns></returns>
+        public static double GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
+        {
+            double ExchangeRate = 1.0;
+
+            if (ACurrencyFrom == ACurrencyTo)
+            {
+                return ExchangeRate;
+            }
+
+            if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
+            {
+                if (!GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
+                {
+                    ExchangeRate = 1.0;
+                    TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
+                }
+            }
+
+            return ExchangeRate;
+        }
+
+        /// <summary>
+        /// get corporate exchange rate for the given currencies and date;
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="AStartDate"></param>
+        /// <param name="AEndDate"></param>
+        /// <param name="AExchangeRate"></param>
+        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
+        private static bool GetCorporateExchangeRate(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime AStartDate,
+            DateTime AEndDate,
+            out double AExchangeRate)
+        {
+            AExchangeRate = double.MinValue;
+
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
+            ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
+
+            templateRow.FromCurrencyCode = ACurrencyFrom;
+            templateRow.ToCurrencyCode = ACurrencyTo;
+
+            ACorporateExchangeRateTable ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+
+            if (ExchangeRates.Count > 0)
+            {
+                // sort rates by date, look for rate just before the date we are looking for
+                ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
+                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
+                                                      AStartDate.ToString("dd/MM/yyyy") + "' AND " +
+                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
+                                                      AEndDate.ToString("dd/MM/yyyy") + "'";
+
+                if (ExchangeRates.DefaultView.Count > 0)
+                {
+                    AExchangeRate = ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
+                }
+            }
+
+            if (AExchangeRate == double.MinValue)
+            {
+                // try other way round
+                templateRow.FromCurrencyCode = ACurrencyTo;
+                templateRow.ToCurrencyCode = ACurrencyFrom;
+
+                ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+
+                if (ExchangeRates.Count > 0)
+                {
+                    // sort rates by date, look for rate just before the date we are looking for
+                    ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
+                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
+                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
+                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
+                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+
+                    if (ExchangeRates.DefaultView.Count > 0)
+                    {
+                        AExchangeRate = 1 / ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
+                    }
+                }
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            if (AExchangeRate == double.MinValue)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// get corporate exchange rate from the previous years for the given currencies and date;
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="AStartDate"></param>
+        /// <param name="AEndDate"></param>
+        /// <param name="AExchangeRate"></param>
+        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
+        private static bool GetCorporateExchangeRateFromPreviousYears(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime AStartDate,
+            DateTime AEndDate,
+            out double AExchangeRate)
+        {
+            AExchangeRate = double.MinValue;
+
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            APrevYearCorpExRateTable PrevTempTable = new APrevYearCorpExRateTable();
+            APrevYearCorpExRateRow PrevTemplateRow = PrevTempTable.NewRowTyped(false);
+
+            PrevTemplateRow.FromCurrencyCode = ACurrencyFrom;
+            PrevTemplateRow.ToCurrencyCode = ACurrencyTo;
+
+            APrevYearCorpExRateTable PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
+
+            if (PrevExchangeRates.Count > 0)
+            {
+                // sort rates by date, look for rate just before the date we are looking for
+                PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
+                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
+                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
+                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
+                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+
+                if (PrevExchangeRates.DefaultView.Count > 0)
+                {
+                    AExchangeRate = ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
+                }
+            }
+
+            if (AExchangeRate == double.MinValue)
+            {
+                // try other way round
+                PrevTemplateRow.FromCurrencyCode = ACurrencyTo;
+                PrevTemplateRow.ToCurrencyCode = ACurrencyFrom;
+
+                PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
+
+                if (PrevExchangeRates.Count > 0)
+                {
+                    // sort rates by date, look for rate just before the date we are looking for
+                    PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
+                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
+                                                              AStartDate.ToString("dd/MM/yyyy") + "' AND " +
+                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
+                                                              AEndDate.ToString("dd/MM/yyyy") + "'";
+
+                    if (PrevExchangeRates.DefaultView.Count > 0)
+                    {
+                        AExchangeRate = 1 / ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
+                    }
+                }
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            if (AExchangeRate == double.MinValue)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// cancel a GL Batch
         /// </summary>
         /// <param name="MainDS"></param>

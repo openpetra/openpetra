@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from BalanceSheet.yaml
+// auto generated with nant generateWinforms from BalanceSheetStandard.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmBalanceSheet: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmBalanceSheetStandard: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmBalanceSheet(IntPtr AParentFormHandle) : base()
+    public TFrmBalanceSheetStandard(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,28 +65,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedger.Text = Catalog.GetString("Ledger:");
-      this.lblAccountHierarchy.Text = Catalog.GetString("Account Hierarchy:");
-      this.grpLedger.Text = Catalog.GetString("Ledger Details");
-      this.lblCurrency.Text = Catalog.GetString("Currency:");
-      this.grpCurrency.Text = Catalog.GetString("Currency");
-      this.lblStartPeriod.Text = Catalog.GetString("from:");
-      this.lblEndPeriod.Text = Catalog.GetString("to:");
-      this.lblPeriodYear.Text = Catalog.GetString("Year:");
-      this.grpPeriodRange.Text = Catalog.GetString("Period Range");
-      this.tpgReportSpecific.Text = Catalog.GetString("General Settings");
-      this.rbtSelectedCostCentres.Text = Catalog.GetString("Selected Cost Centres");
-      this.btnUnselectAllCostCentres.Text = Catalog.GetString("Unselect All");
-      this.rbtAllCostCentres.Text = Catalog.GetString("All Cost Centres");
-      this.rbtAllActiveCostCentres.Text = Catalog.GetString("All Active Cost Centres");
-      this.rbtAccountLevel.Text = Catalog.GetString("Account Level");
-      this.rgrCostCentreOptions.Text = Catalog.GetString("Cost Centre Options");
-      this.chkCostCentreBreakdown.Text = Catalog.GetString("Cost Centre Breakdown");
-      this.rbtDetail.Text = Catalog.GetString("detail");
-      this.rbtStandard.Text = Catalog.GetString("standard");
-      this.rbtSummary.Text = Catalog.GetString("summary");
+      this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
+      this.tpgColumnSettings.Text = Catalog.GetString("Column Settings");
+      this.rbtCurrencyComplete.Text = Catalog.GetString("Complete");
+      this.rbtCurrencyWithoutDecimals.Text = Catalog.GetString("Without decimals");
+      this.rbtCurrencyThousands.Text = Catalog.GetString("Only Thousands");
+      this.rgrFormatCurrency.Text = Catalog.GetString("Format currency numbers:");
+      this.rbtDetail.Text = Catalog.GetString("Detail");
+      this.rbtStandard.Text = Catalog.GetString("Standard");
+      this.rbtSummary.Text = Catalog.GetString("Summary");
       this.rgrDepth.Text = Catalog.GetString("Depth");
-      this.tpgCostCentres.Text = Catalog.GetString("CostCentre Settings");
+      this.tpgAdditionalSettings.Text = Catalog.GetString("Additional Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -113,17 +102,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Balance Sheet");
+      this.Text = Catalog.GetString("Balance Sheet Standard");
       #endregion
-
-      this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "Finance\\\\balancesheet.xml,Finance\\\\finance.xml,common.xml";
-      FPetraUtilsObject.FReportName = "Balance Sheet";
+      FPetraUtilsObject.FReportName = "Balance Sheet Standard";
       FPetraUtilsObject.FCurrentReport = "Balance Sheet";
       FPetraUtilsObject.FSettingsDirectory = "Finance";
 
@@ -134,15 +119,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
       this.SetAvailableFunctions();
 
-      rbtSelectedCostCentresCheckedChanged(null, null);
+      uco_GeneralSettings.InitialiseData(FPetraUtilsObject);
+      uco_FinanceColumns.InitialiseData(FPetraUtilsObject);
+
+      uco_GeneralSettings.PetraUtilsObject = FPetraUtilsObject;
+      uco_GeneralSettings.InitUserControl();
+      uco_FinanceColumns.PetraUtilsObject = FPetraUtilsObject;
+      uco_FinanceColumns.InitUserControl();
+      uco_FinanceColumns.SetVisibility(false, false);
 
       FPetraUtilsObject.LoadDefaultSettings();
-    }
-
-    void rbtSelectedCostCentresCheckedChanged(object sender, System.EventArgs e)
-    {
-      clbCostCentres.Enabled = rbtSelectedCostCentres.Checked;
-      btnUnselectAllCostCentres.Enabled = rbtSelectedCostCentres.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -177,47 +163,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
-      if (this.cmbCurrency.SelectedItem != null)
+      uco_GeneralSettings.ReadControls(ACalc, AReportAction);
+      uco_FinanceColumns.ReadControls(ACalc, AReportAction);
+      if (rbtCurrencyComplete.Checked)
       {
-          ACalc.AddParameter("param_currency", this.cmbCurrency.SelectedItem.ToString());
+          ACalc.AddParameter("param_currency_format", "CurrencyComplete");
       }
-      else
+      if (rbtCurrencyWithoutDecimals.Checked)
       {
-          ACalc.AddParameter("param_currency", "");
+          ACalc.AddParameter("param_currency_format", "CurrencyWithoutDecimals");
       }
-      ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
-      ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
-      ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      if (rbtSelectedCostCentres.Checked)
+      if (rbtCurrencyThousands.Checked)
       {
-          ACalc.AddParameter("param_costcentreoptions", "SelectedCostCentres");
-          ACalc.AddParameter("param_cost_centre_codes", this.clbCostCentres.GetCheckedStringList());
+          ACalc.AddParameter("param_currency_format", "CurrencyThousands");
       }
-      if (rbtAllCostCentres.Checked)
-      {
-          ACalc.AddParameter("param_costcentreoptions", "AllCostCentres");
-      }
-      if (rbtAllActiveCostCentres.Checked)
-      {
-          ACalc.AddParameter("param_costcentreoptions", "AllActiveCostCentres");
-      }
-      if (rbtAccountLevel.Checked)
-      {
-          ACalc.AddParameter("param_costcentreoptions", "AccountLevel");
-      }
-      ACalc.AddParameter("param_cost_centre_breakdown", this.chkCostCentreBreakdown.Checked);
       if (rbtDetail.Checked)
       {
-        ACalc.AddParameter("param_depth", "Detail");
+          ACalc.AddParameter("param_depth", "detail");
       }
       if (rbtStandard.Checked)
       {
-        ACalc.AddParameter("param_depth", "Standard");
+          ACalc.AddParameter("param_depth", "standard");
       }
       if (rbtSummary.Checked)
       {
-        ACalc.AddParameter("param_depth", "Summary");
+          ACalc.AddParameter("param_depth", "summary");
       }
       ReadControlsManual(ACalc, AReportAction);
 
@@ -230,23 +200,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetControls(TParameterList AParameters)
     {
 
-      cmbAccountHierarchy.SetSelectedString(AParameters.Get("param_account_hierarchy_c").ToString());
-      cmbCurrency.SelectedValue = AParameters.Get("param_currency").ToString();
-      txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-      txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-      cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      rbtSelectedCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "SelectedCostCentres";
-      if (rbtSelectedCostCentres.Checked)
-      {
-          clbCostCentres.SetCheckedStringList(AParameters.Get("param_cost_centre_codes").ToString());
-      }
-      rbtAllCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AllCostCentres";
-      rbtAllActiveCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AllActiveCostCentres";
-      rbtAccountLevel.Checked = AParameters.Get("param_costcentreoptions").ToString() == "AccountLevel";
-      chkCostCentreBreakdown.Checked = AParameters.Get("param_cost_centre_breakdown").ToBool();
-      rbtDetail.Checked = AParameters.Get("param_depth").ToString() == "Detail";
-      rbtStandard.Checked = AParameters.Get("param_depth").ToString() == "Standard";
-      rbtSummary.Checked = AParameters.Get("param_depth").ToString() == "Summary";
+      uco_GeneralSettings.SetControls(AParameters);
+      uco_FinanceColumns.SetControls(AParameters);
+      rbtCurrencyComplete.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyComplete";
+      rbtCurrencyWithoutDecimals.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyWithoutDecimals";
+      rbtCurrencyThousands.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyThousands";
+      rbtDetail.Checked = AParameters.Get("param_depth").ToString() == "detail";
+      rbtStandard.Checked = AParameters.Get("param_depth").ToString() == "standard";
+      rbtSummary.Checked = AParameters.Get("param_depth").ToString() == "summary";
     }
 #endregion
 
@@ -258,6 +219,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual Selected Year", 0));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual Previous Year", 0));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual End of Previous Year", false, true));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Variance", 2));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Variance %", 2));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Account %", 1));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Account % INC/EXP", 1));
+
+      uco_GeneralSettings.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      uco_FinanceColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

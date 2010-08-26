@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       berndr
 //
 // Copyright 2004-2010 by OM International
 //
@@ -27,7 +27,7 @@ using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmBalanceSheet
+    public partial class TFrmBalanceSheetStandard
     {
         private Int32 FLedgerNumber;
 
@@ -40,15 +40,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-
-                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                // if there is only one hierarchy, disable the control
-                this.cmbAccountHierarchy.Enabled = (this.cmbAccountHierarchy.Count > 1);
-                clbCostCentres.SetCheckedStringList("");
+                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
@@ -57,10 +49,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_ytd", true);
-            ACalc.AddParameter("param_cost_centre_summary", false);
+            // TODO do we need param_ytd???
+
             ACalc.AddParameter("param_cost_centre_breakdown", false);
-            ACalc.AddParameter("param_quarter", false);
+            ACalc.AddParameter("param_cost_centre_summary", false);
+            ACalc.AddParameter("param_cost_centre_codes", "");
+            ACalc.AddParameter("param_costcentreoptions", "AccountLevel");
         }
     }
 }
