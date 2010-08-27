@@ -80,6 +80,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
+            ABatchRow batch = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+
+            if (batch != null)
+            {
+                UpdateTotals(batch);
+            }
+        }
+
+        /// <summary>
+        /// update the journal header fields from a batch
+        /// </summary>
+        /// <param name="batch"></param>
+        public void UpdateTotals(ABatchRow batch)
+        {
+            txtCurrentPeriod.Text = batch.BatchPeriod.ToString();
+            txtDebit.Text = batch.BatchDebitTotal.ToString();
+            txtCredit.Text = batch.BatchCreditTotal.ToString();
+            txtControl.Text = batch.BatchControlTotal.ToString();
         }
 
         private void ShowDetailsManual(AJournalRow ARow)

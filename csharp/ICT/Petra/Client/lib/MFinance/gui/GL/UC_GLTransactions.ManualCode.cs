@@ -198,8 +198,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
-                AJournalRow journal = GetJournalRow();
+                UpdateTotals(ARow);
+            }
+        }
 
+        /// <summary>
+        /// update amount in other currencys (optional) and recalculate all totals for current batch and journal
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void UpdateTotals(ATransactionRow ARow)
+        {
+            AJournalRow journal = GetJournalRow();
+
+            if (ARow != null)
+            {
                 ARow.AmountInBaseCurrency = TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
                     FMainDS.ALedger[0].BaseCurrency,
                     ARow.TransactionDate) *
@@ -208,44 +220,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ALedger[0].IntlCurrency,
                     ARow.TransactionDate) *
                                             ARow.TransactionAmount;
-
-                // transactions are filtered for this journal; add up the total amounts
-                double sumDebits = 0.0;
-                double sumCredits = 0.0;
-
-                foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
-                {
-                    ATransactionRow r = (ATransactionRow)v.Row;
-
-                    if (r.DebitCreditIndicator)
-                    {
-                        sumDebits += r.TransactionAmount;
-                    }
-                    else
-                    {
-                        sumCredits += r.TransactionAmount;
-                    }
-                }
-
-                journal.JournalCreditTotal = sumCredits;
-                journal.JournalDebitTotal = sumDebits;
-
-                sumDebits = 0.0;
-                sumCredits = 0.0;
-
-                foreach (DataRowView v in FMainDS.AJournal.DefaultView)
-                {
-                    AJournalRow r = (AJournalRow)v.Row;
-                    sumDebits += r.JournalDebitTotal;
-                    sumCredits += r.JournalCreditTotal;
-                }
-
-                ABatchRow batch = GetBatchRow();
-                batch.BatchCreditTotal = sumCredits;
-                batch.BatchDebitTotal = sumDebits;
-
-                // TODO: Batch.BatchRunningTotal
             }
+
+            // transactions are filtered for this journal; add up the total amounts
+            double sumDebits = 0.0;
+            double sumCredits = 0.0;
+
+            foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
+            {
+                ATransactionRow r = (ATransactionRow)v.Row;
+
+                if (r.DebitCreditIndicator)
+                {
+                    sumDebits += r.TransactionAmount;
+                }
+                else
+                {
+                    sumCredits += r.TransactionAmount;
+                }
+            }
+
+            journal.JournalCreditTotal = sumCredits;
+            journal.JournalDebitTotal = sumDebits;
+
+            sumDebits = 0.0;
+            sumCredits = 0.0;
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+                sumDebits += r.JournalDebitTotal;
+                sumCredits += r.JournalCreditTotal;
+            }
+
+            ABatchRow batch = GetBatchRow();
+            batch.BatchCreditTotal = sumCredits;
+            batch.BatchDebitTotal = sumDebits;
+            ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(batch);
+            // TODO: Batch.BatchRunningTotal
         }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
@@ -286,6 +298,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
                 FPreviouslySelectedDetailRow.Delete();
+                UpdateTotals(null);
                 FPetraUtilsObject.SetChangedFlag();
 
                 if (rowIndex == grdDetails.Rows.Count)

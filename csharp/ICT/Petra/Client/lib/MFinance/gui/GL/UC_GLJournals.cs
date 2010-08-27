@@ -63,8 +63,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblCurrentPeriod.Text = Catalog.GetString("Current Period:");
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
       this.lblBatchNumber.Text = Catalog.GetString("Batch:");
+      this.lblDebit.Text = Catalog.GetString("Debit:");
+      this.lblCredit.Text = Catalog.GetString("Credit:");
+      this.lblControl.Text = Catalog.GetString("Hash:");
       this.btnAdd.Text = Catalog.GetString("&Add");
       this.btnCancel.Text = Catalog.GetString("&Cancel");
       this.lblDetailJournalDescription.Text = Catalog.GetString("Journal Description:");
@@ -75,8 +79,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate to Base:");
       #endregion
 
+      this.txtCurrentPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDebit.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtCredit.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtControl.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailJournalDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }

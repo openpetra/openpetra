@@ -18,10 +18,16 @@ RootNode:
             Dock: Fill
         pnlInfo:
             Dock: Top
-            Controls: 
-                Row0: [txtLedgerNumber, txtBatchNumber]
+            Controls:
+                Row0: [txtCurrentPeriod] 
+                Row1: [txtLedgerNumber, txtBatchNumber]
+                Row2: [txtDebit, txtCredit, txtControl]
+        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Unbound=true}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

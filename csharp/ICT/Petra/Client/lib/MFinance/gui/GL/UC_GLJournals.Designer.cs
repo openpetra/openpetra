@@ -69,10 +69,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtCurrentPeriod = new System.Windows.Forms.TextBox();
+            this.lblCurrentPeriod = new System.Windows.Forms.Label();
             this.txtLedgerNumber = new System.Windows.Forms.TextBox();
             this.lblLedgerNumber = new System.Windows.Forms.Label();
             this.txtBatchNumber = new System.Windows.Forms.TextBox();
             this.lblBatchNumber = new System.Windows.Forms.Label();
+            this.txtDebit = new System.Windows.Forms.TextBox();
+            this.lblDebit = new System.Windows.Forms.Label();
+            this.txtCredit = new System.Windows.Forms.TextBox();
+            this.lblCredit = new System.Windows.Forms.Label();
+            this.txtControl = new System.Windows.Forms.TextBox();
+            this.lblControl = new System.Windows.Forms.Label();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
@@ -126,6 +134,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel1.AutoSize = true;
             this.pnlInfo.Controls.Add(this.tableLayoutPanel1);
             //
+            // txtCurrentPeriod
+            //
+            this.txtCurrentPeriod.Location = new System.Drawing.Point(2,2);
+            this.txtCurrentPeriod.Name = "txtCurrentPeriod";
+            this.txtCurrentPeriod.Size = new System.Drawing.Size(150, 28);
+            this.txtCurrentPeriod.ReadOnly = true;
+            this.txtCurrentPeriod.TabStop = false;
+            //
+            // lblCurrentPeriod
+            //
+            this.lblCurrentPeriod.Location = new System.Drawing.Point(2,2);
+            this.lblCurrentPeriod.Name = "lblCurrentPeriod";
+            this.lblCurrentPeriod.AutoSize = true;
+            this.lblCurrentPeriod.Text = "Current Period:";
+            this.lblCurrentPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCurrentPeriod.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCurrentPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
             // txtLedgerNumber
             //
             this.txtLedgerNumber.Location = new System.Drawing.Point(2,2);
@@ -161,17 +187,83 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBatchNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblBatchNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel1.ColumnCount = 4;
+            //
+            // txtDebit
+            //
+            this.txtDebit.Location = new System.Drawing.Point(2,2);
+            this.txtDebit.Name = "txtDebit";
+            this.txtDebit.Size = new System.Drawing.Size(150, 28);
+            this.txtDebit.ReadOnly = true;
+            this.txtDebit.TabStop = false;
+            //
+            // lblDebit
+            //
+            this.lblDebit.Location = new System.Drawing.Point(2,2);
+            this.lblDebit.Name = "lblDebit";
+            this.lblDebit.AutoSize = true;
+            this.lblDebit.Text = "Debit:";
+            this.lblDebit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDebit.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDebit.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtCredit
+            //
+            this.txtCredit.Location = new System.Drawing.Point(2,2);
+            this.txtCredit.Name = "txtCredit";
+            this.txtCredit.Size = new System.Drawing.Size(150, 28);
+            this.txtCredit.ReadOnly = true;
+            this.txtCredit.TabStop = false;
+            //
+            // lblCredit
+            //
+            this.lblCredit.Location = new System.Drawing.Point(2,2);
+            this.lblCredit.Name = "lblCredit";
+            this.lblCredit.AutoSize = true;
+            this.lblCredit.Text = "Credit:";
+            this.lblCredit.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCredit.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCredit.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtControl
+            //
+            this.txtControl.Location = new System.Drawing.Point(2,2);
+            this.txtControl.Name = "txtControl";
+            this.txtControl.Size = new System.Drawing.Size(150, 28);
+            this.txtControl.ReadOnly = true;
+            this.txtControl.TabStop = false;
+            //
+            // lblControl
+            //
+            this.lblControl.Location = new System.Drawing.Point(2,2);
+            this.lblControl.Name = "lblControl";
+            this.lblControl.AutoSize = true;
+            this.lblControl.Text = "Hash:";
+            this.lblControl.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblControl.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblControl.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel1.ColumnCount = 6;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblLedgerNumber, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtLedgerNumber, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblBatchNumber, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtBatchNumber, 3, 0);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblCurrentPeriod, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblLedgerNumber, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblDebit, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtCurrentPeriod, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtLedgerNumber, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtDebit, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblBatchNumber, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblCredit, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtBatchNumber, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtCredit, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblControl, 4, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtControl, 5, 2);
             //
             // pnlDetailGrid
             //
@@ -388,10 +480,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox txtCurrentPeriod;
+        private System.Windows.Forms.Label lblCurrentPeriod;
         private System.Windows.Forms.TextBox txtLedgerNumber;
         private System.Windows.Forms.Label lblLedgerNumber;
         private System.Windows.Forms.TextBox txtBatchNumber;
         private System.Windows.Forms.Label lblBatchNumber;
+        private System.Windows.Forms.TextBox txtDebit;
+        private System.Windows.Forms.Label lblDebit;
+        private System.Windows.Forms.TextBox txtCredit;
+        private System.Windows.Forms.Label lblCredit;
+        private System.Windows.Forms.TextBox txtControl;
+        private System.Windows.Forms.Label lblControl;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
