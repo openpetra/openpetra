@@ -1,30 +1,3 @@
-NUnit is a unit-testing framework for all .Net languages.
-http://www.nunit.org
-
-currently used version: 2.5.7
-from: http://launchpad.net/nunitv2/2.5/2.5.7/+download/NUnit-2.5.7.10213.zip
-
-NUnit License
-
-Copyright © 2002-2008 Charlie Poole
-Copyright © 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov
-Copyright © 2000-2002 Philip A. Craig
-
-This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment (see the following) in the product documentation is required.
-
-Portions Copyright © 2002-2008 Charlie Poole or Copyright © 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov or Copyright © 2000-2002 Philip A. Craig
-
-2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
-==================================================================================
-NUnitForms compiled from SVN, with modifications which are available in our src subdirectory
-
 #region Copyright (c) 2003-2007, Luke T. Maxon
 
 /********************************************************************************************************************
@@ -56,3 +29,37 @@ NUnitForms compiled from SVN, with modifications which are available in our src 
 '*******************************************************************************************************************/
 
 #endregion
+
+        /// Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder<T> 
+        /// so that we can find controls without the long list of generated panels and tablelayoutpanels, 
+        /// but for example <name of tab>.<name of control>
+        private bool Matches(string name, object control, object src)
+        {
+            object c = control;
+            string[] names = name.Split('.');
+            int i;
+
+            for (i = names.Length - 1; i >= 0 && c != null; i--)
+            {
+                // if even the object name does not fit, then there is no match
+                if (i == names.Length - 1 && !names[i].Equals(Name(c)))
+                {
+                    return false;
+                }
+
+                if (!names[i].Equals(Name(c)))
+                {
+                    // stay on the current name, see if we find that name higher up in the control tree
+                    i++;
+                }
+                
+                c = Parent(c);
+
+                if (c == null && src != null)
+                {
+                    c = src;
+                }
+            }
+
+            return i < 0;
+        }

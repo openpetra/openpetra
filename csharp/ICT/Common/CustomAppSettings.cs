@@ -152,6 +152,11 @@ namespace Ict.Common
             // need to switch back to the application directory, because the path names might be relative to the application
             Environment.CurrentDirectory = FApplicationDirectory;
 
+            if (!System.IO.File.Exists(FConfigFileName) && System.IO.File.Exists(FConfigFileName.Replace(".config", ".config.sample")))
+            {
+                System.IO.File.Copy(FConfigFileName.Replace(".config", ".config.sample"), FConfigFileName);
+            }
+
             if (System.IO.File.Exists(FConfigFileName))
             {
                 try

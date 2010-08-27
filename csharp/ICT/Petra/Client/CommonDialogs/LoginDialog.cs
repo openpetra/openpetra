@@ -163,8 +163,6 @@ namespace Ict.Petra.Client.CommonDialogs
                  */
                 FPreviouslyShown = true;
 
-                TCmdOpts CmdOpts = new TCmdOpts();
-
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
                     if (TAppSettingsManager.GetValueStatic("AutoLogin") != TAppSettingsManager.UNDEFINEDVALUE)

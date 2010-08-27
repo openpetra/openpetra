@@ -60,7 +60,7 @@ namespace Tests.Reporting
             // todo: what about different cultures?
             OrigCulture = new CultureInfo("en-GB", false);
             Thread.CurrentThread.CurrentCulture = OrigCulture;
-            TPetraConnector.Connect("Tests.Reporting.dll.config");
+            TPetraConnector.Connect("../../../../../etc/TestReporting.config");
             FCalculator = new TRptCalculator();
             PathToTestData = "../../Reporting/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
             PathToSettingsData = "../../../XMLReports/Settings/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());

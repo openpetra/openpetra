@@ -27,6 +27,7 @@ using System.Net.Sockets;
 using System.Runtime.Remoting;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.RemotedExceptions;
 
@@ -46,10 +47,10 @@ namespace Ict.Testing.NUnitPetraClient
 
         public static void Connect(string AConfigName)
         {
-            TAppSettingsManager Config;
+            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
 
-            Config = new TAppSettingsManager(AConfigName);
             new TClientSettings();
+            TCacheableTablesManager.InitializeUnit();
             Connect(Config.GetValue("AutoLogin"), Config.GetValue("AutoLoginPasswd"), Config.GetInt64("SiteKey"));
         }
 
