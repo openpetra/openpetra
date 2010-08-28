@@ -383,7 +383,10 @@ namespace Ict.Petra.Client.MReporting.Logic
             float LowestYPos;
 
             YPosBefore = FPrinter.CurrentYPos;
-            LowestYPos = -1;
+
+            // we need at least one row, otherwise the strings on the left are written in the same row
+            FPrinter.LineFeed(eFont.eDefaultFont);
+            LowestYPos = FPrinter.CurrentYPos;
 
             for (columnNr = 0; columnNr <= FNumberColumns - 1; columnNr += 1)
             {

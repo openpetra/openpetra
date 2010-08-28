@@ -401,6 +401,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             string ValueMember;
             DataTable Table = TRemote.MFinance.Reporting.UIConnectors.GetAvailableFinancialYears(0, out DisplayMember, out ValueMember);
 
+            Table.DefaultView.Sort = "YearNumber Desc";
+
             AControl.InitialiseUserControl(Table,
                 ValueMember,
                 DisplayMember,

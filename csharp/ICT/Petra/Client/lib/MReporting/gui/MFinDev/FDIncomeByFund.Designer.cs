@@ -87,7 +87,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblQuarter = new System.Windows.Forms.Label();
             this.cmbPeriodYearQuarter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblPeriodYearQuarter = new System.Windows.Forms.Label();
-            this.chkYearToDate = new System.Windows.Forms.CheckBox();
             this.cmbDepth = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDepth = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -327,15 +326,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 1);
             this.rgrPeriod.Text = "Period";
             //
-            // chkYearToDate
-            //
-            this.chkYearToDate.Location = new System.Drawing.Point(2,2);
-            this.chkYearToDate.Name = "chkYearToDate";
-            this.chkYearToDate.AutoSize = true;
-            this.chkYearToDate.Text = "YTD";
-            this.chkYearToDate.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.chkYearToDate.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
-            //
             // cmbDepth
             //
             this.cmbDepth.Location = new System.Drawing.Point(2,2);
@@ -356,19 +346,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblLedger, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.rgrPeriod, 2);
             this.tableLayoutPanel1.Controls.Add(this.rgrPeriod, 0, 1);
-            this.tableLayoutPanel1.SetColumnSpan(this.chkYearToDate, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkYearToDate, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblDepth, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblDepth, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtLedger, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cmbDepth, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDepth, 1, 2);
             this.tpgReportSpecific.Text = "Report parameters";
             this.tpgReportSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -692,7 +679,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private System.Windows.Forms.Label lblQuarter;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYearQuarter;
         private System.Windows.Forms.Label lblPeriodYearQuarter;
-        private System.Windows.Forms.CheckBox chkYearToDate;
         private Ict.Common.Controls.TCmbAutoComplete cmbDepth;
         private System.Windows.Forms.Label lblDepth;
         private System.Windows.Forms.ToolStrip tbrMain;

@@ -74,7 +74,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.lblQuarter.Text = Catalog.GetString("Quarter:");
       this.lblPeriodYearQuarter.Text = Catalog.GetString("Year:");
       this.rgrPeriod.Text = Catalog.GetString("Period");
-      this.chkYearToDate.Text = Catalog.GetString("YTD");
       this.cmbDepth.Text = Catalog.GetString("standard");
       this.lblDepth.Text = Catalog.GetString("Depth:");
       this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
@@ -190,7 +189,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
           ACalc.AddParameter("param_quarter", this.txtQuarter.Text);
           ACalc.AddParameter("param_year_i", this.cmbPeriodYearQuarter.GetSelectedString());
       }
-      ACalc.AddParameter("param_ytd", this.chkYearToDate.Checked);
       if (this.cmbDepth.SelectedItem != null)
       {
           ACalc.AddParameter("param_depth", this.cmbDepth.SelectedItem.ToString());
@@ -210,20 +208,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetControls(TParameterList AParameters)
     {
 
-      rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
-      if (rbtPeriodRange.Checked)
+      if (AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange")
       {
+          rbtPeriodRange.Checked = true;
           txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
           txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
           cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }
-      rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
-      if (rbtQuarter.Checked)
+      if (AParameters.Get("param_rgrPeriod").ToString() == "Quarter")
       {
+          rbtQuarter.Checked = true;
           txtQuarter.Text = AParameters.Get("param_quarter").ToString();
           cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }
-      chkYearToDate.Checked = AParameters.Get("param_ytd").ToBool();
       cmbDepth.SelectedValue = AParameters.Get("param_depth").ToString();
     }
 #endregion

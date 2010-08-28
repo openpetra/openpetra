@@ -981,12 +981,14 @@
             <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="csharp/ICT/Petra/Server/_bin/Debug">
                 <include name="PetraServerConsole.exe.config" />
             </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/etc" prefix="etc">
+                <include name="*.sample" />
+            </fileset>
             <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="log">
                 <include name="placeholder.txt" />
             </fileset>
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/Debug" prefix="csharp/ICT/Testing/_bin/Debug">
                 <include name="*.dll" />
-                <include name="Tests.Reporting.dll.config" />
             </fileset>
             <fileset basedir="${OpenPetraRoot.dir}/XmlReports" prefix="XmlReports">
                 <include name="**.dtd" />
@@ -997,7 +999,6 @@
                 <include name="**.csv" />
                 <include name="**.txt" />
             </fileset>
-            
         </zip>        
         <delete file="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
         <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>

@@ -503,17 +503,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// backup of recently loaded parameters from file. can contain information that is not available on the GUI (yet)
+        private TParameterList FParametersFromFile = new TParameterList();
+
         /// <summary>
         /// This procedure loads the parameters of the given settings
         /// </summary>
         protected void LoadSettings(String ASettingsName)
         {
-            TParameterList Parameters;
-            StringCollection RecentlyUsedSettings;
+            FParametersFromFile = new TParameterList();
 
             FCurrentSettingsName = ASettingsName;
-            Parameters = new TParameterList();
-            RecentlyUsedSettings = FStoredSettings.LoadSettings(ref FCurrentSettingsName, ref Parameters);
+            StringCollection RecentlyUsedSettings = FStoredSettings.LoadSettings(ref FCurrentSettingsName, ref FParametersFromFile);
 
             // set the title of the window
             if (FCurrentSettingsName.Length > 0)
@@ -525,7 +526,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FWinForm.Text = FWindowCaption;
             }
 
-            SetControls(Parameters);
+            SetControls(FParametersFromFile);
             UpdateLoadingMenu(RecentlyUsedSettings);
         }
 
@@ -781,12 +782,28 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
-            // TODO
             FCalculator.ResetParameters();
             FCalculator.AddParameter("xmlfiles", FXMLFiles);
             FCalculator.AddParameter("currentReport", FCurrentReport);
 
             ((IFrmReporting) this.FTheForm).ReadControls(FCalculator, AReportAction);
+
+            TParameterList CurrentParameters = FCalculator.GetParameters();
+
+            // if the current parameters don't have any columns, but the backup list has, copy all columns
+            if ((CurrentParameters.Get("MaxDisplayColumns").ToInt32() == 0) && (FParametersFromFile.Get("MaxDisplayColumns").ToInt32() > 0))
+            {
+                int MaxColumns = FParametersFromFile.Get("MaxDisplayColumns").ToInt32();
+                CurrentParameters.Add("MaxDisplayColumns", MaxColumns);
+
+                for (int ColumnCounter = 0; ColumnCounter < MaxColumns; ColumnCounter++)
+                {
+                    CurrentParameters.Copy(FParametersFromFile, ColumnCounter, -1, eParameterFit.eExact, ColumnCounter);
+                }
+            }
+
+            // add all parameters that do not have an equivalent in the parameter list received from the GUI
+            CurrentParameters.CopyMissing(FParametersFromFile);
         }
 
         /// <summary>

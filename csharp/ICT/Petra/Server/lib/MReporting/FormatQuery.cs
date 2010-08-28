@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 
@@ -107,6 +108,11 @@ namespace Ict.Petra.Server.MReporting
             this.column = column;
             this.depth = depth;
         }
+
+#if DEBUGMODE
+        // do not print warning too many times for the same variable
+        private static SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
+#endif
 
         /// <summary>
         /// todoComment
@@ -198,11 +204,32 @@ namespace Ict.Petra.Server.MReporting
 #if DEBUGMODE
                     else
                     {
-                        // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
-                        TLogging.Log(
-                            "Variable " + parameter + " could not be found (column: " + column.ToString() + "; level: " + depth.ToString() + ")." +
-                            ' ' +
-                            resultString);
+                        int CountWarning = 1;
+
+                        // do not print warning too many times for the same variable
+                        if (!VariablesNotFound.ContainsKey(parameter))
+                        {
+                            VariablesNotFound.Add(parameter, 1);
+                        }
+                        else
+                        {
+                            VariablesNotFound[parameter] = VariablesNotFound[parameter] + 1;
+                            CountWarning = VariablesNotFound[parameter];
+                        }
+
+                        if (CountWarning < 5)
+                        {
+                            // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
+                            TLogging.Log(
+                                "Variable " + parameter + " could not be found (column: " + column.ToString() + "; level: " + depth.ToString() +
+                                ")." +
+                                ' ' +
+                                resultString);
+                        }
+                        else if (CountWarning % 20 == 0)
+                        {
+                            TLogging.Log("20 times: Variable " + parameter + " could not be found.");
+                        }
                     }
 #endif
                 }

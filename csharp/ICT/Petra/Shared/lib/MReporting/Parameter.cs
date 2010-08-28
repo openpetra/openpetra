@@ -322,12 +322,26 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// overloaded copy
+        /// copy the whole list
         /// </summary>
         /// <param name="AOtherList"></param>
         public void Copy(TParameterList AOtherList)
         {
             Copy(AOtherList, -1, -1, eParameterFit.eBestFit, -1);
+        }
+
+        /// <summary>
+        /// add all parameters that do not have an equivalent in this parameter list
+        /// </summary>
+        public void CopyMissing(TParameterList AOtherList)
+        {
+            foreach (TParameter param in AOtherList.parameters)
+            {
+                if (!Exists(param.name))
+                {
+                    Add(param.name, param.value, param.column);
+                }
+            }
         }
 
         /// <summary>

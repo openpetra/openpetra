@@ -87,7 +87,7 @@ namespace Ict.Common.DB
             if (AConnectionString == "")
             {
                 AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
-                                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;Password=";
+                                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;CommandTimeout=3600;Password=";
             }
 
             try
