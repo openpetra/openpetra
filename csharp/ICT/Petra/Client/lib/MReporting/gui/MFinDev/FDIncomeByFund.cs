@@ -208,16 +208,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetControls(TParameterList AParameters)
     {
 
-      if (AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange")
+      rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
+      if (rbtPeriodRange.Checked)
       {
-          rbtPeriodRange.Checked = true;
           txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
           txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
           cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }
-      if (AParameters.Get("param_rgrPeriod").ToString() == "Quarter")
+      rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
+      if (rbtQuarter.Checked)
       {
-          rbtQuarter.Checked = true;
           txtQuarter.Text = AParameters.Get("param_quarter").ToString();
           cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }

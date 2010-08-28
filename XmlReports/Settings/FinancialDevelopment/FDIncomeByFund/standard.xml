@@ -4,6 +4,9 @@
   <Parameter id="xmlfiles" value="FDIncomeByFund.xml, common.xml" />
   <Parameter id="currentReport" value="FDIncomeByFund" />
   <Parameter id="MaxDisplayColumns" value="8" />
+  <Parameter id="param_rgrPeriod" value="PeriodRange" />
+  <Parameter id="param_start_period_i" value="1" />
+  <Parameter id="param_end_period_i" value="12" />
   <Parameter id="param_calculation" column="0" value="GiftsByMotivation" />
   <Parameter id="param_caption" column="0" value="Support" />
   <Parameter id="param_explicit_motivation" column="0" value="GIFT,SUPPORT,GIFT,PERSONAL" />
