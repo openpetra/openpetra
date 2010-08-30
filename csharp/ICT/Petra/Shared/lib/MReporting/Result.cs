@@ -603,7 +603,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// This stores the resultlist into a binary file (using the Datatable conversion);
+        /// This stores the resultlist and parameterlist into a binary file (using the Datatable conversion);
         /// This can be used for debugging the printing, and saving time on calculating the report by reusing previous results
         ///
         /// </summary>
@@ -618,16 +618,20 @@ namespace Ict.Petra.Shared.MReporting
             fs = new FileStream(AFilename, FileMode.Create);
             bf = new BinaryFormatter();
             bf.Serialize(fs, dt);
+
+            dt = AParameters.ToDataTable();
+            bf.Serialize(fs, dt);
+
             fs.Close();
         }
 
         /// <summary>
-        /// This loads the resultlist from a binary file (using the Datatable conversion);
+        /// This loads the resultlist and parameterlist from a binary file (using the Datatable conversion);
         /// This can be used for debugging the printing, and saving time on calculating the report by reusing previous results
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void ReadBinaryFile(String AFilename)
+        public void ReadBinaryFile(String AFilename, out TParameterList AParameters)
         {
             FileStream fs;
             BinaryFormatter bf;
@@ -636,9 +640,15 @@ namespace Ict.Petra.Shared.MReporting
             fs = new FileStream(AFilename, FileMode.Open);
             bf = new BinaryFormatter();
             dt = (DataTable)bf.Deserialize(fs);
-            fs.Close();
+
             results = new ArrayList();
             LoadFromDataTable(dt);
+
+            dt = (DataTable)bf.Deserialize(fs);
+            AParameters = new TParameterList();
+            AParameters.LoadFromDataTable(dt);
+
+            fs.Close();
         }
 
         /// <summary>

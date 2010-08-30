@@ -33,6 +33,10 @@ using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 namespace Tests.Common.Printing
 {
@@ -176,6 +180,37 @@ namespace Tests.Common.Printing
             if (printPreviewControl1.StartPage < NumberOfPages)
             {
                 printPreviewControl1.StartPage++;
+            }
+        }
+
+        void TbbImportReportBinaryFileClick(object sender, EventArgs e)
+        {
+            OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            DialogOpen.Filter = "Binary Report File (*.bin)|*.bin";
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = "Open Binary Report File";
+
+            if (DialogOpen.ShowDialog() == DialogResult.OK)
+            {
+                TResultList Results = new TResultList();
+                TParameterList Parameters;
+                Results.ReadBinaryFile(DialogOpen.FileName, out Parameters);
+
+                PrintDocument doc = new PrintDocument();
+
+                TPetraIdentity PetraIdentity = new TPetraIdentity(
+                    "TESTUSER", "", "", "", "", DateTime.MinValue,
+                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
+                    false);
+
+                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
+                FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
+                TReportPrinterLayout ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, true);
+                printPreviewControl1.Document = doc;
+                doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
+                printPreviewControl1.InvalidatePreview();
             }
         }
     }

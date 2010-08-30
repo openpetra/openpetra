@@ -183,6 +183,8 @@ namespace Tests.Reporting
 
                     if (FCalculator.GenerateResultRemoteClient())
                     {
+                        FCalculator.GetResults().WriteBinaryFile(FCalculator.GetParameters(), "report.bin");
+
                         FCalculator.GetParameters().Save(
                             PathToTestData + ASettingsDirectory + System.IO.Path.DirectorySeparatorChar + "LogParametersAfterCalc.log",
                             true);
