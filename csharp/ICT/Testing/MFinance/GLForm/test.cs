@@ -28,6 +28,7 @@ using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using NUnit.Extensions.Forms;
 using System.IO;
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Testing.NUnitPetraClient;
 using Ict.Petra.Client.MFinance.Gui.GL;
@@ -103,10 +104,27 @@ namespace Tests.MFinance.GLBatches
 
             // cancel that batch. no saving necessary
             ButtonTester btnCancelBatch = new ButtonTester("ucoBatches.btnCancel");
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.AreEqual("Confirm Cancel", tester.Title);
+
+                // there is a second message box after confirming the cancellation, telling the user the cancellation was successful.
+                // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                    // Assert.AreEqual("Success", tester.Title);
+                    tester2.SendCommand(MessageBoxTester.Command.Yes);
+                }
+
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            }
+            btnCancelBatch.Click();
 
             // add a new batch
             btnNewBatch.Click();
-            txtDetailBatchDescription.Properties.Text = "Created by test TestCancelBatchBug121";
+            txtDetailBatchDescription.Properties.Text = "Created by test TestCancelBatchBug121, not cancelled";
 
             // save: the bug caused exception "Forgot to call AcceptChanges"
             btnSave.Click();
