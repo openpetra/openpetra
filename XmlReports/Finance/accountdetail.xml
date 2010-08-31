@@ -234,13 +234,13 @@
 			</calculation>
 			<calculation id="AnalysisType" 
 					returnsFormat="nothing" returns="text">
-				<caption/>
+				<caption><value text="Analysis Type"/></caption>
 				<query><queryDetail></queryDetail>
 				</query>
 			</calculation>
 			<calculation id="AnalysisValue" 
 					returnsFormat="nothing" returns="text">
-				<caption/>
+				<caption><value text="Analysis Value"/></caption>
 				<query><queryDetail></queryDetail>
 				</query>
 			</calculation>

@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     /// </summary>
     public partial class TFrmUC_AccountCostCentreSettings
     {
+        /// <summary>Indicator if the report is generated with balance or not</summary>
         public bool FReportWithBalance;
         private int FLedgerNumber;
         private String FCostCenterCodesDuringLoad;
@@ -191,8 +192,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddColumnLayout(1, 8, 0, 3);
             ACalculator.AddColumnLayout(2, 11, 0, 1);
             ACalculator.AddColumnLayout(3, 12, 0, 5);
-            ACalculator.AddColumnLayout(4, 13, 0, 3);
-            ACalculator.AddColumnLayout(5, 16, 0, 3);
+//            ACalculator.AddColumnLayout(4, 13, 0, 3);
+//            ACalculator.AddColumnLayout(5, 16, 0, 3);
+            ACalculator.AddColumnLayout(4, 17, 0, 3);
+            ACalculator.AddColumnLayout(5, 20, 0, 3);
 
             if (FReportWithBalance == true)
             {

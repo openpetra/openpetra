@@ -42,13 +42,13 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Ict.Petra.Shared.MFinance">
-      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
-      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
-      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+      <HintPath>U:\openpetraorg\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
@@ -106,6 +106,13 @@
     </Compile>
     <Compile Include="AccountDetail.ManualCode.cs">
       <DependentUpon>AccountDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AnalysisAttribute.cs" />
+    <Compile Include="AnalysisAttribute.Designer.cs">
+      <DependentUpon>AnalysisAttribute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AnalysisAttribute.ManualCode.cs">
+      <DependentUpon>AnalysisAttribute.cs</DependentUpon>
     </Compile>
     <Compile Include="ARConferencePayments.cs" />
     <Compile Include="ARConferencePayments.Designer.cs">
@@ -180,6 +187,9 @@
     </Compile>
     <EmbeddedResource Include="AccountDetail.resx">
       <DependentUpon>AccountDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AnalysisAttribute.resx">
+      <DependentUpon>AnalysisAttribute.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ARConferencePayments.resx">
       <DependentUpon>ARConferencePayments.cs</DependentUpon>

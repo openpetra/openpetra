@@ -122,6 +122,7 @@ OpenPetra:
                         #FindTransaction:
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
+                        AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         BalanceSheetStandard: {ActionOpenScreen=TFrmBalanceSheetStandard}
                         BalanceSheetMultiLedger: {ActionOpenScreen=TFrmBalanceSheetMultiLedger}
                             #CurrentPeriod:
