@@ -157,6 +157,13 @@
     <Compile Include="IncomeExpenseStmt.Designer.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
+    <Compile Include="TrialBalance.cs" />
+    <Compile Include="TrialBalance.Designer.cs">
+      <DependentUpon>TrialBalance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TrialBalance.ManualCode.cs">
+      <DependentUpon>TrialBalance.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_AccountCostCentreSettings.cs" />
     <Compile Include="UC_AccountCostCentreSettings.Designer.cs">
       <DependentUpon>UC_AccountCostCentreSettings.cs</DependentUpon>
@@ -208,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TrialBalance.resx">
+      <DependentUpon>TrialBalance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_AccountCostCentreSettings.resx">
       <DependentUpon>UC_AccountCostCentreSettings.cs</DependentUpon>

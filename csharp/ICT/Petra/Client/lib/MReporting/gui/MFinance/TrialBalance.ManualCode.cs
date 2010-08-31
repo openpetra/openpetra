@@ -28,7 +28,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmAnalysisAttribute
+    public partial class TFrmTrialBalance
     {
         private Int32 FLedgerNumber;
 
@@ -39,11 +39,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             set
             {
-                uco_GeneralSettings.EnableDateSelection(true);
+                uco_GeneralSettings.EnableDateSelection(false);
 
                 FLedgerNumber = value;
 
                 uco_AccountCostCentreSettings.InitialiseLedger(FLedgerNumber);
+                uco_AccountCostCentreSettings.FReportWithBalance = false;
+
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
@@ -53,12 +55,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_with_analysis_attributes", true);
-            ACalc.AddColumnLayout(6, 23, 0, 3);
-            ACalc.AddColumnLayout(7, 26, 0, 3);
-            ACalc.SetMaxDisplayColumns(8);
-            ACalc.AddColumnCalculation(6, "AnalysisType");
-            ACalc.AddColumnCalculation(7, "AnalysisValue");
+            ACalc.AddParameter("param_with_analysis_attributes", false);
+            ACalc.AddColumnLayout(0, 8, 0, 3);
+            ACalc.AddColumnLayout(1, 11, 0, 3);
+            ACalc.SetMaxDisplayColumns(2);
+            ACalc.AddColumnCalculation(0, "Debit");
+            ACalc.AddColumnCalculation(1, "Credit");
         }
     }
 }

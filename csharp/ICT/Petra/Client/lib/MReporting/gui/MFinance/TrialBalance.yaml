@@ -1,0 +1,48 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Trial Balance
+    WindowWidth: 650
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance\\\\trialbalance.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: Trial Balance
+        CURRENTREPORT: Trial Balance
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [uco_GeneralSettings, rgrSorting]
+        uco_GeneralSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
+            Dock: Top
+        
+        rgrSorting:
+            ParameterName: param_sortby
+            Dock: Top
+            Controls: [rbtSortByAccount, rbtSortByCostCentre, rbtSortByDepartment]
+        rbtSortByAccount: 
+            Label: Sort by Account
+            ParameterValue: Account
+        rbtSortByCostCentre: 
+            Label: Sort by Cost Centre
+            ParameterValue:Cost Centre
+        rbtSortByDepartment:
+            Label: Sort by Department
+            ParameterValue: Department
+        
+        tpgCCAccount:
+            Label: Account / CostCentre Settings
+            Controls: [uco_AccountCostCentreSettings]
+        uco_AccountCostCentreSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings
+            Dock: Fill
+            
