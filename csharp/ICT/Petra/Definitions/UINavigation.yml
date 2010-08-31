@@ -124,6 +124,7 @@ OpenPetra:
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
+                        SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
                         BalanceSheetStandard: {ActionOpenScreen=TFrmBalanceSheetStandard}
                         BalanceSheetMultiLedger: {ActionOpenScreen=TFrmBalanceSheetMultiLedger}
                             #CurrentPeriod:
