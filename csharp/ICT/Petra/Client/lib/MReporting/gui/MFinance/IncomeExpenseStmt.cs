@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual Selected Year", 0));
       FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual Previous Year", 0));
-      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual End of Year", false, true));
+      FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Actual End of Previous Year", false, true));
       FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Variance", 2));
       FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Variance %", 2));
       FPetraUtilsObject.AddAvailableFunction(new TFinanceColumnFunction("Account %", 1));

@@ -130,6 +130,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
 
             ACalculator.AddParameter("param_quarter", (System.Object) this.rbtQuarter.Checked);
+            ACalculator.AddParameter("param_period", rbtPeriod.Checked);
+            ACalculator.AddParameter("param_daterange", rbtDate.Checked);
 
             if (rbtQuarter.Checked)
             {
@@ -143,8 +145,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     CheckQuarter(Year, Quarter);
                 }
+
+                dtpStartDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodStartDate(Year, DiffPeriod, (Quarter * 3 - 2));
+                dtpEndDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodEndDate(Year, DiffPeriod, Quarter * 3);
             }
-            else
+            else if (rbtPeriod.Checked)
             {
                 Year = (int)cmbPeriodYear.SelectedItem;
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
@@ -165,9 +170,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                 TResultSeverity.Resv_Critical));
                     }
                 }
+
+                dtpStartDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodStartDate(Year, DiffPeriod, StartPeriod);
+                dtpEndDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodEndDate(Year, DiffPeriod, EndPeriod);
+            }
+            else if (rbtDate.Checked)
+            {
+                if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("Start Date must not be bigger than End Date."),
+                            Catalog.GetString("Invalid Data entered."),
+                            TResultSeverity.Resv_Critical));
+                }
+
+                ACalculator.AddParameter("param_date_checked", true);
             }
 
             ACalculator.AddParameter("param_year_i", Year);
+            ACalculator.AddParameter("param_start_date", dtpStartDate.Date);
+            ACalculator.AddParameter("param_end_date", dtpEndDate.Date);
         }
 
         /// <summary>
@@ -189,11 +211,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbQuarterYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
 
             rbtQuarter.Checked = AParameters.Get("param_quarter").ToBool();
-            rbtPeriod.Checked = !rbtQuarter.Checked;
+            rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
+            rbtPeriod.Checked = (!rbtQuarter.Checked && !rbtDate.Checked);
 
             txtQuarter.Text = (AParameters.Get("param_end_period_i").ToInt() / 3).ToString();
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
             txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
+
+            if (AParameters.Exists("param_start_date"))
+            {
+                dtpStartDate.Date = AParameters.Get("param_start_date").ToDate();
+                dtpEndDate.Date = AParameters.Get("param_end_date").ToDate();
+            }
         }
 
         #endregion
@@ -222,6 +251,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             dtpEndDate.Visible = IsVisible;
             cmbPeriodYear.Enabled = true;
             cmbPeriodYear.Visible = true;
+        }
+
+        /// <summary>
+        /// Enable / Disable the radio button date
+        /// </summary>
+        /// <param name="AValue">true to enable the radio button</param>
+        public void EnableDateSelection(bool AValue)
+        {
+            rbtDate.Enabled = AValue;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)

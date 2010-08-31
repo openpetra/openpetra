@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// </summary>
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
-            clbCostCentres.SelectionMode = SourceGrid.GridSelectionMode.Column;
+            clbCostCentres.SelectionMode = SourceGrid.GridSelectionMode.Cell;
             FCostCenterCodesDuringLoad = "";
         }
 

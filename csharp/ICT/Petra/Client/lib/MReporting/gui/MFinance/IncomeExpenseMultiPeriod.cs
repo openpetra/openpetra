@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "Finance\\\\incomeexpensestatement.xml,Finance\\\\finance.xml,common.xml";
-      FPetraUtilsObject.FReportName = "Income Expense Mul Period";
+      FPetraUtilsObject.FReportName = "Inc Exp Multi Period";
       FPetraUtilsObject.FCurrentReport = "Income Expense Statement";
       FPetraUtilsObject.FSettingsDirectory = "Finance";
 

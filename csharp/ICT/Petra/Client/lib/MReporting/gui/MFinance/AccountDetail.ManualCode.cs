@@ -39,27 +39,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             set
             {
+                uco_GeneralSettings.EnableDateSelection(true);
+
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseAccountList(ref cmbAccountStart, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseAccountList(ref cmbAccountEnd, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreStart, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreEnd, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseAccountList(ref clbAccounts, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
-                TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-
-                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                // if there is only one hierarchy, disable the control
-                this.cmbAccountHierarchy.Enabled = (this.cmbAccountHierarchy.Count > 1);
-                cmbAccountStart.SelectedIndex = 0;
-                cmbAccountEnd.SelectedIndex = cmbAccountEnd.Count - 1;
-                cmbCostCentreStart.SelectedIndex = 0;
-                cmbCostCentreEnd.SelectedIndex = cmbCostCentreEnd.Count - 1;
-                clbAccounts.SetCheckedStringList("");
-                clbCostCentres.SetCheckedStringList("");
+                uco_AccountCostCentreSettings.InitialiseLedger(FLedgerNumber);
+                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
@@ -69,26 +54,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_with_analysis_attributes", false);
-
-            if (rbtPeriodRange.Checked)
-            {
-                // TODO: support DiffPeriod for other financial years
-                DateTime StartDate, EndDate, TempDate;
-
-                TRemote.MFinance.GL.WebConnectors.GetPeriodDates(FLedgerNumber,
-                    Convert.ToInt32(cmbPeriodYear.GetSelectedString()),
-                    0,
-                    Convert.ToInt32(txtStartPeriod.Text),
-                    out StartDate, out TempDate);
-                TRemote.MFinance.GL.WebConnectors.GetPeriodDates(FLedgerNumber,
-                    Convert.ToInt32(cmbPeriodYear.GetSelectedString()),
-                    0,
-                    Convert.ToInt32(txtEndPeriod.Text),
-                    out TempDate, out EndDate);
-
-                ACalc.AddParameter("param_start_date", StartDate);
-                ACalc.AddParameter("param_end_date", EndDate);
-            }
         }
     }
 }

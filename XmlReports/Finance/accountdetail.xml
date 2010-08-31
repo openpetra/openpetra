@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "reports.dtd">
+<!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
 
 	<report id="Account Detail">
@@ -144,13 +144,13 @@
 				<value variable="param_current_period_i"/>
 			</field>			
 			<field whichfield="period1">
-				<fielddetail condition="eq({param_rgrPeriod},DateRange)">
+				<fielddetail condition="eq({param_daterange},true)">
 					<value text="Period:  "/>
 					<value variable="param_start_date" format="formatteddate"/>
 					<value text=" To "/>
 					<value variable="param_end_date" format="formatteddate"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_rgrPeriod},PeriodRange)">
+				<fielddetail condition="eq({param_period},true)">
 					<value text="Period:  "/>
 					<value function="getPeriodStartDate({{param_ledger_number_i}}, {{param_start_period_i}})"/>
 					<value text=" To "/>
@@ -162,6 +162,15 @@
 					<value text = ")    (" />
 					<value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
 					<value text = ")" />
+				</fielddetail>
+				<fielddetail condition="eq({param_quarter},true)">
+					<value text="Period:  "/>
+					<value variable="param_start_date" format="formatteddate"/>
+					<value text=" To "/>
+					<value variable="param_end_date" format="formatteddate"/>
+					<value text="   (Quarter:  "/>
+					<value function="div({param_end_period_i}, 3)"/>
+					<value text=")"/>
 				</fielddetail>
 			</field>
 			<switch>

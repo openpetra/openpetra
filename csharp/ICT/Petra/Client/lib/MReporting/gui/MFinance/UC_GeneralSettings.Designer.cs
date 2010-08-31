@@ -398,7 +398,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblStartDate.Location = new System.Drawing.Point(2,2);
             this.lblStartDate.Name = "lblStartDate";
             this.lblStartDate.AutoSize = true;
-            this.lblStartDate.Text = "From:";
+            this.lblStartDate.Text = "from:";
             this.lblStartDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblStartDate.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -414,7 +414,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblEndDate.Location = new System.Drawing.Point(2,2);
             this.lblEndDate.Name = "lblEndDate";
             this.lblEndDate.AutoSize = true;
-            this.lblEndDate.Text = "To:";
+            this.lblEndDate.Text = "to:";
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndDate.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblEndDate.TextAlign = System.Drawing.ContentAlignment.TopRight;

@@ -75,8 +75,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.lblQuarter.Text = Catalog.GetString("from:");
       this.lblQuarterYear.Text = Catalog.GetString("Year:");
       this.rbtDate.Text = Catalog.GetString("Date");
-      this.lblStartDate.Text = Catalog.GetString("From:");
-      this.lblEndDate.Text = Catalog.GetString("To:");
+      this.lblStartDate.Text = Catalog.GetString("from:");
+      this.lblEndDate.Text = Catalog.GetString("to:");
       this.grpPeriodRange.Text = Catalog.GetString("Period Range");
       #endregion
 

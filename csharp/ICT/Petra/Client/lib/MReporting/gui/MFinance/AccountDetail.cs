@@ -65,18 +65,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedger.Text = Catalog.GetString("Ledger:");
-      this.lblAccountHierarchy.Text = Catalog.GetString("Account Hierarchy:");
-      this.grpLedger.Text = Catalog.GetString("Ledger Details");
-      this.lblCurrency.Text = Catalog.GetString("Currency:");
-      this.grpCurrency.Text = Catalog.GetString("Currency");
-      this.rbtPeriodRange.Text = Catalog.GetString("Period Range");
-      this.lblStartPeriod.Text = Catalog.GetString("from:");
-      this.lblEndPeriod.Text = Catalog.GetString("to:");
-      this.lblPeriodYear.Text = Catalog.GetString("Year:");
-      this.rbtDateRange.Text = Catalog.GetString("Date Range");
-      this.lblDateEnd.Text = Catalog.GetString("to:");
-      this.rgrPeriod.Text = Catalog.GetString("Period");
       this.rbtSortByAccount.Text = Catalog.GetString("Sort by Account");
       this.rbtSortByCostCentre.Text = Catalog.GetString("Sort by Cost Centre");
       this.rbtSortByReference.Text = Catalog.GetString("Sort By Reference");
@@ -86,20 +74,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.lblAnalysisTypeFrom.Text = Catalog.GetString("from:");
       this.lblAnalysisTypeTo.Text = Catalog.GetString("to:");
       this.rgrSorting.Text = Catalog.GetString("Sorting");
-      this.tpgReportSpecific.Text = Catalog.GetString("General Settings");
-      this.rbtAccountRange.Text = Catalog.GetString("Account Range");
-      this.lblAccountStart.Text = Catalog.GetString("From:");
-      this.lblAccountEnd.Text = Catalog.GetString("To:");
-      this.rbtAccountList.Text = Catalog.GetString("Account List");
-      this.btnUnselectAllAccounts.Text = Catalog.GetString("Unselect All");
-      this.rgrAccounts.Text = Catalog.GetString("Accounts");
-      this.rbtCostCentreRange.Text = Catalog.GetString("Cost Centre Range");
-      this.lblCostCentreStart.Text = Catalog.GetString("From:");
-      this.lblCostCentreEnd.Text = Catalog.GetString("To:");
-      this.rbtCostCentreList.Text = Catalog.GetString("Cost Centre List");
-      this.btnUnselectAllCostCentres.Text = Catalog.GetString("Unselect All");
-      this.rgrCostCentres.Text = Catalog.GetString("Cost Centres");
-      this.tpgCCAccount.Text = Catalog.GetString("Account/CostCentre Settings");
+      this.tpgGeneralSettings.Text = Catalog.GetString("General Settings");
+      this.tpgCCAccount.Text = Catalog.GetString("Account / CostCentre Settings");
       this.tbbGenerateReport.ToolTipText = Catalog.GetString("Generate the report");
       this.tbbGenerateReport.Text = Catalog.GetString("&Generate");
       this.tbbSaveSettings.Text = Catalog.GetString("&Save Settings");
@@ -129,9 +105,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       this.Text = Catalog.GetString("Account Detail");
       #endregion
 
-      this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtReferenceFrom.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtReferenceTo.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtAnalysisTypeFrom.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -151,29 +124,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
       this.SetAvailableFunctions();
 
-      rbtPeriodRangeCheckedChanged(null, null);
-      rbtDateRangeCheckedChanged(null, null);
+      uco_GeneralSettings.InitialiseData(FPetraUtilsObject);
       rbtSortByReferenceCheckedChanged(null, null);
       rbtSortByAnalysisTypeCheckedChanged(null, null);
-      rbtAccountRangeCheckedChanged(null, null);
-      rbtAccountListCheckedChanged(null, null);
-      rbtCostCentreRangeCheckedChanged(null, null);
-      rbtCostCentreListCheckedChanged(null, null);
+      uco_AccountCostCentreSettings.InitialiseData(FPetraUtilsObject);
+
+      uco_GeneralSettings.PetraUtilsObject = FPetraUtilsObject;
+      uco_GeneralSettings.InitUserControl();
+      uco_AccountCostCentreSettings.PetraUtilsObject = FPetraUtilsObject;
+      uco_AccountCostCentreSettings.InitUserControl();
 
       FPetraUtilsObject.LoadDefaultSettings();
-    }
-
-    void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
-    {
-      txtStartPeriod.Enabled = rbtPeriodRange.Checked;
-      txtEndPeriod.Enabled = rbtPeriodRange.Checked;
-      cmbPeriodYear.Enabled = rbtPeriodRange.Checked;
-    }
-
-    void rbtDateRangeCheckedChanged(object sender, System.EventArgs e)
-    {
-      dtpDateStart.Enabled = rbtDateRange.Checked;
-      dtpDateEnd.Enabled = rbtDateRange.Checked;
     }
 
     void rbtSortByReferenceCheckedChanged(object sender, System.EventArgs e)
@@ -186,30 +147,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
       txtAnalysisTypeFrom.Enabled = rbtSortByAnalysisType.Checked;
       txtAnalysisTypeTo.Enabled = rbtSortByAnalysisType.Checked;
-    }
-
-    void rbtAccountRangeCheckedChanged(object sender, System.EventArgs e)
-    {
-      cmbAccountStart.Enabled = rbtAccountRange.Checked;
-      cmbAccountEnd.Enabled = rbtAccountRange.Checked;
-    }
-
-    void rbtAccountListCheckedChanged(object sender, System.EventArgs e)
-    {
-      clbAccounts.Enabled = rbtAccountList.Checked;
-      btnUnselectAllAccounts.Enabled = rbtAccountList.Checked;
-    }
-
-    void rbtCostCentreRangeCheckedChanged(object sender, System.EventArgs e)
-    {
-      cmbCostCentreStart.Enabled = rbtCostCentreRange.Checked;
-      cmbCostCentreEnd.Enabled = rbtCostCentreRange.Checked;
-    }
-
-    void rbtCostCentreListCheckedChanged(object sender, System.EventArgs e)
-    {
-      clbCostCentres.Enabled = rbtCostCentreList.Checked;
-      btnUnselectAllCostCentres.Enabled = rbtCostCentreList.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -244,28 +181,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      ACalc.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
-      if (this.cmbCurrency.SelectedItem != null)
-      {
-          ACalc.AddParameter("param_currency", this.cmbCurrency.SelectedItem.ToString());
-      }
-      else
-      {
-          ACalc.AddParameter("param_currency", "");
-      }
-      if (rbtPeriodRange.Checked)
-      {
-          ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
-          ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
-          ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
-          ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      }
-      if (rbtDateRange.Checked)
-      {
-          ACalc.AddParameter("param_rgrPeriod", "DateRange");
-          ACalc.AddParameter("param_start_date", this.dtpDateStart.Date);
-          ACalc.AddParameter("param_end_date", this.dtpDateEnd.Date);
-      }
+      uco_GeneralSettings.ReadControls(ACalc, AReportAction);
       if (rbtSortByAccount.Checked)
       {
           ACalc.AddParameter("param_sortby", "Account");
@@ -286,28 +202,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
           ACalc.AddParameter("param_analyis_type_start", this.txtAnalysisTypeFrom.Text);
           ACalc.AddParameter("param_analyis_type_end", this.txtAnalysisTypeTo.Text);
       }
-      if (rbtAccountRange.Checked)
-      {
-          ACalc.AddParameter("param_rgrAccounts", "AccountRange");
-          ACalc.AddParameter("param_account_code_start", this.cmbAccountStart.GetSelectedString());
-          ACalc.AddParameter("param_account_code_end", this.cmbAccountEnd.GetSelectedString());
-      }
-      if (rbtAccountList.Checked)
-      {
-          ACalc.AddParameter("param_rgrAccounts", "AccountList");
-          ACalc.AddParameter("param_account_codes", this.clbAccounts.GetCheckedStringList());
-      }
-      if (rbtCostCentreRange.Checked)
-      {
-          ACalc.AddParameter("param_rgrCostCentres", "CostCentreRange");
-          ACalc.AddParameter("param_cost_centre_code_start", this.cmbCostCentreStart.GetSelectedString());
-          ACalc.AddParameter("param_cost_centre_code_end", this.cmbCostCentreEnd.GetSelectedString());
-      }
-      if (rbtCostCentreList.Checked)
-      {
-          ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
-          ACalc.AddParameter("param_cost_centre_codes", this.clbCostCentres.GetCheckedStringList());
-      }
+      uco_AccountCostCentreSettings.ReadControls(ACalc, AReportAction);
       ReadControlsManual(ACalc, AReportAction);
 
     }
@@ -319,33 +214,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetControls(TParameterList AParameters)
     {
 
-      cmbAccountHierarchy.SetSelectedString(AParameters.Get("param_account_hierarchy_c").ToString());
-      cmbCurrency.SelectedValue = AParameters.Get("param_currency").ToString();
-      rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
-      if (rbtPeriodRange.Checked)
-      {
-          txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-          txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-          cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      }
-      rbtDateRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "DateRange";
-      if (rbtDateRange.Checked)
-      {
-          DateTime dtpDateStartDate = AParameters.Get("param_start_date").ToDate();
-          if ((dtpDateStartDate <= DateTime.MinValue)
-              || (dtpDateStartDate >= DateTime.MaxValue))
-          {
-              dtpDateStartDate = DateTime.Now;
-          }
-          dtpDateStart.Date = dtpDateStartDate;
-          DateTime dtpDateEndDate = AParameters.Get("param_end_date").ToDate();
-          if ((dtpDateEndDate <= DateTime.MinValue)
-              || (dtpDateEndDate >= DateTime.MaxValue))
-          {
-              dtpDateEndDate = DateTime.Now;
-          }
-          dtpDateEnd.Date = dtpDateEndDate;
-      }
+      uco_GeneralSettings.SetControls(AParameters);
       rbtSortByAccount.Checked = AParameters.Get("param_sortby").ToString() == "Account";
       rbtSortByCostCentre.Checked = AParameters.Get("param_sortby").ToString() == "Cost Centre";
       rbtSortByReference.Checked = AParameters.Get("param_sortby").ToString() == "Reference";
@@ -360,28 +229,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
           txtAnalysisTypeFrom.Text = AParameters.Get("param_analyis_type_start").ToString();
           txtAnalysisTypeTo.Text = AParameters.Get("param_analyis_type_end").ToString();
       }
-      rbtAccountRange.Checked = AParameters.Get("param_rgrAccounts").ToString() == "AccountRange";
-      if (rbtAccountRange.Checked)
-      {
-          cmbAccountStart.SetSelectedString(AParameters.Get("param_account_code_start").ToString());
-          cmbAccountEnd.SetSelectedString(AParameters.Get("param_account_code_end").ToString());
-      }
-      rbtAccountList.Checked = AParameters.Get("param_rgrAccounts").ToString() == "AccountList";
-      if (rbtAccountList.Checked)
-      {
-          clbAccounts.SetCheckedStringList(AParameters.Get("param_account_codes").ToString());
-      }
-      rbtCostCentreRange.Checked = AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreRange";
-      if (rbtCostCentreRange.Checked)
-      {
-          cmbCostCentreStart.SetSelectedString(AParameters.Get("param_cost_centre_code_start").ToString());
-          cmbCostCentreEnd.SetSelectedString(AParameters.Get("param_cost_centre_code_end").ToString());
-      }
-      rbtCostCentreList.Checked = AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreList";
-      if (rbtCostCentreList.Checked)
-      {
-          clbCostCentres.SetCheckedStringList(AParameters.Get("param_cost_centre_codes").ToString());
-      }
+      uco_AccountCostCentreSettings.SetControls(AParameters);
     }
 #endregion
 
@@ -393,6 +241,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+
+      uco_GeneralSettings.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      uco_AccountCostCentreSettings.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

@@ -63,7 +63,7 @@ RootNode:
             NoParameter: true
         dtpStartDate:
             NoParameter: true
-            Label: From
+            Label: from
         dtpEndDate:
             NoParameter: true
-            Label: To
+            Label: to
