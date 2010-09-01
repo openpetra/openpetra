@@ -33,7 +33,9 @@ using System.Data.Odbc;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Shared.MPartner.Partner.Data
@@ -13109,6 +13111,1427 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.FConstraints.Add(new TTypedConstraint("FKRelation1", "PRelationCategory", new string[] {
                                 "p_code_c"}, "PRelation", new string[] {
                                 "p_relation_category_c"}));
+            }
+        }
+    }
+     /// auto generated
+    [Serializable()]
+    public class PartnerImportExportTDS : TTypedDataSet
+    {
+
+        private PPartnerTable TablePPartner;
+        private PLocationTable TablePLocation;
+        private PPartnerLocationTable TablePPartnerLocation;
+        private PPersonTable TablePPerson;
+        private PFamilyTable TablePFamily;
+        private PUnitTable TablePUnit;
+        private POrganisationTable TablePOrganisation;
+        private PChurchTable TablePChurch;
+        private PBankTable TablePBank;
+        private PVenueTable TablePVenue;
+        private PPartnerCommentTable TablePPartnerComment;
+        private PPartnerTypeTable TablePPartnerType;
+        private PPartnerInterestTable TablePPartnerInterest;
+        private PInterestTable TablePInterest;
+        private PmPersonalDataTable TablePmPersonalData;
+        private PmPassportDetailsTable TablePmPassportDetails;
+        private PmDocumentTable TablePmDocument;
+        private PmDocumentTypeTable TablePmDocumentType;
+        private PmPersonQualificationTable TablePmPersonQualification;
+        private PmSpecialNeedTable TablePmSpecialNeed;
+        private PmPastExperienceTable TablePmPastExperience;
+        private PmPersonLanguageTable TablePmPersonLanguage;
+        private PmPersonAbilityTable TablePmPersonAbility;
+        private PmPersonVisionTable TablePmPersonVision;
+        private PmStaffDataTable TablePmStaffData;
+        private PmJobAssignmentTable TablePmJobAssignment;
+        private PmPersonEvaluationTable TablePmPersonEvaluation;
+        private PmGeneralApplicationTable TablePmGeneralApplication;
+        private PtApplicationTypeTable TablePtApplicationType;
+        private PmShortTermApplicationTable TablePmShortTermApplication;
+        private PmYearProgramApplicationTable TablePmYearProgramApplication;
+        private PmApplicationFormsTable TablePmApplicationForms;
+        private UmUnitStructureTable TableUmUnitStructure;
+        private UmUnitAbilityTable TableUmUnitAbility;
+        private UmUnitLanguageTable TableUmUnitLanguage;
+        private UmUnitVisionTable TableUmUnitVision;
+        private UmUnitCostTable TableUmUnitCost;
+        private UmJobTable TableUmJob;
+        private UmJobRequirementTable TableUmJobRequirement;
+        private UmJobLanguageTable TableUmJobLanguage;
+        private UmJobQualificationTable TableUmJobQualification;
+        private UmJobVisionTable TableUmJobVision;
+        private PcBuildingTable TablePcBuilding;
+        private PcRoomTable TablePcRoom;
+
+        /// auto generated
+        public PartnerImportExportTDS() :
+                base("PartnerImportExportTDS")
+        {
+        }
+
+        /// auto generated for serialization
+        public PartnerImportExportTDS(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        /// auto generated
+        public PartnerImportExportTDS(string ADatasetName) :
+                base(ADatasetName)
+        {
+        }
+
+        /// auto generated
+        public PPartnerTable PPartner
+        {
+            get
+            {
+                return this.TablePPartner;
+            }
+        }
+
+        /// auto generated
+        public PLocationTable PLocation
+        {
+            get
+            {
+                return this.TablePLocation;
+            }
+        }
+
+        /// auto generated
+        public PPartnerLocationTable PPartnerLocation
+        {
+            get
+            {
+                return this.TablePPartnerLocation;
+            }
+        }
+
+        /// auto generated
+        public PPersonTable PPerson
+        {
+            get
+            {
+                return this.TablePPerson;
+            }
+        }
+
+        /// auto generated
+        public PFamilyTable PFamily
+        {
+            get
+            {
+                return this.TablePFamily;
+            }
+        }
+
+        /// auto generated
+        public PUnitTable PUnit
+        {
+            get
+            {
+                return this.TablePUnit;
+            }
+        }
+
+        /// auto generated
+        public POrganisationTable POrganisation
+        {
+            get
+            {
+                return this.TablePOrganisation;
+            }
+        }
+
+        /// auto generated
+        public PChurchTable PChurch
+        {
+            get
+            {
+                return this.TablePChurch;
+            }
+        }
+
+        /// auto generated
+        public PBankTable PBank
+        {
+            get
+            {
+                return this.TablePBank;
+            }
+        }
+
+        /// auto generated
+        public PVenueTable PVenue
+        {
+            get
+            {
+                return this.TablePVenue;
+            }
+        }
+
+        /// auto generated
+        public PPartnerCommentTable PPartnerComment
+        {
+            get
+            {
+                return this.TablePPartnerComment;
+            }
+        }
+
+        /// auto generated
+        public PPartnerTypeTable PPartnerType
+        {
+            get
+            {
+                return this.TablePPartnerType;
+            }
+        }
+
+        /// auto generated
+        public PPartnerInterestTable PPartnerInterest
+        {
+            get
+            {
+                return this.TablePPartnerInterest;
+            }
+        }
+
+        /// auto generated
+        public PInterestTable PInterest
+        {
+            get
+            {
+                return this.TablePInterest;
+            }
+        }
+
+        /// auto generated
+        public PmPersonalDataTable PmPersonalData
+        {
+            get
+            {
+                return this.TablePmPersonalData;
+            }
+        }
+
+        /// auto generated
+        public PmPassportDetailsTable PmPassportDetails
+        {
+            get
+            {
+                return this.TablePmPassportDetails;
+            }
+        }
+
+        /// auto generated
+        public PmDocumentTable PmDocument
+        {
+            get
+            {
+                return this.TablePmDocument;
+            }
+        }
+
+        /// auto generated
+        public PmDocumentTypeTable PmDocumentType
+        {
+            get
+            {
+                return this.TablePmDocumentType;
+            }
+        }
+
+        /// auto generated
+        public PmPersonQualificationTable PmPersonQualification
+        {
+            get
+            {
+                return this.TablePmPersonQualification;
+            }
+        }
+
+        /// auto generated
+        public PmSpecialNeedTable PmSpecialNeed
+        {
+            get
+            {
+                return this.TablePmSpecialNeed;
+            }
+        }
+
+        /// auto generated
+        public PmPastExperienceTable PmPastExperience
+        {
+            get
+            {
+                return this.TablePmPastExperience;
+            }
+        }
+
+        /// auto generated
+        public PmPersonLanguageTable PmPersonLanguage
+        {
+            get
+            {
+                return this.TablePmPersonLanguage;
+            }
+        }
+
+        /// auto generated
+        public PmPersonAbilityTable PmPersonAbility
+        {
+            get
+            {
+                return this.TablePmPersonAbility;
+            }
+        }
+
+        /// auto generated
+        public PmPersonVisionTable PmPersonVision
+        {
+            get
+            {
+                return this.TablePmPersonVision;
+            }
+        }
+
+        /// auto generated
+        public PmStaffDataTable PmStaffData
+        {
+            get
+            {
+                return this.TablePmStaffData;
+            }
+        }
+
+        /// auto generated
+        public PmJobAssignmentTable PmJobAssignment
+        {
+            get
+            {
+                return this.TablePmJobAssignment;
+            }
+        }
+
+        /// auto generated
+        public PmPersonEvaluationTable PmPersonEvaluation
+        {
+            get
+            {
+                return this.TablePmPersonEvaluation;
+            }
+        }
+
+        /// auto generated
+        public PmGeneralApplicationTable PmGeneralApplication
+        {
+            get
+            {
+                return this.TablePmGeneralApplication;
+            }
+        }
+
+        /// auto generated
+        public PtApplicationTypeTable PtApplicationType
+        {
+            get
+            {
+                return this.TablePtApplicationType;
+            }
+        }
+
+        /// auto generated
+        public PmShortTermApplicationTable PmShortTermApplication
+        {
+            get
+            {
+                return this.TablePmShortTermApplication;
+            }
+        }
+
+        /// auto generated
+        public PmYearProgramApplicationTable PmYearProgramApplication
+        {
+            get
+            {
+                return this.TablePmYearProgramApplication;
+            }
+        }
+
+        /// auto generated
+        public PmApplicationFormsTable PmApplicationForms
+        {
+            get
+            {
+                return this.TablePmApplicationForms;
+            }
+        }
+
+        /// auto generated
+        public UmUnitStructureTable UmUnitStructure
+        {
+            get
+            {
+                return this.TableUmUnitStructure;
+            }
+        }
+
+        /// auto generated
+        public UmUnitAbilityTable UmUnitAbility
+        {
+            get
+            {
+                return this.TableUmUnitAbility;
+            }
+        }
+
+        /// auto generated
+        public UmUnitLanguageTable UmUnitLanguage
+        {
+            get
+            {
+                return this.TableUmUnitLanguage;
+            }
+        }
+
+        /// auto generated
+        public UmUnitVisionTable UmUnitVision
+        {
+            get
+            {
+                return this.TableUmUnitVision;
+            }
+        }
+
+        /// auto generated
+        public UmUnitCostTable UmUnitCost
+        {
+            get
+            {
+                return this.TableUmUnitCost;
+            }
+        }
+
+        /// auto generated
+        public UmJobTable UmJob
+        {
+            get
+            {
+                return this.TableUmJob;
+            }
+        }
+
+        /// auto generated
+        public UmJobRequirementTable UmJobRequirement
+        {
+            get
+            {
+                return this.TableUmJobRequirement;
+            }
+        }
+
+        /// auto generated
+        public UmJobLanguageTable UmJobLanguage
+        {
+            get
+            {
+                return this.TableUmJobLanguage;
+            }
+        }
+
+        /// auto generated
+        public UmJobQualificationTable UmJobQualification
+        {
+            get
+            {
+                return this.TableUmJobQualification;
+            }
+        }
+
+        /// auto generated
+        public UmJobVisionTable UmJobVision
+        {
+            get
+            {
+                return this.TableUmJobVision;
+            }
+        }
+
+        /// auto generated
+        public PcBuildingTable PcBuilding
+        {
+            get
+            {
+                return this.TablePcBuilding;
+            }
+        }
+
+        /// auto generated
+        public PcRoomTable PcRoom
+        {
+            get
+            {
+                return this.TablePcRoom;
+            }
+        }
+
+        /// auto generated
+        public new virtual PartnerImportExportTDS GetChangesTyped(bool removeEmptyTables)
+        {
+            return ((PartnerImportExportTDS)(base.GetChangesTyped(removeEmptyTables)));
+        }
+
+        /// auto generated
+        protected override void InitTables()
+        {
+            this.Tables.Add(new PPartnerTable("PPartner"));
+            this.Tables.Add(new PLocationTable("PLocation"));
+            this.Tables.Add(new PPartnerLocationTable("PPartnerLocation"));
+            this.Tables.Add(new PPersonTable("PPerson"));
+            this.Tables.Add(new PFamilyTable("PFamily"));
+            this.Tables.Add(new PUnitTable("PUnit"));
+            this.Tables.Add(new POrganisationTable("POrganisation"));
+            this.Tables.Add(new PChurchTable("PChurch"));
+            this.Tables.Add(new PBankTable("PBank"));
+            this.Tables.Add(new PVenueTable("PVenue"));
+            this.Tables.Add(new PPartnerCommentTable("PPartnerComment"));
+            this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
+            this.Tables.Add(new PPartnerInterestTable("PPartnerInterest"));
+            this.Tables.Add(new PInterestTable("PInterest"));
+            this.Tables.Add(new PmPersonalDataTable("PmPersonalData"));
+            this.Tables.Add(new PmPassportDetailsTable("PmPassportDetails"));
+            this.Tables.Add(new PmDocumentTable("PmDocument"));
+            this.Tables.Add(new PmDocumentTypeTable("PmDocumentType"));
+            this.Tables.Add(new PmPersonQualificationTable("PmPersonQualification"));
+            this.Tables.Add(new PmSpecialNeedTable("PmSpecialNeed"));
+            this.Tables.Add(new PmPastExperienceTable("PmPastExperience"));
+            this.Tables.Add(new PmPersonLanguageTable("PmPersonLanguage"));
+            this.Tables.Add(new PmPersonAbilityTable("PmPersonAbility"));
+            this.Tables.Add(new PmPersonVisionTable("PmPersonVision"));
+            this.Tables.Add(new PmStaffDataTable("PmStaffData"));
+            this.Tables.Add(new PmJobAssignmentTable("PmJobAssignment"));
+            this.Tables.Add(new PmPersonEvaluationTable("PmPersonEvaluation"));
+            this.Tables.Add(new PmGeneralApplicationTable("PmGeneralApplication"));
+            this.Tables.Add(new PtApplicationTypeTable("PtApplicationType"));
+            this.Tables.Add(new PmShortTermApplicationTable("PmShortTermApplication"));
+            this.Tables.Add(new PmYearProgramApplicationTable("PmYearProgramApplication"));
+            this.Tables.Add(new PmApplicationFormsTable("PmApplicationForms"));
+            this.Tables.Add(new UmUnitStructureTable("UmUnitStructure"));
+            this.Tables.Add(new UmUnitAbilityTable("UmUnitAbility"));
+            this.Tables.Add(new UmUnitLanguageTable("UmUnitLanguage"));
+            this.Tables.Add(new UmUnitVisionTable("UmUnitVision"));
+            this.Tables.Add(new UmUnitCostTable("UmUnitCost"));
+            this.Tables.Add(new UmJobTable("UmJob"));
+            this.Tables.Add(new UmJobRequirementTable("UmJobRequirement"));
+            this.Tables.Add(new UmJobLanguageTable("UmJobLanguage"));
+            this.Tables.Add(new UmJobQualificationTable("UmJobQualification"));
+            this.Tables.Add(new UmJobVisionTable("UmJobVision"));
+            this.Tables.Add(new PcBuildingTable("PcBuilding"));
+            this.Tables.Add(new PcRoomTable("PcRoom"));
+        }
+
+        /// auto generated
+        protected override void InitTables(System.Data.DataSet ds)
+        {
+            if ((ds.Tables.IndexOf("PPartner") != -1))
+            {
+                this.Tables.Add(new PPartnerTable("PPartner"));
+            }
+            if ((ds.Tables.IndexOf("PLocation") != -1))
+            {
+                this.Tables.Add(new PLocationTable("PLocation"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerLocation") != -1))
+            {
+                this.Tables.Add(new PPartnerLocationTable("PPartnerLocation"));
+            }
+            if ((ds.Tables.IndexOf("PPerson") != -1))
+            {
+                this.Tables.Add(new PPersonTable("PPerson"));
+            }
+            if ((ds.Tables.IndexOf("PFamily") != -1))
+            {
+                this.Tables.Add(new PFamilyTable("PFamily"));
+            }
+            if ((ds.Tables.IndexOf("PUnit") != -1))
+            {
+                this.Tables.Add(new PUnitTable("PUnit"));
+            }
+            if ((ds.Tables.IndexOf("POrganisation") != -1))
+            {
+                this.Tables.Add(new POrganisationTable("POrganisation"));
+            }
+            if ((ds.Tables.IndexOf("PChurch") != -1))
+            {
+                this.Tables.Add(new PChurchTable("PChurch"));
+            }
+            if ((ds.Tables.IndexOf("PBank") != -1))
+            {
+                this.Tables.Add(new PBankTable("PBank"));
+            }
+            if ((ds.Tables.IndexOf("PVenue") != -1))
+            {
+                this.Tables.Add(new PVenueTable("PVenue"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerComment") != -1))
+            {
+                this.Tables.Add(new PPartnerCommentTable("PPartnerComment"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerType") != -1))
+            {
+                this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
+            }
+            if ((ds.Tables.IndexOf("PPartnerInterest") != -1))
+            {
+                this.Tables.Add(new PPartnerInterestTable("PPartnerInterest"));
+            }
+            if ((ds.Tables.IndexOf("PInterest") != -1))
+            {
+                this.Tables.Add(new PInterestTable("PInterest"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonalData") != -1))
+            {
+                this.Tables.Add(new PmPersonalDataTable("PmPersonalData"));
+            }
+            if ((ds.Tables.IndexOf("PmPassportDetails") != -1))
+            {
+                this.Tables.Add(new PmPassportDetailsTable("PmPassportDetails"));
+            }
+            if ((ds.Tables.IndexOf("PmDocument") != -1))
+            {
+                this.Tables.Add(new PmDocumentTable("PmDocument"));
+            }
+            if ((ds.Tables.IndexOf("PmDocumentType") != -1))
+            {
+                this.Tables.Add(new PmDocumentTypeTable("PmDocumentType"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonQualification") != -1))
+            {
+                this.Tables.Add(new PmPersonQualificationTable("PmPersonQualification"));
+            }
+            if ((ds.Tables.IndexOf("PmSpecialNeed") != -1))
+            {
+                this.Tables.Add(new PmSpecialNeedTable("PmSpecialNeed"));
+            }
+            if ((ds.Tables.IndexOf("PmPastExperience") != -1))
+            {
+                this.Tables.Add(new PmPastExperienceTable("PmPastExperience"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonLanguage") != -1))
+            {
+                this.Tables.Add(new PmPersonLanguageTable("PmPersonLanguage"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonAbility") != -1))
+            {
+                this.Tables.Add(new PmPersonAbilityTable("PmPersonAbility"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonVision") != -1))
+            {
+                this.Tables.Add(new PmPersonVisionTable("PmPersonVision"));
+            }
+            if ((ds.Tables.IndexOf("PmStaffData") != -1))
+            {
+                this.Tables.Add(new PmStaffDataTable("PmStaffData"));
+            }
+            if ((ds.Tables.IndexOf("PmJobAssignment") != -1))
+            {
+                this.Tables.Add(new PmJobAssignmentTable("PmJobAssignment"));
+            }
+            if ((ds.Tables.IndexOf("PmPersonEvaluation") != -1))
+            {
+                this.Tables.Add(new PmPersonEvaluationTable("PmPersonEvaluation"));
+            }
+            if ((ds.Tables.IndexOf("PmGeneralApplication") != -1))
+            {
+                this.Tables.Add(new PmGeneralApplicationTable("PmGeneralApplication"));
+            }
+            if ((ds.Tables.IndexOf("PtApplicationType") != -1))
+            {
+                this.Tables.Add(new PtApplicationTypeTable("PtApplicationType"));
+            }
+            if ((ds.Tables.IndexOf("PmShortTermApplication") != -1))
+            {
+                this.Tables.Add(new PmShortTermApplicationTable("PmShortTermApplication"));
+            }
+            if ((ds.Tables.IndexOf("PmYearProgramApplication") != -1))
+            {
+                this.Tables.Add(new PmYearProgramApplicationTable("PmYearProgramApplication"));
+            }
+            if ((ds.Tables.IndexOf("PmApplicationForms") != -1))
+            {
+                this.Tables.Add(new PmApplicationFormsTable("PmApplicationForms"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitStructure") != -1))
+            {
+                this.Tables.Add(new UmUnitStructureTable("UmUnitStructure"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitAbility") != -1))
+            {
+                this.Tables.Add(new UmUnitAbilityTable("UmUnitAbility"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitLanguage") != -1))
+            {
+                this.Tables.Add(new UmUnitLanguageTable("UmUnitLanguage"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitVision") != -1))
+            {
+                this.Tables.Add(new UmUnitVisionTable("UmUnitVision"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitCost") != -1))
+            {
+                this.Tables.Add(new UmUnitCostTable("UmUnitCost"));
+            }
+            if ((ds.Tables.IndexOf("UmJob") != -1))
+            {
+                this.Tables.Add(new UmJobTable("UmJob"));
+            }
+            if ((ds.Tables.IndexOf("UmJobRequirement") != -1))
+            {
+                this.Tables.Add(new UmJobRequirementTable("UmJobRequirement"));
+            }
+            if ((ds.Tables.IndexOf("UmJobLanguage") != -1))
+            {
+                this.Tables.Add(new UmJobLanguageTable("UmJobLanguage"));
+            }
+            if ((ds.Tables.IndexOf("UmJobQualification") != -1))
+            {
+                this.Tables.Add(new UmJobQualificationTable("UmJobQualification"));
+            }
+            if ((ds.Tables.IndexOf("UmJobVision") != -1))
+            {
+                this.Tables.Add(new UmJobVisionTable("UmJobVision"));
+            }
+            if ((ds.Tables.IndexOf("PcBuilding") != -1))
+            {
+                this.Tables.Add(new PcBuildingTable("PcBuilding"));
+            }
+            if ((ds.Tables.IndexOf("PcRoom") != -1))
+            {
+                this.Tables.Add(new PcRoomTable("PcRoom"));
+            }
+        }
+
+        /// auto generated
+        protected override void MapTables()
+        {
+            this.InitVars();
+            base.MapTables();
+            if ((this.TablePPartner != null))
+            {
+                this.TablePPartner.InitVars();
+            }
+            if ((this.TablePLocation != null))
+            {
+                this.TablePLocation.InitVars();
+            }
+            if ((this.TablePPartnerLocation != null))
+            {
+                this.TablePPartnerLocation.InitVars();
+            }
+            if ((this.TablePPerson != null))
+            {
+                this.TablePPerson.InitVars();
+            }
+            if ((this.TablePFamily != null))
+            {
+                this.TablePFamily.InitVars();
+            }
+            if ((this.TablePUnit != null))
+            {
+                this.TablePUnit.InitVars();
+            }
+            if ((this.TablePOrganisation != null))
+            {
+                this.TablePOrganisation.InitVars();
+            }
+            if ((this.TablePChurch != null))
+            {
+                this.TablePChurch.InitVars();
+            }
+            if ((this.TablePBank != null))
+            {
+                this.TablePBank.InitVars();
+            }
+            if ((this.TablePVenue != null))
+            {
+                this.TablePVenue.InitVars();
+            }
+            if ((this.TablePPartnerComment != null))
+            {
+                this.TablePPartnerComment.InitVars();
+            }
+            if ((this.TablePPartnerType != null))
+            {
+                this.TablePPartnerType.InitVars();
+            }
+            if ((this.TablePPartnerInterest != null))
+            {
+                this.TablePPartnerInterest.InitVars();
+            }
+            if ((this.TablePInterest != null))
+            {
+                this.TablePInterest.InitVars();
+            }
+            if ((this.TablePmPersonalData != null))
+            {
+                this.TablePmPersonalData.InitVars();
+            }
+            if ((this.TablePmPassportDetails != null))
+            {
+                this.TablePmPassportDetails.InitVars();
+            }
+            if ((this.TablePmDocument != null))
+            {
+                this.TablePmDocument.InitVars();
+            }
+            if ((this.TablePmDocumentType != null))
+            {
+                this.TablePmDocumentType.InitVars();
+            }
+            if ((this.TablePmPersonQualification != null))
+            {
+                this.TablePmPersonQualification.InitVars();
+            }
+            if ((this.TablePmSpecialNeed != null))
+            {
+                this.TablePmSpecialNeed.InitVars();
+            }
+            if ((this.TablePmPastExperience != null))
+            {
+                this.TablePmPastExperience.InitVars();
+            }
+            if ((this.TablePmPersonLanguage != null))
+            {
+                this.TablePmPersonLanguage.InitVars();
+            }
+            if ((this.TablePmPersonAbility != null))
+            {
+                this.TablePmPersonAbility.InitVars();
+            }
+            if ((this.TablePmPersonVision != null))
+            {
+                this.TablePmPersonVision.InitVars();
+            }
+            if ((this.TablePmStaffData != null))
+            {
+                this.TablePmStaffData.InitVars();
+            }
+            if ((this.TablePmJobAssignment != null))
+            {
+                this.TablePmJobAssignment.InitVars();
+            }
+            if ((this.TablePmPersonEvaluation != null))
+            {
+                this.TablePmPersonEvaluation.InitVars();
+            }
+            if ((this.TablePmGeneralApplication != null))
+            {
+                this.TablePmGeneralApplication.InitVars();
+            }
+            if ((this.TablePtApplicationType != null))
+            {
+                this.TablePtApplicationType.InitVars();
+            }
+            if ((this.TablePmShortTermApplication != null))
+            {
+                this.TablePmShortTermApplication.InitVars();
+            }
+            if ((this.TablePmYearProgramApplication != null))
+            {
+                this.TablePmYearProgramApplication.InitVars();
+            }
+            if ((this.TablePmApplicationForms != null))
+            {
+                this.TablePmApplicationForms.InitVars();
+            }
+            if ((this.TableUmUnitStructure != null))
+            {
+                this.TableUmUnitStructure.InitVars();
+            }
+            if ((this.TableUmUnitAbility != null))
+            {
+                this.TableUmUnitAbility.InitVars();
+            }
+            if ((this.TableUmUnitLanguage != null))
+            {
+                this.TableUmUnitLanguage.InitVars();
+            }
+            if ((this.TableUmUnitVision != null))
+            {
+                this.TableUmUnitVision.InitVars();
+            }
+            if ((this.TableUmUnitCost != null))
+            {
+                this.TableUmUnitCost.InitVars();
+            }
+            if ((this.TableUmJob != null))
+            {
+                this.TableUmJob.InitVars();
+            }
+            if ((this.TableUmJobRequirement != null))
+            {
+                this.TableUmJobRequirement.InitVars();
+            }
+            if ((this.TableUmJobLanguage != null))
+            {
+                this.TableUmJobLanguage.InitVars();
+            }
+            if ((this.TableUmJobQualification != null))
+            {
+                this.TableUmJobQualification.InitVars();
+            }
+            if ((this.TableUmJobVision != null))
+            {
+                this.TableUmJobVision.InitVars();
+            }
+            if ((this.TablePcBuilding != null))
+            {
+                this.TablePcBuilding.InitVars();
+            }
+            if ((this.TablePcRoom != null))
+            {
+                this.TablePcRoom.InitVars();
+            }
+        }
+
+        /// auto generated
+        public override void InitVars()
+        {
+            this.DataSetName = "PartnerImportExportTDS";
+            this.TablePPartner = ((PPartnerTable)(this.Tables["PPartner"]));
+            this.TablePLocation = ((PLocationTable)(this.Tables["PLocation"]));
+            this.TablePPartnerLocation = ((PPartnerLocationTable)(this.Tables["PPartnerLocation"]));
+            this.TablePPerson = ((PPersonTable)(this.Tables["PPerson"]));
+            this.TablePFamily = ((PFamilyTable)(this.Tables["PFamily"]));
+            this.TablePUnit = ((PUnitTable)(this.Tables["PUnit"]));
+            this.TablePOrganisation = ((POrganisationTable)(this.Tables["POrganisation"]));
+            this.TablePChurch = ((PChurchTable)(this.Tables["PChurch"]));
+            this.TablePBank = ((PBankTable)(this.Tables["PBank"]));
+            this.TablePVenue = ((PVenueTable)(this.Tables["PVenue"]));
+            this.TablePPartnerComment = ((PPartnerCommentTable)(this.Tables["PPartnerComment"]));
+            this.TablePPartnerType = ((PPartnerTypeTable)(this.Tables["PPartnerType"]));
+            this.TablePPartnerInterest = ((PPartnerInterestTable)(this.Tables["PPartnerInterest"]));
+            this.TablePInterest = ((PInterestTable)(this.Tables["PInterest"]));
+            this.TablePmPersonalData = ((PmPersonalDataTable)(this.Tables["PmPersonalData"]));
+            this.TablePmPassportDetails = ((PmPassportDetailsTable)(this.Tables["PmPassportDetails"]));
+            this.TablePmDocument = ((PmDocumentTable)(this.Tables["PmDocument"]));
+            this.TablePmDocumentType = ((PmDocumentTypeTable)(this.Tables["PmDocumentType"]));
+            this.TablePmPersonQualification = ((PmPersonQualificationTable)(this.Tables["PmPersonQualification"]));
+            this.TablePmSpecialNeed = ((PmSpecialNeedTable)(this.Tables["PmSpecialNeed"]));
+            this.TablePmPastExperience = ((PmPastExperienceTable)(this.Tables["PmPastExperience"]));
+            this.TablePmPersonLanguage = ((PmPersonLanguageTable)(this.Tables["PmPersonLanguage"]));
+            this.TablePmPersonAbility = ((PmPersonAbilityTable)(this.Tables["PmPersonAbility"]));
+            this.TablePmPersonVision = ((PmPersonVisionTable)(this.Tables["PmPersonVision"]));
+            this.TablePmStaffData = ((PmStaffDataTable)(this.Tables["PmStaffData"]));
+            this.TablePmJobAssignment = ((PmJobAssignmentTable)(this.Tables["PmJobAssignment"]));
+            this.TablePmPersonEvaluation = ((PmPersonEvaluationTable)(this.Tables["PmPersonEvaluation"]));
+            this.TablePmGeneralApplication = ((PmGeneralApplicationTable)(this.Tables["PmGeneralApplication"]));
+            this.TablePtApplicationType = ((PtApplicationTypeTable)(this.Tables["PtApplicationType"]));
+            this.TablePmShortTermApplication = ((PmShortTermApplicationTable)(this.Tables["PmShortTermApplication"]));
+            this.TablePmYearProgramApplication = ((PmYearProgramApplicationTable)(this.Tables["PmYearProgramApplication"]));
+            this.TablePmApplicationForms = ((PmApplicationFormsTable)(this.Tables["PmApplicationForms"]));
+            this.TableUmUnitStructure = ((UmUnitStructureTable)(this.Tables["UmUnitStructure"]));
+            this.TableUmUnitAbility = ((UmUnitAbilityTable)(this.Tables["UmUnitAbility"]));
+            this.TableUmUnitLanguage = ((UmUnitLanguageTable)(this.Tables["UmUnitLanguage"]));
+            this.TableUmUnitVision = ((UmUnitVisionTable)(this.Tables["UmUnitVision"]));
+            this.TableUmUnitCost = ((UmUnitCostTable)(this.Tables["UmUnitCost"]));
+            this.TableUmJob = ((UmJobTable)(this.Tables["UmJob"]));
+            this.TableUmJobRequirement = ((UmJobRequirementTable)(this.Tables["UmJobRequirement"]));
+            this.TableUmJobLanguage = ((UmJobLanguageTable)(this.Tables["UmJobLanguage"]));
+            this.TableUmJobQualification = ((UmJobQualificationTable)(this.Tables["UmJobQualification"]));
+            this.TableUmJobVision = ((UmJobVisionTable)(this.Tables["UmJobVision"]));
+            this.TablePcBuilding = ((PcBuildingTable)(this.Tables["PcBuilding"]));
+            this.TablePcRoom = ((PcRoomTable)(this.Tables["PcRoom"]));
+        }
+
+        /// auto generated
+        protected override void InitConstraints()
+        {
+            if (((this.TablePPartner != null)
+                        && (this.TablePBank != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBank1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PBank", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePBank != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBank2", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PBank", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePChurch != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKChurch1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PChurch", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePChurch != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKChurch3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PChurch", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePFamily != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFamily1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PFamily", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePFamily != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKFamily2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PFamily", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePOrganisation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKOrganisation1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "POrganisation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePOrganisation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKOrganisation3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "POrganisation", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerComment != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerComment1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerComment", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PPartnerInterest", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePInterest != null)
+                        && (this.TablePPartnerInterest != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerInterest4", "PInterest", new string[] {
+                                "p_interest_c"}, "PPartnerInterest", new string[] {
+                                "p_interest_c"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerLocation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerLocation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePLocation != null)
+                        && (this.TablePPartnerLocation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerLocation2", "PLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}, "PPartnerLocation", new string[] {
+                                "p_site_key_n", "p_location_key_i"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPartnerType != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPartnerType3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPartnerType", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePFamily != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson2", "PFamily", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_family_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePPerson != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPerson4", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PPerson", new string[] {
+                                "p_field_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePUnit != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnit7", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PUnit", new string[] {
+                                "p_primary_office_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePVenue != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKVenue1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PVenue", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePVenue != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKVenue3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PVenue", new string[] {
+                                "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePVenue != null)
+                        && (this.TablePcBuilding != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKBuilding1", "PVenue", new string[] {
+                                "p_partner_key_n"}, "PcBuilding", new string[] {
+                                "p_venue_key_n"}));
+            }
+            if (((this.TablePcBuilding != null)
+                        && (this.TablePcRoom != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKRoom1", "PcBuilding", new string[] {
+                                "p_venue_key_n", "pc_building_code_c"}, "PcRoom", new string[] {
+                                "p_venue_key_n", "pc_building_code_c"}));
+            }
+            if (((this.TablePmGeneralApplication != null)
+                        && (this.TablePmApplicationForms != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKApplicationForms1", "PmGeneralApplication", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}, "PmApplicationForms", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePmApplicationForms != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKApplicationForms3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PmApplicationForms", new string[] {
+                                "pm_reference_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmDocument != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDocument1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmDocument", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePmDocumentType != null)
+                        && (this.TablePmDocument != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDocument2", "PmDocumentType", new string[] {
+                                "pm_doc_code_c"}, "PmDocument", new string[] {
+                                "pm_doc_code_c"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePmDocument != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKDocument3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PmDocument", new string[] {
+                                "pm_contact_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmGeneralApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralApplication1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmGeneralApplication", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmGeneralApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralApplication2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmGeneralApplication", new string[] {
+                                "pm_registration_office_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmGeneralApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralApplication3", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmGeneralApplication", new string[] {
+                                "pm_gen_app_poss_srv_unit_key_n"}));
+            }
+            if (((this.TablePtApplicationType != null)
+                        && (this.TablePmGeneralApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralApplication5", "PtApplicationType", new string[] {
+                                "pt_app_type_name_c"}, "PmGeneralApplication", new string[] {
+                                "pt_app_type_name_c"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmGeneralApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKGeneralApplication9", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmGeneralApplication", new string[] {
+                                "pm_placement_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePmJobAssignment != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobAssignment1", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PmJobAssignment", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TableUmJob != null)
+                        && (this.TablePmJobAssignment != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobAssignment2", "UmJob", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}, "PmJobAssignment", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPassportDetails != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPassportDetails1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPassportDetails", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPastExperience != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPastExperience1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPastExperience", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonAbility != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonAbility1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonAbility", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonEvaluation != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonEvaluation1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonEvaluation", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonLanguage != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonLanguage1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonLanguage", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonQualification != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonQualification1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonQualification", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonVision != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonVision1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonVision", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmPersonalData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKPersonalData1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmPersonalData", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePmGeneralApplication != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication1", "PmGeneralApplication", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}, "PmShortTermApplication", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication6", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_party_contact_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication16", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_confirmed_option_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication17", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_option1_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication18", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_option2_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication19", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_current_field_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmShortTermApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKShortTermApplication20", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmShortTermApplication", new string[] {
+                                "pm_st_field_charged_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmSpecialNeed != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSpecialNeed1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmSpecialNeed", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPerson != null)
+                        && (this.TablePmStaffData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKStaffData1", "PPerson", new string[] {
+                                "p_partner_key_n"}, "PmStaffData", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmStaffData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKStaffData2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmStaffData", new string[] {
+                                "pm_office_recruited_by_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmStaffData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKStaffData3", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmStaffData", new string[] {
+                                "pm_home_office_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmStaffData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKStaffData4", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmStaffData", new string[] {
+                                "pm_receiving_field_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TablePmStaffData != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKStaffData5", "PUnit", new string[] {
+                                "p_partner_key_n"}, "PmStaffData", new string[] {
+                                "pm_receiving_field_office_n"}));
+            }
+            if (((this.TablePmGeneralApplication != null)
+                        && (this.TablePmYearProgramApplication != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKYearProgramApplication1", "PmGeneralApplication", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}, "PmYearProgramApplication", new string[] {
+                                "p_partner_key_n", "pm_application_key_i", "pm_registration_office_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmJob != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJob1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmJob", new string[] {
+                                "pm_unit_key_n"}));
+            }
+            if (((this.TableUmJob != null)
+                        && (this.TableUmJobLanguage != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobLanguage1", "UmJob", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}, "UmJobLanguage", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}));
+            }
+            if (((this.TableUmJob != null)
+                        && (this.TableUmJobQualification != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobQualification1", "UmJob", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}, "UmJobQualification", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}));
+            }
+            if (((this.TableUmJob != null)
+                        && (this.TableUmJobRequirement != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobRequirement1", "UmJob", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}, "UmJobRequirement", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}));
+            }
+            if (((this.TableUmJob != null)
+                        && (this.TableUmJobVision != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKJobVision1", "UmJob", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}, "UmJobVision", new string[] {
+                                "pm_unit_key_n", "pt_position_name_c", "pt_position_scope_c", "um_job_key_i"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitAbility != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitAbility1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitAbility", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitCost != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitCost1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitCost", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitLanguage != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitLanguage1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitLanguage", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitStructure != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitStructure1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitStructure", new string[] {
+                                "um_parent_unit_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitStructure != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitStructure2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitStructure", new string[] {
+                                "um_child_unit_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitVision != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitVision1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitVision", new string[] {
+                                "p_partner_key_n"}));
             }
         }
     }

@@ -61,6 +61,9 @@
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MHospitality.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MHospitality.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
     </Reference>
@@ -108,6 +111,10 @@
     <ProjectReference Include="..\..\MFinance\data\Ict.Petra.Server.MFinance.DataAccess.csproj">
       <Project>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</Project>
       <Name>Ict.Petra.Server.MFinance.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MHospitality\data\Ict.Petra.Server.MHospitality.DataAccess.csproj">
+      <Project>{4B9EB5F9-2B16-4498-A218-77E6375428D6}</Project>
+      <Name>Ict.Petra.Server.MHospitality.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Server.MPersonnel.DataAccess.csproj">
       <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>

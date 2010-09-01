@@ -2,7 +2,9 @@
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
   
     <DataSet name="PartnerEditTDS">
@@ -297,5 +299,57 @@
         <Table sqltable="p_reason_subscription_given"/>
         <Table sqltable="p_reason_subscription_cancelled"/>
     </DataSet>
+
+    <DataSet name="PartnerImportExportTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="p_location"/>
+        <Table sqltable="p_partner_location"/>
+
+        <Table sqltable="p_person"/>
+        <Table sqltable="p_family"/>
+        <Table sqltable="p_unit"/>
+        <Table sqltable="p_organisation"/>
+        <Table sqltable="p_church"/>
+        <Table sqltable="p_bank"/>
+        <Table sqltable="p_venue"/>
+
+        <Table sqltable="p_partner_comment"/>
+        <Table sqltable="p_partner_type"/>
+        <Table sqltable="p_partner_interest"/>
+        <Table sqltable="p_interest"/>
+
+        <Table sqltable="pm_personal_data"/>
+        <Table sqltable="pm_passport_details"/>
+        <Table sqltable="pm_document"/>
+        <Table sqltable="pm_document_type"/>
+        <Table sqltable="pm_person_qualification"/>
+        <Table sqltable="pm_special_need"/>
+        <Table sqltable="pm_past_experience"/>
+        <Table sqltable="pm_person_language"/>
+        <Table sqltable="pm_person_ability"/>
+        <Table sqltable="pm_person_vision"/>
+        <Table sqltable="pm_staff_data"/>
+        <Table sqltable="pm_job_assignment"/>
+        <Table sqltable="pm_person_evaluation"/>
+        <Table sqltable="pm_general_application"/>
+        <Table sqltable="pt_application_type"/>
+        <Table sqltable="pm_short_term_application"/>
+        <Table sqltable="pm_year_program_application"/>
+        <Table sqltable="pm_application_forms"/>
+        
+        <Table sqltable="um_unit_structure"/>
+        <Table sqltable="um_unit_ability"/>
+        <Table sqltable="um_unit_language"/>
+        <Table sqltable="um_unit_vision"/>
+        <Table sqltable="um_unit_cost"/>
+        <Table sqltable="um_job"/>
+        <Table sqltable="um_job_requirement"/>
+        <Table sqltable="um_job_language"/>
+        <Table sqltable="um_job_qualification"/>
+        <Table sqltable="um_job_vision"/>
+        
+        <Table sqltable="pc_building"/>
+        <Table sqltable="pc_room"/>
+    </DataSet>    
 
 </PetraDataSets>

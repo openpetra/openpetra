@@ -108,6 +108,12 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_CHURCH = "CHURCH";
 
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_VENUE = "VENUE";
+
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_UNIT = "UNIT";
+
         /// <summary>Partner status</summary>
         public const String PARTNERSTATUS_ACTIVE = "ACTIVE";
 
