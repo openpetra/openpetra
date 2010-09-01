@@ -43,4 +43,4 @@
         cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         txtQuarter: {Label=Quarter, ParameterName=param_quarter, Width=30}
         cmbDepth: {Label=Depth, ParameterName=param_depth}
-            OptionalValues: [summary, =standard, detail]
+            OptionalValues: [summary, =standard]
