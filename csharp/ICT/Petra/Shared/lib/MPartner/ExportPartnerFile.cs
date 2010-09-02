@@ -25,7 +25,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text;
 using System.Data;
-using System.Globalization;
+using Ict.Common.IO;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -37,147 +37,8 @@ namespace Ict.Petra.Shared.MPartner.IO
     /// <summary>
     /// Export all data of a partner
     /// </summary>
-    public class TPartnerFileExport
+    public class TPartnerFileExport : TImportExportTextFile
     {
-        private const string QUOTE_MARKS = "\"";
-        private const string SPACE = "  ";
-
-        private StringBuilder FResultText;
-        private bool FStartOfLine;
-
-        private void WriteLine()
-        {
-            FResultText.Append(Environment.NewLine);
-            FStartOfLine = true;
-        }
-
-        private void Write(string AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            FResultText.Append(QUOTE_MARKS);
-            FResultText.Append(AValue.Replace("\"", "'"));
-            FResultText.Append(QUOTE_MARKS);
-
-            FStartOfLine = false;
-        }
-
-        private void WriteMultiLine(string AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            const string MASK = "\r\n\"'";
-            const string ESCAPE = "\\";
-            const string CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-            // escape 'escape symbol' first, by appending '0'
-            AValue = AValue.Replace(ESCAPE, ESCAPE + CODES[0].ToString());
-
-            // escape the other characters by appending ordinal ascii value to escape symbol
-            for (int CountMask = 0; CountMask < MASK.Length; CountMask++)
-            {
-                AValue = AValue.Replace(MASK[CountMask].ToString(), ESCAPE + CODES[CountMask + 1].ToString());
-            }
-
-            FResultText.Append(QUOTE_MARKS);
-            FResultText.Append(AValue);
-            FResultText.Append(QUOTE_MARKS);
-
-            FStartOfLine = false;
-        }
-
-        private void Write(bool AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            FResultText.Append(AValue ? "yes" : "no");
-
-            FStartOfLine = false;
-        }
-
-        private void Write(Int64 AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            FResultText.Append(AValue.ToString());
-
-            FStartOfLine = false;
-        }
-
-        private void Write(Int32 AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            FResultText.Append(AValue.ToString());
-
-            FStartOfLine = false;
-        }
-
-        private void Write(Double AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            // no thousands separator, dot for decimal separator
-            FResultText.Append(AValue.ToString(CultureInfo.InvariantCulture));
-
-            FStartOfLine = false;
-        }
-
-        private void Write(DateTime ? AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            if (!AValue.HasValue)
-            {
-                FResultText.Append(QUOTE_MARKS);
-                FResultText.Append("?");
-                FResultText.Append(QUOTE_MARKS);
-            }
-            else
-            {
-                FResultText.Append(QUOTE_MARKS);
-                FResultText.Append(AValue.Value.ToString("dd/MM/yyyy"));
-                FResultText.Append(QUOTE_MARKS);
-            }
-
-            FStartOfLine = false;
-        }
-
-        private void Write(DateTime AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FResultText.Append(SPACE);
-            }
-
-            FResultText.Append(QUOTE_MARKS);
-            FResultText.Append(AValue.ToString("dd/MM/yyyy"));
-            FResultText.Append(QUOTE_MARKS);
-
-            FStartOfLine = false;
-        }
-
         private void WriteLocation(PLocationRow ALocationRow, PPartnerLocationRow APartnerLocationRow)
         {
             Write(ALocationRow.SiteKey);
@@ -944,8 +805,7 @@ namespace Ict.Petra.Shared.MPartner.IO
         {
             PPartnerRow PartnerRow = AMainDS.PPartner[0];
 
-            FResultText = new StringBuilder();
-            FStartOfLine = true;
+            StartWriting();
 
             Write("PARTNER");
             WriteLine();
@@ -1148,7 +1008,7 @@ namespace Ict.Petra.Shared.MPartner.IO
             Write("END");
             WriteLine();
 
-            return FResultText.ToString();
+            return FinishWriting();
         }
     }
 }

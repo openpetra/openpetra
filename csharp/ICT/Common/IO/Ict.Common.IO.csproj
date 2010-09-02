@@ -59,6 +59,7 @@
     <Compile Include="Excel.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="ImportExportDialogs.cs" />
+    <Compile Include="ImportExportTextFile.cs" />
     <Compile Include="PackTools.cs" />
     <Compile Include="PatchTools.cs" />
     <Compile Include="SelectCSVSeparator.cs" />

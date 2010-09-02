@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       christiank
+//       timop
 //
 // Copyright 2004-2010 by OM International
 //
@@ -114,6 +115,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_UNIT = "UNIT";
 
+        /// <summary>Partner class</summary>
+        public const String PARTNERCLASS_BANK = "BANK";
+
         /// <summary>Partner status</summary>
         public const String PARTNERSTATUS_ACTIVE = "ACTIVE";
 
@@ -222,5 +226,8 @@ namespace Ict.Petra.Shared.MPartner
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>
         public const String DEFAULT_CODE_UNKNOWN = "UNKNOWN";
+
+        /// <summary> Acquisition code for partner </summary>
+        public const String ACQUISITIONCODE_APPLICANT = "APL";
     }
 }

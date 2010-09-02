@@ -49,6 +49,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
     </Reference>
@@ -60,6 +63,7 @@
     <Compile Include="Checks.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ExportPartnerFile.cs" />
+    <Compile Include="ImportPartnerFile.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Constants.cs" />
