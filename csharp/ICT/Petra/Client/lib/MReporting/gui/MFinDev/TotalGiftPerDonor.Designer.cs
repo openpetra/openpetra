@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.chkOnlyFromCountry, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.cmbCountry, 1, 0);
-            this.grpLimitResults.Text = "Limit the results";
+            this.grpLimitResults.Text = "Limit the results to one country";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 2;

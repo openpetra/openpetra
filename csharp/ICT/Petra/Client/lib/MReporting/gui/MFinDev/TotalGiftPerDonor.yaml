@@ -38,15 +38,12 @@
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
         grpLimitResults:
-            Label: Limit the results
+            Label: Limit the results to one country
             Controls: [chkOnlyFromCountry]
         chkOnlyFromCountry:
-            #~ Label: only from Country
             Controls: [cmbCountry]
         cmbCountry:
-            Label: only from Country
             List: CountryList
-            ParameterName: param_country_code
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
