@@ -342,7 +342,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.cmbDepth.Location = new System.Drawing.Point(2,2);
             this.cmbDepth.Name = "cmbDepth";
             this.cmbDepth.Size = new System.Drawing.Size(150, 28);
-            this.cmbDepth.Items.AddRange(new object[] {"summary","standard","detail"});
+            this.cmbDepth.Items.AddRange(new object[] {"summary","standard"});
             this.cmbDepth.Text = "standard";
             //
             // lblDepth

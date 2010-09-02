@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
             {
-// TODO                EnableDisableToolbar(false);
+                ((IFrmReporting) this.FTheForm).EnableBusy(true);
                 FGenerateReportThread = new Thread(GenerateReport);
                 FGenerateReportThread.IsBackground = true;
                 FGenerateReportThread.Start();
@@ -379,7 +379,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 // read the settings and parameters from the controls
                 if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
                 {
-// TODO                    EnableDisableToolbar(true);
+                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
                     return;
                 }
 
@@ -407,7 +407,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
                     {
-                        // TODO EnableDisableToolbar(true);
+                        ((IFrmReporting) this.FTheForm).EnableBusy(false);
                     }
                     else
                     {
@@ -430,7 +430,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     // if generateResult failed or was cancelled
                     this.FWinForm.Cursor = Cursors.Default;
 
-                    // TODO EnableDisableToolbar(true);
+                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
                 }
             }
             catch (Exception e)
@@ -440,7 +440,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 MessageBox.Show(e.Message);
 #endif
 
-                // TODO EnableDisableToolbar(true);
+                ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
         }
 
@@ -459,8 +459,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
 // TODO            printWindow.SetPrintChartProcedure(GenerateChart);
             printWindow.ShowDialog();
-
-// TODO            EnableDisableToolbar(true);
+            ((IFrmReporting) this.FTheForm).EnableBusy(false);
         }
 
         #region Manage Settings
@@ -1210,6 +1209,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="ACheck">True if the item is to be checked. Otherwise false.</param>
         void CheckWrapColumnMenuItem(bool ACheck);
+
+        /// <summary>
+        /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
+        /// </summary>
+        /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+        void EnableBusy(bool ABusy);
     }
 
     /// <summary>This enums defines what action is going on. It's needed e.g. for the ReadControls function </summary>

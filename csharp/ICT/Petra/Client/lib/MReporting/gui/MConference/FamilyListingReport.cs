@@ -282,6 +282,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
     {
         this.mniWrapColumn.Checked = ACheck;
     }
+
+    /// <summary>
+    /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
+    /// </summary>
+    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
+    public void EnableBusy(bool ABusy)
+    {
+        mniClose.Enabled = !ABusy;
+
+        if (ABusy == false)
+        {
+            mniGenerateReport.Text = Catalog.GetString("&Generate Report...");
+            tbbGenerateReport.Text = Catalog.GetString("Generate");
+            tbbGenerateReport.ToolTipText = Catalog.GetString("Generate a report and display the preview");
+        }
+        else
+        {
+            mniGenerateReport.Text = Catalog.GetString("&Cancel Report");
+            tbbGenerateReport.Text = Catalog.GetString("Cancel");
+            tbbGenerateReport.ToolTipText = Catalog.GetString("Cancel the calculation of the report (after cancelling it might still take a while)");
+        }
+    }
+
 #endregion
 
     /// <summary>
@@ -301,28 +324,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         //tbbLoadSettings.Enabled = AEnabled;
         tbbSaveSettings.Enabled = AEnabled;
         tbbSaveSettingsAs.Enabled = AEnabled;
-    }
-
-    /// <summary>
-    /// activate and deactivate toolbar buttons and menu items depending on ongoing report calculation
-    /// </summary>
-    /// <param name="ABusy">True if a report is generated and the close button should be disabled.</param>
-    public void EnableBusy(bool ABusy)
-    {
-        mniClose.Enabled = !ABusy;
-
-        if (ABusy == false)
-        {
-            mniGenerateReport.Text = "&Generate Report...";
-            tbbGenerateReport.Text = "Generate";
-            tbbGenerateReport.ToolTipText = "Generate a report and display the preview";
-        }
-        else
-        {
-            mniGenerateReport.Text = "&Cancel Report";
-            tbbGenerateReport.Text = "Cancel";
-            tbbGenerateReport.ToolTipText = "Cancel the calculation of the report (after cancelling it might still take a while)";
-        }
     }
 
     /// <summary>
