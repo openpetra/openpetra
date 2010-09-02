@@ -231,7 +231,10 @@ OpenPetra:
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
-                    IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+                    GeneralReports:
+                        IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+                        DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
+                        TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Safety:

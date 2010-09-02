@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       berndr
 //
 // Copyright 2004-2010 by OM International
 //
@@ -23,13 +23,15 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
-    public partial class TFrmFDIncomeByFund
+    public partial class TFrmTotalGiftPerDonor
     {
         private Int32 FLedgerNumber;
 
@@ -43,17 +45,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 FLedgerNumber = value;
 
                 TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
-
-                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                rbtPeriodRange.Checked = true;
-                txtStartPeriod.Text = "1";
-                txtEndPeriod.Text = "12";
-                txtQuarter.Text = "1";
-                cmbPeriodYear.SelectedIndex = 0;
-                cmbPeriodYearQuarter.SelectedIndex = 0;
+                uco_Selection.InitialiseLedger(FLedgerNumber);
+                uco_Selection.ShowAccountHierarchy(false);
+                uco_Selection.ShowCurrencySelection(false);
+                uco_Selection.EnableDateSelection(true);
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
@@ -64,10 +59,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_currency", "base");
             ACalc.AddParameter("param_ytd", "mixed");
+            ACalc.AddParameter("param_currency", "base");
+            ACalc.AddParameter("param_depth", "standard");
 
-            ACalc.AddParameter("param_explicit_motivation", "");
-            ACalc.AddParameter("param_exclude_motivation", "");
-            //ACalc.AddParameter("param_selectedAreasFunds", );
+            String CountryCode = "*";
+
+            if (chkOnlyFromCountry.Checked)
+            {
+                CountryCode = cmbCountry.SelectedItem.ToString();
+
+                if (CountryCode.Length == 0)
+                {
+                    CountryCode = "*";
+                }
+            }
+
+            ACalc.AddParameter("param_country_code", CountryCode);
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            String CountryCode = AParameters.Get("param_country_code").ToString();
+
+            if ((CountryCode.Length > 0)
+                && (CountryCode != "*"))
+            {
+                cmbCountry.SelectedItem = CountryCode;
+            }
         }
     }
 }

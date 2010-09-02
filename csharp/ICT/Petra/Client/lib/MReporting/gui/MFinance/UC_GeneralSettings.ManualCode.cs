@@ -129,13 +129,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
             ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
 
-            ACalculator.AddParameter("param_quarter", (System.Object) this.rbtQuarter.Checked);
+            ACalculator.AddParameter("param_quarter", rbtQuarter.Checked);
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
-            ACalculator.AddParameter("param_daterange", rbtDate.Checked);
+            ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
 
             if (rbtQuarter.Checked)
             {
                 Year = (int)cmbQuarterYear.SelectedItem;
+
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
@@ -152,6 +153,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             else if (rbtPeriod.Checked)
             {
                 Year = (int)cmbPeriodYear.SelectedItem;
+
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_start_period_i", StartPeriod);
@@ -183,8 +185,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                             Catalog.GetString("Invalid Data entered."),
                             TResultSeverity.Resv_Critical));
                 }
-
-                ACalculator.AddParameter("param_date_checked", true);
             }
 
             ACalculator.AddParameter("param_year_i", Year);
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             rbtQuarter.Checked = AParameters.Get("param_quarter").ToBool();
             rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
-            rbtPeriod.Checked = (!rbtQuarter.Checked && !rbtDate.Checked);
+            rbtPeriod.Checked = AParameters.Get("param_period").ToBool();
 
             txtQuarter.Text = (AParameters.Get("param_end_period_i").ToInt() / 3).ToString();
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
@@ -251,6 +251,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             dtpEndDate.Visible = IsVisible;
             cmbPeriodYear.Enabled = true;
             cmbPeriodYear.Visible = true;
+        }
+
+        /// <summary>
+        /// Show / Hide the account hierarchy combo box (e.g. we hide it in Financial development reports)
+        /// </summary>
+        /// <param name="AValue">false to hide the account hierarchy combo box</param>
+        public void ShowAccountHierarchy(bool AValue)
+        {
+            lblAccountHierarchy.Visible = AValue;
+            cmbAccountHierarchy.Visible = AValue;
+        }
+
+        /// <summary>
+        /// Show / Hide the Currency selection group. (we hide it in Financial development reports)
+        /// </summary>
+        /// <param name="AValue">false to hide the currency selection group</param>
+        public void ShowCurrencySelection(bool AValue)
+        {
+            cmbCurrency.Visible = AValue;
+            lblCurrency.Visible = AValue;
+            grpCurrency.Visible = AValue;
         }
 
         /// <summary>

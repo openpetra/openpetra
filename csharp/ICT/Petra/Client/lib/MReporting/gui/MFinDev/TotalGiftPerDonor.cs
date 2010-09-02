@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from FDIncomeByFund.yaml
+// auto generated with nant generateWinforms from TotalGiftPerDonor.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
   /// <summary>
   /// auto generated class for report
   /// </summary>
-  public partial class TFrmFDIncomeByFund: System.Windows.Forms.Form, IFrmReporting
+  public partial class TFrmTotalGiftPerDonor: System.Windows.Forms.Form, IFrmReporting
   {
     private TFrmPetraReportingUtils FPetraUtilsObject;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public TFrmFDIncomeByFund(IntPtr AParentFormHandle) : base()
+    public TFrmTotalGiftPerDonor(IntPtr AParentFormHandle) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -65,18 +65,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblLedger.Text = Catalog.GetString("Ledger:");
-      this.rbtPeriodRange.Text = Catalog.GetString("Period Range");
-      this.lblStartPeriod.Text = Catalog.GetString("from:");
-      this.lblEndPeriod.Text = Catalog.GetString("to:");
-      this.lblPeriodYear.Text = Catalog.GetString("Year:");
-      this.rbtQuarter.Text = Catalog.GetString("Quarter");
-      this.lblQuarter.Text = Catalog.GetString("Quarter:");
-      this.lblPeriodYearQuarter.Text = Catalog.GetString("Year:");
-      this.rgrPeriod.Text = Catalog.GetString("Period");
-      this.cmbDepth.Text = Catalog.GetString("standard");
-      this.lblDepth.Text = Catalog.GetString("Depth:");
-      this.tpgReportSpecific.Text = Catalog.GetString("Report parameters");
+      this.grpLimitResults.Text = Catalog.GetString("Limit the results");
+      this.tpgGeneralSettings.Text = Catalog.GetString("GeneralSettings");
+      this.tpgColumns.Text = Catalog.GetString("Columns");
+      this.tpgSorting.Text = Catalog.GetString("Sorting");
       this.rbtComplete.Text = Catalog.GetString("Complete");
       this.rbtWithoutDecimals.Text = Catalog.GetString("Without Decimals");
       this.rbtOnlyThousands.Text = Catalog.GetString("Only Thousands");
@@ -108,19 +100,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("FD Income by Fund");
+      this.Text = Catalog.GetString("Total Gifts Per Donor");
       #endregion
-
-      this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtQuarter.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "FinancialDevelopment/FDIncomeByFund.xml,common.xml";
-      FPetraUtilsObject.FReportName = "FDIncomeByFund";
-      FPetraUtilsObject.FCurrentReport = "FDIncomeByFund";
+      FPetraUtilsObject.FXMLFiles = "FinancialDevelopment/totalgiftsperdonor.xml,common.xml";
+      FPetraUtilsObject.FReportName = "TotalGiftsPerDonor";
+      FPetraUtilsObject.FCurrentReport = "TotalGiftsPerDonor";
       FPetraUtilsObject.FSettingsDirectory = "FinancialDevelopment";
 
       // Hook up Event that is fired by ucoReportColumns
@@ -130,23 +117,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       //                                 mniSaveSettings, mniSaveSettingsAs, mniLoadSettingsDialog, mniMaintainSettings);
       this.SetAvailableFunctions();
 
-      rbtPeriodRangeCheckedChanged(null, null);
-      rbtQuarterCheckedChanged(null, null);
+      uco_Selection.InitialiseData(FPetraUtilsObject);
+      chkOnlyFromCountryCheckedChanged(null, null);
+      ucoReportColumns.InitialiseData(FPetraUtilsObject);
+      ucoReportSorting.InitialiseData(FPetraUtilsObject);
+
+      uco_Selection.PetraUtilsObject = FPetraUtilsObject;
+      uco_Selection.InitUserControl();
+      cmbCountry.InitialiseUserControl();
+      ucoReportColumns.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportColumns.InitUserControl();
+      ucoReportSorting.PetraUtilsObject = FPetraUtilsObject;
+      ucoReportSorting.InitUserControl();
 
       FPetraUtilsObject.LoadDefaultSettings();
     }
 
-    void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
+    void chkOnlyFromCountryCheckedChanged(object sender, System.EventArgs e)
     {
-      txtStartPeriod.Enabled = rbtPeriodRange.Checked;
-      txtEndPeriod.Enabled = rbtPeriodRange.Checked;
-      cmbPeriodYear.Enabled = rbtPeriodRange.Checked;
-    }
-
-    void rbtQuarterCheckedChanged(object sender, System.EventArgs e)
-    {
-      txtQuarter.Enabled = rbtQuarter.Checked;
-      cmbPeriodYearQuarter.Enabled = rbtQuarter.Checked;
+      cmbCountry.Enabled = chkOnlyFromCountry.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -181,27 +170,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     {
       ACalc.SetMaxDisplayColumns(FPetraUtilsObject.FMaxDisplayColumns);
 
-      if (rbtPeriodRange.Checked)
-      {
-          ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
-          ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
-          ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
-          ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
-      }
-      if (rbtQuarter.Checked)
-      {
-          ACalc.AddParameter("param_rgrPeriod", "Quarter");
-          ACalc.AddParameter("param_quarter", this.txtQuarter.Text);
-          ACalc.AddParameter("param_year_i", this.cmbPeriodYearQuarter.GetSelectedString());
-      }
-      if (this.cmbDepth.SelectedItem != null)
-      {
-          ACalc.AddParameter("param_depth", this.cmbDepth.SelectedItem.ToString());
-      }
-      else
-      {
-          ACalc.AddParameter("param_depth", "");
-      }
+      uco_Selection.ReadControls(ACalc, AReportAction);
+      ACalc.AddParameter("param_chkOnlyFromCountry", this.chkOnlyFromCountry.Checked);
+      ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ucoReportSorting.ReadControls(ACalc, AReportAction);
       if (rbtComplete.Checked)
       {
           ACalc.AddParameter("param_currency_format", "CurrencyComplete");
@@ -225,23 +197,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetControls(TParameterList AParameters)
     {
 
-      rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
-      if (rbtPeriodRange.Checked)
-      {
-          txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
-          txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-          cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      }
-      rbtQuarter.Checked = AParameters.Get("param_rgrPeriod").ToString() == "Quarter";
-      if (rbtQuarter.Checked)
-      {
-          txtQuarter.Text = AParameters.Get("param_quarter").ToString();
-          cmbPeriodYearQuarter.SetSelectedString(AParameters.Get("param_year_i").ToString());
-      }
-      cmbDepth.SelectedValue = AParameters.Get("param_depth").ToString();
+      uco_Selection.SetControls(AParameters);
+      chkOnlyFromCountry.Checked = AParameters.Get("param_chkOnlyFromCountry").ToBool();
+      ucoReportColumns.SetControls(AParameters);
+      ucoReportSorting.SetControls(AParameters);
       rbtComplete.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyComplete";
       rbtWithoutDecimals.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyWithoutDecimals";
       rbtOnlyThousands.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyThousands";
+      SetControlsManual(AParameters);
     }
 #endregion
 
@@ -253,6 +216,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
     public void SetAvailableFunctions()
     {
       //ArrayList availableFunctions = FPetraUtilsObject.InitAvailableFunctions();
+
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("DonorKey", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Firstname", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Surname", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address line 1", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Address line 3", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Street", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Post Code", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("City", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Country", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("County", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone Number", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Telephone Extension", 1.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Alternate Phone", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax Number", 2.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Fax Extension", 1.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Mobile Number", 2.5));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Total Given", 3.0));
+
+      uco_Selection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
+      ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
 
     }
 #endregion

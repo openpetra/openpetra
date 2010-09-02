@@ -87,6 +87,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DonorsPerRecipient.cs" />
+    <Compile Include="DonorsPerRecipient.Designer.cs">
+      <DependentUpon>DonorsPerRecipient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DonorsPerRecipient.ManualCode.cs">
+      <DependentUpon>DonorsPerRecipient.cs</DependentUpon>
+    </Compile>
     <Compile Include="FDIncomeByFund.cs" />
     <Compile Include="FDIncomeByFund.Designer.cs">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
@@ -94,8 +101,21 @@
     <Compile Include="FDIncomeByFund.ManualCode.cs">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
     </Compile>
+    <Compile Include="TotalGiftPerDonor.cs" />
+    <Compile Include="TotalGiftPerDonor.Designer.cs">
+      <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TotalGiftPerDonor.ManualCode.cs">
+      <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DonorsPerRecipient.resx">
+      <DependentUpon>DonorsPerRecipient.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FDIncomeByFund.resx">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TotalGiftPerDonor.resx">
+      <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +146,10 @@
     <ProjectReference Include="..\Ict.Petra.Client.MReporting.Gui.csproj">
       <Project>{4DCB81E4-7B19-43D5-BEFC-351706003550}</Project>
       <Name>Ict.Petra.Client.MReporting.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MFinance\Ict.Petra.Client.MReporting.Gui.MFinance.csproj">
+      <Project>{5669E7C8-72A2-47D5-BEBE-C4DCD8099F59}</Project>
+      <Name>Ict.Petra.Client.MReporting.Gui.MFinance</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

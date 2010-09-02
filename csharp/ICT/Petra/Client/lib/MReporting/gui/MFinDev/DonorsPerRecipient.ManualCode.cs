@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       berndr
 //
 // Copyright 2004-2010 by OM International
 //
@@ -23,13 +23,17 @@
 //
 using System;
 using System.Windows.Forms;
+using Mono.Unix;
+using Ict.Common.Verification;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
-    public partial class TFrmFDIncomeByFund
+    public partial class TFrmDonorsPerRecipient
     {
         private Int32 FLedgerNumber;
 
@@ -42,19 +46,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
-
-                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                rbtPeriodRange.Checked = true;
-                txtStartPeriod.Text = "1";
-                txtEndPeriod.Text = "12";
-                txtQuarter.Text = "1";
-                cmbPeriodYear.SelectedIndex = 0;
-                cmbPeriodYearQuarter.SelectedIndex = 0;
-
+                lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
                 FPetraUtilsObject.LoadDefaultSettings();
             }
         }
@@ -62,12 +54,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_currency", "base");
-            ACalc.AddParameter("param_ytd", "mixed");
+            ACalc.AddParameter("param_recipient_key_n", txtPartnerKey.Text);
 
-            ACalc.AddParameter("param_explicit_motivation", "");
-            ACalc.AddParameter("param_exclude_motivation", "");
-            //ACalc.AddParameter("param_selectedAreasFunds", );
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && (txtPartnerKey.Text == "0000000000"))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No recipient selected."),
+                    Catalog.GetString("Please select a recipient."),
+                    TResultSeverity.Resv_Critical);
+
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            txtPartnerKey.Text = AParameters.Get("param_recipient_key_n").ToString();
         }
     }
 }

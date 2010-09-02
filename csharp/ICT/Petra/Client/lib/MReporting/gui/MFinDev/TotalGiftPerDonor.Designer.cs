@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from FDIncomeByFund.yaml
+// auto generated with nant generateWinforms from TotalGiftPerDonor.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
-    partial class TFrmFDIncomeByFund
+    partial class TFrmTotalGiftPerDonor
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -64,35 +64,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmFDIncomeByFund));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmTotalGiftPerDonor));
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
-            this.tpgReportSpecific = new System.Windows.Forms.TabPage();
+            this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtLedger = new System.Windows.Forms.TextBox();
-            this.lblLedger = new System.Windows.Forms.Label();
-            this.rgrPeriod = new System.Windows.Forms.GroupBox();
+            this.uco_Selection = new Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings();
+            this.grpLimitResults = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.rbtPeriodRange = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtStartPeriod = new System.Windows.Forms.TextBox();
-            this.lblStartPeriod = new System.Windows.Forms.Label();
-            this.txtEndPeriod = new System.Windows.Forms.TextBox();
-            this.lblEndPeriod = new System.Windows.Forms.Label();
-            this.cmbPeriodYear = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblPeriodYear = new System.Windows.Forms.Label();
-            this.rbtQuarter = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtQuarter = new System.Windows.Forms.TextBox();
-            this.lblQuarter = new System.Windows.Forms.Label();
-            this.cmbPeriodYearQuarter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblPeriodYearQuarter = new System.Windows.Forms.Label();
-            this.cmbDepth = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblDepth = new System.Windows.Forms.Label();
+            this.chkOnlyFromCountry = new System.Windows.Forms.CheckBox();
+            this.cmbCountry = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.tpgColumns = new System.Windows.Forms.TabPage();
+            this.ucoReportColumns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
+            this.tpgSorting = new System.Windows.Forms.TabPage();
+            this.ucoReportSorting = new Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting();
             this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.rgrFormatCurrency = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtComplete = new System.Windows.Forms.RadioButton();
             this.rbtWithoutDecimals = new System.Windows.Forms.RadioButton();
             this.rbtOnlyThousands = new System.Windows.Forms.RadioButton();
@@ -130,245 +119,113 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.tabReportSettings.SuspendLayout();
-            this.tpgReportSpecific.SuspendLayout();
+            this.tpgGeneralSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.rgrPeriod.SuspendLayout();
+            this.grpLimitResults.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
+            this.tpgColumns.SuspendLayout();
+            this.tpgSorting.SuspendLayout();
             this.tpgAdditionalSettings.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.rgrFormatCurrency.SuspendLayout();
-            this.tableLayoutPanel6.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
 
             //
-            // tpgReportSpecific
+            // tpgGeneralSettings
             //
-            this.tpgReportSpecific.Location = new System.Drawing.Point(2,2);
-            this.tpgReportSpecific.Name = "tpgReportSpecific";
-            this.tpgReportSpecific.AutoSize = true;
+            this.tpgGeneralSettings.Location = new System.Drawing.Point(2,2);
+            this.tpgGeneralSettings.Name = "tpgGeneralSettings";
+            this.tpgGeneralSettings.AutoSize = true;
             //
             // tableLayoutPanel1
             //
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.AutoSize = true;
-            this.tpgReportSpecific.Controls.Add(this.tableLayoutPanel1);
+            this.tpgGeneralSettings.Controls.Add(this.tableLayoutPanel1);
             //
-            // txtLedger
+            // uco_Selection
             //
-            this.txtLedger.Location = new System.Drawing.Point(2,2);
-            this.txtLedger.Name = "txtLedger";
-            this.txtLedger.Size = new System.Drawing.Size(150, 28);
-            this.txtLedger.ReadOnly = true;
-            this.txtLedger.TabStop = false;
+            this.uco_Selection.Name = "uco_Selection";
+            this.uco_Selection.Dock = System.Windows.Forms.DockStyle.Top;
+            this.uco_Selection.AutoSize = true;
             //
-            // lblLedger
+            // grpLimitResults
             //
-            this.lblLedger.Location = new System.Drawing.Point(2,2);
-            this.lblLedger.Name = "lblLedger";
-            this.lblLedger.AutoSize = true;
-            this.lblLedger.Text = "Ledger:";
-            this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblLedger.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblLedger.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // rgrPeriod
-            //
-            this.rgrPeriod.Name = "rgrPeriod";
-            this.rgrPeriod.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rgrPeriod.AutoSize = true;
+            this.grpLimitResults.Location = new System.Drawing.Point(2,2);
+            this.grpLimitResults.Name = "grpLimitResults";
+            this.grpLimitResults.AutoSize = true;
             //
             // tableLayoutPanel2
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.AutoSize = true;
-            this.rgrPeriod.Controls.Add(this.tableLayoutPanel2);
+            this.grpLimitResults.Controls.Add(this.tableLayoutPanel2);
             //
-            // rbtPeriodRange
+            // chkOnlyFromCountry
             //
-            this.rbtPeriodRange.Location = new System.Drawing.Point(2,2);
-            this.rbtPeriodRange.Name = "rbtPeriodRange";
-            this.rbtPeriodRange.AutoSize = true;
-            this.rbtPeriodRange.Text = "Period Range";
-            this.rbtPeriodRange.Checked = true;
+            this.chkOnlyFromCountry.Location = new System.Drawing.Point(2,2);
+            this.chkOnlyFromCountry.Name = "chkOnlyFromCountry";
+            this.chkOnlyFromCountry.Size = new System.Drawing.Size(150, 28);
+            this.chkOnlyFromCountry.Text = "";
+            this.chkOnlyFromCountry.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             //
-            // tableLayoutPanel3
+            // cmbCountry
             //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            //
-            // txtStartPeriod
-            //
-            this.txtStartPeriod.Location = new System.Drawing.Point(2,2);
-            this.txtStartPeriod.Name = "txtStartPeriod";
-            this.txtStartPeriod.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblStartPeriod
-            //
-            this.lblStartPeriod.Location = new System.Drawing.Point(2,2);
-            this.lblStartPeriod.Name = "lblStartPeriod";
-            this.lblStartPeriod.AutoSize = true;
-            this.lblStartPeriod.Text = "from:";
-            this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblStartPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtEndPeriod
-            //
-            this.txtEndPeriod.Location = new System.Drawing.Point(2,2);
-            this.txtEndPeriod.Name = "txtEndPeriod";
-            this.txtEndPeriod.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblEndPeriod
-            //
-            this.lblEndPeriod.Location = new System.Drawing.Point(2,2);
-            this.lblEndPeriod.Name = "lblEndPeriod";
-            this.lblEndPeriod.AutoSize = true;
-            this.lblEndPeriod.Text = "to:";
-            this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblEndPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbPeriodYear
-            //
-            this.cmbPeriodYear.Location = new System.Drawing.Point(2,2);
-            this.cmbPeriodYear.Name = "cmbPeriodYear";
-            this.cmbPeriodYear.Size = new System.Drawing.Size(300, 28);
-            this.cmbPeriodYear.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblPeriodYear
-            //
-            this.lblPeriodYear.Location = new System.Drawing.Point(2,2);
-            this.lblPeriodYear.Name = "lblPeriodYear";
-            this.lblPeriodYear.AutoSize = true;
-            this.lblPeriodYear.Text = "Year:";
-            this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblPeriodYear.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel3.ColumnCount = 6;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 1;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.lblStartPeriod, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtStartPeriod, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblEndPeriod, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtEndPeriod, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblPeriodYear, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.cmbPeriodYear, 5, 0);
-            this.rbtPeriodRange.CheckedChanged += new System.EventHandler(this.rbtPeriodRangeCheckedChanged);
-            //
-            // rbtQuarter
-            //
-            this.rbtQuarter.Location = new System.Drawing.Point(2,2);
-            this.rbtQuarter.Name = "rbtQuarter";
-            this.rbtQuarter.AutoSize = true;
-            this.rbtQuarter.Text = "Quarter";
-            //
-            // tableLayoutPanel4
-            //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            //
-            // txtQuarter
-            //
-            this.txtQuarter.Location = new System.Drawing.Point(2,2);
-            this.txtQuarter.Name = "txtQuarter";
-            this.txtQuarter.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblQuarter
-            //
-            this.lblQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblQuarter.Name = "lblQuarter";
-            this.lblQuarter.AutoSize = true;
-            this.lblQuarter.Text = "Quarter:";
-            this.lblQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbPeriodYearQuarter
-            //
-            this.cmbPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.cmbPeriodYearQuarter.Name = "cmbPeriodYearQuarter";
-            this.cmbPeriodYearQuarter.Size = new System.Drawing.Size(300, 28);
-            this.cmbPeriodYearQuarter.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblPeriodYearQuarter
-            //
-            this.lblPeriodYearQuarter.Location = new System.Drawing.Point(2,2);
-            this.lblPeriodYearQuarter.Name = "lblPeriodYearQuarter";
-            this.lblPeriodYearQuarter.AutoSize = true;
-            this.lblPeriodYearQuarter.Text = "Year:";
-            this.lblPeriodYearQuarter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblPeriodYearQuarter.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblPeriodYearQuarter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel4.ColumnCount = 4;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblQuarter, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtQuarter, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblPeriodYearQuarter, 2, 0);
-            this.tableLayoutPanel4.Controls.Add(this.cmbPeriodYearQuarter, 3, 0);
-            this.rbtQuarter.CheckedChanged += new System.EventHandler(this.rbtQuarterCheckedChanged);
+            this.cmbCountry.Location = new System.Drawing.Point(2,2);
+            this.cmbCountry.Name = "cmbCountry";
+            this.cmbCountry.Size = new System.Drawing.Size(300, 28);
+            this.cmbCountry.ListTable = TCmbAutoPopulated.TListTableEnum.CountryList;
+            this.chkOnlyFromCountry.CheckedChanged += new System.EventHandler(this.chkOnlyFromCountryCheckedChanged);
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.rbtPeriodRange, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtQuarter, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 1, 1);
-            this.rgrPeriod.Text = "Period";
-            //
-            // cmbDepth
-            //
-            this.cmbDepth.Location = new System.Drawing.Point(2,2);
-            this.cmbDepth.Name = "cmbDepth";
-            this.cmbDepth.Size = new System.Drawing.Size(150, 28);
-            this.cmbDepth.Items.AddRange(new object[] {"summary","standard","detail"});
-            this.cmbDepth.Text = "standard";
-            //
-            // lblDepth
-            //
-            this.lblDepth.Location = new System.Drawing.Point(2,2);
-            this.lblDepth.Name = "lblDepth";
-            this.lblDepth.AutoSize = true;
-            this.lblDepth.Text = "Depth:";
-            this.lblDepth.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDepth.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDepth.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel2.Controls.Add(this.chkOnlyFromCountry, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.cmbCountry, 1, 0);
+            this.grpLimitResults.Text = "Limit the results";
+            this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblLedger, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.rgrPeriod, 2);
-            this.tableLayoutPanel1.Controls.Add(this.rgrPeriod, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lblDepth, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtLedger, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cmbDepth, 1, 2);
-            this.tpgReportSpecific.Text = "Report parameters";
-            this.tpgReportSpecific.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Controls.Add(this.uco_Selection, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grpLimitResults, 0, 1);
+            this.tpgGeneralSettings.Text = "GeneralSettings";
+            this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgColumns
+            //
+            this.tpgColumns.Location = new System.Drawing.Point(2,2);
+            this.tpgColumns.Name = "tpgColumns";
+            this.tpgColumns.AutoSize = true;
+            this.tpgColumns.Controls.Add(this.ucoReportColumns);
+            //
+            // ucoReportColumns
+            //
+            this.ucoReportColumns.Name = "ucoReportColumns";
+            this.ucoReportColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgColumns.Text = "Columns";
+            this.tpgColumns.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
+            // tpgSorting
+            //
+            this.tpgSorting.Location = new System.Drawing.Point(2,2);
+            this.tpgSorting.Name = "tpgSorting";
+            this.tpgSorting.AutoSize = true;
+            this.tpgSorting.Controls.Add(this.ucoReportSorting);
+            //
+            // ucoReportSorting
+            //
+            this.ucoReportSorting.Name = "ucoReportSorting";
+            this.ucoReportSorting.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgSorting.Text = "Sorting";
+            this.tpgSorting.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tpgAdditionalSettings
             //
@@ -376,12 +233,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
             this.tpgAdditionalSettings.AutoSize = true;
             //
-            // tableLayoutPanel5
+            // tableLayoutPanel3
             //
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.AutoSize = true;
-            this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel5);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel3);
             //
             // rgrFormatCurrency
             //
@@ -389,12 +246,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rgrFormatCurrency.Name = "rgrFormatCurrency";
             this.rgrFormatCurrency.AutoSize = true;
             //
-            // tableLayoutPanel6
+            // tableLayoutPanel4
             //
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.AutoSize = true;
-            this.rgrFormatCurrency.Controls.Add(this.tableLayoutPanel6);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.rgrFormatCurrency.Controls.Add(this.tableLayoutPanel4);
             //
             // rbtComplete
             //
@@ -417,21 +274,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rbtOnlyThousands.Name = "rbtOnlyThousands";
             this.rbtOnlyThousands.AutoSize = true;
             this.rbtOnlyThousands.Text = "Only Thousands";
-            this.tableLayoutPanel6.ColumnCount = 1;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.RowCount = 3;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Controls.Add(this.rbtComplete, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.rbtWithoutDecimals, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.rbtOnlyThousands, 0, 2);
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.rbtComplete, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.rbtWithoutDecimals, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.rbtOnlyThousands, 0, 2);
             this.rgrFormatCurrency.Text = "Format currency numbers:";
-            this.tableLayoutPanel5.ColumnCount = 1;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.RowCount = 1;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Controls.Add(this.rgrFormatCurrency, 0, 0);
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rgrFormatCurrency, 0, 0);
             this.tpgAdditionalSettings.Text = "Additional Settings";
             this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -439,7 +296,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             //
             this.tabReportSettings.Name = "tabReportSettings";
             this.tabReportSettings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabReportSettings.Controls.Add(this.tpgReportSpecific);
+            this.tabReportSettings.Controls.Add(this.tpgGeneralSettings);
+            this.tabReportSettings.Controls.Add(this.tpgColumns);
+            this.tabReportSettings.Controls.Add(this.tpgSorting);
             this.tabReportSettings.Controls.Add(this.tpgAdditionalSettings);
             this.tabReportSettings.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             //
@@ -697,7 +556,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmFDIncomeByFund
+            // TFrmTotalGiftPerDonor
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -711,8 +570,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmFDIncomeByFund";
-            this.Text = "FD Income by Fund";
+            this.Name = "TFrmTotalGiftPerDonor";
+            this.Text = "Total Gifts Per Donor";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -723,16 +582,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
-            this.rgrFormatCurrency.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tpgAdditionalSettings.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.rgrFormatCurrency.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tpgAdditionalSettings.ResumeLayout(false);
+            this.tpgSorting.ResumeLayout(false);
+            this.tpgColumns.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.rgrPeriod.ResumeLayout(false);
+            this.grpLimitResults.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tpgReportSpecific.ResumeLayout(false);
+            this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
             this.ResumeLayout(false);
@@ -740,32 +599,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         }
 
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
-        private System.Windows.Forms.TabPage tpgReportSpecific;
+        private System.Windows.Forms.TabPage tpgGeneralSettings;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox txtLedger;
-        private System.Windows.Forms.Label lblLedger;
-        private System.Windows.Forms.GroupBox rgrPeriod;
+        private Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings uco_Selection;
+        private System.Windows.Forms.GroupBox grpLimitResults;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.RadioButton rbtPeriodRange;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TextBox txtStartPeriod;
-        private System.Windows.Forms.Label lblStartPeriod;
-        private System.Windows.Forms.TextBox txtEndPeriod;
-        private System.Windows.Forms.Label lblEndPeriod;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYear;
-        private System.Windows.Forms.Label lblPeriodYear;
-        private System.Windows.Forms.RadioButton rbtQuarter;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.TextBox txtQuarter;
-        private System.Windows.Forms.Label lblQuarter;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYearQuarter;
-        private System.Windows.Forms.Label lblPeriodYearQuarter;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDepth;
-        private System.Windows.Forms.Label lblDepth;
+        private System.Windows.Forms.CheckBox chkOnlyFromCountry;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCountry;
+        private System.Windows.Forms.TabPage tpgColumns;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns ucoReportColumns;
+        private System.Windows.Forms.TabPage tpgSorting;
+        private Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting ucoReportSorting;
         private System.Windows.Forms.TabPage tpgAdditionalSettings;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.GroupBox rgrFormatCurrency;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.RadioButton rbtComplete;
         private System.Windows.Forms.RadioButton rbtWithoutDecimals;
         private System.Windows.Forms.RadioButton rbtOnlyThousands;
