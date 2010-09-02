@@ -101,6 +101,13 @@
     <Compile Include="FDIncomeByFund.ManualCode.cs">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
     </Compile>
+    <Compile Include="IncomeLocalSplit.cs" />
+    <Compile Include="IncomeLocalSplit.Designer.cs">
+      <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IncomeLocalSplit.ManualCode.cs">
+      <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
+    </Compile>
     <Compile Include="MethodOfGiving.cs" />
     <Compile Include="MethodOfGiving.Designer.cs">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>
@@ -120,6 +127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FDIncomeByFund.resx">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IncomeLocalSplit.resx">
+      <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MethodOfGiving.resx">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>

@@ -233,6 +233,7 @@ OpenPetra:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
                     GeneralReports:
                         IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+                        LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
                         DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
                         TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
                         MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
