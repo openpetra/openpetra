@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
             if (filteredRows.Length > 0)
             {
                 ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodStartDate;
-                ReturnValue.AddYears(RealYear - FCurrentYear);
+                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
             }
 
             return ReturnValue;
@@ -218,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
             if (filteredRows.Length > 0)
             {
                 ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodEndDate;
-                ReturnValue.AddYears(RealYear - FCurrentYear);
+                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
             }
 
             return ReturnValue;
