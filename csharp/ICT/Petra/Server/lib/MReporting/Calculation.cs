@@ -561,7 +561,15 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (whichField.IndexOf("column ") == 0)
             {
-                column = (Int32)StringHelper.StrToInt(whichField.Substring(7, whichField.Length - 7));
+                if (whichField[7] == '{')
+                {
+                    String ParameterName = whichField.Substring(8, whichField.Length - 9);
+                    column = GetParameters().Get(ParameterName).ToInt();
+                }
+                else
+                {
+                    column = (Int32)StringHelper.StrToInt(whichField.Substring(7, whichField.Length - 7));
+                }
             }
             else if (whichField.IndexOf("left ") == 0)
             {
