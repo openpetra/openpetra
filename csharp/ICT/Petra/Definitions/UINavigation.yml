@@ -237,6 +237,9 @@ OpenPetra:
                         DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
                         TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
                         MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
+                    OldStyleReports:
+                        ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
+                        DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Safety:

@@ -87,6 +87,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DonorReportDetail.cs" />
+    <Compile Include="DonorReportDetail.Designer.cs">
+      <DependentUpon>DonorReportDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DonorReportDetail.ManualCode.cs">
+      <DependentUpon>DonorReportDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DonorReportShort.cs" />
+    <Compile Include="DonorReportShort.Designer.cs">
+      <DependentUpon>DonorReportShort.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DonorReportShort.ManualCode.cs">
+      <DependentUpon>DonorReportShort.cs</DependentUpon>
+    </Compile>
     <Compile Include="DonorsPerRecipient.cs" />
     <Compile Include="DonorsPerRecipient.Designer.cs">
       <DependentUpon>DonorsPerRecipient.cs</DependentUpon>
@@ -122,6 +136,12 @@
     <Compile Include="TotalGiftPerDonor.ManualCode.cs">
       <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="DonorReportDetail.resx">
+      <DependentUpon>DonorReportDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DonorReportShort.resx">
+      <DependentUpon>DonorReportShort.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DonorsPerRecipient.resx">
       <DependentUpon>DonorsPerRecipient.cs</DependentUpon>
     </EmbeddedResource>
