@@ -185,7 +185,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
                 grdChargedFields.DataSource = new DevAge.ComponentModel.BoundDataView(FFieldTable.DefaultView);
 
-                grdChargedFields.SelectionMode = SourceGrid.GridSelectionMode.Cell;
                 grdChargedFields.AutoSizeCells();
             }
 

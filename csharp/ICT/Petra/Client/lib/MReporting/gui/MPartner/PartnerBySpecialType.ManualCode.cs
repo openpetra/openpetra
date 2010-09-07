@@ -52,7 +52,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
-            clbIncludeSpecialTypes.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+            clbIncludeSpecialTypes.SpecialKeys =
+                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
+                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
+                                                  SourceGrid.GridSpecialKeys.Enter) |
+                                                 SourceGrid.GridSpecialKeys.Escape) |
+                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+
+            //clbIncludeSpecialTypes.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludeSpecialTypes.Columns.Clear();
             clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
             clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 60);

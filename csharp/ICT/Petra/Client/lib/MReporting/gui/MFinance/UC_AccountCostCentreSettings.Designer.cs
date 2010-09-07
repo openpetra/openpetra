@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.clbAccountCodes.Name = "clbAccountCodes";
             this.clbAccountCodes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.clbAccountCodes.Size = new System.Drawing.Size(365, 100);
-            this.clbAccountCodes.FixedRows = 0;
+            this.clbAccountCodes.FixedRows = 1;
             //
             // btnUnselectAllAccountCodes
             //
@@ -327,7 +327,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.clbCostCentres.Name = "clbCostCentres";
             this.clbCostCentres.Dock = System.Windows.Forms.DockStyle.Fill;
             this.clbCostCentres.Size = new System.Drawing.Size(365, 100);
-            this.clbCostCentres.FixedRows = 0;
+            this.clbCostCentres.FixedRows = 1;
             //
             // btnUnselectAllCostCentres
             //

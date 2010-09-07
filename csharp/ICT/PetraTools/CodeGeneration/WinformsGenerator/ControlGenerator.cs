@@ -682,7 +682,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "FixedRows", "0");
+            writer.SetControlProperty(ctrl.controlName, "FixedRows", "1");
             return writer.FTemplate;
         }
     }

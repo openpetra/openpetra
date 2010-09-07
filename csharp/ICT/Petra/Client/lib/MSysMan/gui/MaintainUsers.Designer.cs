@@ -252,7 +252,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.clbUserGroup.Location = new System.Drawing.Point(2,2);
             this.clbUserGroup.Name = "clbUserGroup";
             this.clbUserGroup.Size = new System.Drawing.Size(500, 250);
-            this.clbUserGroup.FixedRows = 0;
+            this.clbUserGroup.FixedRows = 1;
             //
             // lblUserGroup
             //

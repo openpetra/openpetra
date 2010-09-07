@@ -71,8 +71,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             FUnitTable.DefaultView.AllowDelete = false;
 
             grdCampaignOption.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTable.DefaultView);
-
-            grdCampaignOption.SelectionMode = SourceGrid.GridSelectionMode.Cell;
         }
 
         private void grdCampaignOptionDoubleClick(System.Object sender, EventArgs e)

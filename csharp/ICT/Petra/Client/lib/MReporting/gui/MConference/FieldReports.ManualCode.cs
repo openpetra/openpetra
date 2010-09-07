@@ -145,8 +145,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             grdFields.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTableList.DefaultView);
 
             grdFields.Text = ConferenceKey.ToString();
-
-            grdFields.SelectionMode = SourceGrid.GridSelectionMode.Cell;
         }
 
         private void grdFields_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)

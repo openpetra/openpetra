@@ -54,9 +54,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FLedgerNumber = -1;
-            clbCostCentres.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            clbAccountCodes.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-
             FReportWithBalance = true;
             rbtAccountRange.Checked = false;
             clbAccountCodes.Enabled = false;

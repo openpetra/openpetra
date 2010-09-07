@@ -336,7 +336,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.clbLedger.Location = new System.Drawing.Point(2,2);
             this.clbLedger.Name = "clbLedger";
             this.clbLedger.Size = new System.Drawing.Size(200, 100);
-            this.clbLedger.FixedRows = 0;
+            this.clbLedger.FixedRows = 1;
             //
             // cmbColumnSelection2
             //

@@ -210,17 +210,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdPartnerTypes_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
-            FLogic.ChangeCheckedStateForRow(e.CellContext.Position.Row - 1);
+            FLogic.ChangeCheckedStateForRow(e.CellContext.Position.Row);
         }
 
         private void GrdPartnerTypes_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            FLogic.ChangeCheckedStateForRow(e.Row - 1);
+            FLogic.ChangeCheckedStateForRow(e.Row);
         }
 
         private void GrdPartnerTypes_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            FLogic.ChangeCheckedStateForRow(e.Row - 1);
+            FLogic.ChangeCheckedStateForRow(e.Row);
         }
 
         /// <summary>

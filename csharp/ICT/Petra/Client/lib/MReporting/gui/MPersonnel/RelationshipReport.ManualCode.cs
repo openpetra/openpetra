@@ -216,8 +216,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             grdDirectRelationship.DataSource = new DevAge.ComponentModel.BoundDataView(FDirectRelationshipTable.DefaultView);
             grdReciprocalRelationship.DataSource = new DevAge.ComponentModel.BoundDataView(FReciprocalRelationshipTable.DefaultView);
 
-            grdDirectRelationship.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            grdReciprocalRelationship.SelectionMode = SourceGrid.GridSelectionMode.Cell;
             grdDirectRelationship.AutoSizeCells();
             grdReciprocalRelationship.AutoSizeCells();
 

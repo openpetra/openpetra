@@ -997,7 +997,7 @@ namespace Ict.Common.Controls
 
                 if (ClickPosition != SourceGrid.Position.Empty)
                 {
-                    if (ClickPosition.Row == 0)
+                    if ((sender.Grid.FixedRows == 1) && (ClickPosition.Row == 0))
                     {
                         // DoubleClick occured in a HeaderCell > fire OnDoubleClickHeaderCell Event
                         HeaderCellArgs = new SourceGrid.ColumnEventArgs(ClickPosition.Column);
@@ -1005,9 +1005,16 @@ namespace Ict.Common.Controls
                     }
                     else
                     {
+                        Position ClickPosWithoutHeader = new Position(ClickPosition.Row, ClickPosition.Column);
+
+                        if (sender.Grid.FixedRows == 1)
+                        {
+                            ClickPosWithoutHeader = new Position(ClickPosition.Row - 1, ClickPosition.Column);
+                        }
+
                         // DoubleClick occured in a Cell > fire OnDoubleClickCell Event
                         CellArgs =
-                            new SourceGrid.CellContextEventArgs(new CellContext(sender.Grid, new Position(ClickPosition.Row, ClickPosition.Column)));
+                            new SourceGrid.CellContextEventArgs(new CellContext(sender.Grid, ClickPosWithoutHeader));
                         ((TSgrdDataGrid)(sender.Grid)).OnDoubleClickCell(CellArgs);
                     }
                 }
@@ -1035,7 +1042,7 @@ namespace Ict.Common.Controls
                 {
                     if (this.SelectedDataRows.Length > 0)
                     {
-                        SelectedDataRow = this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1;
+                        SelectedDataRow = this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]);
                     }
                     else
                     {
@@ -1053,7 +1060,7 @@ namespace Ict.Common.Controls
                 {
                     if (this.SelectedDataRows.Length > 0)
                     {
-                        SelectedDataRow = this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1;
+                        SelectedDataRow = this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]);
                     }
                     else
                     {
@@ -1295,9 +1302,8 @@ namespace Ict.Common.Controls
 
                 // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
-
-                // Key for scrolling to and selecting the last row in the Grid
             }
+            // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
@@ -1310,9 +1316,8 @@ namespace Ict.Common.Controls
 
                 // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
-
-                // Key for firing OnInsertKeyPressed event
             }
+            // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)
             {
                 // MessageBox.Show('Insert pressed!');
@@ -1328,8 +1333,8 @@ namespace Ict.Common.Controls
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                // Key for firing OnDeleteKeyPressed event
             }
+            // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
             {
                 // MessageBox.Show('Delete pressed!');
@@ -1345,8 +1350,8 @@ namespace Ict.Common.Controls
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                // Keys that can trigger AutoFind
             }
+            // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)
                       && (AKeyEventArgs.KeyCode <= Keys.Z)) || (AKeyEventArgs.KeyCode == Keys.Add) || (AKeyEventArgs.KeyCode == Keys.Subtract)
                      || (AKeyEventArgs.KeyCode == Keys.Oemplus) || (AKeyEventArgs.KeyCode == Keys.OemMinus) || (AKeyEventArgs.KeyCode == Keys.Space)
