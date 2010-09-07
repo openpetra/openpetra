@@ -274,6 +274,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("E-Mail", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Name", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Total Given", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner Class", 2.0));
 
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportSorting.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());

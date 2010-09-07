@@ -129,3 +129,6 @@
         Para20:
             Name: Total Given
             Parameter: 3.0
+        Para21:
+            Name: Partner Class
+            Parameter: 2.0
