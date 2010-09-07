@@ -241,6 +241,7 @@ OpenPetra:
                     OldStyleReports:
                         ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
                         DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
+                        GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Safety:

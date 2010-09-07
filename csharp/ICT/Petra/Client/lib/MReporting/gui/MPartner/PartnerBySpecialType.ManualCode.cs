@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)        
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludeSpecialTypes.GetCheckedStringList().Length == 0)
             {

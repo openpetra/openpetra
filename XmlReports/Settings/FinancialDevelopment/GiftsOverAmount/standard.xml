@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Parameters>
+   <Parameter id="systemsettings" value="True" />
+  <Parameter id="xmlfiles" value="FinancialDevelopment\\giftsoveramount.xml,common.xml" />
+  <Parameter id="currentReport" value="GiftsOverAmount" />
+  <Parameter id="MaxDisplayColumns" value="4" />
+  <Parameter id="param_minimum_amount" value="0" />
+  <Parameter id="param_currency" value="Base" />
+  <Parameter id="param_sort_by" value="Donor Name" />
+  <Parameter id="param_exclude_anonymous_donors" value="false" />
+  <Parameter id="param_exclude_no_solicitations" value="false" />
+  <Parameter id="param_calculation" column="0" value="Gift Date" />
+  <Parameter id="ColumnWidth" column="0" value="2" />
+  <Parameter id="param_ytd" column="0" value="false" />
+  <Parameter id="param_calculation" column="1" value="Motivation Detail" />
+  <Parameter id="ColumnWidth" column="1" value="2" />
+  <Parameter id="param_ytd" column="1" value="false" />
+  <Parameter id="param_calculation" column="2" value="Gift Recipient" />
+  <Parameter id="ColumnWidth" column="2" value="8" />
+  <Parameter id="param_ytd" column="2" value="false" />
+  <Parameter id="param_calculation" column="3" value="Total Gifts" />
+  <Parameter id="ColumnWidth" column="3" value="2.5" />
+  <Parameter id="param_ytd" column="3" value="false" />
+  <Parameter id="param_currency_format" value="CurrencyComplete" />
+  <Parameter id="param_gift_amount_column" value="3" />
+</Parameters>

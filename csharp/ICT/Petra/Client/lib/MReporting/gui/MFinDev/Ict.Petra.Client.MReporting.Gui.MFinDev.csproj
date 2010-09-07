@@ -115,6 +115,13 @@
     <Compile Include="FDIncomeByFund.ManualCode.cs">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftsOverMinimumAmount.cs" />
+    <Compile Include="GiftsOverMinimumAmount.Designer.cs">
+      <DependentUpon>GiftsOverMinimumAmount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftsOverMinimumAmount.ManualCode.cs">
+      <DependentUpon>GiftsOverMinimumAmount.cs</DependentUpon>
+    </Compile>
     <Compile Include="IncomeLocalSplit.cs" />
     <Compile Include="IncomeLocalSplit.Designer.cs">
       <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
@@ -147,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FDIncomeByFund.resx">
       <DependentUpon>FDIncomeByFund.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftsOverMinimumAmount.resx">
+      <DependentUpon>GiftsOverMinimumAmount.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeLocalSplit.resx">
       <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
