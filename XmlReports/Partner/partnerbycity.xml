@@ -52,6 +52,19 @@
 				</query>
 			</calculation>
 
+		<calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
+			<query>
+				<queryDetail>
+					<value text="NO-SQL"/>
+					<value function="GetPartnerBestAddress({PartnerKey})"/>
+					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
+					<value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
+					<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+				</queryDetail>
+			</query>
+		</calculation>
+            
 			<calculation id="Partner Key"
 					returnsFormat="partnerkey" returns="text">
 				<caption><value text="Partner Key"/></caption>

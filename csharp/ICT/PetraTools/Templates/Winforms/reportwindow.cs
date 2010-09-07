@@ -65,7 +65,8 @@ namespace {#NAMESPACE}
       {#INITIALISESCREEN}
       
       {#INITUSERCONTROLS}
-      
+
+      {#INITMANUALCODE}
       FPetraUtilsObject.LoadDefaultSettings();
     }
 
@@ -125,6 +126,7 @@ namespace {#NAMESPACE}
     /// </summary>
     public void RunOnceOnActivation()
     {
+        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 

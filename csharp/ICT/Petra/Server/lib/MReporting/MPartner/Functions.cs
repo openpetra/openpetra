@@ -489,7 +489,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             foreach (DataColumn col in PartnerLocationTable.Columns)
             {
-                situation.GetParameters().RemoveVariable(StringHelper.UpperCamelCase(col.ColumnName, true, true));
+                // do not clear the partner key, in case we do not have an address for the partner
+                if (col.ColumnName != PPartnerLocationTable.GetPartnerKeyDBName())
+                {
+                    situation.GetParameters().RemoveVariable(StringHelper.UpperCamelCase(col.ColumnName, true, true));
+                }
             }
 
             situation.GetParameters().RemoveVariable("FirstName");

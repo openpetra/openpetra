@@ -45,6 +45,7 @@ OpenPetra:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport)
                         BriefFoundation: {Label=Brief Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
                         SupportingChurches: {Label=Supporting Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)

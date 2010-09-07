@@ -133,6 +133,13 @@
     <Compile Include="PartnerByCity.Designer.cs">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
     </Compile>
+    <Compile Include="PartnerBySpecialType.cs" />
+    <Compile Include="PartnerBySpecialType.Designer.cs">
+      <DependentUpon>PartnerBySpecialType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PartnerBySpecialType.ManualCode.cs">
+      <DependentUpon>PartnerBySpecialType.cs</DependentUpon>
+    </Compile>
     <Compile Include="PartnerContactReport.cs" />
     <Compile Include="PartnerContactReport.Designer.cs">
       <DependentUpon>PartnerContactReport.cs</DependentUpon>
@@ -173,6 +180,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerByCity.resx">
       <DependentUpon>PartnerByCity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PartnerBySpecialType.resx">
+      <DependentUpon>PartnerBySpecialType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PartnerContactReport.resx">
       <DependentUpon>PartnerContactReport.cs</DependentUpon>
