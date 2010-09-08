@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
                 || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
             {
-                AvailableLedgers = TRemote.MFinance.GL.WebConnectors.GetAvailableLedgers();
+                AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
             }
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;

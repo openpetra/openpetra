@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FMainDS = TRemote.MFinance.GL.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
+                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
 
                 PopulateTreeView();
             }
@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(TRemote.MFinance.GL.WebConnectors.ExportCostCentreHierarchy(FLedgerNumber));
+            doc.LoadXml(TRemote.MFinance.Setup.WebConnectors.ExportCostCentreHierarchy(FLedgerNumber));
 
             TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Cost Centre Hierarchy to file"));
         }
@@ -199,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!TRemote.MFinance.GL.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc)))
+            if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc)))
             {
                 MessageBox.Show(Catalog.GetString(
                         "Import of new Cost Centre Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 // refresh the screen
-                FMainDS = TRemote.MFinance.GL.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
+                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                 PopulateTreeView();
 
                 MessageBox.Show("Import of new Cost Centre Hierarchy has been successful",

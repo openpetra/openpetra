@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FMainDS = TRemote.MFinance.GL.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
+                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
 
                 PopulateTreeView();
             }
@@ -234,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(TRemote.MFinance.GL.WebConnectors.ExportAccountHierarchy(FLedgerNumber, FSelectedHierarchy));
+            doc.LoadXml(TRemote.MFinance.Setup.WebConnectors.ExportAccountHierarchy(FLedgerNumber, FSelectedHierarchy));
 
             TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Account Hierarchy to file"));
         }
@@ -250,7 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!TRemote.MFinance.GL.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
+            if (!TRemote.MFinance.Setup.WebConnectors.ImportAccountHierarchy(FLedgerNumber, FSelectedHierarchy, TXMLParser.XmlToString(doc)))
             {
                 MessageBox.Show(Catalog.GetString(
                         "Import of new Account Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 // refresh the screen
-                FMainDS = TRemote.MFinance.GL.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
+                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
                 PopulateTreeView();
 
                 MessageBox.Show("Import of new Account Hierarchy has been successful",
@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             string AccountCode = ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode;
 
-            if (!TRemote.MFinance.GL.WebConnectors.CanDeleteAccount(FLedgerNumber,
+            if (!TRemote.MFinance.Setup.WebConnectors.CanDeleteAccount(FLedgerNumber,
                     AccountCode))
             {
                 MessageBox.Show(

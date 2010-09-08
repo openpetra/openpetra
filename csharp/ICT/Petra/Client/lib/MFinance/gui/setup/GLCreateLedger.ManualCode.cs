@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TVerificationResultCollection VerificationResult;
 
-            if (!TRemote.MFinance.GL.WebConnectors.CreateNewLedger(
+            if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,
                     cmbCountryCode.GetSelectedString(),
