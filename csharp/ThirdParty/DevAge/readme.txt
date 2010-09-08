@@ -2,6 +2,7 @@ http://sourcegrid.codeplex.com/
 SourceGrid 4.30
 Jun 14 2010
 
+frmSample17DataGrid.cs: frmSample17_Load loads a DataTable into a DataGrid
 
 Modifications Timotheus, to make navigation with cursor keys work, and click on checkbox, in Row SelectionMode
 (see also http://sourcegrid.codeplex.com/workitem/7127):
