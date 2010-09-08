@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gift.Setup.cs" />
-    <Compile Include="GL.cs" />
     <Compile Include="GL.Setup.cs" />
     <Compile Include="Ict.Petra.Server.MFinance.Setup.AssemblyInfo.cs" />
   </ItemGroup>

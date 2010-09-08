@@ -105,10 +105,6 @@ class Program
             interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", YmlFileName);
             CreateInstantiators instantiators = new CreateInstantiators();
             instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", YmlFileName, cmd.GetOptValue("TemplateDir"));
-
-            //		  TestAnalysis("U:/delphi.net/ICT.Patch228/Petra/Server/_bin/Debug/Ict.Petra.Server.MPartner.Instantiator.dll",
-            //		                "Ict.Petra.Server.MPartner.Instantiator.Partner.TPartnerUIConnectorsNamespace");
-            //		  TestAnalysisAll("U:/delphi.net/ICT.Patch228/Petra/Server/_bin/Debug/Ict.Petra.Server.MPartner.UIConnectors.dll");
         }
         catch (Exception e)
         {

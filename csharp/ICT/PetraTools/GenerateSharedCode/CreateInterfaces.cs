@@ -88,7 +88,7 @@ public class CreateInterfaces : AutoGenerationWriter
             if ((t.BaseClasses.Count == 0) && ANamespace.EndsWith("WebConnectors"))
             {
                 ClassList.Add(t);
-                break;
+                continue;
             }
 
             foreach (IType ti in t.BaseClasses)
@@ -479,25 +479,28 @@ public class CreateInterfaces : AutoGenerationWriter
             ParentNamespace,
             ServerConnectorNamespace);
 
-        // this is for the instantiator classes
-        StringCollection NamespaceSplit = StringHelper.StrSplit(ParentNamespace, ".");
+        if (!ParentNamespace.Contains("WebConnector"))
+        {
+            // this is for the instantiator classes
+            StringCollection NamespaceSplit = StringHelper.StrSplit(ParentNamespace, ".");
 
-        // eg convert Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors to Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
-        NamespaceSplit[2] = "Server";
-        NamespaceSplit[3] = NamespaceSplit[4];
-        NamespaceSplit[4] = "Instantiator";
-        string ServerInstantiatorNamespace = StringHelper.StrMerge(NamespaceSplit, ".");
-        List <ClassNode>InstantiatorClasses = GetClassesThatImplementInterface(
-            ACSFiles,
-            AInterfaceName,
-            ServerInstantiatorNamespace);
+            // eg convert Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors to Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
+            NamespaceSplit[2] = "Server";
+            NamespaceSplit[3] = NamespaceSplit[4];
+            NamespaceSplit[4] = "Instantiator";
+            string ServerInstantiatorNamespace = StringHelper.StrMerge(NamespaceSplit, ".");
+            List <ClassNode>InstantiatorClasses = GetClassesThatImplementInterface(
+                ACSFiles,
+                AInterfaceName,
+                ServerInstantiatorNamespace);
 
-        WriteInstantiatorMethods(
-            MethodsAlreadyWritten,
-            InstantiatorClasses,
-            AInterfaceName,
-            ParentNamespace,
-            ServerInstantiatorNamespace);
+            WriteInstantiatorMethods(
+                MethodsAlreadyWritten,
+                InstantiatorClasses,
+                AInterfaceName,
+                ParentNamespace,
+                ServerInstantiatorNamespace);
+        }
 
         EndBlock();
     }
@@ -656,6 +659,8 @@ public class CreateInterfaces : AutoGenerationWriter
             // any class in the module can contain a webconnector
             string[] filePaths = Directory.GetFiles(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name, "*.csproj",
                 SearchOption.AllDirectories);
+
+            Array.Sort(filePaths);
 
             foreach (string filePath in filePaths)
             {

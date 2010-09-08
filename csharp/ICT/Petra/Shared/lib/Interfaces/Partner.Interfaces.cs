@@ -649,17 +649,17 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
         bool DeleteContacts(PPartnerContactTable APartnerContacts,
                             out TVerificationResultCollection AVerificationResults);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
                                          bool AWithAddressDetails,
                                          bool AWithSubscriptions,
                                          bool AWithRelationships);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         bool SavePartner(PartnerEditTDS AMainDS,
                          out TVerificationResultCollection AVerificationResult);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors.TPartnerWebConnectorsNamespace)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector)</summary>
         PartnerFindTDS FindPartners(string AFirstName,
                                     string AFamilyNameOrOrganisation,
                                     string ACity,

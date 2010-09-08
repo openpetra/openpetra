@@ -273,6 +273,8 @@ class CreateInstantiators : AutoGenerationWriter
             string[] filePaths = Directory.GetFiles(CSParser.ICTPath + "/Petra/Server/lib/" + module, "*.csproj",
                 SearchOption.AllDirectories);
 
+            Array.Sort(filePaths);
+
             foreach (string filePath in filePaths)
             {
                 // excluding the data directory
