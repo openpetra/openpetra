@@ -29,6 +29,7 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using DDW;
 using Ict.Common.IO;
 using Ict.Common;
@@ -269,6 +270,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// get the md5sum hash of a file
+        /// </summary>
+        /// <param name="ADLLName"></param>
+        /// <returns></returns>
+        private String GetMd5Sum(String AFilename)
+        {
+            FileStream fs = new FileStream(AFilename, FileMode.Open, FileAccess.Read);
+            MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
+            string ReturnValue = BitConverter.ToString(cr.ComputeHash(fs)).Replace("-", "").ToLower();
+
+            fs.Close();
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Adds an image as a xml resource to FImageResources
         /// </summary>
         /// <param name="AControlName">the name how the image is addressed from the resources</param>
@@ -281,6 +297,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
+            if (!File.Exists(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName))
+            {
+                Console.WriteLine("Warning: Cannot find image file " + FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
+                return;
+            }
+
+            string Md5SumImageFile = GetMd5Sum(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
             string formattedImage = Image2Base64(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName, AImageOrIcon);
 
             if (formattedImage.Length == 0)
@@ -308,6 +331,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             XmlNode DestNode = FImageResources.LastChild;
             XmlNode HeaderNode = DestNode.AppendChild(HeaderElement);
+            HeaderNode.AppendChild(FImageResources.CreateComment(Md5SumImageFile));
             HeaderNode.AppendChild(ImageElement);
         }
 
@@ -327,70 +351,39 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return "";
             }
 
-            // if we don't have a .gif file, create it
-            if (!AImageFileName.EndsWith(".gif") && (AImageOrIcon == "Bitmap"))
+            System.Resources.ResXResourceWriter w = new System.Resources.ResXResourceWriter(AImageFileName + ".resx");
+
+            if (AImageOrIcon == "Icon")
             {
-                // Icon.ToBitmap: The transparent areas of the icon are lost when it is converted to a bitmap,
-                // and the transparent color of the resulting bitmap is set to RGB(13,11,12).
-                Bitmap iconBitmap = (new Icon(AImageFileName)).ToBitmap();
-
-                // http://bytes.com/topic/c-sharp/answers/551890-transparent-gif-using-bitmap-save
-                // it seems that MakeTransparent does not work, and the workarounds to modify the palette and copy the bitmap
-                // data are really a mess. Therefore manually convert the ico file with The Gimp to gif, and transparency works fine!
-                //iconBitmap.MakeTransparent(Color.FromArgb(0,13,11,12));
-
-                int DotIndex = AImageFileName.LastIndexOf('.');
-
-                if (DotIndex > 0)
-                {
-                    AImageFileName.Remove(DotIndex);
-                }
-
-                AImageFileName = AImageFileName + ".gif";
-
-                iconBitmap.Save(AImageFileName, System.Drawing.Imaging.ImageFormat.Gif);
+                w.AddResource(AImageFileName, new Icon(AImageFileName));
+            }
+            else if ((AImageOrIcon == "Bitmap") && (Path.GetExtension(AImageFileName) == ".ico"))
+            {
+                w.AddResource(AImageFileName, (new Icon(AImageFileName)).ToBitmap());
+            }
+            else
+            {
+                w.AddResource(AImageFileName, new Bitmap(AImageFileName));
             }
 
-            int bufferSize = 500000;
-            byte[] buffer = new byte[bufferSize];
-            int readBytes = 0;
-            string unformattedImage = "";
-            FileStream inputFile = new FileStream(AImageFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            BinaryReader br = new BinaryReader(inputFile);
+            w.Close();
 
-            do
+            TXMLParser parser = new TXMLParser(AImageFileName + ".resx", false);
+            File.Delete(AImageFileName + ".resx");
+            XmlDocument doc = parser.GetDocument();
+            XmlNode child = doc.DocumentElement.FirstChild;
+
+            while (child != null)
             {
-                readBytes = br.Read(buffer, 0, bufferSize);
-
-                // Base64FormattingOptions.InsertLineBreaks would break by 76 characters, but we want to break the line at 80
-                // there seems to be a problem if the image is bigger than the buffer; resx files are invalid...
-                // so we increased the bufferSize so that only one run is required
-                unformattedImage += Convert.ToBase64String(buffer, 0, readBytes, Base64FormattingOptions.None);
-            } while (bufferSize <= readBytes);
-
-            br.Close();
-
-            string formattedImage = "\n        ";
-            unformattedImage = unformattedImage.Trim();
-
-            for (int counter = 0; counter < unformattedImage.Length; counter += 80)
-            {
-                int toCopy = 80;
-
-                if (counter + toCopy > unformattedImage.Length)
+                if ((child.Name == "data") && (TXMLParser.GetAttribute(child, "name") == AImageFileName))
                 {
-                    toCopy = unformattedImage.Length - counter;
+                    return child.InnerText;
                 }
 
-                formattedImage += unformattedImage.Substring(counter, toCopy) + '\n';
-
-                if (counter + 80 < unformattedImage.Length)
-                {
-                    formattedImage += "        ";
-                }
+                child = child.NextSibling;
             }
 
-            return formattedImage;
+            return string.Empty;
         }
 
         /// <summary>
@@ -406,6 +399,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
                                   ".resx";
 
+            XmlDocument OrigResourceDoc = (new TXMLParser(ResourceFile, false)).GetDocument();
+
             string ResourceTemplate = ATemplateDir + Path.DirectorySeparatorChar + "resources.resx";
 
             XmlDocument DestinationDoc = new XmlDocument();
@@ -417,7 +412,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (XmlNode ChildNode in ParentNode)
             {
-                XmlNode NewNode = DestinationDoc.ImportNode(ChildNode, true);
+                XmlNode OrigDataNode = OrigResourceDoc.DocumentElement.FirstChild;
+
+                while (OrigDataNode != null && !(OrigDataNode.Name == "data"
+                                                 && TXMLParser.GetAttribute(OrigDataNode, "name") != TXMLParser.GetAttribute(ChildNode, "name")))
+                {
+                    OrigDataNode = OrigDataNode.NextSibling;
+                }
+
+                // compare the md5sum of the original icon file. use original icon encoding for the same file.
+                // it seems the translation of images to base64 is always different, depending on the machine
+                if (OrigDataNode != null)
+                {
+                    if (!OrigDataNode.HasChildNodes || (OrigDataNode.FirstChild.InnerText != ChildNode.FirstChild.InnerText))
+                    {
+                        OrigDataNode = null;
+                    }
+                }
+
+                XmlNode NewNode = DestinationDoc.ImportNode(OrigDataNode == null ? ChildNode : OrigDataNode, true);
                 DestinationNode.AppendChild(NewNode);
             }
 

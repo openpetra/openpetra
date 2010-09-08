@@ -133,4 +133,18 @@
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>25</value>
   </metadata>
+  <data name="btnWorkerField.Glyph" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <!--1b2fe776c5eb3f8919c30da5773ca903-->
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAW9JREFUOE9jZMAC
+        fHx8/iMLn7WtB3Ofl5syYlMPFpPsPP0fhidc/P4fhNMO/UDBIINhGMUgkEaQht33vxCFQWrhrgTZMvfO
+        BaDGr//X3L79X3UXAwqGGbr+zsP/K29f+19+rvX/prtP/y+8eQpiCMh2dE0wfsvFWf/n3jj8X3cPD1Y1
+        IL1gA+bdufi/+coiuCKL/Qpwr+AyHCQON6D7+qb/2578/99+eSHYkMCjHmAD2i/Nx2pz1ulCcJjBDUg/
+        W/J/+u2T/3c+/PV/3o0jYE2gsAEZorWbA8x3PWQC5oPYrZfmoBoAUtx9ffP/9Q8/gRW5HDICK9x69yVc
+        09o7dzG8BXcByICeG1v/L7l///+uB9//a+xmBRpiDNfQcWkhSvRmnM4FW4BiACgMQAbtePQbTBecqcJI
+        E7AEBnLl6ts3IQbAUiFyygOlCZCiXQ8hKRIbhmuGJUnkpAxyATZNOJMyegYBGQZTjMzGmZEGVAIAcdEH
+        ens3FhsAAAAASUVORK5CYII=
+</value>
+  </data>
 </root>

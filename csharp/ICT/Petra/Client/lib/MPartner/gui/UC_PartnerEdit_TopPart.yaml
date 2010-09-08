@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PPartner    
     
     Actions:
-        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MaintainWorkerField, Image: OMerField.ico}
+        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MaintainWorkerField, Image: OMField.ico}
         
     Controls:
         pnlContent:

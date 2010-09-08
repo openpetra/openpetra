@@ -13,7 +13,7 @@ RootNode:
         KeyDown: {class=System.Windows.Forms.KeyEventHandler,method=FPetraUtilsObject.Form_KeyDown}
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
-        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.gif}
+        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         mnuMain: 
         tbrMain:

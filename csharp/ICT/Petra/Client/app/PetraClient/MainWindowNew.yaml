@@ -12,7 +12,7 @@ RootNode:
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
-        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.gif}
+        actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         pnlContent:
             Controls: [dsbContent, lstFolders]
