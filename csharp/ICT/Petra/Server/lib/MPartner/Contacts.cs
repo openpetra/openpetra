@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
@@ -59,6 +60,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AMailingCode">can be empty string</param>
         /// <param name="AVerificationResults"></param>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static bool AddContact(List <Int64>APartnerKeys,
             DateTime AContactDate,
             string AMethodOfContact,
@@ -139,6 +141,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode">can be an empty string</param>
         /// <returns>the contacts table with all contacts that match</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static PPartnerContactTable FindContacts(string AContactor,
             DateTime? AContactDate,
             string ACommentContains,
@@ -218,6 +221,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerContacts">table with deleted rows. edited or untouched rows will not be deleted.</param>
         /// <param name="AVerificationResults"></param>
+        [RequireModulePermission("PTNRUSER")]
         public static bool DeleteContacts(
             PPartnerContactTable APartnerContacts,
             out TVerificationResultCollection AVerificationResults)

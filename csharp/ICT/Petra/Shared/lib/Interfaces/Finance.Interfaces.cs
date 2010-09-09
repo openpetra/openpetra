@@ -57,6 +57,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 #region ManualCode
 using System.Xml;
+using System.Collections.Specialized;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -453,8 +454,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                              string AExtractName,
                                              bool ADropForeignAddresses);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector)</summary>
-        List <string> PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
-                                             string AHTMLTemplate);
+        StringCollection PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
+                                                string AHTMLTemplate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector)</summary>
         string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
                                         DateTime AStartDate,

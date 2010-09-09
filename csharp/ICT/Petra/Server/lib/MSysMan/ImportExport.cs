@@ -34,6 +34,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -47,6 +48,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// this is useful to convert data between different database systems, etc
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("SYSMAN")]
         public static string ExportAllTables()
         {
             XmlDocument OpenPetraData = TYml2Xml.CreateXmlDocument();
@@ -203,6 +205,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// </summary>
         /// <param name="AZippedNewDatabaseData">zipped YML</param>
         /// <returns></returns>
+        [RequireModulePermission("SYSMAN")]
         public static bool ResetDatabase(string AZippedNewDatabaseData)
         {
             List <string>tables = TTableList.GetDBNames();

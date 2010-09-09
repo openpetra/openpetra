@@ -37,6 +37,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -50,6 +51,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
@@ -72,6 +74,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {

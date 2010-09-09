@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnect();
 
-            Environment.Exit(0);
+            PetraClientShutdown.Shutdown.StopPetraClient();
         }
 
         /// the main navigation form

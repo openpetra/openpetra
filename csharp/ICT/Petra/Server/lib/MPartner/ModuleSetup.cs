@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 {
@@ -47,6 +48,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// returns all motivation groups and details for this ledger
         /// </summary>
+        [RequireModulePermission("PTNRUSER")]
         public static PartnerSetupTDS LoadPartnerTypes()
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -68,6 +70,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {

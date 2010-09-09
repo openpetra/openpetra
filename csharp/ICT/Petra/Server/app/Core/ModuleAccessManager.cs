@@ -216,6 +216,11 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 string moduleExpression = requiredModules.RequiredModulesExpression.ToUpper();
 
+                if (moduleExpression == "NONE")
+                {
+                    return true;
+                }
+
                 try
                 {
                     bool hasPermission = CheckUserModulePermissions(moduleExpression);

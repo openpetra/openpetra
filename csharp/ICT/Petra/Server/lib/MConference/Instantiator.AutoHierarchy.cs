@@ -422,6 +422,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         /// generated method from connector
         public PUnitTable GetCampaignOptions(Int64 AUnitKey)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey);
         }
 
@@ -429,6 +430,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         public SelectConferenceTDS GetConferences(String AConferenceName,
                                                   String APrefix)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetConferences");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetConferences(AConferenceName, APrefix);
         }
 
@@ -439,6 +441,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
                                              out DateTime AStartDate,
                                              out DateTime AEndDate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetEarliestAndLatestDate");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate, out AStartDate, out AEndDate);
         }
 
@@ -446,6 +449,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         public System.Boolean GetCampaignOptions(long AUnitKey,
                                                  out System.Data.DataTable AConferenceTable)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey, out AConferenceTable);
         }
 
@@ -455,6 +459,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
                                   out DataTable AFieldsTable,
                                   out String AConferencePrefix)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetFieldUnits");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AFieldTypes, out AFieldsTable, out AConferencePrefix);
         }
     }

@@ -26,6 +26,7 @@ using System.IO;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing.Printing;
 using Mono.Unix;
 using Ict.Common;
@@ -112,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             sr.Close();
 
-            List <string>Letters = TRemote.MFinance.Gift.WebConnectors.PrepareNewDonorLetters(ref FMainDS, htmlTemplate);
+            StringCollection Letters = TRemote.MFinance.Gift.WebConnectors.PrepareNewDonorLetters(ref FMainDS, htmlTemplate);
 
             System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
             bool printerInstalled = printDocument.PrinterSettings.IsValid;

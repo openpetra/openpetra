@@ -46,6 +46,11 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
         bool SetPassword(string AUsername, string APassword);
 
         /// <summary>
+        /// this will allow the user to change his own password
+        /// </summary>
+        bool SetPassword(string AUsername, string APassword, string AOldPassword);
+
+        /// <summary>
         /// this will create a new user
         /// </summary>
         bool CreateUser(string AUsername, string APassword);

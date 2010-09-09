@@ -69,8 +69,7 @@ class CreateInstantiators : AutoGenerationWriter
             }
         }
 
-        // TODO log warning once we have given access permissions to most functions. at the moment the warnings are only confusing and not helping
-        // TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
+        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
 
         return new ProcessTemplate();
     }

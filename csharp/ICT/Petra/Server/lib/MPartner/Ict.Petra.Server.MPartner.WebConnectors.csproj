@@ -92,6 +92,10 @@
     <Compile Include="WebConnectors.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="data\Ict.Petra.Server.MPartner.DataAccess.csproj">
       <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157DF}</Project>
       <Name>Ict.Petra.Server.MPartner.DataAccess</Name>

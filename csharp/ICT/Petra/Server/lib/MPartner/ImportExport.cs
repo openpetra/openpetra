@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {
@@ -202,6 +203,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// imports partner data from file
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static bool ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
@@ -236,6 +238,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// the partners are grouped by class, country, status, and sitekey
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static string ExportPartners()
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();

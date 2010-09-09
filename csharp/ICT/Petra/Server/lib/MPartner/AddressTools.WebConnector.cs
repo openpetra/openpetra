@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Extracts;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
 {
@@ -41,6 +42,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
     public class TAddressWebConnector
     {
         /// find the current best address for the partner
+        [RequireModulePermission("PTNRUSER")]
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
             out string ACountryNameLocal,
@@ -78,6 +80,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
         /// get the best postal address of the partners and return in the result table;
         /// you have to check the ValidAddress flag on the result table
         /// </summary>
+        [RequireModulePermission("PTNRUSER")]
         public static BestAddressTDSLocationTable AddPostalAddress(ref DataTable APartnerTable,
             DataColumn APartnerKeyColumn,
             bool AIgnoreForeignAddresses)
@@ -124,6 +127,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
         /// <param name="ABestAddressTable"></param>
         /// <param name="AIncludeNonValidAddresses">you might want to include invalid addresses if an email was sent</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static bool CreateExtractFromBestAddressTable(
             String AExtractName,
             String AExtractDescription,

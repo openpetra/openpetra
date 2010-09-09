@@ -43,6 +43,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -62,6 +63,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ADateCorrection">the date where we want to create the correction gift batch</param>
         /// <param name="AWithReceipt">if the gifts have already been receipted in the old year, and correction is in the new year. don't print receipts again in the new year.</param>
         /// <returns>the gift batch</returns>
+        [RequireModulePermission("FINANCE-1")]
         public static Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
             Int64 ARecipientKey,
             DateTime AStartDate,

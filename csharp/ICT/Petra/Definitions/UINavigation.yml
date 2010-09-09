@@ -21,7 +21,7 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        Partner: {Label=Pa&rtner, Icon=partner_small.ico}
+        Partner: {Label=Pa&rtner, Icon=partner_small.ico, PermissionsRequired=PTNRUSER}
             # Module
             Main:
                 # Sub Module
@@ -87,7 +87,7 @@ OpenPetra:
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui}
+        Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
             GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
                 SearchBoxes: [Donor, Recipient]
                 Main:
@@ -169,7 +169,7 @@ OpenPetra:
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
             
-        Personnel: {Icon=personel_small.ico}
+        Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
                 # Sub Module
@@ -200,7 +200,7 @@ OpenPetra:
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
                         LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
-        ConferenceManagement: {Icon=conference_small.ico}
+        ConferenceManagement: {Icon=conference_small.ico, PermissionsRequired=CONFERENCE}
             Main:
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui}
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
@@ -229,7 +229,7 @@ OpenPetra:
                         ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
                         CampaignReport: {ActionOpenScreen=TFrmCampaignReport}
-        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true}
+        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
                     GeneralReports:
@@ -246,7 +246,7 @@ OpenPetra:
             Main:
                 Safety:
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-        SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+        SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
             Users:
                 Functions:
                     MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}

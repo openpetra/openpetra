@@ -93,20 +93,45 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // TODO: enter new password twice to be sure it is correct
             PetraInputBox input = new PetraInputBox(
                 Catalog.GetString("Change your password"),
-                Catalog.GetString("Please enter the new password:"),
+                Catalog.GetString("Please enter the old password:"),
                 "", true);
 
             if (input.ShowDialog() == DialogResult.OK)
             {
-                string password = input.GetAnswer();
+                string oldPassword = input.GetAnswer();
 
-                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
+                input = new PetraInputBox(
+                    Catalog.GetString("Change your password"),
+                    Catalog.GetString("Please enter the new password:"),
+                    "", true);
+
+                if (input.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
-                }
-                else
-                {
-                    MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                    string password = input.GetAnswer();
+
+                    input = new PetraInputBox(
+                        Catalog.GetString("Change your password"),
+                        Catalog.GetString("Please enter the new password once more:"),
+                        "", true);
+
+                    if (input.ShowDialog() == DialogResult.OK)
+                    {
+                        if (password == input.GetAnswer())
+                        {
+                            if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, oldPassword))
+                            {
+                                MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+                            }
+                            else
+                            {
+                                MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("The new password did not match! Please try again...");
+                        }
+                    }
                 }
             }
         }

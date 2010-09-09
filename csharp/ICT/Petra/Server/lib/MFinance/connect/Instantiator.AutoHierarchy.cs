@@ -123,6 +123,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 //using Ict.Petra.Server.MFinance.Setup.UIConnectors;
 #region ManualCode
 using System.Xml;
+using System.Collections.Specialized;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.RemotedExceptions;
@@ -943,6 +944,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         public AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                                   Int32 AAPNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "LoadAApDocument");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.LoadAApDocument(ALedgerNumber, AAPNumber);
         }
 
@@ -951,6 +953,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                     Int64 APartnerKey,
                                                     bool ACreditNoteOrInvoice)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "CreateAApDocument");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
         }
 
@@ -958,6 +961,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
         public TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
                                                     out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "SaveAApDocument");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.SaveAApDocument(ref AInspectDS, out AVerificationResult);
         }
 
@@ -969,6 +973,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                           double AAmount,
                                                           Int32 ALastDetailNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "CreateAApDocumentDetail");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
         }
 
@@ -979,6 +984,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                                   bool IsCreditNoteNotInvoice,
                                                   bool AHideAgedTransactions)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "FindAApDocument");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.FindAApDocument(ALedgerNumber, ASupplierKey, ADocumentStatus, IsCreditNoteNotInvoice, AHideAgedTransactions);
         }
 
@@ -988,6 +994,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                     DateTime APostingDate,
                                     out TVerificationResultCollection AVerifications)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "PostAPDocuments");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
@@ -997,6 +1004,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
                                    DateTime APostingDate,
                                    out TVerificationResultCollection AVerifications)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector), "PostAPPayments");
             return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
         }
     }
@@ -1762,18 +1770,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
                                                           AEpTransactionTable ATransTable,
                                                           out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "StoreNewBankStatement");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(ref AStmtTable, ATransTable, out AVerificationResult);
         }
 
         /// generated method from connector
         public AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "GetImportedBankStatements");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetImportedBankStatements(AStartDate);
         }
 
         /// generated method from connector
         public bool DropBankStatement(Int32 AEpStatementKey)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "DropBankStatement");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.DropBankStatement(AEpStatementKey);
         }
 
@@ -1781,12 +1792,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
                                                                     Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "GetBankStatementTransactionsAndMatches");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
         }
 
         /// generated method from connector
         public bool CommitMatches(BankImportTDS AMainDS)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "CommitMatches");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CommitMatches(AMainDS);
         }
 
@@ -1797,6 +1810,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
                                      Int32 AGiftBatchNumber,
                                      out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "CreateGiftBatch");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGiftBatch(AMainDS, ALedgerNumber, AStatementKey, AGiftBatchNumber, out AVerificationResult);
         }
 
@@ -1807,6 +1821,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
                                    Int32 AGLBatchNumber,
                                    out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "CreateGLBatch");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CreateGLBatch(AMainDS, ALedgerNumber, AStatementKey, AGLBatchNumber, out AVerificationResult);
         }
     }
@@ -2095,6 +2110,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                            DateTime ADateCorrection,
                                            bool AWithReceipt)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector), "FieldChangeAdjustment");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector.FieldChangeAdjustment(ALedgerNumber, ARecipientKey, AStartDate, AEndDate, AOldField, ADateCorrection, AWithReceipt);
         }
 
@@ -2105,13 +2121,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                                     string AExtractName,
                                                     bool ADropForeignAddresses)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector), "GetNewDonorSubscriptions");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.GetNewDonorSubscriptions(APublicationCode, ASubscriptionStartFrom, ASubscriptionStartUntil, AExtractName, ADropForeignAddresses);
         }
 
         /// generated method from connector
-        public List <string> PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
-                                                    string AHTMLTemplate)
+        public StringCollection PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
+                                                       string AHTMLTemplate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector), "PrepareNewDonorLetters");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.PrepareNewDonorLetters(ref AMainDS, AHTMLTemplate);
         }
 
@@ -2121,6 +2139,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                                DateTime AEndDate,
                                                string AHTMLTemplate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector), "CreateAnnualGiftReceipts");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector.CreateAnnualGiftReceipts(ALedgerNumber, AStartDate, AEndDate, AHTMLTemplate);
         }
 
@@ -2128,18 +2147,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                              DateTime ADateEffective)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective);
         }
 
         /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber);
         }
 
         /// generated method from connector
         public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadAGiftBatch");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadAGiftBatch(ALedgerNumber);
         }
 
@@ -2147,6 +2169,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         public GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                              Int32 ABatchNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadTransactions");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadTransactions(ALedgerNumber, ABatchNumber);
         }
 
@@ -2154,6 +2177,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         public TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                                      out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveGiftBatchTDS");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
@@ -2162,12 +2186,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                   Int32 ABatchNumber,
                                   out TVerificationResultCollection AVerifications)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatch");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
         public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "LoadMotivationDetails");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
         }
 
@@ -2175,6 +2201,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
                                                           out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "SaveMotivationDetails");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
         }
     }
@@ -2459,6 +2486,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPeriodDates");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
         }
 
@@ -2467,6 +2495,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                                 out DateTime AStartDateCurrentPeriod,
                                                 out DateTime AEndDateLastForwardingPeriod)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPostingRangeDates");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
         }
 
@@ -2478,12 +2507,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                    out DateTime AStartDatePeriod,
                                    out DateTime AEndDatePeriod)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetPeriodDates");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
         }
 
         /// generated method from connector
         public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CreateABatch");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
         }
 
@@ -2491,6 +2522,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public GLBatchTDS LoadABatch(Int32 ALedgerNumber,
                                      TFinanceBatchFilterEnum AFilterBatchStatus)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadABatch");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber, AFilterBatchStatus);
         }
 
@@ -2498,6 +2530,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
                                        Int32 ABatchNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadAJournal");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadAJournal(ALedgerNumber, ABatchNumber);
         }
 
@@ -2506,6 +2539,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                            Int32 ABatchNumber,
                                            Int32 AJournalNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadATransaction");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber);
         }
 
@@ -2513,6 +2547,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "SaveGLBatchTDS");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
@@ -2521,12 +2556,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                 Int32 ABatchNumber,
                                 out TVerificationResultCollection AVerifications)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "PostGLBatch");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
         public string GetStandardCostCentre(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetStandardCostCentre");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
         }
 
@@ -2535,6 +2572,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                            string ACurrencyTo,
                                            DateTime ADateEffective)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetDailyExchangeRate");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
 
@@ -2544,6 +2582,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                                DateTime AStartDate,
                                                DateTime AEndDate)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCorporateExchangeRate");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
         }
 
@@ -2553,6 +2592,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                   Int32 ABatchNumber,
                                   out TVerificationResultCollection AVerifications)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CancelGLBatch");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
     }
@@ -3431,12 +3471,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         /// generated method from connector
         public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "LoadAccountHierarchies");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
         }
 
         /// generated method from connector
         public GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "LoadCostCentreHierarchy");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentreHierarchy(ALedgerNumber);
         }
 
@@ -3444,6 +3486,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "SaveGLSetupTDS");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AInspectDS, out AVerificationResult);
         }
 
@@ -3451,12 +3494,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         public string ExportAccountHierarchy(Int32 ALedgerNumber,
                                              string AAccountHierarchyName)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ExportAccountHierarchy");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName);
         }
 
         /// generated method from connector
         public string ExportCostCentreHierarchy(Int32 ALedgerNumber)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ExportCostCentreHierarchy");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ExportCostCentreHierarchy(ALedgerNumber);
         }
 
@@ -3465,6 +3510,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
                                            string AHierarchyName,
                                            string AXmlAccountHierarchy)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportAccountHierarchy");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
         }
 
@@ -3472,6 +3518,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         public bool ImportCostCentreHierarchy(Int32 ALedgerNumber,
                                               string AXmlHierarchy)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportCostCentreHierarchy");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportCostCentreHierarchy(ALedgerNumber, AXmlHierarchy);
         }
 
@@ -3482,6 +3529,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
                                     string AXmlCostCentreHierarchy,
                                     string AXmlMotivationDetails)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportNewLedger");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlLedgerDetails, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlMotivationDetails);
         }
 
@@ -3489,6 +3537,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         public bool CanDeleteAccount(Int32 ALedgerNumber,
                                      string AAccountCode)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CanDeleteAccount");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CanDeleteAccount(ALedgerNumber, AAccountCode);
         }
 
@@ -3504,12 +3553,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
                                     Int32 ANumberOfFwdPostingPeriods,
                                     out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CreateNewLedger");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
         }
 
         /// generated method from connector
         public ALedgerTable GetAvailableLedgers()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "GetAvailableLedgers");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
         }
     }

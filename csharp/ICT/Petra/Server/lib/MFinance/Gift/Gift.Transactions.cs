@@ -42,6 +42,7 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -57,6 +58,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateEffective"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
@@ -138,6 +140,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
         {
             return CreateAGiftBatch(ALedgerNumber, DateTime.Today);
@@ -150,6 +153,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
@@ -167,6 +171,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
@@ -216,6 +221,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -388,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-2")]
         public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             AVerifications = null;

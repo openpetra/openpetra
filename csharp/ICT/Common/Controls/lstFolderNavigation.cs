@@ -199,15 +199,38 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Select the given folder
+        /// Select the given folder, if it is enabled
         /// </summary>
         /// <param name="AIndex"></param>
-        public void SelectFolder(Int32 AIndex)
+        public bool SelectFolder(Int32 AIndex)
         {
-            ((TRbtNavigationButton) this.sptNavigation.Panel2.Controls[AIndex]).Checked = true;
+            TRbtNavigationButton btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[AIndex];
 
-            // just make sure the splitter is positioned correctly
-            SptNavigationSplitterMoved(null, null);
+            if (btn.Enabled)
+            {
+                btn.Checked = true;
+
+                // just make sure the splitter is positioned correctly
+                SptNavigationSplitterMoved(null, null);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// select the first folder that is available (ie enabled)
+        /// </summary>
+        /// <returns></returns>
+        public void SelectFirstAvailableFolder()
+        {
+            Int32 Index = 0;
+
+            while (Index < this.sptNavigation.Panel2.Controls.Count && !SelectFolder(Index))
+            {
+                Index++;
+            }
         }
     }
 }

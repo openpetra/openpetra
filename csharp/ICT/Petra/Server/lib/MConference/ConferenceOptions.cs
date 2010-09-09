@@ -40,7 +40,7 @@ using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MConference.WebConnectors
 {
@@ -60,6 +60,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// </summary>
         /// <param name="AUnitKey">The unit which defines the campaign code</param>
         /// <returns>A table with all the relevant units</returns>
+        [RequireModulePermission("CONFERENCE")]
         public static PUnitTable GetCampaignOptions(Int64 AUnitKey)
         {
             String ConferenceCodePrefix = "";
@@ -119,6 +120,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AConferenceName">Matching patterns for Unit Name</param>
         /// <param name="APrefix">Matching pattern for campaign code</param>
         /// <returns>A dataset with all the conferences in question</returns>
+        [RequireModulePermission("CONFERENCE")]
         public static SelectConferenceTDS GetConferences(String AConferenceName, String APrefix)
         {
             SelectConferenceTDS ResultTable = new SelectConferenceTDS();
@@ -222,6 +224,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AStartDate">Start Date of the Conference</param>
         /// <param name="AEndDate">End Date of the Conference</param>
         /// <returns>true if successful</returns>
+        [RequireModulePermission("CONFERENCE")]
         public static bool GetEarliestAndLatestDate(Int64 AConferenceKey, out DateTime AEarliestArrivalDate,
             out DateTime ALatestDepartureDate, out DateTime AStartDate, out DateTime AEndDate)
         {
@@ -338,6 +341,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AUnitKey">Partner Key of the unit from which the campaign options are retrieved</param>
         /// <param name="AConferenceTable">A table with all the units</param>
         /// <returns></returns>
+        [RequireModulePermission("CONFERENCE")]
         public static System.Boolean GetCampaignOptions(long AUnitKey,
             out System.Data.DataTable AConferenceTable)
         {
@@ -422,6 +426,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// Column 3 indicates if the unit is directly used by the current conference</param>
         /// <param name="AConferencePrefix">The prefix code of the conference</param>
         /// <returns>True if successful. Otherwise false</returns>
+        [RequireModulePermission("CONFERENCE")]
         public static bool GetFieldUnits(Int64 AConferenceKey, TUnitTypeEnum AFieldTypes, out DataTable AFieldsTable, out String AConferencePrefix)
         {
             TDBTransaction ReadTransaction;

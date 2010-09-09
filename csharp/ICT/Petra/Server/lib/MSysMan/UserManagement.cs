@@ -71,10 +71,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// set the password of an existing user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll
         /// </summary>
+        [RequireModulePermission("SYSMAN")]
         public static bool SetUserPassword(string AUsername, string APassword)
         {
-            // TODO: check permissions. is the current user allowed to change the password of other users?
-
             string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser");
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
@@ -99,6 +98,48 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
 
                 return auth.SetPassword(AUsername, APassword);
+            }
+        }
+
+        /// <summary>
+        /// set the password of the current user. this takes into consideration how users are authenticated in this system, by
+        /// using an optional authentication plugin dll.
+        /// any user can call this, but they need to know the old password.
+        /// </summary>
+        [RequireModulePermission("NONE")]
+        public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword)
+        {
+            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser");
+
+            if (UserAuthenticationMethod == "OpenPetraDBSUser")
+            {
+                TPetraPrincipal tempPrincipal;
+                SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+
+                if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(AOldPassword,
+                            UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                {
+                    return false;
+                }
+
+                SUserTable UserTable = (SUserTable)UserDR.Table;
+
+                UserDR.PasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
+                        UserDR.PasswordSalt), "SHA1");
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                TVerificationResultCollection VerificationResult;
+                SUserAccess.SubmitChanges(UserTable, Transaction, out VerificationResult);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                return true;
+            }
+            else
+            {
+                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+
+                return auth.SetPassword(AUsername, APassword, AOldPassword);
             }
         }
 
@@ -223,6 +264,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// check the implementation of the authentication mechanism and which functionality is implemented for OpenPetra
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static bool GetAuthenticationFunctionality(out bool ACanCreateUser, out bool ACanChangePassword, out bool ACanChangePermissions)
         {
             ACanCreateUser = true;
@@ -245,6 +287,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// load all users in the database and their permissions
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUsersAndModulePermissions()
         {
             MaintainUsersTDS ReturnValue = null;
@@ -278,6 +321,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
+        [RequireModulePermission("SYSMAN")]
         public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;

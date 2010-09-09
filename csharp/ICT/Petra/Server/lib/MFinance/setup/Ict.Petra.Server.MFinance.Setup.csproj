@@ -87,6 +87,10 @@
     <Compile Include="Ict.Petra.Server.MFinance.Setup.AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Server.App.Core.csproj">
+      <Project>{F053BB7D-E40D-4434-B99C-FC803F65E10A}</Project>
+      <Name>Ict.Petra.Server.App.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MSysMan\data\Ict.Petra.Server.MSysMan.DataAccess.csproj">
       <Project>{CF8F3805-344B-4B75-8498-C93205B2A2A9}</Project>
       <Name>Ict.Petra.Server.MSysMan.DataAccess</Name>

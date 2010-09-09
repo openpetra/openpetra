@@ -40,6 +40,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -55,7 +56,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <param name="ATransTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        static public TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
             AEpTransactionTable ATransTable,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -112,7 +114,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         /// <param name="AStartDate"></param>
         /// <returns></returns>
-        static public AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        [RequireModulePermission("FINANCE-1")]
+        public static AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
         {
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -136,7 +139,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         /// <param name="AEpStatementKey"></param>
         /// <returns></returns>
-        static public bool DropBankStatement(Int32 AEpStatementKey)
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DropBankStatement(Int32 AEpStatementKey)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -209,7 +213,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
         /// </summary>
-        static public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
+        [RequireModulePermission("FINANCE-1")]
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -348,7 +353,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <returns></returns>
-        static public bool CommitMatches(BankImportTDS AMainDS)
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CommitMatches(BankImportTDS AMainDS)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -359,7 +365,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// create a gift batch for the matched gifts, and return the gift batch number
         /// </summary>
         /// <returns>the gift batch number</returns>
-        static public Int32 CreateGiftBatch(BankImportTDS AMainDS,
+        [RequireModulePermission("FINANCE-1")]
+        public static Int32 CreateGiftBatch(BankImportTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             Int32 AGiftBatchNumber,
@@ -462,7 +469,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// create a GL batch for the matched GL Transactions, and return the GL batch number
         /// </summary>
         /// <returns>the GL batch number</returns>
-        static public Int32 CreateGLBatch(BankImportTDS AMainDS,
+        [RequireModulePermission("FINANCE-1")]
+        public static Int32 CreateGLBatch(BankImportTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             Int32 AGLBatchNumber,

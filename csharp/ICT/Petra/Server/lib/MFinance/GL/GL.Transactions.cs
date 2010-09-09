@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -50,6 +51,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartDate"></param>
         /// <param name="AEndDate"></param>
+        [RequireModulePermission("FINANCE-1")]
         public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -74,6 +76,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartDateCurrentPeriod"></param>
         /// <param name="AEndDateLastForwardingPeriod"></param>
+        [RequireModulePermission("FINANCE-1")]
         public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
@@ -107,6 +110,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AStartDatePeriod"></param>
         /// <param name="AEndDatePeriod"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static bool GetPeriodDates(Int32 ALedgerNumber,
             Int32 AYearNumber,
             Int32 ADiffPeriod,
@@ -138,6 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
@@ -172,6 +177,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AFilterBatchStatus"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
@@ -199,6 +205,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadAJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
@@ -216,6 +223,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
@@ -232,6 +240,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -248,6 +257,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-3")]
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
@@ -259,6 +269,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static string GetStandardCostCentre(Int32 ALedgerNumber)
         {
             return String.Format("{0:##00}00", ALedgerNumber);
@@ -272,6 +283,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ACurrencyTo"></param>
         /// <param name="ADateEffective"></param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static double GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             if (ACurrencyFrom == ACurrencyTo)
@@ -362,6 +374,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AStartDate"></param>
         /// <param name="AEndDate"></param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static double GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
         {
             double ExchangeRate = 1.0;
@@ -550,6 +563,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-3")]
         public static bool CancelGLBatch(out GLBatchTDS MainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,

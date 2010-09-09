@@ -1332,7 +1332,6 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
-
             }
             // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
@@ -1349,7 +1348,6 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
-
             }
             // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)

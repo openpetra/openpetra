@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
@@ -51,6 +52,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// get a partner key for a new partner
         /// </summary>
         /// <param name="AFieldPartnerKey">can be -1, then the default site key is used</param>
+        [RequireModulePermission("PTNRUSER")]
         public static Int64 NewPartnerKey(Int64 AFieldPartnerKey)
         {
             Int64 NewPartnerKey = TNewPartnerKey.GetNewPartnerKey(AFieldPartnerKey);
@@ -63,6 +65,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// return the existing data of a partner
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static PartnerEditTDS GetPartnerDetails(Int64 APartnerKey, bool AWithAddressDetails, bool AWithSubscriptions, bool AWithRelationships)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
@@ -120,6 +123,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// store the currently edited partner
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static bool SavePartner(PartnerEditTDS AMainDS, out TVerificationResultCollection AVerificationResult)
         {
             if (!PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, null))

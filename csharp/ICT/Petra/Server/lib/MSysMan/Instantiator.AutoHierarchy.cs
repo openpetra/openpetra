@@ -1478,7 +1478,17 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         public bool SetUserPassword(string AUsername,
                                     string APassword)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
+        }
+
+        /// generated method from connector
+        public bool SetUserPassword(string AUsername,
+                                    string APassword,
+                                    string AOldPassword)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword);
         }
 
         /// generated method from connector
@@ -1495,12 +1505,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
                                                    out bool ACanChangePassword,
                                                    out bool ACanChangePermissions)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "GetAuthenticationFunctionality");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
         }
 
         /// generated method from connector
         public MaintainUsersTDS LoadUsersAndModulePermissions()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "LoadUsersAndModulePermissions");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.LoadUsersAndModulePermissions();
         }
 
@@ -1508,6 +1520,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
                                               out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SaveSUser");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SaveSUser(ref ASubmitDS, out AVerificationResult);
         }
     }
@@ -1899,12 +1912,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         /// generated method from connector
         public string ExportAllTables()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ExportAllTables");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllTables();
         }
 
         /// generated method from connector
         public bool ResetDatabase(string AZippedNewDatabaseData)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
         }
     }

@@ -48,6 +48,7 @@ using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -61,6 +62,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// returns several html documents, each in its own body tag; for printing with the HTML printer;
         /// TODO images are currently locally linked
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);

@@ -95,6 +95,19 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // TODO: if this node belongs to a ledger, check if the user has access permission
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
+
+            string PermissionsRequired = TXMLParser.GetAttributeRecursive(ANode, "PermissionsRequired", true);
+
+            while (PermissionsRequired.Length > 0)
+            {
+                string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
+
+                if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -170,7 +183,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.Dashboard = this.dsbContent;
             lstFolders.Statusbar = this.stbMain;
-            lstFolders.SelectFolder(0);
+            lstFolders.SelectFirstAvailableFolder();
         }
 
         private void ExitManualCode()
@@ -180,7 +193,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnect();
 
-            Environment.Exit(0);
+            PetraClientShutdown.Shutdown.StopPetraClient();
         }
 
         /// the main navigation form

@@ -36,6 +36,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
@@ -47,6 +48,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// return all partners that match the given criteria. this is used for the partner import screen
         /// </summary>
+        [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
         {
             TPartnerFindUIConnector UIConnector = new TPartnerFindUIConnector();

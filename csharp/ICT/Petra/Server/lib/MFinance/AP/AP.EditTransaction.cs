@@ -43,6 +43,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
 {
@@ -54,6 +55,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <summary>
         /// Passes data as a Typed DataSet to the Transaction Edit Screen
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AAPNumber)
         {
             // create the DataSet that will later be passed to the Client
@@ -79,6 +81,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APartnerKey">the supplier</param>
         /// <param name="ACreditNoteOrInvoice">true: credit note; false: invoice</param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
         {
             // create the DataSet that will later be passed to the Client
@@ -146,6 +149,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <returns>true if all verifications are OK and all DB calls succeeded, false if
         /// any verification or DB call failed
         /// </returns>
+        [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -237,6 +241,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="AAmount">the amount that is still missing from the total amount of the invoice</param>
         /// <param name="ALastDetailNumber">AApDocument.LastDetailNumber</param>
         /// <returns>the new AApDocumentDetail row</returns>
+        [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
             Int32 AApNumber,
             string AApSupplier_DefaultExpAccount,
@@ -268,6 +273,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// Find AP Documents
         /// TODO: date
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
             string ADocumentStatus,
             bool IsCreditNoteNotInvoice,
@@ -517,6 +523,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool PostAPDocuments(Int32 ALedgerNumber,
             List <Int32>AAPDocumentNumbers,
             DateTime APostingDate,
@@ -746,6 +753,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool PostAPPayments(
             AccountsPayableTDSAApPaymentTable APayments,
             AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,

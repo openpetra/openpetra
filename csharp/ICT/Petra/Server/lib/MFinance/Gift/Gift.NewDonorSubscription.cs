@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using Mono.Unix;
 using Ict.Common;
@@ -38,6 +39,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -49,6 +51,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// return a table with the details of people that have a new subscriptions because they donated
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static NewDonorTDS GetNewDonorSubscriptions(
             string APublicationCode,
             DateTime ASubscriptionStartFrom,
@@ -150,7 +153,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// prepare HTML text for each new donor
         /// </summary>
-        public static List <string>PrepareNewDonorLetters(ref NewDonorTDS AMainDS, string AHTMLTemplate)
+        [RequireModulePermission("FINANCE-1")]
+        public static StringCollection PrepareNewDonorLetters(ref NewDonorTDS AMainDS, string AHTMLTemplate)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
@@ -159,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            List <string>Letters = new List <string>();
+            StringCollection Letters = new StringCollection();
 
             foreach (BestAddressTDSLocationRow addressRow in AMainDS.BestAddress.Rows)
             {

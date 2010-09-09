@@ -96,6 +96,14 @@ namespace Plugin.AuthenticationPhpBB
         }
 
         /// <summary>
+        /// not implemented here. change the password in the forum
+        /// </summary>
+        public bool SetPassword(string AUsername, string APassword, string AOldPassword)
+        {
+            return false;
+        }
+
+        /// <summary>
         /// could check if the user already exists in phpBB
         /// </summary>
         public bool CreateUser(string AUsername, string APassword)

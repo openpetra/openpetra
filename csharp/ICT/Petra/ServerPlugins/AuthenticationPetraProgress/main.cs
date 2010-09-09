@@ -110,6 +110,61 @@ namespace Plugin.AuthenticationPetraProgress
         }
 
         /// <summary>
+        /// this allows the user to change their own password. sets password2 in the Progress database
+        /// </summary>
+        public bool SetPassword(string AUsername, string APassword, string AOldPassword)
+        {
+            TPetraPrincipal tempPrincipal;
+            SUserRow UserDR = TUserManager.LoadUser(AUsername, out tempPrincipal);
+
+            if (UserDR != null)
+            {
+                try
+                {
+                    string Message;
+
+                    if (!AuthenticateUser(AUsername, AOldPassword, out Message))
+                    {
+                        throw new Exception();
+                    }
+                }
+                catch (Exception)
+                {
+                    TLogging.Log(
+                        String.Format("Cannot change the password for user {0} because the old password is wrong",
+                            AUsername));
+                    return false;
+                }
+
+                string NewPasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(APassword, "MD5").Substring(0, 16);
+
+                TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                OdbcParameter parameter = new OdbcParameter("userid", OdbcType.VarChar);
+                parameter.Value = NewPasswordHash;
+                parameters.Add(parameter);
+
+                try
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, false, parameters.ToArray());
+                }
+                catch (Exception e)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception("Plugin.AuthenticationPetraProgress, SetPassword " + e.Message);
+                }
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                throw new Exception("Plugin.AuthenticationPetraProgress, SetPassword " + Catalog.GetString("Invalid User ID"));
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// this will not be implemented
         /// </summary>
         public bool CreateUser(string AUsername, string APassword)

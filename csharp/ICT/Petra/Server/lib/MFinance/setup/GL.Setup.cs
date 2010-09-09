@@ -44,6 +44,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -57,6 +58,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
@@ -94,6 +96,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
@@ -116,6 +119,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -231,6 +235,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountHierarchyName"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
@@ -291,6 +296,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static string ExportCostCentreHierarchy(Int32 ALedgerNumber)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
@@ -399,6 +405,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AHierarchyName"></param>
         /// <param name="AXmlAccountHierarchy"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool ImportAccountHierarchy(Int32 ALedgerNumber, string AHierarchyName, string AXmlAccountHierarchy)
         {
             XmlDocument doc = new XmlDocument();
@@ -505,6 +512,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// only works if there are no balances/transactions yet for the cost centres that are deleted
         /// </summary>
+        [RequireModulePermission("FINANCE-3")]
         public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
         {
             XmlDocument doc = new XmlDocument();
@@ -538,6 +546,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// import basic data for new ledger
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static bool ImportNewLedger(Int32 ALedgerNumber,
             string AXmlLedgerDetails,
             string AXmlAccountHierarchy,
@@ -572,6 +581,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <returns>false if account cannot be deleted</returns>
+        [RequireModulePermission("FINANCE-1")]
         public static bool CanDeleteAccount(Int32 ALedgerNumber, string AAccountCode)
         {
             // TODO: enhance sql statement to check for more references to a_account
@@ -658,6 +668,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
+        [RequireModulePermission("OR(SYSMAN,FINANCE-3)")]
         public static bool CreateNewLedger(Int32 ALedgerNumber,
             String ALedgerName,
             String ACountryCode,
@@ -925,6 +936,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// get the ledger numbers that are available for the current user
         /// </summary>
+        [RequireModulePermission("FINANCE-1")]
         public static ALedgerTable GetAvailableLedgers()
         {
             // TODO check for permissions of the current user

@@ -492,6 +492,34 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// retrieve the value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing.
+        /// check the parent nodes for the attribute, if the current node does not have that attribute
+        /// </summary>
+        /// <param name="cur">the current node</param>
+        /// <param name="attrib">the name of the attribute</param>
+        /// <param name="AInheritAttributes">return all the values of the parent nodes as well</param>
+        /// <returns>the value of the attribute, or the CSV list of attribute values of the parents and the node,
+        ///   or an empty string if the attribute is not existing
+        /// </returns>
+        public static string GetAttributeRecursive(XmlNode cur, string attrib, bool AInheritAttributes)
+        {
+            string ReturnValue = "";
+            bool HasAttrib = HasAttribute(cur, attrib);
+
+            if ((!HasAttrib || AInheritAttributes) && (cur.ParentNode != null))
+            {
+                ReturnValue = GetAttributeRecursive(cur.ParentNode, attrib, AInheritAttributes);
+            }
+
+            if (HasAttrib)
+            {
+                ReturnValue = StringHelper.AddCSV(ReturnValue, GetAttribute(cur, attrib));
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// retrieve whether the node has an attribute with the given name or not
         /// </summary>
         /// <param name="cur">the current node</param>

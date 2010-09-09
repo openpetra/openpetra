@@ -35,6 +35,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using Mono.Unix;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -225,10 +226,16 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableFinanceTable(TCacheableFinanceTablesEnum ACacheableTable)
             {
-                String CacheableTableName;
-
-                CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
-                return TDataCache.GetCacheableDataTableFromCache(CacheableTableName);
+                try
+                {
+                    string CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
+                    return TDataCache.GetCacheableDataTableFromCache(CacheableTableName);
+                }
+                catch (Exception)
+                {
+                    // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module"));
+                }
             }
 
             /**
@@ -355,12 +362,17 @@ namespace Ict.Petra.Client.App.Core
                 System.Int32 ALedgerNumber,
                 out Type ADataTableType)
             {
-                String CacheableTableName;
-                String FilterCriteria;
-
-                CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
-                FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
-                return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
+                try
+                {
+                    String CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
+                    String FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
+                    return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
+                }
+                catch (Exception)
+                {
+                    // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module"));
+                }
             }
         }
 
