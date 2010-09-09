@@ -6,7 +6,21 @@
 For more information, see the project website at <a href="http://www.openpetra.org">http://www.openpetra.org</a><br/>
 Please report any issues with the latest version in the forum: <a href="http://forum.openpetra.org">http://forum.openpetra.org</a><br/>
 
-<h2>Release Notes OpenPetra.org (Preview)</h2>
+<h2>Release Notes OpenPetra.org (Alpha)</h2>
+
+<h3>0.2: 9 September 2010</h3>
+Please see the previous release notes below as well!<br/>
+<ul>
+<li>Plenty of maintenance screens have been added, most of them have been developed by volunteers! With these maintenance screens the user now can maintain most of the lookup fields, eg. occupation codes, etc</li>
+<li>We have plenty of more reports for the Conference module, Partner module and Finance module. Some of them are not much of use yet, since the data cannot be entered yet. But some can be used already with existing databases which are upgraded from Petra 2.x.</li>
+<li>The new report "Partner by Special Type" has been added for a small charity in the UK, to list all partners and their address who have been tagged with special attributes (eg. Donor, Newsletter subscriber, Potential co-worker, etc).</li>
+<li>GL Batches screen has been improved: You can now cancel batches, delete journals, delete transactions, and import GL batches from CSV files. Also the credit and debit totals are summarized at the top of the screen. You can filter for unposted or all batches.</li>
+<li>Fixed some issues with the checked list box control, and the grid we use on many windows.</li>
+<li>Icons have now transparent background again.</li>
+<li>The permissions system is now implemented, ie. the modules are greyed out if you don't have access to that module.</li>
+<li>The normal DEMO user does not have SYSADMIN rights anymore, and therefore to create new users etc, you have to login with user SYSADMIN and password CHANGEME (important: all letters of the password CHANGEME are uppercase!). For production use, you are urgently requested to change the password for the SYSADMIN user, and to create a new user for yourself and to deactivate the DEMO user!</li>
+<li>The standalone installer now supports several OpenPetra installations in parallel. If you choose the default Groupname, nothing will change. But if you change the default groupname, please note that your previous database might still be in C:\Documents and Settings\{Your user name}\Application Data\OpenPetra.org\db30. You might want to copy the file petra.db to C:\Documents and Settings\{Your user name}\Application Data\{Your selected Groupname}\db30.</li>
+</ul>
 
 <h3>0.1: 19 June 2010</h3>
 Please see the previous release notes below as well!<br/>

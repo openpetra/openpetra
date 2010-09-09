@@ -9,7 +9,7 @@ LicenseFile=..\..\..\LICENSE
 VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
-VersionInfoCopyright=2009 OM International
+VersionInfoCopyright=2010 OM International
 OutputBaseFilename=OpenPetraSetup-{#RELEASEVERSION}
 
 [Languages]
@@ -113,14 +113,14 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/petra.db', '{userappdata}/OpenPetra.org/db30/petra.db', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/petra.db', '{userappdata}/{groupname}/db30/petra.db', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'U:/OpenPetra/setup/petra0300/base.db', ExpandConstant('{app}/db30/demo.db'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'reports30', ExpandConstant('{app}/reports30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'sql30', ExpandConstant('{app}/sql30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'OpenPetra.PathTemp" value="TOREPLACE"', 'OpenPetra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'OpenPetra.PathTemp" value="TOREPLACE"', 'OpenPetra.PathTemp" value="{userappdata}/{groupname}/tmp30"', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', 'Reporting.PathReportSettings" value="{userappdata}/{groupname}/reports30"', true);
   end;
 
   // allow the .net remoting communication between client and server

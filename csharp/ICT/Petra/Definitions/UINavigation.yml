@@ -88,9 +88,9 @@ OpenPetra:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
-            GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
-                SearchBoxes: [Donor, Recipient]
-                Main:
+            Finance:
+                GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
+                    SearchBoxes: [Donor, Recipient]
                     GiftEntry:
                         ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=TFrmGiftBatch}
@@ -106,11 +106,9 @@ OpenPetra:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                     Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
-            AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
-                Main:
+                AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
-            GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                Main:
+                GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
@@ -160,11 +158,10 @@ OpenPetra:
                             #LedgerSetupShepherd:
                             #SetupCalendar:
                             #ChangeNumberOfForwardingPeriods:
-            #Budgets:
-            #ICH:
-            #Reports:
-            FinanceModuleSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                Main: 
+                #Budgets:
+                #ICH:
+                #Reports:
+                FinanceModuleSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
