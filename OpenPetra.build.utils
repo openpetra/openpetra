@@ -523,6 +523,13 @@
                             numbers[0], numbers[1], numbers[2]);
         }
 
+        if (numbers[1] == "2" && numbers[2] == "0")
+        {
+            return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                            0, 1, 0,
+                            numbers[0], numbers[1], numbers[2]);
+        }
+
         // this is for smaller patches
         return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                             numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
