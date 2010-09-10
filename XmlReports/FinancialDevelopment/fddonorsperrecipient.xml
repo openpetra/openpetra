@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="FDDonorsPerRecipient">
+		<description>
+			This report can be used to contact supporters of workers that leave.
+			The desire is to see the last gift of the donor and to whom the gift went.
+			The donors should not be lost just because of the worker finishing.
+
+			This report should display:
+			Name 	initials	
+			address	
+			housenumber	
+			postalcode	
+			place	
+			tel. Nr.	
+			subscribtions	
+			subscriptions	
+			subscriptions	
+			remarks	
+			date support recipient	
+			description	
+			amount	
+			date support others. 
+
+			only consider gifts with receipt flag set in the motivation
+			only consider posted gifts
+			
+			uses "DetermineBestAddress" from Ict.Petra.Shared.MPartner.Calculations.pas
+			
+			implementation:
+			Select all donors that have given to a certain partner key
+			then find the best address, and the subscriptions, and the last gift for the certain partner, 
+			and the last gift for other workers
+			
+			todo: what about anonymous gifts, confidential gifts
+			todo: limit to a period of time
+			done: what about reversed gifts? they should not be displayed; in the test case (see cvs commit), I cannot find the original reversed gift though
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_recipient_key_n"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Donors per Recipient" /></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text="Recipient: "/>
+					<value variable="param_recipient_key_n" format="partnerkey"/>
+					<value text=" "/>
+					<value function="getPartnerShortname({param_recipient_key_n})"/>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+		
+			<!-- Select Donors that have given previously to a specific recipient -->
+			<calculation id="Select Donors of the Recipient"
+					returns="DonorKey"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						gift.p_donor_key_n AS DonorKey
+					FROM PUB_a_gift_batch as batch, 
+						 PUB_a_gift as gift, 
+						 PUB_a_gift_detail as detail,
+ 						 PUB_a_motivation_detail AS motivation
+					WHERE batch.a_ledger_number_i = gift.a_ledger_number_i					
+					AND batch.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_ledger_number_i = gift.a_ledger_number_i
+					AND detail.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+					AND motivation.a_ledger_number_i = detail.a_ledger_number_i
+					AND motivation.a_motivation_group_code_c = detail.a_motivation_group_code_c
+					AND motivation.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+					AND motivation.a_receipt_l = TRUE
+<!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
+					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
+					AND batch.a_batch_status_c = "Posted"
+					AND detail.p_recipient_key_n = {{param_recipient_key_n}}
+					</value></queryDetail>
+				</query>
+			</calculation>
+
+			<!-- Get the subscriptions of a partner -->
+			<calculation id="Select Subscriptions"
+					returns="Subscriptions"
+					returnsFormat="list">
+				<query>
+					<queryDetail><value>
+					SELECT p_publication_code_c AS Subscriptions
+					FROM PUB_p_subscription as subscr
+					WHERE subscr.p_partner_key_n = {{DonorKey}}
+					</value></queryDetail>
+				</query>
+			</calculation>
+
+			<!-- Select last gift to the Recipient -->
+			<calculation id="Last Gift To Recipient"
+					returns="LastGiftDate, LastGiftAmount, LastGiftComment1, LastGiftComment2, LastGiftComment3,
+					LastGiftMotivationGroup, LastGiftMotivationDetail"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						batch.a_gl_effective_date_d AS LastGiftDate,
+						detail.a_gift_amount_n AS LastGiftAmount,
+						detail.a_gift_comment_one_c AS LastGiftComment1,
+						detail.a_gift_comment_two_c AS LastGiftComment2,
+						detail.a_gift_comment_three_c AS LastGiftComment3,
+						motivation.a_motivation_group_code_c AS LastGiftMotivationGroup,
+						motivation.a_motivation_detail_code_c AS LastGiftMotivationDetail
+					FROM PUB_a_gift_batch as batch, 
+						 PUB_a_gift as gift, 
+						 PUB_a_gift_detail as detail,
+ 						 PUB_a_motivation_detail AS motivation
+					WHERE batch.a_ledger_number_i = gift.a_ledger_number_i
+					AND batch.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_ledger_number_i = gift.a_ledger_number_i
+					AND detail.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+					AND motivation.a_ledger_number_i = detail.a_ledger_number_i
+					AND motivation.a_motivation_group_code_c = detail.a_motivation_group_code_c
+					AND motivation.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+					AND motivation.a_receipt_l = TRUE
+<!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
+					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
+					AND batch.a_batch_status_c = "Posted"
+					AND detail.p_recipient_key_n = {{param_recipient_key_n}}
+					AND gift.p_donor_key_n = {{DonorKey}}
+					AND NOT (detail.a_modified_detail_l = 1 OR detail.a_gift_amount_n &lt; 0) <!-- skip reversed gifts -->
+					ORDER BY 1 ASC
+					</value></queryDetail>
+				</query>
+			</calculation>
+
+			<!-- Select last gift not to the Recipient -->
+			<calculation id="Last Gift Excluding Recipient"
+					returns="LastGiftOtherDate, LastGiftOtherAmount, LastGiftOtherComment1, 
+							LastGiftOtherComment2, LastGiftOtherComment3, LastGiftOtherRecipient, 
+							LastGiftOtherMotivationGroup, LastGiftOtherMotivationDetail"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						batch.a_gl_effective_date_d AS LastGiftOtherDate,
+						detail.a_gift_amount_n AS LastGiftOtherAmount,
+						detail.a_gift_comment_one_c AS LastGiftOtherComment1,
+						detail.a_gift_comment_two_c AS LastGiftOtherComment2,
+						detail.a_gift_comment_three_c AS LastGiftOtherComment3,
+						detail.p_recipient_key_n AS LastGiftOtherRecipient,
+						motivation.a_motivation_group_code_c AS LastGiftOtherMotivationGroup,
+						motivation.a_motivation_detail_code_c AS LastGiftOtherMotivationDetail
+					FROM PUB_a_gift_batch as batch, 
+						 PUB_a_gift as gift, 
+						 PUB_a_gift_detail as detail,
+ 						 PUB_a_motivation_detail AS motivation
+					WHERE batch.a_ledger_number_i = gift.a_ledger_number_i
+					AND batch.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_ledger_number_i = gift.a_ledger_number_i
+					AND detail.a_batch_number_i = gift.a_batch_number_i
+					AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+					AND motivation.a_ledger_number_i = detail.a_ledger_number_i
+					AND motivation.a_motivation_group_code_c = detail.a_motivation_group_code_c
+					AND motivation.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+					AND motivation.a_receipt_l = TRUE
+<!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
+					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
+					AND batch.a_batch_status_c = "Posted"
+					AND NOT (detail.p_recipient_key_n = {{param_recipient_key_n}})
+					AND NOT (detail.a_modified_detail_l = 1 OR detail.a_gift_amount_n &lt; 0) <!-- skip reversed gifts -->
+					AND gift.p_donor_key_n = {{DonorKey}}
+					ORDER BY 1 ASC
+					</value></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="GetPartnerBestAddressAndSubscriptions"
+					returns="Firstname, Familyname, Address3, PostCode, City, CountryCode, Subscriptions"
+					returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="GetPartnerBestAddress({DonorKey})"/>
+						<value calculation="Select Subscriptions"/>
+						<value calculation="Last Gift To Recipient"/>
+						<value calculation="Last Gift Excluding Recipient"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="DonorKey" 
+					returnsFormat="partnerkey" returns="text">
+				<caption><value text="DonorKey"/></caption>
+				<query>
+					<queryDetail><value variable="DonorKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Firstname" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Firstname"/></caption>
+				<query>
+					<queryDetail><value variable="Firstname"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Surname" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Surname"/></caption>
+				<query>
+					<queryDetail><value variable="Familyname"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Address line 1" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Address1"/></caption>
+				<query>
+					<queryDetail><value variable="Locality"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Street" 
+					returnsFormat="text" returns="text">
+				<caption><value text="StreetName"/></caption>
+				<query>
+					<queryDetail><value variable="StreetName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Address line 3" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Address3"/></caption>
+				<query>
+					<queryDetail><value variable="Address3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Post Code" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Post Code"/></caption>
+				<query>
+					<queryDetail><value variable="PostalCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="City" 
+					returnsFormat="text" returns="text">
+				<caption><value text="City"/></caption>
+				<query>
+					<queryDetail><value variable="City"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Country" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Country"/></caption>
+				<query>
+					<queryDetail><value variable="CountryCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="County" 
+					returnsFormat="text" returns="text">
+				<caption><value text="County"/></caption>
+				<query>
+					<queryDetail><value variable="County"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Telephone Number"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Extension" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Telephone Extension"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Alternate Phone" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Alternate Phone"/></caption>
+				<query>
+					<queryDetail><value variable="AlternatePhone"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Fax Number"/></caption>
+				<query>
+					<queryDetail><value variable="FaxNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Extension" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Fax Extension"/></caption>
+				<query>
+					<queryDetail><value variable="FaxExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Mobile Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Mobile Number"/></caption>
+				<query>
+					<queryDetail><value variable="MobileNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="E-Mail" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Email Address"/></caption>
+				<query>
+					<queryDetail><value variable="EmailAddress"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Subscriptions" 
+					returnsFormat="csvlistslash:text" returns="text" align="left">
+				<caption><value text="Subscriptions"/></caption>
+				<query>
+					<queryDetail><value variable="Subscriptions"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Date" 
+					returnsFormat="formatteddate" returns="text">
+				<caption><value text="Last Gift Date"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftDate"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Comment1" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Comment1"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftComment1"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Comment2" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Comment2"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftComment2"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Comment3" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Comment3"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftComment3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Amount" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Last Gift Amount"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftAmount"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Motivation" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Motivation"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftMotivationGroup"/><value condition="not(isnull(LastGiftMotivationDetail))" text="/"/><value variable="LastGiftMotivationDetail"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Recipient" 
+					returnsFormat="partnerkey" returns="text">
+				<caption><value text="Last Gift Other Recipient"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherRecipient"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Motivation" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Other Motivation"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherMotivationGroup"/><value condition="not(isnull(LastGiftOtherMotivationDetail))" text="/"/><value variable="LastGiftOtherMotivationDetail"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Date" 
+					returnsFormat="formatteddate" returns="text">
+				<caption><value text="Last Gift Other Date"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherDate"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Comment1" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Other Comment1"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherComment1"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Comment2" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Other Comment2"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherComment2"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Comment3" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Last Gift Other Comment3"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherComment3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Last Gift Other Amount" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Last Gift Other Amount"/></caption>
+				<query>
+					<queryDetail><value variable="LastGiftOtherAmount"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+
+		<levels>		
+		
+			<!-- required: the main report level -->
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="Donors" calculation="Select Donors of the Recipient">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+			<level name="Donors" identification="DonorKey">
+				<detail>
+					<field whichfield="columns" calculation="GetPartnerBestAddressAndSubscriptions"></field>
+				</detail>
+			</level>
+
+		</levels>
+	</report><!-- Gift Transactions -->
+	
+</reports>

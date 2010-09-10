@@ -24,7 +24,10 @@
 using System;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MReporting.MFinance;
 using System.Data.Odbc;
 using System.Data;
@@ -62,6 +65,14 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             {
                 value = new TVariant();
                 GetGiftStatistics(ops[1].ToInt(), ops[2].ToString(), ops[3].ToString(), ops[4].ToInt(), ops[5].ToInt(), ops[6].ToInt());
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "IsLapsedDonor"))
+            {
+                value =
+                    new TVariant(IsLapsedDonor(ops[1].ToInt64(), ops[2].ToInt64(), ops[3].ToDate(), ops[4].ToDate(), ops[5].ToString(), ops[6].ToInt(),
+                            ops[7].ToInt(), ops[8].ToString(), ops[9].ToString(), ops[10].ToBool()));
                 return true;
             }
 
@@ -194,6 +205,293 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             situation.GetParameters().Add("averagePerPeriod", new TVariant(averagePerPeriod,
                     "currency"), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             situation.GetParameters().Add("percentageRegular", percentageRegular, -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+        }
+
+        /// <summary>
+        /// Checks if the donor is a lapsed donor according to the parameters supplied
+        /// </summary>
+        /// <param name="ADonorKey">Partner Key of the donor</param>
+        /// <param name="ARecipientKey">Partner Key of the gift recipient</param>
+        /// <param name="AStartDate">Date of the first gift</param>
+        /// <param name="AEndDate">Date until the gift must occure regularly</param>
+        /// <param name="AFrequency">How often the gift must come</param>
+        /// <param name="ATolerance">How much tolerance (in days) the gift can vary</param>
+        /// <param name="ALedgerNumber">The ledger number</param>
+        /// <param name="AMotivationGroup">A matching string for the gift motivation group.</param>
+        /// <param name="AMotivationDetail">A matching string for the gift motivation detail</param>
+        /// <param name="AIgnoreBetween">True: If this donor gave a gift in between the frequency pattern, then return false</param>
+        /// <returns>True if donor is still active</returns>
+        private bool IsLapsedDonor(Int64 ADonorKey, Int64 ARecipientKey, DateTime AStartDate, DateTime AEndDate, String AFrequency,
+            int ATolerance, int ALedgerNumber,
+            String AMotivationGroup, String AMotivationDetail, bool AIgnoreBetween)
+        {
+            bool ReturnValue = false;
+            bool FirstTime = true;
+
+            DateTime SelectionStartDate = AStartDate.AddDays(-ATolerance);
+            DateTime SelectionEndDate = AEndDate.AddDays(ATolerance);
+
+            DateTime StartDate = AEndDate.AddDays(-ATolerance);
+            DateTime EndDate = AEndDate.AddDays(ATolerance);
+
+            int YearFrequency;
+            int MonthFrequency;
+            int DayFrequency;
+
+            GetTimeFrequency(AFrequency, out YearFrequency, out MonthFrequency, out DayFrequency);
+
+            DataTable Table;
+
+            AGiftTable GiftTable = new AGiftTable();
+            AGiftRow TemplateRow = GiftTable.NewRowTyped(false);
+
+            String StrSql = "SELECT " + AGiftTable.GetDateEnteredDBName() +
+                            " FROM " + AGiftTable.GetTableDBName() +
+                            " , " + AGiftDetailTable.GetTableDBName() +
+                            " WHERE " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
+                            " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetLedgerNumberDBName() + " = " +
+                            ALedgerNumber.ToString() +
+                            " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDonorKeyDBName() + " = " + ADonorKey.ToString() +
+                            " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + " = " +
+                            AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetBatchNumberDBName() +
+                            " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + " = " +
+                            AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetGiftTransactionNumberDBName();
+
+            if (ARecipientKey != 0)
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetRecipientKeyDBName() + " = " +
+                         ARecipientKey.ToString();
+            }
+
+            if (AMotivationDetail != "%")
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '" +
+                         AMotivationDetail + "'";
+            }
+
+            if (AMotivationGroup != "%")
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '" +
+                         AMotivationGroup + "'";
+            }
+
+            StrSql = StrSql +
+                     " ORDER BY " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " DESC ";
+
+            Table = situation.GetDatabaseConnection().SelectDT(StrSql, "table", situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
+
+            foreach (DataRow Row in Table.Rows)
+            {
+                DateTime DateEntered = (DateTime)Row[AGiftTable.GetDateEnteredDBName()];
+
+                // Ok they gave a gift during this period but check that it was the last gift.
+                if (FirstTime)
+                {
+                    if (DateEntered > EndDate)
+                    {
+                        break;
+                    }
+
+                    FirstTime = false;
+                }
+
+                // If the date is not within the date range then
+                // check the flag to see if gifts are allowed between gifts.
+                // otherwise ignore.
+                if (DateEntered > EndDate)
+                {
+                    if (AIgnoreBetween)
+                    {
+                        break;
+                    }
+
+                    continue;
+                }
+
+                // If we are passed the start date and have not found a gift then this
+                // donor does not have the right pattern of giving */
+                if (DateEntered < StartDate)
+                {
+                    break;
+                }
+
+                // we have found a gift and it is within the dates we are interested in.
+                // now go back to the next set of dates.
+                StartDate = StartDate.AddDays(-DayFrequency);
+                StartDate = StartDate.AddMonths(-MonthFrequency);
+                StartDate = StartDate.AddYears(-YearFrequency);
+                EndDate = EndDate.AddDays(-DayFrequency);
+                EndDate = EndDate.AddMonths(-MonthFrequency);
+                EndDate = EndDate.AddYears(-YearFrequency);
+
+                // we are now beyond the first gift date so stop.
+                if (EndDate < AStartDate)
+                {
+                    ReturnValue = true;
+                    break;
+                }
+            }
+
+            if (!ReturnValue)
+            {
+                // clear this row, we don't want to display it
+                // set all parameters of this row to NULL
+                situation.GetParameters().Add("DONTDISPLAYROW", new TVariant(true));
+            }
+            else
+            {
+                // show this row
+                situation.GetParameters().Add("DONTDISPLAYROW", new TVariant(false), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+
+                String Currency = situation.GetParameters().Get("param_currency").ToString();
+                bool BaseCurrency = false;
+
+                if (Currency == "Base")
+                {
+                    BaseCurrency = true;
+                }
+
+                CalculatePrviousYearsGift(AEndDate, ADonorKey, ALedgerNumber, ARecipientKey, AMotivationDetail, AMotivationGroup, BaseCurrency);
+            }
+
+            return ReturnValue;
+        }
+
+        void GetTimeFrequency(String AFrequency, out int AYears, out int AMonths, out int ADays)
+        {
+            AYears = 0;
+            AMonths = 0;
+            ADays = 0;
+
+            if (AFrequency == "Annual - Every Year")
+            {
+                AYears = 1;
+            }
+            else if (AFrequency == "Semi-Annualy - Every Six Months")
+            {
+                AMonths = 6;
+            }
+            else if (AFrequency == "Quarterly - Every Three Months")
+            {
+                AMonths = 3;
+            }
+            else if (AFrequency == "Bi-Monthly - Every Two Months")
+            {
+                AMonths = 2;
+            }
+            else if (AFrequency == "Monthly - Every Month")
+            {
+                AMonths = 1;
+            }
+            else if (AFrequency == " Weekly - Every Week")
+            {
+                ADays = 7;
+            }
+            else if (AFrequency == "Daily - Every Day")
+            {
+                ADays = 7;
+            }
+        }
+
+        /// <summary>
+        /// Calculate the gift amount for this year and the previous two years given from this donor to this recipient.
+        /// </summary>
+        /// <param name="ALastGiftDate">defines the last year of the calculation</param>
+        /// <param name="ADonorKey">Partner Key of the donor</param>
+        /// <param name="ALedgerNumber">The ledger number</param>
+        /// <param name="ARecipientKey">Partner Key of the gift recipient</param>
+        /// <param name="AMotivationDetail">A matching string for the gift motivation detail</param>
+        /// <param name="AMotivationGroup">A matching string for the gift motivation group.</param>
+        /// <param name="ABaseCurrency">Defines if we sum up the base currency or international currency</param>
+        private void CalculatePrviousYearsGift(DateTime ALastGiftDate,
+            Int64 ADonorKey,
+            int ALedgerNumber,
+            Int64 ARecipientKey,
+            String AMotivationDetail,
+            String AMotivationGroup,
+            bool ABaseCurrency)
+        {
+            DateTime SelectionEndDate = new DateTime(ALastGiftDate.Year, 12, 31);
+            DateTime SelectionStartDate = new DateTime(ALastGiftDate.Year - 2, 1, 1);
+
+            String StrSql = "SELECT " + AGiftTable.GetDateEnteredDBName();
+
+            if (ABaseCurrency)
+            {
+                StrSql = StrSql + ", " + AGiftDetailTable.GetGiftAmountDBName() + " AS CurrentAmount";
+            }
+            else
+            {
+                StrSql = StrSql + ", " + AGiftDetailTable.GetGiftAmountIntlDBName() + " AS CurrentAmount";
+            }
+
+            StrSql = StrSql +
+                     " FROM " + AGiftTable.GetTableDBName() +
+                     " , " + AGiftDetailTable.GetTableDBName() +
+                     " WHERE " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
+                     " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetLedgerNumberDBName() + " = " +
+                     ALedgerNumber.ToString() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDonorKeyDBName() + " = " + ADonorKey.ToString() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + " = " + AGiftDetailTable.GetTableDBName() +
+                     "." + AGiftDetailTable.GetBatchNumberDBName() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + " = " +
+                     AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetGiftTransactionNumberDBName() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " BETWEEN '" + SelectionStartDate.ToString(
+                "yyyy-MM-dd") + "' AND '" + SelectionEndDate.ToString("yyyy-MM-dd") + "'";
+
+            if (ARecipientKey != 0)
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetRecipientKeyDBName() + " = " +
+                         ARecipientKey.ToString();
+            }
+
+            if (AMotivationDetail != "%")
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '" +
+                         AMotivationDetail + "'";
+            }
+
+            if (AMotivationGroup != "%")
+            {
+                StrSql = StrSql +
+                         " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '" +
+                         AMotivationGroup + "'";
+            }
+
+            DataTable Table = situation.GetDatabaseConnection().SelectDT(StrSql, "table",
+                situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
+
+            double TotalYear_0 = 0.0;
+            double TotalYear_1 = 0.0;
+            double TotalYear_2 = 0.0;
+
+            foreach (DataRow Row in Table.Rows)
+            {
+                DateTime DateEntered = (DateTime)Row[AGiftTable.GetDateEnteredDBName()];
+                Double CurrentAmount = Convert.ToDouble(Row["CurrentAmount"]);
+
+                if (DateEntered.Year == ALastGiftDate.Year)
+                {
+                    TotalYear_0 += CurrentAmount;
+                }
+                else if (DateEntered.Year == ALastGiftDate.Year - 1)
+                {
+                    TotalYear_1 += CurrentAmount;
+                }
+                else if (DateEntered.Year == ALastGiftDate.Year - 2)
+                {
+                    TotalYear_2 += CurrentAmount;
+                }
+            }
+
+            situation.GetParameters().Add("TotalYear_0", new TVariant(TotalYear_0));
+            situation.GetParameters().Add("TotalYear_1", new TVariant(TotalYear_1));
+            situation.GetParameters().Add("TotalYear_2", new TVariant(TotalYear_2));
         }
     }
 }

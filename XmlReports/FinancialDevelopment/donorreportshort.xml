@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="DonorReportShort">
+		<description>
+			
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_partner_source"/>
+			<reportparameter name="param_extract_name"/>
+			<reportparameter name="param_currency"/>
+			<reportparameter name="param_start_date"/> <!-- set by getQuarterOrPeriod if param_start_period_i is set -->
+			<reportparameter name="param_end_date"/> <!-- set by getQuarterOrPeriod if param_start_period_i is set -->
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Donor Report" /></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			
+			<field whichfield="period1">
+				<fielddetail>
+					<value text="Period:  "/>
+					<value variable="param_start_date" format="formatteddate"/>
+					<value text=" To "/>
+					<value variable="param_end_date" format="formatteddate"/>
+				</fielddetail>
+			</field>
+			<field whichfield="descr1">
+				<value text="Sorted by: "></value>
+				<value variable="param_sortby_readable"></value>
+			</field>
+			<field whichfield="descr2">
+				<value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+		</pageheader>
+
+		<calculations>
+		
+			<!-- Select Donors and Totals in a given period of time -->
+			<calculation id="Select Donors and Totals"
+					returns="DonorKey, TotalGiven, ShortName, PartnerClass"
+					returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT 
+							gift.p_donor_key_n AS DonorKey,
+							PUB_p_partner.p_partner_short_name_c AS ShortName,
+							PUB_p_partner.p_partner_class_c AS PartnerClass,
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SUM(detail.a_gift_amount_n) AS TotalGiven
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SUM(detail.a_gift_amount_intl_n) AS TotalGiven
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM PUB_a_gift_batch as batch, 
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_p_partner
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_partner_source}, Extract)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_partner_source}, AllPartner)">
+						<value>
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							batch.a_ledger_number_i = gift.a_ledger_number_i
+							AND batch.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
+							AND batch.a_batch_status_c = "Posted"
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
+							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="GetPartnerBestAddress"
+					returns="automatic"
+					returnsFormat="internal">
+				<query>
+					<queryDetail><value function="GetPartnerBestAddress({DonorKey})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="DonorKey" 
+					returnsFormat="partnerkey" returns="text">
+				<caption><value text="DonorKey"/></caption>
+				<query>
+					<queryDetail><value variable="DonorKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Partner Name" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Partner Name"/></caption>
+				<query>
+					<queryDetail><value variable="ShortName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="First Name" 
+					returnsFormat="text" returns="text">
+				<caption><value text="First Name"/></caption>
+				<query>
+					<queryDetail><value variable="Firstname"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Surname" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Surname"/></caption>
+				<query>
+					<queryDetail><value variable="Familyname"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Address line 1" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Address1"/></caption>
+				<query>
+					<queryDetail><value variable="Locality"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Street" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Street Name"/></caption>
+				<query>
+					<queryDetail><value variable="StreetName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Address line 3" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Address3"/></caption>
+				<query>
+					<queryDetail><value variable="Address3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Post Code" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Post Code"/></caption>
+				<query>
+					<queryDetail><value variable="PostalCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="City" 
+					returnsFormat="text" returns="text">
+				<caption><value text="City"/></caption>
+				<query>
+					<queryDetail><value variable="City"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="County" 
+					returnsFormat="text" returns="text">
+				<caption><value text="County"/></caption>
+				<query>
+					<queryDetail><value variable="County"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Country" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Country"/></caption>
+				<query>
+					<queryDetail><value variable="CountryCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="TelephoneNumber"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Extension" 
+					returnsFormat="text" returns="text">
+				<caption><value text="TelephoneExtension"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Alternate Phone" 
+					returnsFormat="text" returns="text">
+				<caption><value text="AlternatePhone"/></caption>
+				<query>
+					<queryDetail><value variable="AlternatePhone"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="FaxNumber"/></caption>
+				<query>
+					<queryDetail><value variable="FaxNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Extension" 
+					returnsFormat="text" returns="text">
+				<caption><value text="FaxExtension"/></caption>
+				<query>
+					<queryDetail><value variable="FaxExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Mobile Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="MobileNumber"/></caption>
+				<query>
+					<queryDetail><value variable="MobileNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="E-Mail" 
+					returnsFormat="text" returns="text">
+				<caption><value text="EmailAddress"/></caption>
+				<query>
+					<queryDetail><value variable="EmailAddress"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Partner Class" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Partner Class"/></caption>
+				<query>
+					<queryDetail><value variable="PartnerClass"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Total Given" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="TotalGiven"/></caption>
+				<query>
+					<queryDetail><value variable="TotalGiven"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+
+		<levels>		
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="DonorDetailLevel" calculation="Select Donors and Totals">
+					</lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="Donors" identification="DonorKey">
+				<detail>
+					<lowerLevelReport level="DonorDetailLevel"></lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="DonorDetailLevel">
+				<detail>
+					<field whichfield="columns" calculation="GetPartnerBestAddress"/>
+				</detail>
+			</level>
+			
+		</levels>
+		
+	</report><!-- Donor Report -->
+	
+</reports>

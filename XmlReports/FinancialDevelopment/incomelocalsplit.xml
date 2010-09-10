@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="IncomeLocalSplit">
+		<description>
+			This report can be used by the financial development department to see how much donations have come in
+			for the local field, and which money will be forwarded to local and remote projects.
+			
+			
+			Order by: 
+			   account
+			   motivation group
+			   plainlist (TODO)
+
+			TODO: summary vs standard
+			TODO: display names of accounts from correct account hierarchy
+			
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_year_i"/>
+			<reportparameter name="param_start_period_i"/>
+			<reportparameter name="param_end_period_i"/>
+			<reportparameter name="param_start_date_ytd"/> <!-- set by getYTDPeriod -->
+			<reportparameter name="param_start_date"/> <!-- set by getQuarterOrPeriod -->
+			<reportparameter name="param_end_date"/> <!-- set by getQuarterOrPeriod -->
+			<reportparameter name="param_orderby">
+				<option name="plainlist"/>
+				<option name="account"/>
+				<option name="motivation"/>
+			</reportparameter>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Local Income Split" /></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="period1"><value text="At "/>
+				<value function="getQuarterOrPeriod({{param_ledger_number_i}}, {{param_quarter}}, {{param_start_period_i}}, {{param_end_period_i}})"/>
+				<value text="  ("/>
+				<value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+				<value text=")"/>
+			</field>
+			<field whichfield="period2">
+				<value function="getYTDPeriod({{param_ledger_number_i}}, {{param_end_period_i}}, {GLOBAL:param_ytd})"/>
+			</field>
+			<field whichfield="descr2"><value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			<field whichfield="type"><value text="Local Income Split"/>
+			</field>
+			<field whichfield="left1"><value condition="eq({{param_orderby}},motivation)" text = "Motivation"/>
+				<value condition="eq({{param_orderby}},account)" text = "Account"/></field>
+			<field whichfield="left2"><value condition="eq({{param_orderby}},motivation)" text = "Account"/>
+				<value condition="eq({{param_orderby}},account)" text = "Motivation"/></field>
+		</pageheader>
+
+		<calculations>
+			
+			<calculation id="Select Accounts"
+					returns="Account, AccountName"
+					returnsFormat="row">
+					<!-- this is just a rough estimate, should return only a small number of accounts more than actually needed -->
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						motivation.a_account_code_c AS Account,
+						account.a_account_code_short_desc_c AS AccountName
+					FROM PUB_a_motivation_detail AS motivation, 
+					     PUB_a_account as account
+					WHERE motivation.a_ledger_number_i = {{param_ledger_number_i}}
+						AND motivation.a_receipt_l = TRUE
+						AND account.a_ledger_number_i = motivation.a_ledger_number_i
+						AND account.a_account_code_c = motivation.a_account_code_c
+					ORDER BY Account, AccountName
+					</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Select MotivationGroups"
+					returns="MotivationGroup"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						motivation.a_motivation_group_code_c AS MotivationGroup
+					FROM PUB_a_motivation_detail AS motivation
+					WHERE motivation.a_ledger_number_i = {{param_ledger_number_i}}
+						AND motivation.a_receipt_l = TRUE
+					ORDER BY MotivationGroup
+					</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+
+			<calculation id="Select Motivations and Accounts and AmountYTD"
+					returns="MotivationGroup, MotivationDetail, Account, AccountName, AmountYTD" 
+					returnsFormat="row"> 
+				<!-- this query selects all motivations and their accounts, for gifts that go
+				     to local cost centres and have no other recipient ledger, in a given time frame;
+				     it always selects the ytd figure first
+				    -->
+				<query>
+					<queryDetail><value>
+					SELECT 
+						motivation.a_motivation_group_code_c AS MotivationGroup,
+						motivation.a_motivation_detail_code_c AS MotivationDetail,
+						motivation.a_account_code_c AS Account,
+						account.a_account_code_short_desc_c AS AccountName,
+						SUM(detail.a_gift_amount_n) AS AmountYTD
+						FROM PUB_a_gift_detail AS detail, 
+						     PUB_a_gift_batch as batch, 
+						     PUB_a_motivation_detail AS motivation,
+						     PUB_a_cost_centre AS costcentre,
+						     PUB_a_account AS account
+						WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
+						AND batch.a_batch_status_c = "Posted"
+						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date_ytd#} AND {#param_end_date#}
+						AND detail.a_ledger_number_i = batch.a_ledger_number_i
+						AND detail.a_batch_number_i = batch.a_batch_number_i
+						AND motivation.a_ledger_number_i = detail.a_ledger_number_i
+						AND motivation.a_motivation_group_code_c = detail.a_motivation_group_code_c
+						AND motivation.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+						AND (
+							detail.a_recipient_ledger_number_n = </value>
+							<value function="mul({param_ledger_number_i},1000000)"/>
+							<value> OR detail.a_recipient_ledger_number_n = 0)
+						AND account.a_ledger_number_i = motivation.a_ledger_number_i
+						AND account.a_account_code_c = motivation.a_account_code_c
+						AND costcentre.a_ledger_number_i = detail.a_ledger_number_i
+						AND costcentre.a_cost_centre_code_c = detail.a_cost_centre_code_c
+						AND (detail.a_cost_centre_code_c LIKE '{{param_ledger_number_i}}%'
+						OR costcentre.a_cost_centre_to_report_to_c LIKE '{{param_ledger_number_i}}%')
+						AND motivation.a_receipt_l = TRUE
+						</value>
+						<value condition="eq({{param_orderby}},account)"> 
+						AND motivation.a_account_code_c = {Account}
+						</value>
+						<value condition="eq({{param_orderby}},motivation)"> 
+						AND motivation.a_motivation_group_code_c = {MotivationGroup}
+						</value>
+						<value> GROUP BY motivation.a_motivation_group_code_c, motivation.a_motivation_detail_code_c, motivation.a_account_code_c, account.a_account_code_short_desc_c
+					</value>
+					
+					</queryDetail>
+
+				</query>
+			</calculation>
+
+			<calculation id="Calculate Gift Amount By Motivation and Account"
+					returns="Amount"
+					returnsFormat="currency">
+				<query>
+					<queryDetail><value>
+					SELECT SUM(detail.a_gift_amount_n) AS Amount
+						FROM PUB_a_gift_detail AS detail, 
+						     PUB_a_gift_batch as batch, 
+						     PUB_a_cost_centre AS costcentre
+						WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
+						AND batch.a_batch_status_c = "Posted"
+						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+						AND detail.a_ledger_number_i = batch.a_ledger_number_i
+						AND detail.a_batch_number_i = batch.a_batch_number_i
+						AND detail.a_motivation_group_code_c = {MotivationGroup}
+						AND detail.a_motivation_detail_code_c = {MotivationDetail}
+						AND (
+							detail.a_recipient_ledger_number_n = </value>
+							<value function="mul({param_ledger_number_i},1000000)"/>
+							<value> OR detail.a_recipient_ledger_number_n = 0)
+						AND costcentre.a_ledger_number_i = detail.a_ledger_number_i
+						AND costcentre.a_cost_centre_code_c = detail.a_cost_centre_code_c
+						AND (detail.a_cost_centre_code_c LIKE '{{param_ledger_number_i}}%'
+						OR costcentre.a_cost_centre_to_report_to_c LIKE '{{param_ledger_number_i}}%')
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Amount" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Amount"/>
+					<value text="\n"/><value function="GetYTDPerColumn()"/>
+				</caption>
+				<query>
+					<queryDetail><value calculation="Calculate Gift Amount By Motivation and Account"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="AmountYTD" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Amount"/>
+					<value text="\n"/><value function="GetYTDPerColumn()"/>
+				</caption>
+				<query>
+					<queryDetail><value variable="AmountYTD"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="% of Grand Income" 
+					returnsFormat="percentage2decimals" 
+					returns="functionresult">
+				<caption><value text="of\nGrand Income"/>
+				</caption>
+				<query>
+					<queryDetail><value function="mul(div(column({{FirstColumn}}),FirstLevelColumn({{FirstColumn}})), 100)"/>
+					</queryDetail>                             
+				</query>
+			</calculation>
+			
+		</calculations>
+
+		<levels>		
+
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="GrandTotal"/>
+				</detail>
+			</level> <!-- main -->
+		
+			<level name="GrandTotal">
+				<detail>
+					<lowerLevelReport level="LocalGiftsByAccount" 
+						calculation="Select Accounts"
+						condition="eq({{param_orderby}},account)"/>
+					<lowerLevelReport level="LocalGiftsByMotivation" 
+						calculation="Select MotivationGroups"
+						condition="eq({{param_orderby}},motivation)"/>
+				</detail>
+				<footer line="above">
+					<field whichfield="left 0" pos = "0.5cm" width="5cm" align="left">
+					<value text="Grand Total"/></field>
+					<field whichfield="columns" pos="indented"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</footer>
+			</level> <!-- GrandTotal -->
+
+			
+			<level name="LocalGiftsByAccount" identification="Account" condition="HasChildRows">
+				<header>
+					<field whichfield="header 0" pos="0 cm" width="1cm"><value variable="Account"/></field>
+					<field whichfield="header 1" pos="1 cm" width="5cm"><value variable="AccountName"/></field>
+				</header>
+				<detail>
+					<lowerLevelReport level="DetailOfAccount" 
+						calculation="Select Motivations and Accounts and AmountYTD"/>
+				</detail>
+				<footer space="below">
+					<field whichfield="left 0" pos = "0.3cm" width="4cm" align="left">
+					<value text="Total for "/><value variable="AccountName"/><value text=":"/></field>
+					<field whichfield="columns" pos="indented"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</footer>
+			</level>
+
+			<level name="DetailOfAccount" identification="Account, MotivationGroup, MotivationDetail">
+				<detail>
+					<field whichfield="left 1" pos="0.5cm" width="4cm" align="left">
+						<value variable="MotivationGroup"/><value text="/"/><value variable="MotivationDetail"/>
+					</field>
+					<field whichfield="columns"/>
+				</detail>
+			</level>
+
+			<level name="LocalGiftsByMotivation" identification="MotivationGroup" condition="HasChildRows">
+				<header>
+					<field whichfield="header 0" pos="0 cm" width="5cm" align="left">
+					<value variable="MotivationGroup"/></field>
+				</header>
+				<detail>
+					<lowerLevelReport level="DetailOfMotivation" 
+						calculation="Select Motivations and Accounts and AmountYTD"/>
+				</detail>
+				<footer space="below">
+					<field whichfield="left 0" pos = "0.3cm" width="4cm" align="left">
+					<value text="Total for "/><value variable="MotivationGroup"/><value text=":"/></field>
+					<field whichfield="columns" pos="indented"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</footer>
+			</level>
+
+			<level name="DetailOfMotivation" identification="MotivationGroup, MotivationDetail, Account">
+				<detail>
+					<field whichfield="left 1" pos="0.5 cm" width="6cm">
+						<value variable="Account"/> <!-- todo: should be the alias, see common.xml; different account hierarchies -->
+						<value text = "   "/>
+						<value variable="AccountName"/>
+					</field>
+					<field whichfield="columns"/>
+				</detail>
+			</level>
+		
+		</levels>
+	</report><!-- FDIncomeLocalSplit -->
+	
+</reports>

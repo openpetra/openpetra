@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="LapsedDonorReport">
+		<description>
+			
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_currency"/>
+			<reportparameter name="param_start_date"/>
+			<reportparameter name="param_end_date"/> 
+			<reportparameter name="param_minimum_amount"/>
+			<reportparameter name="param_recipientkey"/>
+			<reportparameter name="param_days_tolerance"/>
+			<reportparameter name="param_frequency"/>
+			<reportparameter name="param_ignore_between"/>
+			<reportparameter name="param_motivation_group"/>
+			<reportparameter name="param_motivation_detail"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Lapsed Donor Report" /></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			
+			<field whichfield="period1">
+				<fielddetail>
+					<value text="Period:  "/>
+					<value variable="param_start_date" format="formatteddate"/>
+					<value text=" To "/>
+					<value variable="param_end_date" format="formatteddate"/>
+					<value text=" (+/-) "/>
+					<value variable="param_days_tolerance" />
+					<value text=" days"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period2">
+				<value text="Minimum Amount: "/>
+				<value variable="param_minimum_amount"/>
+			</field>
+			<field whichfield="period3">
+				<fielddetail>
+					<switch>
+						<case condition="eq({param_recipientkey}, 0)">
+							<value text="All Recipients"/>
+						</case>
+						<case condition="not(eq({param_recipientkey}, 0))">
+							<value text="Recipient: "/>
+							<value function="GetPartnerShortName({param_recipientkey})"/>
+						</case>
+					</switch>
+				</fielddetail>
+			</field>
+			<field whichfield="descr1">
+				<value text="Frequency: "></value>
+				<value variable="param_frequency"></value>
+			</field>
+			<field whichfield="descr2">
+				<value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			<switch>
+				<case condition="eq({param_ignore_between}, true)">
+					<field whichfield="descr3" >
+						<value text="Ignore if other gifts"/>
+					</field>
+				</case>
+			</switch>
+			
+		</pageheader>
+
+		<calculations>
+		
+			<!-- Select Donors and Totals in a given period of time -->
+			<calculation id="Select Donors" returns="DonorKey, ShortName, PartnerClass" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							gift.p_donor_key_n AS DonorKey,
+							PUB_p_partner.p_partner_short_name_c AS ShortName,
+							PUB_p_partner.p_partner_class_c AS PartnerClass
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_p_partner
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_extract}, true)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_partners}, true)">
+						<value>
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							AND gift.a_date_entered_d BETWEEN {#param_selection_start_date#} AND {#param_selection_end_date#}
+							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_recipientkey}, 0))">
+						<value>
+							AND detail.p_recipient_key_n = {param_recipientkey}
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_motivation_group}, %))">
+						<value>
+							AND detail.a_motivation_group_code_c LIKE {param_motivation_group}
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_motivation_detail}, %))">
+						<value>
+							AND detail.a_motivation_detail_code_c LIKE {param_motivation_detail}
+						</value>
+					</queryDetail>
+					<!-- We search for the absolut gift amount -->
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							AND (detail.a_gift_amount_n &gt;= {param_minimum_amount}
+								OR detail.a_gift_amount_n &lt;= {param_minimum_amount})
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							AND (detail.a_gift_amount_intl_n &gt;= {param_minimum_amount}
+								OR detail.a_gift_amount_intl_n &lt;= {param_minimum_amount})
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_sort_by}, Donor_Key)">
+						<value>
+							ORDER BY gift.p_donor_key_n
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_sort_by}, Donor_Name)">
+						<value>
+							ORDER BY PUB_p_partner.p_partner_short_name_c
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Gift Date" 
+					returnsFormat="date" returns="text">
+				<caption><value text="Gift Date"/></caption>
+				<query>
+					<queryDetail><value variable="GiftDate"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			
+			<calculation id="Donor Key" 
+					returnsFormat="partnerkey" returns="text">
+				<caption><value text="Donor Key"/></caption>
+				<query>
+					<queryDetail><value variable="DonorKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Donor Name" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Donor Name"/></caption>
+				<query>
+					<queryDetail><value variable="ShortName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Partner Class" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Partner Class"/></caption>
+				<query>
+					<queryDetail><value variable="PartnerClass"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift this year" returnsFormat="currency" returns="amount">
+				<!--caption><value text="Gift this year"/></caption-->
+				<query>
+					<queryDetail><value variable="TotalYear_0"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift year - 1" returnsFormat="currency" returns="amount">
+				<!--caption><value text="Gift year - 1"/></caption-->
+				<query>
+					<queryDetail><value variable="TotalYear_1"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift year - 2" returnsFormat="currency" returns="amount">
+				<!--caption><value text="Gift year - 2"/></caption-->
+				<query>
+					<queryDetail><value variable="TotalYear_2"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+
+		<levels>		
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="DonorLevel" calculation="Select Donors"></lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="DonorLevel" identification="DonorKey">
+				<detail>
+					<switch>
+						<case condition="IsLapsedDonor({DonorKey}, {param_recipientkey}, {param_start_date}, {param_end_date}, {param_frequency}, {param_days_tolerance}, {param_ledger_number_i}, {param_motivation_group}, {param_motivation_detail}, {param_ignore_between})">
+							<field whichfield="columns"/>
+						</case>
+					</switch>
+				</detail>
+			</level>
+
+		</levels>
+		
+	</report><!-- Donor Report -->
+	
+</reports>

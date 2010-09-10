@@ -129,6 +129,13 @@
     <Compile Include="IncomeLocalSplit.ManualCode.cs">
       <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
     </Compile>
+    <Compile Include="LapsedDonorReport.cs" />
+    <Compile Include="LapsedDonorReport.Designer.cs">
+      <DependentUpon>LapsedDonorReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LapsedDonorReport.ManualCode.cs">
+      <DependentUpon>LapsedDonorReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="MethodOfGiving.cs" />
     <Compile Include="MethodOfGiving.Designer.cs">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>
@@ -160,6 +167,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeLocalSplit.resx">
       <DependentUpon>IncomeLocalSplit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LapsedDonorReport.resx">
+      <DependentUpon>LapsedDonorReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MethodOfGiving.resx">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>

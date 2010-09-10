@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="MethodOfGiving">
+		<description>
+			lists the number and sum of gifts for each currency and method of giving,
+			in a given period of time
+			
+			todo: optionally include unposted batches
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_start_date"/>
+			<reportparameter name="param_end_date"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text = "Gift Totals of Method of Giving"/></field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="period1"><value text = "From "/><value variable="param_start_date"/>
+				<value text=" to "/><value variable="param_end_date"/></field>
+		</pageheader>
+		<detailreports>
+			<detailreport id="Get all the gifts with selected Method of Giving"
+			   action="GiftTransactions/GiftTransactionsDefaultDetail.xml">
+			   <parameter name="title2" value="Gift Totals of Method of Giving {{param_Method}}"/>
+			   <parameter name="period1" value="From {{param_start_date}} to {{param_end_date}}"/>
+			   <detailreportquery>
+			   batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+			   AND batch.a_batch_status_c = "Posted" 
+			   AND motivation.a_receipt_l = TRUE
+			   AND (gift.a_method_of_giving_code_c = {param_Method} OR ({param_Method} = '' AND gift.a_method_of_giving_code_c IS NULL))
+			   AND batch.a_currency_code_c = {param_Currency}
+			   </detailreportquery>
+			</detailreport>
+		</detailreports>
+		<calculations>
+
+			<!-- get all currencies in that range of time -->
+			<calculation id="GetGiftBatchCurrencies"
+					returns="line_a_currency_code_c"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					Select Distinct batch.a_currency_code_c as line_a_currency_code_c
+					FROM PUB_a_gift_batch as batch
+					WHERE batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
+					AND batch.a_batch_status_c = "Posted"
+					ORDER BY batch.a_currency_code_c
+					</value></queryDetail>
+				</query>
+			</calculation>
+		
+			<!-- get all methods of giving in that range of time for the current currency -->
+			<calculation id="GetMethodsOfGiving"
+					returns="line_method_c, method_amount, method_number"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					Select DISTINCT gift.a_method_of_giving_code_c as line_method_c,
+						SUM (detail.a_gift_amount_n) as method_amount,
+						COUNT(*) as method_number
+					FROM PUB_a_gift_batch as batch, 
+						 PUB_a_gift as gift, 
+						 PUB_a_gift_detail as detail,
+ 						 PUB_a_motivation_detail AS motivation
+					WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
+						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+						AND batch.a_currency_code_c = {line_a_currency_code_c}
+						AND batch.a_batch_status_c = "Posted"
+						AND gift.a_ledger_number_i = batch.a_ledger_number_i
+						AND gift.a_batch_number_i = batch.a_batch_number_i
+						AND detail.a_ledger_number_i = gift.a_ledger_number_i
+						AND detail.a_batch_number_i = gift.a_batch_number_i
+						AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						AND motivation.a_ledger_number_i = detail.a_ledger_number_i
+						AND motivation.a_motivation_group_code_c = detail.a_motivation_group_code_c
+						AND motivation.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+						AND motivation.a_receipt_l = TRUE
+						GROUP BY gift.a_method_of_giving_code_c
+					</value></queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Method" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Method"/></caption>
+				<query><queryDetail><value variable="line_method_c"/></queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Currency" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Currency"/></caption>
+				<query><queryDetail><value variable="line_a_currency_code_c"/></queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Number" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Number"/></caption>
+				<query><queryDetail><value variable="method_number"/></queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Amount" 
+					returnsFormat="currency" returns="amount">
+				<caption><value text="Amount"/></caption>
+				<query><queryDetail><value variable="method_amount"/></queryDetail>
+				</query>
+			</calculation>
+
+		</calculations>
+
+		<levels>		
+		
+			<!-- required: the main report level -->
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="currencies" calculation="GetGiftBatchCurrencies">
+					</lowerLevelReport>
+				</detail>
+			</level> <!-- main -->
+
+			<!-- a level for grouping rows -->
+			<level name="currencies" identification="line_a_currency_code_c">
+				<header>
+				</header>
+				<detail>
+					<lowerLevelReport level="methods" calculation="GetMethodsOfGiving">
+					</lowerLevelReport>
+				</detail>
+				<footer>
+					<field whichfield="columns" pos="indented" line="above"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+				</footer>
+			</level><!-- currencies -->
+		
+			<!-- a level with detailed data -->
+			<level name="methods" identification="line_a_currency_code_c,line_method_c" condition="HasColumns" >
+				<detail>
+					<field whichfield="columns"/>
+				</detail>
+			</level><!-- methods -->
+
+		</levels>
+	</report><!-- gift method giving -->
+	
+</reports>
