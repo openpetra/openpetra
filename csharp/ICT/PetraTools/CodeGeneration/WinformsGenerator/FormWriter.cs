@@ -399,7 +399,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
                                   ".resx";
 
-            XmlDocument OrigResourceDoc = (new TXMLParser(ResourceFile, false)).GetDocument();
+            XmlDocument OrigResourceDoc = null;
+
+            if (File.Exists(ResourceFile))
+            {
+                OrigResourceDoc = (new TXMLParser(ResourceFile, false)).GetDocument();
+            }
 
             string ResourceTemplate = ATemplateDir + Path.DirectorySeparatorChar + "resources.resx";
 
@@ -412,10 +417,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (XmlNode ChildNode in ParentNode)
             {
-                XmlNode OrigDataNode = OrigResourceDoc.DocumentElement.FirstChild;
+                XmlNode OrigDataNode = null;
+
+                if (OrigResourceDoc != null)
+                {
+                    OrigDataNode = OrigResourceDoc.DocumentElement.FirstChild;
+                }
 
                 while (OrigDataNode != null && !(OrigDataNode.Name == "data"
-                                                 && TXMLParser.GetAttribute(OrigDataNode, "name") != TXMLParser.GetAttribute(ChildNode, "name")))
+                                                 && TXMLParser.GetAttribute(OrigDataNode, "name") == TXMLParser.GetAttribute(ChildNode, "name")))
                 {
                     OrigDataNode = OrigDataNode.NextSibling;
                 }
@@ -424,7 +434,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // it seems the translation of images to base64 is always different, depending on the machine
                 if (OrigDataNode != null)
                 {
-                    if (!OrigDataNode.HasChildNodes || (OrigDataNode.FirstChild.InnerText != ChildNode.FirstChild.InnerText))
+                    if (!OrigDataNode.HasChildNodes || (!OrigDataNode.FirstChild.InnerText.Equals(ChildNode.FirstChild.InnerText)))
                     {
                         OrigDataNode = null;
                     }
