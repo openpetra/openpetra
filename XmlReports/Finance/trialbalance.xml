@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+
+    <report id="Trial Balance">
+        <description>
+            This report shows the credits and debits and the balance of 
+            account/costcentre combinations at the end of a period.
+            It shows the year to date data.
+            The report can be sorted by account, by costcentre or by department. 
+            There is a total for each displayed.
+            
+            In the department mode, the same accounts of different cost centres of one department are summed up.
+            The debits and credits for each department are displayed.
+            Department in this report just stands for the whole field? "LedgerNumber"%00S, not including the main cost centre itself
+            
+            The report is also used for the Surplus Deficit report, which is basically
+            a trial balance report sorted by cost centre, 
+            which only displays the net balance of each cost centre.
+            
+            requires accountdetailcommon.xml
+        </description>
+
+        <reportparameters>
+            <reportparameter name="param_account_hierarchy_c"/>
+            <reportparameter name="param_ledger_number_i"/>
+            <reportparameter name="param_end_period_i"/>
+            <reportparameter name="param_sortby">
+                <option name="Account"/>
+                <option name="Cost Centre"/>
+                <option name="Department"/>
+            </reportparameter>
+            <reportparameter name="param_depth"> 
+                <!-- param_sortby department: detail and standard; only used for debugging -->
+                <!-- summary for Surplus Deficit; just displays the net balance -->
+                <option name="detail"/>
+                <option name="standard"/>
+                <option name="summary"/>
+            </reportparameter>
+            <reportparameter name="param_year_i">
+                <option name="Available Years"/>
+            </reportparameter>
+            <reportparameter name="param_currency"> 
+                <option name="Base"/>
+                <option name="International"/>
+            </reportparameter>
+            <reportparameter name="param_cost_centre_code_start">
+                <option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
+            </reportparameter>
+            <reportparameter name="param_cost_centre_code_end">
+                <option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
+            </reportparameter>
+            <reportparameter name="param_cost_centre_codes"/> <!-- alternative to cost centre range, comma separated list of cost centre codes -->
+            <reportparameter name="param_account_code_start"> 
+                <option name="all accounts from the current ledger with a_posting_status_l"/>
+            </reportparameter>
+            <reportparameter name="param_account_code_end">
+                <option name="all accounts from the current ledger with a_posting_status_l"/>
+            </reportparameter>
+            <reportparameter name="param_account_codes"/> <!-- alternative to account code range, comma separated list of account codes -->
+        </reportparameters>
+
+        <reportheader/>
+        <pageheader>
+            <field whichfield="title1">
+                <fielddetail condition="ne({param_depth},summary)">
+                    <value text ="Trial Balance" /></fielddetail>
+                <fielddetail condition="eq({param_depth},summary)">
+                    <value text ="Surplus Deficit" /></fielddetail>
+            </field>
+            <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+            <field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+                <value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+            </field>
+            <field whichfield="period2" align="right">
+                <fielddetail condition="eq({param_cost_centre_codes},*NOTUSED*)">
+                    <value text="Cost Centre: "/>
+                    <value variable="param_cost_centre_code_start"/>
+                    <value text=" To "/>                
+                    <value variable="param_cost_centre_code_end"/>
+                </fielddetail>
+                <fielddetail condition="eq({param_cost_centre_code_start},*NOTUSED*)">
+                    <value text="    Cost Centres: "/>
+                    <value variable="param_cost_centre_codes"/>
+                </fielddetail>
+            </field>
+            <field whichfield="period3" align="right">
+                <fielddetail>
+                    <value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
+                </fielddetail>
+                <fielddetail condition="eq({param_account_codes},*NOTUSED*)">
+                    <value text="Account: "/>
+                    <value variable="param_account_code_start"/>
+                    <value text=" To "/>                
+                    <value variable="param_account_code_end"/>
+                </fielddetail>
+                <fielddetail condition="eq({param_account_code_start},*NOTUSED*)">
+                    <value text="Accounts: "/>
+                    <value variable="param_account_codes"/>
+                </fielddetail>
+            </field>
+            <field whichfield="descr2" width="7 cm"><value text="Currency: "/>
+                <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+                <value text=" Ordered by: "/>
+                <value variable="param_sortby"/>
+            </field>
+            <field whichfield="descr3"><value text="Current Period is "/>
+                <value variable="param_current_period_i"/>
+            </field>            
+            <field whichfield="period1">
+                <fielddetail>
+                    <value text="Period: As at "/>
+                    <value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})" format="formatteddate"/>
+                    <value text = " (" />
+                    <value variable="param_end_period_i"/>
+                    <value text = ")    (" />
+                    <value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+                    <value text = ")" />
+                </fielddetail>
+            </field>
+            <field whichfield="left1" pos="0 cm" width="5 cm">
+                <fielddetail condition="ne({param_depth},summary)">
+                    <value text = "CostCentre/Account"/></fielddetail>
+                <fielddetail condition="eq({param_depth},summary)">
+                    <value text = "CostCentre"/></fielddetail>
+            </field>
+            <field whichfield="left2" pos="5.5 cm" width="5 cm"><value text = "Description"/></field>
+        </pageheader>
+        
+        <calculations>
+
+            <!-- get all costcentres, that either report to ILT or
+                 whose code has ledgernumber, 2 Zeros and an S at the end;
+                 disregard the costcentre range or list, because that will be considered in "Select Accounts of Department" -->
+            <calculation id="Select Departments"
+                    returns="line_department_c"
+                    returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                    SELECT DISTINCT cc.a_cost_centre_code_c AS line_department_c
+                    FROM PUB_a_general_ledger_master AS glm, PUB_a_cost_centre AS cc 
+                    WHERE glm.a_ledger_number_i = cc.a_ledger_number_i 
+                        AND glm.a_cost_centre_code_c = cc.a_cost_centre_code_c
+                        AND glm.a_ledger_number_i = {{param_ledger_number_i}}
+                        AND (cc.a_cost_centre_to_report_to_c = "ILT" OR cc.a_cost_centre_code_c = "{{param_ledger_number_i}}00S")
+                        ORDER BY 1
+                    </value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="Get Department Name"
+                returns="department_name"
+                returnsFormat="internal">
+                <query>
+                    <queryDetail><value>
+                    SELECT a_cost_centre_name_c as department_name 
+                    FROM PUB_a_cost_centre AS cc 
+                    WHERE cc.a_ledger_number_i = {{param_ledger_number_i}}
+                        AND cc.a_cost_centre_code_c = "{{line_department_c}}"
+                    </value>
+                    </queryDetail>
+                </query>
+            </calculation>
+                
+
+
+            <calculation id="Select Accounts of Department"
+                    returns="line_a_account_alias_c, line_a_account_code_c, account_name, a_debit_credit_indicator_l"
+                    returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                    SELECT DISTINCT 
+                        acc.a_account_code_c AS line_a_account_alias_c, 
+                        acc.a_account_code_c AS line_a_account_code_c,
+                        acc.a_account_code_short_desc_c AS account_name, a_debit_credit_indicator_l
+                    FROM PUB_a_general_ledger_master AS glm, PUB_a_account AS acc, PUB_a_cost_centre AS cc
+                    WHERE glm.a_ledger_number_i = acc.a_ledger_number_i 
+                        AND glm.a_account_code_c = acc.a_account_code_c
+                        AND glm.a_cost_centre_code_c = cc.a_cost_centre_code_c
+                        AND glm.a_ledger_number_i = cc.a_ledger_number_i 
+                        AND glm.a_ledger_number_i = {{param_ledger_number_i}}
+                        AND acc.a_posting_status_l = 1
+                        AND (acc.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+                         OR (
+                    </value><value function = "csv" text="acc.a_account_code_c" variable="param_account_codes"/>
+                    <value> ))
+                        AND glm.a_cost_centre_code_c = {line_department_c}
+                        AND NOT EXISTS(
+                            SELECT prop.a_property_value_c FROM PUB_a_account_property AS prop 
+                            WHERE prop.a_ledger_number_i = acc.a_ledger_number_i
+                            AND prop.a_property_code_c = {param_account_hierarchy_c}
+                            AND prop.a_account_code_c = acc.a_account_code_c)
+                    UNION
+                    SELECT DISTINCT prop.a_property_value_c AS line_a_account_alias_c,
+                        acc.a_account_code_c AS line_a_account_code_c,
+                        acc.a_account_code_short_desc_c AS account_name, a_debit_credit_indicator_l
+                    FROM (PUB_a_general_ledger_master AS glm INNER JOIN PUB_a_account AS acc 
+                        ON glm.a_ledger_number_i = acc.a_ledger_number_i 
+                        AND glm.a_account_code_c = acc.a_account_code_c)
+                        INNER JOIN PUB_a_account_property AS prop 
+                        ON prop.a_ledger_number_i = acc.a_ledger_number_i
+                        AND prop.a_account_code_c = acc.a_account_code_c, PUB_a_cost_centre AS cc
+                    WHERE glm.a_ledger_number_i = {{param_ledger_number_i}}
+                        AND prop.a_property_code_c = {param_account_hierarchy_c}
+                        AND acc.a_posting_status_l = 1
+                        AND glm.a_cost_centre_code_c = cc.a_cost_centre_code_c
+                        AND glm.a_ledger_number_i = cc.a_ledger_number_i 
+                        AND (acc.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+                         OR (
+                    </value><value function = "csv" text="acc.a_account_code_c" variable="param_account_codes"/>
+                    <value> ))
+                        AND glm.a_cost_centre_code_c = {line_department_c}
+                        
+                    </value>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Select CostCentres of DepartmentAccounts"
+                    returns="line_a_cost_centre_code_c, cost_centre_name"
+                    returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                    SELECT DISTINCT cc.a_cost_centre_code_c AS line_a_cost_centre_code_c, 
+                        cc.a_cost_centre_name_c AS cost_centre_name
+                    FROM PUB_a_general_ledger_master AS glm, PUB_a_cost_centre AS cc
+                    WHERE glm.a_account_code_c = {line_a_account_code_c}
+                        AND glm.a_cost_centre_code_c = cc.a_cost_centre_code_c
+                        AND glm.a_ledger_number_i = cc.a_ledger_number_i 
+                        AND glm.a_ledger_number_i = {{param_ledger_number_i}}
+                        AND (glm.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end} 
+                         OR (
+                    </value><value function = "csv" text="glm.a_cost_centre_code_c" variable="param_cost_centre_codes"/>
+                    <value> ))
+                        AND 
+                         (glm.a_cost_centre_code_c LIKE "{{line_department_code_c}}%" AND cc.a_posting_cost_centre_flag_l = 1)
+                        ORDER BY 1
+                    </value> <!-- ((glm.a_cost_centre_code_c = {line_department_c} AND NOT {line_department_c} = "{{param_ledger_number_i}}%00S") -->
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="getTrialBalance"
+                    returns="trialBalance"
+                    returnsFormat="internal">
+                <query>
+                    <queryDetail><value function="getGlmSequences({{param_ledger_number_i}}, {line_a_cost_centre_code_c}, {line_a_account_code_c}, {param_year_i})"/>
+                        <value function="assign(trial_balance, getActual({{param_end_period_i}}, {{param_year_i}},true,{param_currency}))"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Debit" 
+                    returnsFormat="#,##0.00;;;;" returns="amount">
+                <caption><value text="Debits"/></caption>
+                <query>
+                    <queryDetail>
+                        <value function="getAccountDetailAmount({trial_balance}, {a_debit_credit_indicator_l})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Credit" 
+                    returnsFormat=";#,##0.00;;;" returns="amount">
+                <caption><value text="Credits"/></caption>
+                <query>
+                    <queryDetail>
+                        <value function="getAccountDetailAmount({trial_balance}, {a_debit_credit_indicator_l})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+        </calculations>
+        <levels>
+            <level name="main">
+                <detail>
+                    <lowerLevelReport level="GrandTotalNetBalance"/>
+                </detail>
+            </level> <!-- main -->
+
+            <level name="GrandTotalNetBalance" identification="">
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="GrandTotal">
+                    </lowerLevelReport>         
+                </detail>
+                <footer>
+                    <field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Net Balance:"/></field>
+                    <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                    <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+                </footer>
+            </level><!-- GrandTotalNetBalance -->
+
+            <level name="GrandTotal" identification="">
+                <header>
+                </header>
+                <detail>
+                    <switch>
+                        <case condition="eq({param_sortby}, Account)">
+                            <lowerLevelReport level="AccountDetailNetBalance" calculation ="Select Account Detail SortBy Account"/>
+                        </case>
+                        <case condition="eq({param_sortby}, Cost Centre)">
+                            <lowerLevelReport level="CostCentreDetailNetBalance" calculation ="Select Account Detail SortBy CostCentre"/>
+                        </case>
+                        <case condition="eq({param_sortby}, Department)">
+                            <lowerLevelReport level="DepartmentDetailNetBalance" calculation ="Select Departments"/>
+                        </case>
+                    </switch>
+                </detail>
+                <footer line="above">
+                    <field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Grand Total:"/></field>
+                    <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}}, false)"/></field>
+                </footer>
+            </level><!-- GrandTotal -->
+
+<!-- sort by account -->
+
+            <level name="AccountDetailNetBalance" identification=""
+                    condition="HasChildColumns">
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="AccountDetail"/>
+                </detail>
+                <footer space="below">
+                    <field whichfield="left 0" pos = "4cm" width="2cm" align="right"><value text="Net Balance:"/></field>
+                    <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                    <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+                </footer>
+            </level><!-- AccountDetailNetBalance -->
+
+            <level name="AccountDetail" identification="line_a_account_code_c"
+                condition="HasChildRows">
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="AccountCostCentreDetail" calculation ="Select CostCentres of Account"/>
+                </detail>
+                <footer>
+                    <field whichfield="left 0" pos = "4cm" width="2cm" align="right"><value text="Account Total:"/></field>
+                    <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                </footer>
+            </level><!-- AccountDetail -->
+
+            <level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+                    condition = "HasColumns">
+                <header>
+                </header>
+                <detail>
+                    <field whichfield="left 0" pos = "0cm" width="3cm" align="left"><value variable="line_a_cost_centre_code_c"/>
+                    <value text="-"/><value variable="line_a_account_alias_c"/></field>
+                    <field whichfield="left 1" pos = "3cm" width="6cm"><value variable="account_name"/>
+                    <value text=" "/><value variable="cost_centre_name"/></field>
+                    <field whichfield="columns" calculation ="getTrialBalance" />
+                </detail>
+                <footer>
+                </footer>
+            </level><!-- AccountCostCentreDetail -->
+
+<!-- sort by costcentre -->
+            <level name="CostCentreDetailNetBalance" identification=""
+                    condition="HasChildColumns">
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="CostCentreDetail"/>
+                </detail>
+                <footer space="below">
+                    <switch>
+                        <case condition="eq({param_depth}, summary)">
+                            <field whichfield="left 0" pos = "0cm" width="3cm" align="left"><value variable="line_a_cost_centre_code_c"/></field>
+                            <field whichfield="left 1" pos = "3cm" width="4cm" align="left"><value variable="cost_centre_name"/></field>
+                            <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                            <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+                        </case>
+                        <default>
+                            <field whichfield="left 0" pos = "4cm" width="2cm" align="right"><value text="Net Balance:"/></field>
+                            <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                            <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+                        </default>
+                    </switch>
+                </footer>
+            </level><!-- CostCentreDetailNetBalance -->
+
+            <level name="CostCentreDetail" identification="line_a_cost_centre_code_c"
+                    condition="and(HasChildRows,ne({param_depth},summary))">
+                    
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="CostCentreAccountDetail" calculation ="Select Accounts of CostCentre"/>
+                </detail>
+                <footer>
+                    <field whichfield="left 0" pos = "3cm" width="3cm" align="right"><value text="Cost Centre Total:"/></field>
+                    <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                </footer>
+            </level><!-- CostCentreDetail -->
+
+            <level name="CostCentreAccountDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+                    condition = "HasColumns">
+                <header>
+                </header>
+                <detail>
+                    <field whichfield="left 0" pos = "0cm" width="3cm" align="left"><value variable="line_a_cost_centre_code_c"/>
+                    <value text="-"/><value variable="line_a_account_alias_c"/></field>
+                    <field whichfield="left 1" pos = "3cm" width="6cm"><value variable="account_name"/>
+                    <value text=" "/><value variable="cost_centre_name"/></field>
+                    <field whichfield="columns" calculation ="getTrialBalance" />
+                </detail>
+                <footer>
+                </footer>
+            </level><!-- CostCentreAccountDetail -->
+
+<!-- sort by department -->
+            <level name="DepartmentDetailNetBalance" identification=""
+                    condition="HasChildColumns">
+                <header>
+                </header>
+                <detail>
+                    <lowerLevelReport level="DepartmentDetail" calculation="Get Department Name"/>
+                </detail>
+                <footer space="below">
+                    <field whichfield="left 0" pos = "4cm" width="2cm" align="right"><value text="Net Balance:"/></field>
+                    <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                    <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+                </footer>
+            </level><!-- DepartmentDetailNetBalance -->
+
+            <level name="DepartmentDetail" identification="line_department_c"
+                    condition="HasChildRows">
+                <header>
+                    <field whichfield="header 0" pos="0cm" width="5cm">
+                    <value variable="department_name"/></field>
+                </header>
+                <detail>
+                    <switch>
+                            <!-- helper variable for sort by department; cuts off the trailing 00 or 00S -->
+                        <case condition="or(assign(line_department_code_c,
+iif(eq(S,substringRight({line_department_c},1)),
+substringWithoutRight({line_department_c},3),
+substringWithoutRight({line_department_c},2))),true)">
+                            <lowerLevelReport level="DepartmentAccountDetail" calculation ="Select Accounts of Department"/>
+                        </case>
+                    </switch>
+                </detail>
+                <footer>
+                    <field whichfield="left 0" pos = "0cm" width="6cm" align="right"><value text="Department Total:"/></field>
+                    <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                </footer>
+            </level><!-- DepartmentDetail -->
+
+            <level name="DepartmentAccountDetail" identification="line_department_c, line_a_account_code_c"
+                    condition="HasColumns">
+                <header>
+                    <switch>
+                        <case condition="eq({param_depth}, Detail)">
+                            <field whichfield="header 0" pos="0.3cm" width="5cm">
+                            <value variable="line_a_account_alias_c"/><value text=" "/><value variable="account_name"/>
+                            </field>
+                        </case>
+                    </switch>
+                </header>
+                <detail>
+                    <switch>
+                        <case condition="eq({param_depth}, Detail)"> <!-- Detail only for debugging -->
+                            <lowerLevelReport level="DepartmentAccountCostCentreDetailDisplay" calculation ="Select CostCentres of DepartmentAccounts"/>
+                        </case>
+                        <default>
+                            <lowerLevelReport level="DepartmentAccountCostCentreDetail" calculation ="Select CostCentres of DepartmentAccounts"/>
+                        </default>
+                    </switch>
+                </detail>
+                <footer>
+                    <switch>
+                        <case condition="eq({param_depth}, Detail)"> <!-- Detail only for debugging -->
+                            <field whichfield="left 0" pos = "0cm" width="6.5cm" align="left">
+                            <value variable="line_department_c"/>
+                            <value text="-"/><value variable="line_a_account_alias_c"/><value text=" "/><value variable="account_name"/>
+                            </field>
+                    <field whichfield="column 0" format="#,##0.00;;;" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format=";#,##0.00;;" line="above"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                        </case>
+                        <default>
+                            <field whichfield="left 0" pos = "0cm" width="2.5cm" align="left"><value variable="line_department_c"/>
+                            <value text="-"/><value variable="line_a_account_alias_c"/></field>
+                            <field whichfield="left 1" pos = "2.5cm" width="4cm"><value variable="account_name"/>
+                            </field>
+                    <field whichfield="column 0" format="#,##0.00;;;"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                    <field whichfield="column 1" format=";#,##0.00;;"><value function="getSumLowerReport({{lineId}}, {{column}}, false)"/></field>
+                            
+                        </default>
+                    </switch>
+                </footer>
+            </level><!-- DepartmentAccountDetail -->
+
+            <level name="DepartmentAccountCostCentreDetail" identification="line_department_c, line_a_account_code_c, line_a_cost_centre_code_c"
+                    condition="invisible">
+                <header>
+                </header>
+                <detail>
+                    <field whichfield="columns" calculation ="getTrialBalance" />
+                </detail>
+                <footer>
+                </footer>
+            </level><!-- DepartmentAccountCostCentreDetail -->
+
+            <level name="DepartmentAccountCostCentreDetailDisplay" identification="line_department_c, line_a_account_code_c, line_a_cost_centre_code_c"
+                    condition="HasColumns">
+            <!-- Detail only for debugging -->
+                <header>
+                </header>
+                <detail>
+                    <field whichfield="left 0" pos="0.5cm" width="2.5cm"><value variable="line_a_cost_centre_code_c"/></field>
+                    <field whichfield="left 1" pos="3cm" width="4cm"><value variable="cost_centre_name"/></field>
+                    <field whichfield="columns" calculation ="getTrialBalance"/>
+                </detail>
+                <footer>
+                </footer>
+            </level><!-- DepartmentAccountCostCentreDetailDisplay -->
+
+
+        </levels>
+    </report><!-- Trial Balance -->
+</reports>
