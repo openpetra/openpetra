@@ -211,7 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
 
-            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPPayments(FMainDS.AApPayment,
+            if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(FMainDS.AApPayment,
                     FMainDS.AApDocumentPayment,
                     PaymentDate, out Verifications))
             {

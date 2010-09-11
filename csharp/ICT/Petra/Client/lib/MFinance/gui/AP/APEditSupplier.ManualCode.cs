@@ -37,7 +37,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;

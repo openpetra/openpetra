@@ -41,10 +41,10 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 #endregion ManualCode
 
-namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
+namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {
     ///<summary>
     /// This UIConnector provides data for the finance Accounts Payable screens
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TFindUIConnector : TConfigurableMBRObject, IAccountsPayableUIConnectorsFind
+    public class TFindUIConnector : TConfigurableMBRObject, IAPUIConnectorsFind
     {
         /// <summary>Paged query object</summary>
         TPagedDataSet FPagedDataSetObject;

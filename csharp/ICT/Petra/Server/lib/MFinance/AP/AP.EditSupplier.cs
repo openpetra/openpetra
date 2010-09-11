@@ -31,9 +31,9 @@ using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 
-namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
+namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {
     ///<summary>
     /// This UIConnector provides data for the finance Accounts Payable screens
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TSupplierEditUIConnector : TConfigurableMBRObject, IAccountsPayableUIConnectorsSupplierEdit
+    public class TSupplierEditUIConnector : TConfigurableMBRObject, IAPUIConnectorsSupplierEdit
     {
         /// <summary>
         /// constructor

@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
-    private Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit FUIConnector = null;
+    private Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors.IAPUIConnectorsSupplierEdit FUIConnector = null;
 
     /// constructor
     public TFrmAPEditSupplier(IntPtr AParentFormHandle) : base()
@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
       FPetraUtilsObject.InitActionState();
       ActionEnabledEvent(null, new ActionEventArgs("cndDiscountEnabled", false));
 
-      FUIConnector = TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit();
+      FUIConnector = TRemote.MFinance.AP.UIConnectors.SupplierEdit();
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
     }

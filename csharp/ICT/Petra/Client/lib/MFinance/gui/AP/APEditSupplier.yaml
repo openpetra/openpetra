@@ -2,8 +2,8 @@ RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Supplier Edit
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
-    UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors.IAccountsPayableUIConnectorsSupplierEdit
-    UIConnectorCreate: TRemote.MFinance.AccountsPayable.UIConnectors.SupplierEdit
+    UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors.IAPUIConnectorsSupplierEdit
+    UIConnectorCreate: TRemote.MFinance.AP.UIConnectors.SupplierEdit
     FormType: edit
     Template: windowEditUIConnector
     MasterTable: AApSupplier

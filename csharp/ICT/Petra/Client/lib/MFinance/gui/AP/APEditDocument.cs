@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     /// automatically generated function from webconnector
     public bool CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
     {
-        FMainDS = TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
+        FMainDS = TRemote.MFinance.AP.WebConnectors.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
 
         FPetraUtilsObject.SetChangedFlag();
 
@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
     public bool CreateAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
     {
-        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
+        FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
         FMainDS.InitVars();
         FMainDS.AApDocumentDetail.InitVars();
 
@@ -248,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     /// automatically generated function from webconnector
     public bool LoadAApDocument(Int32 ALedgerNumber, Int32 AAPNumber)
     {
-        FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.LoadAApDocument(ALedgerNumber, AAPNumber));
+        FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(ALedgerNumber, AAPNumber));
 
         ShowData(FMainDS.AApDocument[0]);
 
@@ -571,7 +571,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.AccountsPayable.WebConnectors.SaveAApDocument(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = TRemote.MFinance.AP.WebConnectors.SaveAApDocument(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

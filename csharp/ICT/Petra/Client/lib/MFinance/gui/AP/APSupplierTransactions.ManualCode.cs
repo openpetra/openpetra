@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FLedgerNumber = ALedgerNumber;
             FPartnerKey = APartnerKey;
 
-            FMainDS.Merge(TRemote.MFinance.AccountsPayable.WebConnectors.FindAApDocument(
+            FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.FindAApDocument(
                     ALedgerNumber, APartnerKey,
                     "UNPOSTED", // cmbStatus.GetSelectedString(),
                     cmbType.SelectedIndex == 1,
@@ -175,7 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
-            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(
+            if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     FLedgerNumber,
                     TaggedDocuments,
                     PostingDate,

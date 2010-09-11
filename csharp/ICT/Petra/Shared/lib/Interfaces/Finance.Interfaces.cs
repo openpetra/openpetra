@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable;
+using Ict.Petra.Shared.Interfaces.MFinance.AP;
+using Ict.Petra.Shared.Interfaces.MFinance.AR;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
 using Ict.Petra.Shared.Interfaces.MFinance.Cacheable;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport;
@@ -42,9 +42,9 @@ using Ict.Petra.Shared.Interfaces.MFinance.ICH;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AR.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
@@ -74,13 +74,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
     public interface IMFinanceNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
-        IAccountsPayableNamespace AccountsPayable
+        IAPNamespace AP
         {
             get;
         }
 
         /// <summary>access to sub namespace</summary>
-        IAccountsReceivableNamespace AccountsReceivable
+        IARNamespace AR
         {
             get;
         }
@@ -144,19 +144,19 @@ namespace Ict.Petra.Shared.Interfaces.MFinance
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable
+namespace Ict.Petra.Shared.Interfaces.MFinance.AP
 {
     /// <summary>auto generated</summary>
-    public interface IAccountsPayableNamespace : IInterface
+    public interface IAPNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
-        IAccountsPayableUIConnectorsNamespace UIConnectors
+        IAPUIConnectorsNamespace UIConnectors
         {
             get;
         }
 
         /// <summary>access to sub namespace</summary>
-        IAccountsPayableWebConnectorsNamespace WebConnectors
+        IAPWebConnectorsNamespace WebConnectors
         {
             get;
         }
@@ -166,39 +166,39 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
+namespace Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors
 {
     /// <summary>auto generated</summary>
-    public interface IAccountsPayableUIConnectorsNamespace : IInterface
+    public interface IAPUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
-        IAccountsPayableUIConnectorsFind Find();
-        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit();
-        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
-        IAccountsPayableUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet,
-                                                              Int64 APartnerKey);
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
+        IAPUIConnectorsFind Find();
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.AP.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAPUIConnectorsSupplierEdit SupplierEdit();
+        /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MFinance.AP.UIConnectors.TSupplierEditUIConnector)</summary>
+        IAPUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet,
+                                                 Int64 APartnerKey);
     }
 
     /// <summary>auto generated</summary>
-    public interface IAccountsPayableUIConnectorsFind : IInterface
+    public interface IAPUIConnectorsFind : IInterface
     {
-        /// <summary>auto generated from Connector property (Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary>auto generated from Connector property (Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         IAsynchronousExecutionProgress AsyncExecProgress
         {
             get;
         }
 
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void FindSupplier(DataTable ACriteriaData);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void FindInvoices(DataTable ACriteriaData);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void PerformSearch(DataTable ACriteriaData);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void StopSearch(object ASender,
                         EventArgs AArgs);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TFindUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         DataTable GetDataPagedResult(System.Int16 APage,
                                      System.Int16 APageSize,
                                      out System.Int32 ATotalRecords,
@@ -206,13 +206,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
     }
 
     /// <summary>auto generated</summary>
-    public interface IAccountsPayableUIConnectorsSupplierEdit : IInterface
+    public interface IAPUIConnectorsSupplierEdit : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TSupplierEditUIConnector)</summary>
         bool CanFindSupplier(Int64 APartnerKey);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TSupplierEditUIConnector)</summary>
         AccountsPayableTDS GetData(Int64 APartnerKey);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors.TSupplierEditUIConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TSupplierEditUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS,
                                            out TVerificationResultCollection AVerificationResult);
     }
@@ -220,40 +220,40 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
+namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
 {
     /// <summary>auto generated</summary>
-    public interface IAccountsPayableWebConnectorsNamespace : IInterface
+    public interface IAPWebConnectorsNamespace : IInterface
     {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                            Int32 AAPNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
                                              Int64 APartnerKey,
                                              bool ACreditNoteOrInvoice);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
                                              out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
                                                    Int32 AApNumber,
                                                    string AApSupplier_DefaultExpAccount,
                                                    string AApSupplier_DefaultCostCentre,
                                                    double AAmount,
                                                    Int32 ALastDetailNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
                                            Int64 ASupplierKey,
                                            string ADocumentStatus,
                                            bool IsCreditNoteNotInvoice,
                                            bool AHideAgedTransactions);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         bool PostAPDocuments(Int32 ALedgerNumber,
                              List <Int32> AAPDocumentNumbers,
                              DateTime APostingDate,
                              out TVerificationResultCollection AVerifications);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionWebConnector)</summary>
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         bool PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
                             AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                             DateTime APostingDate,
@@ -263,13 +263,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.WebConnectors
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable
+namespace Ict.Petra.Shared.Interfaces.MFinance.AR
 {
     /// <summary>auto generated</summary>
-    public interface IAccountsReceivableNamespace : IInterface
+    public interface IARNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
-        IAccountsReceivableWebConnectorsNamespace WebConnectors
+        IARWebConnectorsNamespace WebConnectors
         {
             get;
         }
@@ -279,10 +279,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MFinance.AccountsReceivable.WebConnectors
+namespace Ict.Petra.Shared.Interfaces.MFinance.AR.WebConnectors
 {
     /// <summary>auto generated</summary>
-    public interface IAccountsReceivableWebConnectorsNamespace : IInterface
+    public interface IARWebConnectorsNamespace : IInterface
     {
     }
 

@@ -39,13 +39,13 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPMain
     {
-        private IAccountsPayableUIConnectorsFind FSupplierFindObject = null;
+        private IAPUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            FSupplierFindObject = TRemote.MFinance.AccountsPayable.UIConnectors.Find();
+            FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
 
             DataTable CriteriaTable = new DataTable();
 

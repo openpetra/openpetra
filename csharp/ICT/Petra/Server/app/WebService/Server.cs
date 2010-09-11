@@ -29,7 +29,7 @@ using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.MFinance.AccountsPayable.UIConnectors;
+using Ict.Petra.Server.MFinance.AP.UIConnectors;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Jayrock.Json;

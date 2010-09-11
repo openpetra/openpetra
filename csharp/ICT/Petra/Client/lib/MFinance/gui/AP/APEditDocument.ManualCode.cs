@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
-            if (!TRemote.MFinance.AccountsPayable.WebConnectors.PostAPDocuments(
+            if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     FMainDS.AApDocument[0].LedgerNumber,
                     TaggedDocuments,
                     PostingDate,
