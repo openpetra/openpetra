@@ -367,7 +367,9 @@ namespace Ict.Petra.Server.App.Main
 
             if (AppSettingsManager.HasValue("Server.LogFile"))
             {
-                ServerLogFile = AppSettingsManager.GetValue("Server.LogFile", false);
+                ServerLogFile =
+                    AppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             }
             else
             {
@@ -578,6 +580,42 @@ namespace Ict.Petra.Server.App.Main
                         else
                         {
                             throw new Exception("Cannot connect to old database, please restore the latest clean demo database");
+                        }
+                    }
+
+                    TAppSettingsManager settings = new TAppSettingsManager();
+                    string userTempPath = Path.GetDirectoryName(settings.GetValue("Server.LogFile")).
+                                          Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                    string userSettingsPath = userTempPath.Replace("tmp30", "reports30") + Path.DirectorySeparatorChar + "Settings";
+
+                    if ((dbversion.Compare(serverExeInfo) < 0) || !Directory.Exists(userSettingsPath))
+                    {
+                        if (!Directory.Exists(userSettingsPath))
+                        {
+                            Directory.CreateDirectory(userSettingsPath);
+                        }
+
+                        if (!Directory.Exists(userTempPath))
+                        {
+                            Directory.CreateDirectory(userTempPath);
+                        }
+
+                        // copy all report default settings from the application directory
+                        string origSettingsPath = Path.GetFullPath(settings.GetValue(
+                                "Reporting.PathStandardReports") + Path.DirectorySeparatorChar + "Settings");
+                        DirectoryInfo dirInfo = new DirectoryInfo(origSettingsPath);
+                        FileInfo[] files = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);
+
+                        foreach (FileInfo file in files)
+                        {
+                            string destination = file.FullName.Replace(origSettingsPath, userSettingsPath);
+
+                            if (!Directory.Exists(Path.GetDirectoryName(destination)))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                            }
+
+                            System.IO.File.Copy(file.FullName, destination, true);
                         }
                     }
                 }

@@ -10,7 +10,7 @@ cmDotNetPleaseDownload=Please download the installer for .Net 2.0 from
 cmDotNetUrlAndSize=http://www.microsoft.com/downloads/details.aspx?FamilyID=0856EACB-4362-4B0D-8EDD-AAB15C5E04F5 (about 22 MB)
 cmDotNetInstallFirst=and install it first!
 cmIconTask=Create an Icon on the desktop
-cmIconStandaloneLabel=OpenPetra.org Standalone
+cmIconStandaloneLabel=OpenPetra.org
 cmIconStandaloneComment=Start OpenPetra.org
 cmIconRemoteLabel=OpenPetra.org Client
 cmIconRemoteComment=Start OpenPetra.org (connecting to your OpenPetra server)

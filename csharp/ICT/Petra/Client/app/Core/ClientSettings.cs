@@ -323,7 +323,9 @@ namespace Ict.Petra.Client.App.Core
             }
 
             UDelayedDataLoading = FAppSettings.GetBoolean("DelayedDataLoading", false);
-            UReportingPathReportSettings = FAppSettings.GetValue("Reporting.PathReportSettings");
+            UReportingPathReportSettings =
+                FAppSettings.GetValue("Reporting.PathReportSettings").Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
             UServerPollIntervalInSeconds = FAppSettings.GetInt16("ServerPollIntervalInSeconds", 5);
             UServerObjectKeepAliveIntervalInSeconds = FAppSettings.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
