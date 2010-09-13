@@ -136,6 +136,13 @@
     <Compile Include="LapsedDonorReport.ManualCode.cs">
       <DependentUpon>LapsedDonorReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="SYBUNTReport.cs" />
+    <Compile Include="SYBUNTReport.Designer.cs">
+      <DependentUpon>SYBUNTReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SYBUNTReport.ManualCode.cs">
+      <DependentUpon>SYBUNTReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="MethodOfGiving.cs" />
     <Compile Include="MethodOfGiving.Designer.cs">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>
@@ -170,6 +177,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LapsedDonorReport.resx">
       <DependentUpon>LapsedDonorReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SYBUNTReport.resx">
+      <DependentUpon>SYBUNTReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MethodOfGiving.resx">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>

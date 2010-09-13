@@ -240,6 +240,7 @@ OpenPetra:
                         DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
                         GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}
                         LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
+                        SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Safety:

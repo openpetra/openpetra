@@ -76,6 +76,12 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "SelectLastGift"))
+            {
+                value = new TVariant(SelectLastGift(ops[1].ToInt64(), ops[2].ToInt64(), ops[3].ToDate(), ops[4].ToDate(), ops[5].ToString()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
@@ -492,6 +498,72 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             situation.GetParameters().Add("TotalYear_0", new TVariant(TotalYear_0));
             situation.GetParameters().Add("TotalYear_1", new TVariant(TotalYear_1));
             situation.GetParameters().Add("TotalYear_2", new TVariant(TotalYear_2));
+        }
+
+        /// <summary>
+        ///	Select the last Gift and motivation details of the gifts that were given within the time period from one partner.
+        /// </summary>
+        /// <param name="ADonorKey">Partner key of the donor</param>
+        /// <param name="ALedgerNumber">Ledger number</param>
+        /// <param name="AStartDate">Start date of the period</param>
+        /// <param name="AEndDate">End date of the period</param>
+        /// <param name="ACurrency">Currency: Base or International</param>
+        /// <returns>True if a gift was found; otherwise false</returns>
+        private bool SelectLastGift(Int64 ADonorKey, Int64 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, String ACurrency)
+        {
+            String StrSql = "SELECT " + AGiftTable.GetDateEnteredDBName() + ", " +
+                            AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationGroupCodeDBName() + ", " +
+                            AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetMotivationDetailCodeDBName();
+
+            if (ACurrency == "Base")
+            {
+                StrSql = StrSql + ", " + AGiftDetailTable.GetGiftAmountDBName() + " AS CurrentAmount";
+            }
+            else
+            {
+                StrSql = StrSql + ", " + AGiftDetailTable.GetGiftAmountIntlDBName() + " AS CurrentAmount";
+            }
+
+            StrSql = StrSql +
+                     " FROM " + AGiftTable.GetTableDBName() +
+                     " , " + AGiftDetailTable.GetTableDBName() +
+                     ", " + AGiftBatchTable.GetTableDBName() +
+
+                     " WHERE " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
+                     " AND " + AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetLedgerNumberDBName() + " = " +
+                     ALedgerNumber.ToString() +
+                     " AND " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDonorKeyDBName() + " = " + ADonorKey.ToString() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + " = " + AGiftDetailTable.GetTableDBName() +
+                     "." + AGiftDetailTable.GetBatchNumberDBName() +
+                     " AND " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetBatchNumberDBName() + " = " +
+                     AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetBatchNumberDBName() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + " = " +
+                     AGiftDetailTable.GetTableDBName() + "." + AGiftDetailTable.GetGiftTransactionNumberDBName() +
+                     " AND " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " BETWEEN '" + AStartDate.ToString(
+                "yyyy-MM-dd") + "' AND '" + AEndDate.ToString("yyyy-MM-dd") + "'" +
+                     " AND " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetBatchStatusDBName() + " = 'Posted'" +
+                     " ORDER BY " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " DESC LIMIT 1";
+
+            DataTable Table = situation.GetDatabaseConnection().SelectDT(StrSql, "table",
+                situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
+
+            if (Table.Rows.Count > 0)
+            {
+                DateTime DateEntered = (DateTime)Table.Rows[0][AGiftTable.GetDateEnteredDBName()];
+                Double CurrentAmount = Convert.ToDouble(Table.Rows[0]["CurrentAmount"]);
+                String MotivationDetail = (String)Table.Rows[0][AGiftDetailTable.GetMotivationDetailCodeDBName()];
+                String MotivationGroup = (String)Table.Rows[0][AGiftDetailTable.GetMotivationGroupCodeDBName()];
+
+                situation.GetParameters().Add("LastGiftDate", new TVariant(DateEntered));
+                situation.GetParameters().Add("LastGiftAmount", new TVariant(CurrentAmount));
+                situation.GetParameters().Add("MotivationDetail", new TVariant(MotivationDetail));
+                situation.GetParameters().Add("MotivationGroup", new TVariant(MotivationGroup));
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
