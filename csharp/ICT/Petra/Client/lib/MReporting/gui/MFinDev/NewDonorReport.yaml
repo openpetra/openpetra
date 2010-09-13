@@ -1,0 +1,93 @@
+﻿RootNode:
+    BaseYaml: FinancialDevelopmentReportingForm.yaml
+    FormType: report
+    FormTitle: New Donor Report
+    WindowWidth: 650
+    WindowHeight: 500
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
+    TemplateParameters:
+        XMLFILES: [FinancialDevelopment\\\\newdonorreport.xml, common.xml]
+        REPORTNAME: NewDonorReport
+        CURRENTREPORT: NewDonorReport
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRFINDEV]
+    Controls:
+        tpgGeneralSettings:
+            Label: GeneralSettings
+            Controls: [lblLedger, grpDateSelection, rgrSorting]
+        tpgColumns:
+            Label: Columns
+            Controls: [ucoReportColumns]
+          
+        ucoReportColumns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill
+            ParameterName: param_partner_source
+        grpDateSelection:
+            Dock: Top
+            Label: Selection
+            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount, cmbCurrency]
+        rgrSorting:
+            Dock: Top
+            Label: Sort by
+            Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
+        lblLedger:
+            Label: Ledger
+           
+        dtpStartDate:
+            Label: Start Date
+            ParameterName: param_start_date
+        dtpEndDate:
+            Label: End date
+            ParameterName: param_end_date
+        txtMinimumAmount:
+            Label: Minimum Amount
+            ParameterName: param_minimum_amount
+            Format: Integer
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International]
+        rbtPartnerName:
+            Label: Partner Name
+            ParameterValue: Partner Name
+        rbtPartnerKey:
+            Label: Partner Key
+            ParameterValue: Partner Key
+        rbtAmount:
+            Label: Gift Amount
+            ParameterValue: Amount
+        
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: Gift Date
+            Parameter: 2.0
+        Para2:
+            Name: Motivation Group
+            Parameter: 3.0
+        Para3:
+            Name: Motivation Group Description
+            Parameter: 3.0
+        Para4:
+            Name: Motivation Detail
+            Parameter: 3.0
+        Para5:
+            Name: Motivation Detail Description
+            Parameter: 3.0
+        Para6:
+            Name: Gift Amount
+            Parameter: 3.0
+        Para7:
+            Name: Recipient Name
+            Parameter: 4.0
+        Para8:
+            Name: Recipient Key
+            Parameter: 2.0
+        
+        
+      
