@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Shared.MPartner.DataTables</RootNamespace>
     <AssemblyName>Ict.Petra.Shared.MPartner.DataTables</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\..\_bin\Server_Client\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\_bin\Server_Client\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -20,7 +20,7 @@
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>..\..\..\_bin\Server_Client\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\Server_Client\ObjCode\</IntermediateOutputPath>
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -30,7 +30,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>False</Optimize>
-    <IntermediateOutputPath>..\..\..\_bin\Server_Client\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\Server_Client\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

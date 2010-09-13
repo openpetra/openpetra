@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Common.DB</RootNamespace>
     <AssemblyName>Ict.Common.DB</AssemblyName>
-    <BaseIntermediateOutputPath>..\_bin\Debug\obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -21,6 +21,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\_bin\Release\</OutputPath>
@@ -29,6 +30,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

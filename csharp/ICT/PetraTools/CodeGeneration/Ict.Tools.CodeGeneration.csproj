@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Tools.CodeGeneration</RootNamespace>
     <AssemblyName>Ict.Tools.CodeGeneration</AssemblyName>
-    <BaseIntermediateOutputPath>..\_bin\Debug\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -21,7 +21,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <IntermediateOutputPath>..\_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
     <StartAction>Program</StartAction>
     <StartProgram>..\_bin\Debug\GenerateWinForms.exe</StartProgram>
   </PropertyGroup>
@@ -32,6 +32,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

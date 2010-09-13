@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>GenerateSQL</RootNamespace>
     <AssemblyName>GenerateSQL</AssemblyName>
-    <BaseIntermediateOutputPath>../_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -14,21 +14,22 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>../_bin\Debug\</OutputPath>
+    <OutputPath>..\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <IntermediateOutputPath>../_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>../_bin\Release\</OutputPath>
+    <OutputPath>..\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

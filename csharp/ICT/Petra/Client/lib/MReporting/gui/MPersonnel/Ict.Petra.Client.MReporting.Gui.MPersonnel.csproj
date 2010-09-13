@@ -7,8 +7,7 @@
     <RootNamespace>Ict.Petra.Client.MReporting.Gui.MPersonnel</RootNamespace>
     <AssemblyName>Ict.Petra.Client.MReporting.Gui.MPersonnel</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\berndr\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <BaseIntermediateOutputPath>../../../../_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\..\..\_bin\Debug\Ict.Petra.Client.MReporting.Gui.MPersonnel.xml</DocumentationFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -16,22 +15,22 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>../../../../_bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>../../../../_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>../../../../_bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <IntermediateOutputPath>../../../../_bin\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

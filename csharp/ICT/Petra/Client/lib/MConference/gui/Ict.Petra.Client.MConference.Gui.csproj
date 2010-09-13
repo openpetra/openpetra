@@ -6,33 +6,32 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Client.MConference.Gui</RootNamespace>
     <AssemblyName>Ict.Petra.Client.MConference.Gui</AssemblyName>
-    <BaseIntermediateOutputPath>../../../_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Client.MConference.Gui.xml</DocumentationFile>
-    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\berndr\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <NoWarn>0067</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>../../../_bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE;SHOWCHANGES</DefineConstants>
-    <IntermediateOutputPath>../../../_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\ObjCode\</IntermediateOutputPath>
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>../../../_bin\Release\</OutputPath>
+    <OutputPath>..\..\..\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>False</Optimize>
-    <IntermediateOutputPath>../../../_bin\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

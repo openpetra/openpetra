@@ -78,12 +78,15 @@ public class TFixProjectReferences : TCSProjTools
         bool firstPropertyGroup = true;
 
         string xmlns = "http://schemas.microsoft.com/developer/msbuild/2003"; // doc.Attributes["xmlns"].Value;
+        string BaseIntermediateOutputPath = String.Empty;
 
         foreach (XmlNode child in doc.DocumentElement)
         {
             if (child.Name == "PropertyGroup")
             {
                 bool containsTargetPlatform = false;
+                bool containsIntermediateOutputPath = false;
+                string OutputPath = String.Empty;
 
                 foreach (XmlNode child2 in child.ChildNodes)
                 {
@@ -104,6 +107,8 @@ public class TFixProjectReferences : TCSProjTools
 
                     if (child2.Name == "IntermediateOutputPath")
                     {
+                        containsIntermediateOutputPath = true;
+
                         // it seems we get problems with "unreferenced" resource files.
                         // looking at such a dll with Reflector, there is a strange relative path to the resource file.
                         // the trailing backslash prevents this
@@ -112,6 +117,98 @@ public class TFixProjectReferences : TCSProjTools
                             child2.InnerText = child2.InnerText.Substring(0, child2.InnerText.Length - 1) + "\\";
                         }
                     }
+
+                    if ((child2.Name == "BaseIntermediateOutputPath") || (child2.Name == "IntermediateOutputPath"))
+                    {
+                        child2.InnerText = child2.InnerText.Replace("/", "\\");
+                        child2.InnerText = child2.InnerText.Replace("Objcode", "ObjCode");
+                        child2.InnerText = child2.InnerText.Replace("objcode", "ObjCode");
+                        child2.InnerText = child2.InnerText.Replace("ObjCode\\ObjCode", "ObjCode");
+
+                        if (!child2.InnerText.EndsWith("\\"))
+                        {
+                            child2.InnerText += "\\";
+                        }
+
+                        if (!child2.InnerText.EndsWith("\\ObjCode\\"))
+                        {
+                            if (child2.InnerText.EndsWith("Debug\\obj\\"))
+                            {
+                                child2.InnerText = child2.InnerText.Replace("Debug\\obj\\", "ObjCode\\");
+                            }
+
+                            if (child2.InnerText.EndsWith("Debug\\"))
+                            {
+                                child2.InnerText = child2.InnerText.Replace("Debug\\", "ObjCode\\");
+                            }
+
+                            if (child2.InnerText.EndsWith("Release\\"))
+                            {
+                                child2.InnerText = child2.InnerText.Replace("Release\\", "ObjCode\\");
+                            }
+
+                            if (child2.InnerText.EndsWith("_bin\\"))
+                            {
+                                child2.InnerText = child2.InnerText.Replace("_bin\\", "_bin\\ObjCode\\");
+                            }
+
+                            if (child2.InnerText.EndsWith("Server_Client\\"))
+                            {
+                                child2.InnerText = child2.InnerText.Replace("Server_Client\\", "Server_Client\\ObjCode\\");
+                            }
+                        }
+
+                        if (!child2.InnerText.EndsWith("\\ObjCode\\"))
+                        {
+                            Console.WriteLine("WARNING: " + child2.Name + " is non standard: " + child2.InnerText);
+                        }
+
+                        if (child2.Name == "BaseIntermediateOutputPath")
+                        {
+                            BaseIntermediateOutputPath = child2.InnerText.Replace("/", "\\");
+                        }
+                        else
+                        {
+                            if (child2.InnerText.Replace("Debug", "ObjCode").Replace("Release", "ObjCode").Replace("/",
+                                    "\\") != BaseIntermediateOutputPath)
+                            {
+                                Console.WriteLine("ERROR: Problem with " + child2.Name + " " + child2.InnerText + " in " +
+                                    TXMLParser.GetAttribute(child, "Condition"));
+                            }
+                        }
+                    }
+
+                    if (child2.Name == "OutputPath")
+                    {
+                        child2.InnerText = child2.InnerText.Replace("/", "\\");
+
+                        if (!child2.InnerText.EndsWith("\\"))
+                        {
+                            child2.InnerText += "\\";
+                        }
+
+                        OutputPath = child2.InnerText;
+
+                        if (OutputPath.Replace("Debug", "ObjCode").Replace("Release", "ObjCode").Replace("/", "\\") != BaseIntermediateOutputPath)
+                        {
+                            Console.WriteLine("ERROR: Problem with " + child2.Name + " " + OutputPath + " in " +
+                                TXMLParser.GetAttribute(child, "Condition"));
+                        }
+                    }
+
+                    if (child2.Name == "SourceAnalysisOverrideSettingsFile")
+                    {
+                        child.RemoveChild(child2);
+                    }
+                }
+
+                if (!containsIntermediateOutputPath && TXMLParser.GetAttribute(child, "Condition").Contains("Configuration"))
+                {
+                    Console.WriteLine("Fixing: PropertyGroup " + TXMLParser.GetAttribute(child,
+                            "Condition") + " does not contain IntermediateOutputPath");
+                    XmlNode newIntermediateOutputPath = child.OwnerDocument.CreateElement("IntermediateOutputPath", xmlns);
+                    newIntermediateOutputPath.InnerText = OutputPath.Replace("Debug", "ObjCode").Replace("Release", "ObjCode");
+                    child.AppendChild(newIntermediateOutputPath);
                 }
 
                 if (firstPropertyGroup && !containsTargetPlatform)

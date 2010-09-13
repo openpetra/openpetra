@@ -232,30 +232,8 @@
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
         <!-- but the clean task is not implemented yet: see https://sourceforge.net/tracker/?func=detail&atid=402868&aid=1534755&group_id=31650 -->
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Common/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_ServerAdmin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/*.txt"/></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/*.txt" /></fileset></delete>
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}" failonerror="false" />
-        <delete dir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/ObjCode" failonerror="false" />
-        <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/*.txt" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="**/_bin/" /></fileset></delete>
+        <delete failonerror="false"><fileset><include name="**/obj/" /></fileset></delete>
     </target>
     
     <target name="createSQLStatements" depends="compileCommon, compilePetraTools" description="Create the SQL files.">

@@ -8,8 +8,7 @@
     <AssemblyName>Ict.Petra.Client.MFinance.Gui.Setup</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\christiank\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <BaseIntermediateOutputPath>..\..\..\..\_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\..\..\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.xml</DocumentationFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -31,7 +30,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE;SHOWCHANGES</DefineConstants>
-    <IntermediateOutputPath>..\..\..\..\_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
@@ -40,6 +39,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>

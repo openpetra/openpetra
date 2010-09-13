@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Server.MCommon.DataAccess</RootNamespace>
     <AssemblyName>Ict.Petra.Server.MCommon.DataAccess</AssemblyName>
-    <BaseIntermediateOutputPath>../../../_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -15,22 +15,22 @@
     <DocumentationFile>..\..\..\_bin\Debug\Ict.Petra.Server.MCommon.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>../../../_bin/Debug\</OutputPath>
+    <OutputPath>..\..\..\_bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>../../../_bin/Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\ObjCode\</IntermediateOutputPath>
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>../../../_bin/Release\</OutputPath>
+    <OutputPath>..\..\..\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>False</Optimize>
-    <IntermediateOutputPath>../../../_bin/Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

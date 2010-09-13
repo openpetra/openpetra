@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Server.MCommon</RootNamespace>
     <AssemblyName>Ict.Petra.Server.MCommon</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\_bin\Objcode\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -21,7 +21,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE; DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\Objcode\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\_bin\Release\</OutputPath>
@@ -30,7 +30,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

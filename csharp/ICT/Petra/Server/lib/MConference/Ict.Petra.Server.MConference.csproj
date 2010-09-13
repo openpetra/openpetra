@@ -11,7 +11,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <BaseIntermediateOutputPath>..\..\_bin\objcode\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MConference.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -21,15 +21,16 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE; DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\objcode\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\_bin\Release</OutputPath>
+    <OutputPath>..\..\_bin\Release\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

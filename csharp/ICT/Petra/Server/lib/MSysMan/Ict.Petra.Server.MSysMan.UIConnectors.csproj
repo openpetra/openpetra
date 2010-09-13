@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Ict.Petra.Server.MSysMan.UIConnectors</RootNamespace>
     <AssemblyName>Ict.Petra.Server.MSysMan.UIConnectors</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <DocumentationFile>..\..\_bin\Debug\Ict.Petra.Server.MSysMan.UIConnectors.xml</DocumentationFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
@@ -21,7 +21,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\_bin\Release\</OutputPath>
@@ -30,7 +30,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

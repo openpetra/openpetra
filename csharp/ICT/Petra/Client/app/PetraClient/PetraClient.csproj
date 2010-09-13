@@ -10,11 +10,10 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <BaseIntermediateOutputPath>..\..\_bin\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <DocumentationFile>..\..\_bin\Debug\PetraClient.xml</DocumentationFile>
     <StartArguments>-C:../../../../../../etc/Client.config</StartArguments>
-    <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\timotheus\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\_bin\Debug\</OutputPath>
@@ -23,7 +22,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
-    <IntermediateOutputPath>..\..\_bin\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -33,6 +32,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>
