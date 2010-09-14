@@ -410,7 +410,405 @@ namespace Ict.Petra.Shared.MPartner.IO
             }
         }
 
-        private void ImportOptionalDetails()
+        private void ImportComment(PPartnerRow APartnerRow)
+        {
+            APartnerRow.Comment = ReadString();
+        }
+
+        private void ImportCommentSeq()
+        {
+            PPartnerCommentRow PartnerCommentRow = FMainDS.PPartnerComment.NewRowTyped();
+
+            FMainDS.PPartnerComment.Rows.Add(PartnerCommentRow);
+            PartnerCommentRow.PartnerKey = FPartnerKey;
+
+            PartnerCommentRow.Sequence = ReadInt32();
+            PartnerCommentRow.Comment = ReadString();
+        }
+
+        private void ImportCommitment()
+        {
+            PmStaffDataRow StaffDataRow = FMainDS.PmStaffData.NewRowTyped();
+
+            FMainDS.PmStaffData.Rows.Add(StaffDataRow);
+            StaffDataRow.PartnerKey = FPartnerKey;
+
+            StaffDataRow.SiteKey = ReadInt64();
+            StaffDataRow.Key = ReadInt64();
+            StaffDataRow.StartOfCommitment = ReadDate();
+            StaffDataRow.StartDateApprox = ReadBoolean();
+            StaffDataRow.EndOfCommitment = ReadNullableDate();
+            StaffDataRow.StatusCode = ReadString();
+            StaffDataRow.ReceivingField = ReadInt64();
+            StaffDataRow.HomeOffice = ReadInt64();
+            StaffDataRow.OfficeRecruitedBy = ReadInt64();
+            StaffDataRow.ReceivingFieldOffice = ReadInt64();
+            StaffDataRow.JobTitle = ReadString();
+            StaffDataRow.StaffDataComments = ReadString();
+        }
+
+        private void ImportLanguage()
+        {
+            PmPersonLanguageRow PersonLanguageRow = FMainDS.PmPersonLanguage.NewRowTyped();
+
+            FMainDS.PmPersonLanguage.Rows.Add(PersonLanguageRow);
+            PersonLanguageRow.PartnerKey = FPartnerKey;
+
+            PersonLanguageRow.LanguageCode = ReadString();
+            PersonLanguageRow.WillingToTranslate = ReadBoolean();
+            PersonLanguageRow.TranslateInto = ReadBoolean();
+            PersonLanguageRow.TranslateOutOf = ReadBoolean();
+            PersonLanguageRow.YearsOfExperience = ReadInt32();
+            PersonLanguageRow.LanguageLevel = ReadInt32();
+            PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
+            PersonLanguageRow.Comment = ReadString();
+        }
+
+        private void ImportPreviousExperience()
+        {
+            PmPastExperienceRow PastExperienceRow = FMainDS.PmPastExperience.NewRowTyped();
+
+            FMainDS.PmPastExperience.Rows.Add(PastExperienceRow);
+            PastExperienceRow.PartnerKey = FPartnerKey;
+
+            PastExperienceRow.SiteKey = ReadInt64();
+            PastExperienceRow.Key = ReadInt64();
+            PastExperienceRow.PrevLocation = ReadString();
+            PastExperienceRow.StartDate = ReadNullableDate();
+            PastExperienceRow.EndDate = ReadNullableDate();
+            PastExperienceRow.PrevWorkHere = ReadBoolean();
+            PastExperienceRow.PrevWork = ReadBoolean();
+            PastExperienceRow.OtherOrganisation = ReadString();
+            PastExperienceRow.PrevRole = ReadString();
+            PastExperienceRow.Category = ReadString();
+            PastExperienceRow.PastExpComments = ReadString();
+        }
+
+        private void ImportPassport()
+        {
+            PmPassportDetailsRow PassportDetailsRow = FMainDS.PmPassportDetails.NewRowTyped();
+
+            FMainDS.PmPassportDetails.Rows.Add(PassportDetailsRow);
+            PassportDetailsRow.PartnerKey = FPartnerKey;
+
+            PassportDetailsRow.PassportNumber = ReadString();
+            PassportDetailsRow.MainPassport = ReadBoolean();
+            PassportDetailsRow.CountryOfIssue = ReadString();
+            PassportDetailsRow.DateOfExpiration = ReadNullableDate();
+            PassportDetailsRow.DateOfIssue = ReadNullableDate();
+            PassportDetailsRow.FullPassportName = ReadString();
+            PassportDetailsRow.PassportNationalityCode = ReadString();
+            PassportDetailsRow.PassportDetailsType = ReadString();
+            PassportDetailsRow.PassportDob = ReadNullableDate();
+            PassportDetailsRow.PlaceOfBirth = ReadString();
+            PassportDetailsRow.PlaceOfIssue = ReadString();
+        }
+
+        private void ImportPersonalDocument()
+        {
+            PmDocumentRow DocumentRow = FMainDS.PmDocument.NewRowTyped();
+
+            FMainDS.PmDocument.Rows.Add(DocumentRow);
+            DocumentRow.PartnerKey = FPartnerKey;
+
+            DocumentRow.SiteKey = ReadInt64();
+            DocumentRow.DocumentKey = ReadInt64();
+            DocumentRow.DocCode = ReadString();
+            string DocCategory = ReadString();
+            DocumentRow.DocumentId = ReadString();
+            DocumentRow.PlaceOfIssue = ReadString();
+            DocumentRow.DateOfIssue = ReadNullableDate();
+            DocumentRow.DateOfStart = ReadNullableDate();
+            DocumentRow.DateOfExpiration = ReadNullableDate();
+            DocumentRow.AssocDocId = ReadString();
+            DocumentRow.ContactPartnerKey = ReadInt64();
+            DocumentRow.DocComment = ReadString();
+
+            // TODO: PmDocumentType, PmDocumentCategory
+        }
+
+        private void ImportPersonalData()
+        {
+            PmPersonalDataRow PersonalDataRow = FMainDS.PmPersonalData.NewRowTyped();
+
+            FMainDS.PmPersonalData.Rows.Add(PersonalDataRow);
+            PersonalDataRow.PartnerKey = FPartnerKey;
+
+            PersonalDataRow.DriverStatus = ReadString();
+            PersonalDataRow.GenDriverLicense = ReadBoolean();
+            PersonalDataRow.DrivingLicenseNumber = ReadString();
+            PersonalDataRow.InternalDriverLicense = ReadBoolean();
+
+            // TODO: PtDriverStatus
+        }
+
+        private void ImportProfessionalData()
+        {
+            PmPersonQualificationRow PersonQualificationRow = FMainDS.PmPersonQualification.NewRowTyped();
+
+            FMainDS.PmPersonQualification.Rows.Add(PersonQualificationRow);
+            PersonQualificationRow.PartnerKey = FPartnerKey;
+
+            PersonQualificationRow.QualificationAreaName = ReadString();
+            PersonQualificationRow.QualificationLevel = ReadInt32();
+            PersonQualificationRow.InformalFlag = ReadBoolean();
+            PersonQualificationRow.YearsOfExperience = ReadInt32();
+            PersonQualificationRow.YearsOfExperienceAsOf = ReadNullableDate();
+            PersonQualificationRow.Comment = ReadString();
+            PersonQualificationRow.QualificationDate = ReadNullableDate();
+            PersonQualificationRow.QualificationExpiry = ReadNullableDate();
+        }
+
+        private void ImportPersonEvaluation()
+        {
+            PmPersonEvaluationRow PersonEvaluationRow = FMainDS.PmPersonEvaluation.NewRowTyped();
+
+            FMainDS.PmPersonEvaluation.Rows.Add(PersonEvaluationRow);
+            PersonEvaluationRow.PartnerKey = FPartnerKey;
+
+            PersonEvaluationRow.EvaluationDate = ReadDate();
+            PersonEvaluationRow.Evaluator = ReadString();
+            PersonEvaluationRow.EvaluationType = ReadString();
+            PersonEvaluationRow.NextEvaluationDate = ReadNullableDate();
+            PersonEvaluationRow.EvaluationComments = ReadString();
+            PersonEvaluationRow.PersonEvalAction = ReadString();
+        }
+
+        private void ImportSpecialNeeds()
+        {
+            PmSpecialNeedRow SpecialNeedRow = FMainDS.PmSpecialNeed.NewRowTyped();
+
+            FMainDS.PmSpecialNeed.Rows.Add(SpecialNeedRow);
+            SpecialNeedRow.PartnerKey = FPartnerKey;
+
+            SpecialNeedRow.DateCreated = ReadNullableDate();
+            SpecialNeedRow.ContactHomeOffice = ReadBoolean();
+            SpecialNeedRow.VegetarianFlag = ReadBoolean();
+            SpecialNeedRow.DietaryComment = ReadString();
+            SpecialNeedRow.MedicalComment = ReadString();
+            SpecialNeedRow.OtherSpecialNeed = ReadString();
+        }
+
+        private void ImportPartnerType()
+        {
+            PPartnerTypeRow PartnerTypeRow = FMainDS.PPartnerType.NewRowTyped();
+
+            FMainDS.PPartnerType.Rows.Add(PartnerTypeRow);
+            PartnerTypeRow.PartnerKey = FPartnerKey;
+
+            PartnerTypeRow.TypeCode = ReadString();
+            PartnerTypeRow.ValidFrom = ReadNullableDate();
+            PartnerTypeRow.ValidUntil = ReadNullableDate();
+        }
+
+        private void ImportInterest()
+        {
+            PPartnerInterestRow PartnerInterestRow = FMainDS.PPartnerInterest.NewRowTyped();
+
+            FMainDS.PPartnerInterest.Rows.Add(PartnerInterestRow);
+            PartnerInterestRow.PartnerKey = FPartnerKey;
+
+            PartnerInterestRow.InterestNumber = ReadInt32();
+            PartnerInterestRow.FieldKey = ReadInt64();
+            PartnerInterestRow.Country = ReadString();
+            PartnerInterestRow.Interest = ReadString();
+            string Category = ReadString();
+            PartnerInterestRow.Level = ReadInt32();
+            PartnerInterestRow.Comment = ReadString();
+
+            // TODO: PInterest, PInterestCategory
+        }
+
+        private void ImportVision()
+        {
+            PmPersonVisionRow PersonVisionRow = FMainDS.PmPersonVision.NewRowTyped();
+
+            FMainDS.PmPersonVision.Rows.Add(PersonVisionRow);
+            PersonVisionRow.PartnerKey = FPartnerKey;
+
+            PersonVisionRow.VisionAreaName = ReadString();
+            PersonVisionRow.VisionLevel = ReadInt32();
+            PersonVisionRow.VisionComment = ReadString();
+        }
+
+        private void ImportUnitAbility()
+        {
+            UmUnitAbilityRow UnitAbilityRow = FMainDS.UmUnitAbility.NewRowTyped();
+
+            FMainDS.UmUnitAbility.Rows.Add(UnitAbilityRow);
+            UnitAbilityRow.PartnerKey = FPartnerKey;
+
+            UnitAbilityRow.AbilityAreaName = ReadString();
+            UnitAbilityRow.AbilityLevel = ReadInt32();
+            UnitAbilityRow.YearsOfExperience = ReadInt32();
+        }
+
+        private void ImportUnitCosts()
+        {
+            UmUnitCostRow UnitCostRow = FMainDS.UmUnitCost.NewRowTyped();
+
+            FMainDS.UmUnitCost.Rows.Add(UnitCostRow);
+            UnitCostRow.PartnerKey = FPartnerKey;
+
+            UnitCostRow.ValidFromDate = ReadDate();
+            UnitCostRow.ChargePeriod = ReadString();
+            UnitCostRow.CoupleJoiningChargeIntl = ReadDouble();
+            UnitCostRow.AdultJoiningChargeIntl = ReadDouble();
+            UnitCostRow.ChildJoiningChargeIntl = ReadDouble();
+            UnitCostRow.CoupleCostsPeriodIntl = ReadDouble();
+            UnitCostRow.SingleCostsPeriodIntl = ReadDouble();
+            UnitCostRow.Child1CostsPeriodIntl = ReadDouble();
+            UnitCostRow.Child2CostsPeriodIntl = ReadDouble();
+            UnitCostRow.Child3CostsPeriodIntl = ReadDouble();
+        }
+
+        private void ImportJob()
+        {
+            // Job Assignments are not being imported into the database anymore from 2.1.0 onwards.
+
+            ReadNullableDate();
+            ReadNullableDate();
+            ReadString();
+            ReadString();
+            ReadBoolean();
+            ReadInt64();
+            ReadString();
+            ReadString();
+            ReadNullableDate();
+        }
+
+        private void ImportUnitJob()
+        {
+            // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            ReadString();
+            ReadString();
+            ReadInt32();
+            ReadNullableDate();
+            ReadNullableDate();
+            ReadString();
+            ReadString();
+            ReadString();
+            ReadBoolean();
+            ReadBoolean();
+            ReadInt32();
+            ReadBoolean();
+            ReadInt32();
+            ReadInt32();
+            ReadInt32();
+            ReadInt32();
+        }
+
+        private void ImportUnitJobAbility()
+        {
+            // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            ReadString();
+            ReadString();
+            ReadInt32();
+            ReadString();
+            ReadInt32();
+            ReadInt32();
+        }
+
+        private void ImportUnitJobLanguage()
+        {
+            // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            ReadString();
+            ReadString();
+            ReadInt32();
+            ReadString();
+            ReadInt32();
+            ReadInt32();
+        }
+
+        private void ImportUnitJobQualification()
+        {
+            // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            ReadString();
+            ReadString();
+            ReadInt32();
+            ReadString();
+            ReadInt32();
+            ReadInt32();
+        }
+
+        private void ImportUnitJobVision()
+        {
+            // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            ReadString();
+            ReadString();
+            ReadInt32();
+            ReadString();
+            ReadInt32();
+        }
+
+        private void ImportUnitLanguage()
+        {
+            UmUnitLanguageRow UnitLanguageRow = FMainDS.UmUnitLanguage.NewRowTyped();
+
+            FMainDS.UmUnitLanguage.Rows.Add(UnitLanguageRow);
+            UnitLanguageRow.PartnerKey = FPartnerKey;
+
+            UnitLanguageRow.LanguageCode = ReadString();
+            UnitLanguageRow.LanguageLevel = ReadInt32();
+            UnitLanguageRow.YearsOfExperience = ReadInt32();
+            UnitLanguageRow.UnitLanguageReq = ReadString();
+            UnitLanguageRow.UnitLangComment = ReadString();
+
+            // TODO p_language
+            // TODO pt_language_level
+        }
+
+        private void ImportUnitStructure()
+        {
+            UmUnitStructureRow UnitStructureRow = FMainDS.UmUnitStructure.NewRowTyped();
+
+            FMainDS.UmUnitStructure.Rows.Add(UnitStructureRow);
+            UnitStructureRow.ChildUnitKey = FPartnerKey;
+            UnitStructureRow.ParentUnitKey = ReadInt64();
+        }
+
+        private void ImportUnitVision()
+        {
+            UmUnitVisionRow UnitVisionRow = FMainDS.UmUnitVision.NewRowTyped();
+
+            FMainDS.UmUnitVision.Rows.Add(UnitVisionRow);
+            UnitVisionRow.PartnerKey = FPartnerKey;
+
+            UnitVisionRow.VisionAreaName = ReadString();
+            UnitVisionRow.VisionLevel = ReadInt32();
+
+            // TODO pt_vision_area
+            // TODO pt_vision_level
+        }
+
+        private void ImportBuilding()
+        {
+            PcBuildingRow BuildingRow = FMainDS.PcBuilding.NewRowTyped();
+
+            FMainDS.PcBuilding.Rows.Add(BuildingRow);
+            BuildingRow.VenueKey = FPartnerKey;
+
+            BuildingRow.BuildingCode = ReadString();
+            BuildingRow.BuildingDesc = ReadString();
+        }
+
+        private void ImportRoom()
+        {
+            PcRoomRow RoomRow = FMainDS.PcRoom.NewRowTyped();
+
+            FMainDS.PcRoom.Rows.Add(RoomRow);
+            RoomRow.VenueKey = FPartnerKey;
+
+            RoomRow.BuildingCode = ReadString();
+            RoomRow.RoomNumber = ReadString();
+            RoomRow.Beds = ReadInt32();
+            RoomRow.BedCharge = ReadDouble();
+            RoomRow.BedCost = ReadDouble();
+            RoomRow.MaxOccupancy = ReadInt32();
+            RoomRow.GenderPreference = ReadString();
+        }
+
+        private void ImportOptionalDetails(PPartnerRow APartnerRow)
         {
             string KeyWord = ReadString();
 
@@ -430,111 +828,111 @@ namespace Ict.Petra.Shared.MPartner.IO
                 }
                 else if (KeyWord == "COMMENT")
                 {
-                    // TODO ImportComment();
+                    ImportComment(APartnerRow);
                 }
                 else if (KeyWord == "COMMENTSEQ")
                 {
-                    // TODO ImportCommentSeq();
+                    ImportCommentSeq();
                 }
                 else if (KeyWord == "COMMIT")
                 {
-                    // TODO ImportCommitment();
+                    ImportCommitment();
                 }
                 else if (KeyWord == "JOB")
                 {
-                    // TODO ImportJob();
+                    ImportJob();
                 }
                 else if (KeyWord == "LANGUAGE")
                 {
-                    // TODO ImportLanguage();
+                    ImportLanguage();
                 }
                 else if (KeyWord == "PREVEXP")
                 {
-                    // TODO ImportPreviousExperience();
+                    ImportPreviousExperience();
                 }
                 else if (KeyWord == "PASSPORT")
                 {
-                    // TODO ImportPassport();
+                    ImportPassport();
                 }
                 else if (KeyWord == "PERSDOCUMENT")
                 {
-                    // TODO ImportPersonalDocument();
+                    ImportPersonalDocument();
                 }
                 else if (KeyWord == "PERSONAL")
                 {
-                    // TODO ImportPersonal();
+                    ImportPersonalData();
                 }
                 else if (KeyWord == "PROFESN")
                 {
-                    // TODO ImportProfession();
+                    ImportProfessionalData();
                 }
                 else if (KeyWord == "PROGREP")
                 {
-                    // TODO ImportPersonEvaluation();
+                    ImportPersonEvaluation();
                 }
                 else if (KeyWord == "SPECNEED")
                 {
-                    // TODO ImportSpecialNeeds();
+                    ImportSpecialNeeds();
                 }
                 else if (KeyWord == "TYPE")
                 {
-                    // TODO ImportPartnerType();
+                    ImportPartnerType();
                 }
                 else if (KeyWord == "INTEREST")
                 {
-                    // TODO ImportInterest();
+                    ImportInterest();
                 }
                 else if (KeyWord == "VISION")
                 {
-                    // TODO ImportVision();
+                    ImportVision();
                 }
                 else if (KeyWord == "U-ABILITY")
                 {
-                    // TODO ImportUnitAbility();
+                    ImportUnitAbility();
                 }
                 else if (KeyWord == "U-COSTS")
                 {
-                    // TODO ImportUnitCosts();
+                    ImportUnitCosts();
                 }
                 else if (KeyWord == "U-JOB")
                 {
-                    // TODO ImportUnitJob();
+                    ImportUnitJob();
                 }
                 else if (KeyWord == "UJ-ABIL")
                 {
-                    // TODO ImportUnitJobAbility();
+                    ImportUnitJobAbility();
                 }
                 else if (KeyWord == "UJ-LANG")
                 {
-                    // TODO ImportUnitJobLanguage();
+                    ImportUnitJobLanguage();
                 }
                 else if (KeyWord == "UJ-QUAL")
                 {
-                    // TODO ImportUnitJobQualification();
+                    ImportUnitJobQualification();
                 }
                 else if (KeyWord == "UJ-VISION")
                 {
-                    // TODO ImportUnitJobVision();
+                    ImportUnitJobVision();
                 }
                 else if (KeyWord == "U-LANG")
                 {
-                    // TODO ImportUnitLanguage();
+                    ImportUnitLanguage();
                 }
                 else if (KeyWord == "U-STRUCT")
                 {
-                    // TODO ImportUnitStructure();
+                    ImportUnitStructure();
                 }
                 else if (KeyWord == "U-VISION")
                 {
-                    // TODO ImportUnitVision();
+                    ImportUnitVision();
                 }
                 else if (KeyWord == "V-BUILDING")
                 {
-                    // TODO ImportBuilding();
+                    ImportBuilding();
                 }
                 else if (KeyWord == "V-ROOM")
                 {
-                    // TODO ImportRoom();
+                    ImportRoom();
                 }
                 else
                 {
@@ -566,7 +964,7 @@ namespace Ict.Petra.Shared.MPartner.IO
 
                 ImportLocation();
 
-                ImportOptionalDetails();
+                ImportOptionalDetails(PartnerRow);
             }
 
             return FMainDS;
