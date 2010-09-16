@@ -22,15 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Server.MReporting;
-using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.MFinance.Gift.Data;
+using System.Data.Odbc;
+using System.Data;
+using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.MFinance;
-using System.Data.Odbc;
-using System.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Server.MReporting.MFinDev
 {
@@ -79,6 +82,20 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             if (StringHelper.IsSame(f, "SelectLastGift"))
             {
                 value = new TVariant(SelectLastGift(ops[1].ToInt64(), ops[2].ToInt64(), ops[3].ToDate(), ops[4].ToDate(), ops[5].ToString()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "IsTopDonor"))
+            {
+                value = new TVariant(IsTopDonor(ops[1].ToDouble(), ops[2].ToDouble(), ops[3].ToDouble()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "MakeTopDonor"))
+            {
+                value = new TVariant(MakeTopDonor(ops[1].ToDouble(), ops[2].ToDouble(), ops[3].ToDouble(),
+                        ops[4].ToBool(), ops[5].ToString(), ops[6].ToDate(), ops[7].ToDate(),
+                        ops[8].ToInt64(), ops[9].ToString(), ops[10].ToString()));
                 return true;
             }
 
@@ -564,6 +581,240 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             }
 
             return false;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ATopXAmount">the Maximum Amount</param>
+        /// <param name="ABottomXAmount">the Minimum Amount</param>
+        /// <param name="ACummulativeAmount">The accummalated amount of all donors</param>
+        /// <returns></returns>
+        private bool IsTopDonor(double ATopXAmount, double ABottomXAmount, double ACummulativeAmount)
+        {
+            if ((ACummulativeAmount <= ATopXAmount)
+                && (ACummulativeAmount >= ABottomXAmount))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// This report considers gifts given between the two specified dates, and can include all gifts or, if
+        ///	selected, those to a particular motivation, motivation detail or recipient. For the defined set of gifts
+        ///	and its total value, the donors are sorted into a list, starting with those who gave most, and showing
+        ///	the percentage that their gifts contributed to the total received (for this motivation or recipient, if
+        ///	specified) and the cumulative percentage, moving down the list starting with the top donor.
+        /// </summary>
+        /// <param name="ATotalAmount">Pre calculated value of the total gifts given with these parameters</param>
+        /// <param name="ATopXPercent">Upper limit of the percentage to show in the report</param>
+        /// <param name="ABottomXPercent">Lower limit of the percentage to show in the report</param>
+        /// <param name="AExtract">true to use only partners from an extract</param>
+        /// <param name="AExtractName">extract name</param>
+        /// <param name="AStartDate">Start date of the gifts given</param>
+        /// <param name="AEndDate">End date of the gifts given</param>
+        /// <param name="ARecipientKey">Partner key of a specific recipient. If 0 then use all recipients</param>
+        /// <param name="AMotivationGroup">Limit gifts to this motivation group. If % use all motivation groups</param>
+        /// <param name="AMotivationDetail">Limit gifts to this motivation detail. If % use all motivation details</param>
+        /// <returns></returns>
+        private bool MakeTopDonor(double ATotalAmount, double ATopXPercent, double ABottomXPercent,
+            bool AExtract, String AExtractName, DateTime AStartDate, DateTime AEndDate,
+            Int64 ARecipientKey, String AMotivationGroup, String AMotivationDetail)
+        {
+            Int64 LedgerNumber = situation.GetParameters().Get("param_ledger_number_i").ToInt64();
+            String CurrencyType = situation.GetParameters().Get("param_currency").ToString();
+            StringBuilder SqlString = new StringBuilder();
+
+            SqlString.Append("SELECT DISTINCT ");
+            SqlString.Append("gift.p_donor_key_n AS DonorKey, ");
+            SqlString.Append(" PUB_p_partner.p_partner_short_name_c AS ShortName, ");
+            SqlString.Append(" PUB_p_partner.p_partner_class_c AS PartnerClass, ");
+
+            if (CurrencyType == "Base")
+            {
+                SqlString.Append("SUM(detail.a_gift_amount_n) AS Amount ");
+            }
+            else
+            {
+                SqlString.Append("SUM(detail.a_gift_amount_intl_n) AS Amount ");
+            }
+
+            SqlString.Append(" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_p_partner, PUB_a_gift_batch ");
+
+            if (AExtract)
+            {
+                SqlString.Append(", PUB_m_extract, PUB_m_extract_master");
+                SqlString.Append(" WHERE gift.p_donor_key_n = PUB_m_extract.p_partner_key_n ");
+                SqlString.Append(" AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i ");
+                SqlString.Append(" AND PUB_m_extract_master.m_extract_name_c = '");
+                SqlString.Append(AExtractName);
+                SqlString.Append("' AND ");
+            }
+            else
+            {
+                SqlString.Append(" WHERE ");
+            }
+
+            SqlString.Append(" detail.a_ledger_number_i = gift.a_ledger_number_i ");
+            SqlString.Append(" AND detail.a_batch_number_i = gift.a_batch_number_i ");
+            SqlString.Append(" AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i ");
+            SqlString.Append(" AND gift.a_date_entered_d BETWEEN '");
+            SqlString.Append(AStartDate.ToString("yyyy-MM-dd"));
+            SqlString.Append("' AND '");
+            SqlString.Append(AEndDate.ToString("yyyy-MM-dd"));
+            SqlString.Append("' AND gift.a_ledger_number_i = ");
+            SqlString.Append(LedgerNumber.ToString());
+            SqlString.Append(" AND PUB_a_gift_batch.a_ledger_number_i = ");
+            SqlString.Append(LedgerNumber.ToString());
+            SqlString.Append(" AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i ");
+            SqlString.Append(" AND ( PUB_a_gift_batch.a_batch_status_c = 'Posted' OR ");
+            SqlString.Append("    PUB_a_gift_batch.a_batch_status_c = 'posted' ) ");
+            SqlString.Append(" AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n ");
+
+            // only positive gifts. Corrections or reversals are excluded
+//            if (CurrencyType == "Base")
+//            {
+//                SqlString.Append(" AND detail.a_gift_amount_n > 0 ");
+//            }
+//            else
+//            {
+//                SqlString.Append(" AND detail.a_gift_amount_intl_n > 0 ");
+//            }
+
+            if (ARecipientKey != 0)
+            {
+                SqlString.Append(" AND detail.p_recipient_key_n = ");
+                SqlString.Append(ARecipientKey.ToString());
+            }
+
+            if (AMotivationGroup != "%")
+            {
+                SqlString.Append(" AND  detail.a_motivation_group_code_c LIKE '");
+                SqlString.Append(AMotivationGroup);
+                SqlString.Append("' ");
+            }
+
+            if (AMotivationDetail != "%")
+            {
+                SqlString.Append(" AND  detail.a_motivation_detail_code_c LIKE '");
+                SqlString.Append(AMotivationDetail);
+                SqlString.Append("' ");
+            }
+
+            SqlString.Append(" GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c ");
+            SqlString.Append(" ORDER BY Amount DESC");
+
+            DataTable Table = situation.GetDatabaseConnection().SelectDT(SqlString.ToString(), "table",
+                situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
+
+            double CummulativeAmount = 0;
+            double TopAmount = ATotalAmount * ATopXPercent / 100;
+            double BottomAmount = ATotalAmount * ABottomXPercent / 100;
+
+            int NumColumns = 7;
+            int ChildRow = 1;
+            situation.GetResults().Clear();
+
+            for (int Counter = 0; Counter < Table.Rows.Count; ++Counter)
+            {
+                double CurrentAmount = Convert.ToDouble(Table.Rows[Counter]["Amount"]);
+
+                if (CurrentAmount < 0)
+                {
+                    continue;
+                }
+
+                if ((CummulativeAmount <= TopAmount)
+                    && (CummulativeAmount >= BottomAmount))
+                {
+                    Int64 DonorKey = Convert.ToInt64(Table.Rows[Counter]["DonorKey"]);
+                    String ShortName = (String)Table.Rows[Counter]["ShortName"];
+                    String PartnerClass = (String)Table.Rows[Counter]["PartnerClass"];
+
+                    CummulativeAmount += CurrentAmount;
+
+                    // Transfer to results
+                    TVariant[] Header = new TVariant[NumColumns];
+                    TVariant[] Description =
+                    {
+                        new TVariant(), new TVariant()
+                    };
+                    TVariant[] Columns = new TVariant[NumColumns];
+
+                    for (int Counter2 = 0; Counter2 < NumColumns; ++Counter2)
+                    {
+                        Header[Counter2] = new TVariant();
+                        Columns[Counter2] = new TVariant();
+                    }
+
+                    StringBuilder PartnerAddress = new StringBuilder();
+                    PPartnerLocationRow AddressRow;
+
+                    if (Ict.Petra.Server.MReporting.MPartner.TRptUserFunctionsPartner.GetPartnerBestAddressRow(DonorKey, situation, out AddressRow))
+                    {
+                        PLocationTable LocationTable = PLocationAccess.LoadByPrimaryKey(AddressRow.SiteKey,
+                            AddressRow.LocationKey, situation.GetDatabaseConnection().Transaction);
+
+                        if (LocationTable.Rows.Count > 0)
+                        {
+                            PLocationRow LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                            PartnerAddress.Append(LocationRow.Locality);
+
+                            if (LocationRow.Locality.Length > 0)
+                            {
+                                PartnerAddress.Append(", ");
+                            }
+
+                            PartnerAddress.Append(LocationRow.StreetName);
+
+                            if (PartnerAddress.Length > 0)
+                            {
+                                PartnerAddress.Append(", ");
+                            }
+
+                            PartnerAddress.Append(LocationRow.Address3);
+
+                            if (PartnerAddress.Length > 0)
+                            {
+                                PartnerAddress.Append(", ");
+                            }
+
+                            PartnerAddress.Append(LocationRow.PostalCode);
+                            PartnerAddress.Append(" ");
+                            PartnerAddress.Append(LocationRow.City);
+
+                            if (LocationRow.County.Length > 0)
+                            {
+                                PartnerAddress.Append(", ");
+                                PartnerAddress.Append(LocationRow.County);
+                            }
+
+                            PartnerAddress.Append(", ");
+                            PartnerAddress.Append(LocationRow.CountryCode);
+                        }
+                    }
+
+                    Columns[0] = new TVariant(DonorKey.ToString("0000000000"));
+                    Columns[1] = new TVariant(PartnerClass);
+                    Columns[2] = new TVariant(ShortName);
+                    Columns[3] = new TVariant(CurrentAmount, "-#,##0.00;#,##0.00");
+                    Columns[4] = new TVariant((CurrentAmount * 100 / ATotalAmount), "-#,##0.00;#,##0.00");
+                    Columns[5] = new TVariant((CummulativeAmount * 100 / ATotalAmount), "-#,##0.00;#,##0.00");
+                    Columns[6] = new TVariant(PartnerAddress.ToString());
+
+                    situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                        Header, Description, Columns);
+                }
+                else
+                {
+                    CummulativeAmount += CurrentAmount;
+                }
+            }
+
+            return true;
         }
     }
 }

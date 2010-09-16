@@ -157,6 +157,13 @@
     <Compile Include="MethodOfGiving.ManualCode.cs">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>
     </Compile>
+    <Compile Include="TopDonorReport.cs" />
+    <Compile Include="TopDonorReport.Designer.cs">
+      <DependentUpon>TopDonorReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TopDonorReport.ManualCode.cs">
+      <DependentUpon>TopDonorReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="TotalGiftPerDonor.cs" />
     <Compile Include="TotalGiftPerDonor.Designer.cs">
       <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>
@@ -193,6 +200,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MethodOfGiving.resx">
       <DependentUpon>MethodOfGiving.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TopDonorReport.resx">
+      <DependentUpon>TopDonorReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TotalGiftPerDonor.resx">
       <DependentUpon>TotalGiftPerDonor.cs</DependentUpon>

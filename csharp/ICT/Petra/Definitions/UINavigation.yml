@@ -242,6 +242,7 @@ OpenPetra:
                         LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
                         SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
                         NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
+                        TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Safety:
