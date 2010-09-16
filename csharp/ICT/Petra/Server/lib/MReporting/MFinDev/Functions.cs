@@ -32,6 +32,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.MFinance;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -629,26 +630,33 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             SqlString.Append("SELECT DISTINCT ");
             SqlString.Append("gift.p_donor_key_n AS DonorKey, ");
-            SqlString.Append(" PUB_p_partner.p_partner_short_name_c AS ShortName, ");
-            SqlString.Append(" PUB_p_partner.p_partner_class_c AS PartnerClass, ");
+            SqlString.Append(PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS ShortName, ");
+            SqlString.Append(PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerClassDBName() + " AS PartnerClass, ");
 
             if (CurrencyType == "Base")
             {
-                SqlString.Append("SUM(detail.a_gift_amount_n) AS Amount ");
+                SqlString.Append("SUM(detail." + AGiftDetailTable.GetGiftAmountDBName() + ") AS Amount ");
             }
             else
             {
-                SqlString.Append("SUM(detail.a_gift_amount_intl_n) AS Amount ");
+                SqlString.Append("SUM(detail." + AGiftDetailTable.GetGiftAmountIntlDBName() + ") AS Amount ");
             }
 
-            SqlString.Append(" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_p_partner, PUB_a_gift_batch ");
+            SqlString.Append(
+                " FROM " + AGiftTable.GetTableDBName() + " as gift, " + AGiftDetailTable.GetTableDBName() + " as detail, " +
+                PPartnerTable.GetTableDBName() + ", " + AGiftBatchTable.GetTableDBName() + " ");
 
             if (AExtract)
             {
-                SqlString.Append(", PUB_m_extract, PUB_m_extract_master");
-                SqlString.Append(" WHERE gift.p_donor_key_n = PUB_m_extract.p_partner_key_n ");
-                SqlString.Append(" AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i ");
-                SqlString.Append(" AND PUB_m_extract_master.m_extract_name_c = '");
+                SqlString.Append(", " + MExtractTable.GetTableDBName() + ", " + MExtractMasterTable.GetTableDBName());
+                SqlString.Append(
+                    " WHERE gift." + AGiftTable.GetDonorKeyDBName() + " = " + MExtractTable.GetTableDBName() + "." +
+                    MExtractTable.GetPartnerKeyDBName());
+                SqlString.Append(
+                    " AND " + MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName() + " = " +
+                    MExtractMasterTable.GetTableDBName() +
+                    "." + MExtractMasterTable.GetExtractIdDBName());
+                SqlString.Append(" AND " + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() + " = '");
                 SqlString.Append(AExtractName);
                 SqlString.Append("' AND ");
             }
@@ -657,53 +665,49 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                 SqlString.Append(" WHERE ");
             }
 
-            SqlString.Append(" detail.a_ledger_number_i = gift.a_ledger_number_i ");
-            SqlString.Append(" AND detail.a_batch_number_i = gift.a_batch_number_i ");
-            SqlString.Append(" AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i ");
-            SqlString.Append(" AND gift.a_date_entered_d BETWEEN '");
+            SqlString.Append(" detail." + AGiftDetailTable.GetLedgerNumberDBName() + " = gift." + AGiftTable.GetLedgerNumberDBName());
+            SqlString.Append(" AND detail." + AGiftDetailTable.GetBatchNumberDBName() + " = gift." + AGiftTable.GetBatchNumberDBName());
+            SqlString.Append(
+                " AND detail." + AGiftDetailTable.GetGiftTransactionNumberDBName() + " = gift." + AGiftTable.GetGiftTransactionNumberDBName());
+            SqlString.Append(" AND gift." + AGiftTable.GetDateEnteredDBName() + " BETWEEN '");
             SqlString.Append(AStartDate.ToString("yyyy-MM-dd"));
             SqlString.Append("' AND '");
             SqlString.Append(AEndDate.ToString("yyyy-MM-dd"));
-            SqlString.Append("' AND gift.a_ledger_number_i = ");
+            SqlString.Append("' AND gift." + AGiftTable.GetLedgerNumberDBName() + " = ");
             SqlString.Append(LedgerNumber.ToString());
-            SqlString.Append(" AND PUB_a_gift_batch.a_ledger_number_i = ");
+            SqlString.Append(" AND " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetLedgerNumberDBName() + " = ");
             SqlString.Append(LedgerNumber.ToString());
-            SqlString.Append(" AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i ");
-            SqlString.Append(" AND ( PUB_a_gift_batch.a_batch_status_c = 'Posted' OR ");
-            SqlString.Append("    PUB_a_gift_batch.a_batch_status_c = 'posted' ) ");
-            SqlString.Append(" AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n ");
-
-            // only positive gifts. Corrections or reversals are excluded
-//            if (CurrencyType == "Base")
-//            {
-//                SqlString.Append(" AND detail.a_gift_amount_n > 0 ");
-//            }
-//            else
-//            {
-//                SqlString.Append(" AND detail.a_gift_amount_intl_n > 0 ");
-//            }
+            SqlString.Append(
+                " AND " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetBatchNumberDBName() + " = gift." +
+                AGiftTable.GetBatchNumberDBName());
+            SqlString.Append(" AND ( " + AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetBatchStatusDBName() + " = 'Posted' OR ");
+            SqlString.Append(AGiftBatchTable.GetTableDBName() + "." + AGiftBatchTable.GetBatchStatusDBName() + " = 'posted' ) ");
+            SqlString.Append(
+                " AND " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = gift." + AGiftTable.GetDonorKeyDBName());
 
             if (ARecipientKey != 0)
             {
-                SqlString.Append(" AND detail.p_recipient_key_n = ");
+                SqlString.Append(" AND detail." + AGiftDetailTable.GetRecipientKeyDBName() + " = ");
                 SqlString.Append(ARecipientKey.ToString());
             }
 
             if (AMotivationGroup != "%")
             {
-                SqlString.Append(" AND  detail.a_motivation_group_code_c LIKE '");
+                SqlString.Append(" AND  detail." + AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '");
                 SqlString.Append(AMotivationGroup);
                 SqlString.Append("' ");
             }
 
             if (AMotivationDetail != "%")
             {
-                SqlString.Append(" AND  detail.a_motivation_detail_code_c LIKE '");
+                SqlString.Append(" AND  detail." + AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '");
                 SqlString.Append(AMotivationDetail);
                 SqlString.Append("' ");
             }
 
-            SqlString.Append(" GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c ");
+            SqlString.Append(" GROUP BY gift." + AGiftTable.GetDonorKeyDBName() + ", ");
+            SqlString.Append(PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + ", ");
+            SqlString.Append(PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerClassDBName());
             SqlString.Append(" ORDER BY Amount DESC");
 
             DataTable Table = situation.GetDatabaseConnection().SelectDT(SqlString.ToString(), "table",
