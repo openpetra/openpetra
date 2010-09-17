@@ -134,6 +134,7 @@ OpenPetra:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                         IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:

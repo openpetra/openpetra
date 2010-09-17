@@ -157,6 +157,13 @@
     <Compile Include="IncomeExpenseStmt.Designer.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
+    <Compile Include="RecipientGiftStatement.cs" />
+    <Compile Include="RecipientGiftStatement.Designer.cs">
+      <DependentUpon>RecipientGiftStatement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RecipientGiftStatement.ManualCode.cs">
+      <DependentUpon>RecipientGiftStatement.cs</DependentUpon>
+    </Compile>
     <Compile Include="SurplusDeficit.cs" />
     <Compile Include="SurplusDeficit.Designer.cs">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>
@@ -222,6 +229,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RecipientGiftStatement.resx">
+      <DependentUpon>RecipientGiftStatement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SurplusDeficit.resx">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>

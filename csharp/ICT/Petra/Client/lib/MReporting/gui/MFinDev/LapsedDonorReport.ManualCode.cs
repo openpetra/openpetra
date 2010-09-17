@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
             if (rbtExtract.Checked)
             {
-                ACalc.AddParameter("param_extract_name", txtExtract.Name);
+                ACalc.AddParameter("param_extract_name", txtExtract.Text);
             }
 
             ACalc.AddParameter("param_recipientkey", txtRecipient.Text);

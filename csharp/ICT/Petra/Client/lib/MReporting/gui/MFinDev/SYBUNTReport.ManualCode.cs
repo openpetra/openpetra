@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
             if (rbtExtract.Checked)
             {
-                ACalc.AddParameter("param_extract_name", txtExtract.Name);
+                ACalc.AddParameter("param_extract_name", txtExtract.Text);
             }
 
             if ((txtThisYear.Text != "0")
