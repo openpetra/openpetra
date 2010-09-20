@@ -22,14 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common.Verification;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using Mono.Unix;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmRecipientGiftStatement
+    public partial class TFrmDonorGiftStatement
     {
         private Int32 FLedgerNumber;
 
@@ -44,16 +46,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("Gift Limit wrong."),
+                    Catalog.GetString("Minimum Amount can't be greater than Maximum Amount."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
+            ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
-            DateTime FromDateThisYear = new DateTime(dtpToDate.Date.Value.Year, 1, 1);
-            DateTime ToDatePreviousYear = new DateTime(dtpToDate.Date.Value.Year - 1, 12, 31);
-            DateTime FromDatePreviousYear = new DateTime(dtpToDate.Date.Value.Year - 1, 1, 1);
+            DateTime FromDateThisYear = new DateTime(DateTime.Today.Year, 1, 1);
+            DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
+            DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);
 
+            ACalc.AddParameter("param_to_date_this_year", DateTime.Today);
             ACalc.AddParameter("param_from_date_this_year", FromDateThisYear);
             ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
             ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
@@ -73,7 +88,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void SetControlsManual(TParameterList AParameters)
         {
-            txtRecipient.Text = AParameters.Get("param_recipientkey").ToString();
+            txtDonor.Text = AParameters.Get("param_donorkey").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
         }
     }

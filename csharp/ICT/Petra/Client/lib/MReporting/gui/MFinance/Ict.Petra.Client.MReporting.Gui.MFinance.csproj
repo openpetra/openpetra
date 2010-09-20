@@ -136,6 +136,13 @@
     <Compile Include="BalanceSheetStandard.ManualCode.cs">
       <DependentUpon>BalanceSheetStandard.cs</DependentUpon>
     </Compile>
+    <Compile Include="DonorGiftStatement.cs" />
+    <Compile Include="DonorGiftStatement.Designer.cs">
+      <DependentUpon>DonorGiftStatement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DonorGiftStatement.ManualCode.cs">
+      <DependentUpon>DonorGiftStatement.cs</DependentUpon>
+    </Compile>
     <Compile Include="IncomeExpenseMultiLedger.cs" />
     <Compile Include="IncomeExpenseMultiLedger.Designer.cs">
       <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
@@ -220,6 +227,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BalanceSheetStandard.resx">
       <DependentUpon>BalanceSheetStandard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DonorGiftStatement.resx">
+      <DependentUpon>DonorGiftStatement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseMultiLedger.resx">
       <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
