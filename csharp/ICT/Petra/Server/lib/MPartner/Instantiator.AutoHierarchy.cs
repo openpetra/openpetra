@@ -1065,11 +1065,27 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public bool ImportPartners(string AXmlPartnerData,
-                                   out TVerificationResultCollection AVerificationResult)
+        public PartnerImportExportTDS ImportPartnersFromYml(string AXmlPartnerData,
+                                                            out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportPartners");
-            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportPartners(AXmlPartnerData, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportPartnersFromYml");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportPartnersFromYml(AXmlPartnerData, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData,
+                                                        out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromCSVFile");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportFromCSVFile(AXmlPartnerData, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines,
+                                                               out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportFromPartnerExtract(ATextFileLines, out AVerificationResult);
         }
 
         /// generated method from connector

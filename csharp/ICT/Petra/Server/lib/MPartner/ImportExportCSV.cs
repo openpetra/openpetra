@@ -29,35 +29,52 @@ using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Client.App.Gui;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Server.MSysMan.Maintenance;
 
-namespace Ict.Petra.Client.MPartner
+namespace Ict.Petra.Server.MPartner.ImportExport
 {
     /// <summary>
     /// This will create a new partner and new relationships, match addresses etc
     /// </summary>
-    public class TPartnerImportLogic
+    public class TPartnerImportCSV
     {
+        private static Int32 FLocationKey = -1;
+
+        /// <summary>
+        /// Import data from a CSV file
+        /// </summary>
+        /// <param name="AChildNode"></param>
+        /// <returns></returns>
+        public static PartnerImportExportTDS ImportData(XmlNode AChildNode)
+        {
+            PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
+
+            TPartnerImportCSV.FLocationKey = -1;
+
+            while (AChildNode != null)
+            {
+                CreateNewFamily(AChildNode, ref ResultDS);
+
+                AChildNode = AChildNode.NextSibling;
+            }
+
+            return ResultDS;
+        }
+
         /// <summary>
         /// create a new family record with the address and return the data
         /// </summary>
-        /// <param name="ACurrentPartnerNode"></param>
-        /// <returns></returns>
-        static public PartnerEditTDS CreateNewFamily(XmlNode ACurrentPartnerNode)
+        private static void CreateNewFamily(XmlNode ACurrentPartnerNode, ref PartnerImportExportTDS AMainDS)
         {
-            PartnerEditTDS MainDS = new PartnerEditTDS();
+            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
 
-            PPartnerRow newPartner = MainDS.PPartner.NewRowTyped();
+            AMainDS.PPartner.Rows.Add(newPartner);
 
-            MainDS.PPartner.Rows.Add(newPartner);
-
-            newPartner.PartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
+            newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-
-            TXMLParser.SetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY, newPartner.PartnerKey.ToString());
 
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
@@ -92,13 +109,13 @@ namespace Ict.Petra.Client.MPartner
             {
                 newPartner.LanguageCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
-            else if (TUserDefaults.HasDefault(TUserDefaults.PARTNER_LANGUAGECODE))
+            else if (TUserDefaults.HasDefault(MSysManConstants.PARTNER_LANGUAGECODE))
             {
-                newPartner.LanguageCode = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_LANGUAGECODE);
+                newPartner.LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE);
             }
 
-            PFamilyRow newFamily = MainDS.PFamily.NewRowTyped();
-            MainDS.PFamily.Rows.Add(newFamily);
+            PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
+            AMainDS.PFamily.Rows.Add(newFamily);
 
             newFamily.PartnerKey = newPartner.PartnerKey;
             newFamily.FirstName = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
@@ -112,10 +129,9 @@ namespace Ict.Petra.Client.MPartner
 
             newFamily.MaritalStatus = GetMaritalStatusCode(ACurrentPartnerNode);
 
-            // TODO check for existing location
-            PLocationRow newLocation = MainDS.PLocation.NewRowTyped(true);
-            MainDS.PLocation.Rows.Add(newLocation);
-            newLocation.LocationKey = -1;
+            PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
+            AMainDS.PLocation.Rows.Add(newLocation);
+            newLocation.LocationKey = TPartnerImportCSV.FLocationKey;
             newLocation.Locality = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LOCALITY);
             newLocation.StreetName = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_STREETNAME);
             newLocation.Address3 = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESS);
@@ -124,8 +140,8 @@ namespace Ict.Petra.Client.MPartner
             newLocation.County = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTY);
             newLocation.CountryCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
-            PPartnerLocationRow partnerlocation = MainDS.PPartnerLocation.NewRowTyped(true);
-            partnerlocation.LocationKey = -1;
+            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+            partnerlocation.LocationKey = TPartnerImportCSV.FLocationKey;
             partnerlocation.SiteKey = 0;
             partnerlocation.PartnerKey = newPartner.PartnerKey;
             partnerlocation.DateEffective = DateTime.Now;
@@ -134,7 +150,9 @@ namespace Ict.Petra.Client.MPartner
             partnerlocation.EmailAddress = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_EMAIL);
             partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PHONE);
             partnerlocation.MobileNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
-            MainDS.PPartnerLocation.Rows.Add(partnerlocation);
+            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+
+            TPartnerImportCSV.FLocationKey--;
 
             // import special types
             if (TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
@@ -143,14 +161,12 @@ namespace Ict.Petra.Client.MPartner
 
                 while (specialTypes.Length > 0)
                 {
-                    PPartnerTypeRow partnerType = MainDS.PPartnerType.NewRowTyped(true);
+                    PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
                     partnerType.PartnerKey = newPartner.PartnerKey;
                     partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
-                    MainDS.PPartnerType.Rows.Add(partnerType);
+                    AMainDS.PPartnerType.Rows.Add(partnerType);
                 }
             }
-
-            return MainDS;
         }
 
         /// <summary>

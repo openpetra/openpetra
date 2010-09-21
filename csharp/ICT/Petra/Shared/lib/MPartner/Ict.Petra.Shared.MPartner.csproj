@@ -62,8 +62,6 @@
   <ItemGroup>
     <Compile Include="Checks.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ExportPartnerFile.cs" />
-    <Compile Include="ImportPartnerFile.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Constants.cs" />

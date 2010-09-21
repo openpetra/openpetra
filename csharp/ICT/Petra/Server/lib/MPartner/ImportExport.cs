@@ -48,7 +48,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
     /// </summary>
     public class TImportExportWebConnector
     {
-        private static void ParsePartners(ref PartnerEditTDS AMainDS, XmlNode ACurNode)
+        static Int64 NewPartnerKey = -1;
+
+        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode)
         {
             XmlNode LocalNode = ACurNode;
 
@@ -74,14 +76,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     // get a new partner key
                     Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
-                    Int64 newPartnerKey = -1;
-
-                    do
-                    {
-                        newPartnerKey = TNewPartnerKey.GetNewPartnerKey(SiteKey);
-                        TNewPartnerKey.SubmitNewPartnerKey(SiteKey, newPartnerKey, ref newPartnerKey);
-                        newPartner.PartnerKey = newPartnerKey;
-                    } while (newPartnerKey == -1);
+                    newPartner.PartnerKey = TImportExportWebConnector.NewPartnerKey;
+                    TImportExportWebConnector.NewPartnerKey--;
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
@@ -204,9 +200,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
+        public static PartnerImportExportTDS ImportPartnersFromYml(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
-            PartnerEditTDS MainDS = new PartnerEditTDS();
+            return TImportExportYml.ImportPartners(AXmlPartnerData, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// This imports partners from a CSV file
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
 
             XmlDocument doc = new XmlDocument();
 
@@ -214,23 +219,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
-            // import partner groups
-            // advantage: can inherit some common attributes, eg. partner class, etc
+            PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root);
 
-            ParsePartners(ref MainDS, root);
+            // TODO: check for updated partners, matching addresses etc.
 
-            PartnerEditTDS InspectDS = MainDS.GetChangesTyped(true);
+            return MainDS;
+        }
 
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+        /// <summary>
+        /// This imports partners from a partner extract which is a text file format used already with Petra 2.x
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
 
-            AVerificationResult = null;
+            TPartnerFileImport Importer = new TPartnerFileImport();
+            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines);
 
-            if (InspectDS != null)
-            {
-                SubmissionResult = PartnerEditTDSAccess.SubmitChanges(InspectDS, out AVerificationResult);
-            }
+            // TODO: check for updated partners, matching addresses etc.
 
-            return SubmissionResult == TSubmitChangesResult.scrOK;
+            return MainDS;
         }
 
         /// <summary>
@@ -241,208 +250,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartners()
         {
-            PartnerEditTDS MainDS = new PartnerEditTDS();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            // load data
-            try
-            {
-                PPartnerAccess.LoadAll(MainDS, Transaction);
-
-                foreach (PPartnerRow partnerRow in MainDS.PPartner.Rows)
-                {
-                    PLocationAccess.LoadViaPPartner(MainDS, partnerRow.PartnerKey, Transaction);
-                    PPartnerLocationAccess.LoadViaPPartner(MainDS, partnerRow.PartnerKey, Transaction);
-                    PPartnerTypeAccess.LoadViaPPartner(MainDS, partnerRow.PartnerKey, Transaction);
-                    PPersonAccess.LoadViaPPartner(MainDS, partnerRow.PartnerKey, Transaction);
-                    PFamilyAccess.LoadViaPPartner(MainDS, partnerRow.PartnerKey, Transaction);
-                    POrganisationAccess.LoadViaPPartnerPartnerKey(MainDS, partnerRow.PartnerKey, Transaction);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("ExportPartners: " + e.Message);
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            // group partners by class, country, status, and sitekey
-            SortedList <string, List <Int64>>PartnerCategories = new SortedList <string, List <long>>();
-
-            foreach (PPartnerRow partnerRow in MainDS.PPartner.Rows)
-            {
-                string countryCode = "";
-                Int64 siteKey = -1;
-
-                // TODO: could determine the best address and use that
-                DataView partnerLocationView = MainDS.PPartnerLocation.DefaultView;
-                partnerLocationView.RowFilter = PPartnerLocationTable.GetPartnerKeyDBName() + " = " + partnerRow.PartnerKey.ToString();
-
-                if (partnerLocationView.Count > 0)
-                {
-                    PPartnerLocationRow partnerLocationRow = (PPartnerLocationRow)partnerLocationView[0].Row;
-
-                    DataView locationView = MainDS.PLocation.DefaultView;
-                    locationView.RowFilter =
-                        PLocationTable.GetSiteKeyDBName() + "=" + partnerLocationRow.SiteKey.ToString() + " AND " +
-                        PLocationTable.GetLocationKeyDBName() + "=" + partnerLocationRow.LocationKey.ToString();
-
-                    if (locationView.Count > 0)
-                    {
-                        PLocationRow locationRow = (PLocationRow)locationView[0].Row;
-                        countryCode = locationRow.CountryCode;
-                        siteKey = locationRow.SiteKey;
-                    }
-                }
-
-                string category = partnerRow.PartnerClass + "," + countryCode + "," +
-                                  partnerRow.StatusCode + "," + siteKey.ToString();
-
-                if (!PartnerCategories.ContainsKey(category))
-                {
-                    PartnerCategories.Add(category, new List <long>());
-                }
-
-                PartnerCategories[category].Add(partnerRow.PartnerKey);
-            }
-
-            // create XML structure for each category
-            XmlDocument PartnerData = TYml2Xml.CreateXmlDocument();
-
-            XmlNode rootNode = PartnerData.FirstChild.NextSibling;
-
-            Int32 groupCounter = 0;
-
-            foreach (string category in PartnerCategories.Keys)
-            {
-                // get category data
-                groupCounter++;
-                XmlElement groupNode = PartnerData.CreateElement("PartnerGroup" + groupCounter.ToString());
-                rootNode.AppendChild(groupNode);
-
-                Int32 partnerCounter = 0;
-                string[] categoryDetails = category.Split(new char[] { ',' });
-
-                groupNode.SetAttribute("class", categoryDetails[0]);
-                groupNode.SetAttribute("Country", categoryDetails[1]);
-                groupNode.SetAttribute("status", categoryDetails[2]);
-                groupNode.SetAttribute("SiteKey", categoryDetails[3]);
-
-                List <long>partnerKeys = PartnerCategories[category];
-
-                foreach (Int64 partnerKey in partnerKeys)
-                {
-                    MainDS.PPartner.DefaultView.RowFilter = PPartnerTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
-                    PPartnerRow partnerRow = (PPartnerRow)MainDS.PPartner.DefaultView[0].Row;
-
-                    PFamilyRow familyRow = null;
-
-                    if (partnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    {
-                        MainDS.PFamily.DefaultView.RowFilter = PFamilyTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
-                        familyRow = (PFamilyRow)MainDS.PFamily.DefaultView[0].Row;
-                    }
-
-                    PPersonRow personRow = null;
-
-                    if (partnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-                    {
-                        MainDS.PPerson.DefaultView.RowFilter = PPersonTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
-                        personRow = (PPersonRow)MainDS.PPerson.DefaultView[0].Row;
-                    }
-
-                    POrganisationRow organisationRow = null;
-
-                    if (partnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
-                    {
-                        MainDS.POrganisation.DefaultView.RowFilter = POrganisationTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
-                        organisationRow = (POrganisationRow)MainDS.POrganisation.DefaultView[0].Row;
-                    }
-
-                    partnerCounter++;
-                    XmlElement partnerNode = PartnerData.CreateElement("Partner" + partnerCounter.ToString());
-                    groupNode.AppendChild(partnerNode);
-
-                    partnerNode.SetAttribute("PartnerKey", partnerRow.PartnerKey.ToString());
-
-                    //groupNode.SetAttribute("ShortName", partnerRow.PartnerShortName.ToString());
-
-                    if (personRow != null)
-                    {
-                        partnerNode.SetAttribute("FirstName", personRow.FirstName.ToString());
-                        partnerNode.SetAttribute("LastName", personRow.FamilyName.ToString());
-                        partnerNode.SetAttribute("Title", personRow.Title.ToString());
-                    }
-                    else if (familyRow != null)
-                    {
-                        partnerNode.SetAttribute("FirstName", familyRow.FirstName.ToString());
-                        partnerNode.SetAttribute("LastName", familyRow.FamilyName.ToString());
-                        partnerNode.SetAttribute("Title", familyRow.Title.ToString());
-                    }
-                    else if (organisationRow != null)
-                    {
-                        partnerNode.SetAttribute("Name", organisationRow.OrganisationName.ToString());
-                    }
-
-                    partnerNode.SetAttribute("CreatedAt", partnerRow.DateCreated.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-
-                    // special types
-                    string specialTypes = "";
-                    MainDS.PPartnerType.DefaultView.RowFilter = PPartnerTypeTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
-
-                    foreach (DataRowView rv in MainDS.PPartnerType.DefaultView)
-                    {
-                        if (specialTypes.Length > 0)
-                        {
-                            specialTypes += ", ";
-                        }
-
-                        specialTypes += ((PPartnerTypeRow)rv.Row).TypeCode;
-                    }
-
-                    if (specialTypes.Length > 0)
-                    {
-                        partnerNode.SetAttribute("SpecialTypes", specialTypes);
-                    }
-
-                    // addresses
-                    DataView partnerLocationView = MainDS.PPartnerLocation.DefaultView;
-                    partnerLocationView.RowFilter = PPartnerLocationTable.GetPartnerKeyDBName() + " = " + partnerRow.PartnerKey.ToString();
-                    Int32 addressCounter = 0;
-
-                    foreach (DataRowView rv in partnerLocationView)
-                    {
-                        XmlElement addressNode = PartnerData.CreateElement("Address" + (addressCounter > 0 ? addressCounter.ToString() : ""));
-                        addressCounter++;
-                        partnerNode.AppendChild(addressNode);
-
-                        PPartnerLocationRow partnerLocationRow = (PPartnerLocationRow)rv.Row;
-
-                        DataView locationView = MainDS.PLocation.DefaultView;
-                        locationView.RowFilter =
-                            PLocationTable.GetSiteKeyDBName() + "=" + partnerLocationRow.SiteKey.ToString() + " AND " +
-                            PLocationTable.GetLocationKeyDBName() + "=" + partnerLocationRow.LocationKey.ToString();
-
-                        if (locationView.Count > 0)
-                        {
-                            PLocationRow locationRow = (PLocationRow)locationView[0].Row;
-
-                            addressNode.SetAttribute("Street", locationRow.StreetName);
-                            addressNode.SetAttribute("City", locationRow.City);
-                            addressNode.SetAttribute("PostCode", locationRow.PostalCode);
-                        }
-
-                        addressNode.SetAttribute("Email", partnerLocationRow.EmailAddress);
-                        addressNode.SetAttribute("Phone", partnerLocationRow.TelephoneNumber);
-                        addressNode.SetAttribute("MobilePhone", partnerLocationRow.MobileNumber);
-                    }
-
-                    // TODO: notes
-                }
-            }
-
-            return TXMLParser.XmlToString(PartnerData);
+            return TImportExportYml.ExportPartners();
         }
     }
 }

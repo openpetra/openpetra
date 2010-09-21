@@ -27,6 +27,7 @@ using System.Data;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Specialized;
+using System.IO;
 using Mono.Unix;
 using Ict.Common;
 using Ict.Common.IO;
@@ -61,10 +62,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             pnlImportRecord.Enabled = false;
-            chkSemiAutomatic.Checked = true;
+            chkSemiAutomatic.Checked = false;
         }
 
-        XmlNode FCurrentPartnerNode = null;
+        PartnerImportExportTDS FMainDS = null;
         Int32 FCurrentNumberOfRecord = 0;
         Int32 FTotalNumberOfRecords = 0;
         private void OpenFile(System.Object sender, EventArgs e)
@@ -75,16 +76,66 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            string filename;
+            OpenFileDialog DialogOpen = new OpenFileDialog();
 
-            XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Select the file for importing partners"), out filename);
+            DialogOpen.Filter =
+                Catalog.GetString(
+                    "All supported formats|*.yml;*.csv;*.ext|Text file (*.yml)|*.yml|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
+            DialogOpen.FilterIndex = 1;
 
-            if (doc != null)
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = Catalog.GetString("Select the file for importing partners");
+
+            if (DialogOpen.ShowDialog() == DialogResult.OK)
             {
-                txtFilename.Text = filename;
+                txtFilename.Text = DialogOpen.FileName;
 
-                XmlNode root = doc.FirstChild.NextSibling;
-                FCurrentPartnerNode = root.FirstChild;
+                TVerificationResultCollection VerificationResult = null;
+
+                if (Path.GetExtension(DialogOpen.FileName) == ".yml")
+                {
+                    TYml2Xml yml = new TYml2Xml(DialogOpen.FileName);
+                    FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportPartnersFromYml(TXMLParser.XmlToString(
+                            yml.ParseYML2XML()), out VerificationResult);
+                }
+
+                if (Path.GetExtension(DialogOpen.FileName) == ".csv")
+                {
+                    // select separator, make sure there is a header line with the column captions/names
+                    TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
+                    dlgSeparator.CSVFileName = DialogOpen.FileName;
+
+                    if (dlgSeparator.ShowDialog() == DialogResult.OK)
+                    {
+                        XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName, dlgSeparator.SelectedSeparator);
+                        FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(TXMLParser.XmlToString(doc), out VerificationResult);
+                    }
+                }
+                else if (Path.GetExtension(DialogOpen.FileName) == ".ext")
+                {
+                    StreamReader sr = new StreamReader(DialogOpen.FileName, true);
+                    string[] FileContent = sr.ReadToEnd().Replace("\r", "").Split(new char[] { '\n' });
+                    sr.Close();
+                    FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromPartnerExtract(FileContent, out VerificationResult);
+                }
+
+                if ((VerificationResult != null) && VerificationResult.HasCriticalError())
+                {
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in VerificationResult)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    MessageBox.Show(ErrorMessages, Catalog.GetString("Import of partners failed!"));
+
+                    FMainDS = null;
+
+                    return;
+                }
             }
         }
 
@@ -103,10 +154,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    if (FCurrentPartnerNode != null)
+                    if (FCurrentNumberOfRecord < FMainDS.PPartner.Count)
                     {
-                        FCurrentPartnerNode = FCurrentPartnerNode.NextSibling;
-
                         FCurrentNumberOfRecord++;
                     }
                 }
@@ -117,12 +166,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void StartImport(Object sender, EventArgs e)
         {
-            if (FCurrentPartnerNode == null)
+            if (FMainDS == null)
             {
                 OpenFile(null, null);
             }
 
-            if (FCurrentPartnerNode == null)
+            if (FMainDS == null)
             {
                 MessageBox.Show(Catalog.GetString("Please select a text file containing the partners first"),
                     Catalog.GetString("Need a file to import"),
@@ -135,11 +184,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.FPetraUtilsObject.EnableAction("actCancelImport", true);
 
             FCurrentNumberOfRecord = 1;
-            FTotalNumberOfRecords = FCurrentPartnerNode.ParentNode.ChildNodes.Count;
+            FTotalNumberOfRecords = FMainDS.PPartner.Count;
 
-            FCurrentPartnerNode = SkipImportedPartners(FCurrentPartnerNode);
+            SkipImportedPartners();
 
             pnlImportRecord.Enabled = true;
+            pnlActions.Enabled = true;
 
             if (chkSemiAutomatic.Checked)
             {
@@ -161,75 +211,67 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DisplayCurrentRecord()
         {
-            if (FCurrentPartnerNode == null)
+            if ((FMainDS == null) || (FCurrentNumberOfRecord < 1))
             {
-                // have we finished importing?
-                if (FCurrentNumberOfRecord > 0)
-                {
-                    txtCurrentRecordStatus.Text =
-                        String.Format(Catalog.GetString("{0} Records processed - Import finished"),
-                            FTotalNumberOfRecords);
-                    pnlActions.Enabled = false;
-                    this.FPetraUtilsObject.EnableAction("actStartImport", true);
-                    this.FPetraUtilsObject.EnableAction("actCancelImport", false);
+                return;
+            }
 
-                    // TODO: finish the thread
-                }
+            // have we finished importing?
+            if (FCurrentNumberOfRecord > FTotalNumberOfRecords)
+            {
+                txtCurrentRecordStatus.Text =
+                    String.Format(Catalog.GetString("{0} Records processed - Import finished"),
+                        FTotalNumberOfRecords);
+                pnlActions.Enabled = false;
+                this.FPetraUtilsObject.EnableAction("actStartImport", true);
+                this.FPetraUtilsObject.EnableAction("actCancelImport", false);
 
-                grdParsedValues.DataSource = null;
+                // TODO: finish the thread
                 grdMatchingRecords.DataSource = null;
                 pnlImportRecord.Enabled = false;
                 return;
             }
 
-            DataTable ValuePairs = new DataTable();
+            PPartnerRow CurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
 
-            ValuePairs.Columns.Add(new DataColumn("Attribute", typeof(string)));
-            ValuePairs.Columns.Add(new DataColumn("Value", typeof(string)));
-            ValuePairs.Columns.Add(new DataColumn("Order", typeof(int)));
+            string PartnerInfo = CurrentPartner.PartnerShortName + Environment.NewLine;
+            PartnerInfo += Environment.NewLine;
 
-            if (FCurrentPartnerNode != null)
+            if (CurrentPartner.PartnerKey > 0)
             {
-                foreach (XmlAttribute attr in FCurrentPartnerNode.Attributes)
+                PartnerInfo += CurrentPartner.PartnerKey.ToString() + Environment.NewLine;
+            }
+
+            FMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}",
+                PFamilyTable.GetPartnerKeyDBName(),
+                CurrentPartner.PartnerKey);
+
+            FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerLocationTable.GetPartnerKeyDBName(),
+                CurrentPartner.PartnerKey);
+
+            foreach (DataRowView rv in FMainDS.PPartnerLocation.DefaultView)
+            {
+                PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
+
+                FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                    PLocationTable.GetLocationKeyDBName(),
+                    PartnerLocationRow.LocationKey,
+                    PLocationTable.GetSiteKeyDBName(),
+                    PartnerLocationRow.SiteKey);
+
+                if (FMainDS.PLocation.DefaultView.Count > 0)
                 {
-                    DataRow valuePair = ValuePairs.NewRow();
-                    valuePair["Attribute"] = attr.Name;
-                    valuePair["Value"] = attr.Value;
+                    PLocationRow LocationRow = (PLocationRow)FMainDS.PLocation.DefaultView[0].Row;
 
-                    if (attr.Name == MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
-                    {
-                        valuePair["Order"] = 0;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
-                    {
-                        valuePair["Order"] = 1;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_STREETNAME)
-                    {
-                        valuePair["Order"] = 2;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_CITY)
-                    {
-                        valuePair["Order"] = 3;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_POSTALCODE)
-                    {
-                        valuePair["Order"] = 4;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_COUNTRYCODE)
-                    {
-                        valuePair["Order"] = 5;
-                    }
-                    else if (attr.Name == MPartnerConstants.PARTNERIMPORT_EMAIL)
-                    {
-                        valuePair["Order"] = 6;
-                    }
-                    else
-                    {
-                        valuePair["Order"] = 99;
-                    }
+                    PartnerInfo += LocationRow.StreetName + Environment.NewLine;
+                    PartnerInfo += LocationRow.Address3 + Environment.NewLine;
+                    PartnerInfo += LocationRow.PostalCode + Environment.NewLine;
+                    PartnerInfo += LocationRow.City + Environment.NewLine;
+                    PartnerInfo += LocationRow.CountryCode + Environment.NewLine;
+                    PartnerInfo += PartnerLocationRow.EmailAddress + Environment.NewLine;
 
-                    ValuePairs.Rows.Add(valuePair);
+                    PartnerInfo += Environment.NewLine;
                 }
 
                 txtCurrentRecordStatus.Text =
@@ -238,18 +280,32 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FTotalNumberOfRecords);
             }
 
-            grdParsedValues.Columns.Clear();
-            grdParsedValues.AddTextColumn(Catalog.GetString("Attribute"), ValuePairs.Columns["Attribute"], 150);
-            grdParsedValues.AddTextColumn(Catalog.GetString("Value"), ValuePairs.Columns["Value"], 150);
-            ValuePairs.DefaultView.AllowNew = false;
-            ValuePairs.DefaultView.Sort = "Order";
-            grdParsedValues.DataSource = new DevAge.ComponentModel.BoundDataView(ValuePairs.DefaultView);
+            TLocationPK BestLocationPK = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(FMainDS.PPartnerLocation);
+            FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                PLocationTable.GetLocationKeyDBName(),
+                BestLocationPK.LocationKey,
+                PLocationTable.GetSiteKeyDBName(),
+                BestLocationPK.SiteKey);
 
-            // get all partners with same surname in that city
-            PartnerFindTDS result = TRemote.MPartner.Partner.WebConnectors.FindPartners("",
-                TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME),
-                TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_CITY),
-                new StringCollection());
+            PLocationRow BestLocation = null;
+
+            if (FMainDS.PLocation.DefaultView.Count > 0)
+            {
+                BestLocation = (PLocationRow)FMainDS.PLocation.DefaultView[0].Row;
+            }
+
+            txtPartnerInfo.Text = PartnerInfo;
+
+            // TODO: several tabs, displaying count of numbers of partners with same name, different cities, etc? support Address change, etc
+
+            // get all partners with same surname in that city. using the first Plocation for the moment.
+            // TODO should use getBestAddress?
+            PartnerFindTDS result =
+                TRemote.MPartner.Partner.WebConnectors.FindPartners(
+                    "",
+                    Ict.Petra.Shared.MPartner.Calculations.FormatShortName(CurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
+                    BestLocation.City,
+                    new StringCollection());
 
             grdMatchingRecords.Columns.Clear();
             grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass, 50);
@@ -264,18 +320,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // check if the partner to import matches completely one of the search results
                 foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
                 {
-                    if ((row.StreetName == FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_STREETNAME].Value)
-                        && (row.City == FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_CITY].Value)
-                        && row.PartnerShortName.StartsWith(
-                            FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_FAMILYNAME].Value + ", " +
-                            FCurrentPartnerNode.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value))
+                    if ((row.StreetName == BestLocation.StreetName)
+                        && (row.City == BestLocation.City)
+                        && (row.PartnerShortName == CurrentPartner.PartnerShortName))
                     {
-                        TXMLParser.SetAttribute(FCurrentPartnerNode, "PartnerKey", row.PartnerKey.ToString());
+                        FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey = row.PartnerKey;
                         break;
                     }
                 }
 
-                if (TXMLParser.GetIntAttribute(FCurrentPartnerNode, "PartnerKey") > 0)
+                if (FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey > 0)
                 {
                     // TODO: if any data is different, wait for user interaction, or update data automatically?
                     // otherwise skip to next partner
@@ -303,18 +357,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            FCurrentPartnerNode = null;
+            FMainDS = null;
             // TODO: store partner keys of imported partners
             this.FPetraUtilsObject.EnableAction("actStartImport", true);
             this.FPetraUtilsObject.EnableAction("actCancelImport", false);
         }
 
-        private XmlNode SkipImportedPartners(XmlNode ACurrentNode)
+        /// <summary>
+        /// check for hash values etc to see if the partner has been imported already.
+        /// modify FCurrentNumberOfRecord to move to next partner that should be imported
+        /// </summary>
+        private void SkipImportedPartners()
         {
             // TODO check for import settings, which partners to skip etc
             // TODO: CurrentNumberOfRecord and TotalRecords different?
 
-            return ACurrentNode;
+            // TODO modify FCurrentNumberOfRecord
         }
 
         private void SkipRecord(Object sender, EventArgs e)
@@ -325,13 +383,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            if (FCurrentPartnerNode != null)
+            if (FMainDS != null)
             {
-                FCurrentPartnerNode = FCurrentPartnerNode.NextSibling;
-
                 FCurrentNumberOfRecord++;
 
-                FCurrentPartnerNode = SkipImportedPartners(FCurrentPartnerNode);
+                SkipImportedPartners();
             }
 
             if (chkSemiAutomatic.Checked)
@@ -342,24 +398,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             DisplayCurrentRecord();
         }
 
+        private void AddAddresses(ref PartnerEditTDS ANewPartnerDS)
+        {
+            // TODO check duplicate addresses
+            foreach (DataRowView rv in FMainDS.PPartnerLocation.DefaultView)
+            {
+                PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
+
+                PartnerLocationRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+
+
+                FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                    PLocationTable.GetLocationKeyDBName(),
+                    PartnerLocationRow.LocationKey,
+                    PLocationTable.GetSiteKeyDBName(),
+                    PartnerLocationRow.SiteKey);
+
+                ANewPartnerDS.PLocation.ImportRow((PLocationRow)FMainDS.PLocation.DefaultView[0].Row);
+            }
+        }
+
         private void CreateNewFamily(Object sender, EventArgs e)
         {
-            if (FCurrentPartnerNode == null)
+            if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
             {
                 return;
             }
 
-            if (TXMLParser.GetAttribute(FCurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY).Length > 0)
+            if (FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey > 0)
             {
                 // it would not make any sense to create a partner if there is already a partner key
                 return;
             }
 
-            PartnerEditTDS MainDS = TPartnerImportLogic.CreateNewFamily(FCurrentPartnerNode);
+            PartnerEditTDS NewPartnerDS = new PartnerEditTDS();
+
+            NewPartnerDS.PPartner.ImportRow(FMainDS.PPartner[FCurrentNumberOfRecord - 1]);
+            NewPartnerDS.PPartner[0].PartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
+
+            NewPartnerDS.PFamily.ImportRow((PFamilyRow)FMainDS.PFamily.DefaultView[0].Row);
+            NewPartnerDS.PFamily[0].PartnerKey = NewPartnerDS.PPartner[0].PartnerKey;
+
+            AddAddresses(ref NewPartnerDS);
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TRemote.MPartner.Partner.WebConnectors.SavePartner(MainDS, out VerificationResult))
+            if (!TRemote.MPartner.Partner.WebConnectors.SavePartner(NewPartnerDS, out VerificationResult))
             {
                 MessageBox.Show(VerificationResult.BuildVerificationResultString(), Catalog.GetString("Error"),
                     MessageBoxButtons.OK,

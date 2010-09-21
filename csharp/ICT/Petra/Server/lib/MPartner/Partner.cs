@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
@@ -680,25 +681,25 @@ namespace Ict.Petra.Server.MPartner.Partner
                 switch (ALastPartnerUse)
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
-                        TMaintenanceUserDefaults.SetDefault(TMaintenanceUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey, false);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelPerson:
-                        TMaintenanceUserDefaults.SetDefault(TMaintenanceUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey, false);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelUnit:
-                        TMaintenanceUserDefaults.SetDefault(TMaintenanceUserDefaults.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey, false);
                         break;
 
                     case TLastPartnerUse.lpuConferencePerson:
-                        TMaintenanceUserDefaults.SetDefault(TMaintenanceUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey, false);
                         break;
                 }
 
                 // TODO 2 : Remove this call when 4GL does not need to read user defaults any more
                 // now save the user defaults back to the db so 4GL can get it
-                TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide(ref SingleVerificationResultCollection);
+                TUserDefaults.SaveUserDefaultsFromServerSide(ref SingleVerificationResultCollection);
 
                 // TODO 2 : Activate this call when 4GL does not need to read user defaults any more
                 // update user default values on client
@@ -728,7 +729,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                 // Get the number of recent partners that the user has set, if not found
                 // take 10 as default value.
-                NumberOfRecentPartners = TMaintenanceUserDefaults.GetInt16Default(TMaintenanceUserDefaults.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
+                NumberOfRecentPartners = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
                 ClassCounter = 0;
 
                 for (Counter = RecentPartnersDV.Count - 1; Counter >= 0; Counter -= 1)

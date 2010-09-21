@@ -233,8 +233,14 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
     public interface IImportExportWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        bool ImportPartners(string AXmlPartnerData,
-                            out TVerificationResultCollection AVerificationResult);
+        PartnerImportExportTDS ImportPartnersFromYml(string AXmlPartnerData,
+                                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData,
+                                                 out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines,
+                                                        out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         string ExportPartners();
     }

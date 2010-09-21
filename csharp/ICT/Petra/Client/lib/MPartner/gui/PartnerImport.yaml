@@ -26,13 +26,14 @@ RootNode:
         pnlImportRecord:
             Controls:
                 RowA: [txtCurrentRecordStatus]
-                Row0: [grdParsedValues, pnlActions]
+                Row0: [txtPartnerInfo, pnlActions]
                 Row1: [grdMatchingRecords]
         txtCurrentRecordStatus: {Label=Current Import File Record Status, ReadOnly=true, Width=500, ColSpan=2}
-        grdParsedValues:
+        txtPartnerInfo:
+            Multiline: true
+            ReadOnly: true
             Width: 400
             Height: 300
-            #Columns: [AttributeName, AttributeValue]
         grdMatchingRecords:
             ColSpan: 2
             Width: 600

@@ -187,6 +187,11 @@ namespace Ict.Petra.Shared.MPartner
             }
 #endif
 
+            if (!APartnerLocationsDT.Columns.Contains(PARTNERLOCATION_BESTADDR_COLUMN))
+            {
+                DeterminePartnerLocationsDateStatus(APartnerLocationsDT, DateTime.Today);
+            }
+
             /*
              *  Add custom DataColumn if its not part of the DataTable yet
              */
@@ -200,7 +205,7 @@ namespace Ict.Petra.Shared.MPartner
              * ascending by Icon, then all records with p_send_mail_l = false, these are ordered
              * ascending by Icon.
              */
-            OrderedRows = APartnerLocationsDT.Select("",
+            OrderedRows = APartnerLocationsDT.Select(APartnerLocationsDT.DefaultView.RowFilter,
                 PPartnerLocationTable.GetSendMailDBName() + " DESC, " + PartnerEditTDSPPartnerLocationTable.GetIconDBName() + " ASC",
                 DataViewRowState.CurrentRows);
 
@@ -282,7 +287,8 @@ namespace Ict.Petra.Shared.MPartner
                     OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
                 }
 
-                ReturnValue = new TLocationPK(-1, -1);
+                ReturnValue = new TLocationPK(Convert.ToInt64(OrderedRows[0][PLocationTable.GetSiteKeyDBName()]),
+                    Convert.ToInt32(OrderedRows[0][PLocationTable.GetLocationKeyDBName()]));
             }
 
             return ReturnValue;

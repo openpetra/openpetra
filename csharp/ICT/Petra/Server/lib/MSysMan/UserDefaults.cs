@@ -40,7 +40,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// Reads and saves a DataTable for the User Defaults.
     ///
     /// </summary>
-    public class TMaintenanceUserDefaults
+    public class TUserDefaults
     {
         private const String USERDEFAULTSDT_NAME = "UserDefaultsCacheDT";
 
@@ -58,35 +58,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
         /// <summary>tells whether the cache is containing data, or not</summary>
         private static Boolean UTableCached;
-
-        /*------------------------------------------------------------------------------
-         *      Partner System Default Constants
-         * -------------------------------------------------------------------------------*/
-
-        /// <summary>key name for language</summary>
-        public const String PARTNER_LANGUAGE = "p_language";
-
-        /// <summary>key name for acquisition</summary>
-        public const String PARTNER_ACQUISITION = "p_acquisition";
-
-        /*------------------------------------------------------------------------------
-         *      Put other User Default Constants here as well.
-         * -------------------------------------------------------------------------------*/
-
-        /// <summary>string constant</summary>
-        public const String USERDEFAULT_NUMBEROFRECENTPARTNERS = "NumberOfRecentPartners";
-
-        /// <summary>string constant</summary>
-        public const String USERDEFAULT_LASTPARTNERMAILROOM = "MailroomLastPerson";
-
-        /// <summary>string constant</summary>
-        public const String USERDEFAULT_LASTPERSONPERSONNEL = "PersonnelLastPerson";
-
-        /// <summary>string constant</summary>
-        public const String USERDEFAULT_LASTUNITPERSONNEL = "PersonnelLastUnit";
-
-        /// <summary>string constant</summary>
-        public const String USERDEFAULT_LASTPERSONCONFERENCE = "ConferenceLastPerson";
 
         /// <summary>time when this object was instantiated</summary>
         private DateTime FStartTime;
@@ -108,7 +79,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// constructor
         /// </summary>
-        public TMaintenanceUserDefaults() : base()
+        public TUserDefaults() : base()
         {
             // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FStartTime = DateTime.Now;
@@ -118,13 +89,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// destructor
         /// </summary>
-        ~TMaintenanceUserDefaults()
+        ~TUserDefaults()
         {
             // if TSrvSetting.DL >= new 9 then Console.WriteLine(this.GetType.FullName + ': Getting collected after ' + (TimeSpan(DateTime.Now.Ticks  FStartTime.Ticks)).ToString() + ' seconds.');
         }
 #endif
 
 
+        /// <summary>
+        /// Find out if a user default exists already.
+        /// This is required where the default should be calculated otherwise
+        /// (e.g. FINANCE_REPORTING_SHOWDIFFFINANCIALYEARSELECTION)
+        /// </summary>
+        /// <returns>true if a default with the given key already exists
+        /// </returns>
+        public static bool HasDefault(String AKey)
+        {
+            return TInternal.HasUserDefault(AKey);
+        }
 
         /// <summary>
         /// get boolean default
@@ -773,7 +755,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 else
                 {
                     // User Defaults were submitted from the Client side for any user but the current user
-                    SubmissionOK = TMaintenanceUserDefaults.SaveUserDefaultsTable(AUserName,
+                    SubmissionOK = TUserDefaults.SaveUserDefaultsTable(AUserName,
                         ref AUserDefaultsDataTable,
                         null,
                         ref AVerificationResult);
@@ -1104,7 +1086,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 if (UUserDefaultsDT.Rows.Count > 0)
                 {
-                    SubmissionOK = TMaintenanceUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
+                    SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
                         ref UUserDefaultsDT,
                         null,
                         ref AVerificationResult,
@@ -1340,6 +1322,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         public class TInternal
         {
+            /// <summary>
+            /// check if a user default exists with that key name
+            /// </summary>
+            /// <param name="AKey"></param>
+            /// <returns></returns>
+            public static bool HasUserDefault(String AKey)
+            {
+                return GetUserDefault(AKey, SharedConstants.SYSDEFAULT_NOT_FOUND) != SharedConstants.SYSDEFAULT_NOT_FOUND;
+            }
+
             /**
              * Gets the value of a UserDefault.
              *
@@ -1361,7 +1353,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (!UTableCached)
                 {
                     // make sure we have loaded the UserDefaults for the current User...
-                    TMaintenanceUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
+                    TUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
                 }
 
 #if DEBUGMODE
@@ -1436,7 +1428,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (!UTableCached)
                 {
                     // make sure we have loaded the UserDefaults for the current User...
-                    TMaintenanceUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
+                    TUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
                 }
 
 #if DEBUGMODE
@@ -1492,7 +1484,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                     if (ASendUpdateInfoToClient)
                     {
-                        TMaintenanceUserDefaults.UpdateUserDefaultsOnClient(UserInfo.GUserInfo.UserID, AKey, AValue,
+                        TUserDefaults.UpdateUserDefaultsOnClient(UserInfo.GUserInfo.UserID, AKey, AValue,
                             UUserDefaultsDV[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()].ToString());
                     }
                 }

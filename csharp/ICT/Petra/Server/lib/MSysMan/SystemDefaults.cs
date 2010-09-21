@@ -35,7 +35,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// Reads and saves a DataTable for the System Defaults.
     ///
     /// </summary>
-    public class TMaintenanceSystemDefaults
+    public class TSystemDefaults
     {
         /// <summary>time when this object was instantiated</summary>
         private DateTime FStartTime;
@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// constructor
         /// </summary>
-        public TMaintenanceSystemDefaults() : base()
+        public TSystemDefaults() : base()
         {
             // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FStartTime = DateTime.Now;
@@ -53,13 +53,60 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// destructor
         /// </summary>
-        ~TMaintenanceSystemDefaults()
+        ~TSystemDefaults()
         {
             // if TSrvSetting.DL >= new 9 then Console.WriteLine(this.GetType.FullName + ': Getting collected after ' + (TimeSpan(DateTime.Now.Ticks  FStartTime.Ticks)).ToString() + ' seconds.');
         }
 #endif
 
 
+        /// <summary>
+        /// Returns the value of the specified System Default.
+        /// </summary>
+        /// <param name="ASystemDefaultName">The System Default for which the value should be
+        /// returned</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was
+        /// not found</param>
+        /// <returns>The value of the System Default, or the value of the ADefault
+        /// parameter if the specified System Default was not found
+        /// </returns>
+        public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
+        {
+            String ReturnValue = ADefault;
+
+            String Tmp = GetSystemDefault(ASystemDefaultName);
+
+            if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
+            {
+                ReturnValue = Tmp;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns the value of the specified System Default.
+        /// </summary>
+        /// <param name="ASystemDefaultName">The System Default for which the value should be
+        /// returned</param>
+        /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
+        /// specified System Default was not found
+        /// </returns>
+        public static String GetSystemDefault(String ASystemDefaultName)
+        {
+            String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
+            SSystemDefaultsTable SystemDefaultsTable = GetSystemDefaults();
+
+            // Look up the System Default
+            SSystemDefaultsRow FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsTable.Rows.Find(ASystemDefaultName);
+
+            if (FoundSystemDefaultsRow != null)
+            {
+                ReturnValue = FoundSystemDefaultsRow.DefaultValue;
+            }
+
+            return ReturnValue;
+        }
 
         /// <summary>
         /// Returns the System Defaults as a DataTable.
@@ -67,7 +114,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <returns>System Defaults Typed DataTable.
         /// </returns>
-        public SSystemDefaultsTable GetSystemDefaults()
+        public static SSystemDefaultsTable GetSystemDefaults()
         {
             // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
 

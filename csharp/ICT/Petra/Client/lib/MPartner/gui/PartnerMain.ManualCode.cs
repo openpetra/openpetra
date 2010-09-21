@@ -68,41 +68,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.Show();
         }
 
-        /// import partners from file
-        public static void ImportPartners(IntPtr AParentFormHandle)
-        {
-            XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Partners from File"));
-
-            if (doc == null)
-            {
-                return;
-            }
-
-            TVerificationResultCollection VerificationResult;
-
-            if (!TRemote.MPartner.ImportExport.WebConnectors.ImportPartners(TXMLParser.XmlToString(doc), out VerificationResult))
-            {
-                string ErrorMessages = String.Empty;
-
-                if (VerificationResult != null)
-                {
-                    foreach (TVerificationResult verif in VerificationResult)
-                    {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
-                    }
-                }
-
-                MessageBox.Show(ErrorMessages, Catalog.GetString("Import of partners failed!"));
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("Partner(s) have been imported successfully"), Catalog.GetString(
-                        "Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
         /// export partners into file
         public static void ExportPartners(IntPtr AParentFormHandle)
         {

@@ -80,7 +80,24 @@ namespace Ict.Common.IO
         {
             FLinesToParse = ATextFileContents;
             FCurrentLineCounter = 0;
-            FCurrentLine = FLinesToParse[FCurrentLineCounter];
+            FCurrentLine = FLinesToParse[FCurrentLineCounter].TrimEnd();
+
+            FCurrentLine = FCurrentLine.Replace(" ", "  ");
+
+            string DateTimeFormat = ReadString();
+
+            if (DateTimeFormat.ToLower() == "dmy")
+            {
+                DATEFORMAT = "dd/MM/yyyy";
+            }
+            else if (DateTimeFormat.ToLower() == "mdy")
+            {
+                DATEFORMAT = "MM/dd/yyyy";
+            }
+            else
+            {
+                throw new Exception("Unknown DateTimeFormat " + DateTimeFormat);
+            }
         }
 
         /// <summary>
@@ -93,7 +110,7 @@ namespace Ict.Common.IO
                 return true;
             }
 
-            return FCurrentLine.Length > 0;
+            return FCurrentLine.Length <= 0;
         }
 
         /// <summary>
@@ -112,7 +129,7 @@ namespace Ict.Common.IO
             while (FCurrentLine.Length == 0 && FCurrentLineCounter < FLinesToParse.Length - 1)
             {
                 FCurrentLineCounter++;
-                FCurrentLine = FLinesToParse[FCurrentLineCounter];
+                FCurrentLine = FLinesToParse[FCurrentLineCounter].TrimEnd();
             }
 
             return NextStringItem;
@@ -132,7 +149,7 @@ namespace Ict.Common.IO
             string TempString = String.Copy(FCurrentLine);
             string NextStringItem = StringHelper.GetNextCSV(ref TempString, SPACE);
 
-            if (NextStringItem == QUOTE_MARKS + AKeyword + QUOTE_MARKS)
+            if (NextStringItem == AKeyword)
             {
                 ReadNextStringItem();
                 return true;
@@ -176,7 +193,12 @@ namespace Ict.Common.IO
         {
             string NextItem = ReadNextStringItem();
 
-            return NextItem.Substring(QUOTE_MARKS.Length, NextItem.Length - 2 * QUOTE_MARKS.Length);
+            if (NextItem.StartsWith(QUOTE_MARKS))
+            {
+                NextItem = NextItem.Substring(QUOTE_MARKS.Length, NextItem.Length - 2 * QUOTE_MARKS.Length);
+            }
+
+            return NextItem;
         }
 
         /// <summary>

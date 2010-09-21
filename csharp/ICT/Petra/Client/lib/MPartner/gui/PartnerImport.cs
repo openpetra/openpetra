@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.btnSelectFile.Text = Catalog.GetString("Select File");
       this.lblSemiAutomatic.Text = Catalog.GetString("Semi Automatic Import:");
       this.lblCurrentRecordStatus.Text = Catalog.GetString("Current Import File Record Status:");
+      this.lblPartnerInfo.Text = Catalog.GetString("Partner Info:");
       this.lblExplanation.Text = Catalog.GetString("Explanation:");
       this.lblTakeAction.Text = Catalog.GetString("Take Action:");
       this.btnSkip.Text = Catalog.GetString("Skip Record");
@@ -89,6 +90,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
       this.txtFilename.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtCurrentRecordStatus.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtPartnerInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtExplanation.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);

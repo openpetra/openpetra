@@ -32,6 +32,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
@@ -979,7 +980,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // Determine LanguageCode
                 if (FPartnerClass != TPartnerClass.PERSON)
                 {
-                    LanguageCode = TMaintenanceUserDefaults.GetStringDefault(TMaintenanceUserDefaults.PARTNER_LANGUAGE, "99");
+                    LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGE, "99");
                 }
                 else
                 {
@@ -987,7 +988,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (PersonFamilyPartnerDT[0].LanguageCode == "99")
                     {
-                        LanguageCode = TMaintenanceUserDefaults.GetStringDefault(TMaintenanceUserDefaults.PARTNER_LANGUAGE, "99");
+                        LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGE, "99");
                     }
                     else
                     {

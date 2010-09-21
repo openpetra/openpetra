@@ -27,12 +27,13 @@ using System.Text;
 using System.Data;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPersonnel;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 
-namespace Ict.Petra.Shared.MPartner.IO
+namespace Ict.Petra.Server.MPartner.ImportExport
 {
     /// <summary>
     /// Export all data of a partner

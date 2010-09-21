@@ -26,12 +26,13 @@ using System.Text;
 using System.Data;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPersonnel;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 
-namespace Ict.Petra.Shared.MPartner.IO
+namespace Ict.Petra.Server.MPartner.ImportExport
 {
     /// <summary>
     /// Import all data of a partner
@@ -94,8 +95,20 @@ namespace Ict.Petra.Shared.MPartner.IO
                 FamilyRow.FamilyName = ReadString();
                 FamilyRow.FirstName = ReadString();
                 FamilyRow.Title = ReadString();
-                FamilyRow.FieldKey = ReadInt64();
+                try
+                {
+                    FamilyRow.FieldKey = ReadInt64();
+                }
+                catch (Exception)
+                {
+                    FamilyRow.SetFieldKeyNull();
+                }
+
                 FamilyRow.MaritalStatus = ReadString();
+
+                // TODO it seems the NULL value for field key confuses the next values,
+                // so date cannot be parsed, because some fields have been jumped?
+
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
                 FamilyRow.MaritalStatusComment = ReadString();
             }
@@ -953,6 +966,10 @@ namespace Ict.Petra.Shared.MPartner.IO
             FMainDS = new PartnerImportExportTDS();
 
             InitReading(ALinesToImport);
+
+            string PetraVersion = ReadString();
+            Int64 SiteKey = ReadInt64();
+            Int32 SubVersion = ReadInt32();
 
             while (CheckForKeyword("PARTNER"))
             {

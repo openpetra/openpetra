@@ -79,7 +79,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtCurrentRecordStatus = new System.Windows.Forms.TextBox();
             this.lblCurrentRecordStatus = new System.Windows.Forms.Label();
-            this.grdParsedValues = new Ict.Common.Controls.TSgrdDataGridPaged();
+            this.txtPartnerInfo = new System.Windows.Forms.TextBox();
+            this.lblPartnerInfo = new System.Windows.Forms.Label();
             this.pnlActions = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtExplanation = new System.Windows.Forms.TextBox();
@@ -236,11 +237,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCurrentRecordStatus.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblCurrentRecordStatus.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // grdParsedValues
+            // txtPartnerInfo
             //
-            this.grdParsedValues.Location = new System.Drawing.Point(2,2);
-            this.grdParsedValues.Name = "grdParsedValues";
-            this.grdParsedValues.Size = new System.Drawing.Size(400, 300);
+            this.txtPartnerInfo.Location = new System.Drawing.Point(2,2);
+            this.txtPartnerInfo.Name = "txtPartnerInfo";
+            this.txtPartnerInfo.Size = new System.Drawing.Size(400, 300);
+            this.txtPartnerInfo.ReadOnly = true;
+            this.txtPartnerInfo.TabStop = false;
+            this.txtPartnerInfo.Multiline = true;
+            //
+            // lblPartnerInfo
+            //
+            this.lblPartnerInfo.Location = new System.Drawing.Point(2,2);
+            this.lblPartnerInfo.Name = "lblPartnerInfo";
+            this.lblPartnerInfo.AutoSize = true;
+            this.lblPartnerInfo.Text = "Partner Info:";
+            this.lblPartnerInfo.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblPartnerInfo.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblPartnerInfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // pnlActions
             //
@@ -407,12 +421,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.Controls.Add(this.lblCurrentRecordStatus, 0, 0);
-            this.tableLayoutPanel3.SetColumnSpan(this.grdParsedValues, 2);
-            this.tableLayoutPanel3.Controls.Add(this.grdParsedValues, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblPartnerInfo, 0, 1);
             this.tableLayoutPanel3.SetColumnSpan(this.grdMatchingRecords, 3);
             this.tableLayoutPanel3.Controls.Add(this.grdMatchingRecords, 0, 2);
             this.tableLayoutPanel3.SetColumnSpan(this.txtCurrentRecordStatus, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtCurrentRecordStatus, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtPartnerInfo, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.pnlActions, 2, 1);
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -579,7 +593,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtCurrentRecordStatus;
         private System.Windows.Forms.Label lblCurrentRecordStatus;
-        private Ict.Common.Controls.TSgrdDataGridPaged grdParsedValues;
+        private System.Windows.Forms.TextBox txtPartnerInfo;
+        private System.Windows.Forms.Label lblPartnerInfo;
         private System.Windows.Forms.Panel pnlActions;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TextBox txtExplanation;

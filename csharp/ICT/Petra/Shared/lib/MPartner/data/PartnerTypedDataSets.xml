@@ -318,6 +318,9 @@
         <Table sqltable="p_partner_interest"/>
         <Table sqltable="p_interest"/>
 
+        <Table sqltable="p_publication"/>
+        <Table sqltable="p_subscription"/>
+
         <Table sqltable="pm_personal_data"/>
         <Table sqltable="pm_passport_details"/>
         <Table sqltable="pm_document"/>

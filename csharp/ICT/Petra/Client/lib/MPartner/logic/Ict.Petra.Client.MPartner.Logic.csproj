@@ -101,7 +101,6 @@
     <Compile Include="Ict.Petra.Client.MPartner.Logic.AssemblyInfo.cs" />
     <Compile Include="PartnerEdit.cs" />
     <Compile Include="PartnerFind.cs" />
-    <Compile Include="PartnerImport.cs" />
     <Compile Include="PartnerNewDialog.cs" />
     <Compile Include="PartnerTypeFamilyMembersPropagationSelection.cs" />
     <Compile Include="Resourcestrings.cs" />

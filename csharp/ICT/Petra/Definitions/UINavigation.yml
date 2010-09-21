@@ -39,8 +39,7 @@ OpenPetra:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts}
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
-                        ImportPartners: {ActionClick=TFrmPartnerMain.ImportPartners, Label=Import from YAML, Description="Import Partners, only useful for initial database setup"}
-                        ImportPartnersFromCSV: {ActionOpenScreen=TFrmPartnerImport, Label=Import from CSV, Description=Import Partners without overwriting}
+                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
                 #Extracts:
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
@@ -163,7 +162,7 @@ OpenPetra:
                 #Budgets:
                 #ICH:
                 #Reports:
-                FinanceModuleSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}

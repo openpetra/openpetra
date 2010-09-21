@@ -1143,7 +1143,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
 #endif
 
         #region ManualCode
-        private TMaintenanceSystemDefaults FSystemDefaultsManager;
+        private TSystemDefaults FSystemDefaultsManager;
         #endregion ManualCode
         /// <summary>Constructor</summary>
         public TMaintenanceSystemDefaultsNamespace()
@@ -1157,7 +1157,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
             FStartTime = DateTime.Now;
 #endif
             #region ManualCode
-            FSystemDefaultsManager = new TMaintenanceSystemDefaults();
+            FSystemDefaultsManager = new TSystemDefaults();
             #endregion ManualCode
         }
 
@@ -1212,7 +1212,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
         public Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable GetSystemDefaults()
         {
             #region ManualCode
-            return FSystemDefaultsManager.GetSystemDefaults();
+            return TSystemDefaults.GetSystemDefaults();
             #endregion ManualCode
         }
 
@@ -1380,7 +1380,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
                                     out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable)
         {
             #region ManualCode
-            TMaintenanceUserDefaults.GetUserDefaults(AUserName, out AUserDefaultsDataTable);
+            TUserDefaults.GetUserDefaults(AUserName, out AUserDefaultsDataTable);
             #endregion ManualCode
         }
 
@@ -1390,7 +1390,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
                                                out Ict.Common.Verification.TVerificationResultCollection AVerificationResult)
         {
             #region ManualCode
-            return TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide(AUserName, ref AUserDefaultsDataTable, out AVerificationResult);
+            return TUserDefaults.SaveUserDefaultsFromClientSide(AUserName, ref AUserDefaultsDataTable, out AVerificationResult);
             #endregion ManualCode
         }
 
@@ -1399,7 +1399,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
                                        out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable)
         {
             #region ManualCode
-            TMaintenanceUserDefaults.ReloadUserDefaults(AUserName, true, out AUserDefaultsDataTable);
+            TUserDefaults.ReloadUserDefaults(AUserName, true, out AUserDefaultsDataTable);
             #endregion ManualCode
         }
     }

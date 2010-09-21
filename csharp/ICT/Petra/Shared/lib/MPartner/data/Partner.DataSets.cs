@@ -13133,6 +13133,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         private PPartnerTypeTable TablePPartnerType;
         private PPartnerInterestTable TablePPartnerInterest;
         private PInterestTable TablePInterest;
+        private PPublicationTable TablePPublication;
+        private PSubscriptionTable TablePSubscription;
         private PmPersonalDataTable TablePmPersonalData;
         private PmPassportDetailsTable TablePmPassportDetails;
         private PmDocumentTable TablePmDocument;
@@ -13305,6 +13307,24 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             get
             {
                 return this.TablePInterest;
+            }
+        }
+
+        /// auto generated
+        public PPublicationTable PPublication
+        {
+            get
+            {
+                return this.TablePPublication;
+            }
+        }
+
+        /// auto generated
+        public PSubscriptionTable PSubscription
+        {
+            get
+            {
+                return this.TablePSubscription;
             }
         }
 
@@ -13601,6 +13621,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PPartnerTypeTable("PPartnerType"));
             this.Tables.Add(new PPartnerInterestTable("PPartnerInterest"));
             this.Tables.Add(new PInterestTable("PInterest"));
+            this.Tables.Add(new PPublicationTable("PPublication"));
+            this.Tables.Add(new PSubscriptionTable("PSubscription"));
             this.Tables.Add(new PmPersonalDataTable("PmPersonalData"));
             this.Tables.Add(new PmPassportDetailsTable("PmPassportDetails"));
             this.Tables.Add(new PmDocumentTable("PmDocument"));
@@ -13691,6 +13713,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             if ((ds.Tables.IndexOf("PInterest") != -1))
             {
                 this.Tables.Add(new PInterestTable("PInterest"));
+            }
+            if ((ds.Tables.IndexOf("PPublication") != -1))
+            {
+                this.Tables.Add(new PPublicationTable("PPublication"));
+            }
+            if ((ds.Tables.IndexOf("PSubscription") != -1))
+            {
+                this.Tables.Add(new PSubscriptionTable("PSubscription"));
             }
             if ((ds.Tables.IndexOf("PmPersonalData") != -1))
             {
@@ -13875,6 +13905,14 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.TablePInterest.InitVars();
             }
+            if ((this.TablePPublication != null))
+            {
+                this.TablePPublication.InitVars();
+            }
+            if ((this.TablePSubscription != null))
+            {
+                this.TablePSubscription.InitVars();
+            }
             if ((this.TablePmPersonalData != null))
             {
                 this.TablePmPersonalData.InitVars();
@@ -14015,6 +14053,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TablePPartnerType = ((PPartnerTypeTable)(this.Tables["PPartnerType"]));
             this.TablePPartnerInterest = ((PPartnerInterestTable)(this.Tables["PPartnerInterest"]));
             this.TablePInterest = ((PInterestTable)(this.Tables["PInterest"]));
+            this.TablePPublication = ((PPublicationTable)(this.Tables["PPublication"]));
+            this.TablePSubscription = ((PSubscriptionTable)(this.Tables["PSubscription"]));
             this.TablePmPersonalData = ((PmPersonalDataTable)(this.Tables["PmPersonalData"]));
             this.TablePmPassportDetails = ((PmPassportDetailsTable)(this.Tables["PmPassportDetails"]));
             this.TablePmDocument = ((PmDocumentTable)(this.Tables["PmDocument"]));
@@ -14175,6 +14215,27 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.FConstraints.Add(new TTypedConstraint("FKPerson4", "PUnit", new string[] {
                                 "p_partner_key_n"}, "PPerson", new string[] {
                                 "p_field_key_n"}));
+            }
+            if (((this.TablePPublication != null)
+                        && (this.TablePSubscription != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSubscription1", "PPublication", new string[] {
+                                "p_publication_code_c"}, "PSubscription", new string[] {
+                                "p_publication_code_c"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePSubscription != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSubscription2", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PSubscription", new string[] {
+                                "p_partner_key_n"}));
+            }
+            if (((this.TablePPartner != null)
+                        && (this.TablePSubscription != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKSubscription3", "PPartner", new string[] {
+                                "p_partner_key_n"}, "PSubscription", new string[] {
+                                "p_gift_from_key_n"}));
             }
             if (((this.TablePPartner != null)
                         && (this.TablePUnit != null)))
