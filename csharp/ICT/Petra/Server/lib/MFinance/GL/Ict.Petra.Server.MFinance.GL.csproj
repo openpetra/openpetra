@@ -104,6 +104,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GL.Exporting.cs" />
     <Compile Include="GL.FinancialYear.cs" />
     <Compile Include="GL.Posting.cs" />
     <Compile Include="GL.Transactions.cs" />

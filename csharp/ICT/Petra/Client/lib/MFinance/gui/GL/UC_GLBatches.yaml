@@ -13,6 +13,7 @@ RootNode:
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
     Controls:
         pnlContent:
             Dock: Fill
@@ -62,7 +63,9 @@ RootNode:
             mniPost: {Action=actPostBatch}
             mniImportFromSpreadSheet:
             mniImportBatches:
+            mniExportBatches:
     Toolbar:
         tbbPostBatch:
         tbbImportFromSpreadSheet:
         tbbImportBatches:
+        tbbExportBatches:

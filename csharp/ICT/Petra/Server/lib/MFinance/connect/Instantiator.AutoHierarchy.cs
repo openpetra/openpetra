@@ -2595,6 +2595,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CancelGLBatch");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
+
+        /// generated method from connector
+        public bool ExportAllGLBatchData(ref ArrayList batches,
+                                         Hashtable requestParams,
+                                         out String exportString)
+        {
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.ExportAllGLBatchData(ref batches, requestParams, out exportString);
+        }
     }
 }
 

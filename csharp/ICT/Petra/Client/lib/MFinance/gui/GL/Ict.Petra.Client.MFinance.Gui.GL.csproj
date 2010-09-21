@@ -104,6 +104,13 @@
     <Compile Include="GLBatch.ManualCode.cs">
       <DependentUpon>GLBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLBatchExport.cs" />
+    <Compile Include="GLBatchExport.Designer.cs">
+      <DependentUpon>GLBatchExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLBatchExport.ManualCode.cs">
+      <DependentUpon>GLBatchExport.cs</DependentUpon>
+    </Compile>
     <Compile Include="GLEnterDateEffective.cs" />
     <Compile Include="GLEnterDateEffective.Designer.cs">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
@@ -134,6 +141,9 @@
     </Compile>
     <EmbeddedResource Include="GLBatch.resx">
       <DependentUpon>GLBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLBatchExport.resx">
+      <DependentUpon>GLBatchExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GLEnterDateEffective.resx">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>

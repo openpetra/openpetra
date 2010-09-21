@@ -138,6 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.txtCurrentPeriod.Location = new System.Drawing.Point(2,2);
             this.txtCurrentPeriod.Name = "txtCurrentPeriod";
+            this.txtCurrentPeriod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCurrentPeriod.Size = new System.Drawing.Size(150, 28);
             this.txtCurrentPeriod.ReadOnly = true;
             this.txtCurrentPeriod.TabStop = false;

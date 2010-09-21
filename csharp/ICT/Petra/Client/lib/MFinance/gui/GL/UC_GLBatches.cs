@@ -78,9 +78,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
       this.tbbImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
       this.tbbImportBatches.Text = Catalog.GetString("&Import Batches");
+      this.tbbExportBatches.Text = Catalog.GetString("&Export Batches");
       this.mniPost.Text = Catalog.GetString("&Post Batch");
       this.mniImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
       this.mniImportBatches.Text = Catalog.GetString("&Import Batches");
+      this.mniExportBatches.Text = Catalog.GetString("&Export Batches");
       this.mniBatch.Text = Catalog.GetString("&Batch");
       #endregion
 
@@ -346,6 +348,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             tbbImportBatches.Enabled = e.Enabled;
             mniImportBatches.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportBatches")
+        {
+            tbbExportBatches.Enabled = e.Enabled;
+            mniExportBatches.Enabled = e.Enabled;
         }
     }
 

@@ -579,5 +579,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ImportBatches();
         }
+
+        private void ExportBatches(object sender, EventArgs e)
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                    Catalog.GetString("Export Error"));
+                return;
+            }
+
+            TFrmGLBatchExport gl = new TFrmGLBatchExport(this.Handle);
+            gl.LedgerNumber = FLedgerNumber;
+            gl.MainDS = FMainDS;
+            gl.Show();
+        }
     }
 }

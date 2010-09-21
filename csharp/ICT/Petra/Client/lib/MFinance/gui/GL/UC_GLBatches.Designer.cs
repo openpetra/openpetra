@@ -98,11 +98,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbPostBatch = new System.Windows.Forms.ToolStripButton();
             this.tbbImportFromSpreadSheet = new System.Windows.Forms.ToolStripButton();
             this.tbbImportBatches = new System.Windows.Forms.ToolStripButton();
+            this.tbbExportBatches = new System.Windows.Forms.ToolStripButton();
             this.mnuTabPage = new System.Windows.Forms.MenuStrip();
             this.mniBatch = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPost = new System.Windows.Forms.ToolStripMenuItem();
             this.mniImportFromSpreadSheet = new System.Windows.Forms.ToolStripMenuItem();
             this.mniImportBatches = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniExportBatches = new System.Windows.Forms.ToolStripMenuItem();
 
             this.pnlContent.SuspendLayout();
             this.pnlInfo.SuspendLayout();
@@ -406,6 +408,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbbImportBatches.Click += new System.EventHandler(this.ImportBatches);
             this.tbbImportBatches.Text = "&Import Batches";
             //
+            // tbbExportBatches
+            //
+            this.tbbExportBatches.Name = "tbbExportBatches";
+            this.tbbExportBatches.AutoSize = true;
+            this.tbbExportBatches.Click += new System.EventHandler(this.ExportBatches);
+            this.tbbExportBatches.Text = "&Export Batches";
+            //
             // tbrTabPage
             //
             this.tbrTabPage.Name = "tbrTabPage";
@@ -414,7 +423,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tbrTabPage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            tbbPostBatch,
                         tbbImportFromSpreadSheet,
-                        tbbImportBatches});
+                        tbbImportBatches,
+                        tbbExportBatches});
             //
             // mniPost
             //
@@ -437,6 +447,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniImportBatches.Click += new System.EventHandler(this.ImportBatches);
             this.mniImportBatches.Text = "&Import Batches";
             //
+            // mniExportBatches
+            //
+            this.mniExportBatches.Name = "mniExportBatches";
+            this.mniExportBatches.AutoSize = true;
+            this.mniExportBatches.Click += new System.EventHandler(this.ExportBatches);
+            this.mniExportBatches.Text = "&Export Batches";
+            //
             // mniBatch
             //
             this.mniBatch.Name = "mniBatch";
@@ -444,7 +461,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.mniBatch.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniPost,
                         mniImportFromSpreadSheet,
-                        mniImportBatches});
+                        mniImportBatches,
+                        mniExportBatches});
             this.mniBatch.Text = "&Batch";
             //
             // mnuTabPage
@@ -521,10 +539,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.ToolStripButton tbbPostBatch;
         private System.Windows.Forms.ToolStripButton tbbImportFromSpreadSheet;
         private System.Windows.Forms.ToolStripButton tbbImportBatches;
+        private System.Windows.Forms.ToolStripButton tbbExportBatches;
         private System.Windows.Forms.MenuStrip mnuTabPage;
         private System.Windows.Forms.ToolStripMenuItem mniBatch;
         private System.Windows.Forms.ToolStripMenuItem mniPost;
         private System.Windows.Forms.ToolStripMenuItem mniImportFromSpreadSheet;
         private System.Windows.Forms.ToolStripMenuItem mniImportBatches;
+        private System.Windows.Forms.ToolStripMenuItem mniExportBatches;
     }
 }

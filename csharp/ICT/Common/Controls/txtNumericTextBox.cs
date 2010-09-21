@@ -344,14 +344,16 @@ namespace Ict.Common.Controls
 
                     FormatValue(RemoveNonNumeralChars());
                 }
-                else
-                {
-                    if (!DesignMode)
-                    {
-                        throw new ApplicationException(
-                            "The 'NumberValueDecimal' Property can only be set if the 'ControlMode' Property is 'Decimal' or 'Currency'!");
-                    }
-                }
+
+// Sharp Developer Designer Bug makes Integer mode unusable
+//                else
+//                {
+//                    if (!DesignMode)
+//                    {
+//                        throw new ApplicationException(
+//                            "The 'NumberValueDecimal' Property can only be set if the 'ControlMode' Property is 'Decimal' or 'Currency'!");
+//                    }
+//                }
             }
         }
 

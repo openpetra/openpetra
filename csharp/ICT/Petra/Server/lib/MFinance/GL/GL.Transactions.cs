@@ -24,6 +24,12 @@
 using System;
 using System.Data;
 using System.Collections.Specialized;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Text;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -570,6 +576,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out TVerificationResultCollection AVerifications)
         {
             return TGLPosting.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// <summary>
+        /// export all the Data of the batches array list to a String
+        /// </summary>
+        /// <param name="batches"></param>
+        /// <param name="requestParams"></param>
+        /// <param name="exportString"></param>
+        /// <returns>false if batch does not exist at all</returns>
+        public static bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        {
+            return TGLExporting.ExportAllGLBatchData(ref batches, requestParams, out exportString);
         }
     }
 }

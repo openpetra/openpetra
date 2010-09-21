@@ -353,7 +353,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CheckForOtherControls(ctrl);
 
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+
+            // Support NoLabel=true
+            FGenerateLabel = true;
+
+            if (GenerateLabel(ctrl))
+            {
+                writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            }
+
+            FGenerateLabel = false;
 
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
