@@ -3191,6 +3191,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
             return FFinanceReportingUIConnector.GetAvailableFinancialYears(ADiffPeriod, out ADisplayMember, out AValueMember);
             #endregion ManualCode
         }
+
+        /// generated method from interface
+        public System.Data.DataTable GetReceivingFields(out System.String ADisplayMember,
+                                                        out System.String AValueMember)
+        {
+            #region ManualCode
+            return FFinanceReportingUIConnector.GetReceivingFields(out ADisplayMember, out AValueMember);
+            #endregion ManualCode
+        }
     }
 }
 

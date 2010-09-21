@@ -678,6 +678,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors
         System.Data.DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod,
                                                          out System.String ADisplayMember,
                                                          out System.String AValueMember);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.TReportingUIConnectorsNamespace)</summary>
+        System.Data.DataTable GetReceivingFields(out System.String ADisplayMember,
+                                                 out System.String AValueMember);
     }
 
 }

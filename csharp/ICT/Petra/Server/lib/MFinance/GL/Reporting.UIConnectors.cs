@@ -30,6 +30,7 @@ using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting
@@ -229,7 +230,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
         /// To be used by a combobox to select the financial year
         ///
         /// </summary>
-        /// <returns>void</returns>
+        /// <returns>DataTable</returns>
         public DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod, out String ADisplayMember, out String AValueMember)
         {
             DataTable tab;
@@ -279,6 +280,46 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
             return tab;
+        }
+
+        /// <summary>
+        /// Load all the receiving fields
+        /// </summary>
+        /// <param name="ADisplayMember"></param>
+        /// <param name="AValueMember"></param>
+        /// <returns>Table with the field keys and the field names</returns>
+        public DataTable GetReceivingFields(out String ADisplayMember, out String AValueMember)
+        {
+            DataTable ReturnTable = new DataTable();
+            String sql;
+
+            TDBTransaction ReadTransaction;
+
+            ADisplayMember = "FieldName";
+            AValueMember = "FieldKey";
+
+            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+            try
+            {
+                sql = "SELECT DISTINCT " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " AS " + AValueMember +
+                      ", " +
+                      PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS " + ADisplayMember +
+                      " FROM " + PPartnerTable.GetTableDBName() + ", " +
+                      PPartnerTypeTable.GetTableDBName() +
+                      " WHERE " +
+                      PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() + " = " + PPartnerTable.GetTableDBName() +
+                      "." + PPartnerTable.GetPartnerKeyDBName() +
+                      " AND (" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'LEDGER' OR " +
+                      PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetTypeCodeDBName() + " = 'COSTCENTRE' " +
+                      ") ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
+
+                ReturnTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return ReturnTable;
         }
     }
 }
