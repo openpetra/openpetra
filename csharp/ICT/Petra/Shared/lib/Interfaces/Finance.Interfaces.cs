@@ -575,6 +575,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                            Int32 ALedgerNumber,
                            Int32 ABatchNumber,
                            out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        bool ExportAllGLBatchData(ref ArrayList batches,
+                                  Hashtable requestParams,
+                                  out String exportString);
     }
 
 }
