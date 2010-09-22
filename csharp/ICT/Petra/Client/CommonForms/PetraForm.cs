@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.CommonForms
 
             TFormsList.GFormsList.NotifyWindowOpened(ACallerWindowHandle, FWinForm.Handle);
 
-            // sbtForm.InstanceDefaultText = "Enter data or press ESC to end.";
+            // WriteToStatusBar(Catalog.GetString("Ready."));
         }
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace Ict.Petra.Client.CommonForms
         public void WriteToStatusBar(String s)
         {
             // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-// TODO            this.sbtForm.InstanceDefaultText = s;
+            FStatusBar.ShowMessage(s);
         }
 
         /**
