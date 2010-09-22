@@ -68,25 +68,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             this.tabReportSettings = new Ict.Common.Controls.TTabVersatile();
             this.tpgGeneralSettings = new System.Windows.Forms.TabPage();
-            this.grpReportType = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.lblLedger = new System.Windows.Forms.Label();
+            this.grpReportType = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbReportType = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblReportType = new System.Windows.Forms.Label();
             this.grpDateSelection = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dtpFromDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblFromDate = new System.Windows.Forms.Label();
             this.dtpToDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblToDate = new System.Windows.Forms.Label();
             this.rgrDonorSelection = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtAllDonors = new System.Windows.Forms.RadioButton();
             this.rbtExtract = new System.Windows.Forms.RadioButton();
             this.txtExtract = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.rbtPartner = new System.Windows.Forms.RadioButton();
             this.txtDonor = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.grpCurrencySelection = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.txtMinAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblMinAmount = new System.Windows.Forms.Label();
             this.txtMaxAmount = new Ict.Common.Controls.TTxtNumericTextBox();
@@ -96,9 +98,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tpgColumnSettings = new System.Windows.Forms.TabPage();
             this.uco_Columns = new Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns();
             this.tpgAdditionalSettings = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.rgrFormatCurrency = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.rgrFormatCurrency = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtCurrencyComplete = new System.Windows.Forms.RadioButton();
             this.rbtCurrencyWithoutDecimals = new System.Windows.Forms.RadioButton();
             this.rbtCurrencyThousands = new System.Windows.Forms.RadioButton();
@@ -137,19 +139,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             this.tabReportSettings.SuspendLayout();
             this.tpgGeneralSettings.SuspendLayout();
-            this.grpReportType.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.grpDateSelection.SuspendLayout();
+            this.grpReportType.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.rgrDonorSelection.SuspendLayout();
+            this.grpDateSelection.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.grpCurrencySelection.SuspendLayout();
+            this.rgrDonorSelection.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.grpCurrencySelection.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.tpgColumnSettings.SuspendLayout();
             this.tpgAdditionalSettings.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
-            this.rgrFormatCurrency.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
+            this.rgrFormatCurrency.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -160,10 +163,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tpgGeneralSettings.Location = new System.Drawing.Point(2,2);
             this.tpgGeneralSettings.Name = "tpgGeneralSettings";
             this.tpgGeneralSettings.AutoSize = true;
-            this.tpgGeneralSettings.Controls.Add(this.grpCurrencySelection);
-            this.tpgGeneralSettings.Controls.Add(this.rgrDonorSelection);
-            this.tpgGeneralSettings.Controls.Add(this.grpDateSelection);
-            this.tpgGeneralSettings.Controls.Add(this.grpReportType);
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tpgGeneralSettings.Controls.Add(this.tableLayoutPanel1);
+            //
+            // lblLedger
+            //
+            this.lblLedger.Location = new System.Drawing.Point(2,2);
+            this.lblLedger.Name = "lblLedger";
+            this.lblLedger.AutoSize = true;
+            this.lblLedger.Text = "Ledger:";
+            this.lblLedger.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             //
             // grpReportType
             //
@@ -171,18 +185,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.grpReportType.Dock = System.Windows.Forms.DockStyle.Top;
             this.grpReportType.AutoSize = true;
             //
-            // tableLayoutPanel1
+            // tableLayoutPanel2
             //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.grpReportType.Controls.Add(this.tableLayoutPanel1);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.grpReportType.Controls.Add(this.tableLayoutPanel2);
             //
             // cmbReportType
             //
             this.cmbReportType.Location = new System.Drawing.Point(2,2);
             this.cmbReportType.Name = "cmbReportType";
             this.cmbReportType.Size = new System.Drawing.Size(150, 28);
+            this.cmbReportType.SelectedValueChanged += new System.EventHandler(this.ReportTypeChanged);
             this.cmbReportType.Items.AddRange(new object[] {"Complete","Total"});
             //
             // lblReportType
@@ -194,13 +209,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblReportType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblReportType.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblReportType.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblReportType, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.cmbReportType, 1, 0);
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.lblReportType, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.cmbReportType, 1, 0);
             this.grpReportType.Text = "Report Type";
             //
             // grpDateSelection
@@ -209,12 +224,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.grpDateSelection.Dock = System.Windows.Forms.DockStyle.Top;
             this.grpDateSelection.AutoSize = true;
             //
-            // tableLayoutPanel2
+            // tableLayoutPanel3
             //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.grpDateSelection.Controls.Add(this.tableLayoutPanel2);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.grpDateSelection.Controls.Add(this.tableLayoutPanel3);
             //
             // dtpFromDate
             //
@@ -247,16 +262,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblToDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblToDate.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblToDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblFromDate, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblToDate, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.dtpFromDate, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpToDate, 1, 1);
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.lblFromDate, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblToDate, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.dtpFromDate, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.dtpToDate, 1, 1);
             this.grpDateSelection.Text = "Select Date";
             //
             // rgrDonorSelection
@@ -265,12 +280,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rgrDonorSelection.Dock = System.Windows.Forms.DockStyle.Top;
             this.rgrDonorSelection.AutoSize = true;
             //
-            // tableLayoutPanel3
+            // tableLayoutPanel4
             //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            this.rgrDonorSelection.Controls.Add(this.tableLayoutPanel3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.rgrDonorSelection.Controls.Add(this.tableLayoutPanel4);
             //
             // rbtAllDonors
             //
@@ -329,19 +344,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.txtDonor.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.txtDonor.ButtonText = "Find";
             this.rbtPartner.CheckedChanged += new System.EventHandler(this.rbtPartnerCheckedChanged);
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.SetColumnSpan(this.rbtAllDonors, 2);
-            this.tableLayoutPanel3.Controls.Add(this.rbtAllDonors, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtExtract, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.rbtPartner, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.txtExtract, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtDonor, 1, 2);
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.SetColumnSpan(this.rbtAllDonors, 2);
+            this.tableLayoutPanel4.Controls.Add(this.rbtAllDonors, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.rbtExtract, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.rbtPartner, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.txtExtract, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtDonor, 1, 2);
             this.rgrDonorSelection.Text = "Select Donors";
             //
             // grpCurrencySelection
@@ -350,12 +365,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.grpCurrencySelection.Dock = System.Windows.Forms.DockStyle.Top;
             this.grpCurrencySelection.AutoSize = true;
             //
-            // tableLayoutPanel4
+            // tableLayoutPanel5
             //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.grpCurrencySelection.Controls.Add(this.tableLayoutPanel4);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.grpCurrencySelection.Controls.Add(this.tableLayoutPanel5);
             //
             // txtMinAmount
             //
@@ -411,20 +426,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.lblCurrency.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 3;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblMinAmount, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.lblMaxAmount, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.lblCurrency, 0, 2);
-            this.tableLayoutPanel4.Controls.Add(this.txtMinAmount, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtMaxAmount, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.cmbCurrency, 1, 2);
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 3;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.lblMinAmount, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.lblMaxAmount, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.lblCurrency, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.txtMinAmount, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.txtMaxAmount, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.cmbCurrency, 1, 2);
             this.grpCurrencySelection.Text = "Gift Limit";
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.lblLedger, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.grpReportType, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.grpDateSelection, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.rgrDonorSelection, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.grpCurrencySelection, 0, 4);
             this.tpgGeneralSettings.Text = "General Settings";
             this.tpgGeneralSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -448,12 +476,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.tpgAdditionalSettings.Name = "tpgAdditionalSettings";
             this.tpgAdditionalSettings.AutoSize = true;
             //
-            // tableLayoutPanel5
+            // tableLayoutPanel6
             //
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.AutoSize = true;
-            this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel5);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
+            this.tpgAdditionalSettings.Controls.Add(this.tableLayoutPanel6);
             //
             // rgrFormatCurrency
             //
@@ -461,12 +489,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rgrFormatCurrency.Name = "rgrFormatCurrency";
             this.rgrFormatCurrency.AutoSize = true;
             //
-            // tableLayoutPanel6
+            // tableLayoutPanel7
             //
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.AutoSize = true;
-            this.rgrFormatCurrency.Controls.Add(this.tableLayoutPanel6);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
+            this.rgrFormatCurrency.Controls.Add(this.tableLayoutPanel7);
             //
             // rbtCurrencyComplete
             //
@@ -489,21 +517,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.rbtCurrencyThousands.Name = "rbtCurrencyThousands";
             this.rbtCurrencyThousands.AutoSize = true;
             this.rbtCurrencyThousands.Text = "Only Thousands";
+            this.tableLayoutPanel7.ColumnCount = 1;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.RowCount = 3;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.Controls.Add(this.rbtCurrencyComplete, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.rbtCurrencyWithoutDecimals, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.rbtCurrencyThousands, 0, 2);
+            this.rgrFormatCurrency.Text = "Format currency numbers:";
             this.tableLayoutPanel6.ColumnCount = 1;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.RowCount = 3;
+            this.tableLayoutPanel6.RowCount = 1;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Controls.Add(this.rbtCurrencyComplete, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.rbtCurrencyWithoutDecimals, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.rbtCurrencyThousands, 0, 2);
-            this.rgrFormatCurrency.Text = "Format currency numbers:";
-            this.tableLayoutPanel5.ColumnCount = 1;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.RowCount = 1;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Controls.Add(this.rgrFormatCurrency, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.rgrFormatCurrency, 0, 0);
             this.tpgAdditionalSettings.Text = "Additional Settings";
             this.tpgAdditionalSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -796,19 +824,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
             this.rgrFormatCurrency.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel6.ResumeLayout(false);
             this.tpgAdditionalSettings.ResumeLayout(false);
             this.tpgColumnSettings.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
             this.grpCurrencySelection.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.rgrDonorSelection.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             this.grpDateSelection.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.grpReportType.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.tpgGeneralSettings.ResumeLayout(false);
             this.tabReportSettings.ResumeLayout(false);
 
@@ -818,25 +847,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private Ict.Common.Controls.TTabVersatile tabReportSettings;
         private System.Windows.Forms.TabPage tpgGeneralSettings;
-        private System.Windows.Forms.GroupBox grpReportType;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label lblLedger;
+        private System.Windows.Forms.GroupBox grpReportType;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Common.Controls.TCmbAutoComplete cmbReportType;
         private System.Windows.Forms.Label lblReportType;
         private System.Windows.Forms.GroupBox grpDateSelection;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpFromDate;
         private System.Windows.Forms.Label lblFromDate;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpToDate;
         private System.Windows.Forms.Label lblToDate;
         private System.Windows.Forms.GroupBox rgrDonorSelection;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.RadioButton rbtAllDonors;
         private System.Windows.Forms.RadioButton rbtExtract;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtExtract;
         private System.Windows.Forms.RadioButton rbtPartner;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDonor;
         private System.Windows.Forms.GroupBox grpCurrencySelection;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private Ict.Common.Controls.TTxtNumericTextBox txtMinAmount;
         private System.Windows.Forms.Label lblMinAmount;
         private Ict.Common.Controls.TTxtNumericTextBox txtMaxAmount;
@@ -846,9 +877,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private System.Windows.Forms.TabPage tpgColumnSettings;
         private Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns uco_Columns;
         private System.Windows.Forms.TabPage tpgAdditionalSettings;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.GroupBox rgrFormatCurrency;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.GroupBox rgrFormatCurrency;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.RadioButton rbtCurrencyComplete;
         private System.Windows.Forms.RadioButton rbtCurrencyWithoutDecimals;
         private System.Windows.Forms.RadioButton rbtCurrencyThousands;

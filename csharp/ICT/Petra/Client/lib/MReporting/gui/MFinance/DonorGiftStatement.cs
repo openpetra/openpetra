@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblLedger.Text = Catalog.GetString("Ledger:");
       this.lblReportType.Text = Catalog.GetString("Report Type:");
       this.grpReportType.Text = Catalog.GetString("Report Type");
       this.lblFromDate.Text = Catalog.GetString("From:");

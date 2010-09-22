@@ -21,7 +21,7 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
+            Controls: [lblLedger, grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
             
         tpgColumnSettings:
             Label: Column Settings
@@ -29,6 +29,8 @@
         uco_Columns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
+        lblLedger:
+            Label: Ledger
         grpReportType:
             Label: Report Type
             Dock: Top
@@ -49,6 +51,7 @@
         cmbReportType:
             ParameterName: param_report_type
             OptionalValues: [Complete, Total]
+            OnChange: ReportTypeChanged
         dtpFromDate:
             Label: From
             ParameterName: param_from_date

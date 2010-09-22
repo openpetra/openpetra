@@ -94,7 +94,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 && (!dtpCurrentStaff.ValidDate(false)))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
-                    "Enter a valid date.", "Wrong date!", TResultSeverity.Resv_Critical);
+                    Catalog.GetString("Enter a valid date."),
+                    Catalog.GetString("Wrong date!"),
+                    TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
@@ -103,7 +105,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 && (txtPartnerKey.Text == "0000000000"))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
-                    "Enter a valid Partner Key.", "No Partner Key entered!", TResultSeverity.Resv_Critical);
+                    Catalog.GetString("Enter a valid Partner Key."),
+                    Catalog.GetString("No Partner Key entered!"),
+                    TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
@@ -112,7 +116,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 && (txtExtract.Text == ""))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
-                    "Enter a extract name.", "No extract name entered!", TResultSeverity.Resv_Critical);
+                    Catalog.GetString("Enter a extract name."),
+                    Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
         }

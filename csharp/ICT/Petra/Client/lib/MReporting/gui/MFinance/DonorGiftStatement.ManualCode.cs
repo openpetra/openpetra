@@ -43,12 +43,55 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
+                lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
             }
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReportTypeChanged(object sender, EventArgs e)
         {
-            if (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt)
+            bool IsTotal = (cmbReportType.SelectedItem.ToString() == "Total");
+
+            if (IsTotal)
+            {
+                tpgColumnSettings.Text = Catalog.GetString("(Disabled)");
+            }
+            else
+            {
+                tpgColumnSettings.Text = Catalog.GetString("Column Settings");
+            }
+
+            tpgColumnSettings.Enabled = !IsTotal;
+            txtMinAmount.Enabled = !IsTotal;
+            txtMaxAmount.Enabled = !IsTotal;
+            dtpFromDate.Enabled = !IsTotal;
+            dtpToDate.Enabled = !IsTotal;
+        }
+
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+        	 if ((AReportAction == TReportActionEnum.raGenerate)
+                && (rbtPartner.Checked && (txtDonor.Text == "0000000000")))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No donor selected."),
+                    Catalog.GetString("Please select a donor."),
+                    TResultSeverity.Resv_Critical);
+
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && rbtExtract.Checked
+                && (txtExtract.Text == ""))
+            {
+                TVerificationResult VerificationMessage = new TVerificationResult(
+                    Catalog.GetString("Enter a extract name."),
+                    Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+            }
+
+            if ((AReportAction == TReportActionEnum.raGenerate)
+                && (txtMinAmount.NumberValueInt > txtMaxAmount.NumberValueInt))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
                     Catalog.GetString("Gift Limit wrong."),
@@ -56,10 +99,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
-        }
 
-        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
+        	if ((AReportAction == TReportActionEnum.raGenerate)
+                && (cmbReportType.SelectedItem.ToString() == "Complete")
+                && (dtpFromDate.Date > dtpToDate.Date))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("From date is later than to date."),
+                    Catalog.GetString("Please change from date or to date."),
+                    TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
@@ -73,15 +124,57 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
             ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
 
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
-
-            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+            if (cmbReportType.SelectedItem.ToString() == "Total")
             {
-                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+                ACalc.AddParameter("Month0", 1);
+                ACalc.AddParameter("Month1", 2);
+                ACalc.AddParameter("Year0", DateTime.Today.Year);
+                ACalc.AddParameter("Year1", DateTime.Today.Year - 1);
+                ACalc.AddParameter("Year2", DateTime.Today.Year - 2);
+                ACalc.AddParameter("Year3", DateTime.Today.Year - 3);
 
-                if (ColumnName == "Gift Amount")
+                int ColumnCounter = 0;
+                ACalc.AddParameter("param_calculation", "Month", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Year-0", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Count-0", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)0.8, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Year-1", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Count-1", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)0.8, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Year-2", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Count-2", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)0.8, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Year-3", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.AddParameter("param_calculation", "Count-3", ColumnCounter);
+                ACalc.AddParameter("ColumnWidth", (float)0.8, ColumnCounter);
+                ++ColumnCounter;
+                ACalc.SetMaxDisplayColumns(ColumnCounter);
+            }
+            else
+            {
+                int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+
+                for (int Counter = 0; Counter <= MaxColumns; ++Counter)
                 {
-                    ACalc.AddParameter("param_gift_amount_column", Counter);
+                    String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+
+                    if (ColumnName == "Gift Amount")
+                    {
+                        ACalc.AddParameter("param_gift_amount_column", Counter);
+                    }
                 }
             }
         }

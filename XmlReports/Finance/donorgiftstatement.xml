@@ -1,0 +1,1132 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="DonorGiftStatement">
+		<description>
+			This report shows all gifts from a particular donor for a specified period
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_currency"/>
+			<reportparameter name="param_start_date"/>
+			<reportparameter name="param_end_date"/> 
+			<reportparameter name="param_from_date_previous_year"/>
+			<reportparameter name="param_to_date_previous_year"/>
+			<reportparameter name="param_from_date_this_year"/>
+			<reportparameter name="param_to_date_this_year"/>
+			<reportparameter name="param_min_amount"/>
+			<reportparameter name="param_max_amount"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1">
+				<value text="Donor Gift Statement (" />
+				<value variable="param_report_type" />
+				<value text=")" />
+			</field>
+			
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1">
+				<value text="Ledger "/>
+				<value variable="param_ledger_number_i"/>
+				<value text="   "/>
+				<value function="getLedgerName({{param_ledger_number_i}})"/>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail condition="eq({param_donor}, All Donors)">
+					<value text="All Donors"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_donor}, One Donor)">
+					<value text="One Donor: "/>
+					<value variable="{param_donorkey}"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_donor}, Extract)">
+					<value text="Donors from Extract: "/>
+					<value variable="{param_extract_name}"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period1">
+				<fielddetail>
+					<value text="From: "/>
+					<value variable="param_from_date" format="formatteddate"/>
+					<value text=" To: "/>
+					<value variable="param_to_date" format="formatteddate"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period2">
+				<value text="Gift Amount From: "/>
+				<value variable="param_min_amount" format="currency" />
+				<value text=" To: "/>
+				<value variable="param_max_amount" format="currency"/>
+			</field>
+			<field whichfield="period3">
+				<value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			
+		</pageheader>
+
+		<calculations>
+		
+			<!-- Select Donors in a given period of time -->
+			<calculation id="SelectDonors" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							gift.p_donor_key_n AS DonorKey,
+							PUB_p_partner.p_partner_short_name_c AS DonorName,
+							PUB_p_partner.p_partner_class_c AS DonorClass,
+							detail.a_recipient_ledger_number_n
+						FROM
+							PUB_a_gift as gift, 
+							PUB_a_gift_detail as detail,
+							PUB_a_gift_batch,
+							PUB_p_partner
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, Extract)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_donor}, Extract))">
+						<value>
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							AND detail.a_gift_amount_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+						 </value>
+					</queryDetail>
+					<!--queryDetail condition="not(eq({param_report_type}, List)">
+						<value>
+							AND gift.p_donor_key_n  &lt;&gt; 0
+						</value>
+					</queryDetail-->
+					<queryDetail condition="eq({param_donor}, One Donor)">
+						<value>
+							AND gift.p_donor_key_n = {param_donorkey}
+						</value>
+					</queryDetail>
+					<!--queryDetail>
+						<value>
+							ORDER BY detail.a_recipient_ledger_number_n
+						</value>
+					</queryDetail-->
+				</query>
+			</calculation>
+			
+			<calculation id="SelectDonorsTotal" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							gift.p_donor_key_n AS DonorKey,
+							PUB_p_partner.p_partner_short_name_c AS DonorName,
+							PUB_p_partner.p_partner_class_c AS DonorClass
+						FROM
+							PUB_a_gift as gift, 
+							PUB_a_gift_detail as detail,
+							PUB_a_gift_batch,
+							PUB_p_partner
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, Extract)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_donor}, Extract))">
+						<value>
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, One Donor)">
+						<value>
+							AND gift.p_donor_key_n = {param_donorkey}
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							ORDER BY PUB_p_partner.p_partner_short_name_c
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="SelectSingleGift" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT
+							gift.a_date_entered_d AS GiftDate,
+							detail.p_recipient_key_n AS RecipientKey,
+							detail.a_confidential_gift_flag_l AS Confidential,
+							PUB_p_partner.p_partner_short_name_c AS RecipientName,
+							PUB_p_partner.p_partner_class_c AS RecipientClass,
+							detail.a_motivation_detail_code_c AS GiftType,
+							gift.a_receipt_number_i AS Receipt,
+							detail.a_recipient_ledger_number_n as FieldKey,
+							PUB_a_motivation_detail.a_motivation_detail_desc_c,
+							PUB_a_motivation_group.a_motivation_group_description_c,
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							detail.a_gift_amount_n AS GiftAmount
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							detail.a_gift_amount_intl_n AS GiftAmount
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch,
+							 PUB_p_partner,
+							 PUB_a_motivation_group,
+							 PUB_a_motivation_detail
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n 
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							
+							AND PUB_a_motivation_group.a_motivation_group_code_c = detail.a_motivation_group_code_c
+							AND PUB_a_motivation_group.a_ledger_number_i =  {param_ledger_number_i}
+							
+							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
+							AND PUB_a_motivation_detail.a_ledger_number_i  = {param_ledger_number_i}
+				
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							AND detail.a_gift_amount_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_report_type}, Complete)">
+						<value>
+							ORDER BY gift.a_date_entered_d
+						 </value>
+					</queryDetail>
+					<!--queryDetail condition="eq({param_report_type}, Gifts Only)">
+						<value>
+							ORDER BY gift.a_date_entered_d
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_report_type}, Donors Only)">
+						<value>
+							ORDER BY PUB_p_partner.p_partner_short_name_c
+						 </value>
+					</queryDetail-->
+				</query>
+			</calculation>
+			
+			<calculation id="SelectTotalPreviousYear" returns="TotalPreviousYear" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS TotalPreviousYear
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS TotalPreviousYear
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_date_entered_d BETWEEN {#param_from_date_previous_year#} AND {#param_to_date_previous_year#}
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectTotalThisYear" returns="TotalThisYear" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS TotalThisYear
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS TotalThisYear
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_date_entered_d BETWEEN{#param_from_date_this_year#} AND {#param_to_date_this_year#}
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthSum_0" returns="MonthSum_0, Count_0" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthSum_0,
+							COUNT (detail.a_gift_amount_n) AS Count_0
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthSum_0,
+							COUNT (detail.a_gift_amount_n) AS Count_0
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year0}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthSum_1" returns="MonthSum_1, Count_1" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthSum_1,
+							COUNT (detail.a_gift_amount_n) AS Count_1
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthSum_1,
+							COUNT (detail.a_gift_amount_n) AS Count_1
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year1}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year1}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year1}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year1}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year1}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year1}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year1}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year1}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthSum_2" returns="MonthSum_2, Count_2" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthSum_2,
+							COUNT (detail.a_gift_amount_n) AS Count_2
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthSum_2,
+							COUNT (detail.a_gift_amount_n) AS Count_2
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year2}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year2}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year2}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year2}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year2}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year2}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year2}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year2}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthSum_3" returns="MonthSum_3, Count_3" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthSum_3,
+							COUNT (detail.a_gift_amount_n) AS Count_3
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthSum_3,
+							COUNT (detail.a_gift_amount_n) AS Count_3
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
+								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year3}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year3}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year3}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year3}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year3}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year3}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year3}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year3}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="MakeDonorAddress" returns="automatic" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="GetPartnerBestAddress({DonorKey})"/>
+						<value function="assign(DonorAddress,  )"/>
+						<value function="assign(DonorAddress, concatenateww({DonorAddress}, {Locality}, 2))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{StreetName}))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{Address3}))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{PostalCode}))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{City}))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{County}))"/>
+						<value function="assign(DonorAddress, concatenatewithcomma({DonorAddress},{CountryCode}))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="ResetMonth" returns="Month" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(Month0, 1)"/>
+						<value function="assign(Month1, 2)"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			<calculation id="AddMonth" returns="Month" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(Month0, add({Month0}, 1))"/>
+						<value function="assign(Month1, add({Month1}, 1))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="GetPartnerAddress" returns="automatic" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="GetPartnerBestAddress({DonorKey})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Donor Key" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Donor Key"/></caption>
+				<query>
+					<queryDetail><value variable="DonorKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Donor Name" returnsFormat="text" returns="text">
+				<caption><value text="Donor Name"/></caption>
+				<query>
+					<queryDetail><value variable="DonorName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Donor Class" returnsFormat="text" returns="text">
+				<caption><value text="Donor Class"/></caption>
+				<query>
+					<queryDetail><value variable="DonorClass"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Recipient Key" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Recipient Key"/></caption>
+				<query>
+					<queryDetail><value variable="RecipientKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Recipient Name" returnsFormat="text" returns="text">
+				<caption><value text="Recipient Name"/></caption>
+				<query>
+					<queryDetail><value variable="RecipientName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Recipient Class" returnsFormat="text" returns="text">
+				<caption><value text="Recipient Class"/></caption>
+				<query>
+					<queryDetail><value variable="RecipientClass"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Recipient Type" returnsFormat="text" returns="text">
+				<caption><value text="Recpt  Type"/></caption>
+				<query>
+					<queryDetail><value variable="RecipientType"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Confidential" returnsFormat="text" returns="text">
+				<caption><value text="Confidential"/></caption>
+				<query>
+					<queryDetail><value variable="Confidential"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Field" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Field"/></caption>
+				<query>
+					<queryDetail><value variable="FieldKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Field Name" returnsFormat="text" returns="text">
+				<caption><value text="Field Name"/></caption>
+				<query>
+					<queryDetail><value variable="FieldName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift Date" returnsFormat="date" returns="text">
+				<caption><value text="Gift Date"/></caption>
+				<query>
+					<queryDetail><value variable="GiftDate"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift Amount" returnsFormat="currency" returns="amount">
+				<caption><value text="Gift Amount"/></caption>
+				<query>
+					<queryDetail><value variable="GiftAmount"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Gift Type" returnsFormat="text" returns="text">
+				<caption><value text="Gift Type"/></caption>
+				<query>
+					<queryDetail><value variable="GiftType"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			
+			<calculation id="Address line 1" returnsFormat="text" returns="text">
+				<caption><value text="Address1"/></caption>
+				<query>
+					<queryDetail><value variable="Locality"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Street" returnsFormat="text" returns="text">
+				<caption><value text="Street Name"/></caption>
+				<query>
+					<queryDetail><value variable="StreetName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Address line 3" returnsFormat="text" returns="text">
+				<caption><value text="Address3"/></caption>
+				<query>
+					<queryDetail><value variable="Address3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Post Code" returnsFormat="text" returns="text">
+				<caption><value text="Post Code"/></caption>
+				<query>
+					<queryDetail><value variable="PostalCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="City" returnsFormat="text" returns="text">
+				<caption><value text="City"/></caption>
+				<query>
+					<queryDetail><value variable="City"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="County" returnsFormat="text" returns="text">
+				<caption><value text="County"/></caption>
+				<query>
+					<queryDetail><value variable="County"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Country" returnsFormat="text" returns="text">
+				<caption><value text="Country"/></caption>
+				<query>
+					<queryDetail><value variable="CountryCode"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Number" returnsFormat="text" returns="text">
+				<caption><value text="TelephoneNumber"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Telephone Extension" returnsFormat="text" returns="text">
+				<caption><value text="TelephoneExtension"/></caption>
+				<query>
+					<queryDetail><value variable="TelephoneExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Alternate Phone" returnsFormat="text" returns="text">
+				<caption><value text="AlternatePhone"/></caption>
+				<query>
+					<queryDetail><value variable="AlternatePhone"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Number" returnsFormat="text" returns="text">
+				<caption><value text="FaxNumber"/></caption>
+				<query>
+					<queryDetail><value variable="FaxNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Fax Extension" returnsFormat="text" returns="text">
+				<caption><value text="FaxExtension"/></caption>
+				<query>
+					<queryDetail><value variable="FaxExtension"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Mobile Number" returnsFormat="text" returns="text">
+				<caption><value text="MobileNumber"/></caption>
+				<query>
+					<queryDetail><value variable="MobileNumber"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="E-Mail" returnsFormat="text" returns="text">
+				<caption><value text="EmailAddress"/></caption>
+				<query>
+					<queryDetail><value variable="EmailAddress"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Receipt" returnsFormat="text" returns="text">
+				<caption><value text="Receipt"/></caption>
+				<query>
+					<queryDetail><value variable="Receipt"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Motivation Detail" returnsFormat="text" returns="text">
+				<caption><value text="Motivation Detail"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="a_motivation_detail_desc_c"/>
+						<value text=", "/>
+						<value variable="a_motivation_group_description_c"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="DonorAddress" returnsFormat="text" returns="text">
+				<caption><value text="DonorAddress"/></caption>
+				<query>
+					<queryDetail><value variable="DonorAddress"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			
+			<calculation id="Month" returnsFormat="text" returns="text">
+				<caption><value text="Month"/></caption>
+				<query>
+					<queryDetail><value variable="Month"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Year-0" returnsFormat="currency" returns="amount">
+				<caption> <value variable="Year0"/></caption>
+				<query>                                     
+				</query>
+			</calculation>
+			<calculation id="Year-1" returnsFormat="currency" returns="amount">
+				<caption><value variable="Year1"/></caption>
+				<query>                                       
+				</query>
+			</calculation>
+			<calculation id="Year-2" returnsFormat="currency" returns="amount">
+				<caption><value variable="Year2"/></caption>
+				<query>
+				</query>
+			</calculation>
+			<calculation id="Year-3" returnsFormat="currency" returns="amount">
+				<caption><value variable="Year3"/></caption>
+				<query>
+				</query>
+			</calculation>
+			<calculation id="Count-0" returnsFormat="text" returns="text">
+				<caption><value text="No."/></caption>
+				<query>
+					<queryDetail><value variable="Count_0"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Count-1" returnsFormat="text" returns="text">
+				<caption><value text="No."/></caption>
+				<query>
+					<queryDetail><value variable="Count_1"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Count-2" returnsFormat="text" returns="text">
+				<caption><value text="No."/></caption>
+				<query>
+					<queryDetail><value variable="Count_2"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Count-3" returnsFormat="text" returns="text">
+				<caption><value text="No."/></caption>
+				<query>
+					<queryDetail><value variable="Count_3"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+		</calculations>
+
+		<levels>		
+			<level name="main">
+				<detail>
+					<switch>
+						<case condition="eq({param_report_type}, Complete)">
+							<lowerLevelReport level="TotalCurrentYear" calculation="SelectDonors"></lowerLevelReport>
+						</case>
+						<case condition="eq({param_report_type}, Total)">
+							<lowerLevelReport level="AllMonthLevel1" calculation="SelectDonorsTotal"></lowerLevelReport>
+						</case>
+					</switch>
+				</detail>
+			</level>
+			
+			<level name="TotalCurrentYear">
+				<detail>
+					<lowerLevelReport level="ToatlPreviousYear"></lowerLevelReport>
+				</detail>
+				<footer space="below" line="below">
+					<field whichfield="column 2" width="9cm" pos="5cm">
+						<value text="Total for current year ("/>
+						<value variable="param_from_date_this_year"/>
+						<value text=" To "/>
+						<value variable="param_to_date_this_year"/>
+						<value text="):"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}">
+						<value calculation="SelectTotalThisYear"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="ToatlPreviousYear">
+				<detail>
+					<lowerLevelReport level="DonorLevel"></lowerLevelReport>
+				</detail>
+				<footer space="above">
+					<field whichfield="column 2" width="9cm" pos="5cm">
+						<value text="Total for previous year ("/>
+						<value variable="param_from_date_previous_year"/>
+						<value text=" To "/>
+						<value variable="param_to_date_previous_year"/>
+						<value text="):"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}">
+						<value calculation="SelectTotalPreviousYear"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="DonorLevel">
+				<header>
+					<field whichfield="header 0" pos="0cm" width="19.0cm"  calculation="MakeDonorAddress">
+						<value text="Donor: "/>
+						<value variable="DonorName"/>
+						<value text="  Partner Key: "/>
+						<value variable="DonorKey" format="partnerkey"/>
+						<value text=" Adress: "/>
+						<value variable="DonorAddress"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="RecipientLevel" calculation="SelectSingleGift"></lowerLevelReport>
+				</detail>
+				<footer>
+					<field whichfield="column 2" width="9cm"  pos="5cm">
+						<value text="Total for report period: "/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {param_gift_amount_column})"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="RecipientLevel" identification="DonortKey">
+				<detail>
+					<field whichfield="columns" calculation="GetPartnerAddress"/>
+				</detail>
+			</level>
+			
+			<level name="AllMonthLevel1">
+				<detail>
+					<lowerLevelReport level="AllMonthLevel2" />
+				</detail>
+				<footer line="below">
+					<field whichfield="column 0">
+						<value text="Average / Month"/>
+					</field>
+					<field whichfield="column 1">
+						<value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
+					</field>
+					<field whichfield="column 3">
+						<value function="div(getSumLowerReport({{lineId}}, 3), 12)"/>
+					</field>
+					<field whichfield="column 5">
+						<value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
+					</field>
+					<field whichfield="column 7">
+						<value function="div(getSumLowerReport({{lineId}}, 7), 12)"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="AllMonthLevel2">
+				<header>
+					<field whichfield="header 1" pos="0cm" width="3cm" calculation="ResetMonth">
+						<value text="Donor: "/>
+						<value variable="DonorKey" format="partnerkey"/>
+					</field>
+					<field whichfield="header 0" pos="3cm" width="6cm">
+						<value variable="DonorName"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+				</detail>
+				<footer space="above">
+					<field whichfield="column 0">
+						<value text="Total / Gifts"/>
+					</field>
+					<field whichfield="column 1">
+						<value function="getSumLowerReport({{lineId}}, 1)"/>
+					</field>
+					<field whichfield="column 2" align="right">
+						<value function="getSumLowerReport({{lineId}}, 2)"/>
+					</field>
+					<field whichfield="column 3">
+						<value function="getSumLowerReport({{lineId}}, 3)"/>
+					</field>
+					<field whichfield="column 4" align="right">
+						<value function="getSumLowerReport({{lineId}}, 4)"/>
+					</field>
+					<field whichfield="column 5">
+						<value function="getSumLowerReport({{lineId}}, 5)"/>
+					</field>
+					<field whichfield="column 6" align="right">
+						<value function="getSumLowerReport({{lineId}}, 6)"/>
+					</field>
+					<field whichfield="column 7">
+						<value function="getSumLowerReport({{lineId}}, 7)"/>
+					</field>
+					<field whichfield="column 8" align="right">
+						<value function="getSumLowerReport({{lineId}}, 8)"/>
+					</field>
+				</footer>
+			</level>
+
+			<level name="SingleMonthLevel">
+				<header>
+					<field whichfield="header 0" calculation="AddMonth"/>
+				</header>
+				<detail>
+					<field whichfield="column 0" pos="0cm">
+						<value function="GetMonthName(sub({Month0}, 1))"/>
+					</field>
+					<field whichfield="column 1" calculation="SelectMonthSum_0">
+						<value variable="MonthSum_1" />
+					</field>
+					<field whichfield="column 2" align="right">
+						<value variable="Count_0" />
+					</field>
+					<field whichfield="column 3" calculation="SelectMonthSum_1">
+						<value variable="MonthSum_1" />
+					</field>
+					<field whichfield="column 4" align="right">
+						<value variable="Count_1" />
+					</field>
+					<field whichfield="column 5" calculation="SelectMonthSum_2">
+						<value variable="MonthSum_2" />
+					</field>
+					<field whichfield="column 6" align="right">
+						<value variable="Count_2" />
+					</field>
+					<field whichfield="column 7" calculation="SelectMonthSum_3">
+						<value variable="MonthSum_3" />
+					</field>
+					<field whichfield="column 8" align="right">
+						<value variable="Count_3" />
+					</field>
+				</detail>
+			</level>
+		</levels>
+		
+	</report>
+	
+</reports>

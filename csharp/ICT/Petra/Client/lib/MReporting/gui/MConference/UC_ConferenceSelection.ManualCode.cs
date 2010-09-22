@@ -133,8 +133,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 && (rbtExtract.Checked)
                 && (txtExtract.Text.Length == 0))
             {
-                VerificationResult = new TVerificationResult("Select an extract for running the report.",
-                    "No extract was selected!",
+                VerificationResult = new TVerificationResult(Catalog.GetString("Select an extract for running the report."),
+                    Catalog.GetString("No extract was selected!"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
@@ -143,8 +143,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 && (rbtOneAttendee.Checked)
                 && (txtOneAttendee.Text == "0000000000"))
             {
-                VerificationResult = new TVerificationResult("Select a partner for whom to run the report.",
-                    "No partner was selected!",
+                VerificationResult = new TVerificationResult(Catalog.GetString("Select a partner for whom to run the report."),
+                    Catalog.GetString("No partner was selected!"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
@@ -153,8 +153,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 && (rbtConference.Checked)
                 && (txtConference.Text == "0000000000"))
             {
-                VerificationResult = new TVerificationResult("Select a conference to run the report against to.",
-                    "No conference was selected!",
+                VerificationResult = new TVerificationResult(Catalog.GetString("Select a conference to run the report against to."),
+                    Catalog.GetString("No conference was selected!"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
@@ -172,8 +172,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                     && (DlgResult != DialogResult.None))
                 {
                     VerificationResult = new TVerificationResult(
-                        "You must chose at least one campaign option from the \"Select Campaign Option\" Dialog.",
-                        "No campaign option was selected!",
+                        Catalog.GetString("You must chose at least one campaign option from the \"Select Campaign Option\" Dialog."),
+                        Catalog.GetString("No campaign option was selected!"),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }

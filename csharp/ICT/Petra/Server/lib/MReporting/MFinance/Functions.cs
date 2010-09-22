@@ -211,6 +211,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetMonthName"))
+            {
+                value = new TVariant(StringHelper.GetLongMonthName(ops[1].ToInt32()));
+                return true;
+            }
+
             value = new TVariant();
             return false;
         }
