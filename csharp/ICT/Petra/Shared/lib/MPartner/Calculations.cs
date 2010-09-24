@@ -285,10 +285,14 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     // mark the only location to be the 'best'
                     OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
-                }
 
-                ReturnValue = new TLocationPK(Convert.ToInt64(OrderedRows[0][PLocationTable.GetSiteKeyDBName()]),
-                    Convert.ToInt32(OrderedRows[0][PLocationTable.GetLocationKeyDBName()]));
+                    ReturnValue = new TLocationPK(Convert.ToInt64(OrderedRows[0][PLocationTable.GetSiteKeyDBName()]),
+                        Convert.ToInt32(OrderedRows[0][PLocationTable.GetLocationKeyDBName()]));
+                }
+                else
+                {
+                    ReturnValue = new TLocationPK();
+                }
             }
 
             return ReturnValue;

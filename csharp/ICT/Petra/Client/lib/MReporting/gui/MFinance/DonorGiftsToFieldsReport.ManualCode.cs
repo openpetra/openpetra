@@ -94,6 +94,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
             ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
 
+            ACalc.AddParameter("DonorAddress", "");
+
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 
             for (int Counter = 0; Counter <= MaxColumns; ++Counter)

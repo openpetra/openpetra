@@ -194,7 +194,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.cmbReportType.Location = new System.Drawing.Point(2,2);
             this.cmbReportType.Name = "cmbReportType";
             this.cmbReportType.Size = new System.Drawing.Size(150, 28);
-            this.cmbReportType.Items.AddRange(new object[] {"Complete","Summary"});
+            this.cmbReportType.Items.AddRange(new object[] {"Complete","Summary","Tax Claim"});
             //
             // lblReportType
             //

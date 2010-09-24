@@ -489,7 +489,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private String transactionCurrency;
         private double exchangeRateToBase;
         private SortedDictionary <String, ATransactionSummaryRow>transactionSummaries = new SortedDictionary <String, ATransactionSummaryRow>();
-		/// <summary>A SortedDictinary contains the subordinate Summary Rows.</summary>	
+        /// <summary>A SortedDictinary contains the subordinate Summary Rows.</summary>
         public SortedDictionary <string, ATransactionSummaryRow>TransactionSummaries {
             get
             {
@@ -500,10 +500,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 transactionSummaries = value;
             }
         }
-		
-		/// <summary>
-		/// Exchange Rate
-		/// </summary>	
+
+        /// <summary>
+        /// Exchange Rate
+        /// </summary>
         public double ExchangeRateToBase {
             get
             {
@@ -514,10 +514,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 exchangeRateToBase = value;
             }
         }
-		
-		/// <summary>
-		/// Transaction Currency
-		/// </summary>
+
+        /// <summary>
+        /// Transaction Currency
+        /// </summary>
         public string TransactionCurrency {
             get
             {
@@ -535,10 +535,10 @@ namespace Ict.Petra.Server.MFinance.GL
     public class ATransactionSummaryRow
     {
         private String costCentreCode;
-		
+
         /// <summary>
-		/// Cost Centre
-		/// </summary>
+        /// Cost Centre
+        /// </summary>
         public string CostCentreCode {
             get
             {
@@ -550,10 +550,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
         private String accountCode;
-		
+
         /// <summary>
-		/// Account Code
-		/// </summary>
+        /// Account Code
+        /// </summary>
         public string AccountCode {
             get
             {
@@ -565,10 +565,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
         private String narrative;
-        
-		/// <summary>
-		/// Narrative
-		/// </summary>
+
+        /// <summary>
+        /// Narrative
+        /// </summary>
         public string Narrative {
             get
             {
@@ -579,12 +579,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 narrative = value;
             }
         }
-        
-		private String reference;
-        
-		/// <summary>
-		/// Reference
-		/// </summary>
+
+        private String reference;
+
+        /// <summary>
+        /// Reference
+        /// </summary>
         public string Reference {
             get
             {
@@ -595,12 +595,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 reference = value;
             }
         }
-        
-		private double transactionAmount;
-        
-		/// <summary>
-		/// Transaction Amount (may be negative!!!)
-		/// </summary>
+
+        private double transactionAmount;
+
+        /// <summary>
+        /// Transaction Amount (may be negative!!!)
+        /// </summary>
         public double TransactionAmount {
             get
             {
@@ -612,10 +612,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
         private double amountInBaseCurrency;
-        
-		/// <summary>
-		/// Amount in Base currency (may be negative!!!)
-		/// </summary>
+
+        /// <summary>
+        /// Amount in Base currency (may be negative!!!)
+        /// </summary>
         public double AmountInBaseCurrency {
             get
             {

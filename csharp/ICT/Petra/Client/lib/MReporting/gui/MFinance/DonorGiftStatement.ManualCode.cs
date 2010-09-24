@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-        	 if ((AReportAction == TReportActionEnum.raGenerate)
+            if ((AReportAction == TReportActionEnum.raGenerate)
                 && (rbtPartner.Checked && (txtDonor.Text == "0000000000")))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
-        	if ((AReportAction == TReportActionEnum.raGenerate)
+            if ((AReportAction == TReportActionEnum.raGenerate)
                 && (cmbReportType.SelectedItem.ToString() == "Complete")
                 && (dtpFromDate.Date > dtpToDate.Date))
             {
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     Catalog.GetString("From date is later than to date."),
                     Catalog.GetString("Please change from date or to date."),
                     TResultSeverity.Resv_Critical);
-                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);

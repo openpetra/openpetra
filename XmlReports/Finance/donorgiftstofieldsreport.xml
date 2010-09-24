@@ -78,7 +78,7 @@
 
 		<calculations>
 		
-			<!-- Select Donors and Totals in a given period of time -->
+			<!-- Select Donors in a given period of time -->
 			<calculation id="SelectDonors" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -86,8 +86,7 @@
 						SELECT DISTINCT
 							gift.p_donor_key_n AS DonorKey,
 							PUB_p_partner.p_partner_short_name_c AS DonorName,
-							PUB_p_partner.p_partner_class_c AS DonorClass,
-							detail.a_recipient_ledger_number_n
+							PUB_p_partner.p_partner_class_c AS DonorClass
 						FROM
 							PUB_a_gift as gift, 
 							PUB_a_gift_detail as detail,
@@ -106,9 +105,16 @@
 							AND
 						</value>
 					</queryDetail>
-					<queryDetail condition="not(eq({param_donor}, Extract))">
+					<queryDetail condition="eq({param_donor}, All Donors)">
 						<value>
 						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, One Donor))">
+						<value>
+						WHERE
+							gift.p_donor_key_n = {param_donorkey}
+							AND
 						</value>
 					</queryDetail>
 					<queryDetail>
@@ -119,8 +125,7 @@
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 							AND gift.a_ledger_number_i ={param_ledger_number_i}
 							
-							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
-								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							
@@ -138,8 +143,73 @@
 									variable="param_clbFields" calculation="OR" format="Number">
 							</value>
 					</queryDetail>
+				</query>
+			</calculation>
 					
-					
+			<calculation id="SelectDonorsTaxClaim" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							gift.p_donor_key_n AS DonorKey,
+							PUB_p_partner.p_partner_short_name_c AS DonorName,
+							PUB_p_partner.p_partner_class_c AS DonorClass
+						FROM
+							PUB_a_gift as gift, 
+							PUB_a_gift_detail as detail,
+							PUB_a_gift_batch,
+							PUB_p_partner
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, Extract)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, All Donors))">
+						<value>
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_donor}, One Donor))">
+						<value>
+						WHERE
+							gift.p_donor_key_n = {param_donorkey}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							
+							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
+							
+							AND ( gift.a_method_of_giving_code_c = 'PO'
+								 OR  gift.a_method_of_giving_code_c = 'CASH'
+								 OR  gift.a_method_of_giving_code_c = 'CC'
+								 OR  gift.a_method_of_giving_code_c = 'CHQ'
+								 OR  gift.a_method_of_giving_code_c = 'INTERNET'
+								 OR  gift.a_method_of_giving_code_c = 'DM'
+								 OR  gift.a_method_of_giving_code_c = 'DW'
+								 OR  gift.a_method_of_giving_code_c = 'BACS'
+								 OR  gift.a_method_of_giving_code_c = 'SO'
+								 OR  gift.a_method_of_giving_code_c = 'DD' )    
+						</value>
+					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
 							AND detail.a_gift_amount_n &gt;= {param_min_amount}
@@ -152,17 +222,22 @@
 							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
 						 </value>
 					</queryDetail>
-					<queryDetail condition="not(eq({param_report_type}, List)">
+					<queryDetail condition="eq({param_field_selection}, selected_fields)">
 						<value>
-							AND gift.p_donor_key_n  &lt;&gt; 0
-						</value>
+							AND
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_field_selection}, selected_fields)">
+							<value function="csv" text="detail.a_recipient_ledger_number_n" 
+									variable="param_clbFields" calculation="OR" format="Number">
+							</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_donor}, One Donor)">
 						<value>
 							AND gift.p_donor_key_n = {param_donorkey}
 						</value>
 					</queryDetail>
-					<queryDetail condition="eq({param_report_type}, Summary)">
+					<queryDetail>
 						<value>
 							ORDER BY PUB_p_partner.p_partner_short_name_c
 						</value>
@@ -210,8 +285,7 @@
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
 							AND gift.p_donor_key_n = {DonorKey}
-							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
-								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
@@ -283,6 +357,101 @@
 				</query>
 			</calculation>
 			
+			<calculation id="SelectSingleGiftTaxClaim" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT
+							gift.a_date_entered_d AS GiftDate,
+							detail.p_recipient_key_n AS RecipientKey,
+							detail.a_confidential_gift_flag_l AS Confidential,
+							PUB_p_partner.p_partner_short_name_c AS RecipientName,
+							PUB_p_partner.p_partner_class_c AS RecipientClass,
+							detail.a_motivation_detail_code_c AS GiftType,
+							gift.a_receipt_number_i AS Receipt,
+							gift.a_method_of_giving_code_c AS Method,
+							detail.a_recipient_ledger_number_n as FieldKey,
+							PUB_a_motivation_detail.a_motivation_detail_desc_c,
+							PUB_a_motivation_group.a_motivation_group_description_c,
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							detail.a_gift_amount_n AS GiftAmount
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							detail.a_gift_amount_intl_n AS GiftAmount
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch,
+							 PUB_p_partner,
+							 PUB_a_motivation_group,
+							 PUB_a_motivation_detail
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND gift.p_donor_key_n = {DonorKey}
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n 
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+							
+							AND PUB_a_motivation_group.a_motivation_group_code_c = detail.a_motivation_group_code_c
+							AND PUB_a_motivation_group.a_ledger_number_i =  {param_ledger_number_i}
+							
+							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
+							AND PUB_a_motivation_detail.a_ledger_number_i  = {param_ledger_number_i}
+				
+							AND ( gift.a_method_of_giving_code_c = 'PO'
+								 OR  gift.a_method_of_giving_code_c = 'CASH'
+								 OR  gift.a_method_of_giving_code_c = 'CC'
+								 OR  gift.a_method_of_giving_code_c = 'CHQ'
+								 OR  gift.a_method_of_giving_code_c = 'INTERNET'
+								 OR  gift.a_method_of_giving_code_c = 'DM'
+								 OR  gift.a_method_of_giving_code_c = 'DW'
+								 OR  gift.a_method_of_giving_code_c = 'BACS'
+								 OR  gift.a_method_of_giving_code_c = 'SO'
+								 OR  gift.a_method_of_giving_code_c = 'DD' ) 
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_field_selection}, selected_fields)">
+						<value>
+							AND
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_field_selection}, selected_fields)">
+							<value function="csv" text="detail.a_recipient_ledger_number_n" 
+									variable="param_clbFields" calculation="OR" format="Number">
+							</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							AND detail.a_gift_amount_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+							ORDER BY gift.a_date_entered_d
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
+							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+							ORDER BY gift.a_date_entered_d
+						 </value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
 			<calculation id="SelectPeriodTotal" returns="GiftAmount" returnsFormat="row">
 				<query>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -304,8 +473,7 @@
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
 							AND gift.p_donor_key_n = {DonorKey}
-							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
-								  PUB_a_gift_batch.a_batch_status_c = "posted" )
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
@@ -480,6 +648,9 @@
 						<case condition="eq({param_report_type}, Summary)">
 							<lowerLevelReport level="SummaryDonorLevel1"></lowerLevelReport>
 						</case>
+						<case condition="eq({param_report_type}, Tax Claim)">
+							<lowerLevelReport level="DonorLevelTaxClaim"></lowerLevelReport>
+						</case>
 					</switch>
 				</detail>
 			</level>
@@ -547,6 +718,44 @@
 					<field whichfield="columns" calculation="SelectPeriodTotal"/>
 					<field whichfield="column 0" calculation="MakeDonorAddress"/>
 				</detail>
+			</level>
+			
+			<level name="DonorLevelTaxClaim">
+				<detail>
+					<lowerLevelReport level="DonorLevelTaxClaim2" calculation="SelectDonorsTaxClaim"></lowerLevelReport>
+				</detail>
+				<footer space="below">
+					<field whichfield="column 2" width="9cm"  pos="5cm">
+						<value text="Grand Total "/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {param_gift_amount_column})"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="DonorLevelTaxClaim2">
+				<header>
+					<field whichfield="header 0" pos="0cm" width="19.0cm"  calculation="MakeDonorAddress">
+						<value text="Donor: "/>
+						<value variable="DonorName"/>
+						<value text="  Partner Key: "/>
+						<value variable="DonorKey" format="partnerkey"/>
+						<value text=" Adress: "/>
+						<value variable="DonorAddress"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="RecipientLevel" calculation="SelectSingleGiftTaxClaim"></lowerLevelReport>
+				</detail>
+				<footer space="below">
+					<field whichfield="column 2" width="9cm"  pos="5cm">
+						<value text="Total for report period: "/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {param_gift_amount_column})"/>
+					</field>
+				</footer>
 			</level>
 			
 			<level name="RecipientLevel" identification="DonortKey">
