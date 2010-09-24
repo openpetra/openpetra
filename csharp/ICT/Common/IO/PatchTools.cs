@@ -1039,7 +1039,7 @@ namespace Ict.Common.IO
                 FPatchesPath = "";
             }
 
-            if (ARemotePatchesPath.StartsWith("http://"))
+            if (ARemotePatchesPath.StartsWith("http://") || ARemotePatchesPath.StartsWith("https://"))
             {
                 FRemotePatchesPath = ARemotePatchesPath;
             }
@@ -1101,7 +1101,7 @@ namespace Ict.Common.IO
             FCurrentlyInstalledVersion = new TFileVersionInfo(srVersion.ReadLine());
             srVersion.Close();
 
-            if (FRemotePatchesPath.StartsWith("http://"))
+            if (FRemotePatchesPath.StartsWith("http://") || FRemotePatchesPath.StartsWith("https://"))
             {
                 directoryListing = THTTPUtils.ReadWebsite(FRemotePatchesPath);
 

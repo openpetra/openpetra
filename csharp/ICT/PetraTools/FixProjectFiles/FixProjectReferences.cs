@@ -102,7 +102,18 @@ public class TFixProjectReferences : TCSProjTools
                     if (child2.Name == "TargetFrameworkVersion")
                     {
                         containsTargetPlatform = true;
-                        child2.InnerText = "v2.0";
+
+                        if (TXMLParser.GetChild(child, "ApplicationManifest") != null)
+                        {
+                            // to avoid problems with Win7 thinking the program program requires elevated privileges
+                            // see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
+                            // we need that at least for the PatchTool
+                            child2.InnerText = "v3.5";
+                        }
+                        else
+                        {
+                            child2.InnerText = "v2.0";
+                        }
                     }
 
                     if (child2.Name == "IntermediateOutputPath")

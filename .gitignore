@@ -38,5 +38,6 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/*
 *Setup-*.exe
 /tmp
+/delivery
 *.patch
 /log

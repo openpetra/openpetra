@@ -1,16 +1,17 @@
 [Setup]
 AppCopyright=by developers of OpenPetra.org
-AppName=OpenPetra.org
-AppVerName=OpenPetra.org Remote {#PATCHVERSION}
-DefaultDirName={pf}\OpenPetra.org
-DefaultGroupName=OpenPetra.org
-AppPublisherURL=http://www.openpetra.org
+AppName=OpenPetra.org {#ORGNAME}
+AppVerName=OpenPetra.org {#ORGNAME} {#PATCHVERSION}
+DefaultDirName={pf}\OpenPetra{#ORGNAME}
+DefaultGroupName=OpenPetra.org {#ORGNAME}
+AppPublisherURL=http://{#PUBLISHERURL}
 LicenseFile=..\..\..\LICENSE
 VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
-VersionInfoCopyright=2009 OM International
-OutputBaseFilename=OpenPetraRemoteSetup-{#RELEASEVERSION}
+VersionInfoCopyright=2010 OM International
+OutputBaseFilename=OpenPetraRemoteSetup-{#ORGNAME}-{#RELEASEVERSION}
+OutputDir={#DELIVERY.DIR}
 PrivilegesRequired=admin
 
 [Languages]
@@ -24,8 +25,6 @@ Name: {app}/patches30; permissions: users-full
 Name: {app}/manuals30; permissions: users-full
 Name: {app}/resources30; permissions: users-full
 Name: {app}/etc30; permissions: users-full
-Name: {userappdata}/OpenPetra.org/tmp30
-Name: {userappdata}/OpenPetra.org/reports30
 
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
@@ -53,7 +52,7 @@ Source: version.txt; DestDir: {app}/bin30
 [Icons]
 Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"; Tasks: iconDesktop
+Name: {commondesktop}\{groupname}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
@@ -121,10 +120,11 @@ end;
 
 procedure InitializeWizard;
 begin
-    strServer := 'LINUX';
-    NetPort := 9000;
-    PetraServerConnectionPage := CreatePage_PetraServerConnection(wpPreparing, strServer, NETPort);
-    DotNetPage := CreatePage_MissingNetFrameWork(PetraServerConnectionPage.Id);
+    strServer := '{#SERVERHOST}';
+    NetPort := {#SERVERPORT};
+    // PetraServerConnectionPage := CreatePage_PetraServerConnection(wpPreparing, strServer, NETPort);
+	PetraServerConnectionPage := nil;
+    DotNetPage := CreatePage_MissingNetFrameWork(wpPreparing);
 end;
 
 function ShouldSkipPage(PageID: Integer): Boolean;
@@ -144,7 +144,7 @@ begin
   begin
     result :=  IsDotNetInstalled();
   end
-  else if (CurPageID = PetraServerConnectionPage.ID) then
+  else if ((PetraServerConnectionPage <> nil) and (CurPageID = PetraServerConnectionPage.ID)) then
   begin
     strServer := ctrlPetraServerConnectionHostName.Text;
     NetPort := StrToInt(ctrlPetraServerConnectionNET.Text);
@@ -159,13 +159,16 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
     ResultCode: Integer;
+    Dirname: String;
 begin
   if CurStep=ssPostInstall then
   begin
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.PathTemp" value="TOREPLACE"', ExpandConstant('Petra.PathTemp" value="{userappdata}/OpenPetra.org/tmp30"'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.Patches" value="TOREPLACE"', ExpandConstant('Petra.Path.Patches" value="{app}/patches30"'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Petra.Path.RemotePatches" value="TOREPLACE"', 'Petra.Path.RemotePatches" value="http://www.example.org/OpenPetraPatches/"', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'Reporting.PathReportSettings" value="TOREPLACE"', ExpandConstant('Reporting.PathReportSettings" value="{userappdata}/OpenPetra.org/reports30"'), true);
+    Dirname := ExpandConstant('{app}');
+    StringChangeEx(Dirname, ExpandConstant('{pf}') + '\', '', true);
+	ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PATCHES30', ExpandConstant('{app}/patches30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'REPORTSETTINGSPATH', '{userappdata}/' + Dirname + '/reports30/Settings', true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;

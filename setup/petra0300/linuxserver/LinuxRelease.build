@@ -148,7 +148,7 @@
         </if>
         <if test="${BuildClientArchive}">
             <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-            <tar destfile="openpetraorg-win-${ReleaseVersion}.tar.gz" compression="GZip">
+            <tar destfile="${Delivery.dir}/openpetraorg-win-${ReleaseVersion}.tar.gz" compression="GZip">
                 <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseVersion}">
                     <include name="**/*" />
                 </fileset>

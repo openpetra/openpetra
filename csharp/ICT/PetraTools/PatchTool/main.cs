@@ -48,7 +48,10 @@ namespace Ict.Tools.PatchTool
             {
                 // check command line
                 TAppSettingsManager appOpts = new TAppSettingsManager(false);
-                string TempPath = appOpts.GetValue("OpenPetra.PathTemp");
+                string TempPath = appOpts.GetValue("OpenPetra.PathTemp").
+                                  Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
                 new TLogging(TempPath + Path.DirectorySeparatorChar + "PetraPatch.log");
 
                 if (!appOpts.HasValue("action"))

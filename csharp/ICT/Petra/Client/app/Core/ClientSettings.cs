@@ -338,8 +338,8 @@ namespace Ict.Petra.Client.App.Core
             UPetra_Path_RemotePatches = "";
             UPetra_Path_Dat = "";
             UPetra_Path_Patches = "";
-            UPetraWebsite_Link = FAppSettings.GetValue("Petra.Website", "http://www.openpetra.org");
-            UPetraPatches_Link = FAppSettings.GetValue("Petra.PatchesSite", "http://www.example.org/index.php?page=OpenPetraPatches");
+            UPetraWebsite_Link = FAppSettings.GetValue("OpenPetra.Website", "http://www.openpetra.org");
+            UPetraPatches_Link = FAppSettings.GetValue("OpenPetra.Path.RemotePatches", "http://www.example.org/index.php?page=OpenPetraPatches");
 
             if (URunAsStandalone == true)
             {

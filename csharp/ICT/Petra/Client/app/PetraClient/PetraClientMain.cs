@@ -223,7 +223,8 @@ namespace Ict.Petra.Client.App.PetraClient
             // todo: check whether the user has write access to the bin directory
             // check whether the user has access to the server and the Petra patches directory
             if ((TClientSettings.Petra_Path_RemotePatches.Length > 0)
-                && !TClientSettings.Petra_Path_RemotePatches.ToLower().StartsWith("http://")
+                && !(TClientSettings.Petra_Path_RemotePatches.ToLower().StartsWith("http://")
+                     || TClientSettings.Petra_Path_RemotePatches.ToLower().StartsWith("https://"))
                 && !System.IO.Directory.Exists(TClientSettings.Petra_Path_RemotePatches))
             {
                 FSplashScreen.ShowMessageBox(
