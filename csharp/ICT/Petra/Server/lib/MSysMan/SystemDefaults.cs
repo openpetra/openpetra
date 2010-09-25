@@ -49,17 +49,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             FStartTime = DateTime.Now;
         }
 
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TSystemDefaults()
-        {
-            // if TSrvSetting.DL >= new 9 then Console.WriteLine(this.GetType.FullName + ': Getting collected after ' + (TimeSpan(DateTime.Now.Ticks  FStartTime.Ticks)).ToString() + ' seconds.');
-        }
-#endif
-
-
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>

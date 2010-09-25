@@ -582,7 +582,6 @@ namespace Ict.Petra.Server.App.Main
                             throw new Exception("Cannot connect to old database, please restore the latest clean demo database");
                         }
                     }
-
                 }
 
                 // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + FSystemDefaultsCache.GetSystemDefault('LocalisedCountyLabel'));$ENDIF

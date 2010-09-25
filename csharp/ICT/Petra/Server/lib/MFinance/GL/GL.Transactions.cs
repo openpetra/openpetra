@@ -585,6 +585,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="requestParams"></param>
         /// <param name="exportString"></param>
         /// <returns>false if batch does not exist at all</returns>
+        [RequireModulePermission("FINANCE-1")]
         public static bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
         {
             return TGLExporting.ExportAllGLBatchData(ref batches, requestParams, out exportString);

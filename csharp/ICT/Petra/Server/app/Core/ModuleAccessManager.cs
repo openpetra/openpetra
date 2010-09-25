@@ -204,44 +204,69 @@ namespace Ict.Petra.Server.App.Core.Security
 
         /// throws an exception if the current user does not have enough permission to access the method;
         /// this uses a custom attribute associated with the method of the connector
-        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName)
+        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes)
         {
-            MethodInfo method = AConnectorType.GetMethod(AMethodName);
+            MethodInfo[] methods = AConnectorType.GetMethods();
 
-            System.Object[] attributes = method.GetCustomAttributes(typeof(RequireModulePermissionAttribute), false);
+            MethodInfo MethodToTest = null;
 
-            if ((attributes != null) && (attributes.Length > 0))
+            foreach (MethodInfo method in methods)
             {
-                RequireModulePermissionAttribute requiredModules = (RequireModulePermissionAttribute)attributes[0];
-
-                string moduleExpression = requiredModules.RequiredModulesExpression.ToUpper();
-
-                if (moduleExpression == "NONE")
+                if (method.Name == AMethodName)
                 {
+                    string ParameterTypes = String.Empty;
+                    ParameterInfo[] Parameters = method.GetParameters();
+
+                    foreach (ParameterInfo Parameter in Parameters)
+                    {
+                        ParameterTypes += Parameter.ParameterType.ToString();
+                    }
+
+                    if (ParameterTypes == AParameterTypes)
+                    {
+                        MethodToTest = method;
+                    }
+                }
+            }
+
+            if (MethodToTest != null)
+            {
+                System.Object[] attributes = MethodToTest.GetCustomAttributes(typeof(RequireModulePermissionAttribute), false);
+
+                if ((attributes != null) && (attributes.Length > 0))
+                {
+                    RequireModulePermissionAttribute requiredModules = (RequireModulePermissionAttribute)attributes[0];
+
+                    string moduleExpression = requiredModules.RequiredModulesExpression.ToUpper();
+
+                    if (moduleExpression == "NONE")
+                    {
+                        return true;
+                    }
+
+                    try
+                    {
+                        bool hasPermission = CheckUserModulePermissions(moduleExpression);
+                    }
+                    catch (EvaluateException evException)
+                    {
+                        string msg =
+                            String.Format(Catalog.GetString("Module access permission was violated for method {0} in Connector class {1}: {2}"),
+                                AMethodName, AConnectorType, evException.Message);
+                        TLogging.Log(msg);
+                        throw new ApplicationException(msg);
+                    }
+                    catch (ArgumentException argException)
+                    {
+                        throw new ApplicationException("Problem with ModulePermissions, " +
+                            argException.Message + ": '" +
+                            moduleExpression + "' for " +
+                            AConnectorType.ToString() + "." +
+                            AMethodName + "()");
+                    }
+
                     return true;
                 }
-
-                try
-                {
-                    bool hasPermission = CheckUserModulePermissions(moduleExpression);
-                }
-                catch (EvaluateException evException)
-                {
-                    string msg = String.Format(Catalog.GetString("Module access permission was violated for method {0} in Connector class {1}: {2}"),
-                        AMethodName, AConnectorType, evException.Message);
-                    TLogging.Log(msg);
-                    throw new ApplicationException(msg);
-                }
-                catch (ArgumentException argException)
-                {
-                    throw new ApplicationException("Problem with ModulePermissions, " +
-                        argException.Message + ": '" +
-                        moduleExpression + "' for " +
-                        AConnectorType.ToString() + "." +
-                        AMethodName + "()");
-                }
-
-                return true;
             }
 
             // TODO: resolve module permission from namespace?

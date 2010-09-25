@@ -85,17 +85,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             FStartTime = DateTime.Now;
         }
 
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TUserDefaults()
-        {
-            // if TSrvSetting.DL >= new 9 then Console.WriteLine(this.GetType.FullName + ': Getting collected after ' + (TimeSpan(DateTime.Now.Ticks  FStartTime.Ticks)).ToString() + ' seconds.');
-        }
-#endif
-
-
         /// <summary>
         /// Find out if a user default exists already.
         /// This is required where the default should be calculated otherwise

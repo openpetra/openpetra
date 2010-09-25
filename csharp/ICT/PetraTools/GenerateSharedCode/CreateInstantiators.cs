@@ -64,6 +64,15 @@ class CreateInstantiators : AutoGenerationWriter
                     ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
                     snippet.SetCodelet("METHODNAME", CSParser.GetName(m.Names));
                     snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
+
+                    string ParameterTypes = String.Empty;
+
+                    foreach (ParamDeclNode p in m.Params)
+                    {
+                        ParameterTypes += CSParser.GetName(p.Type);
+                    }
+
+                    snippet.SetCodelet("PARAMETERTYPES", ParameterTypes);
                     return snippet;
                 }
             }

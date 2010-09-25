@@ -262,7 +262,7 @@ namespace {#NAMESPACENAME}
 }
 
 {##CHECKUSERMODULEPERMISSIONS}
-TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}");
+TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}", "{#PARAMETERTYPES}");
 
 {##CALLPROCEDUREWITHGETDATA}
 #if DEBUGMODE
