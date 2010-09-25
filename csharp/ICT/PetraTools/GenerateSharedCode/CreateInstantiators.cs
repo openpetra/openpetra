@@ -65,13 +65,25 @@ class CreateInstantiators : AutoGenerationWriter
                     snippet.SetCodelet("METHODNAME", CSParser.GetName(m.Names));
                     snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
 
-                    string ParameterTypes = String.Empty;
+                    string ParameterTypes = ";";
 
                     foreach (ParamDeclNode p in m.Params)
                     {
-                        ParameterTypes += CSParser.GetName(p.Type);
+                        string ParameterName = CSParser.GetName(p.Type).Replace("&", "");
+
+                        if (ParameterName.Contains("."))
+                        {
+                            ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
+                        }
+
+                        ParameterName = ParameterName.Replace("Boolean", "bool");
+                        ParameterName = ParameterName.Replace("Int32", "int");
+                        ParameterName = ParameterName.Replace("Int64", "long");
+
+                        ParameterTypes += ParameterName + ";";
                     }
 
+                    ParameterTypes = ParameterTypes.ToUpper();
                     snippet.SetCodelet("PARAMETERTYPES", ParameterTypes);
                     return snippet;
                 }
