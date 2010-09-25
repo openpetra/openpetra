@@ -72,11 +72,20 @@
            </fileset> 
         </copy>
         
-        <copy todir="${setupDir}/etc30">
-            <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/">
-                <include name="*.config" />
-            </fileset>
-        </copy>
+        <if test="${not BuildClientArchive}">
+            <copy todir="${setupDir}/etc30">
+                <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/linuxserver/">
+                    <include name="*.config" />
+                </fileset>
+            </copy>
+        </if>
+        <if test="${BuildClientArchive}">
+            <copy todir="${setupDir}/etc30">
+                <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/">
+                    <include name="PetraClientRemote.config" />
+                </fileset>
+            </copy>
+        </if>
 
         <copy todir="${setupDir}/manuals30">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/releasenotes/">

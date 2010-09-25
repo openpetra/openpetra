@@ -24,6 +24,7 @@ Name: {app}/bin30/locale/de/LC_MESSAGES; permissions: users-full
 Name: {app}/patches30; permissions: users-full
 Name: {app}/manuals30; permissions: users-full
 Name: {app}/resources30; permissions: users-full
+Name: {app}/reports30/Settings; permissions: users-full
 Name: {app}/etc30; permissions: users-full
 
 [Files]
@@ -41,7 +42,8 @@ Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Sh
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\i18n\*.mo; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
-Source: PetraClientRemote.config; DestDir: {app}/etc30; DestName: PetraClient-Remote.config
+Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {app}/reports30/Settings; Flags: recursesubdirs createallsubdirs
+Source: PetraClientRemote.config; DestDir: {app}/etc30
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
@@ -50,9 +52,9 @@ Source: ..\..\..\LICENSE; DestDir: {app}
 Source: version.txt; DestDir: {app}/bin30
 
 [Icons]
-Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"
+Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClientRemote.config"""
 Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{groupname}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClient-Remote.config"" -AutoLogin:demo"; Tasks: iconDesktop
+Name: {commondesktop}\{groupname}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClientRemote.config"""; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
@@ -165,12 +167,13 @@ begin
   begin
     Dirname := ExpandConstant('{app}');
     StringChangeEx(Dirname, ExpandConstant('{pf}') + '\', '', true);
-	ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PATCHES30', ExpandConstant('{app}/patches30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'REPORTSETTINGSPATH', '{userappdata}/' + Dirname + '/reports30/Settings', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAHOST', strServer, true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClient-Remote.config'), 'PETRAPORT', IntToStr(NetPort), true);
+	ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PATCHES30', ExpandConstant('{app}/patches30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REPORTUSERSETTINGSPATH', '{userappdata}/' + Dirname + '/reports30/Settings', true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REPORTSETTINGSPATH', ExpandConstant('{app}/reports30/Settings'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
+    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;
 
   // allow the .net remoting communication between client and server

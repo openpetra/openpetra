@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.App.Core
         private static String UBehaviourSeveralClients = "";
         private static Boolean UDelayedDataLoading = false;
         private static String UReportingPathReportSettings = "";
+        private static String UReportingPathReportUserSettings = "";
         private static Int16 UServerPollIntervalInSeconds = 0;
         private static Int16 UServerObjectKeepAliveIntervalInSeconds = 0;
         private static String URemoteDataDirectory = "";
@@ -102,6 +103,15 @@ namespace Ict.Petra.Client.App.Core
             get
             {
                 return UReportingPathReportSettings;
+            }
+        }
+
+        /// <summary>the path for the report settings in the data directory that are written by the user</summary>
+        public static String ReportingPathReportUserSettings
+        {
+            get
+            {
+                return UReportingPathReportUserSettings;
             }
         }
 
@@ -282,6 +292,15 @@ namespace Ict.Petra.Client.App.Core
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
                 }
+
+                string userSettingsPath = TAppSettingsManager.GetValueStatic("Reporting.PathReportUserSettings", String.Empty);
+                userSettingsPath = userSettingsPath.Replace("{userappdata}",
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+                if (!Directory.Exists(userSettingsPath))
+                {
+                    Directory.CreateDirectory(userSettingsPath);
+                }
             }
 
             return UPathTemp;
@@ -296,7 +315,6 @@ namespace Ict.Petra.Client.App.Core
         {
             TCmdOpts FCmdOptions = new TCmdOpts();
             TAppSettingsManager FAppSettings = new TAppSettingsManager();
-            string hostname;
 
             //
             // Parse settings from the Command Line
@@ -324,7 +342,9 @@ namespace Ict.Petra.Client.App.Core
 
             UDelayedDataLoading = FAppSettings.GetBoolean("DelayedDataLoading", false);
             UReportingPathReportSettings =
-                FAppSettings.GetValue("Reporting.PathReportSettings").Replace("{userappdata}",
+                FAppSettings.GetValue("Reporting.PathReportSettings");
+            UReportingPathReportUserSettings =
+                FAppSettings.GetValue("Reporting.PathReportUserSettings").Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
             UServerPollIntervalInSeconds = FAppSettings.GetInt16("ServerPollIntervalInSeconds", 5);
@@ -363,23 +383,6 @@ namespace Ict.Petra.Client.App.Core
                 UPetra_Path_Patches = FAppSettings.GetValue("OpenPetra.Path.Patches");
                 UPetra_Path_Dat = FAppSettings.GetValue("OpenPetra.Path.Dat");
                 UPetra_Path_RemotePatches = FAppSettings.GetValue("OpenPetra.Path.RemotePatches");
-
-                // check whether the config file refers to http: or samba directory
-                // or should we check for http anyways?
-                if ((!UPetra_Path_RemotePatches.ToLower().StartsWith("http://")
-                     && UPetra_Path_RemotePatches.StartsWith("\\\\")))
-                {
-                    // expect the path to start like this: "\\LINUX\"
-                    hostname = UPetra_Path_RemotePatches.Substring(2,
-                        UPetra_Path_RemotePatches.Substring(2).IndexOf("\\"));
-
-/* TODO
- *                  if (TPatchTools.ReadWebsite("http://" + hostname + "/PetraNetPatches/").Length > 0)
- *                  {
- *                      UPetra_Path_RemotePatches = "http://" + hostname + "/PetraNetPatches/";
- *                  }
- */
-                }
             }
 
             if ((!URunAsRemote) && (!URunAsStandalone))

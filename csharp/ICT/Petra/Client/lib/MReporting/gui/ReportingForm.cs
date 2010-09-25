@@ -224,7 +224,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             FWindowCaption = FWinForm.Text;
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings +
                                        System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
-            this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory);
+            string UserSettingsDirectory = TClientSettings.ReportingPathReportUserSettings +
+                                           System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
+            this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory, UserSettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
 
             FWrapColumn = FStoredSettings.GetWrapOption();

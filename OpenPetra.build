@@ -15,8 +15,8 @@
     <property name="ThirdParty.dir" value="${OpenPetraRoot.dir}/csharp/ThirdParty/"/>
     <property name="PetraToolsExe.dir" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}"/>
     <property name="Logging.dir" value="${OpenPetraRoot.dir}/log"/>
-	<property name="Delivery.dir" value="${OpenPetraRoot.dir}/delivery"/>
-	<property name="Tmp.dir" value="${OpenPetraRoot.dir}/tmp"/>
+    <property name="Delivery.dir" value="${OpenPetraRoot.dir}/delivery"/>
+    <property name="Tmp.dir" value="${OpenPetraRoot.dir}/tmp"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
@@ -93,7 +93,7 @@
         <echo message="startPetraClient: run the Petra Client"/>
         <echo message="startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)"/>
         <echo message="buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0"/>
-		<echo message="setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000"/>
+        <echo message="setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000"/>
         <echo message="createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0"/>
         <echo message="packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine"/>
         <echo message="addProject: eg. -D:solution=Testing.sln -D:path=Testing\CodeGeneration -D:namespace=Tests.CodeGeneration or -D:solution=Client.sln -D:namespace=Ict.Petra.Client.MFinance.Gui.Test -D:path=Petra\Client\lib\MFinance\Gui; for plugins use namespace starting with ClientPlugin. or ServerPlugin.; for PetraTools: Ict.Tools."/>
@@ -101,15 +101,15 @@
     
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
-		<call target="compileTemplate"/>
-		<if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
-			<!-- avoid problems with Win7 thinking the program requires elevated privileges
-				 see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
-				 we need that at least for the PatchTool
-			-->
-			<exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchTool.exe;1"/> 
-			<exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchToolConsole.exe;1"/> 
-		</if>
+        <call target="compileTemplate"/>
+        <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+            <!-- avoid problems with Win7 thinking the program requires elevated privileges
+                 see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
+                 we need that at least for the PatchTool
+            -->
+            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchTool.exe;1"/> 
+            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchToolConsole.exe;1"/> 
+        </if>
     </target>
     <target name="compileTesting" description="compile the Testing module">
         <if test="${not file::exists(TestReportingConfigFile)}">
@@ -600,7 +600,7 @@
         <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
     </target>
-	
+    
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
@@ -861,18 +861,18 @@
         <echo message='${script::ReplaceInFile(Current.File, toReplace, script::GetMainVersionWithoutBuildNr(ReleaseVersion))}'/>
         <property name="toReplace" value="{#DELIVERY.DIR}"/>
         <echo message='${script::ReplaceInFile(Current.File, toReplace, Delivery.dir)}'/>
-		
-		<!-- for remote installer -->
-		<if test="${property::exists('OrgName')}">
-			<property name="toReplace" value="{#ORGNAME}"/>
-			<echo message='${script::ReplaceInFile(Current.File, toReplace, OrgName)}'/>
-			<property name="toReplace" value="{#PUBLISHERURL}"/>
-			<echo message='${script::ReplaceInFile(Current.File, toReplace, PublisherUrl)}'/>
-			<property name="toReplace" value="{#SERVERHOST}"/>
-			<echo message='${script::ReplaceInFile(Current.File, toReplace, ServerHost)}'/>
-			<property name="toReplace" value="{#SERVERPORT}"/>
-			<echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
-		</if>
+        
+        <!-- for remote installer -->
+        <if test="${property::exists('OrgName')}">
+            <property name="toReplace" value="{#ORGNAME}"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, OrgName)}'/>
+            <property name="toReplace" value="{#PUBLISHERURL}"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, PublisherUrl)}'/>
+            <property name="toReplace" value="{#SERVERHOST}"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerHost)}'/>
+            <property name="toReplace" value="{#SERVERPORT}"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
+        </if>
         <exec program="${Innosetup.ISCC}" commandline=" ${Current.File}"
               workingdir="${path::get-directory-name(Current.File)}"/>
     </target>
@@ -888,95 +888,92 @@
     </target>
     <target name="setupRemote">
         <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
-		
-		<property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}"/>
-		<property name="RandomDBPassword" value="${script::GetPasswordSalt()}"/>
-		
-		<!--  ***************  Build remote client installer ********************* -->
+        
+        <property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}"/>
+        <property name="RandomDBPassword" value="${script::GetPasswordSalt()}"/>
+        
+        <!--  ***************  Build remote client installer ********************* -->
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
         <call target="setupTemplate"/>
-		
-		<!-- create the linux scripts for the server side -->
-		<copy todir="${Tmp.dir}">
+        
+        <!-- create the linux scripts for the server side -->
+        <copy todir="${Tmp.dir}">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/">
-				<include name="openpetraorg-server.sh" />
+                <include name="openpetraorg-server.sh" />
                 <include name="PetraServerConsole-mysql.config" />
-				<include name="PetraServerAdminConsole.config" />
-				<include name="initmysql.sh" />
+                <include name="PetraServerAdminConsole.config" />
+                <include name="initmysql.sh" />
             </fileset>
         </copy>
 
-		<!--  ***************  openpetraorg-server.sh ********************* -->
-		<property name="Current.File" value="${Tmp.dir}/openpetraorg-server.sh"/>
+        <!--  ***************  openpetraorg-server.sh ********************* -->
+        <property name="Current.File" value="${Tmp.dir}/openpetraorg-server.sh"/>
         <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-		<property name="newValue" value="${OrgNameWithoutSpace}"/>
+        <property name="newValue" value="${OrgNameWithoutSpace}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
-		<property name="toReplace" value="{#ORGNAME}"/>
-		<property name="newValue" value="${OrgName}"/>
+        <property name="toReplace" value="{#ORGNAME}"/>
+        <property name="newValue" value="${OrgName}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
-		<!--  ***************  PetraServerConsole-mysql.config ********************* -->
-		<property name="Current.File" value="${Tmp.dir}/PetraServerConsole-mysql.config"/>
+        <!--  ***************  PetraServerConsole-mysql.config ********************* -->
+        <property name="Current.File" value="${Tmp.dir}/PetraServerConsole-mysql.config"/>
         <property name="toReplace" value="{#SERVERPORT}"/>
-		<property name="newValue" value="${ServerPort}"/>
+        <property name="newValue" value="${ServerPort}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
         <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-		<property name="newValue" value="${OrgNameWithoutSpace}"/>
+        <property name="newValue" value="${OrgNameWithoutSpace}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
         <property name="toReplace" value="{#DBPASSWORD}"/>
-		<property name="newValue" value="${RandomDBPassword}"/>
+        <property name="newValue" value="${RandomDBPassword}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-		
-		<!--  ***************  PetraServerAdminConsole.config ********************* -->
-		<property name="Current.File" value="${Tmp.dir}/PetraServerAdminConsole.config"/>
+        
+        <!--  ***************  PetraServerAdminConsole.config ********************* -->
+        <property name="Current.File" value="${Tmp.dir}/PetraServerAdminConsole.config"/>
         <property name="toReplace" value="{#SERVERPORT}"/>
-		<property name="newValue" value="${ServerPort}"/>
-		<property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        <property name="newValue" value="${ServerPort}"/>
+        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
         <property name="toReplace" value="{#SERVERHOST}"/>
-		<property name="newValue" value="${ServerHost}"/>
-		<property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-		
-		<!--  ***************  initmysql.sh ********************* -->
-		<property name="Current.File" value="${Tmp.dir}/initmysql.sh"/>
+        <property name="newValue" value="${ServerHost}"/>
+        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        
+        <!--  ***************  initmysql.sh ********************* -->
+        <property name="Current.File" value="${Tmp.dir}/initmysql.sh"/>
         <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-		<property name="newValue" value="${OrgNameWithoutSpace}"/>
+        <property name="newValue" value="${OrgNameWithoutSpace}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
         <property name="toReplace" value="{#DBPASSWORD}"/>
-		<property name="newValue" value="${RandomDBPassword}"/>
+        <property name="newValue" value="${RandomDBPassword}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
-		<!-- todo on Server: 
-		    mkdir /usr/local/openpetra
-			useradd openpetraOrgNameWithoutSpace
-			mkdir /usr/local/openpetra/OrgNameWithoutSpace
-			chmod 700 openpetraOrgNameWithoutSpace /usr/local/openpetra/OrgNameWithoutSpace
-			sftp get openpetraorg-mono-0.2.3-0.tar.gz
-			su openpetraOrgNameWithoutSpace
-			tar xzf openpetraorg-mono-0.2.3-0.tar.gz
-			mv /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-0.2.3-0/* /usr/local/openpetra/OrgNameWithoutSpace
-			generate private and public key, with GenerateEncryptionKey from PetraTools/_bin. write to 2 text files
-			upload /var/www/keys/publickey.xml
-			upload /usr/local/openpetra/OrgNameWithoutSpace/etc30/privatekey.xml
-			copy generated PetraServerAdminConsole.config and PetraServerConsole-mysql.config to etc30
-			copy generated initmysql.sh and openpetraorg-server.sh
-			cd etc30
-			rm PetraServerConsole.config
-			ln -s PetraServerConsole-mysql.config PetraServerConsole.config
-			initmysql
+        <!-- todo on Server: 
+            mkdir /usr/local/openpetra
+            useradd openpetraOrgNameWithoutSpace
+            mkdir /usr/local/openpetra/OrgNameWithoutSpace
+            chmod 700 openpetraOrgNameWithoutSpace /usr/local/openpetra/OrgNameWithoutSpace
+            sftp get openpetraorg-mono-0.2.3-0.tar.gz
+            su openpetraOrgNameWithoutSpace
+            tar xzf openpetraorg-mono-0.2.3-0.tar.gz
+            mv /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-0.2.3-0/* /usr/local/openpetra/OrgNameWithoutSpace
+            generate private and public key, with GenerateEncryptionKey from PetraTools/_bin. write to 2 text files
+            upload /var/www/keys/publickey.xml
+            upload /usr/local/openpetra/OrgNameWithoutSpace/etc30/privatekey.xml
+            copy generated PetraServerAdminConsole.config and PetraServerConsole-mysql.config to etc30
+            copy generated initmysql.sh and openpetraorg-server.sh
+            cd etc30
+            rm PetraServerConsole.config
+            ln -s PetraServerConsole-mysql.config PetraServerConsole.config
+            initmysql
 
-			as root:
-				ln -s /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-server.sh /etc/init.d/openpetra-server-OrgNameWithoutSpace.sh
-				update-rc.d -f openpetra-server-OrgNameWithoutSpace.sh defaults
-			start server
-		-->
-		
-		
-
+            as root:
+                ln -s /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-server.sh /etc/init.d/openpetra-server-OrgNameWithoutSpace.sh
+                update-rc.d -f openpetra-server-OrgNameWithoutSpace.sh defaults
+            start server
+        -->
     </target>
 
     <target name="createSQLiteDB">

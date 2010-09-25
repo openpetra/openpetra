@@ -46,19 +46,21 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>Private Declarations</summary>
         private String FReportName;
         private String FSettingsDirectory;
+        private String FUserSettingsDirectory;
 
         /// <summary>
         /// The constructor sets the name of the report and the name of the user
         ///
         /// </summary>
         /// <param name="AReportName">the name of the report (to know where to search/store settings)</param>
-        /// <param name="ASettingsDirectory">this is where the settings are stored (in subdirectories for each report type)
-        /// </param>
+        /// <param name="ASettingsDirectory">this is where the default settings are stored (in subdirectories for each report type)</param>
+        /// <param name="AUserSettingsDirectory">this is where the user settings are stored (in subdirectories for each report type)</param>
         /// <returns>void</returns>
-        public TStoredSettings(String AReportName, String ASettingsDirectory)
+        public TStoredSettings(String AReportName, String ASettingsDirectory, String AUserSettingsDirectory)
         {
             this.FReportName = AReportName;
             this.FSettingsDirectory = ASettingsDirectory + System.IO.Path.DirectorySeparatorChar;
+            this.FUserSettingsDirectory = AUserSettingsDirectory + System.IO.Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -92,6 +94,31 @@ namespace Ict.Petra.Client.MReporting.Logic
                 {
                     SettingName = System.IO.Path.GetFileNameWithoutExtension(FileName);
                     ReturnValue.Add(SettingName);
+                }
+            }
+
+            // now get the user settings
+            try
+            {
+                // need to switch back to the application directory, because the path names might be relative to the application
+                Environment.CurrentDirectory = FApplicationDirectory;
+                StringArray = System.IO.Directory.GetFiles(FUserSettingsDirectory + FReportName, "*.xml");
+            }
+            catch (System.Exception)
+            {
+                // Messagebox.show('Error: Xmlfiles could not be found!!!');
+            }
+
+            if (StringArray != null)
+            {
+                foreach (string FileName in StringArray)
+                {
+                    SettingName = System.IO.Path.GetFileNameWithoutExtension(FileName);
+
+                    if (!ReturnValue.Contains(SettingName))
+                    {
+                        ReturnValue.Add(SettingName);
+                    }
                 }
             }
 
@@ -198,39 +225,21 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>
         /// This will check, if the set of settings with the given name is already existing
-        /// and if it is a system settings; ie. it is provided by ICT and should not be overwritten
-        ///
+        /// and if it is a system settings; ie. it is provided by the organisation/OpenPetra.org and should not be overwritten.
+        /// all settings in the user directory are non system settings, all in the {app}/reports30/Settings are system settings
         /// </summary>
         /// <returns>void</returns>
         public bool IsSystemSettings(String ASettingsName)
         {
-            bool ReturnValue;
-            String Filename;
-            TParameterList Parameters;
-
-            ReturnValue = false;
+            bool ReturnValue = false;
 
             // need to switch back to the application directory, because the path names might be relative to the application
             Environment.CurrentDirectory = FApplicationDirectory;
-            Filename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
+            String Filename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
 
             if (System.IO.File.Exists(Filename))
             {
-                Parameters = new TParameterList();
-                try
-                {
-                    Parameters.Load(Filename);
-
-                    if (Parameters.Get("systemsettings").ToBool())
-                    {
-                        ReturnValue = true;
-                    }
-                }
-                finally
-                {
-                }
-
-                // nothing
+                ReturnValue = true;
             }
 
             return ReturnValue;
@@ -240,7 +249,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// Save the currently selected options and parameters to a file;
         /// this will automatically make this setting the most recent
         /// </summary>
-        /// <returns>nil if something went wrong (eg. overwrite a system settings file);
+        /// <returns>null if something went wrong (eg. overwrite a system settings file);
         /// otherwise a collection with the recently used settings, including the settings just saved
         /// </returns>
         public StringCollection SaveSettings(String ASettingsName, TParameterList AParameters)
@@ -252,12 +261,12 @@ namespace Ict.Petra.Client.MReporting.Logic
                 return null;
             }
 
-            if (!System.IO.Directory.Exists(FSettingsDirectory + FReportName))
+            if (!System.IO.Directory.Exists(FUserSettingsDirectory + FReportName))
             {
-                System.IO.Directory.CreateDirectory(FSettingsDirectory + FReportName);
+                System.IO.Directory.CreateDirectory(FUserSettingsDirectory + FReportName);
             }
 
-            AParameters.Save(FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml");
+            AParameters.Save(FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml");
             return UpdateRecentlyUsedSettings(ASettingsName);
         }
 
@@ -277,6 +286,11 @@ namespace Ict.Petra.Client.MReporting.Logic
             Environment.CurrentDirectory = FApplicationDirectory;
             path = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
 
+            if (!System.IO.File.Exists(path))
+            {
+                path = FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
+            }
+
             if (System.IO.File.Exists(path))
             {
                 AParameters.Load(path);
@@ -288,6 +302,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             }
             else
             {
+                // setting does not exist anymore, and should disappear from the menu
                 ReturnValue = UpdateRecentlyUsedSettings(ASettingsName);
                 ReturnValue.Remove(ASettingsName);
                 ASettingsName = "";
@@ -310,7 +325,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 return;
             }
 
-            Filename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
+            Filename = FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
             try
             {
                 if (System.IO.File.Exists(Filename))
@@ -344,8 +359,8 @@ namespace Ict.Petra.Client.MReporting.Logic
                 return false;
             }
 
-            OldFilename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + AOldSettingsName + ".xml";
-            NewFilename = FSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ANewSettingsName + ".xml";
+            OldFilename = FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + AOldSettingsName + ".xml";
+            NewFilename = FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ANewSettingsName + ".xml";
             try
             {
                 System.IO.File.Move(OldFilename, NewFilename);

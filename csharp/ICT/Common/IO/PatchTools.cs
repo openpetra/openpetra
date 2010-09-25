@@ -1367,7 +1367,7 @@ namespace Ict.Common.IO
             {
                 // download the patch file from the remote server if it is not available locally yet
                 // todo: display progress? could do it via the remoting connection?
-                if (FRemotePatchesPath.StartsWith("http://"))
+                if (FRemotePatchesPath.StartsWith("http://") || FRemotePatchesPath.StartsWith("https://"))
                 {
                     remotename = FRemotePatchesPath + "/" + Path.GetFileName(patch);
                     THTTPUtils.DownloadFile(remotename, patch);
