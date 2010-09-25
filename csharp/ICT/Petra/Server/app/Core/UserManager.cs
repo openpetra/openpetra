@@ -339,7 +339,13 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
                             UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
                 {
-                    // todo: increase failed logins
+                    // increase failed logins
+                    UserDR.FailedLogins++;
+                    LoginDateTime = DateTime.Now;
+                    UserDR.FailedLoginDate = LoginDateTime;
+                    UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                    SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+
                     throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
                 }
             }
@@ -360,6 +366,12 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
                 {
+                    UserDR.FailedLogins++;
+                    LoginDateTime = DateTime.Now;
+                    UserDR.FailedLoginDate = LoginDateTime;
+                    UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                    SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+
                     throw new EPasswordWrongException(ErrorMessage);
                 }
             }

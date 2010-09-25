@@ -219,6 +219,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void RetireUser(Object Sender, EventArgs e)
         {
             GetSelectedDetailRow().Retired = !GetSelectedDetailRow().Retired;
+            FPetraUtilsObject.SetChangedFlag();
         }
 
         private void SetPassword(Object Sender, EventArgs e)
