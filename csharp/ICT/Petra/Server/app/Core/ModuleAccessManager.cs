@@ -222,6 +222,18 @@ namespace Ict.Petra.Server.App.Core.Security
                         ParameterTypes += Parameter.ParameterType.ToString();
                     }
 
+                    ParameterTypes = ParameterTypes.Replace("System.", "");
+                    ParameterTypes = ParameterTypes.Replace("&", "");
+                    ParameterTypes = ParameterTypes.Replace("bool", "Boolean");
+                    ParameterTypes = ParameterTypes.Replace("int", "Int32");
+                    ParameterTypes = ParameterTypes.Replace("long", "Int64");
+                    ParameterTypes = ParameterTypes.ToUpper();
+                    AParameterTypes = AParameterTypes.Replace("System.", "");
+                    AParameterTypes = AParameterTypes.Replace("&", "");
+                    AParameterTypes = AParameterTypes.Replace("bool", "Boolean");
+                    AParameterTypes = AParameterTypes.Replace("long", "Int64");
+                    AParameterTypes = AParameterTypes.ToUpper();
+
                     if (ParameterTypes == AParameterTypes)
                     {
                         MethodToTest = method;
