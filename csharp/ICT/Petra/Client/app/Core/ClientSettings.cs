@@ -288,9 +288,9 @@ namespace Ict.Petra.Client.App.Core
                 UPathTemp = UPathTemp.Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
-                if (!Directory.Exists(Path.GetDirectoryName(UPathTemp)))
+                if (!Directory.Exists(UPathTemp))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(UPathTemp));
+                    Directory.CreateDirectory(UPathTemp);
                 }
 
                 string userSettingsPath = TAppSettingsManager.GetValueStatic("Reporting.PathReportUserSettings", String.Empty);
