@@ -50,6 +50,12 @@
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -185,6 +191,13 @@
     <Compile Include="SurplusDeficit.ManualCode.cs">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>
     </Compile>
+    <Compile Include="TotalGivingForRecipients.cs" />
+    <Compile Include="TotalGivingForRecipients.Designer.cs">
+      <DependentUpon>TotalGivingForRecipients.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TotalGivingForRecipients.ManualCode.cs">
+      <DependentUpon>TotalGivingForRecipients.cs</DependentUpon>
+    </Compile>
     <Compile Include="TrialBalance.cs" />
     <Compile Include="TrialBalance.Designer.cs">
       <DependentUpon>TrialBalance.cs</DependentUpon>
@@ -255,6 +268,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SurplusDeficit.resx">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TotalGivingForRecipients.resx">
+      <DependentUpon>TotalGivingForRecipients.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TrialBalance.resx">
       <DependentUpon>TrialBalance.cs</DependentUpon>

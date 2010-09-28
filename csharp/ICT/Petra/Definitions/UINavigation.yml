@@ -136,6 +136,7 @@ OpenPetra:
                         RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {ActionOpenScreen=TFrmDonorGiftStatement}
                         DonorGiftsToFieldsReport: {ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
+                        TotalGivingForRecipients: {ActionOpenScreen=TFrmTotalGivingForRecipients}
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
