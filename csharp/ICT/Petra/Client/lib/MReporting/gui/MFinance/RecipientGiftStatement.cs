@@ -257,6 +257,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
       rbtCurrencyComplete.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyComplete";
       rbtCurrencyWithoutDecimals.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyWithoutDecimals";
       rbtCurrencyThousands.Checked = AParameters.Get("param_currency_format").ToString() == "CurrencyThousands";
+      SetControlsManual(AParameters);
     }
 #endregion
 
