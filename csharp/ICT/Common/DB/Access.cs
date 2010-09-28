@@ -1162,7 +1162,7 @@ namespace Ict.Common.DB
         /// Allows a retry timeout to be specified.
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified.
-        /// This is to be able to migtigate the problem of wanting to start a DB
+        /// This is to be able to mitigate the problem of wanting to start a DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
         /// <returns>Started Transaction (null if an error occured)
@@ -1213,6 +1213,13 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
+                if ((FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
+                {
+                    // reconnect to the database
+                    FSqlConnection.Open();
+                    return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+                }
+
                 LogExceptionAndThrow(exp, "Error creating Transaction - Server-side error.");
             }
 
@@ -1235,7 +1242,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" /></param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified.
-        /// This is to be able to migtigate the problem of wanting to start a DB
+        /// This is to be able to mitigate the problem of wanting to start a DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
         /// <returns>Started Transaction (null if an error occured)</returns>
@@ -1290,6 +1297,13 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
+                if ((FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
+                {
+                    // reconnect to the database
+                    FSqlConnection.Open();
+                    return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+                }
+
                 LogExceptionAndThrow(exp, "Error creating Transaction - Server-side error.");
             }
 
