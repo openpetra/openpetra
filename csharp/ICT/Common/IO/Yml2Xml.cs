@@ -195,8 +195,10 @@ namespace Ict.Common.IO
 
                 attributesYml.Append(attrToWrite.Name + "=");
 
+                attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
+
                 if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
-                    || attrToWrite.Value.Contains("\""))
+                    || attrToWrite.Value.Contains("\"") || attrToWrite.Value.Contains("#"))
                 {
                     attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
                 }
@@ -520,6 +522,8 @@ namespace Ict.Common.IO
             return s;
         }
 
+        private static bool PrintedOriginalError = false;
+
         // this function does not know and care about base and hierarchical structures; use Tag for that
         // only for one thing it needs to consider base: check if the leaf to be added is already in base;
         // that would mean that the leaf needs to be moved back, and only the attributes go into base?
@@ -539,123 +543,146 @@ namespace Ict.Common.IO
                     line = line.Substring(0, line.LastIndexOf('#'));
                 }
 
-                if (SplitNode(line, out nodeName, out nodeContent))
+                try
                 {
-                    // check if the node already exists
-                    // at this stage existing elements are just modified and added to
-                    // to get different versions, use the method Tag()
-                    // TYml2Xml.LoadChild will either
-                    // reuse an element, move an existing leaf from base to the main node, or create a new element
-
-                    XmlNode newElement = null;
-
-                    if (!CheckName(nodeName))
+                    if (SplitNode(line, out nodeName, out nodeContent))
                     {
-                        newElement = TYml2Xml.LoadChild(parent, TYml2Xml.XMLELEMENT, ADepth);
-                        ((XmlElement)newElement).SetAttribute("name", nodeName);
-                    }
-                    else
-                    {
-                        newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
-                    }
+                        // check if the node already exists
+                        // at this stage existing elements are just modified and added to
+                        // to get different versions, use the method Tag()
+                        // TYml2Xml.LoadChild will either
+                        // reuse an element, move an existing leaf from base to the main node, or create a new element
 
-                    if (nodeContent.Length > 0)
-                    {
-                        // there is some content directly in the line
-                        // can be scalar, sequence, or mapping
-                        if (nodeContent.StartsWith("{"))
+                        XmlNode newElement = null;
+
+                        if (!CheckName(nodeName))
                         {
-                            // mapping
-                            // first get the list without brackets
-                            string list = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
-
-                            // now use getNextCSV which is able to deal with quoted strings
-                            while (list.Length > 0)
-                            {
-                                string mapping = StringHelper.GetNextCSV(ref list, ",");
-                                string mappingName = StringHelper.GetNextCSV(ref mapping, new string[] { "=", ":" }).Trim();
-                                string mappingValue = StripQuotes(mapping.Trim());
-                                TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
-                            }
-                        }
-                        else if (nodeContent.StartsWith("["))
-                        {
-                            // sequence
-                            // first get the list without brackets
-                            string list = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
-
-                            // now use getNextCSV which is able to deal with quoted strings
-                            while (list.Length > 0)
-                            {
-                                // beware of duplicates
-                                // tilde character ~ in front of name removes the element from the list
-                                // don't worry about base class
-                                string value = StripQuotes(StringHelper.GetNextCSV(ref list, ",").Trim());
-                                bool negated = false;
-
-                                if (value[0] == '~')
-                                {
-                                    negated = true;
-                                    value = value.Substring(1);
-                                }
-
-                                List <XmlNode>children = TYml2Xml.GetChildren(newElement, false);
-                                XmlNode childFound = null;
-
-                                foreach (XmlNode childNode in children)
-                                {
-                                    if (childNode.Attributes["name"].Value == value)
-                                    {
-                                        childFound = childNode;
-                                        break;
-                                    }
-                                }
-
-                                // does the name already exist in the list?
-                                if (childFound != null)
-                                {
-                                    if (negated)
-                                    {
-                                        newElement.RemoveChild(childFound);
-                                    }
-                                }
-                                else
-                                {
-                                    XmlElement sequenceElement = myDoc.CreateElement("", "Element", "");
-                                    newElement.AppendChild(sequenceElement);
-                                    XmlAttribute attr = myDoc.CreateAttribute("name");
-                                    attr.Value = value;
-                                    sequenceElement.Attributes.Append(attr);
-                                }
-                            }
+                            newElement = TYml2Xml.LoadChild(parent, TYml2Xml.XMLELEMENT, ADepth);
+                            ((XmlElement)newElement).SetAttribute("name", nodeName);
                         }
                         else
                         {
-                            // scalar
-                            // this should not be an element, but an attribute of the parent
-                            parent.RemoveChild(newElement);
-                            nodeContent = nodeContent.Trim();
+                            newElement = TYml2Xml.LoadChild(parent, nodeName, ADepth);
+                        }
 
-                            if (nodeContent.StartsWith("\"") && nodeContent.EndsWith("\""))
+                        if (nodeContent.Length > 0)
+                        {
+                            // there is some content directly in the line
+                            // can be scalar, sequence, or mapping
+                            if (nodeContent.StartsWith("{"))
                             {
-                                nodeContent = nodeContent.Substring(1, nodeContent.Length - 2);
-                            }
+                                if (!nodeContent.EndsWith("}"))
+                                {
+                                    throw new Exception("missing closing curly bracket");
+                                }
 
-                            TYml2Xml.SetAttribute(parent, nodeName, nodeContent);
+                                // mapping
+                                // first get the list without brackets
+                                string list = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
+
+                                // now use getNextCSV which is able to deal with quoted strings
+                                while (list.Length > 0)
+                                {
+                                    string mapping = StringHelper.GetNextCSV(ref list, ",");
+                                    string mappingName = StringHelper.GetNextCSV(ref mapping, new string[] { "=", ":" }).Trim();
+                                    string mappingValue = StripQuotes(mapping.Trim()).Replace("\\n", Environment.NewLine);
+                                    TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
+                                }
+                            }
+                            else if (nodeContent.StartsWith("["))
+                            {
+                                if (!nodeContent.EndsWith("]"))
+                                {
+                                    throw new Exception("missing closing square bracket");
+                                }
+
+                                // sequence
+                                // first get the list without brackets
+                                string list = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
+
+                                // now use getNextCSV which is able to deal with quoted strings
+                                while (list.Length > 0)
+                                {
+                                    // beware of duplicates
+                                    // tilde character ~ in front of name removes the element from the list
+                                    // don't worry about base class
+                                    string value = StripQuotes(StringHelper.GetNextCSV(ref list, ",").Trim());
+                                    bool negated = false;
+
+                                    if (value[0] == '~')
+                                    {
+                                        negated = true;
+                                        value = value.Substring(1);
+                                    }
+
+                                    List <XmlNode>children = TYml2Xml.GetChildren(newElement, false);
+                                    XmlNode childFound = null;
+
+                                    foreach (XmlNode childNode in children)
+                                    {
+                                        if (childNode.Attributes["name"].Value == value)
+                                        {
+                                            childFound = childNode;
+                                            break;
+                                        }
+                                    }
+
+                                    // does the name already exist in the list?
+                                    if (childFound != null)
+                                    {
+                                        if (negated)
+                                        {
+                                            newElement.RemoveChild(childFound);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        XmlElement sequenceElement = myDoc.CreateElement("", "Element", "");
+                                        newElement.AppendChild(sequenceElement);
+                                        XmlAttribute attr = myDoc.CreateAttribute("name");
+                                        attr.Value = value;
+                                        sequenceElement.Attributes.Append(attr);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // scalar
+                                // this should not be an element, but an attribute of the parent
+                                parent.RemoveChild(newElement);
+                                nodeContent = nodeContent.Trim().Replace("\\n", "\n");
+
+                                if (nodeContent.StartsWith("\"") && nodeContent.EndsWith("\""))
+                                {
+                                    nodeContent = nodeContent.Substring(1, nodeContent.Length - 2);
+                                }
+
+                                TYml2Xml.SetAttribute(parent, nodeName, nodeContent);
+                            }
+                        }
+
+                        // this is a parent node, so read the child nodes as well
+                        if (GetIndentationNext(currentLine) > 0)
+                        {
+                            // There are children
+                            Int32 childrenAbsoluteIndentation = GetAbsoluteIndentationNext(currentLine);
+
+                            do
+                            {
+                                ParseNode(myDoc, newElement, ADepth);
+                            } while (GetAbsoluteIndentationNext(currentLine) == childrenAbsoluteIndentation);
                         }
                     }
-
-                    // this is a parent node, so read the child nodes as well
-                    if (GetIndentationNext(currentLine) > 0)
+                }
+                catch (Exception)
+                {
+                    if (!PrintedOriginalError)
                     {
-                        // There are children
-                        Int32 childrenAbsoluteIndentation = GetAbsoluteIndentationNext(currentLine);
-
-                        do
-                        {
-                            ParseNode(myDoc, newElement, ADepth);
-                        } while (GetAbsoluteIndentationNext(currentLine) == childrenAbsoluteIndentation);
+                        TLogging.Log("Problem in line " + currentLine.ToString() + " " + line);
+                        PrintedOriginalError = true;
                     }
+
+                    throw;
                 }
             }
         }
@@ -723,6 +750,8 @@ namespace Ict.Common.IO
         {
             XmlDocument myDoc = CreateXmlDocument();
             XmlNode root = myDoc.FirstChild.NextSibling;
+
+            PrintedOriginalError = false;
 
             // recursive parsing of the yml document
             ParseNode(myDoc, root, 0);

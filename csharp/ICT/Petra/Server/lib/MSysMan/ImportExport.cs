@@ -232,6 +232,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 success = success && LoadTable("s_module", doc, Transaction);
                 success = success && LoadTable("s_user_module_access_permission", doc, Transaction);
                 success = success && LoadTable("s_system_defaults", doc, Transaction);
+                success = success && LoadTable("s_system_status", doc, Transaction);
 
                 if (!success)
                 {
@@ -244,6 +245,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 tables.Remove("s_module");
                 tables.Remove("s_user_module_access_permission");
                 tables.Remove("s_system_defaults");
+                tables.Remove("s_system_status");
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
