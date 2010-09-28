@@ -11,6 +11,8 @@ VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
 VersionInfoCopyright=2010 OM International
 OutputBaseFilename=OpenPetraSetup-{#RELEASEVERSION}
+OutputDir={#DELIVERY.DIR}
+PrivilegesRequired=admin
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
