@@ -45,15 +45,15 @@ OpenPetra:
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
-                        PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport)
-                        BriefFoundation: {Label=Brief Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport)
-                        SupportingChurches: {Label=Supporting Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport)
-                        ValidBankAccount: {Label=Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport)
-                        PublicationStatisticalReport: {Label=Publication Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport)
-                        BulkAddressReport: {Label=Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport)
-                        PartnerContactReport: {Label=Partner Contact Report, ActionOpenScreen=TFrmPartnerContactReport)
-                        SubscriptionReport: {Label=Subscription Report, ActionOpenScreen=TFrmSubscriptionReport)
-                        LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport)
+                        PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport}
+                        BriefFoundation: {Label=Brief Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport}
+                        SupportingChurches: {Label=Supporting Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport}
+                        ValidBankAccount: {Label=Valid Bank Account Report, ActionOpenScreen=TFrmValidBankAccountReport}
+                        PublicationStatisticalReport: {Label=Publication Statistical Report, ActionOpenScreen=TFrmPublicationStatisticalReport}
+                        BulkAddressReport: {Label=Bulk Address Report, ActionOpenScreen=TFrmBulkAddressReport}
+                        PartnerContactReport: {Label=Partner Contact Report, ActionOpenScreen=TFrmPartnerContactReport}
+                        SubscriptionReport: {Label=Subscription Report, ActionOpenScreen=TFrmSubscriptionReport}
+                        LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport}
            
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
