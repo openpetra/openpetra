@@ -156,6 +156,13 @@
     <Compile Include="DonorGiftsToFieldsReport.ManualCode.cs">
       <DependentUpon>DonorGiftsToFieldsReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldGiftTotalsReport.cs" />
+    <Compile Include="FieldGiftTotalsReport.Designer.cs">
+      <DependentUpon>FieldGiftTotalsReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldGiftTotalsReport.ManualCode.cs">
+      <DependentUpon>FieldGiftTotalsReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="IncomeExpenseMultiLedger.cs" />
     <Compile Include="IncomeExpenseMultiLedger.Designer.cs">
       <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>
@@ -253,6 +260,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DonorGiftsToFieldsReport.resx">
       <DependentUpon>DonorGiftsToFieldsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldGiftTotalsReport.resx">
+      <DependentUpon>FieldGiftTotalsReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseMultiLedger.resx">
       <DependentUpon>IncomeExpenseMultiLedger.cs</DependentUpon>

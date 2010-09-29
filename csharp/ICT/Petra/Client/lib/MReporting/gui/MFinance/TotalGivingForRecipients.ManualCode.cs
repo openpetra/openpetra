@@ -176,7 +176,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_from_date_21", FromDatePreviousYear.AddYears(-1));
             ACalc.AddParameter("param_to_date_3", ToDatePreviousYear.AddYears(-2));
             ACalc.AddParameter("param_from_date_3", FromDatePreviousYear.AddYears(-2));
-    
+
             int ColumnCounter = 0;
             ACalc.AddParameter("param_calculation", "PartnerKey", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
