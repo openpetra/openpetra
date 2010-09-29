@@ -102,7 +102,7 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
-        <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+        <if test="${string::starts-with(framework::get-target-framework(), 'net-') and file::exists(framework::get-sdk-directory(framework::get-runtime-framework()) + '\mt.exe')}" >
             <!-- avoid problems with Win7 thinking the program requires elevated privileges
                  see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
                  we need that at least for the PatchTool
