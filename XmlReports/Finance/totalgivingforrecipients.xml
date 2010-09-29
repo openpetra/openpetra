@@ -474,65 +474,7 @@
 				</footer>
 			</level>
 			
-			<!--level name="AllMonthLevel2">
-				<header>
-					<field whichfield="header 1" pos="0cm" width="3cm" calculation="ResetMonth">
-						<value text="Donor: "/>
-						<value variable="DonorKey" format="partnerkey"/>
-					</field>
-					<field whichfield="header 0" pos="3cm" width="6cm">
-						<value variable="DonorName"/>
-					</field>
-				</header>
-				<detail>
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-					<lowerLevelReport level="SingleMonthLevel" />
-				</detail>
-				<footer space="above">
-					<field whichfield="column 0">
-						<value text="Total / Gifts"/>
-					</field>
-					<field whichfield="column 1">
-						<value function="getSumLowerReport({{lineId}}, 1)"/>
-					</field>
-					<field whichfield="column 2" align="right">
-						<value function="getSumLowerReport({{lineId}}, 2)"/>
-					</field>
-					<field whichfield="column 3">
-						<value function="getSumLowerReport({{lineId}}, 3)"/>
-					</field>
-					<field whichfield="column 4" align="right">
-						<value function="getSumLowerReport({{lineId}}, 4)"/>
-					</field>
-					<field whichfield="column 5">
-						<value function="getSumLowerReport({{lineId}}, 5)"/>
-					</field>
-					<field whichfield="column 6" align="right">
-						<value function="getSumLowerReport({{lineId}}, 6)"/>
-					</field>
-					<field whichfield="column 7">
-						<value function="getSumLowerReport({{lineId}}, 7)"/>
-					</field>
-					<field whichfield="column 8" align="right">
-						<value function="getSumLowerReport({{lineId}}, 8)"/>
-					</field>
-				</footer>
-			</level-->
-
 			<level name="YearLevel">
-				<!--header>
-					<field whichfield="header 0"/>
-				</header-->
 				<detail>
 					<field whichfield="column 0" pos="0cm">
 						<value variable="DonorKey" />
