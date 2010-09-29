@@ -187,8 +187,8 @@
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
 
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
-                <fileset basedir="${ThirdParty.dir}/Mono" overwrite="true">
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" overwrite="true">
+                <fileset basedir="${ThirdParty.dir}/Mono">
                     <include name="intl.dll" />
                     <include name="MonoPosixHelper.dll" />
                     <include name="Mono.Security.dll" />
