@@ -1,0 +1,132 @@
+RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Field Leader Gift Summary
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance\\\\fieldleadergiftsummary.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: FieldLeaderGiftSummary
+        CURRENTREPORT: FieldLeaderGiftSummary
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        INITUSERCONTROLS: InitFieldList();
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Actions:
+        actUnselectAllFields:
+            ActionClick: UnselectAllFields
+        actSelectAllFields:
+            ActionClick: SelectAllFields
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [lblLedger, grpSelection, grpDateSelection]
+        lblLedger:
+            Label: Ledger
+        grpSelection:
+            Label: Currency
+            Dock: Top
+            Controls: [cmbCurrency]
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International]
+        grpDateSelection:
+            Dock: Top
+            Label: Select Report Range
+            Controls: [dtpFromDate, dtpToDate, txtYears]
+        txtYears:
+            Label: For last years (1-4)
+            Format: Integer
+        dtpFromDate:
+            Label: From
+            ParameterName: param_from_date
+        dtpToDate:
+            Label: To
+            ParameterName: param_to_date
+        
+        tpgColumnSettings:
+            Label: Column Settings
+            Controls: [uco_Columns]
+        uco_Columns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill
+        
+        tpgFields:
+            Label: Fields
+            Controls: [rgrFields]
+        rgrFields:
+            Label: Select Receiving Fields
+            Controls: [rbtAllFields, rbtSelectedFields]
+            ParameterName: param_field_selection
+        rbtAllFields:
+            Label: All Fields
+            ParameterValue: all_fields
+        rbtSelectedFields:
+            Label: Selected Fields
+            Controls: [pnlFields]
+            ParameterValue: selected_fields
+        pnlFields:
+            Controls:
+                Row1: [clbFields]
+                Row2: [pnlFieldButtons]
+        pnlFieldButtons:
+            Controls: [btnSelectAllFields, btnUnselectAllFields]
+            ControlsOrientation: horizontal
+        clbFields:
+            List: UserDefinedList
+            NoLabel:true
+            Dock: Fill
+            Width: 365
+            Height: 300
+        btnSelectAllFields:
+            Label: Select All
+            Action: actSelectAllFields
+        btnUnselectAllFields:
+            Label: Unselect All
+            Action: actUnselectAllFields
+            
+        tpgAdditionalSettings:
+            Label: Additional Settings
+            Controls: [rgrFormatCurrency]
+        rgrFormatCurrency:
+            ParameterName: param_currency_format
+            Label: Format currency numbers:
+            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
+        rbtCurrencyComplete:
+            Label: Complete
+            ParameterValue: CurrencyComplete
+        rbtCurrencyWithoutDecimals:
+            Label: Without decimals
+            ParameterValue: CurrencyWithoutDecimals
+        rbtCurrencyThousands:
+            Label: Only Thousands
+            ParameterValue: CurrencyThousands
+        
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para0:
+            Name: Partner Name
+            Parameter: 3.5
+        Para1:
+            Name: Partner Key
+            Parameter: 2.0
+        Para2:
+            Name: Partner Class
+            Parameter: 2.0
+        Para7:
+            Name: Gift Amount
+            Parameter: 2.0
+        Para24:
+            Name: Field
+            Parameter: 2.5
+        Para25:
+            Name: Motivation Detail
+            Parameter: 3.5
+        Para26:
+            Name: Motivation Group
+            Parameter: 3.5

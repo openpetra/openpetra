@@ -138,6 +138,7 @@ OpenPetra:
                         DonorGiftsToFieldsReport: {ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
                         TotalGivingForRecipients: {ActionOpenScreen=TFrmTotalGivingForRecipients}
                         FieldGiftTotalsReport: {ActionOpenScreen=TFrmFieldGiftTotalsReport}
+                        FieldLeaderGiftSummary: {ActionOpenScreen=TFrmFieldLeaderGiftSummary}
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
