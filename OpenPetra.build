@@ -102,7 +102,7 @@
     <target name="compilePetraTools" description="compile the PetraTools">
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/PetraTools.sln"/>
         <call target="compileTemplate"/>
-        <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+        <if test="${string::starts-with(framework::get-target-framework(), 'net-') and file::exists(framework::get-sdk-directory(framework::get-runtime-framework()) + '\mt.exe')}" >
             <!-- avoid problems with Win7 thinking the program requires elevated privileges
                  see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
                  we need that at least for the PatchTool
@@ -187,7 +187,7 @@
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
 
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}">
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" overwrite="true">
                 <fileset basedir="${ThirdParty.dir}/Mono">
                     <include name="intl.dll" />
                     <include name="MonoPosixHelper.dll" />
@@ -221,7 +221,7 @@
             <call target="compileTemplate"/>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
             <call target="compileTemplate"/>
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}">
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}" overwrite="true">
                 <fileset basedir="${ThirdParty.dir}/Mono">
                     <include name="intl.dll" />
                     <include name="MonoPosixHelper.dll" />
@@ -269,7 +269,7 @@
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         
-        <copy todir="${DBDoc.Output.dir}">
+        <copy todir="${DBDoc.Output.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/db/html/">
                 <include name="*.html" />
                 <include name="*.css" />
@@ -493,7 +493,7 @@
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
-        <copy todir="${WebServerInstall.dir}/bin">
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
             <!-- some unmanaged dlls cause problems for mono xsp -->
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
                 <include name="*.dll" />
@@ -897,7 +897,7 @@
         <call target="setupTemplate"/>
         
         <!-- create the linux scripts for the server side -->
-        <copy todir="${Tmp.dir}">
+        <copy todir="${Tmp.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/">
                 <include name="openpetraorg-server.sh" />
                 <include name="PetraServerConsole-mysql.config" />
@@ -1064,7 +1064,7 @@
     </target>
     
     <target name="packTestReportingRelease">
-        <copy file="${OpenPetraRoot.dir}/etc/Server.config" tofile="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
+        <copy file="${OpenPetraRoot.dir}/etc/Server.config" tofile="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config" overwrite="true"/>
         <echo file="${OpenPetraRoot.dir}/tmp/placeholder.txt">directory needed for Server.log</echo>
         <zip zipfile="testRelease.zip">
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug" prefix="csharp/ICT/Petra/Server/_bin/Debug">

@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="FieldGiftTotalsReport">
+		<description>
+			This report shows all gifts from a particular donor for a specified period
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_currency"/>
+			<reportparameter name="param_start_date"/>
+			<reportparameter name="param_end_date"/> 
+			<reportparameter name="param_min_amount"/>
+			<reportparameter name="param_max_amount"/>
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1">
+				<value text="Field Gift Totals Report" />
+			</field>
+			
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1">
+				<value text="Ledger "/>
+				<value variable="param_ledger_number_i"/>
+				<value text="   "/>
+				<value function="getLedgerName({{param_ledger_number_i}})"/>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail>
+					<value text="Fields: "/>
+					<value variable="{param_clbFields}"/>
+				</fielddetail>
+			</field>
+			
+			<field whichfield="period3">
+				<value text="Currency: "/>
+				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			
+		</pageheader>
+
+		<calculations>
+		
+			<calculation id="SelectFields" returns="FieldKey, FieldName" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							PUB_p_partner.p_partner_key_n AS FieldKey,
+							PUB_p_partner.p_partner_short_name_c AS FieldName
+						FROM
+							PUB_p_partner
+						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value function="csv" text="PUB_p_partner.p_partner_key_n" 
+								variable="param_clbFields" calculation="OR" format="Number">
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectField" returns="FieldName" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT DISTINCT
+							PUB_p_partner.p_partner_short_name_c AS FieldName
+						FROM
+							PUB_p_partner
+						WHERE
+							PUB_p_partner.p_partner_key_n = {{FieldKey}}
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthWorker" returns="MonthWorker, CountWorker" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthWorker,
+							COUNT (detail.a_gift_amount_n) AS CountWorker
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthWorker,
+							COUNT (detail.a_gift_amount_n) AS CountWorker
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
+							AND detail.a_motivation_group_code_c = "GIFT"
+							AND detail.a_motivation_detail_code_c = "SUPPORT"
+							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_ledger_number_i}, 2)">
+						<value>
+							AND detail.a_motivation_detail_code_c = "SUPPORT"
+							AND detail.a_motivation_detail_code_c = "USA SUPP"
+							AND detail.a_motivation_detail_code_c = "SHRTTERM"
+							AND detail.a_motivation_detail_code_c = "UNKFLD"
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_ledger_number_i}, 2))">
+						<value>
+							AND detail.a_motivation_group_code_c = "GIFT"
+							AND ( detail.a_motivation_detail_code_c = "SUPPORT" 
+								OR detail.a_motivation_detail_code_c = "PERSONAL" )
+						</value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year0}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectMonthField" returns="MonthField, CountField" returnsFormat="row">
+				<query>
+					<queryDetail condition="eq({param_currency}, Base)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_n) AS MonthField,
+							COUNT (detail.a_gift_amount_n) AS CountField
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_currency}, International)">
+						<value>
+							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthField,
+							COUNT (detail.a_gift_amount_n) AS CountWorker
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+						FROM
+							 PUB_a_gift as gift, 
+							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch
+						WHERE
+								detail.a_ledger_number_i = gift.a_ledger_number_i
+							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
+							AND detail.a_motivation_group_code_c = "GIFT"
+							AND detail.a_motivation_detail_code_c = "FIELD"
+							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+						 </value>
+					</queryDetail>
+					<queryDetail condition="lt({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-0{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 9)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="or(eq({{Month0}}, 10), eq({{Month0}}, 11))">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({{Month0}}, 12)">
+						<value>
+							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
+							AND gift.a_date_entered_d &lt;= #{{Year0}}-{{Month0}}-31#
+						 </value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND detail.a_batch_number_i = gift.a_batch_number_i
+							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="ResetMonth" returns="Month" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(Month0, 1)"/>
+						<value function="assign(Month1, 2)"/>
+						<value function="assign(Year0, sub({Year0}, 1))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			<calculation id="ResetYear" returns="Year0" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(Year0, {param_Year0})"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			<calculation id="AddMonth" returns="Month" returnsFormat="internal">
+				<query>
+					<queryDetail>
+						<value text="NO-SQL"/>
+						<value function="assign(Month0, add({Month0}, 1))"/>
+						<value function="assign(Month1, add({Month1}, 1))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Field" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Field"/></caption>
+				<query>
+					<queryDetail><value variable="FieldKey"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="Field Name" returnsFormat="text" returns="text">
+				<caption><value text="Field Name"/></caption>
+				<query>
+					<queryDetail><value variable="FieldName"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			
+			<calculation id="Month" returnsFormat="text" returns="text">
+				<caption><value text="Month"/></caption>
+				<query>
+					<queryDetail><value variable="Month"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="AmountWorker" returnsFormat="currency" returns="amount">
+				<caption> <value text="Amount Worker"/></caption>
+				<query> 
+					<queryDetail><value variable="MonthWorker"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			<calculation id="AmountField" returnsFormat="currency" returns="amount">
+				<caption><value text="Amount Field"/></caption>
+				<query> 
+					<queryDetail><value variable="MonthField"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			<calculation id="AmountCombined" returnsFormat="currency" returns="amount">
+				<caption><value text="Amount Combined"/></caption>
+				<query>
+				</query>
+			</calculation>
+			<calculation id="CountWorker" returnsFormat="text" returns="text">
+				<caption><value text="Qty."/></caption>
+				<query>
+					<queryDetail><value variable="CountWorker"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="CountField" returnsFormat="text" returns="text">
+				<caption><value text="Qty."/></caption>
+				<query>
+					<queryDetail><value variable="CountField"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			<calculation id="CountCombined" returnsFormat="text" returns="text">
+				<caption><value text="Qty."/></caption>
+				<query>
+					<queryDetail><value variable="CountCombined"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
+			
+		</calculations>
+
+		<levels>		
+			<level name="main">
+				<detail>
+					<lowerLevelReport level="YearLevel" calculation="SelectFields"></lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="YearLevel">
+				<header>
+					<field whichfield="header 1" pos="8cm" width="8cm" calculation="ResetYear">
+						<value text="Field: "/>
+						<value variable="FieldName"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="Year0Level" calculation="SelectField"></lowerLevelReport>
+					<lowerLevelReport level="Year1Level" calculation="SelectField"></lowerLevelReport>
+					<lowerLevelReport level="Year2Level" calculation="SelectField"></lowerLevelReport>
+					<lowerLevelReport level="Year3Level" calculation="SelectField"></lowerLevelReport>
+				</detail>
+				<footer line="below" space="below">
+				</footer>
+			</level>
+			
+			<level name="Year0Level">
+				<detail>
+					<lowerLevelReport level="OneYearLevel" condition="gt({param_txtYears}, 0)"></lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="Year1Level">
+				<detail>
+					<lowerLevelReport level="OneYearLevel" condition="gt({param_txtYears}, 1)"></lowerLevelReport>
+				</detail>
+			</level>
+			<level name="Year2Level">
+				<detail>
+					<lowerLevelReport level="OneYearLevel" condition="gt({param_txtYears}, 2)"></lowerLevelReport>
+				</detail>
+			</level>
+			<level name="Year3Level">
+				<detail>
+					<lowerLevelReport level="OneYearLevel" condition="gt({param_txtYears}, 3)"></lowerLevelReport>
+				</detail>
+			</level>
+			
+			<level name="OneYearLevel">
+				<detail>
+					<lowerLevelReport level="TotalYearLevel" />
+				</detail>
+				<footer line="below">
+					<field whichfield="column 0">
+						<value text="Average / Month"/>
+					</field>
+					<field whichfield="column 1">
+						<value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
+					</field>
+					<field whichfield="column 3">
+						<value function="div(getSumLowerReport({{lineId}}, 3), 12)"/>
+					</field>
+					<field whichfield="column 5">
+						<value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
+					</field>
+					<field whichfield="column 7">
+						<value function="div(getSumLowerReport({{lineId}}, 7), 12)"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="TotalYearLevel">
+				<header>
+					<field whichfield="header 1" pos="0cm" width="3cm" calculation="ResetMonth">
+						<value text="Year: "/>
+						<value function="add({Year0}, 1)"/>
+					</field>
+				</header>
+				<detail>
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+					<lowerLevelReport level="SingleMonthLevel" />
+				</detail>
+				<footer space="above">
+					<field whichfield="column 0">
+						<value text="Total / Gifts"/>
+					</field>
+					<field whichfield="column 1">
+						<value function="getSumLowerReport({{lineId}}, 1)"/>
+					</field>
+					<field whichfield="column 2" align="right">
+						<value function="getSumLowerReport({{lineId}}, 2)"/>
+					</field>
+					<field whichfield="column 3">
+						<value function="getSumLowerReport({{lineId}}, 3)"/>
+					</field>
+					<field whichfield="column 4" align="right">
+						<value function="getSumLowerReport({{lineId}}, 4)"/>
+					</field>
+					<field whichfield="column 5">
+						<value function="getSumLowerReport({{lineId}}, 5)"/>
+					</field>
+					<field whichfield="column 6" align="right">
+						<value function="getSumLowerReport({{lineId}}, 6)"/>
+					</field>
+				</footer>
+			</level>
+			
+			<level name="SingleMonthLevel">
+				<header>
+					<field whichfield="header 0" calculation="AddMonth"/>
+				</header>
+				<detail>
+					<field whichfield="column 0" pos="0cm">
+						<value function="GetMonthName(sub({Month0}, 1))"/>
+					</field>
+					<field whichfield="column 1" calculation="SelectMonthWorker">
+						<value variable="MonthWorker" />
+					</field>
+					<field whichfield="column 2" align="right">
+						<value variable="CountWorker" />
+					</field>
+					<field whichfield="column 3" calculation="SelectMonthField">
+						<value variable="MonthField" />
+					</field>
+					<field whichfield="column 4" align="right">
+						<value variable="CountField" />
+					</field>
+					<field whichfield="column 5">
+						<value function="add({MonthWorker}, {MonthField})" />
+					</field>
+					<field whichfield="column 6" align="right">
+						<value function="add({CountWorker}, {CountField})" />
+					</field>
+				</detail>
+			</level>
+		</levels>
+		
+	</report>
+	
+</reports>

@@ -239,7 +239,20 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (System.IO.File.Exists(Filename))
             {
-                ReturnValue = true;
+                TParameterList Parameters = new TParameterList();
+
+                try
+                {
+                    Parameters.Load(Filename);
+
+                    if (Parameters.Get("systemsettings").ToBool())
+                    {
+                        ReturnValue = true;
+                    }
+                }
+                finally
+                {
+                }
             }
 
             return ReturnValue;
