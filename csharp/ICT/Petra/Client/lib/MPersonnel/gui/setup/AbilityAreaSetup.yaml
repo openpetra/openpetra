@@ -35,7 +35,7 @@ RootNode:
                 Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area}
+        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
         txtDetailAbilityAreaDescr: {Label=Description, Width=250}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}

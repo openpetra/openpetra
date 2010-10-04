@@ -185,6 +185,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.txtDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
             this.txtDetailAbilityAreaName.Name = "txtDetailAbilityAreaName";
             this.txtDetailAbilityAreaName.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailAbilityAreaName.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailAbilityAreaName
             //

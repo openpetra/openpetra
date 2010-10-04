@@ -185,6 +185,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCode.Name = "txtDetailCode";
             this.txtDetailCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailCode
             //

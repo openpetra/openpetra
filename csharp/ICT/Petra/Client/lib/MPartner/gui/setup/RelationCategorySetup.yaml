@@ -35,7 +35,7 @@ RootNode:
                 Row0: [txtDetailCode, txtDetailDescription]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailCode: {Label=Relationship Category Code}
+        txtDetailCode: {Label=Relationship Category Code, CharacterCasing=Upper}
         txtDetailDescription: {Width=207}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}

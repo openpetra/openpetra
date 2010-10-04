@@ -79,6 +79,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 dtpDetailUnassignableDate.Date = null;
             }
+            else
+            {
+                dtpDetailUnassignableDate.Date = DateTime.Now.Date;
+            }
         }
     }
 }
