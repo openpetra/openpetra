@@ -60,5 +60,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPPublication();
         }
+
+        private void UpdatePublicationLabelCode(Object sender, EventArgs e)
+        {
+            if (txtDetailPublicationLabelCode.Text.Trim() == String.Empty)
+            {
+                txtDetailPublicationLabelCode.Text = txtDetailPublicationCode.Text.Substring(0, 2);
+            }
+        }
     }
 }

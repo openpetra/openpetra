@@ -189,6 +189,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailPublicationCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailPublicationCode.Name = "txtDetailPublicationCode";
             this.txtDetailPublicationCode.Size = new System.Drawing.Size(100, 28);
+            this.txtDetailPublicationCode.Leave += new System.EventHandler(this.UpdatePublicationLabelCode);
+            this.txtDetailPublicationCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailPublicationCode
             //
