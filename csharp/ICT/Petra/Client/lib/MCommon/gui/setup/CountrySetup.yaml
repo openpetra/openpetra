@@ -33,18 +33,21 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailCountryCode, txtDetailCountryName]
-                Row1: [pnlInternat]
-                Row2: [cmbDetailAddressOrder, cmbDetailInternatPostalTypeCode]
-                Row3: [pnlTimeZone]
-#            ColWidths: [1=Fixed:110] 
-        txtDetailCountryCode: {Width=100}
-        txtDetailCountryName: {Width=247}
+                Row1: [Empty, txtDetailCountryNameLocal]
+                Row2: [pnlInternat]
+                Row3: [cmbDetailAddressOrder, cmbDetailInternatPostalTypeCode]
+                Row4: [pnlTimeZone]
+            ColWidths: [1=Fixed:127] 
+        txtDetailCountryCode: {Width=100, CharacterCasing=Upper}
+        Empty:
+        txtDetailCountryName: {Width=247, OnLeave=UpdateCountryNameLocal}
+        txtDetailCountryNameLocal: {Width=247}
         chkDetailUndercover: 
         txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=30}
         txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=30, Align=right}        
         cmbDetailAddressOrder:  {Label=Address Display Order, List=AddressDisplayOrderList, Width=145}
         cmbDetailInternatPostalTypeCode: {Label=Int'l Postal Type, List=InternationalPostalTypeList}
-        txtDetailTimeZoneMinimum: {Label=Time Zone From, Width=45, Format=Decimal}
+        txtDetailTimeZoneMinimum: {Label=Time Zone From, Width=45, Format=Decimal, OnLeave=UpdateTimeZoneMaximum}
         txtDetailTimeZoneMaximum: {Label=To, Width=45, Format=Decimal}
         chkDetailDeletable:
         

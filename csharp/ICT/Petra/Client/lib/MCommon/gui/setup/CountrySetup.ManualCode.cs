@@ -65,5 +65,21 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             CreateNewPCountry();
         }
+
+        private void UpdateCountryNameLocal(Object sender, EventArgs e)
+        {
+            if (txtDetailCountryNameLocal.Text == String.Empty)
+            {
+                txtDetailCountryNameLocal.Text = txtDetailCountryName.Text;
+            }
+        }
+
+        private void UpdateTimeZoneMaximum(Object sender, EventArgs e)
+        {
+            if (txtDetailTimeZoneMaximum.NumberValueDouble == 0.0)
+            {
+                txtDetailTimeZoneMaximum.NumberValueDouble = txtDetailTimeZoneMinimum.NumberValueDouble;
+            }
+        }
     }
 }

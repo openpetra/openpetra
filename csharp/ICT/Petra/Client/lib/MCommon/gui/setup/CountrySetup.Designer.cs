@@ -78,6 +78,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.lblDetailCountryCode = new System.Windows.Forms.Label();
             this.txtDetailCountryName = new System.Windows.Forms.TextBox();
             this.lblDetailCountryName = new System.Windows.Forms.Label();
+            this.txtDetailCountryNameLocal = new System.Windows.Forms.TextBox();
+            this.lblDetailCountryNameLocal = new System.Windows.Forms.Label();
             this.pnlInternat = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.chkDetailUndercover = new System.Windows.Forms.CheckBox();
@@ -203,6 +205,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.txtDetailCountryCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCountryCode.Name = "txtDetailCountryCode";
             this.txtDetailCountryCode.Size = new System.Drawing.Size(100, 28);
+            this.txtDetailCountryCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailCountryCode
             //
@@ -219,6 +222,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.txtDetailCountryName.Location = new System.Drawing.Point(2,2);
             this.txtDetailCountryName.Name = "txtDetailCountryName";
             this.txtDetailCountryName.Size = new System.Drawing.Size(247, 28);
+            this.txtDetailCountryName.Leave += new System.EventHandler(this.UpdateCountryNameLocal);
             //
             // lblDetailCountryName
             //
@@ -229,6 +233,22 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.lblDetailCountryName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCountryName.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailCountryName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtDetailCountryNameLocal
+            //
+            this.txtDetailCountryNameLocal.Location = new System.Drawing.Point(2,2);
+            this.txtDetailCountryNameLocal.Name = "txtDetailCountryNameLocal";
+            this.txtDetailCountryNameLocal.Size = new System.Drawing.Size(247, 28);
+            //
+            // lblDetailCountryNameLocal
+            //
+            this.lblDetailCountryNameLocal.Location = new System.Drawing.Point(2,2);
+            this.lblDetailCountryNameLocal.Name = "lblDetailCountryNameLocal";
+            this.lblDetailCountryNameLocal.AutoSize = true;
+            this.lblDetailCountryNameLocal.Text = "Country Name Local:";
+            this.lblDetailCountryNameLocal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailCountryNameLocal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailCountryNameLocal.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // pnlInternat
             //
@@ -366,6 +386,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.txtDetailTimeZoneMinimum.Location = new System.Drawing.Point(2,2);
             this.txtDetailTimeZoneMinimum.Name = "txtDetailTimeZoneMinimum";
             this.txtDetailTimeZoneMinimum.Size = new System.Drawing.Size(45, 28);
+            this.txtDetailTimeZoneMinimum.Leave += new System.EventHandler(this.UpdateTimeZoneMaximum);
             this.txtDetailTimeZoneMinimum.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
             this.txtDetailTimeZoneMinimum.DecimalPlaces = 2;
             this.txtDetailTimeZoneMinimum.NullValueAllowed = true;
@@ -433,26 +454,29 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.tableLayoutPanel4.Controls.Add(this.chkDetailDeletable, 5, 0);
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, 127));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryCode, 0, 0);
             this.tableLayoutPanel2.SetColumnSpan(this.pnlInternat, 4);
-            this.tableLayoutPanel2.Controls.Add(this.pnlInternat, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAddressOrder, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.pnlInternat, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailAddressOrder, 0, 3);
             this.tableLayoutPanel2.SetColumnSpan(this.pnlTimeZone, 4);
-            this.tableLayoutPanel2.Controls.Add(this.pnlTimeZone, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.pnlTimeZone, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailCountryCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailAddressOrder, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailAddressOrder, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryName, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailInternatPostalTypeCode, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailCountryNameLocal, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailInternatPostalTypeCode, 2, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailCountryName, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.cmbDetailInternatPostalTypeCode, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailCountryNameLocal, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.cmbDetailInternatPostalTypeCode, 3, 3);
             //
             // tbbSave
             //
@@ -681,6 +705,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private System.Windows.Forms.Label lblDetailCountryCode;
         private System.Windows.Forms.TextBox txtDetailCountryName;
         private System.Windows.Forms.Label lblDetailCountryName;
+        private System.Windows.Forms.TextBox txtDetailCountryNameLocal;
+        private System.Windows.Forms.Label lblDetailCountryNameLocal;
         private System.Windows.Forms.Panel pnlInternat;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.CheckBox chkDetailUndercover;

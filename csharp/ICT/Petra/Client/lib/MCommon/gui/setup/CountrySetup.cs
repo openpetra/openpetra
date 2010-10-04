@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailCountryCode.Text = Catalog.GetString("Country Code:");
       this.lblDetailCountryName.Text = Catalog.GetString("Country Name:");
+      this.lblDetailCountryNameLocal.Text = Catalog.GetString("Country Name Local:");
       this.lblDetailUndercover.Text = Catalog.GetString("Undercover:");
       this.lblDetailInternatAccessCode.Text = Catalog.GetString("Int'l Access Code:");
       this.lblDetailInternatTelephoneCode.Text = Catalog.GetString("Int'l Dialling Code:");
@@ -102,11 +103,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
       this.txtDetailCountryCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailCountryName.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCountryNameLocal.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailInternatAccessCode.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FPetraUtilsObject.SetStatusBarText(txtDetailCountryCode, Catalog.GetString("Enter an internationally accepted (ISO) country code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailCountryName, Catalog.GetString("Enter the full name of the country"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailCountryNameLocal, Catalog.GetString("Enter the full name of the country in your local language"));
       FPetraUtilsObject.SetStatusBarText(chkDetailUndercover, Catalog.GetString("Select if the country is politically sensitive"));
       FPetraUtilsObject.SetStatusBarText(txtDetailInternatAccessCode, Catalog.GetString("International telephone access code needed to dial OUT"));
       FPetraUtilsObject.SetStatusBarText(txtDetailInternatTelephoneCode, Catalog.GetString("Enter the International Code needed to dial INTO the country"));
@@ -263,6 +266,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             txtDetailCountryCode.Text = ARow.CountryCode;
             txtDetailCountryCode.ReadOnly = (ARow.RowState != DataRowState.Added);
             txtDetailCountryName.Text = ARow.CountryName;
+            if (ARow.IsCountryNameLocalNull())
+            {
+                txtDetailCountryNameLocal.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailCountryNameLocal.Text = ARow.CountryNameLocal;
+            }
             if (ARow.IsUndercoverNull())
             {
                 chkDetailUndercover.Checked = false;
@@ -345,6 +356,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             ARow.CountryCode = txtDetailCountryCode.Text;
             ARow.CountryName = txtDetailCountryName.Text;
+            if (txtDetailCountryNameLocal.Text.Length == 0)
+            {
+                ARow.SetCountryNameLocalNull();
+            }
+            else
+            {
+                ARow.CountryNameLocal = txtDetailCountryNameLocal.Text;
+            }
             ARow.Undercover = chkDetailUndercover.Checked;
             if (txtDetailInternatAccessCode.Text.Length == 0)
             {
