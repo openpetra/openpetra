@@ -30,7 +30,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailInternatPostalTypeCode, txtDetailDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailInternatPostalTypeCode: {Label=Int. Postal Type Code, Width=135}
+        txtDetailInternatPostalTypeCode: {Label=Int. Postal Type Code, Width=135, CharacterCasing=Upper}
         txtDetailDescription: {Width=210}
         chkDetailDeletable:
     Toolbar:

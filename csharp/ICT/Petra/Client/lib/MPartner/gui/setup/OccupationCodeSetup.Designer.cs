@@ -183,6 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailOccupationCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailOccupationCode.Name = "txtDetailOccupationCode";
             this.txtDetailOccupationCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailOccupationCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailOccupationCode
             //
@@ -515,3 +516,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+

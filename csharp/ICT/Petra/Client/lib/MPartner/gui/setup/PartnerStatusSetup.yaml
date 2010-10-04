@@ -35,7 +35,7 @@ RootNode:
                 Row0: [txtDetailStatusCode, txtDetailPartnerStatusDescription]
                 Row2: [chkDetailPartnerIsActive, chkDetailIncludePartnerOnReport]
                 Row3: [chkDetailDeletable]
-        txtDetailStatusCode: {Label=Status Code}
+        txtDetailStatusCode: {Label=Status Code, CharacterCasing=Upper}
         txtDetailPartnerStatusDescription: {Label=Description, Width: 260}
         chkDetailPartnerIsActive: {Label=Active Partner}
         chkDetailIncludePartnerOnReport: {Label=Include Partners on Reports}

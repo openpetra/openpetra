@@ -195,6 +195,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.txtDetailCurrencyCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCurrencyCode.Name = "txtDetailCurrencyCode";
             this.txtDetailCurrencyCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCurrencyCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailCurrencyCode
             //

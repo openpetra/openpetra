@@ -31,7 +31,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailBusinessCode, txtDetailBusinessDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailBusinessCode: {Label=Business Code, Width=135}
+        txtDetailBusinessCode: {Label=Business Code, Width=135, CharacterCasing=Upper}
         txtDetailBusinessDescription: {Width=195}
         chkDetailDeletable:
     Toolbar:

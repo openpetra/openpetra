@@ -183,6 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailTypeCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailTypeCode.Name = "txtDetailTypeCode";
             this.txtDetailTypeCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailTypeCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailTypeCode
             //
@@ -515,3 +516,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+

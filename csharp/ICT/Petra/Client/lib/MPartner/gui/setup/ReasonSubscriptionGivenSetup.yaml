@@ -30,7 +30,7 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailCode, txtDetailDescription]
-        txtDetailCode: {Label= Reason Given Code}
+        txtDetailCode: {Label=Reason Given Code, CharacterCasing=Upper}
         txtDetailDescription: {Width=206}
     Toolbar:
         tbbNew:

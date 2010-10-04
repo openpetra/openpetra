@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.txtDetailInternatPostalTypeCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailInternatPostalTypeCode.Name = "txtDetailInternatPostalTypeCode";
             this.txtDetailInternatPostalTypeCode.Size = new System.Drawing.Size(135, 28);
+            this.txtDetailInternatPostalTypeCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailInternatPostalTypeCode
             //

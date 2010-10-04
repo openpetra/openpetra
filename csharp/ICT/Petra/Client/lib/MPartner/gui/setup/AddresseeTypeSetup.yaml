@@ -31,7 +31,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailAddresseeTypeCode, txtDetailDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=150}
+        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=150, CharacterCasing=Upper}
         txtDetailDescription: {Width=194}
         chkDetailDeletable:
     Toolbar:

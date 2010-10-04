@@ -31,7 +31,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailCode, txtDetailDescription]
                 Row1: [chkDetailAssignable, chkDetailDeletable]
-        txtDetailCode: {Label=Location Code}
+        txtDetailCode: {Label=Location Code, CharacterCasing=Upper}
         txtDetailDescription: {Width=236}
         chkDetailAssignable: 
         chkDetailDeletable:

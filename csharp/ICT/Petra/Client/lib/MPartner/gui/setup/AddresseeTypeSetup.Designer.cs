@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailAddresseeTypeCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailAddresseeTypeCode.Name = "txtDetailAddresseeTypeCode";
             this.txtDetailAddresseeTypeCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailAddresseeTypeCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailAddresseeTypeCode
             //

@@ -205,6 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             this.txtDetailMotivationDetailCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailMotivationDetailCode.Name = "txtDetailMotivationDetailCode";
             this.txtDetailMotivationDetailCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailMotivationDetailCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailMotivationDetailCode
             //

@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.txtDetailBusinessCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailBusinessCode.Name = "txtDetailBusinessCode";
             this.txtDetailBusinessCode.Size = new System.Drawing.Size(135, 28);
+            this.txtDetailBusinessCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailBusinessCode
             //
@@ -490,3 +491,4 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
+
