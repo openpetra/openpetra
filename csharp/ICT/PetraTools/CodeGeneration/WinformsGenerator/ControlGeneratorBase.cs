@@ -663,6 +663,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("OnChange"));
             }
 
+            if (ctrl.HasAttribute("OnLeave"))
+            {
+                AssignEventHandlerToControl(writer, ctrl,
+                    "Leave",
+                    "System.EventHandler",
+                    ctrl.GetAttribute("OnLeave"));
+            }
+
             if (ctrl.HasAttribute("Tooltip"))
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
