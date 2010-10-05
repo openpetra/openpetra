@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     /// <summary>
     /// This report shows the income posted to all your Local cost centres, in account order. Each recipient
-	/// or Motivation Detail is listed separately.
+    /// or Motivation Detail is listed separately.
     /// </summary>
     public partial class TFrmFieldLeaderGiftSummary_2
     {
@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     ACalc.AddParameter("param_debit_column", Counter);
                 }
+
                 if (ColumnName == "Credits")
                 {
                     ACalc.AddParameter("param_credit_column", Counter);

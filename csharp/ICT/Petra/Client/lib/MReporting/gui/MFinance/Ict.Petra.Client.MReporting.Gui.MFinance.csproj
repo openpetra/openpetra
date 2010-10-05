@@ -212,6 +212,13 @@
     <Compile Include="SurplusDeficit.ManualCode.cs">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>
     </Compile>
+    <Compile Include="TotalGiftsThroughField.cs" />
+    <Compile Include="TotalGiftsThroughField.Designer.cs">
+      <DependentUpon>TotalGiftsThroughField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TotalGiftsThroughField.ManualCode.cs">
+      <DependentUpon>TotalGiftsThroughField.cs</DependentUpon>
+    </Compile>
     <Compile Include="TotalGivingForRecipients.cs" />
     <Compile Include="TotalGivingForRecipients.Designer.cs">
       <DependentUpon>TotalGivingForRecipients.cs</DependentUpon>
@@ -298,6 +305,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SurplusDeficit.resx">
       <DependentUpon>SurplusDeficit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TotalGiftsThroughField.resx">
+      <DependentUpon>TotalGiftsThroughField.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TotalGivingForRecipients.resx">
       <DependentUpon>TotalGivingForRecipients.cs</DependentUpon>

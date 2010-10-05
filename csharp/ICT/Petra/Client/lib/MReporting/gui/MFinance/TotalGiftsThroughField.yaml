@@ -1,0 +1,54 @@
+RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Total Gifts through Field
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance\\\\totalgiftsthroughfield.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: TotalGiftsThroughField
+        CURRENTREPORT: TotalGiftsThroughField
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [lblLedger, grpSelection]
+        lblLedger:
+            Label: Ledger
+        grpSelection:
+            Label: Selection
+            Dock: Top
+            Controls: [cmbCurrency, txtYears]
+        cmbCurrency:
+            ParameterName: param_currency
+            OptionalValues: [Base, International]
+        txtYears:
+            Label: For last years (1-4)
+            Format: Integer
+        
+        tpgAdditionalSettings:
+            Label: Additional Settings
+            Controls: [rgrFormatCurrency]
+        rgrFormatCurrency:
+            ParameterName: param_currency_format
+            Label: Format currency numbers:
+            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
+        rbtCurrencyComplete:
+            Label: Complete
+            ParameterValue: CurrencyComplete
+        rbtCurrencyWithoutDecimals:
+            Label: Without decimals
+            ParameterValue: CurrencyWithoutDecimals
+        rbtCurrencyThousands:
+            Label: Only Thousands
+            ParameterValue: CurrencyThousands
+        
