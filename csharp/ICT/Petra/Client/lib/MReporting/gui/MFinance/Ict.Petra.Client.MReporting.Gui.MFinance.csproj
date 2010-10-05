@@ -163,6 +163,13 @@
     <Compile Include="FieldGiftTotalsReport.ManualCode.cs">
       <DependentUpon>FieldGiftTotalsReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldLeaderGiftSummary_2.cs" />
+    <Compile Include="FieldLeaderGiftSummary_2.Designer.cs">
+      <DependentUpon>FieldLeaderGiftSummary_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FieldLeaderGiftSummary_2.ManualCode.cs">
+      <DependentUpon>FieldLeaderGiftSummary_2.cs</DependentUpon>
+    </Compile>
     <Compile Include="FieldLeaderGiftSummary.cs" />
     <Compile Include="FieldLeaderGiftSummary.Designer.cs">
       <DependentUpon>FieldLeaderGiftSummary.cs</DependentUpon>
@@ -270,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FieldGiftTotalsReport.resx">
       <DependentUpon>FieldGiftTotalsReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldLeaderGiftSummary_2.resx">
+      <DependentUpon>FieldLeaderGiftSummary_2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldLeaderGiftSummary.resx">
       <DependentUpon>FieldLeaderGiftSummary.cs</DependentUpon>

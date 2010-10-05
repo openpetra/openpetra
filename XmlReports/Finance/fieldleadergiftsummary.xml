@@ -10,14 +10,15 @@
 		<reportparameters>
 			<reportparameter name="param_ledger_number_i"/>
 			<reportparameter name="param_currency"/>
-			<reportparameter name="param_start_date"/>
-			<reportparameter name="param_end_date"/> 
-			<reportparameter name="param_from_date_previous_year"/>
-			<reportparameter name="param_to_date_previous_year"/>
-			<reportparameter name="param_from_date_this_year"/>
-			<reportparameter name="param_to_date_this_year"/>
-			<reportparameter name="param_min_amount"/>
-			<reportparameter name="param_max_amount"/>
+			<reportparameter name="param_from_date"/>
+			<reportparameter name="param_to_date"/> 
+			<reportparameter name="param_field_selection"/> 
+			<reportparameter name="param_gift_amount_column"/> 
+			<reportparameter name="Year0"/> 
+			<reportparameter name="Year1"/> 
+			<reportparameter name="Year2"/> 
+			<reportparameter name="Year3"/> 
+			<reportparameter name="param_txtYears"/> 
 		</reportparameters>
 		
 		<reportheader/>
