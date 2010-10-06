@@ -141,6 +141,7 @@ OpenPetra:
                         FieldLeaderGiftSummary: {ActionOpenScreen=TFrmFieldLeaderGiftSummary}
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
+                        OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:

@@ -198,6 +198,13 @@
     <Compile Include="IncomeExpenseStmt.Designer.cs">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
     </Compile>
+    <Compile Include="OneYearMonthlyGiving.cs" />
+    <Compile Include="OneYearMonthlyGiving.Designer.cs">
+      <DependentUpon>OneYearMonthlyGiving.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OneYearMonthlyGiving.ManualCode.cs">
+      <DependentUpon>OneYearMonthlyGiving.cs</DependentUpon>
+    </Compile>
     <Compile Include="RecipientGiftStatement.cs" />
     <Compile Include="RecipientGiftStatement.Designer.cs">
       <DependentUpon>RecipientGiftStatement.cs</DependentUpon>
@@ -299,6 +306,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="IncomeExpenseStmt.resx">
       <DependentUpon>IncomeExpenseStmt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OneYearMonthlyGiving.resx">
+      <DependentUpon>OneYearMonthlyGiving.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RecipientGiftStatement.resx">
       <DependentUpon>RecipientGiftStatement.cs</DependentUpon>
