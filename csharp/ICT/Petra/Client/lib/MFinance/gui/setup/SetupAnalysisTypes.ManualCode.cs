@@ -30,13 +30,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupAnalysisTypes
     {
+        private Int32 FLedgerNumber;
+
+
+        /// <summary>
+        /// use this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+                ucoValues.LedgerNumber = value;
+                ucoValues.LoadValues(FLedgerNumber);
+            }
+        }
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewAAnalysisType();
         }
+
         private void NewRowManual(ref AAnalysisTypeRow ARow)
         {
-        	string newName = Catalog.GetString("NEWTYPE");
+            string newName = Catalog.GetString("NEWTYPE");
             Int32 countNewDetail = 0;
 
             if (FMainDS.AAnalysisType.Rows.Find(new object[] { newName }) != null)
@@ -52,7 +68,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AnalysisTypeCode = newName;
         }
 
-       
         private void DeleteRow(System.Object sender, EventArgs e)
         {
             // TODO
@@ -62,7 +77,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // TODO
         }
-
-      
     }
 }

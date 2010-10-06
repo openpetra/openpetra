@@ -73,12 +73,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ABatchAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-
             while (batches.Count > 0)
             {
                 Int32 ABatchNumber = (Int32)batches[0];
-                AJournalAccess.LoadViaABatch(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
 
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {

@@ -132,6 +132,13 @@
     <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_SetupAnalysisValues.cs" />
+    <Compile Include="UC_SetupAnalysisValues.Designer.cs">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_SetupAnalysisValues.ManualCode.cs">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="GiftMotivationSetup.resx">
       <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
     </EmbeddedResource>
@@ -149,6 +156,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupDailyExchangeRate.resx">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_SetupAnalysisValues.resx">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

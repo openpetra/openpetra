@@ -1579,6 +1579,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, ALedgerNumber, out TmpType);
             #endregion ManualCode
         }
+
         /// generated method from interface
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
@@ -1589,6 +1590,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, ALedgerNumber, out AVerificationResult);
             #endregion ManualCode                                    
         }
+
         /// generated method from interface
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
@@ -1598,7 +1600,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
             #endregion ManualCode                                    
         }
-            
     }
 }
 
@@ -3589,6 +3590,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "GetAvailableLedgers", ";");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.GetAvailableLedgers();
+        }
+
+        /// generated method from connector
+        public GLSetupTDS LoadValues(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "LoadValues", ";INT;");
+            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadValues(ALedgerNumber);
         }
     }
 }

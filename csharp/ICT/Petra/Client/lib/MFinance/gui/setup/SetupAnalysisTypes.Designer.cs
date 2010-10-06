@@ -67,20 +67,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmSetupAnalysisTypes));
 
             this.pnlContent = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.pnlGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlButtons = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnNew = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailAnalysisTypeCode = new System.Windows.Forms.TextBox();
             this.lblDetailAnalysisTypeCode = new System.Windows.Forms.Label();
             this.txtDetailAnalysisTypeDescription = new System.Windows.Forms.TextBox();
             this.lblDetailAnalysisTypeDescription = new System.Windows.Forms.Label();
             this.chkDetailSystemAnalysisType = new System.Windows.Forms.CheckBox();
             this.lblDetailSystemAnalysisType = new System.Windows.Forms.Label();
+            this.pnlValues = new System.Windows.Forms.Panel();
+            this.ucoValues = new Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -107,11 +110,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.pnlGrid.SuspendLayout();
             this.pnlButtons.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.pnlDetails.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.pnlValues.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -122,14 +127,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.AutoSize = true;
-            this.pnlContent.Controls.Add(this.pnlGrid);
-            this.pnlContent.Controls.Add(this.pnlDetails);
+            //
+            // tableLayoutPanel1
+            //
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.pnlContent.Controls.Add(this.tableLayoutPanel1);
             //
             // pnlGrid
             //
             this.pnlGrid.Name = "pnlGrid";
             this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlGrid.AutoSize = true;
+            this.pnlGrid.Size = new System.Drawing.Size(650, 200);
             this.pnlGrid.Controls.Add(this.grdDetails);
             this.pnlGrid.Controls.Add(this.pnlButtons);
             //
@@ -145,12 +155,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlButtons.AutoSize = true;
             //
-            // tableLayoutPanel1
+            // tableLayoutPanel2
             //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.pnlButtons.Controls.Add(this.tableLayoutPanel1);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.AutoSize = true;
+            this.pnlButtons.Controls.Add(this.tableLayoutPanel2);
             //
             // btnNew
             //
@@ -167,13 +177,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnDelete.AutoSize = true;
             this.btnDelete.Click += new System.EventHandler(this.DeleteRow);
             this.btnDelete.Text = "&Delete";
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnDelete, 0, 1);
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.btnNew, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDelete, 0, 1);
             //
             // pnlDetails
             //
@@ -181,12 +191,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlDetails.AutoSize = true;
             //
-            // tableLayoutPanel2
+            // tableLayoutPanel3
             //
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.AutoSize = true;
-            this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.pnlDetails.Controls.Add(this.tableLayoutPanel3);
             //
             // txtDetailAnalysisTypeCode
             //
@@ -238,19 +248,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailSystemAnalysisType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailSystemAnalysisType.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailSystemAnalysisType.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAnalysisTypeCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAnalysisTypeDescription, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailSystemAnalysisType, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAnalysisTypeCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAnalysisTypeDescription, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailSystemAnalysisType, 1, 2);
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailAnalysisTypeCode, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailAnalysisTypeDescription, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailSystemAnalysisType, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailAnalysisTypeCode, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailAnalysisTypeDescription, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.chkDetailSystemAnalysisType, 1, 2);
+            //
+            // pnlValues
+            //
+            this.pnlValues.Location = new System.Drawing.Point(2,2);
+            this.pnlValues.Name = "pnlValues";
+            this.pnlValues.Size = new System.Drawing.Size(650, 400);
+            this.pnlValues.Controls.Add(this.ucoValues);
+            //
+            // ucoValues
+            //
+            this.ucoValues.Name = "ucoValues";
+            this.ucoValues.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Controls.Add(this.pnlGrid, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pnlDetails, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.pnlValues, 0, 2);
             //
             // tbbSave
             //
@@ -438,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(660, 700);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -448,7 +479,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmSetupAnalysisTypes";
-            this.Text = "Setup Analysis Types";
+            this.Text = "Setup Analysis Types und Values";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -459,11 +490,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlValues.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlButtons.ResumeLayout(false);
             this.pnlGrid.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 
             this.ResumeLayout(false);
@@ -471,20 +504,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         private System.Windows.Forms.Panel pnlContent;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel pnlGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlButtons;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Panel pnlDetails;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtDetailAnalysisTypeCode;
         private System.Windows.Forms.Label lblDetailAnalysisTypeCode;
         private System.Windows.Forms.TextBox txtDetailAnalysisTypeDescription;
         private System.Windows.Forms.Label lblDetailAnalysisTypeDescription;
         private System.Windows.Forms.CheckBox chkDetailSystemAnalysisType;
         private System.Windows.Forms.Label lblDetailSystemAnalysisType;
+        private System.Windows.Forms.Panel pnlValues;
+        private Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues ucoValues;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;

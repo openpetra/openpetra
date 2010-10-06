@@ -946,5 +946,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetLedgerNumberDBName());
             return ALedgerAccess.LoadAll(Fields, null, null, 0, 0);
         }
+
+        /// <summary>
+        /// Load the values from the table AFREEFORMANALSYSIS
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLSetupTDS LoadValues(Int32 ALedgerNumber)
+        {
+            GLSetupTDS MainDS = new GLSetupTDS();
+
+            AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
     }
 }

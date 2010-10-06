@@ -1,22 +1,24 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Setup Analysis Types
+    FormTitle: Setup Analysis Types und Values
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAnalysisType
     CacheableTable: AnalysisTypeList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660
-    WindowHeight: 500
+    WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGrid, pnlDetails, pnlValues]
             Dock: Fill
         pnlGrid:
+            Height: 200
             Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
@@ -35,7 +37,14 @@ RootNode:
             Controls:
                 Row0: [txtDetailAnalysisTypeCode]
                 Row1: [txtDetailAnalysisTypeDescription]
-                Row3: [chkDetailSystemAnalysisType]
+                Row2: [chkDetailSystemAnalysisType]
+        pnlValues:
+            Height: 400
+            Controls: [ucoValues]
+        ucoValues:
+            Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues
+            Dock: Fill
+          
         txtDetailAnalysisTypeCode: {Label=&Analysis Type Code}
         txtDetailAnalysisTypeDescription: {Label=Description, Width=400}
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}

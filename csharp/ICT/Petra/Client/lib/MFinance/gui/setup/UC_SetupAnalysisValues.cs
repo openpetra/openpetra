@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SetupAnalysisTypes.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from UC_SetupAnalysisValues.yaml and template controlMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -47,17 +47,15 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
-  /// auto generated: Setup Analysis Types und Values
-  public partial class TFrmSetupAnalysisTypes: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated:
+  public partial class TUC_SetupAnalysisValues: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
     /// constructor
-    public TFrmSetupAnalysisTypes(IntPtr AParentFormHandle) : base()
+    public TUC_SetupAnalysisValues() : base()
     {
-      Control[] FoundCheckBoxes;
-
       //
       // Required for Windows Form Designer support
       //
@@ -65,126 +63,72 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.lblDetailLedgerNumber.Text = Catalog.GetString("Values for this Type and Ledger Number:");
       this.btnNew.Text = Catalog.GetString("&New");
       this.btnDelete.Text = Catalog.GetString("&Delete");
-      this.lblDetailAnalysisTypeCode.Text = Catalog.GetString("&Analysis Type Code:");
-      this.lblDetailAnalysisTypeDescription.Text = Catalog.GetString("Description:");
-      this.lblDetailSystemAnalysisType.Text = Catalog.GetString("System Analysis Type:");
-      this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
-      this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Analysis Type");
-      this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
-      this.mniFileSave.Text = Catalog.GetString("&Save");
-      this.mniFilePrint.Text = Catalog.GetString("&Print...");
-      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
-      this.mniClose.Text = Catalog.GetString("&Close");
-      this.mniFile.Text = Catalog.GetString("&File");
-      this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
-      this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
-      this.mniEditFind.Text = Catalog.GetString("&Find...");
-      this.mniEdit.Text = Catalog.GetString("&Edit");
-      this.mniAnalysisTypes.Text = Catalog.GetString("Analysis Types");
-      this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
-      this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
-      this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
-      this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
-      this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Setup Analysis Types und Values");
+      this.lblDetailAnalysisValue.Text = Catalog.GetString("Description:");
+      this.lblDetailActive.Text = Catalog.GetString("Active:");
       #endregion
 
-      this.txtDetailAnalysisTypeCode.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailAnalysisTypeDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAnalysisValue.Font = TAppSettingsManager.GetDefaultBoldFont();
 
-      FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
-            FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisTypeDescription, Catalog.GetString("Enter a description"));
-            FPetraUtilsObject.SetStatusBarText(chkDetailSystemAnalysisType, Catalog.GetString("To indicate whether the user or system has set up the analysis type."));
-            ucoValues.PetraUtilsObject = FPetraUtilsObject;
-            ucoValues.MainDS = FMainDS;
-            ucoValues.InitUserControl();
-
-      /*
-       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
-       * 'Deletable' flag is true are system records that must not be deleted)
-       */
-      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
-
-      if (FoundCheckBoxes.Length > 0)
-      {
-          FoundCheckBoxes[0].Enabled = false;
-      }
-
-      LoadDataAndFinishScreenSetup();
     }
 
-    private void TFrmPetra_Activated(object sender, EventArgs e)
+    /// helper object for the whole screen
+    public TFrmPetraEditUtils PetraUtilsObject
     {
-        FPetraUtilsObject.TFrmPetra_Activated(sender, e);
+        set
+        {
+            FPetraUtilsObject = value;
+        }
     }
-
-    private void TFrmPetra_Load(object sender, EventArgs e)
+        /// dataset for the whole screen
+    public Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS MainDS
     {
-        FPetraUtilsObject.TFrmPetra_Load(sender, e);
+        set
+        {
+            FMainDS = value;
+        }
     }
-
-    private void TFrmPetra_Closing(object sender, CancelEventArgs e)
-    {
-        FPetraUtilsObject.TFrmPetra_Closing(sender, e);
-    }
-
-    private void Form_KeyDown(object sender, KeyEventArgs e)
-    {
-        FPetraUtilsObject.Form_KeyDown(sender, e);
-    }
-
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
-    /// <returns>void</returns>
-    private void LoadDataAndFinishScreenSetup()
+    /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
+    public void InitUserControl()
     {
+      FPetraUtilsObject.SetStatusBarText(txtDetailLedgerNumber, Catalog.GetString("Ledger Number "));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisValue, Catalog.GetString("Value of analysis code"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailActive, Catalog.GetString("Select if analysis attribute value can be used"));
       Type DataTableType;
 
       // Load Data
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("AnalysisTypeList", String.Empty, null, out DataTableType);
-      FMainDS.AAnalysisType.Merge(CacheDT);
+      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("FreeformAnalysisList", String.Empty, null, out DataTableType);
+      FMainDS.AFreeformAnalysis.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Analysis Type Code", FMainDS.AAnalysisType.ColumnAnalysisTypeCode);
-      grdDetails.AddTextColumn("Description", FMainDS.AAnalysisType.ColumnAnalysisTypeDescription);
-
+      grdDetails.AddTextColumn("Value", FMainDS.AFreeformAnalysis.ColumnAnalysisValue);
+      grdDetails.AddCheckBoxColumn("Active", FMainDS.AFreeformAnalysis.ColumnActive);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.AAnalysisType.DefaultView;
+      DataView myDataView = FMainDS.AFreeformAnalysis.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.AAnalysisType.Rows.Count == 0)
-      {
-        ShowDetails(null);
-      }
-
-      FPetraUtilsObject.InitActionState();
+      ShowData();
     }
 
-    private void TFrmPetra_Closed(object sender, EventArgs e)
+    /// automatically generated, create a new record of AFreeformAnalysis and display on the edit screen
+    public bool CreateNewAFreeformAnalysis()
     {
-        // TODO? Save Window position
-
-    }
-
-    /// automatically generated, create a new record of AAnalysisType and display on the edit screen
-    /// we create the table locally, no dataset
-    public bool CreateNewAAnalysisType()
-    {
-        AAnalysisTypeRow NewRow = FMainDS.AAnalysisType.NewRowTyped();
+        // we create the table locally, no dataset
+        AFreeformAnalysisRow NewRow = FMainDS.AFreeformAnalysis.NewRowTyped(true);
         NewRowManual(ref NewRow);
-        FMainDS.AAnalysisType.Rows.Add(NewRow);
+        FMainDS.AFreeformAnalysis.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AAnalysisType.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AFreeformAnalysis.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.AAnalysisType.Rows.Count - 1);
+        SelectDetailRowByDataTableIndex(FMainDS.AFreeformAnalysis.Rows.Count - 1);
 
         return true;
     }
@@ -195,9 +139,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.AAnalysisType.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.AFreeformAnalysis.PrimaryKey)
             {
-                string value1 = FMainDS.AAnalysisType.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.AFreeformAnalysis.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -218,19 +162,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     }
 
     /// return the selected row
-    private AAnalysisTypeRow GetSelectedDetailRow()
+    public AFreeformAnalysisRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (AAnalysisTypeRow)SelectedGridRow[0].Row;
+            return (AFreeformAnalysisRow)SelectedGridRow[0].Row;
         }
 
         return null;
     }
 
-    private void ShowDetails(AAnalysisTypeRow ARow)
+    private void ShowData()
+    {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
+        if (FMainDS.AFreeformAnalysis != null)
+        {
+            DataView myDataView = FMainDS.AFreeformAnalysis.DefaultView;
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            if (myDataView.Count > 0)
+            {
+                grdDetails.Selection.ResetSelection(false);
+                grdDetails.Selection.SelectRow(1, true);
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            }
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private void ShowDetails(AFreeformAnalysisRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -240,23 +204,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
-            txtDetailAnalysisTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailAnalysisTypeDescription.Text = ARow.AnalysisTypeDescription;
-            if (ARow.IsSystemAnalysisTypeNull())
+            txtDetailLedgerNumber.Text = ARow.LedgerNumber.ToString();
+            txtDetailLedgerNumber.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailAnalysisValue.Text = ARow.AnalysisValue;
+            txtDetailAnalysisValue.ReadOnly = (ARow.RowState != DataRowState.Added);
+            if (ARow.IsActiveNull())
             {
-                chkDetailSystemAnalysisType.Checked = false;
+                chkDetailActive.Checked = false;
             }
             else
             {
-                chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
+                chkDetailActive.Checked = ARow.Active;
             }
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private AAnalysisTypeRow FPreviouslySelectedDetailRow = null;
+    private AFreeformAnalysisRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -267,21 +232,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // display the details of the currently selected row
         FPreviouslySelectedDetailRow = GetSelectedDetailRow();
         ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
     }
 
-    private void GetDetailsFromControls(AAnalysisTypeRow ARow)
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+    }
+
+    private void GetDetailsFromControls(AFreeformAnalysisRow ARow)
     {
         if (ARow != null)
         {
-            ARow.AnalysisTypeCode = txtDetailAnalysisTypeCode.Text;
-            ARow.AnalysisTypeDescription = txtDetailAnalysisTypeDescription.Text;
+            ARow.BeginEdit();
+            ARow.AnalysisValue = txtDetailAnalysisValue.Text;
+            ARow.Active = chkDetailActive.Checked;
             GetDetailDataFromControlsManual(ARow);
+            ARow.EndEdit();
         }
     }
 
 #region Implement interface functions
-
     /// auto generated
     public void RunOnceOnActivation()
     {
@@ -333,7 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataRow InspectDR in FMainDS.AAnalysisType.Rows)
+            foreach (DataRow InspectDR in FMainDS.AFreeformAnalysis.Rows)
             {
                 InspectDR.EndEdit();
             }
@@ -350,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.AAnalysisType.GetChangesTyped();
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.AFreeformAnalysis.GetChangesTyped();
 
                 if (SubmitDT == null)
                 {
@@ -361,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("AnalysisTypeList", ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("FreeformAnalysisList", ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -421,13 +392,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AAnalysisType.AcceptChanges();
+                        FMainDS.AFreeformAnalysis.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.AAnalysisType.Merge(SubmitDT, false);
+                        FMainDS.AFreeformAnalysis.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.AAnalysisType.AcceptChanges();
+                        FMainDS.AFreeformAnalysis.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
@@ -475,36 +446,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         if (e.ActionName == "actNew")
         {
             btnNew.Enabled = e.Enabled;
-            tbbNew.Enabled = e.Enabled;
         }
         if (e.ActionName == "actDelete")
         {
             btnDelete.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actSave")
-        {
-            tbbSave.Enabled = e.Enabled;
-            mniFileSave.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actClose")
-        {
-            mniClose.Enabled = e.Enabled;
-        }
-        mniFilePrint.Enabled = false;
-        mniEditUndoCurrentField.Enabled = false;
-        mniEditUndoScreen.Enabled = false;
-        mniEditFind.Enabled = false;
-        mniAnalysisTypes.Enabled = false;
-        mniHelpPetraHelp.Enabled = false;
-        mniHelpBugReport.Enabled = false;
-        mniHelpAboutPetra.Enabled = false;
-        mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actClose(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
     }
 
 #endregion

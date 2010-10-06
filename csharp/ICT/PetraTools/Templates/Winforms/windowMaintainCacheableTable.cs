@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowMaintainTable
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -29,12 +29,16 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-    {#FILTERVAR}    
+{#FILTERVAR}
+{#IFDEF DATASETTYPE}
+    private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
     private class FMainDS
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
-
+{#ENDIFN DATASETTYPE} 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
     {
@@ -53,6 +57,9 @@ namespace {#NAMESPACE}
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      {#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+      {#ENDIF DATASETTYPE}
       {#INITUSERCONTROLS}
       
       /*
@@ -78,7 +85,9 @@ namespace {#NAMESPACE}
       Type DataTableType;
       
       // Load Data
+{#IFNDEF DATASETTYPE}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
+{#ENDIFN DATASETTYPE}      
       DataTable CacheDT = TDataCache.{#CACHEABLETABLERETRIEVEMETHOD}({#CACHEABLETABLE}, {#CACHEABLETABLESPECIFICFILTERLOAD}, out DataTableType);
       FMainDS.{#DETAILTABLE}.Merge(CacheDT);    
       
