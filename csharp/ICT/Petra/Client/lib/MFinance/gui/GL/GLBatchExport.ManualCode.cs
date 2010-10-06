@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DateTime firstDayMonth = new DateTime(now.Year, now.Month, 1);
             dtpDateFrom.Date = firstDayMonth.AddMonths(-1);
             dtpDateTo.Date = firstDayMonth.AddDays(-1);
+            dtpDateSummary.Date = dtpDateTo.Date;
             //cmbDontSummarizeAccount.AddNotSetRow("","");
 
             LoadUserDefaults();
