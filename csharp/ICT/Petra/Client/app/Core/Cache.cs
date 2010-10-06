@@ -1166,6 +1166,7 @@ namespace Ict.Petra.Client.App.Core
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             TCacheableCommonTablesEnum CacheableMCommonTable;
+            TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
@@ -1179,6 +1180,17 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.SaveChangedStandardCacheableTable(CacheableMCommonTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MPartner.Subscriptions Namespace
+                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MFinance.Cacheable.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }

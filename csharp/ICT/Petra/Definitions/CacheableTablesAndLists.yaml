@@ -93,6 +93,8 @@ CachedTables:
         Finance:
             DatabaseTables:
                 AAnalysisType: {Comment=Contains types of analysis attributes}
+                AFreeformAnalysis: {Comment=Values for the analysis types}
+                AAnalysisAttribute: {Comment=Relationsship between account and analysis type }
                 ABudgetType:
                 ACostCentreTypes:
                 AMethodOfGiving: {Comment="Special payment programs the donor may give money through. (ie, Gift Aid in the UK)"}

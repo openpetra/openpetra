@@ -40,6 +40,16 @@ namespace Ict.Petra.Shared.MFinance
         AnalysisTypeList,
 
         /// <summary>
+        /// Values for the analysis types
+        /// </summary>
+        FreeformAnalysisList,
+
+        /// <summary>
+        /// Relationsship between account and analysis type
+        /// </summary>
+        AnalysisAttributeList,
+
+        /// <summary>
         /// Used for initial set up of budgets, for how to calculate amounts for each period.  Some possible types are adhoc,same,percentage of annual.
         /// </summary>
         BudgetTypeList,

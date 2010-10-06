@@ -1579,7 +1579,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, ALedgerNumber, out TmpType);
             #endregion ManualCode
         }
-
         /// generated method from interface
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
@@ -1590,6 +1589,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, ALedgerNumber, out AVerificationResult);
             #endregion ManualCode                                    
         }
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
+        }
+            
     }
 }
 

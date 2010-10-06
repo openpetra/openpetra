@@ -346,6 +346,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
                                                                ref TTypedDataTable ASubmitTable,
                                                                int ALedgerNumber,
                                                                out TVerificationResultCollection AVerificationResult);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

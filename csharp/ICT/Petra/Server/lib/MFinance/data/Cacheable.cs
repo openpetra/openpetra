@@ -153,6 +153,18 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.FreeformAnalysisList:
+                        {
+                            DataTable TmpTable = AFreeformAnalysisAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.AnalysisAttributeList:
+                        {
+                            DataTable TmpTable = AAnalysisAttributeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
                         {
                             DataTable TmpTable = ABudgetTypeAccess.LoadAll(ReadTransaction);
@@ -391,6 +403,20 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                     {
                         case TCacheableFinanceTablesEnum.AnalysisTypeList:
                             if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.FreeformAnalysisList:
+                            if (AFreeformAnalysisAccess.SubmitChanges((AFreeformAnalysisTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.AnalysisAttributeList:
+                            if (AAnalysisAttributeAccess.SubmitChanges((AAnalysisAttributeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

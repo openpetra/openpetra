@@ -173,6 +173,7 @@ OpenPetra:
                     CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                    SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
@@ -269,6 +270,8 @@ OpenPetra:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui}
                     SetupCurrencies: {ActionOpenScreen=Setup.TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}   
+                    SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
