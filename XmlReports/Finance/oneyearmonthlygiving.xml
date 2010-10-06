@@ -44,7 +44,7 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_donor}, Extract)">
 					<value text="Donors from Extract: "/>
-					<value variable="{param_extract_name}"/>
+					<value variable="param_extract_name"/>
 				</fielddetail>
 			</field>
 			<field whichfield="period1">
@@ -978,6 +978,14 @@
 			</level>
 			
 			<level name="RecipientLevel2">
+				<header>
+					<field whichfield="header 1" pos="0cm" width="9cm">
+						<value text="Recipient: "/>
+						<value variable="RecipientKey" format="partnerKey"/>
+						<value text="   "/>
+						<value variable="RecipientName"/>
+					</field>
+				</header>
 				<detail>
 					<lowerLevelReport level="RecipientLevel3" calculation="SelectRecipient"/>
 				</detail>
@@ -1006,53 +1014,51 @@
 			<level name="RecipientLevel3">
 				<header>
 					<field whichfield="header 1" pos="0cm" width="9cm">
-						<value text="Recipient: "/>
-						<value variable="RecipientKey" format="partnerKey"/>
-						<value text="   "/>
-						<value variable="RecipientName"/>
+						<value text="Field: "/>
+						<value function="GetFieldOfPartner({{RecipientKey}})"/>
 					</field>
 				</header>
 				<detail>
 					<lowerLevelReport level="DonorLevel" calculation="SelectTotal"></lowerLevelReport>
 				</detail>
 				<footer space="below">
-					<field whichfield="column {{January}}" line="above">
+					<field whichfield="column {January}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{January}})"/>
 					</field>
-					<field whichfield="column {{February}}" line="above">
+					<field whichfield="column {February}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{February}})"/>
 					</field>
-					<field whichfield="column {{March}}" line="above">
+					<field whichfield="column {March}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{March}})"/>
 					</field>
-					<field whichfield="column {{April}}" line="above">
+					<field whichfield="column {April}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{April}})"/>
 					</field>
-					<field whichfield="column {{May}}" line="above">
+					<field whichfield="column {May}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{May}})"/>
 					</field>
-					<field whichfield="column {{June}}" line="above">
+					<field whichfield="column {June}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{June}})"/>
 					</field>
-					<field whichfield="column {{July}}" line="above">
+					<field whichfield="column {July}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{July}})"/>
 					</field>
-					<field whichfield="column {{August}}" line="above">
+					<field whichfield="column {August}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{August}})"/>
 					</field>
-					<field whichfield="column {{September}}" line="above">
+					<field whichfield="column {September}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{September}})"/>
 					</field>
-					<field whichfield="column {{October}}" line="above">
+					<field whichfield="column {October}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{October}})"/>
 					</field>
-					<field whichfield="column {{November}}" line="above">
+					<field whichfield="column {November}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{November}})"/>
 					</field>
-					<field whichfield="column {{December}}" line="above">
+					<field whichfield="column {December}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{December}})"/>
 					</field>
-					<field whichfield="column {{Total}}" line="above">
+					<field whichfield="column {Total}" line="above">
 						<value function="GetSumLowerReport({{lineId}}, {{Total}})"/>
 					</field>
 				</footer>
