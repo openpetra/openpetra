@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, morayh
+//       matthiash
 //
 // Copyright 2004-2010 by OM International
 //
@@ -76,8 +76,8 @@ namespace Ict.Petra.Server.MFinance.GL
             while (batches.Count > 0)
             {
                 Int32 ABatchNumber = (Int32)batches[0];
-                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
-                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                ABatchAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
+                AJournalAccess.LoadViaABatch(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
 
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {
