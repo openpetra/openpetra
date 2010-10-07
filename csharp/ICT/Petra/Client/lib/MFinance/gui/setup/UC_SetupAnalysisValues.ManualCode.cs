@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -28,7 +28,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
-    public partial class TFrmSetupAnalysisTypes
+    public partial class TUC_SetupAnalysisValues
     {
         private Int32 FLedgerNumber;
 
@@ -41,31 +41,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                ucoValues.LedgerNumber = value;
-                ucoValues.LoadValues(FLedgerNumber);
             }
         }
+
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public void LoadValues(Int32 ALedgerNumber)
+        {
+            // TODO
+        }
+
         private void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewAAnalysisType();
+            // TODO
         }
 
-        private void NewRowManual(ref AAnalysisTypeRow ARow)
+        private void NewRowManual(ref AFreeformAnalysisRow ARow)
         {
-            string newName = Catalog.GetString("NEWTYPE");
-            Int32 countNewDetail = 0;
-
-            if (FMainDS.AAnalysisType.Rows.Find(new object[] { newName }) != null)
-            {
-                while (FMainDS.AAnalysisType.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
-                {
-                    countNewDetail++;
-                }
-
-                newName += countNewDetail.ToString();
-            }
-
-            ARow.AnalysisTypeCode = newName;
+            // TODO
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -73,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // TODO
         }
 
-        private void GetDetailDataFromControlsManual(AAnalysisTypeRow ARow)
+        private void GetDetailDataFromControlsManual(AFreeformAnalysisRow ARow)
         {
             // TODO
         }
