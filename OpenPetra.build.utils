@@ -423,7 +423,7 @@
         string template = String.Empty;
         string solutionHomeRef = String.Empty;
 
-        if (ANamespace.StartsWith("Tests."))
+        if (ANamespace.StartsWith("Tests.") || ANamespace.StartsWith("Ict.Testing."))
         {
             template = "nunit.csproj";
             solutionHomeRef = "ICT/Testing/";
