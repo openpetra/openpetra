@@ -89,8 +89,8 @@ namespace Ict.Petra.Server.MFinance.GL
             while (batches.Count > 0)
             {
                 Int32 ABatchNumber = (Int32)batches[0];
-                ABatchAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
-                AJournalAccess.LoadViaABatch(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
 
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {
