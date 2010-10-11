@@ -151,7 +151,7 @@ OpenPetra:
                         CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                         SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                         SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-^                       SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
+                        SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                     #Accounts:
