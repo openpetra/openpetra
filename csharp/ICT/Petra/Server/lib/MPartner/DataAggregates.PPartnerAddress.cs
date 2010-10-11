@@ -1557,6 +1557,24 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             return ReturnValue;
         }
 
+        private static bool SameValueOriginalCurrent(DataRow ADataRow, string AColumnName)
+        {
+            object obj1 = ADataRow[AColumnName, DataRowVersion.Original];
+            object obj2 = ADataRow[AColumnName, DataRowVersion.Current];
+
+            if ((obj1 == null) && (obj2 == null))
+            {
+                return true;
+            }
+
+            if ((obj1 == null) || (obj2 == null))
+            {
+                return false;
+            }
+
+            return obj1.ToString() == obj2.ToString();
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -1572,34 +1590,13 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             if (ALocationRow.RowState == DataRowState.Modified)
             {
                 // Check if any of the Addressholding fields were changed
-                if ((ALocationRow[PLocationTable.GetLocalityDBName(),
-                                  DataRowVersion.Original].ToString() !=
-                     ALocationRow[PLocationTable.GetLocalityDBName(),
-                                  DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetStreetNameDBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetStreetNameDBName(),
-                                     DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetAddress3DBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetAddress3DBName(),
-                                     DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetCityDBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetCityDBName(),
-                                     DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetCountyDBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetCountyDBName(),
-                                     DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetCountryCodeDBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetCountryCodeDBName(),
-                                     DataRowVersion.Current].ToString())
-                    || (ALocationRow[PLocationTable.GetPostalCodeDBName(),
-                                     DataRowVersion.Original].ToString() !=
-                        ALocationRow[PLocationTable.GetPostalCodeDBName(),
-                                     DataRowVersion.Current].ToString()))
+                if (!SameValueOriginalCurrent(ALocationRow, PLocationTable.GetLocalityDBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetStreetNameDBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetAddress3DBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetCityDBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetCountyDBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetCountryCodeDBName())
+                    || !SameValueOriginalCurrent(ALocationRow, PLocationTable.GetPostalCodeDBName()))
                 {
                     ReturnValue = true;
 #if DEBUGMODE
