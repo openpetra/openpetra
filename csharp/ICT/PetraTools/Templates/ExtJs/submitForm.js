@@ -65,13 +65,29 @@ function XmlExtractJSONResponse(response)
 }
 {#ENDIF REQUESTPARAMETERS}
 
+{#IFDEF ASSISTANT}
+// This is a fake CardLayout navigation function.  A real implementation would
+// likely be more sophisticated, with logic to validate navigation flow.  It will
+// be assigned next as the handling function for the buttons in the CardLayout example.
+var cardNav = function(incr){
+    var l = Ext.getCmp('card-assistant-panel').getLayout();
+    var i = l.activeItem.id.split('card-')[1];
+    var next = parseInt(i) + incr;
+    l.setActiveItem(next);
+    Ext.getCmp('card-prev').setDisabled(next==0);
+    Ext.getCmp('card-next').setDisabled(next==2);
+};
+{#ENDIF ASSISTANT}
+
 {#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
     {#RESOURCESTRINGS}
     strEmpty:'',
     initComponent : function(config) {
         Ext.apply(this, {    
-            frame: true,
+            frame: {#FORMFRAME},
+            header: {#FORMHEADER},
             // monitorValid:true,
+            fileUpload: {#CONTAINSFILEUPLOAD},
             title: this.{#FORMCAPTION},
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},
@@ -114,6 +130,34 @@ function XmlExtractJSONResponse(response)
     xtype: 'fieldset',
     title: this.{#LABEL},
     autoHeight: true,
+    items: [{#ITEMS}]
+}
+
+{##ASSISTANTDEFINITION}
+{
+    id: 'card-assistant-panel',
+    title: this.{#LABEL},
+    header: {#ASSISTANTHEADER},
+    layout:'card',
+    activeItem: 0,
+    bodyStyle: 'padding:15px',
+    defaults: {border:false},
+    bbar: ['->', {
+        id: 'card-prev',
+        text: '&laquo; Previous',
+        handler: cardNav.createDelegate(this, [-1]),
+        disabled: true
+    },{
+        id: 'card-next',
+        text: 'Next &raquo;',
+        handler: cardNav.createDelegate(this, [1])
+    }],
+    items: [{#ITEMS}]
+}
+
+{##ASSISTANTPAGEDEFINITION}
+{
+    id: 'card-{#PAGENUMBER}',
     items: [{#ITEMS}]
 }
 
@@ -161,6 +205,9 @@ function XmlExtractJSONResponse(response)
 {#IFDEF WIDTH}
     width: {#WIDTH},
 {#ENDIF WIDTH}
+{#IFDEF HTML}
+    html: '{#HTML}',
+{#ENDIF HTML}
     {#CUSTOMATTRIBUTES}
     emptyText: this.{#HELP},
     name: '{#ITEMNAME}',
@@ -172,6 +219,19 @@ function XmlExtractJSONResponse(response)
     xtype: '{#XTYPE}',
     hideLabel: true,
     value: this.{#LABEL}
+}
+
+{##FILEUPLOADDEFINITION}
+{
+    xtype: 'fileuploadfield',
+    id: '{#ITEMNAME}-file',
+    emptyText: this.{#HELP},
+    fieldLabel: this.{#LABEL},
+    name: '{#ITEMNAME}',
+    buttonText: '',
+    buttonCfg: {
+        iconCls: 'upload-icon'
+    }
 }
 
 {##CHECKBOXDEFINITION}
