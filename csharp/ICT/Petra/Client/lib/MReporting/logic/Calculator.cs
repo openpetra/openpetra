@@ -103,9 +103,20 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                     for (Counter = 0; Counter <= MaxDisplayColumns - 1; Counter += 1)
                     {
-                        if (Parameters.Get("param_calculation", Counter).ToString() == calculation)
+                        String ColumnName = Parameters.Get("param_calculation", Counter).ToString();
+
+                        // If the name is DataLabelColumn then we have something like office specific
+                        // data and we need to get the real name.
+                        if ((ColumnName == "DataLabelColumn")
+                            && (Parameters.Exists("param_label", Counter)))
+                        {
+                            ColumnName = Parameters.Get("param_label", Counter).ToString();
+                        }
+
+                        if (ColumnName == calculation)
                         {
                             ColumnPos = Counter;
+                            break;
                         }
                     }
 
