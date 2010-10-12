@@ -83,6 +83,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.LB_ExistingSettings.Location = new System.Drawing.Point(16, 24);
             this.LB_ExistingSettings.Name = "LB_ExistingSettings";
             this.LB_ExistingSettings.Size = new System.Drawing.Size(336, 134);
+            this.LB_ExistingSettings.Sorted = true;
             this.LB_ExistingSettings.TabIndex = 1;
 
             //
