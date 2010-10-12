@@ -235,6 +235,19 @@ namespace Ict.Common.DB
         /// <summary>References the type of RDBMS that we are currently connected to</summary>
         private TDBType FDbType;
 
+        /// store credentials to be able to login again after closed db connection
+        private string FDsnOrServer;
+        /// store credentials to be able to login again after closed db connection
+        private string FDBPort;
+        /// store credentials to be able to login again after closed db connection
+        private string FDatabaseName;
+        /// store credentials to be able to login again after closed db connection
+        private string FUsername;
+        /// store credentials to be able to login again after closed db connection
+        private string FPassword;
+        /// store credentials to be able to login again after closed db connection
+        private string FConnectionString;
+
         /// <summary> this is a reference to the specific database functions which can be different for each RDBMS</summary>
         private IDataBaseRDBMS FDataBaseRDBMS;
 
@@ -387,6 +400,12 @@ namespace Ict.Common.DB
             String AConnectionString)
         {
             FDbType = ADataBaseType;
+            FDsnOrServer = ADsnOrServer;
+            FDBPort = ADBPort;
+            FDatabaseName = ADatabaseName;
+            FUsername = AUsername;
+            FPassword = APassword;
+            FConnectionString = AConnectionString;
 
             if (FDbType == TDBType.PostgreSQL)
             {
@@ -1215,8 +1234,16 @@ namespace Ict.Common.DB
             {
                 if ((FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
                 {
-                    // reconnect to the database
-                    FSqlConnection.Open();
+                    TLogging.Log(exp.Message);
+                    TLogging.Log("Connection State: " + FSqlConnection.State.ToString("G"));
+
+                    if (FSqlConnection.State == ConnectionState.Broken)
+                    {
+                        FSqlConnection.Close();
+                    }
+
+                    FSqlConnection = null;
+                    EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
                     return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
                 }
 
@@ -1300,7 +1327,16 @@ namespace Ict.Common.DB
                 if ((FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
                 {
                     // reconnect to the database
-                    FSqlConnection.Open();
+                    TLogging.Log(exp.Message);
+                    TLogging.Log("Connection State: " + FSqlConnection.State.ToString("G"));
+
+                    if (FSqlConnection.State == ConnectionState.Broken)
+                    {
+                        FSqlConnection.Close();
+                    }
+
+                    FSqlConnection = null;
+                    EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
                 }
 

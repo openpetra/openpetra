@@ -52,6 +52,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             TAppSettingsManager settings = new TAppSettingsManager(false);
 
             AddControlGenerator(new TextFieldGenerator());
+            AddControlGenerator(new TextAreaGenerator());
             AddControlGenerator(new FieldSetGenerator());
             AddControlGenerator(new CheckboxGenerator());
             AddControlGenerator(new DateTimePickerGenerator());
@@ -62,6 +63,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new CompositeGenerator());
             AddControlGenerator(new ButtonGenerator());
             AddControlGenerator(new ComboboxGenerator());
+            AddControlGenerator(new AssistantGenerator());
+            AddControlGenerator(new AssistantPageGenerator());
+            AddControlGenerator(new InlineGenerator());
+            AddControlGenerator(new UploadGenerator());
         }
 
         public override string CodeFileExtension
@@ -270,9 +275,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public static void InsertButtons(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
         {
-            XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Buttons");
-
-            List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
+            XmlNode controlsNode = TYml2Xml.GetChild(ACtrl.xmlNode, "Buttons");
 
             StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Buttons");
 
@@ -308,7 +311,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FCodeStorage = ACodeStorage;
             TControlGenerator.FCodeStorage = ACodeStorage;
             FTemplate = new ProcessTemplate(ATemplateFile);
-            FFormName = Path.GetFileNameWithoutExtension(AXAMLFilename);
+            FFormName = Path.GetFileNameWithoutExtension(AXAMLFilename).Replace("-", "_");
+
+            // drop language specific part of the name
+            if (FFormName.Contains("."))
+            {
+                FFormName = FFormName.Substring(0, FFormName.IndexOf("."));
+            }
 
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
@@ -316,6 +325,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.AddToCodelet("GPLFILEHEADER",
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
+
+            FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "false");
 
             FLanguageFileTemplate = FTemplate.GetSnippet("LANGUAGEFILE");
 
@@ -337,6 +348,25 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
             FTemplate.SetCodelet("LABELWIDTH", "140");
             FTemplate.SetCodelet("FORMNAME", FFormName);
+
+            string FormHeader = "true";
+
+            if (FCodeStorage.HasAttribute("FormHeader"))
+            {
+                FormHeader = FCodeStorage.GetAttribute("FormHeader");
+            }
+
+            FTemplate.SetCodelet("FORMHEADER", FormHeader);
+
+            string FormFrame = "true";
+
+            if (FCodeStorage.HasAttribute("FormFrame"))
+            {
+                FormFrame = FCodeStorage.GetAttribute("FormFrame");
+            }
+
+            FTemplate.SetCodelet("FORMFRAME", FormFrame);
+
             FLanguageFileTemplate.SetCodelet("FORMNAME", FFormName);
         }
     }

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, morayh
+//       matthiash
 //
 // Copyright 2004-2010 by OM International
 //
@@ -43,6 +43,19 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         private const String quote = "\"";
         private const String summarizedData = "Summarised Transaction Data";
+        StringWriter FStringWriter;
+        String FDelimiter;
+        Int32 FLedgerNumber;
+        String FDateFormatString;
+        CultureInfo FCultureInfo;
+        bool FSummary;
+        bool FUseBaseCurrency;
+        String FBaseCurrency;
+        DateTime FDateForSummary;
+        bool FTransactionsOnly;
+        bool FDontSummarize;
+        String FDontSummarizeAccount;
+
 
         /// <summary>
         /// export all the Data of the batches array list to a String
@@ -51,38 +64,37 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="requestParams"></param>
         /// <param name="exportString"></param>
         /// <returns>false if batch does not exist at all</returns>
-        public static bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        public bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
         {
-            StringWriter sw = new StringWriter();
+            FStringWriter = new StringWriter();
             StringBuilder line = new StringBuilder();
             GLBatchTDS FMainDS = new GLBatchTDS();
-            String Delimiter = (String)requestParams["Delimiter"];
-            Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            String dateFormatString = (String)requestParams["DateFormatString"];
-            bool Summary = (bool)requestParams["Summary"];
-            bool bUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
-            String BaseCurrency = (String)requestParams["BaseCurrency"];
-            DateTime DateForSummary = (DateTime)requestParams["DateForSummary"];
+            FDelimiter = (String)requestParams["Delimiter"];
+            FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            FDateFormatString = (String)requestParams["DateFormatString"];
+            FSummary = (bool)requestParams["Summary"];
+            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
+            FBaseCurrency = (String)requestParams["BaseCurrency"];
+            FDateForSummary = (DateTime)requestParams["DateForSummary"];
             String NumberFormat = (String)requestParams["NumberFormat"];
-            CultureInfo ci = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            bool TransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            bool bDontSummarize = (bool)requestParams["bDontSummarize"];
-            String DontSummarizeAccount = (String)requestParams["DontSummarizeAccount"];
+            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
+            FDontSummarize = (bool)requestParams["bDontSummarize"];
+            FDontSummarizeAccount = (String)requestParams["DontSummarizeAccount"];
 
             SortedDictionary <String, AJournalSummaryRow>sdSummary = new SortedDictionary <String, AJournalSummaryRow>();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ABatchAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-
             while (batches.Count > 0)
             {
                 Int32 ABatchNumber = (Int32)batches[0];
-                AJournalAccess.LoadViaABatch(FMainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
+                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
 
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {
-                    if (journal.BatchNumber.Equals(ABatchNumber) && journal.LedgerNumber.Equals(ALedgerNumber))
+                    if (journal.BatchNumber.Equals(ABatchNumber) && journal.LedgerNumber.Equals(FLedgerNumber))
                     {
                         ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
                             journal.BatchNumber,
@@ -100,9 +112,9 @@ namespace Ict.Petra.Server.MFinance.GL
 
             foreach (ABatchRow batch in FMainDS.ABatch.Rows)
             {
-                if (!TransactionsOnly & !Summary)
+                if (!FTransactionsOnly & !FSummary)
                 {
-                    WriteBatchLine(ref sw, ref line, Delimiter, dateFormatString, ci, batch);
+                    WriteBatchLine(batch);
                 }
 
                 //foreach (AJournalRow journal in journalDS.AJournal.Rows)
@@ -110,10 +122,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     if (journal.BatchNumber.Equals(batch.BatchNumber) && journal.LedgerNumber.Equals(batch.LedgerNumber))
                     {
-                        if (Summary)
+                        if (FSummary)
                         {
-                            String mapCurrency = bUseBaseCurrency ? BaseCurrency : journal.TransactionCurrency;
-                            double mapExchangeRateToBase = bUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
+                            String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
+                            double mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
 
                             if (!sdSummary.TryGetValue(mapCurrency, out journalSummary))
                             {
@@ -127,9 +139,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else
                         {
-                            if (!TransactionsOnly)
+                            if (!FTransactionsOnly)
                             {
-                                WriteJournalLine(ref sw, ref line, Delimiter, dateFormatString, ci, journal, bUseBaseCurrency, BaseCurrency);
+                                WriteJournalLine(journal);
                             }
                         }
 
@@ -139,14 +151,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (transaction.JournalNumber.Equals(journal.JournalNumber) && transaction.BatchNumber.Equals(journal.BatchNumber)
                                 && transaction.LedgerNumber.Equals(journal.LedgerNumber))
                             {
-                                if (Summary)
+                                if (FSummary)
                                 {
                                     ATransactionSummaryRow transactionSummary;
                                     counter++;
                                     String DictionaryKey = transaction.CostCentreCode + ";" + transaction.AccountCode;
                                     int signum = transaction.DebitCreditIndicator ? 1 : -1;
-                                    bool bDontSummarizeAccount = DontSummarizeAccount != null && DontSummarizeAccount.Length > 0
-                                                                 && transaction.AccountCode.Equals(DontSummarizeAccount);
+                                    bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null && FDontSummarizeAccount.Length > 0
+                                                                 && transaction.AccountCode.Equals(FDontSummarizeAccount);
 
                                     if (bDontSummarizeAccount)
                                     {
@@ -182,15 +194,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                                 else
                                 {
-                                    WriteTransactionLine(ref sw,
-                                        ref line,
-                                        Delimiter,
-                                        dateFormatString,
-                                        ci,
-                                        TransactionsOnly,
-                                        quote,
-                                        transaction,
-                                        bUseBaseCurrency);
+                                    WriteTransactionLine(transaction);
                                 }
                             }
                         }
@@ -198,287 +202,223 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            if (Summary)
+            if (FSummary)
             {
                 //To simplify matters this is always written even if there are no batches
-                WriteBatchSummaryLine(ref sw, ref line, Delimiter, DateForSummary, dateFormatString);
+                WriteBatchSummaryLine();
 
                 foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
                 {
-                    WriteJournalSummaryLine(ref sw,
-                        ref line,
-                        Delimiter,
-                        DateForSummary,
-                        dateFormatString,
-                        ci,
-                        kvp.Value,
-                        bUseBaseCurrency,
-                        BaseCurrency);
+                    WriteJournalSummaryLine(kvp.Value);
 
                     foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
                     {
-                        WriteTransactionSummaryLine(ref sw,
-                            ref line,
-                            Delimiter,
-                            DateForSummary,
-                            dateFormatString,
-                            ci,
-                            TransactionsOnly,
-                            quote,
-                            kvpt.Value,
-                            bUseBaseCurrency);
+                        WriteTransactionSummaryLine(kvpt.Value);
                     }
                 }
             }
 
-            exportString = sw.ToString();
+            exportString = FStringWriter.ToString();
             return true;
         }
 
-        static void WriteBatchSummaryLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            DateTime DateForSummary,
-            String dateFormatString)
+        void WriteBatchSummaryLine()
         {
-            line.Append(quote);
-            line.Append("B");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(summarizedData);
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append("0");
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, DateForSummary);
-            sw.WriteLine(line);
-            line.Length = 0;
+            WriteStringQuoted("B");
+            WriteStringQuoted(summarizedData);
+            WriteCurrency(0);
+            WriteLineDate(FDateForSummary);
         }
 
-        static void WriteBatchLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            String dateFormatString,
-            CultureInfo ci,
-            ABatchRow batch)
+        void WriteBatchLine(ABatchRow batch)
         {
-            line.Append(quote);
-            line.Append("B");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(batch.BatchDescription.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.AppendFormat(ci, "{0:f}", batch.BatchControlTotal);
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, batch.DateEffective);
-            sw.WriteLine(line);
-            line.Length = 0;
+            WriteStringQuoted("B");
+            WriteStringQuoted(batch.BatchDescription);
+            WriteCurrency(batch.BatchControlTotal);
+            WriteLineDate(batch.DateEffective);
         }
 
-        static void WriteJournalSummaryLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            DateTime DateForSummary,
-            String dateFormatString,
-            CultureInfo ci,
-            AJournalSummaryRow journalSummary,
-            bool useBaseCurrency,
-            String BaseCurrency)
+        void WriteJournalSummaryLine(AJournalSummaryRow journalSummary)
         {
-            line.Append(quote);
-            line.Append("J");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(summarizedData);
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append("GL");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append("STD");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(journalSummary.TransactionCurrency.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.AppendFormat(ci, "{0:f}", journalSummary.ExchangeRateToBase);
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, DateForSummary);
-            sw.WriteLine(line);
-            line.Length = 0;
+            WriteStringQuoted("J");
+            WriteStringQuoted(summarizedData);
+            WriteStringQuoted("GL");
+            WriteStringQuoted("STD");
+            WriteStringQuoted(journalSummary.TransactionCurrency);
+            WriteGeneralNumber(journalSummary.ExchangeRateToBase); // format ok ???
+            WriteLineDate(FDateForSummary);
         }
 
-        static void WriteJournalLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            String dateFormatString,
-            CultureInfo ci,
-            AJournalRow journal,
-            bool useBaseCurrency,
-            String BaseCurrency)
+        void WriteJournalLine(AJournalRow journal)
         {
-            line.Append(quote);
-            line.Append("J");
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(journal.JournalDescription.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(journal.SubSystemCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(journal.TransactionTypeCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
+            WriteStringQuoted("J");
+            WriteStringQuoted(journal.JournalDescription);
+            WriteStringQuoted(journal.SubSystemCode);
+            WriteStringQuoted(journal.TransactionTypeCode);
 
-            if (useBaseCurrency)
+            if (FUseBaseCurrency)
             {
-                line.Append(BaseCurrency);
-                line.Append(quote);
-                line.Append(Delimiter);
-                line.Append("1");
+                WriteStringQuoted(FBaseCurrency);
+                WriteGeneralNumber(1);
             }
             else
             {
-                line.Append(journal.TransactionCurrency.ToString());
-                line.Append(quote);
-                line.Append(Delimiter);
-                line.AppendFormat(ci, "{0:f}", journal.ExchangeRateToBase);
+                WriteStringQuoted(journal.TransactionCurrency);
+                WriteGeneralNumber(journal.ExchangeRateToBase);
             }
 
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, journal.DateEffective);
-            sw.WriteLine(line);
-            line.Length = 0;
+            WriteLineDate(journal.DateEffective);
         }
 
-        static void WriteTransactionLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            String dateFormatString,
-            CultureInfo ci,
-            bool TransactionsOnly,
-            String quote,
-            ATransactionRow transaction,
-            bool useBaseCurrency)
+        void WriteTransactionLine(ATransactionRow transaction)
         {
-            if (!TransactionsOnly)
+            if (!FTransactionsOnly)
             {
-                line.Append(quote);
-                line.Append("T");
-                line.Append(quote);
-                line.Append(Delimiter);
+                WriteStringQuoted("T");
             }
 
-            line.Append(quote);
-            line.Append(transaction.CostCentreCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transaction.AccountCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transaction.Narrative.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transaction.Reference.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, transaction.TransactionDate);
-            line.Append(Delimiter);
-            double amount = (useBaseCurrency) ? transaction.AmountInBaseCurrency : transaction.TransactionAmount;
+            WriteStringQuoted(transaction.CostCentreCode);
+            WriteStringQuoted(transaction.AccountCode);
+            WriteStringQuoted(transaction.Narrative);
+            WriteStringQuoted(transaction.Reference);
+            WriteDate(transaction.TransactionDate);
+            double amount = (FUseBaseCurrency) ? transaction.AmountInBaseCurrency : transaction.TransactionAmount;
 
             if (transaction.DebitCreditIndicator)
             {
-                line.AppendFormat(ci, "{0:f}", amount);
-                line.Append(Delimiter);
-                line.Append("0");
+                WriteCurrency(amount);
+                WriteCurrency(0);
             }
             else
             {
-                line.Append("0");
-                line.Append(Delimiter);
-                line.AppendFormat(ci, "{0:f}", amount);
+                WriteCurrency(0);
+                WriteCurrency(amount);
             }
 
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i <= 10; i++)
             {
-                line.Append(Delimiter);
-                line.Append(quote);
-                line.Append(quote);
+                WriteStringQuoted("", (i == 10));
             }
-
-            sw.WriteLine(line);
-            line.Length = 0;
         }
 
-        static void WriteTransactionSummaryLine(ref StringWriter sw,
-            ref StringBuilder line,
-            String Delimiter,
-            DateTime DateForSummary,
-            String dateFormatString,
-            CultureInfo ci,
-            bool TransactionsOnly,
-            String quote,
-            ATransactionSummaryRow transactionSummary,
-            bool useBaseCurrency)
+        void WriteTransactionSummaryLine(ATransactionSummaryRow transactionSummary)
         {
-            if (!TransactionsOnly)
+            if (!FTransactionsOnly)
             {
-                line.Append(quote);
-                line.Append("T");
-                line.Append(quote);
-                line.Append(Delimiter);
+                WriteStringQuoted("T");
             }
 
-            line.Append(quote);
-            line.Append(transactionSummary.CostCentreCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transactionSummary.AccountCode.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transactionSummary.Narrative.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.Append(quote);
-            line.Append(transactionSummary.Reference.ToString());
-            line.Append(quote);
-            line.Append(Delimiter);
-            line.AppendFormat(dateFormatString, DateForSummary);
-            line.Append(Delimiter);
-            double amount = (useBaseCurrency) ? transactionSummary.AmountInBaseCurrency : transactionSummary.TransactionAmount;
+            WriteStringQuoted(transactionSummary.CostCentreCode);
+            WriteStringQuoted(transactionSummary.AccountCode);
+            WriteStringQuoted(transactionSummary.Narrative);
+            WriteStringQuoted(transactionSummary.Reference);
+            WriteDate(FDateForSummary);
+            double amount = (FUseBaseCurrency) ? transactionSummary.AmountInBaseCurrency : transactionSummary.TransactionAmount;
 
             if (amount > 0)
             {
-                line.AppendFormat(ci, "{0:f}", amount);
-                line.Append(Delimiter);
-                line.Append("0");
+                WriteCurrency(amount);
+                WriteLineCurrency(0);
             }
             else
             {
-                line.Append("0");
-                line.Append(Delimiter);
-                line.AppendFormat(ci, "{0:f}", -amount);
+                WriteCurrency(0);
+                WriteLineCurrency(-amount);
             }
+        }
 
-            sw.WriteLine(line);
-            line.Length = 0;
+        void WriteDelimiter(bool bLineEnd)
+        {
+            if (bLineEnd)
+            {
+                FStringWriter.WriteLine();
+            }
+            else
+            {
+                FStringWriter.Write(FDelimiter);
+            }
+        }
+
+        void WriteStringQuoted(String theString, bool bLineEnd)
+        {
+            FStringWriter.Write(quote);
+            FStringWriter.Write(theString);
+            FStringWriter.Write(quote);
+            WriteDelimiter(bLineEnd);
+        }
+
+        /*
+         * void WriteCurrency(double currencyField, bool bLineEnd)
+         * {
+         * Int64 integerNumber = Convert.ToInt64(currencyField);
+         *
+         * if (Convert.ToDouble(integerNumber) == currencyField)
+         * {
+         * FStringWriter.Write(String.Format("{0:d}", integerNumber));
+         * }
+         * else
+         * {
+         * FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
+         * }
+         *
+         * WriteDelimiter(bLineEnd);
+         * }
+         */
+        void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
+        {
+            Int64 integerNumber = Convert.ToInt64(generalNumberField);
+
+
+            FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
+
+
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteDate(DateTime dateField, bool bLineEnd)
+        {
+            FStringWriter.Write(String.Format(FDateFormatString, dateField));
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteStringQuoted(String theString)
+        {
+            WriteStringQuoted(theString, false);
+        }
+
+        void WriteCurrency(double currencyField)
+        {
+            WriteGeneralNumber(currencyField, false);
+        }
+
+        void WriteGeneralNumber(double generalNumberField)
+        {
+            WriteGeneralNumber(generalNumberField, false);
+        }
+
+        void WriteDate(DateTime dateField)
+        {
+            WriteDate(dateField, false);
+        }
+
+        void WriteLineStringQuoted(String theString)
+        {
+            WriteStringQuoted(theString, true);
+        }
+
+        void WriteLineCurrency(double currencyField)
+        {
+            WriteGeneralNumber(currencyField, true);
+        }
+
+        void WriteLineGeneralNumber(double generalNumberField)
+        {
+            WriteGeneralNumber(generalNumberField, true);
+        }
+
+        void WriteLineDate(DateTime dateField)
+        {
+            WriteDate(dateField, true);
         }
     }
     /// <summary>

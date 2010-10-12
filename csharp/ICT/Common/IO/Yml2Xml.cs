@@ -753,8 +753,17 @@ namespace Ict.Common.IO
 
             PrintedOriginalError = false;
 
-            // recursive parsing of the yml document
-            ParseNode(myDoc, root, 0);
+            try
+            {
+                // recursive parsing of the yml document
+                ParseNode(myDoc, root, 0);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Error while parsing yml, line " + currentLine.ToString() + ". " + e.Message);
+                throw e;
+            }
+
             return myDoc;
         }
 

@@ -85,6 +85,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == AAnalysisTypeTable.GetTableDBName())
+                {
+                    tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
                     tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);
@@ -155,6 +159,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                     {
                         if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AAnalysisTypeTable.GetTableDBName())
+                    {
+                        if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

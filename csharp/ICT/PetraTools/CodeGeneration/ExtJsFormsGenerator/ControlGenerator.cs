@@ -39,6 +39,58 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             FDefaultWidth = -1;
         }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if ((TYml2Xml.GetAttribute(curNode, "Multiline") != "true"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+    public class TextAreaGenerator : TControlGenerator
+    {
+        public TextAreaGenerator()
+            : base("txt", "textarea")
+        {
+            FDefaultWidth = -1;
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if ((TYml2Xml.GetAttribute(curNode, "Multiline") == "true"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public class UploadGenerator : TControlGenerator
+    {
+        public UploadGenerator()
+            : base("upl", "fileuploadfield")
+        {
+            FControlDefinitionSnippetName = "FILEUPLOADDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            writer.FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "true");
+
+            return ctrlSnippet;
+        }
     }
     public class LabelGenerator : TControlGenerator
     {
@@ -81,7 +133,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
 
-            XmlNode AjaxParametersNode = TXMLParser.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
+            XmlNode AjaxParametersNode = TYml2Xml.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
 
             if (AjaxParametersNode != null)
             {
@@ -91,7 +143,6 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 {
                     if (!attr.Name.Equals("depth"))
                     {
-                        Console.WriteLine(attr.Name);
                         ParameterString += attr.Name + ": '" + attr.Value + "', ";
                     }
                 }
@@ -207,6 +258,40 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    public class InlineGenerator : TControlGenerator
+    {
+        public InlineGenerator()
+            : base("inl", "displayfield")
+        {
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
+
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "DESCRIPTIONDOCUMENT",
+                ACtrl,
+                TYml2Xml.GetAttribute(ACtrl.xmlNode, "description"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "URL",
+                ACtrl,
+                TYml2Xml.GetAttribute(ACtrl.xmlNode, "url"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "BROWSERMISSINGIFRAMESUPPORT",
+                ACtrl,
+                "Your browser is not able to display embedded documents. Please click on the following link to read the text: ");
+
+            ctrlSnippet.SetCodelet("HTML",
+                String.Format("<iframe src=\"' + {0} + '\" width=\"100%\" height=\"250\"><p>{1}<a href=\"' + {0} + '\">' + {2} + '</a></p></iframe>",
+                    "this." + ACtrl.controlName + "URL",
+                    "' + this." + ACtrl.controlName + "BROWSERMISSINGIFRAMESUPPORT + '",
+                    "this." + ACtrl.controlName + "DESCRIPTIONDOCUMENT"));
+
+            return ctrlSnippet;
+        }
+    }
+
     public class CompositeGenerator : GroupBoxBaseGenerator
     {
         public CompositeGenerator()
@@ -222,6 +307,54 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             : base("grp")
         {
             FControlDefinitionSnippetName = "GROUPBOXDEFINITION";
+        }
+    }
+
+    public class AssistantGenerator : GroupBoxBaseGenerator
+    {
+        public AssistantGenerator()
+            : base("ass")
+        {
+            FControlDefinitionSnippetName = "ASSISTANTDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            writer.FTemplate.SetCodelet("ASSISTANT", "true");
+
+            string AssistantHeader = "true";
+
+            if (ctrl.HasAttribute("AssistantHeader"))
+            {
+                AssistantHeader = ctrl.GetAttribute("AssistantHeader");
+            }
+
+            ctrlSnippet.SetCodelet("ASSISTANTHEADER", AssistantHeader);
+
+            return ctrlSnippet;
+        }
+    }
+
+    public class AssistantPageGenerator : GroupBoxBaseGenerator
+    {
+        private static int PageCounter = 0;
+
+        public AssistantPageGenerator()
+            : base("asp")
+        {
+            FControlDefinitionSnippetName = "ASSISTANTPAGEDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
+
+            ctrlSnippet.SetCodelet("PAGENUMBER", PageCounter.ToString());
+            PageCounter++;
+
+            return ctrlSnippet;
         }
     }
 

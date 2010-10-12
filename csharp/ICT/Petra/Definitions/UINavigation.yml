@@ -103,8 +103,6 @@ OpenPetra:
                         #PrintSingleReceipt:
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
-                    Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
@@ -145,35 +143,37 @@ OpenPetra:
                     #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
-                    Setup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
-                        #Accounts:
-                            #AddPostingAccount:
-                            #AddForeignCurrencyAccount:
-                            #AddSummarisationAccount:
-                            #EditAccount:
-                            #DeleteAccount:
-                            #RenameAccount:
-                            #ImportChartOfAccounts:
-                        #CostCentres:
-                            #AddCostCentre:
-                            #EditCostCentre:
-                            #DeleteCostCentre:
-                            #RenameCostCentre:
-                            #LinkCostCentreToPartner:
-                        #Other:
-                            #LedgerSetupShepherd:
-                            #SetupCalendar:
-                            #ChangeNumberOfForwardingPeriods:
                 #Budgets:
                 #ICH:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                    SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-            
+                    GLSetup:
+                        CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
+                        SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
+                        SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                        SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
+                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
+                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
+                    #Accounts:
+                        #AddPostingAccount:
+                        #AddForeignCurrencyAccount:
+                        #AddSummarisationAccount:
+                        #EditAccount:
+                        #DeleteAccount:
+                        #RenameAccount:
+                        #ImportChartOfAccounts:
+                    #CostCentres:
+                        #AddCostCentre:
+                        #EditCostCentre:
+                        #DeleteCostCentre:
+                        #RenameCostCentre:
+                        #LinkCostCentreToPartner:
+                    #Other:
+                        #LedgerSetupShepherd:
+                        #SetupCalendar:
+                        #ChangeNumberOfForwardingPeriods:
+                    GiftSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                        SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
@@ -263,12 +263,14 @@ OpenPetra:
                     #ModifyUserPermissions:
                     #ImportUserPermissions:
             Finance:
-                LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
+                #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                    #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
                     #DeleteLedger:
-                ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui}
-                    SetupCurrencies: {ActionOpenScreen=Setup.TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {ActionOpenScreen=Setup.TFrmSetupDailyExchangeRate}
+                ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                    SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
+                    SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                    SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}

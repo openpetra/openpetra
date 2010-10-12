@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.CodeGeneration", "Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.MFinance.GLBatches", "Testing\MFinance\GLForm\Tests.MFinance.GLBatches.csproj", "{F66C325F-C85B-4897-B949-2E2710AE755C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Testing.NUnitForms", "Testing\NUnitForms\Ict.Testing.NUnitForms.csproj", "{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -68,5 +70,9 @@ Global
 		{F66C325F-C85B-4897-B949-2E2710AE755C}.Debug|x86.ActiveCfg = Debug|x86
 		{F66C325F-C85B-4897-B949-2E2710AE755C}.Release|x86.Build.0 = Release|x86
 		{F66C325F-C85B-4897-B949-2E2710AE755C}.Release|x86.ActiveCfg = Release|x86
+		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Debug|x86.Build.0 = Debug|x86
+		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Debug|x86.ActiveCfg = Debug|x86
+		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Release|x86.Build.0 = Release|x86
+		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

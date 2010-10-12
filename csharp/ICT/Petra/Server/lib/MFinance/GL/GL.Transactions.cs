@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, matthiash
 //
 // Copyright 2004-2010 by OM International
 //
@@ -588,7 +588,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
         {
-            return TGLExporting.ExportAllGLBatchData(ref batches, requestParams, out exportString);
+            TGLExporting exporting = new TGLExporting();
+
+            return exporting.ExportAllGLBatchData(ref batches, requestParams, out exportString);
         }
     }
 }

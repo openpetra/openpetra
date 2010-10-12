@@ -127,7 +127,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (MessageBox.Show(String.Format(Catalog.GetString("You have choosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
                          FSelectedBatchNumber),
                      Catalog.GetString("Confirm Cancel"),
-                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxButtons.YesNo,
+                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
                 TVerificationResultCollection Verifications;
                 GLBatchTDS mergeDS;
@@ -175,7 +176,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
-                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"));
+                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
@@ -200,7 +203,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     // saving failed, therefore do not try to post
                     MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"));
+                        Catalog.GetString("Please first save the batch, and then post it!"),
+                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -208,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
                         FSelectedBatchNumber),
                     Catalog.GetString("Question"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
@@ -221,12 +225,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                          verif.ResultText + Environment.NewLine;
                     }
 
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
                 else
                 {
                     // TODO: print reports on successfully posted batch
-                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
+                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
                     // TODO: refresh the grid, to reflect that the batch has been posted
                     LoadBatches(FLedgerNumber);

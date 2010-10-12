@@ -116,10 +116,11 @@ namespace Tests.MFinance.GLBatches
                     MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
                     // Assert.AreEqual("Success", tester.Title);
                     tester2.SendCommand(MessageBoxTester.Command.Yes);
-                }
+                };
 
                 tester.SendCommand(MessageBoxTester.Command.Yes);
-            }
+            };
+
             btnCancelBatch.Click();
 
             // add a new batch
@@ -130,6 +131,139 @@ namespace Tests.MFinance.GLBatches
             btnSave.Click();
 
             Assert.AreEqual(false, btnSave.Properties.Enabled, "Save button should be disabled because all changes have been saved");
+        }
+
+        /// <summary>
+        /// test for creating and posting batch
+        /// </summary>
+        [Test]
+        public void TestCreateBatchAndPost()
+        {
+            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            // create a new batch and save
+            ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+            TextBoxTester txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription");
+            txtDetailBatchDescription.Properties.Text = "Created by test TestExportGLBatch";
+
+            TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            ButtonTester btnNewJournal = new ButtonTester("ucoJournals.btnAdd");
+            btnNewJournal.Click();
+
+            // go to transaction tab
+            tabGLBatch.SelectTab(2);
+
+            ButtonTester btnNewTransaction = new ButtonTester("ucoTransactions.btnNew");
+            btnNewTransaction.Click();
+
+            TextBoxTester txtDetailNarrative = new TextBoxTester("txtDetailNarrative");
+            txtDetailNarrative.Properties.Text = "test";
+            TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
+            txtDetailReference.Properties.Text = "test";
+
+            TextBoxTester txtDebitAmount = new TextBoxTester("txtDebitAmount");
+            decimal Amount = 1111.44M;
+            txtDebitAmount.Properties.Text = Amount.ToString();
+
+            TCmbAutoPopulatedTester cmbDetailAccountCode = new TCmbAutoPopulatedTester("cmbDetailAccountCode");
+            cmbDetailAccountCode.Properties.SetSelectedString("6000");
+
+            TCmbAutoPopulatedTester cmbDetailCostCentreCode = new TCmbAutoPopulatedTester("cmbDetailCostCentreCode");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            btnNewTransaction.Click();
+            txtDetailNarrative.Properties.Text = "test";
+            txtDetailReference.Properties.Text = "test";
+            TextBoxTester txtCreditAmount = new TextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.Text = Amount.ToString();
+
+            cmbDetailAccountCode.Properties.SetSelectedString("0200");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            btnSave.Click();
+
+            // post this batch
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.IsTrue(tester.Text.StartsWith(
+                        "Are you sure you want to post batch"),
+                    "Should start with 'are you sure you want to post batch', but is '" +
+                    tester.Text + "'");
+
+                // there is a second message box after posting, telling the user about success.
+                // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                    Assert.AreEqual("Success", tester2.Title);
+                    tester2.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+
+            ToolStripButtonTester btnPost = new ToolStripButtonTester("tbbPostBatch");
+            btnPost.Click();
+        }
+
+        /// <summary>
+        /// test the import and export of gl batches
+        /// </summary>
+        [Test]
+        public void TestImportExportGLBatch()
+        {
+            // create two test batches, with some strange figures, to test problem with double values
+            // export the 2 test batches, with summarize option
+            // compare the exported text file
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                OpenFileDialogTester tester = new OpenFileDialogTester(hWnd);
+
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    TDlgSelectCSVSeparatorTester tester2 = new TDlgSelectCSVSeparatorTester(hWnd2);
+                    TextBoxTester txtDateFormat = new TextBoxTester("txtDateFormat");
+                    txtDateFormat.Properties.Text = "MM.dd.yyyy";
+                    RadioButtonTester rbtSemicolon = new RadioButtonTester("rbtSemicolon");
+                    rbtSemicolon.Properties.Checked = true;
+
+                    ButtonTester btnOK = new ButtonTester("btnOK", tester2.Properties.Name);
+                    btnOK.Click();
+                };
+
+                string p = Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../MFinance/GLForm/TestData/BatchImportFloatTest.csv");
+                Assert.IsTrue(File.Exists(p), "File does not exist: " + p);
+                tester.OpenFile(p);
+            };
+
+            ToolStripButtonTester btnImport = new ToolStripButtonTester("tbbImportBatches");
+            btnImport.Click();
+
+            ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            Assert.IsTrue(btnSave.Properties.Enabled, "Save button has not been activated");
+            btnSave.Click();
+
+            // TODO: select the new batch, get the batch number from the journal tab
+            // export that batch, summarize the transactions
+            // compare the result with the expected file
+
+            //TSgrdDataGridPagedTester grdBatches = new TSgrdDataGridPagedTester("ucoBatches.grdDetails");
         }
     }
 }

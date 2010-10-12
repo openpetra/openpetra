@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -26,7 +26,7 @@ namespace {#NAMESPACE}
 {
 
   /// auto generated: {#FORMTITLE}
-  public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
+  public partial class {#CLASSNAME}: System.Windows.Forms.UserControl, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#FILTERVAR}
@@ -40,10 +40,8 @@ namespace {#NAMESPACE}
     }
 {#ENDIFN DATASETTYPE} 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}() : base()
     {
-      Control[] FoundCheckBoxes;  
-      
       //
       // Required for Windows Form Designer support
       //
@@ -53,35 +51,32 @@ namespace {#NAMESPACE}
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       {#CATALOGI18N}
       #endregion
-      
+
       {#ASSIGNFONTATTRIBUTES}
-      
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#IFDEF DATASETTYPE}
-      FMainDS = new {#DATASETTYPE}();
-      {#ENDIF DATASETTYPE}
-      {#INITUSERCONTROLS}
-      
-      /*
-       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the 
-       * 'Deletable' flag is true are system records that must not be deleted)
-       */
-      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
-      
-      if (FoundCheckBoxes.Length > 0) 
-      {
-          FoundCheckBoxes[0].Enabled = false;
-      }
-      
-      {#LOADDATAONCONSTRUCTORRUN}      
+
     }
 
-    {#EVENTHANDLERSIMPLEMENTATION}
-
+    /// helper object for the whole screen
+    public {#UTILOBJECTCLASS} PetraUtilsObject
+    {
+        set
+        {
+            FPetraUtilsObject = value;
+        }
+    }
+	    /// dataset for the whole screen
+    public {#DATASETTYPE} MainDS
+    {
+        set
+        {
+            FMainDS = value;
+        }
+    }
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
-    /// <returns>void</returns>
-    private void LoadDataAndFinishScreenSetup()
-    {      
+    /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
+    public void InitUserControl()
+    {
+      {#INITUSERCONTROLS}
       Type DataTableType;
       
       // Load Data
@@ -92,43 +87,38 @@ namespace {#NAMESPACE}
       FMainDS.{#DETAILTABLE}.Merge(CacheDT);    
       
       {#INITMANUALCODE}
-      
+{#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+{#ENDIF ACTIONENABLING}
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.{#DETAILTABLE}.Rows.Count == 0) 
-      {
-        ShowDetails(null);
-      }
-      
-      {#INITACTIONSTATE}            
-      {#DISPLAYFILTERINFORMTITLE}
+      ShowData();
     }
     
-    private void TFrmPetra_Closed(object sender, EventArgs e)
-    {
-        // TODO? Save Window position
-
-    }
+    {#EVENTHANDLERSIMPLEMENTATION}
 
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
     {
-        {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+{#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
+        // we create the table locally, no dataset
+        {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
         {#INITNEWROWMANUAL}
         FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
-        
+{#ENDIFN CANFINDWEBCONNECTOR_CREATEDETAIL}
+{#IFDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
+        FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS_LOCAL}));
+{#ENDIF CANFINDWEBCONNECTOR_CREATEDETAIL}
+
         FPetraUtilsObject.SetChangedFlag();
 
         grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
         grdDetails.Refresh();
         SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-        
+
         return true;
     }
 
@@ -161,7 +151,7 @@ namespace {#NAMESPACE}
     }
 
     /// return the selected row
-    private {#DETAILTABLE}Row GetSelectedDetailRow()
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
@@ -173,12 +163,32 @@ namespace {#NAMESPACE}
         return null;
     }
 
-{#IFDEF SHOWDATA}
-    private void ShowData({#MASTERTABLE}Row ARow)
+    private void ShowData()
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDATA}
+        pnlDetails.Enabled = false;
+        if (FMainDS.{#DETAILTABLE} != null)
+        {
+            DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF DETAILTABLESORT}
+            myDataView.Sort = "{#DETAILTABLESORT}";
+{#ENDIF DETAILTABLESORT}
+{#IFDEF DETAILTABLEFILTER}
+            myDataView.RowFilter = {#DETAILTABLEFILTER};
+{#ENDIF DETAILTABLEFILTER}
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            if (myDataView.Count > 0)
+            {
+                grdDetails.Selection.ResetSelection(false);
+                grdDetails.Selection.SelectRow(1, true);
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            }
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
-{#ENDIF SHOWDATA}
 
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLE}Row ARow)
@@ -211,26 +221,31 @@ namespace {#NAMESPACE}
         // display the details of the currently selected row
         FPreviouslySelectedDetailRow = GetSelectedDetailRow();
         ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
     }
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+    }
+
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}
 
 #region Implement interface functions
-
     /// auto generated
     public void RunOnceOnActivation()
     {
-        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
@@ -414,6 +429,7 @@ namespace {#NAMESPACE}
     }
 
 #endregion
+{#IFDEF ACTIONENABLING}
 
 #region Action Handling
 
@@ -427,6 +443,7 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
+{#ENDIF ACTIONENABLING}
   }
 }
 

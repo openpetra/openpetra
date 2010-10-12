@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
@@ -81,16 +82,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                 if (RowType == "B")
                                 {
-                                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
-                                    NewBatch = FMainDS.ABatch[FMainDS.ABatch.Count - 1];
+                                    GLBatchTDS NewBatchDS = TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber);
+                                    Int32 NewBatchNumber = NewBatchDS.ABatch[0].BatchNumber;
+                                    FMainDS.Merge(NewBatchDS);
+
+                                    DataView FindView = new DataView(FMainDS.ABatch);
+                                    FindView.Sort = ABatchTable.GetLedgerNumberDBName() + "," + ABatchTable.GetBatchNumberDBName();
+                                    NewBatch = (ABatchRow)FindView[FindView.Find(new object[] { FLedgerNumber, NewBatchNumber })].Row;
                                     NewJournal = null;
+
+                                    FPetraUtilsObject.SetChangedFlag();
 
                                     NewBatch.BatchDescription = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
                                     Message = Catalog.GetString("Parsing the hash value of the batch");
                                     NewBatch.BatchControlTotal = Convert.ToDouble(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
-                                    Message = Catalog.GetString("Parsing the date effective of the batch");
-                                    NewBatch.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line,
-                                            dlgSeparator.SelectedSeparator), culture);
+                                    string NextString = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    Message = Catalog.GetString("Parsing the date effective of the batch: " + NextString);
+                                    NewBatch.DateEffective = Convert.ToDateTime(NextString, culture);
                                 }
                                 else if (RowType == "J")
                                 {
@@ -102,6 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                     NewJournal = FMainDS.AJournal.NewRowTyped(true);
                                     ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
+                                    NewJournal.BatchNumber = NewBatch.BatchNumber;
                                     FMainDS.AJournal.Rows.Add(NewJournal);
 
                                     NewJournal.JournalDescription = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
@@ -130,6 +139,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                     GLBatchTDSATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
                                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref NewTransaction, NewJournal);
+                                    NewTransaction.BatchNumber = NewBatch.BatchNumber;
+                                    NewTransaction.JournalNumber = NewJournal.JournalNumber;
                                     FMainDS.ATransaction.Rows.Add(NewTransaction);
 
                                     Message = Catalog.GetString("Parsing the cost centre of the transaction");

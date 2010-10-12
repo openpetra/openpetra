@@ -346,6 +346,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
                                                                ref TTypedDataTable ASubmitTable,
                                                                int ALedgerNumber,
                                                                out TVerificationResultCollection AVerificationResult);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -768,6 +772,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
         ALedgerTable GetAvailableLedgers();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
+        GLSetupTDS LoadValues(Int32 ALedgerNumber);
     }
 
 }
