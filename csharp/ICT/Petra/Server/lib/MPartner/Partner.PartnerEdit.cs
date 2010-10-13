@@ -2100,11 +2100,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw;
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
+
+                    throw e;
                 }
             }
             else
