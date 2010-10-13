@@ -124,9 +124,6 @@
             <property name="newValue" value="${OpenPetraRoot.dir}"/>
             <echo message='${script::ReplaceInFile(TestClientConfigFile, toReplace, newValue)}'/>
         </if>
-    
-        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
-        <call target="compileTemplate"/>
 
         <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}">
             <fileset basedir="${ThirdParty.dir}/Mono">
@@ -135,6 +132,9 @@
                 <include name="Mono.Security.dll" />
             </fileset>
         </copy>
+
+        <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
+        <call target="compileTemplate"/>
     </target>
     <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
     <target name="compileSingleGuiProject">
@@ -187,6 +187,14 @@
                     tofile="${ServerConfigFile}"/>
             </if>
 
+            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" overwrite="true">
+                <fileset basedir="${ThirdParty.dir}/Mono">
+                    <include name="intl.dll" />
+                    <include name="MonoPosixHelper.dll" />
+                    <include name="Mono.Security.dll" />
+                </fileset>
+            </copy>
+
             <call target="compilePetraServerAdmin"/>
 
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
@@ -195,13 +203,6 @@
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
 
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" overwrite="true">
-                <fileset basedir="${ThirdParty.dir}/Mono">
-                    <include name="intl.dll" />
-                    <include name="MonoPosixHelper.dll" />
-                    <include name="Mono.Security.dll" />
-                </fileset>
-            </copy>
             <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
             <if test="${file::exists(language.file)}">
                 <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
@@ -225,10 +226,6 @@
                 <copy file="${OpenPetraRoot.dir}/etc/Client.config.sample"
                     tofile="${ClientConfigFile}"/>
             </if>
-            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
-            <call target="compileTemplate"/>
-            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
-            <call target="compileTemplate"/>
             <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}" overwrite="true">
                 <fileset basedir="${ThirdParty.dir}/Mono">
                     <include name="intl.dll" />
@@ -236,6 +233,10 @@
                     <include name="Mono.Security.dll" />
                 </fileset>
             </copy>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
+            <call target="compileTemplate"/>
+            <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
+            <call target="compileTemplate"/>
             <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
             <if test="${file::exists(language.file)}">
                 <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
