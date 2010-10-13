@@ -127,5 +127,9 @@
       <Project>{212F7EE5-B247-4924-93D9-93646CB6C804}</Project>
       <Name>Ict.Testing.NUnitClient</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\NUnitForms\Ict.Testing.NUnitForms.csproj">
+      <Project>{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}</Project>
+      <Name>Ict.Testing.NUnitForms</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

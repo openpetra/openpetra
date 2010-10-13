@@ -29,6 +29,7 @@
     <property name="ServerConfigFile" value="${OpenPetraRoot.dir}/etc/Server.config"/>
     <property name="ServerAdminConfigFile" value="${OpenPetraRoot.dir}/etc/ServerAdmin.config"/>
     <property name="TestReportingConfigFile" value="${OpenPetraRoot.dir}/etc/TestReporting.config"/>
+    <property name="TestClientConfigFile" value="${OpenPetraRoot.dir}/etc/TestClient.config"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
     <if test="${not file::exists(IctNAntTasks.file)}">
@@ -115,6 +116,13 @@
         <if test="${not file::exists(TestReportingConfigFile)}">
             <copy file="${OpenPetraRoot.dir}/etc/TestReporting.config.sample"
                 tofile="${TestReportingConfigFile}"/>
+        </if>
+        <if test="${not file::exists(TestClientConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/TestClient.config.sample"
+                tofile="${TestClientConfigFile}"/>
+            <property name="toReplace" value="U:\openpetraorg"/>
+            <property name="newValue" value="${OpenPetraRoot.dir}"/>
+            <echo message='${script::ReplaceInFile(TestClientConfigFile, toReplace, newValue)}'/>
         </if>
     
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>

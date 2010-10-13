@@ -87,8 +87,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Tools.CodeGeneration">
-      <HintPath>../../PetraTools/_bin/Debug/Ict.Tools.CodeGeneration.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PetraTools\_bin\Debug\Ict.Tools.CodeGeneration.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>../../../ThirdParty/NUnit/nunit.framework.dll</HintPath>

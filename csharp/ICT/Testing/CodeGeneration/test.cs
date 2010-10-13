@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       <please insert your name>
+//       timop
 //
 // Copyright 2004-2010 by OM International
 //
@@ -85,8 +85,8 @@ namespace Tests.CodeGeneration
             List <string>hashes = new List <string>();
             List <string>origLines = new List <string>();
 
-            Int32[] file1Indexes = TFileDiffMerge.CalculateHashes(file1, ref hashes, ref origLines, true);
-            Int32[] file2Indexes = TFileDiffMerge.CalculateHashes(file2, ref hashes, ref origLines, false);
+            Int32[] file1Indexes = TFileDiffMerge.CalculateHashes(file1, 0, ref hashes, ref origLines, true);
+            Int32[] file2Indexes = TFileDiffMerge.CalculateHashes(file2, 0, ref hashes, ref origLines, false);
 
             // calculate matrix for the indexes of the hashes
             int[, ] matrix = TFileDiffMerge.GetLongestCommonSubsequenceMatrix(file1Indexes, file2Indexes);
