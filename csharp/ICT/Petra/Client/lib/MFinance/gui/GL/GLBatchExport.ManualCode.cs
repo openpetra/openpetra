@@ -168,6 +168,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     dateFormatString = "{0:dd}/{0:MM}/{0:yyyy}";
                 }
 
+                // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
+                if (FMainDS == null)
+                {
+                    FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
+                }
             
                 Hashtable requestParams = new Hashtable();
 
@@ -201,6 +207,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ALedgerNumber = batch.LedgerNumber;
                 }
 
+                if (batches.Count == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+
                 requestParams.Add("ALedgerNumber", ALedgerNumber);
                 requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
                 requestParams.Add("DateFormatString", dateFormatString);
@@ -223,7 +237,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     sw1.Write(exportString);
                 } while (!completed);
 
-                MessageBox.Show(Catalog.GetString("Your data was exported successfully!"));
+                MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
+                    Catalog.GetString("Success"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
                 SaveUserDefaults();
             }
@@ -252,12 +269,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void BtnCloseClick(object sender, EventArgs e)
         {
-            Dispose();
+            Close();
         }
 
         void BtnHelpClick(object sender, EventArgs e)
         {
-            Dispose();
+            // TODO
         }
     }
 }
