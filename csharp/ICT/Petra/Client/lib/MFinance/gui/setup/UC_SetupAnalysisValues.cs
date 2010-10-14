@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_SetupAnalysisValues.yaml and template controlMaintainCachableTable
+// auto generated with nant generateWinforms from UC_SetupAnalysisValues.yaml and template controlMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -36,7 +36,6 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -47,16 +46,13 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
-  /// auto generated:
+  /// auto generated user control
   public partial class TUC_SetupAnalysisValues: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
-    private TTypedDataSet FParentMainDS;
-    private class FMainDS
-    {
-        public static AFreeformAnalysisTable AFreeformAnalysis;
-    }
+    private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
+
     /// constructor
     public TUC_SetupAnalysisValues() : base()
     {
@@ -76,7 +72,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
       this.txtDetailLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAnalysisValue.Font = TAppSettingsManager.GetDefaultBoldFont();
-
     }
 
     /// helper object for the whole screen
@@ -87,28 +82,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject = value;
         }
     }
-                /// dataset for the whole screen
-    public TTypedDataSet MainDS
+
+    /// dataset for the whole screen
+    public Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS MainDS
     {
         set
         {
-            FParentMainDS = value;
+            FMainDS = value;
         }
     }
-        /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
-    /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
+
+    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
       FPetraUtilsObject.SetStatusBarText(txtDetailLedgerNumber, Catalog.GetString("Ledger Number "));
       FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisValue, Catalog.GetString("Value of analysis code"));
       FPetraUtilsObject.SetStatusBarText(chkDetailActive, Catalog.GetString("Select if analysis attribute value can be used"));
-      Type DataTableType;
-
-      // Load Data
-      FMainDS.AFreeformAnalysis = new AFreeformAnalysisTable();
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("FreeformAnalysisList", String.Empty, null, out DataTableType);
-      FMainDS.AFreeformAnalysis.Merge(CacheDT);
-
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Value", FMainDS.AFreeformAnalysis.ColumnAnalysisValue);
       grdDetails.AddCheckBoxColumn("Active", FMainDS.AFreeformAnalysis.ColumnActive);
@@ -287,160 +276,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
-
-    /// auto generated
-    public void FileSave(object sender, EventArgs e)
-    {
-        SaveChanges();
-    }
-
-    /// <summary>
-    /// save the changes on the screen
-    /// </summary>
-    /// <returns></returns>
-    public bool SaveChanges()
-    {
-        FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
-
-//TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
-
-        // TODO: verification
-
-        if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
-        {
-            foreach (DataRow InspectDR in FMainDS.AFreeformAnalysis.Rows)
-            {
-                InspectDR.EndEdit();
-            }
-
-            if (!FPetraUtilsObject.HasChanges)
-            {
-                return true;
-            }
-            else
-            {
-                FPetraUtilsObject.WriteToStatusBar("Saving data...");
-                this.Cursor = Cursors.WaitCursor;
-
-                TSubmitChangesResult SubmissionResult;
-                TVerificationResultCollection VerificationResult;
-
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.AFreeformAnalysis.GetChangesTyped();
-
-                if (SubmitDT == null)
-                {
-                    // nothing to be saved, so it is ok to close the screen etc
-                    return true;
-                }
-
-                // Submit changes to the PETRAServer
-                try
-                {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("FreeformAnalysisList", ref SubmitDT, out VerificationResult);
-                }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-                    MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                        "No Server response",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-                    bool ReturnValue = false;
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-/* TODO ESecurityDBTableAccessDeniedException
-*                  catch (ESecurityDBTableAccessDeniedException Exp)
-*                  {
-*                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-*                      this.Cursor = Cursors.Default;
-*                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
-*                      bool ReturnValue = false;
-*                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-*                      return ReturnValue;
-*                  }
-*/
-                catch (EDBConcurrencyException)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-
-                    // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                    bool ReturnValue = false;
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return ReturnValue;
-                }
-                catch (Exception exp)
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                    this.Cursor = Cursors.Default;
-                    TLogging.Log(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
-                        TLoggingType.ToLogfile);
-                    MessageBox.Show(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
-                        "For details see the log file: " + TLogging.GetLogFileName(),
-                        "Server connection error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return false;
-                }
-
-                switch (SubmissionResult)
-                {
-                    case TSubmitChangesResult.scrOK:
-
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AFreeformAnalysis.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.AFreeformAnalysis.Merge(SubmitDT, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.AFreeformAnalysis.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
-                        this.Cursor = Cursors.Default;
-
-                        // TODO EnableSave(false);
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return true;
-
-                    case TSubmitChangesResult.scrError:
-
-                        // TODO scrError
-                        this.Cursor = Cursors.Default;
-                        break;
-
-                    case TSubmitChangesResult.scrNothingToBeSaved:
-
-                        // TODO scrNothingToBeSaved
-                        this.Cursor = Cursors.Default;
-                        return true;
-
-                    case TSubmitChangesResult.scrInfoNeeded:
-
-                        // TODO scrInfoNeeded
-                        this.Cursor = Cursors.Default;
-                        break;
-                }
-            }
-        }
-
-        return false;
-    }
-
 #endregion
 
 #region Action Handling

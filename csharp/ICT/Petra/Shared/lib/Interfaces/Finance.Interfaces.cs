@@ -773,7 +773,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
         ALedgerTable GetAvailableLedgers();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
-        GLSetupTDS LoadValues(Int32 ALedgerNumber);
+        AFreeformAnalysisTable LoadAFreeformAnalysis(Int32 ALedgerNumber);
     }
 
 }

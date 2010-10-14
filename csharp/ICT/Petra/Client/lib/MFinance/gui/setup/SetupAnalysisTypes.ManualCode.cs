@@ -75,8 +75,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(AAnalysisTypeRow ARow)
         {
-            // TODO
+        	ucoValues.GetDataFromControls();
         }
+        private void GetDataFromControlsManual()
+		{
+			// TODO
+		}
         private void ShowDetailsManual(AAnalysisTypeRow ARow)
         {
         	ucoValues.TypeCode=ARow.AnalysisTypeCode;

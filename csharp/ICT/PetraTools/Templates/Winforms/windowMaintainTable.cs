@@ -28,11 +28,16 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-
+{#IFDEF DATASETTYPE}
+    private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
     private class FMainDS
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
+{#ENDIFN DATASETTYPE} 
+
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -52,8 +57,14 @@ namespace {#NAMESPACE}
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#INITUSERCONTROLS}
+{#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
+{#ENDIFN DATASETTYPE}
+      {#INITUSERCONTROLS}
+
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
@@ -201,7 +212,20 @@ namespace {#NAMESPACE}
         }
     }
 {#ENDIF SAVEDETAILS}
+{#IFDEF MASTERTABLE}
 
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    {
+        {#SAVEDATA}
+    }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+
+    private void GetDataFromControls()
+    {
+        {#SAVEDATA}
+    }
+{#ENDIFN MASTERTABLE}
 #region Implement interface functions
 
     /// auto generated
@@ -274,19 +298,38 @@ namespace {#NAMESPACE}
 
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
-
+{#IFDEF DATASETTYPE}
+                {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
+                
+                if (SubmitDS == null)
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
                 Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.{#DETAILTABLE}.GetChangesTyped();
-
+                
                 if (SubmitDT == null)
+{#ENDIFN DATASETTYPE}
+               
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                     // Thereis nothing to be saved 
+                     // Update UI
+                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+                    
                     return true;
                 }
                 
                 // Submit changes to the PETRAServer
                 try
                 {
+{#IFDEF DATASETTYPE}                
+                    SubmissionResult = {#WEBCONNECTORTDS}.Save{#SHORTDATASETTYPE}(ref SubmitDS, out VerificationResult);
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
                     SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
+{#ENDIFN DATASETTYPE}
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -344,7 +387,17 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
+{#IFDEF DATASETTYPE}
+                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+                        FMainDS.AcceptChanges();
 
+                        // Merge back with data from the Server (eg. for getting Sequence values)
+                        FMainDS.Merge(SubmitDS, false);
+
+                        // need to accept the new modification ID
+                        FMainDS.AcceptChanges();
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}                       
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                         FMainDS.{#DETAILTABLE}.AcceptChanges();
 
@@ -353,7 +406,7 @@ namespace {#NAMESPACE}
 
                         // need to accept the new modification ID
                         FMainDS.{#DETAILTABLE}.AcceptChanges();
-
+{#ENDIFN DATASETTYPE}
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
                         this.Cursor = Cursors.Default;

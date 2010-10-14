@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SetupAnalysisTypes.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from SetupAnalysisTypes.yaml and template windowMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -36,7 +36,6 @@ using System.Resources;
 using System.Collections.Specialized;
 using Mono.Unix;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -51,8 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
   public partial class TFrmSetupAnalysisTypes: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-
     private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
+
     /// constructor
     public TFrmSetupAnalysisTypes(IntPtr AParentFormHandle) : base()
     {
@@ -96,12 +95,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.txtDetailAnalysisTypeDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
-            FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisTypeDescription, Catalog.GetString("Enter a description"));
-            FPetraUtilsObject.SetStatusBarText(chkDetailSystemAnalysisType, Catalog.GetString("To indicate whether the user or system has set up the analysis type."));
-            ucoValues.PetraUtilsObject = FPetraUtilsObject;
-            ucoValues.MainDS = FMainDS;
-            ucoValues.InitUserControl();
+      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
+      FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisTypeDescription, Catalog.GetString("Enter a description"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailSystemAnalysisType, Catalog.GetString("To indicate whether the user or system has set up the analysis type."));
+      ucoValues.PetraUtilsObject = FPetraUtilsObject;
+      ucoValues.MainDS = FMainDS;
+      ucoValues.InitUserControl();
+
+      Ict.Common.Data.TTypedDataTable TypedTable;
+      TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+      FMainDS.AAnalysisType.Merge(TypedTable);
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Analysis Type Code", FMainDS.AAnalysisType.ColumnAnalysisTypeCode);
+      grdDetails.AddTextColumn("Description", FMainDS.AAnalysisType.ColumnAnalysisTypeDescription);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+      DataView myDataView = FMainDS.AAnalysisType.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.AAnalysisType.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
+      FPetraUtilsObject.InitActionState();
 
       /*
        * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
@@ -113,8 +132,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       {
           FoundCheckBoxes[0].Enabled = false;
       }
-
-      LoadDataAndFinishScreenSetup();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -135,35 +152,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
-    }
-
-    /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
-    /// <returns>void</returns>
-    private void LoadDataAndFinishScreenSetup()
-    {
-      Type DataTableType;
-
-      // Load Data
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("AnalysisTypeList", String.Empty, null, out DataTableType);
-      FMainDS.AAnalysisType.Merge(CacheDT);
-
-      grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Analysis Type Code", FMainDS.AAnalysisType.ColumnAnalysisTypeCode);
-      grdDetails.AddTextColumn("Description", FMainDS.AAnalysisType.ColumnAnalysisTypeDescription);
-
-      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-
-      DataView myDataView = FMainDS.AAnalysisType.DefaultView;
-      myDataView.AllowNew = false;
-      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.AAnalysisType.Rows.Count == 0)
-      {
-        ShowDetails(null);
-      }
-
-      FPetraUtilsObject.InitActionState();
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -282,6 +270,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
     }
 
+    private void GetDataFromControls()
+    {
+        GetDataFromControlsManual();
+    }
 #region Implement interface functions
 
     /// auto generated
@@ -351,19 +343,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
+                Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.AAnalysisType.GetChangesTyped();
+                if (SubmitDS == null)
 
-                if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                     // Thereis nothing to be saved
+                     // Update UI
+                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("AnalysisTypeList", ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -421,16 +420,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AAnalysisType.AcceptChanges();
+                        FMainDS.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.AAnalysisType.Merge(SubmitDT, false);
+                        FMainDS.Merge(SubmitDS, false);
 
                         // need to accept the new modification ID
-                        FMainDS.AAnalysisType.AcceptChanges();
-
+                        FMainDS.AcceptChanges();
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
                         this.Cursor = Cursors.Default;

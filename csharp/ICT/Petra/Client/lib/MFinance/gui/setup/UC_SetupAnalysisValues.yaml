@@ -2,11 +2,11 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AFreeformAnalysis
-    CacheableTable: FreeformAnalysisList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
-    Template: controlMaintainCachableTable
+    Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      

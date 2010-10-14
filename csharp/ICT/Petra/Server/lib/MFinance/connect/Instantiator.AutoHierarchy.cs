@@ -3593,10 +3593,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public GLSetupTDS LoadValues(Int32 ALedgerNumber)
+        public AFreeformAnalysisTable LoadAFreeformAnalysis(Int32 ALedgerNumber)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "LoadValues", ";INT;");
-            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadValues(ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "LoadAFreeformAnalysis", ";INT;");
+            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadAFreeformAnalysis(ALedgerNumber);
         }
     }
 }
