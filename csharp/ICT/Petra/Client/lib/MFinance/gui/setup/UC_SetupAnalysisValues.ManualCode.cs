@@ -23,9 +23,11 @@
 //
 
 using System;
+using System.Data;
+using System.Windows.Forms;
+
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
 using Mono.Unix;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -43,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                txtDetailLedgerNumber.Text = ""+value;
+                txtDetailLedgerNumber.Text = "" + value;
             }
         }
         private String FTypeCode;
@@ -52,20 +54,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public String TypeCode
         {
-        	set
-        	{ 
-        		FTypeCode = value;
-        		//save the position of the actual row
+            set
+            {
+                FTypeCode = value;
+                //save the position of the actual row
                 int rowIndex = CurrentRowIndex();
-        		FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-        		    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
                 SelectByIndex(rowIndex);
-        	}
+            }
         }
         private void NewRow(System.Object sender, EventArgs e)
         {
+            GetDataFromControls();
+            TypeCode = ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
             this.CreateNewAFreeformAnalysis();
+            pnlDetails.Enabled = true;
         }
 
         private void NewRowManual(ref AFreeformAnalysisRow ARow)
@@ -75,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName }) != null)
             {
-                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] {FLedgerNumber, FTypeCode,  newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -90,10 +95,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
+                FPreviouslySelectedDetailRow.AnalysisTypeCode,
+                FPreviouslySelectedDetailRow.AnalysisValue);
+
+            if (num > 0)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "This value is already referenced and cannot be deleted."));
+                return;
+            }
+
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                || (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
+                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+            }
         }
-		
-			
+
         private void GetDetailDataFromControlsManual(AFreeformAnalysisRow ARow)
         {
             // TODO
@@ -105,12 +135,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ALedgerNumber"></param>
         public void LoadValues(Int32 ALedgerNumber)
         {
-        	//GLSetupTDS MergeDS=TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber);
-        	AFreeformAnalysisTable AT=TRemote.MFinance.Setup.WebConnectors.LoadAFreeformAnalysis(FLedgerNumber);
-        	AFreeformAnalysisTable myAT=FMainDS.AFreeformAnalysis;
-        	myAT.Merge(AT);
+            //GLSetupTDS MergeDS=TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber);
+            AFreeformAnalysisTable AT = TRemote.MFinance.Setup.WebConnectors.LoadAFreeformAnalysis(FLedgerNumber);
+            AFreeformAnalysisTable myAT = FMainDS.AFreeformAnalysis;
+
+            myAT.Merge(AT);
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
         }
+
         private int CurrentRowIndex()
         {
             int rowIndex = -1;
@@ -131,9 +163,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 rowIndex = grdDetails.Rows.Count - 1;
             }
+
             if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            	rowIndex=1;
-            	
+            {
+                rowIndex = 1;
+            }
+
             if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);

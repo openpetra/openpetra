@@ -774,6 +774,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
         ALedgerTable GetAvailableLedgers();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
         AFreeformAnalysisTable LoadAFreeformAnalysis(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
+        int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber,
+                                         String ATypeCode,
+                                         String AAnalysisValue);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
+        int CheckDeleteAAnalysisType(String ATypeCode);
     }
 
 }

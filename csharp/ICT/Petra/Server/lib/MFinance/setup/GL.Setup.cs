@@ -962,8 +962,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-			AFreeformAnalysisTable myAT= MainDS.AFreeformAnalysis;
+            AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
             return myAT;
+        }
+
+        [RequireModulePermission("FINANCE-1")]
+        public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
+        {
+            return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
+        }
+
+        [RequireModulePermission("FINANCE-1")]
+        public static int CheckDeleteAAnalysisType(String ATypeCode)
+        {
+            return AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, null);
         }
     }
 }
