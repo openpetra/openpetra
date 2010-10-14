@@ -1,8 +1,8 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       timop
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,10 +21,11 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
-using Mono.Unix;
-using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Mono.Unix;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -41,26 +42,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
+                txtDetailLedgerNumber.Text = ""+value;
             }
         }
-
+        private String FTypeCode;
         /// <summary>
-        /// TODO Comment
+        /// these values are for this TypeCode
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        public void LoadValues(Int32 ALedgerNumber)
+        public String TypeCode
         {
-            // TODO
+        	set
+        	{ 
+        		FTypeCode = value;
+        	}
         }
-
         private void NewRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            this.CreateNewAFreeformAnalysis();
         }
 
         private void NewRowManual(ref AFreeformAnalysisRow ARow)
         {
-            // TODO
+            string newName = Catalog.GetString("NEWVALUE");
+            Int32 countNewDetail = 0;
+
+            if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FTypeCode, newName, FLedgerNumber }) != null)
+            {
+                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] {FTypeCode,  newName + countNewDetail.ToString(), FLedgerNumber }) != null)
+                {
+                    countNewDetail++;
+                }
+
+                newName += countNewDetail.ToString();
+            }
+
+            ARow.AnalysisValue = newName;
+            ARow.LedgerNumber = FLedgerNumber;
+            ARow.AnalysisTypeCode = FTypeCode;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -71,6 +89,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDetailDataFromControlsManual(AFreeformAnalysisRow ARow)
         {
             // TODO
+        }
+
+        /// <summary>
+        /// load the values into the grid
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public void LoadValues(Int32 ALedgerNumber)
+        {
+            //FMainDS.AFreeform = TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber);
         }
     }
 }

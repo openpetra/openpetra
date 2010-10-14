@@ -77,5 +77,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // TODO
         }
+        private void ShowDetailsManual(AAnalysisTypeRow ARow)
+        {
+        	ucoValues.TypeCode=ARow.AnalysisTypeCode;
+        }
     }
 }

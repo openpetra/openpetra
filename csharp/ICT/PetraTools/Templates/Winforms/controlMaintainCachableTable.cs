@@ -34,7 +34,8 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
-    private class FMainDS
+    private TTypedDataSet FParentMainDS;
+    private class FMainDS 
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
@@ -64,6 +65,7 @@ namespace {#NAMESPACE}
             FPetraUtilsObject = value;
         }
     }
+    {#IFDEF DATASETTYPE}
 	    /// dataset for the whole screen
     public {#DATASETTYPE} MainDS
     {
@@ -72,6 +74,17 @@ namespace {#NAMESPACE}
             FMainDS = value;
         }
     }
+    {#ENDIF DATASETTYPE}
+    {#IFNDEF DATASETTYPE}
+	    /// dataset for the whole screen
+    public TTypedDataSet MainDS
+    {
+        set
+        {
+            FParentMainDS = value;
+        }
+    }
+    {#ENDIFN DATASETTYPE}
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
     /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
@@ -166,7 +179,9 @@ namespace {#NAMESPACE}
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+{#IFDEF SHOWDATA}        
         {#SHOWDATA}
+{#ENDIF SHOWDATA}        
         pnlDetails.Enabled = false;
         if (FMainDS.{#DETAILTABLE} != null)
         {

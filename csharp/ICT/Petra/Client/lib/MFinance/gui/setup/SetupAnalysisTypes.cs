@@ -236,6 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
+            ShowDetailsManual(ARow);
         }
         else
         {
@@ -251,6 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
             }
+            ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();

@@ -52,7 +52,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
-    private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
+    private TTypedDataSet FParentMainDS;
+    private class FMainDS
+    {
+        public static AFreeformAnalysisTable AFreeformAnalysis;
+    }
     /// constructor
     public TUC_SetupAnalysisValues() : base()
     {
@@ -66,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailLedgerNumber.Text = Catalog.GetString("Values for this Type and Ledger Number:");
       this.btnNew.Text = Catalog.GetString("&New");
       this.btnDelete.Text = Catalog.GetString("&Delete");
-      this.lblDetailAnalysisValue.Text = Catalog.GetString("Description:");
+      this.lblDetailAnalysisValue.Text = Catalog.GetString("Value:");
       this.lblDetailActive.Text = Catalog.GetString("Active:");
       #endregion
 
@@ -83,15 +87,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject = value;
         }
     }
-        /// dataset for the whole screen
-    public Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS MainDS
+                /// dataset for the whole screen
+    public TTypedDataSet MainDS
     {
         set
         {
-            FMainDS = value;
+            FParentMainDS = value;
         }
     }
-    /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+        /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
     /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
@@ -101,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       Type DataTableType;
 
       // Load Data
+      FMainDS.AFreeformAnalysis = new AFreeformAnalysisTable();
       DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("FreeformAnalysisList", String.Empty, null, out DataTableType);
       FMainDS.AFreeformAnalysis.Merge(CacheDT);
 

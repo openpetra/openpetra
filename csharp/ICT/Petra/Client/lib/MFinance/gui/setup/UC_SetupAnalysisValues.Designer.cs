@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailAnalysisValue.Location = new System.Drawing.Point(2,2);
             this.lblDetailAnalysisValue.Name = "lblDetailAnalysisValue";
             this.lblDetailAnalysisValue.AutoSize = true;
-            this.lblDetailAnalysisValue.Text = "Description:";
+            this.lblDetailAnalysisValue.Text = "Value:";
             this.lblDetailAnalysisValue.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAnalysisValue.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailAnalysisValue.TextAlign = System.Drawing.ContentAlignment.TopRight;
