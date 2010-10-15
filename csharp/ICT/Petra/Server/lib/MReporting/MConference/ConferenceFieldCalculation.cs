@@ -1557,6 +1557,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             foreach (PPartnerTypeRow Row in PartnerTypeTable.Rows)
             {
+                // TODO ORGANIZATION SPECIFIC TypeCode
                 if (Row.TypeCode.StartsWith("OMER"))
                 {
                     FConferenceFlags = FConferenceFlags + "O";

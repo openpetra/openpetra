@@ -116,6 +116,7 @@
 		
 			<calculation id="List Types" returns="PartnerType" returnsFormat="list">
 				<query>
+				<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 					<queryDetail><value>
 						SELECT DISTINCT
 							p_type_code_c AS PartnerType

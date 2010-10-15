@@ -90,6 +90,7 @@
 				<query>
 					<queryDetail condition="eq({pm_prev_work_here_l}, true)">
 						<value text="NO-SQL"/>
+						<!-- TODO: ORGANIZATION SPECIFIC  -->
 						<value function="assign(Organisation, OM)"/>
 					</queryDetail>
 					<queryDetail condition="eq({pm_prev_work_here_l}, false)">
@@ -98,6 +99,7 @@
 					</queryDetail>
 					<queryDetail>
 						<value text="NO-SQL"/>
+						<!-- TODO: ORGANIZATION SPECIFIC  GetType() -->
 						<value function="assign(TypeCode, GetType({PartnerKey}, OMER;EX-OMER, BEGIN))"/>
 					</queryDetail>
 				</query>
