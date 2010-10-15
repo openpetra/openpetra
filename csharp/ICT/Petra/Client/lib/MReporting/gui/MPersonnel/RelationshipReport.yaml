@@ -140,7 +140,7 @@ RootNode:
             Name: Partner 1 Contact Partner Key
             Parameter: 3.0
         Para21:
-            Name: Partner 1 OM Field
+            Name: Partner 1 Worker Field
             Parameter: 3.0
             
         Para22:
@@ -208,5 +208,5 @@ RootNode:
             Name: Partner 2 Contact Partner Key
             Parameter: 3.0
         Para43:
-            Name: Partner 2 OM Field
+            Name: Partner 2 Worker Field
             Parameter: 3.0

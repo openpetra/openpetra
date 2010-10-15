@@ -109,6 +109,7 @@
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value function="assign(FieldName, GetFieldOfPartner({PartnerKey}))"/>
+						<!-- TODO: ORGANIZATION SPECIFIC  GetType() -->
 						<value function="assign(PartnerType, GetType({PartnerKey}, OMER;EX-OMER;ASSOC, BEGIN))"/>
 						<value function="GetOccupation({Occupation})"/>
 					</queryDetail>

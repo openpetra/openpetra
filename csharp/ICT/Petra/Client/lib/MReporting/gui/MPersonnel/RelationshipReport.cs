@@ -234,7 +234,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 1 Address Mobile", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 1 Contact Person", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 1 Contact Partner Key", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 1 OM Field", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 1 Worker Field", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Relationship", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Partner Class", 1.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Partner Key", 2.0));
@@ -256,7 +256,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Address Mobile", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Contact Person", 3.0));
       FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Contact Partner Key", 3.0));
-      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 OM Field", 3.0));
+      FPetraUtilsObject.AddAvailableFunction(new TPartnerColumnFunction("Partner 2 Worker Field", 3.0));
 
       ucoPartnerSelection.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
       ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
