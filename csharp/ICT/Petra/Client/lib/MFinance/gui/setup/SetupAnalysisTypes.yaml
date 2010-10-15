@@ -6,7 +6,7 @@ RootNode:
     DetailTable: AAnalysisType
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowEdit
     WindowWidth: 660
     WindowHeight: 700
     Actions:

@@ -372,9 +372,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 if (SubmitDT == null)
                 {
-                     // Thereis nothing to be saved
-                     // Update UI
-                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    // There is nothing to be saved.
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
                     this.Cursor = Cursors.Default;
 
                     // We don't have unsaved changes anymore

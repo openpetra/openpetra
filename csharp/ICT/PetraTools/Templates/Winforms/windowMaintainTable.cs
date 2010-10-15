@@ -279,9 +279,9 @@ namespace {#NAMESPACE}
 
                 if (SubmitDT == null)
                 {
-                    // There is nothing to be saved 
+                    // There is nothing to be saved.
                     // Update UI
-                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
                     this.Cursor = Cursors.Default;
 
                     // We don't have unsaved changes anymore

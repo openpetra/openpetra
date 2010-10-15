@@ -335,7 +335,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                    // There is nothing to be saved.
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 
