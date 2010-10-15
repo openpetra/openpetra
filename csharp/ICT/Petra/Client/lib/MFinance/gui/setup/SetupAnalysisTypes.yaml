@@ -4,10 +4,9 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAnalysisType
-    CacheableTable: AnalysisTypeList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
-    Template: windowMaintainCacheableTable
+    Template: windowMaintainTable
     WindowWidth: 660
     WindowHeight: 700
     Actions:

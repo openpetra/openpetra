@@ -30,7 +30,9 @@ using NUnit.Extensions.Forms;
 using System.IO;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Testing.NUnitPetraClient;
+using Ict.Testing.NUnitForms;
 using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Tests.MFinance.GLBatches
@@ -226,6 +228,11 @@ namespace Tests.MFinance.GLBatches
             // export the 2 test batches, with summarize option
             // compare the exported text file
 
+            string TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
+
+            TestFile = Path.GetFullPath(TestFile);
+            Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
+
             TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
 
             frmBatch.LedgerNumber = FLedgerNumber;
@@ -247,9 +254,7 @@ namespace Tests.MFinance.GLBatches
                     btnOK.Click();
                 };
 
-                string p = Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../MFinance/GLForm/TestData/BatchImportFloatTest.csv");
-                Assert.IsTrue(File.Exists(p), "File does not exist: " + p);
-                tester.OpenFile(p);
+                tester.OpenFile(TestFile);
             };
 
             ToolStripButtonTester btnImport = new ToolStripButtonTester("tbbImportBatches");
@@ -259,11 +264,81 @@ namespace Tests.MFinance.GLBatches
             Assert.IsTrue(btnSave.Properties.Enabled, "Save button has not been activated");
             btnSave.Click();
 
-            // TODO: select the new batch, get the batch number from the journal tab
+            // go to Journal tab
+            TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+            tabGLBatch.SelectTab(1);
+            TextBoxTester txtBatchNumber = new TextBoxTester("ucoJournals.txtBatchNumber");
+
+            // get the batch number from the journal tab
+            int ImportedBatchNumber = Convert.ToInt32(txtBatchNumber.Properties.Text);
+
+            TFrmGLBatchExport frmBatchExport = new TFrmGLBatchExport(IntPtr.Zero);
+
+            frmBatch.Close();
+
             // export that batch, summarize the transactions
             // compare the result with the expected file
+            frmBatchExport.LedgerNumber = FLedgerNumber;
+            frmBatchExport.Show();
 
-            //TSgrdDataGridPagedTester grdBatches = new TSgrdDataGridPagedTester("ucoBatches.grdDetails");
+            CheckBoxTester chkIncludeUnposted = new CheckBoxTester("chkIncludeUnposted");
+            chkIncludeUnposted.Properties.Checked = true;
+
+            RadioButtonTester rbtSummary = new RadioButtonTester("rbtSummary");
+            rbtSummary.Properties.Checked = false;
+
+            RadioButtonTester rbtBatchNumberSelection = new RadioButtonTester("rbtBatchNumberSelection");
+            rbtBatchNumberSelection.Properties.Checked = true;
+
+            TextBoxTester txtFilename = new TextBoxTester("txtFilename");
+
+            ToolStripButtonTester tbbExportBatches = new ToolStripButtonTester("tbbExportBatches");
+
+            TTxtNumericTextBoxTester txtBatchNumberStart = new TTxtNumericTextBoxTester("txtBatchNumberStart");
+            txtBatchNumberStart.Properties.NumberValueInt = ImportedBatchNumber;
+            TTxtNumericTextBoxTester txtBatchNumberEnd = new TTxtNumericTextBoxTester("txtBatchNumberEnd");
+            txtBatchNumberEnd.Properties.NumberValueInt = ImportedBatchNumber;
+
+            // Test simple export of batches, no summary
+            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTest.csv";
+            TestFile = Path.GetFullPath(TestFile);
+            Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
+            txtFilename.Properties.Text = TestFile + ".new";
+
+            ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+            {
+                MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                // Assert.AreEqual("Success", tester.Title);
+                tester2.SendCommand(MessageBoxTester.Command.OK);
+            };
+
+            tbbExportBatches.Click();
+
+            Assert.AreEqual(true, TTextFile.SameContent(TestFile,
+                    TestFile + ".new"), "the files should be the same: " + TestFile);
+            System.IO.File.Delete(TestFile + ".new");
+
+            // Test export of batches, summarizing the transactions
+            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTestSummary.csv";
+            TestFile = Path.GetFullPath(TestFile);
+            Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
+            txtFilename.Properties.Text = TestFile + ".new";
+            rbtSummary.Properties.Checked = true;
+
+            ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+            {
+                MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                // Assert.AreEqual("Success", tester.Title);
+                tester2.SendCommand(MessageBoxTester.Command.OK);
+            };
+
+            tbbExportBatches.Click();
+
+            Assert.AreEqual(true, TTextFile.SameContent(TestFile,
+                    TestFile + ".new"), "the files should be the same: " + TestFile);
+            System.IO.File.Delete(TestFile + ".new");
+
+            frmBatchExport.Close();
         }
     }
 }

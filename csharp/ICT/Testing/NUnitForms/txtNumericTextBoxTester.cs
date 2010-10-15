@@ -20,7 +20,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
-using Ict.Petra.Client.CommonControls;
+using Ict.Common.Controls;
 using System.Windows.Forms;
 using NUnit.Extensions.Forms;
 
@@ -29,41 +29,41 @@ namespace Ict.Testing.NUnitForms
     /// <summary>
     /// test for our own combobox
     /// </summary>
-    public class TCmbAutoPopulatedTester : ControlTester <TCmbAutoPopulated, TCmbAutoPopulatedTester>
+    public class TTxtNumericTextBoxTester : ControlTester <TTxtNumericTextBox, TTxtNumericTextBoxTester>
     {
         /// constructor
-        public TCmbAutoPopulatedTester()
+        public TTxtNumericTextBoxTester()
         {
         }
 
         /// constructor
-        public TCmbAutoPopulatedTester(string name, Form form) : base(name, form)
+        public TTxtNumericTextBoxTester(string name, Form form) : base(name, form)
         {
         }
 
         /// constructor
-        public TCmbAutoPopulatedTester(string name, string formName) : base(name, formName)
+        public TTxtNumericTextBoxTester(string name, string formName) : base(name, formName)
         {
         }
 
         /// constructor
-        public TCmbAutoPopulatedTester(string name) : base(name)
+        public TTxtNumericTextBoxTester(string name) : base(name)
         {
         }
 
         /// constructor
-        public TCmbAutoPopulatedTester(TCmbAutoPopulatedTester tester, int index) : base(tester, index)
+        public TTxtNumericTextBoxTester(TTxtNumericTextBoxTester tester, int index) : base(tester, index)
         {
         }
 
         /// <summary>
         /// access the properties of the auto populated combobox
         /// </summary>
-        public new TCmbAutoPopulated Properties
+        public new TTxtNumericTextBox Properties
         {
             get
             {
-                return (TCmbAutoPopulated) base.TheObject;
+                return (TTxtNumericTextBox) base.TheObject;
             }
         }
     }

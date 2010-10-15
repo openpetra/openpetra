@@ -70,6 +70,9 @@
       <HintPath>../../Common/_bin/Debug/Ict.Common.Verification.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Client.CommonControls.Gui">
+      <HintPath>../../Petra/Client/_bin/Debug/Ict.Petra.Client.CommonControls.Gui.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Client.MReporting.Logic">
       <HintPath>../../Petra/Client/_bin/Debug/Ict.Petra.Client.MReporting.Logic.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -93,6 +96,12 @@
     <Reference Include="nunit.framework">
       <HintPath>../../../ThirdParty/NUnit/nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="NUnitForms">
+      <HintPath>../../../ThirdParty/NUnit/NUnitForms.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>../../../ThirdParty/DevAge/SourceGrid.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -105,6 +114,7 @@
     <Compile Include="cmbAutoPopulatedTester.cs" />
     <Compile Include="dlgSelectCSVSeparatorTester.cs" />
     <Compile Include="SgrdDataGridPagedTester.cs" />
+    <Compile Include="txtNumericTextBoxTester.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">

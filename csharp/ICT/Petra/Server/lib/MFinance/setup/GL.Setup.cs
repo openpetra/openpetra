@@ -948,10 +948,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Load the values from the table AFREEFORMANALSYSIS
+        /// Load  the table AFREEFORMANALSYSIS
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GLSetupTDS LoadValues(Int32 ALedgerNumber)
+        public static AFreeformAnalysisTable LoadAFreeformAnalysis(Int32 ALedgerNumber)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
@@ -962,8 +962,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
+            AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
+            return myAT;
+        }
 
-            return MainDS;
+        [RequireModulePermission("FINANCE-1")]
+        public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
+        {
+            return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
+        }
+
+        [RequireModulePermission("FINANCE-1")]
+        public static int CheckDeleteAAnalysisType(String ATypeCode)
+        {
+            return AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, null);
         }
     }
 }

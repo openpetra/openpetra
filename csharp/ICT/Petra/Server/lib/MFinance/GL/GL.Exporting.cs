@@ -29,6 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
+using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -145,57 +146,64 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                         }
 
-                        //foreach (ATransactionRow transaction in journalDS.ATransaction.Rows)
-                        foreach (ATransactionRow transaction in FMainDS.ATransaction.Rows)
+                        FMainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetTransactionNumberDBName();
+                        FMainDS.ATransaction.DefaultView.RowFilter =
+                            String.Format("{0}={1} and {2}={3} and {4}={5}",
+                                ATransactionTable.GetLedgerNumberDBName(),
+                                journal.LedgerNumber,
+                                ATransactionTable.GetBatchNumberDBName(),
+                                journal.BatchNumber,
+                                ATransactionTable.GetJournalNumberDBName(),
+                                journal.JournalNumber);
+
+                        foreach (DataRowView dv in FMainDS.ATransaction.DefaultView)
                         {
-                            if (transaction.JournalNumber.Equals(journal.JournalNumber) && transaction.BatchNumber.Equals(journal.BatchNumber)
-                                && transaction.LedgerNumber.Equals(journal.LedgerNumber))
+                            ATransactionRow transaction = (ATransactionRow)dv.Row;
+
+                            if (FSummary)
                             {
-                                if (FSummary)
+                                ATransactionSummaryRow transactionSummary;
+                                counter++;
+                                String DictionaryKey = transaction.CostCentreCode + ";" + transaction.AccountCode;
+                                int signum = transaction.DebitCreditIndicator ? 1 : -1;
+                                bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null && FDontSummarizeAccount.Length > 0
+                                                             && transaction.AccountCode.Equals(FDontSummarizeAccount);
+
+                                if (bDontSummarizeAccount)
                                 {
-                                    ATransactionSummaryRow transactionSummary;
-                                    counter++;
-                                    String DictionaryKey = transaction.CostCentreCode + ";" + transaction.AccountCode;
-                                    int signum = transaction.DebitCreditIndicator ? 1 : -1;
-                                    bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null && FDontSummarizeAccount.Length > 0
-                                                                 && transaction.AccountCode.Equals(FDontSummarizeAccount);
+                                    DictionaryKey += ";" + counter.ToString("X");
+                                }
 
-                                    if (bDontSummarizeAccount)
-                                    {
-                                        DictionaryKey += ";" + counter.ToString("X");
-                                    }
-
-                                    if (journalSummary.TransactionSummaries.TryGetValue(DictionaryKey, out transactionSummary))
-                                    {
-                                        transactionSummary.TransactionAmount += signum * transaction.TransactionAmount;
-                                        transactionSummary.AmountInBaseCurrency += signum * transaction.AmountInBaseCurrency;
-                                    }
-                                    else
-                                    {
-                                        transactionSummary = new ATransactionSummaryRow();
-                                        transactionSummary.CostCentreCode = transaction.CostCentreCode;
-                                        transactionSummary.AccountCode = transaction.AccountCode;
-                                        transactionSummary.TransactionAmount = signum * transaction.TransactionAmount;
-                                        transactionSummary.AmountInBaseCurrency = signum * transaction.AmountInBaseCurrency;
-
-                                        if (bDontSummarizeAccount)
-                                        {
-                                            transactionSummary.Narrative = transaction.Narrative;
-                                            transactionSummary.Reference = transaction.Reference;
-                                        }
-                                        else
-                                        {
-                                            transactionSummary.Narrative = summarizedData;
-                                            transactionSummary.Reference = "";
-                                        }
-
-                                        journalSummary.TransactionSummaries.Add(DictionaryKey, transactionSummary);
-                                    }
+                                if (journalSummary.TransactionSummaries.TryGetValue(DictionaryKey, out transactionSummary))
+                                {
+                                    transactionSummary.TransactionAmount += signum * transaction.TransactionAmount;
+                                    transactionSummary.AmountInBaseCurrency += signum * transaction.AmountInBaseCurrency;
                                 }
                                 else
                                 {
-                                    WriteTransactionLine(transaction);
+                                    transactionSummary = new ATransactionSummaryRow();
+                                    transactionSummary.CostCentreCode = transaction.CostCentreCode;
+                                    transactionSummary.AccountCode = transaction.AccountCode;
+                                    transactionSummary.TransactionAmount = signum * transaction.TransactionAmount;
+                                    transactionSummary.AmountInBaseCurrency = signum * transaction.AmountInBaseCurrency;
+
+                                    if (bDontSummarizeAccount)
+                                    {
+                                        transactionSummary.Narrative = transaction.Narrative;
+                                        transactionSummary.Reference = transaction.Reference;
+                                    }
+                                    else
+                                    {
+                                        transactionSummary.Narrative = summarizedData;
+                                        transactionSummary.Reference = "";
+                                    }
+
+                                    journalSummary.TransactionSummaries.Add(DictionaryKey, transactionSummary);
                                 }
+                            }
+                            else
+                            {
+                                WriteTransactionLine(transaction);
                             }
                         }
                     }

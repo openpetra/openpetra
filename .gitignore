@@ -17,6 +17,7 @@ _bin
 *.yaml.xml
 *.cs.error
 *.error
+*.new
 *.FileListAbsolute.txt
 *.pdb
 *.pidb
