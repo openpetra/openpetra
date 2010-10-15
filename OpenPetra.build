@@ -187,11 +187,11 @@
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerPlugins.sln"/>
             <call target="compileTemplate"/>
 
-            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <property name = "language.file" value="${Delivery.dir}/i18n/${SelectedLanguage}/OpenPetra.resources.dll"/>
             <if test="${file::exists(language.file)}">
-                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/${SelectedLanguage}" failonerror="false"/>
                 <copy file="${language.file}"
-                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/${SelectedLanguage}/OpenPetra.resources.dll" overwrite="true"/>
             </if>
         </if>
     </target>
@@ -214,11 +214,11 @@
             <call target="compileTemplate"/>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
             <call target="compileTemplate"/>
-            <property name = "language.file" value="${OpenPetraRoot.dir}/i18n/${SelectedLanguage}.mo"/>
+            <property name = "language.file" value="${Delivery.dir}/i18n/${SelectedLanguage}/OpenPetra.resources.dll"/>
             <if test="${file::exists(language.file)}">
-                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES" failonerror="false"/>
+                <mkdir dir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/${SelectedLanguage}" failonerror="false"/>
                 <copy file="${language.file}"
-                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/locale/${SelectedLanguage}/LC_MESSAGES/i18n.mo" overwrite="true"/>
+                    tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/${SelectedLanguage}/OpenPetra.resources.dll" overwrite="true"/>
             </if>
         </if>
     </target>
@@ -618,8 +618,8 @@
 
     <target name="translationCompilePOFile">
         <!-- compile the language file for delivery -->
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -d ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n --locale=${Translation.TargetLanguage} --resource=OpenPetra --csharp">
+        <mkdir dir="${Delivery.dir}/i18n" failonerror="false"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -d ${Delivery.dir}/i18n/ --locale=${Translation.TargetLanguage} --resource=OpenPetra --csharp">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
             </environment>

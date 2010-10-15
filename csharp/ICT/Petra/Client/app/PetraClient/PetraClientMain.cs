@@ -303,18 +303,10 @@ namespace Ict.Petra.Client.App.PetraClient
 
             FLogging = new TLogging(TClientSettings.GetPathTemp() + Path.DirectorySeparatorChar + "PetraClient.log");
 
-            // seems not to work to load culture from config file etc
-            // need to set environment variable before starting PetraClient?
-            // ie if you want to force english: set LANGUAGE=en; PetraClient.exe -C:[..]PetraClient.exe.config
-            // see also http://www.mail-archive.com/mono-devel-list@lists.ximian.com/msg16275.html
-            // CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("de");
-            // Thread.CurrentThread.CurrentCulture = culture;
-            // Thread.CurrentThread.CurrentUICulture = culture;
-            // Environment.SetEnvironmentVariable ("LANGUAGE", "de");
+            // TODO load culture from config file etc
             Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
 
             // TODO another Catalog.Init("org", "./locale") for organisation specific words?
-
 
             /* Show Splash Screen.
              * This is non-blocking since it is done in a separate Thread, that means
