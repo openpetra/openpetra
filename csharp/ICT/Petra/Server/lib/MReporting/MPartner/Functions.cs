@@ -872,7 +872,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             foreach (DataRow row in PartnerTypeTable.Rows)
             {
                 String PartnerType = row[0].ToString();
-
+                // TODO ORGANIZATION SPECIFIC PartnerType
                 if (PartnerType.StartsWith("EX-OMER"))
                 {
                     ++ANumberExParticipants;
