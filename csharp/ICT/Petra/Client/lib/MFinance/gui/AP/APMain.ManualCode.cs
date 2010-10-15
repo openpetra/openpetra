@@ -31,7 +31,7 @@ using System.Threading;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;

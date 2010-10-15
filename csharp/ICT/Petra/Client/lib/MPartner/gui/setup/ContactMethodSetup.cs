@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ContactMethodSetup.yaml and template windowMaintainTable
+// auto generated with nant generateWinforms from ContactMethodSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -51,11 +51,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
   public partial class TFrmContactMethodSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
+
     private class FMainDS
     {
         public static PMethodOfContactTable PMethodOfContact;
     }
-
     /// constructor
     public TFrmContactMethodSetup(IntPtr AParentFormHandle) : base()
     {
@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.txtDetailContactType.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailMethodOfContactCode, Catalog.GetString("Enter a method of contact code"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailMethodOfContactCode, Catalog.GetString("Enter a method of contact code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailDescription, Catalog.GetString("Enter the full description"));
       FPetraUtilsObject.SetStatusBarText(txtDetailContactType, Catalog.GetString("Select a contact type"));
       FPetraUtilsObject.SetStatusBarText(chkDetailValidMethod, Catalog.GetString("Should this option be selectable by users"));
@@ -386,7 +386,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                     // Thereis nothing to be saved
+                     // Update UI
+                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 

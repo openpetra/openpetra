@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using SourceGrid;
 using SourceGrid.Selection;
 using Ict.Common;

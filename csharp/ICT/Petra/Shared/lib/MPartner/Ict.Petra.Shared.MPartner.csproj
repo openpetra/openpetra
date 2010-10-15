@@ -52,8 +52,8 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

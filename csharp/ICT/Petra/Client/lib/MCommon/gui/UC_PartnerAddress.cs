@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Controls;
 using System.Globalization;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.MCommon
 {

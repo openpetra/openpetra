@@ -25,7 +25,7 @@ using System;
 using System.Xml;
 using System.Windows.Forms;
 using Ict.Common.IO;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Common.Controls
 {

@@ -31,7 +31,8 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonControls;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {

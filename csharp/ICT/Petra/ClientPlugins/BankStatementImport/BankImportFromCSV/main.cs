@@ -31,7 +31,7 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Plugin.BankImportFromCSV

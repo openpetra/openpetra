@@ -24,7 +24,7 @@
 using System;
 using Ict.Common;
 using Ict.Common.Verification;
-using Mono.Unix;
+using GNU.Gettext;
 using System.Windows.Forms;
 
 namespace Ict.Common.Verification

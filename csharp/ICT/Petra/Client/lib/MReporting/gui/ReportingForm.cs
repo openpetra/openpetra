@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Resources;
 using System.Threading;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;

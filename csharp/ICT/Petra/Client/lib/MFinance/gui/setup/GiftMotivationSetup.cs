@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowMaintainTable
+// auto generated with nant generateWinforms from GiftMotivationSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -51,12 +51,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
   public partial class TFrmGiftMotivationSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
-    object FFilter;
-    private class FMainDS
-    {
-        public static AMotivationDetailTable AMotivationDetail;
-    }
-
+object FFilter;
+    private Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS FMainDS;
     /// constructor
     public TFrmGiftMotivationSetup(IntPtr AParentFormHandle) : base()
     {
@@ -103,13 +99,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       this.txtDetailMotivationDetailDesc.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
-      FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailDesc, Catalog.GetString("Enter a description"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
+            FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS();
+            FPetraUtilsObject.SetStatusBarText(txtDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailMotivationDetailDesc, Catalog.GetString("Enter a description"));
+            FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
+            FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
+            FPetraUtilsObject.SetStatusBarText(chkDetailMotivationStatus, Catalog.GetString("Is this motivation code still in use?"));
+            FPetraUtilsObject.SetStatusBarText(chkDetailReceipt, Catalog.GetString("Do you want receipts for gifts with this motivation code?"));
 
       /*
        * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
@@ -152,7 +149,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
       Type DataTableType;
 
       // Load Data
-      FMainDS.AMotivationDetail = new AMotivationDetailTable();
       DataTable CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("MotivationList", "Ledger", FFilter, out DataTableType);
       FMainDS.AMotivationDetail.Merge(CacheDT);
 
@@ -378,7 +374,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                     // Thereis nothing to be saved
+                     // Update UI
+                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 

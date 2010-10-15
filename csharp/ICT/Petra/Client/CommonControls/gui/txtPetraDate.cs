@@ -31,7 +31,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.App.Gui;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.CommonControls
 {

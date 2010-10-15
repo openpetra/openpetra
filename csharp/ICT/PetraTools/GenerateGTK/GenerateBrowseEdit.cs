@@ -85,7 +85,7 @@ public class TGenerateBrowseEdit
         AWriter.WriteLine("using System;");
         AWriter.WriteLine("using System.Collections;");
         AWriter.WriteLine("using System.Data;");
-        AWriter.WriteLine("using Mono.Unix;");
+        AWriter.WriteLine("using GNU.Gettext;");
         AWriter.WriteLine("using Ict.Common.GTK;");
         AWriter.WriteLine("using Ict.Petra.Client.App.Core.RemoteObjects;");
         AWriter.WriteLine(String.Format("using Ict.Petra.Shared.Interfaces.{0};", Module));

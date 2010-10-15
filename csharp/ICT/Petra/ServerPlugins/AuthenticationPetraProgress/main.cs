@@ -34,7 +34,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Plugin.AuthenticationPetraProgress
 {

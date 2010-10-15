@@ -28,7 +28,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Logic;

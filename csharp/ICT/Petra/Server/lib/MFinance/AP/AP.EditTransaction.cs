@@ -26,7 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;

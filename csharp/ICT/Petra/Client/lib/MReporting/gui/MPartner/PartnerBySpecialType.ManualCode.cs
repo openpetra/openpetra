@@ -23,7 +23,8 @@
 //
 using System;
 using System.Data;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;

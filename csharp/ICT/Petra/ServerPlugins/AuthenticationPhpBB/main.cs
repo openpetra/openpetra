@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Plugin.AuthenticationPhpBB
 {

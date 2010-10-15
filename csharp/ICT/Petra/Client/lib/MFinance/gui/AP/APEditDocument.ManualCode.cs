@@ -25,7 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.CommonControls;

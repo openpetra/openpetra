@@ -26,7 +26,7 @@ using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.Controls;
 using Ict.Common;
 using Ict.Petra.Client.App.Gui;

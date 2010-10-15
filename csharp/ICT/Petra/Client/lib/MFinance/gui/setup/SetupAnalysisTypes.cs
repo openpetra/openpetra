@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -229,18 +229,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
-            txtDetailAnalysisTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailAnalysisTypeDescription.Text = ARow.AnalysisTypeDescription;
-            if (ARow.IsSystemAnalysisTypeNull())
-            {
-                chkDetailSystemAnalysisType.Checked = false;
-            }
-            else
-            {
-                chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
-            }
-            ShowDetailsManual(ARow);
+        txtDetailAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
+        txtDetailAnalysisTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailAnalysisTypeDescription.Text = ARow.AnalysisTypeDescription;
+        if (ARow.IsSystemAnalysisTypeNull())
+        {
+            chkDetailSystemAnalysisType.Checked = false;
+        }
+        else
+        {
+            chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
+        }
+        ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -328,9 +328,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
             foreach (DataRow InspectDR in FMainDS.AAnalysisType.Rows)
-            {
-                InspectDR.EndEdit();
-            }
+                {
+                    InspectDR.EndEdit();
+                }
 
             if (!FPetraUtilsObject.HasChanges)
             {

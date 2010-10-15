@@ -26,9 +26,10 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {

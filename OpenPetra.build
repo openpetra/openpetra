@@ -125,14 +125,6 @@
             <echo message='${script::ReplaceInFile(TestClientConfigFile, toReplace, newValue)}'/>
         </if>
 
-        <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}">
-            <fileset basedir="${ThirdParty.dir}/Mono">
-                <include name="intl.dll" />
-                <include name="MonoPosixHelper.dll" />
-                <include name="Mono.Security.dll" />
-            </fileset>
-        </copy>
-
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
         <call target="compileTemplate"/>
     </target>
@@ -187,14 +179,6 @@
                     tofile="${ServerConfigFile}"/>
             </if>
 
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}" overwrite="true">
-                <fileset basedir="${ThirdParty.dir}/Mono">
-                    <include name="intl.dll" />
-                    <include name="MonoPosixHelper.dll" />
-                    <include name="Mono.Security.dll" />
-                </fileset>
-            </copy>
-
             <call target="compilePetraServerAdmin"/>
 
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
@@ -226,13 +210,6 @@
                 <copy file="${OpenPetraRoot.dir}/etc/Client.config.sample"
                     tofile="${ClientConfigFile}"/>
             </if>
-            <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}" overwrite="true">
-                <fileset basedir="${ThirdParty.dir}/Mono">
-                    <include name="intl.dll" />
-                    <include name="MonoPosixHelper.dll" />
-                    <include name="Mono.Security.dll" />
-                </fileset>
-            </copy>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
             <call target="compileTemplate"/>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
@@ -641,8 +618,12 @@
 
     <target name="translationCompilePOFile">
         <!-- compile the language file for delivery -->
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -o ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n/locale/${Translation.TargetLanguage}/LC_MESSAGES/i18n.mo"/>
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n" failonerror="false"/>
+        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -d ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/i18n --locale=${Translation.TargetLanguage} --resource=OpenPetra --csharp">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+            </environment>
+        </exec>
     </target>
 
     <target name="translation">

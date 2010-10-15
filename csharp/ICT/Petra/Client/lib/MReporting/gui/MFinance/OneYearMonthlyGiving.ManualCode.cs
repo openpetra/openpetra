@@ -27,7 +27,8 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {

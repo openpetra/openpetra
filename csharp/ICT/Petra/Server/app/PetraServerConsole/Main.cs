@@ -25,7 +25,7 @@ using System;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Services;
 using System.Threading;
-using Mono.Unix;
+using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Petra.Server.App.Main;
@@ -91,7 +91,7 @@ public class TServer
             // Thread.CurrentThread.CurrentCulture = culture;
             // Thread.CurrentThread.CurrentUICulture = culture;
             // Environment.SetEnvironmentVariable ("LANGUAGE", "de");
-            Catalog.Init("i18n", "./locale");
+            Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
 
             // TODO another Catalog.Init("org", "./locale") for organisation specific words?
 

@@ -23,7 +23,8 @@
 //
 using System;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Gui.AP;

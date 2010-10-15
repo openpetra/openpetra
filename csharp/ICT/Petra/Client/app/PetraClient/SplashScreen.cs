@@ -24,7 +24,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace SplashScreen
 {

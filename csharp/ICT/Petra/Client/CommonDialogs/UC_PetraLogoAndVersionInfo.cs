@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -26,7 +26,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace Ict.Petra.Client.CommonDialogs
 {

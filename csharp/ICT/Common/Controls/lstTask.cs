@@ -26,7 +26,7 @@ using System.Xml;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.IO;
 
 namespace Ict.Common.Controls

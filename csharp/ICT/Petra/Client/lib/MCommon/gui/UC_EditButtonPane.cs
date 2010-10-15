@@ -31,7 +31,7 @@ using Ict.Common;
 using System.Resources;
 using System.Globalization;
 using Ict.Petra.Client.CommonForms;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.MCommon
 {

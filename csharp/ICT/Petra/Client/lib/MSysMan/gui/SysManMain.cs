@@ -24,7 +24,8 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;

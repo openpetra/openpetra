@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace I18N
 {

@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.Printing;
 using PdfSharp;
 using PdfSharp.Drawing;

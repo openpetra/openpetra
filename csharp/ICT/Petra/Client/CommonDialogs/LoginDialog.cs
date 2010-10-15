@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.IO.IsolatedStorage;
 using Microsoft.Win32;
-using Mono.Unix;
+using GNU.Gettext;
 using System.Security.Principal;
 using Ict.Petra.Client.App.Core;
 using System.Threading;

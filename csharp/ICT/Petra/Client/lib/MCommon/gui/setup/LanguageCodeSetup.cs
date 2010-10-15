@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from LanguageCodeSetup.yaml and template windowMaintainTable
+// auto generated with nant generateWinforms from LanguageCodeSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -51,11 +51,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
   public partial class TFrmLanguageCodeSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
+
     private class FMainDS
     {
         public static PLanguageTable PLanguage;
     }
-
     /// constructor
     public TFrmLanguageCodeSetup(IntPtr AParentFormHandle) : base()
     {
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
       this.txtDetailLanguageDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailLanguageCode, Catalog.GetString("Enter an internationally accepted language code"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailLanguageCode, Catalog.GetString("Enter an internationally accepted language code"));
       FPetraUtilsObject.SetStatusBarText(txtDetailLanguageDescription, Catalog.GetString("Enter a full description or name"));
       FPetraUtilsObject.SetStatusBarText(chkDetailCongressLanguage, Catalog.GetString("Indicates if the language is an 'official' Congress Language."));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletable, Catalog.GetString("This code is Required for System operation by other code"));
@@ -367,7 +367,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                     // Thereis nothing to be saved
+                     // Update UI
+                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 
