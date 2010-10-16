@@ -294,6 +294,7 @@
     {
         ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*Mono.*dll</HintPath>", "");
         ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*ICSharpCode.*dll</HintPath>", "");
+        ReplaceInFile(filename, "RegEx:<HintPath>.*ThirdParty.*nunit.*dll</HintPath>", "");
 
         //hide warnings: 
         // warning CS0169:  The private method / property / etc is never used
