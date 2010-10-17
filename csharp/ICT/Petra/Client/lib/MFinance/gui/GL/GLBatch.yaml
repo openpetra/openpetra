@@ -21,6 +21,9 @@ RootNode:
         tpgTransactions:
             Label: Transactions
             Controls: [ucoTransactions]
+        tpgAttributes:
+            Label: Attributes
+            Controls: [ucoAttributes]            
         ucoBatches:
             Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches
             Dock: Fill
@@ -30,3 +33,6 @@ RootNode:
         ucoTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions
             Dock: Fill
+        ucoAttributes:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLAttributes
+            Dock: Fill    

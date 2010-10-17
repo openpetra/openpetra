@@ -2554,6 +2554,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber,
+                                               Int32 ABatchNumber,
+                                               Int32 AJournalNumber,
+                                               Int32 ATransactionNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadATransAnalAttrib", ";INT;INT;INT;INT;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber);
+        }
+
+        /// generated method from connector
         public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {

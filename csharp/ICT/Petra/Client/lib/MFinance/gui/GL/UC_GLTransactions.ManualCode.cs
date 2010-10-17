@@ -178,6 +178,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                             TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
                                                 dtpDetailTransactionDate.Date.Value)
                                             ).ToString();
+            if (ARow == null)
+            {
+                ((TFrmGLBatch)ParentForm).DisableAttributes();
+            }
+            else
+            {
+                ((TFrmGLBatch)ParentForm).LoadAttributes(
+                    ARow.LedgerNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber,
+                    ARow.TransactionNumber
+                    );
+            }
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
@@ -298,6 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
                 FPreviouslySelectedDetailRow.Delete();
+                ((TFrmGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
                 UpdateTotals(null);
                 FPetraUtilsObject.SetChangedFlag();
 

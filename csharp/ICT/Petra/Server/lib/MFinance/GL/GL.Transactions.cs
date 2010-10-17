@@ -239,7 +239,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
+		/// <summary>
+        /// loads a list of attributes for the given transaction (identified by ledger,batch,Journal and Transactionnumber)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            ATransAnalAttribAccess.LoadViaATransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
         /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>

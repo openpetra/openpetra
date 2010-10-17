@@ -69,6 +69,15 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.ATransAnalAttrib, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMasterPeriod, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
@@ -240,6 +249,14 @@ namespace Ict.Petra.Server.MFinance.GL.Data.Access
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
                     && !TTypedDataAccess.SubmitChanges(AInspectDS.AGeneralLedgerMasterPeriod, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.ATransAnalAttrib, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))

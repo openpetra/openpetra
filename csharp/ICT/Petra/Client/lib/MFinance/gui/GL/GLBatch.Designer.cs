@@ -74,6 +74,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.ucoJournals = new Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals();
             this.tpgTransactions = new System.Windows.Forms.TabPage();
             this.ucoTransactions = new Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions();
+            this.tpgAttributes = new System.Windows.Forms.TabPage();
+            this.ucoAttributes = new Ict.Petra.Client.MFinance.Gui.GL.TUC_GLAttributes();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
@@ -102,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgBatches.SuspendLayout();
             this.tpgJournals.SuspendLayout();
             this.tpgTransactions.SuspendLayout();
+            this.tpgAttributes.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -156,6 +159,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgTransactions.Text = "Transactions";
             this.tpgTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
             //
+            // tpgAttributes
+            //
+            this.tpgAttributes.Location = new System.Drawing.Point(2,2);
+            this.tpgAttributes.Name = "tpgAttributes";
+            this.tpgAttributes.AutoSize = true;
+            this.tpgAttributes.Controls.Add(this.ucoAttributes);
+            //
+            // ucoAttributes
+            //
+            this.ucoAttributes.Name = "ucoAttributes";
+            this.ucoAttributes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgAttributes.Text = "Attributes";
+            this.tpgAttributes.Dock = System.Windows.Forms.DockStyle.Fill;
+            //
             // tabGLBatch
             //
             this.tabGLBatch.Name = "tabGLBatch";
@@ -163,6 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tabGLBatch.Controls.Add(this.tpgBatches);
             this.tabGLBatch.Controls.Add(this.tpgJournals);
             this.tabGLBatch.Controls.Add(this.tpgTransactions);
+            this.tabGLBatch.Controls.Add(this.tpgAttributes);
             this.tabGLBatch.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabGLBatch.AllowDrop = false;
             this.tabGLBatch.SelectedIndexChanged += new System.EventHandler(this.TabSelectionChanged);
@@ -359,6 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
+            this.tpgAttributes.ResumeLayout(false);
             this.tpgTransactions.ResumeLayout(false);
             this.tpgJournals.ResumeLayout(false);
             this.tpgBatches.ResumeLayout(false);
@@ -377,6 +396,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals ucoJournals;
         private System.Windows.Forms.TabPage tpgTransactions;
         private Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions ucoTransactions;
+        private System.Windows.Forms.TabPage tpgAttributes;
+        private Ict.Petra.Client.MFinance.Gui.GL.TUC_GLAttributes ucoAttributes;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.MenuStrip mnuMain;

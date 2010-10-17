@@ -51,6 +51,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         private AAccountHierarchyDetailTable TableAAccountHierarchyDetail;
         private AGeneralLedgerMasterTable TableAGeneralLedgerMaster;
         private AGeneralLedgerMasterPeriodTable TableAGeneralLedgerMasterPeriod;
+        private ATransAnalAttribTable TableATransAnalAttrib;
 
         /// auto generated
         public GLBatchTDS() :
@@ -152,6 +153,15 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
         }
 
         /// auto generated
+        public ATransAnalAttribTable ATransAnalAttrib
+        {
+            get
+            {
+                return this.TableATransAnalAttrib;
+            }
+        }
+
+        /// auto generated
         public new virtual GLBatchTDS GetChangesTyped(bool removeEmptyTables)
         {
             return ((GLBatchTDS)(base.GetChangesTyped(removeEmptyTables)));
@@ -169,6 +179,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Tables.Add(new AAccountHierarchyDetailTable("AAccountHierarchyDetail"));
             this.Tables.Add(new AGeneralLedgerMasterTable("AGeneralLedgerMaster"));
             this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
+            this.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
         }
 
         /// auto generated
@@ -209,6 +220,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             if ((ds.Tables.IndexOf("AGeneralLedgerMasterPeriod") != -1))
             {
                 this.Tables.Add(new AGeneralLedgerMasterPeriodTable("AGeneralLedgerMasterPeriod"));
+            }
+            if ((ds.Tables.IndexOf("ATransAnalAttrib") != -1))
+            {
+                this.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
             }
         }
 
@@ -253,6 +268,10 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             {
                 this.TableAGeneralLedgerMasterPeriod.InitVars();
             }
+            if ((this.TableATransAnalAttrib != null))
+            {
+                this.TableATransAnalAttrib.InitVars();
+            }
         }
 
         /// auto generated
@@ -268,6 +287,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.TableAAccountHierarchyDetail = ((AAccountHierarchyDetailTable)(this.Tables["AAccountHierarchyDetail"]));
             this.TableAGeneralLedgerMaster = ((AGeneralLedgerMasterTable)(this.Tables["AGeneralLedgerMaster"]));
             this.TableAGeneralLedgerMasterPeriod = ((AGeneralLedgerMasterPeriodTable)(this.Tables["AGeneralLedgerMasterPeriod"]));
+            this.TableATransAnalAttrib = ((ATransAnalAttribTable)(this.Tables["ATransAnalAttrib"]));
         }
 
         /// auto generated
@@ -335,6 +355,27 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
                 this.FConstraints.Add(new TTypedConstraint("FKJournal1", "ABatch", new string[] {
                                 "a_ledger_number_i", "a_batch_number_i"}, "AJournal", new string[] {
                                 "a_ledger_number_i", "a_batch_number_i"}));
+            }
+            if (((this.TableATransaction != null)
+                        && (this.TableATransAnalAttrib != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransAnalAttrib1", "ATransaction", new string[] {
+                                "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i", "a_transaction_number_i"}, "ATransAnalAttrib", new string[] {
+                                "a_ledger_number_i", "a_batch_number_i", "a_journal_number_i", "a_transaction_number_i"}));
+            }
+            if (((this.TableAAccount != null)
+                        && (this.TableATransAnalAttrib != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransAnalAttrib2", "AAccount", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}, "ATransAnalAttrib", new string[] {
+                                "a_ledger_number_i", "a_account_code_c"}));
+            }
+            if (((this.TableACostCentre != null)
+                        && (this.TableATransAnalAttrib != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKTransAnalAttrib5", "ACostCentre", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}, "ATransAnalAttrib", new string[] {
+                                "a_ledger_number_i", "a_cost_centre_code_c"}));
             }
             if (((this.TableAJournal != null)
                         && (this.TableATransaction != null)))

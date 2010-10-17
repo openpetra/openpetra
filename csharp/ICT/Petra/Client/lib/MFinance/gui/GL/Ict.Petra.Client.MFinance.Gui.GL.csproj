@@ -115,6 +115,13 @@
     <Compile Include="GLEnterDateEffective.Designer.cs">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_GLAttributes.cs" />
+    <Compile Include="UC_GLAttributes.Designer.cs">
+      <DependentUpon>UC_GLAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_GLAttributes.ManualCode.cs">
+      <DependentUpon>UC_GLAttributes.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_GLBatches.cs" />
     <Compile Include="UC_GLBatches.Designer.cs">
       <DependentUpon>UC_GLBatches.cs</DependentUpon>
@@ -147,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GLEnterDateEffective.resx">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_GLAttributes.resx">
+      <DependentUpon>UC_GLAttributes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_GLBatches.resx">
       <DependentUpon>UC_GLBatches.cs</DependentUpon>
