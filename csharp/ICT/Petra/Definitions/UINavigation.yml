@@ -105,6 +105,8 @@ OpenPetra:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
+                        DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:

@@ -120,6 +120,13 @@
     <Compile Include="AnalysisAttribute.ManualCode.cs">
       <DependentUpon>AnalysisAttribute.cs</DependentUpon>
     </Compile>
+    <Compile Include="AP_AccountDetailReport.cs" />
+    <Compile Include="AP_AccountDetailReport.Designer.cs">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AP_AccountDetailReport.ManualCode.cs">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ARConferencePayments.cs" />
     <Compile Include="ARConferencePayments.Designer.cs">
       <DependentUpon>ARConferencePayments.cs</DependentUpon>
@@ -273,6 +280,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AnalysisAttribute.resx">
       <DependentUpon>AnalysisAttribute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AP_AccountDetailReport.resx">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ARConferencePayments.resx">
       <DependentUpon>ARConferencePayments.cs</DependentUpon>
