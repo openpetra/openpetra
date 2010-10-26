@@ -457,7 +457,7 @@ namespace Ict.Common
         /// <param name="AShowWarning">log a warning if value cannot be found</param>
         /// <returns>Value of the AppSetting
         /// </returns>
-        public static String GetValueStatic(String AKey, String ADefaultValue, String AShowWarning)
+        public static String GetValueStatic(String AKey, String ADefaultValue, bool AShowWarning)
         {
             String ReturnValue = UNDEFINEDVALUE;
             TAppSettingsManager Config;
