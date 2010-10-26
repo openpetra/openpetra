@@ -3,7 +3,7 @@
 
 echo "creating database..."
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS openpetra;"
-sudo -u postgres psql -c "DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;"
+sudo -u postgres psql -c "DROP USER IF EXISTS petraserver;"
 sudo -u postgres psql -c "CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER'; "
 sudo -u postgres createdb -T template0 openpetra
 
