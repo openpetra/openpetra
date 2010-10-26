@@ -2564,6 +2564,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadAAnalysisAttributes", ";INT;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadAAnalysisAttributes(ALedgerNumber);
+        }
+
+        /// generated method from connector
         public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {

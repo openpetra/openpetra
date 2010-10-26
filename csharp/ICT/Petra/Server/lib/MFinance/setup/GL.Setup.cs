@@ -965,13 +965,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
             return myAT;
         }
-
+		/// <summary>
+        /// Check if a value in  AFREEFORMANALSYSIS cand be deleted (count the references in ATRansANALATTRIB)
+        /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
         {
             return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
         }
-
+		/// <summary>
+        /// Check if a TypeCode in  AnalysisType can be deleted (count the references in ATRansAnalysisAtrributes)
+        /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAAnalysisType(String ATypeCode)
         {

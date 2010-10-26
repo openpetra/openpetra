@@ -257,6 +257,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
+       	/// <summary>
+        /// loads some necessary analysis attributes tables for the given ledger number
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>GLSetupTDS</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
+        {
+            GLSetupTDS CacheDS = new GLSetupTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            AAnalysisTypeAccess.LoadAll(CacheDS,Transaction);
+            AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber,Transaction);
+            AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber,Transaction);
+           	DBAccess.GDBAccessObj.RollbackTransaction();
+            return CacheDS;
+        }
         /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>

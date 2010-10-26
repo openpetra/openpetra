@@ -304,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailAccountCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailAccountCode.Name = "cmbDetailAccountCode";
             this.cmbDetailAccountCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailAccountCode.SelectedValueChanged += new System.EventHandler(this.AccountCodeDetailChanged);
             this.cmbDetailAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblDetailAccountCode

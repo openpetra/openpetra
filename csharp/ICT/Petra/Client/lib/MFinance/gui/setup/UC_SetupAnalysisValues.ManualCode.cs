@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                txtDetailLedgerNumber.Text = "" + value;
+                txtHeaderLedgerNumber.Text = "" + value;
             }
         }
         private String FTypeCode;
@@ -178,6 +178,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 FPreviouslySelectedDetailRow = null;
+                txtDetailAnalysisValue.ResetText();
+                chkDetailActive.Checked=false;
             }
         }
     }

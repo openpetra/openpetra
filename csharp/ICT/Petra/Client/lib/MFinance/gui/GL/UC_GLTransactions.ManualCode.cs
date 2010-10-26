@@ -340,5 +340,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.FPreviouslySelectedDetailRow = null;
         }
+        /// <summary>
+        /// if the account code changes, analysis types/attributes  have to be updated
+        /// </summary>
+        private void AccountCodeDetailChanged(object sender, EventArgs e)
+        {
+        	((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes((String)cmbDetailAccountCode.SelectedValue);
+        }
     }
 }

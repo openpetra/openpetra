@@ -562,6 +562,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                         Int32 AJournalNumber,
                                         Int32 ATransactionNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>

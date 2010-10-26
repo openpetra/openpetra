@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
+            this.tpgAttributes.Enabled = false;
         }
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = true;
             DisableTransactions();
+            DisableAttributes();
             this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
 

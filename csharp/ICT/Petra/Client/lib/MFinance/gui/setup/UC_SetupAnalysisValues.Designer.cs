@@ -69,8 +69,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailLedgerNumber = new System.Windows.Forms.TextBox();
-            this.lblDetailLedgerNumber = new System.Windows.Forms.Label();
+            this.txtHeaderLedgerNumber = new System.Windows.Forms.TextBox();
+            this.lblHeaderLedgerNumber = new System.Windows.Forms.Label();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -113,23 +113,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.Size = new System.Drawing.Size(690, 150);
             this.pnlGrid.Controls.Add(this.tableLayoutPanel1);
             //
-            // txtDetailLedgerNumber
+            // txtHeaderLedgerNumber
             //
-            this.txtDetailLedgerNumber.Location = new System.Drawing.Point(2,2);
-            this.txtDetailLedgerNumber.Name = "txtDetailLedgerNumber";
-            this.txtDetailLedgerNumber.Size = new System.Drawing.Size(150, 28);
-            this.txtDetailLedgerNumber.ReadOnly = true;
-            this.txtDetailLedgerNumber.TabStop = false;
+            this.txtHeaderLedgerNumber.Location = new System.Drawing.Point(2,2);
+            this.txtHeaderLedgerNumber.Name = "txtHeaderLedgerNumber";
+            this.txtHeaderLedgerNumber.Size = new System.Drawing.Size(150, 28);
+            this.txtHeaderLedgerNumber.ReadOnly = true;
+            this.txtHeaderLedgerNumber.TabStop = false;
             //
-            // lblDetailLedgerNumber
+            // lblHeaderLedgerNumber
             //
-            this.lblDetailLedgerNumber.Location = new System.Drawing.Point(2,2);
-            this.lblDetailLedgerNumber.Name = "lblDetailLedgerNumber";
-            this.lblDetailLedgerNumber.AutoSize = true;
-            this.lblDetailLedgerNumber.Text = "Values for this Type and Ledger Number:";
-            this.lblDetailLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblHeaderLedgerNumber.Location = new System.Drawing.Point(2,2);
+            this.lblHeaderLedgerNumber.Name = "lblHeaderLedgerNumber";
+            this.lblHeaderLedgerNumber.AutoSize = true;
+            this.lblHeaderLedgerNumber.Text = "Values for this Type and Ledger Number:";
+            this.lblHeaderLedgerNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblHeaderLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblHeaderLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // grdDetails
             //
@@ -179,12 +179,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.lblDetailLedgerNumber, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblHeaderLedgerNumber, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.grdDetails, 2);
             this.tableLayoutPanel1.Controls.Add(this.grdDetails, 0, 1);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlButtons, 2);
             this.tableLayoutPanel1.Controls.Add(this.pnlButtons, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtDetailLedgerNumber, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtHeaderLedgerNumber, 1, 0);
             //
             // pnlDetails
             //
@@ -271,8 +271,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.Panel pnlGrid;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox txtDetailLedgerNumber;
-        private System.Windows.Forms.Label lblDetailLedgerNumber;
+        private System.Windows.Forms.TextBox txtHeaderLedgerNumber;
+        private System.Windows.Forms.Label lblHeaderLedgerNumber;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;

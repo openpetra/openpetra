@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from UC_SetupAnalysisValues.yaml and template controlMaintainTable
+// auto generated with nant generateWinforms from UC_GLAttributes.yaml and template controlMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -42,19 +42,20 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup
+namespace Ict.Petra.Client.MFinance.Gui.GL
 {
 
   /// auto generated user control
-  public partial class TUC_SetupAnalysisValues: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TUC_GLAttributes: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
-    private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
+    private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
 
     /// constructor
-    public TUC_SetupAnalysisValues() : base()
+    public TUC_GLAttributes() : base()
     {
       //
       // Required for Windows Form Designer support
@@ -63,15 +64,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblHeaderLedgerNumber.Text = Catalog.GetString("Values for this Type and Ledger Number:");
-      this.btnNew.Text = Catalog.GetString("&New");
-      this.btnDelete.Text = Catalog.GetString("&Delete");
-      this.lblDetailAnalysisValue.Text = Catalog.GetString("Value:");
-      this.lblDetailActive.Text = Catalog.GetString("Active:");
+      this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
+      this.lblBatchNumber.Text = Catalog.GetString("Batch:");
+      this.lblJournalNumber.Text = Catalog.GetString("Journal:");
+      this.lblTransactionNumber.Text = Catalog.GetString("Transaction:");
+      this.lblReadonlyAnalysisTypeCode.Text = Catalog.GetString("Type Code:");
+      this.lblReadonlyDescription.Text = Catalog.GetString("Description:");
+      this.lblDetailAnalysisAttributeValue.Text = Catalog.GetString("Value:");
       #endregion
 
-      this.txtHeaderLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailAnalysisValue.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtJournalNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtTransactionNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReadonlyAnalysisTypeCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtReadonlyDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -84,7 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     }
 
     /// dataset for the whole screen
-    public Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS MainDS
+    public Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS MainDS
     {
         set
         {
@@ -95,33 +102,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-      FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisValue, Catalog.GetString("Value of analysis code"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailActive, Catalog.GetString("Select if analysis attribute value can be used"));
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Value", FMainDS.AFreeformAnalysis.ColumnAnalysisValue);
-      grdDetails.AddCheckBoxColumn("Active", FMainDS.AFreeformAnalysis.ColumnActive);
-      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      grdDetails.AddTextColumn("Analysis Type Code", FMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode);
+      grdDetails.AddTextColumn("Analysis Attribute Value", FMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue);
 
-      DataView myDataView = FMainDS.AFreeformAnalysis.DefaultView;
+      DataView myDataView = FMainDS.ATransAnalAttrib.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
       ShowData();
     }
 
-    /// automatically generated, create a new record of AFreeformAnalysis and display on the edit screen
-    public bool CreateNewAFreeformAnalysis()
+    /// automatically generated, create a new record of ATransAnalAttrib and display on the edit screen
+    public bool CreateNewATransAnalAttrib()
     {
         // we create the table locally, no dataset
-        AFreeformAnalysisRow NewRow = FMainDS.AFreeformAnalysis.NewRowTyped(true);
+        ATransAnalAttribRow NewRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
         NewRowManual(ref NewRow);
-        FMainDS.AFreeformAnalysis.Rows.Add(NewRow);
+        FMainDS.ATransAnalAttrib.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AFreeformAnalysis.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.AFreeformAnalysis.Rows.Count - 1);
+        SelectDetailRowByDataTableIndex(FMainDS.ATransAnalAttrib.Rows.Count - 1);
 
         return true;
     }
@@ -132,9 +136,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.AFreeformAnalysis.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.ATransAnalAttrib.PrimaryKey)
             {
-                string value1 = FMainDS.AFreeformAnalysis.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.ATransAnalAttrib.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -155,13 +159,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     }
 
     /// return the selected row
-    public AFreeformAnalysisRow GetSelectedDetailRow()
+    public ATransAnalAttribRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (AFreeformAnalysisRow)SelectedGridRow[0].Row;
+            return (ATransAnalAttribRow)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -170,10 +174,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        ShowDataManual();
         pnlDetails.Enabled = false;
-        if (FMainDS.AFreeformAnalysis != null)
+        if (FMainDS.ATransAnalAttrib != null)
         {
-            DataView myDataView = FMainDS.AFreeformAnalysis.DefaultView;
+            DataView myDataView = FMainDS.ATransAnalAttrib.DefaultView;
+            myDataView.Sort = "a_analysis_type_code_c ASC";
+            myDataView.RowFilter = "a_batch_number_i = " + FBatchNumber.ToString() + " and a_journal_number_i = " + FJournalNumber.ToString() + " and a_transaction_number_i = " + FTransactionNumber.ToString();
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             if (myDataView.Count > 0)
@@ -187,32 +194,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private void ShowDetails(AFreeformAnalysisRow ARow)
+    private void ShowDetails(ATransAnalAttribRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
+            ShowDetailsManual(ARow);
         }
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailAnalysisValue.Text = ARow.AnalysisValue;
-            txtDetailAnalysisValue.ReadOnly = (ARow.RowState != DataRowState.Added);
-            if (ARow.IsActiveNull())
+            if (ARow.IsAnalysisAttributeValueNull())
             {
-                chkDetailActive.Checked = false;
+                cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
             }
             else
             {
-                chkDetailActive.Checked = ARow.Active;
+                cmbDetailAnalysisAttributeValue.SetSelectedString(ARow.AnalysisAttributeValue);
             }
+            ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private AFreeformAnalysisRow FPreviouslySelectedDetailRow = null;
+    private ATransAnalAttribRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -231,13 +238,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls(AFreeformAnalysisRow ARow)
+    private void GetDetailsFromControls(ATransAnalAttribRow ARow)
     {
         if (ARow != null)
         {
             ARow.BeginEdit();
-            ARow.AnalysisValue = txtDetailAnalysisValue.Text;
-            ARow.Active = chkDetailActive.Checked;
+            if (cmbDetailAnalysisAttributeValue.SelectedIndex == -1)
+            {
+                ARow.SetAnalysisAttributeValueNull();
+            }
+            else
+            {
+                ARow.AnalysisAttributeValue = cmbDetailAnalysisAttributeValue.GetSelectedString();
+            }
             GetDetailDataFromControlsManual(ARow);
             ARow.EndEdit();
         }
@@ -273,23 +286,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
-#endregion
-
-#region Action Handling
-
-    /// auto generated
-    public void ActionEnabledEvent(object sender, ActionEventArgs e)
-    {
-        if (e.ActionName == "actNew")
-        {
-            btnNew.Enabled = e.Enabled;
-        }
-        if (e.ActionName == "actDelete")
-        {
-            btnDelete.Enabled = e.Enabled;
-        }
-    }
-
 #endregion
   }
 }
