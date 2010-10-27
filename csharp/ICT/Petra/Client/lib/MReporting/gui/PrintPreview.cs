@@ -550,7 +550,17 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (dlgSaveCSVFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (Results.WriteCSV(Parameters, dlgSaveCSVFile.FileName))
+                bool ExportOnlyLowestLevel = false;
+
+                // Add the parameter eport_only_lowest_level to the Parameters if you don't want to export the
+                // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
+                // output looks much nicer if it doesn't contain the unnecessary higer levels.
+                if (Parameters.Exists("csv_export_only_lowest_level"))
+                {
+                    ExportOnlyLowestLevel = Parameters.Get("csv_export_only_lowest_level").ToBool();
+                }
+
+                if (Results.WriteCSV(Parameters, dlgSaveCSVFile.FileName, ExportOnlyLowestLevel))
                 {
                     try
                     {

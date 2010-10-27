@@ -339,6 +339,14 @@ namespace Ict.Petra.Client.MReporting.Logic
                 columnCounter = columnCounter + 1;
             }
 
+            if (parameters.Exists("ControlSource", ReportingConsts.HEADERCOLUMN))
+            {
+                SetValue(GetRange(columnCounter, rowCounter), "header 1");
+                columnCounter = columnCounter + 1;
+                SetValue(GetRange(columnCounter, rowCounter), "header 0");
+                columnCounter = columnCounter + 1;
+            }
+
             parameters.Add("CurrentSubReport", 0);
 
             // otherwise 'indented' cannot be read
@@ -394,6 +402,14 @@ namespace Ict.Petra.Client.MReporting.Logic
                     if (parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT2))
                     {
                         SetValue(GetRange(columnCounter, rowCounter), element.descr[1].ToString());
+                        columnCounter++;
+                    }
+
+                    if (parameters.Exists("ControlSource", ReportingConsts.HEADERCOLUMN))
+                    {
+                        SetValue(GetRange(columnCounter, rowCounter), element.header[1].ToString());
+                        columnCounter++;
+                        SetValue(GetRange(columnCounter, rowCounter), element.header[0].ToString());
                         columnCounter++;
                     }
 

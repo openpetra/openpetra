@@ -315,13 +315,10 @@
 		</query>
 	</calculation>
 	
-	<calculation id="MakePartnerName" returns="PartnerNameAndKey" returnsFormat="text">
+	<calculation id="AddAddressCount" returns="PartnerNameAndKey" returnsFormat="text">
 		<query>
 			<queryDetail>
 				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({PartnerKey})"/>
-				<value function="assign(PartnerNameAndKey, {PartnerKey})"/>
-				<value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{ShortName}, 2))"/>
 				<value function="assign(NumberOfAddresses, add({NumberOfAddresses}, 1))"/>
 			</queryDetail>
 		</query>
@@ -332,6 +329,8 @@
 			<queryDetail>
 				<value text="NO-SQL"/>
 				<value function="GetPartnerBestAddress({PartnerKey})"/>
+				<value function="assign(PartnerNameAndKey, {PartnerKey})"/>
+				<value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{ShortName}, 2))"/>
 			</queryDetail>
 			<queryDetail>
 				<value text="NO-SQL"/>
@@ -352,29 +351,11 @@
 			<queryDetail>
 				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
 			</queryDetail>
 		</query>
@@ -620,11 +601,11 @@
 	
       <level name="Partner Level" identification="PartnerKey">
 		<header>
-			<field whichfield="header 0" pos="0 cm" width="7cm" calculation="MakePartnerName">
+			<field whichfield="header 0" pos="0cm" width="7cm" calculation="AddAddressCount">
 				<value text=""/>
 				<value variable="PartnerNameAndKey"/>
 			</field>
-			<field whichfield="header 1" pos="8 cm" width="15cm" calculation="MakeAddress">
+			<field whichfield="header 1" pos="8.0cm" width="15cm">
 				<value text=""/>
 				<value variable="PartnerAddress"/>
 			</field>
@@ -647,16 +628,34 @@
        </level><!-- Partner Level -->
 	   
 	<level name="Partner Contact" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
+				<value variable="PartnerNameAndKey"/>
+				<value text="   "/>
+				<value variable="PartnerAddress"/>
+			</field>
+		</header>
 		<detail>
-			<field whichfield="left 0" pos="0 cm" width="0.3 cm"></field>
-			<field whichfield="Columns"></field>
+			<field whichfield="left 0" pos="0cm" width="0.3cm">
+				<value text=" "/>
+			</field>
+			<field whichfield="columns"></field>
 		</detail>
        </level><!-- Partner Contact -->
 	   
-	<level name="Partner Contact2" identification="PartnerKey, ContactId, ContactAttribute, ContactDetail">
+	<level name="Partner Contact2" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
+				<value variable="PartnerNameAndKey"/>
+				<value text="   "/>
+				<value variable="PartnerAddress"/>
+			</field>
+		</header>
 		<detail>
-			<field whichfield="left 0" pos="0 cm" width="0.3 cm" calculation="Make Contact Time"></field>
-			<field whichfield="Columns" calculation="Get All Details of Contact Attribute"></field>
+			<field whichfield="left 0" pos="0cm" width="0.3 cm" calculation="Make Contact Time">
+				<value text=" "/>
+			</field>
+			<field whichfield="columns" calculation="Get All Details of Contact Attribute"></field>
 		</detail>
        </level>
 	   

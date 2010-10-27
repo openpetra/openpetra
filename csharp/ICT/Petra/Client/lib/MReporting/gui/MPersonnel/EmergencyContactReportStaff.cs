@@ -155,6 +155,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
       ucoPartnerSelection.ReadControls(ACalc, AReportAction);
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

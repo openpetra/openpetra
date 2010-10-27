@@ -167,6 +167,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
           ACalc.AddParameter("param_order_by", "PartnerKey");
       }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

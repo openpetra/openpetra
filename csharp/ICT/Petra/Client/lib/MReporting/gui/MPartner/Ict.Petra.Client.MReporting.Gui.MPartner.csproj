@@ -161,6 +161,9 @@
     <Compile Include="SupportingChurchesReport.Designer.cs">
       <DependentUpon>SupportingChurchesReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="SupportingChurchesReport.ManualCode.cs">
+      <DependentUpon>SupportingChurchesReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="ValidBankAccountReport.cs" />
     <Compile Include="ValidBankAccountReport.Designer.cs">
       <DependentUpon>ValidBankAccountReport.cs</DependentUpon>
