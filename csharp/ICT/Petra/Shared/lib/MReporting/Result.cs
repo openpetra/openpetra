@@ -1091,6 +1091,19 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
+        /// overload; export all levels
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="csvfilename"></param>
+        /// <param name="separator"></param>
+        /// <param name="ADebugging"></param>
+        /// <returns></returns>
+        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging)
+        {
+            return WriteCSV(AParameters, csvfilename, separator, ADebugging, false);
+        }
+
+        /// <summary>
         /// overload; no debugging
         /// </summary>
         /// <param name="AParameters"></param>
