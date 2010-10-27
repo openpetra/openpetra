@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    if (TAppSettingsManager.GetValueStatic("AutoLogin") != TAppSettingsManager.UNDEFINEDVALUE)
+                    if (TAppSettingsManager.GetValueStatic("AutoLogin", false) != TAppSettingsManager.UNDEFINEDVALUE)
                     {
                         txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
 

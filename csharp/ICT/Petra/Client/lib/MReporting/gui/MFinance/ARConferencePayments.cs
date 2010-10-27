@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Finance\\\\AccountsReceivable/ConferencePayments.xml";
+      FPetraUtilsObject.FXMLFiles = "Finance/AccountsReceivable/ConferencePayments.xml";
       FPetraUtilsObject.FReportName = "ConferencePayments";
       FPetraUtilsObject.FCurrentReport = "ConferencePayments";
       FPetraUtilsObject.FSettingsDirectory = "Finance";
