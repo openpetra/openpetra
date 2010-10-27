@@ -19,6 +19,7 @@
   <appSettings>
     <add key="OpenPetra.PathTemp" value="../../../../../../log" />
     <add key="Reporting.PathReportSettings" value="../../../../../../XmlReports/Settings" />
+    <add key="Reporting.PathReportUserSettings" value="../../../../../../tmp/Settings" />
     <add key="UINavigation.File" value="../../../Definitions/UINavigation.yml" />
     <add key="Resource.Dir" value="../../../../../../resources" />
     <add key="UseWindowsUserID" value="true" />                <!-- Default Value: "false" -->
