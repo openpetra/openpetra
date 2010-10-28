@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{97DF12C5-27C0-446C-AF5F-7C592977F1AE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -126,6 +126,10 @@
     <Compile Include="EndOfCommitmentReport.Designer.cs">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="JobAssignmentReport.cs" />
+    <Compile Include="JobAssignmentReport.Designer.cs">
+      <DependentUpon>JobAssignmentReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="LocalPersonnelDataReport.cs" />
     <Compile Include="LocalPersonnelDataReport.Designer.cs">
       <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>
@@ -231,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JobAssignmentReport.resx">
+      <DependentUpon>JobAssignmentReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LocalPersonnelDataReport.resx">
       <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>
