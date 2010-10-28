@@ -39,5 +39,4 @@
   <Parameter id="param_calculation" column="7" value="Assistant" />
   <Parameter id="ColumnWidth" column="7" value="2" />
   <Parameter id="param_ytd" column="7" value="false" />
-  <Parameter id="param_today" value="#20101028#" />
 </Parameters>
