@@ -107,6 +107,7 @@ OpenPetra:
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
+                        AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:

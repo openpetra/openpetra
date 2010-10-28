@@ -1,0 +1,46 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: AP Aged Supplier List
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance\\\\AP_agedsupplierlist.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: APAgedSupplierList
+        CURRENTREPORT: APAgedSupplierList
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [lblLedger, grpSelection]
+            
+        uco_Columns:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+            Dock: Fill
+            
+        lblLedger:
+            Label: Ledger
+        grpSelection:
+            Label: Settings
+            Dock: Top
+            Controls: [dtpDateSelection, chkInvoice, chkDiscounted]
+        
+        dtpDateSelection:
+            Label: Date for Report
+            ParameterName: param_date_selection
+        chkInvoice:
+            Label: Show Invoices
+            ParameterName: param_show_invoices
+        chkDiscounted:
+            Label: Discounted Only
+            ParameterName: param_discounted_only
+        
