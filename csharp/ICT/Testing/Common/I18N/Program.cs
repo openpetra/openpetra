@@ -38,6 +38,8 @@ namespace I18N
 /// in Notepad++: change format to UTF-8 without BOM
 /// in mono shell, or with mono bin path in PATH: PATH=%PATH%;c:\Programme\Mono-2.4.3\bin;c:\Programme\Poedit\bin
 ///     msgfmt csharp\Ict\Testing\Common\I18N\de.po -d csharp\ICT\Testing\_bin\Debug --locale=de-DE --resource=OpenPetra --csharp
+/// to merge a custom language file (eg. organisation specific), use msgcat:
+///     msgcat csharp\Ict\Testing\Common\I18N\de-custom.po csharp\Ict\Testing\Common\I18N\de.po --use-first -o csharp\Ict\Testing\Common\I18N\de-test.po
 /// </summary>
 class Program
 {
@@ -58,8 +60,10 @@ class Program
             Catalog.Init("de-DE");
             Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
             Console.WriteLine(Catalog.GetString("Hello World!"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
             Catalog.Init("en-GB");
             Console.WriteLine(Catalog.GetString("Hello World!"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
         }
         catch (Exception e)
         {

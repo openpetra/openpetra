@@ -3,6 +3,7 @@
     <property name="sys.env.ProgramFiles" value="${environment::get-folder-path('ProgramFiles')}"/>
     <include buildfile="OpenPetra.build.config" />
     <include buildfile="OpenPetra.build.utils" />
+    <include buildfile="OpenPetra.build.translation.utils" />
     <include buildfile="setup/petra0300/linuxserver/LinuxRelease.build" />
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
@@ -20,9 +21,6 @@
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
-    <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
-    <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
-    <property name="DoNotTranslatePofileWithPath" value="${OpenPetraRoot.dir}/i18n/doNotTranslate.po"/>
     <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
     <property name="WebConfigFile" value="${WebServerInstall.dir}/web.config"/>
     <property name="ClientConfigFile" value="${OpenPetraRoot.dir}/etc/Client.config"/>
@@ -592,76 +590,6 @@
         <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
-    </target>
-    
-    <target name="translationTemplate">
-        <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
-        <!-- use solutionName.CollectedGettext.cs as input for po file -->
-        <property name="collectedGettext.file" value="csharp/ICT/${solutionName}.CollectedGettext.cs"/>
-        <if test="${file::exists(collectedGettext.file)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ../${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
-        </if>
-    </target>
-
-    <target name="translationBankimport">
-        <!-- create initial version of .po file if it does not exist yet -->
-        <property name="WorkingDir" value="${OpenPetraRoot.dir}/csharp/ICT/experimenting/bankimport"/>
-        <property name="LocalPofileWithPath" value="${WorkingDir}/${Translation.TargetLanguage}.po"/>
-
-        <if test="${not file::exists(LocalPofileWithPath)}">
-            <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="--force-po --no-location --from-code=UTF-8 ${WorkingDir}/Program.cs -o ${TargetLanguage.Pofile}"/>
-            <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
-            <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
-            <echo message='${script::ReplaceInFile(LocalPofileWithPath, toReplace, newValue)}'/>
-        </if>
-
-        <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/Experimenting/bankimport/bankimport.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
-        <!-- use solutionName.CollectedGettext.cs as input for po file -->
-        <property name="collectedGettext.file" value="bankimport.CollectedGettext.cs"/>
-        <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
-    </target>
-
-    <target name="translationCompilePOFile">
-        <!-- compile the language file for delivery -->
-        <mkdir dir="${Delivery.dir}/i18n" failonerror="false"/>
-        <exec program="${Poedit.msgfmt}" commandline="${TargetLanguage.PofileWithPath} -d ${Delivery.dir}/i18n/ --locale=${Translation.TargetLanguage} --resource=OpenPetra --csharp">
-            <environment>
-                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-            </environment>
-        </exec>
-    </target>
-
-    <target name="translation">
-
-        <!-- create initial version of .po file if it does not exist yet -->
-        <if test="${not file::exists(TargetLanguage.PofileWithPath)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
-            <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
-            <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
-            <echo message='${script::ReplaceInFile(TargetLanguage.PofileWithPath, toReplace, newValue)}'/>
-        </if>
-
-        <property name="solutionName" value="Common"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="Shared"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="Client"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="ClientPlugins"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="Server"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="ServerPlugins"/>
-        <call target="translationTemplate"/>
-        <property name="solutionName" value="ServerAdmin"/>
-        <call target="translationTemplate"/>
-
-        <!-- remove all strings that should not be translated: demo labels, etc -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate -dntFile:${DoNotTranslatePofileWithPath}  -poFile:${TargetLanguage.PofileWithPath}"/>
-
-        <call target="translationCompilePOFile"/>
     </target>
 
     <target name="loc">

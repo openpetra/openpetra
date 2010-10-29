@@ -23,6 +23,8 @@
 //
 using System;
 using System.IO;
+using System.Threading;
+using System.Diagnostics;
 using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Tools.DBXML;
@@ -84,6 +86,45 @@ class Program
                 }
 
                 writerGettextFile.Close();
+
+                
+                string GettextPath = settings.GetValue("gettext");
+                foreach (string pathProjectFile in pathsProjectFiles)
+                {
+                    StringCollection codeFilePaths = TCSProjTools.LoadCodeFilesFromProject(pathProjectFile);
+
+                    foreach (string pathCodeFile in codeFilePaths)
+                    {
+                    	System.Diagnostics.Process GettextProcess;
+			            GettextProcess = new System.Diagnostics.Process();
+			            GettextProcess.EnableRaisingEvents = false;
+			            GettextProcess.StartInfo.FileName = GettextPath;
+			            GettextProcess.StartInfo.Arguments = String.Format(
+			            	"-j --add-comments=/// --no-location --from-code=UTF-8 \"{0}\" -o \"{1}\"",
+			            	pathCodeFile, GettextFilename);
+			            Console.WriteLine(			            GettextProcess.StartInfo.Arguments);
+			            GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+			            GettextProcess.EnableRaisingEvents = true;
+			            try
+			            {
+			                if (!GettextProcess.Start())
+			                {
+			                    throw new Exception("cannot start gettext");
+			                }
+			            }
+			            catch (Exception)
+			            {
+			                TLogging.Log("Cannot start external gettext program. Is it on the path?");
+			                TLogging.Log("Arguments: " + GettextProcess.StartInfo.Arguments);
+			                throw new Exception("Problem running gettext");
+			            }
+			
+			            while ((!GettextProcess.HasExited))
+			            {
+			                Thread.Sleep(500);
+			            }
+                    }
+                }
 
                 // delete the file if it is empty
                 if (File.ReadAllText(GettextFilename).Length == 0)

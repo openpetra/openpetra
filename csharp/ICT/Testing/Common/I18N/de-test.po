@@ -15,16 +15,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
 #
 msgid "Hello World!"
-msgstr "Hallo Welt!"
-#
-msgid ""
-"Test for two lines\n"
-"second line"
-msgstr ""
-"Zwei Zeilen Test\n"
-"zweite Zeile"
+msgstr "Hallo ihr da draussen!"
+
 #
 msgid "Press any key to continue . . . "
 msgstr "Irgendeine Taste drücken um weiterzumachen . . . "
