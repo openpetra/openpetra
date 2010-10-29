@@ -34,6 +34,37 @@ namespace GenerateI18N
 {
 class Program
 {
+    private static void ParseWithGettext(string AGettextApp, string APoFile, string AListOfFilesToParse)
+    {
+        System.Diagnostics.Process GettextProcess;
+        GettextProcess = new System.Diagnostics.Process();
+        GettextProcess.EnableRaisingEvents = false;
+        GettextProcess.StartInfo.FileName = AGettextApp;
+        GettextProcess.StartInfo.Arguments = String.Format(
+            "-j --add-comments=/// --no-location --from-code=UTF-8 {0} -o \"{1}\"",
+            AListOfFilesToParse, APoFile);
+        GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        GettextProcess.EnableRaisingEvents = true;
+        try
+        {
+            if (!GettextProcess.Start())
+            {
+                throw new Exception("cannot start gettext");
+            }
+        }
+        catch (Exception)
+        {
+            TLogging.Log("Cannot start external gettext program. Is it on the path?");
+            TLogging.Log("Arguments: " + GettextProcess.StartInfo.Arguments);
+            throw new Exception("Problem running gettext");
+        }
+
+        while ((!GettextProcess.HasExited))
+        {
+            Thread.Sleep(100);
+        }
+    }
+
     public static void Main(string[] args)
     {
         TAppSettingsManager settings = new TAppSettingsManager(false);
@@ -60,76 +91,54 @@ class Program
                 parser.ParseDocument(ref store, true, true);
 
                 string solutionFilename = settings.GetValue("solution");
-                string GettextFilename = Path.GetDirectoryName(solutionFilename) +
-                                         Path.DirectorySeparatorChar +
-                                         Path.GetFileNameWithoutExtension(solutionFilename) +
-                                         ".CollectedGettext.cs";
-                StreamWriter writerGettextFile = new StreamWriter(GettextFilename);
+                string CollectedStringsFilename = settings.GetValue("tmpPath") +
+                                                  Path.DirectorySeparatorChar +
+                                                  Path.GetFileNameWithoutExtension(solutionFilename) +
+                                                  ".CollectedGettext.cs";
+                StreamWriter writerCollectedStringsFile = new StreamWriter(CollectedStringsFilename);
 
                 TCSProjTools projTools = new TCSProjTools();
                 StringCollection pathsProjectFiles = projTools.LoadGUIDsFromSolution(solutionFilename);
+                string GettextApp = settings.GetValue("gettext");
 
                 foreach (string pathProjectFile in pathsProjectFiles)
                 {
-                    Console.WriteLine(pathProjectFile);
+                    Console.WriteLine(Path.GetFileName(pathProjectFile));
                     StringCollection codeFilePaths = TCSProjTools.LoadCodeFilesFromProject(pathProjectFile);
+
+                    string filesToParseWithGettext = string.Empty;
 
                     foreach (string pathCodeFile in codeFilePaths)
                     {
-                        TGenerateCatalogStrings.Execute(pathCodeFile, store, writerGettextFile);
+                        if (TGenerateCatalogStrings.Execute(pathCodeFile, store, writerCollectedStringsFile))
+                        {
+                            filesToParseWithGettext += "\"" + pathCodeFile + "\" ";
+
+                            if (filesToParseWithGettext.Length > 1500)
+                            {
+                                ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
+                                filesToParseWithGettext = string.Empty;
+                            }
+                        }
+                    }
+
+                    if (filesToParseWithGettext.Length > 0)
+                    {
+                        ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
                     }
                 }
 
                 if (settings.GetValue("solution").Contains("Client.sln"))
                 {
-                    TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerGettextFile);
+                    TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerCollectedStringsFile);
                 }
 
-                writerGettextFile.Close();
-
-                
-                string GettextPath = settings.GetValue("gettext");
-                foreach (string pathProjectFile in pathsProjectFiles)
-                {
-                    StringCollection codeFilePaths = TCSProjTools.LoadCodeFilesFromProject(pathProjectFile);
-
-                    foreach (string pathCodeFile in codeFilePaths)
-                    {
-                    	System.Diagnostics.Process GettextProcess;
-			            GettextProcess = new System.Diagnostics.Process();
-			            GettextProcess.EnableRaisingEvents = false;
-			            GettextProcess.StartInfo.FileName = GettextPath;
-			            GettextProcess.StartInfo.Arguments = String.Format(
-			            	"-j --add-comments=/// --no-location --from-code=UTF-8 \"{0}\" -o \"{1}\"",
-			            	pathCodeFile, GettextFilename);
-			            Console.WriteLine(			            GettextProcess.StartInfo.Arguments);
-			            GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			            GettextProcess.EnableRaisingEvents = true;
-			            try
-			            {
-			                if (!GettextProcess.Start())
-			                {
-			                    throw new Exception("cannot start gettext");
-			                }
-			            }
-			            catch (Exception)
-			            {
-			                TLogging.Log("Cannot start external gettext program. Is it on the path?");
-			                TLogging.Log("Arguments: " + GettextProcess.StartInfo.Arguments);
-			                throw new Exception("Problem running gettext");
-			            }
-			
-			            while ((!GettextProcess.HasExited))
-			            {
-			                Thread.Sleep(500);
-			            }
-                    }
-                }
+                writerCollectedStringsFile.Close();
 
                 // delete the file if it is empty
-                if (File.ReadAllText(GettextFilename).Length == 0)
+                if (File.ReadAllText(CollectedStringsFilename).Length == 0)
                 {
-                    File.Delete(GettextFilename);
+                    File.Delete(CollectedStringsFilename);
                 }
             }
         }

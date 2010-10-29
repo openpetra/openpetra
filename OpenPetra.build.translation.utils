@@ -1,68 +1,66 @@
 <?xml version="1.0"?>
 <!-- this contains helpful targets used for translation -->
 <project name="OpenPetra" default="help">
-    <property name="TargetLanguage.Pofile" value="${Translation.TargetLanguage}.po"/>
-    <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${Translation.TargetLanguage}.po"/>
+    <property name="TargetLanguage.Pofile" value="template.pot"/>
+    <property name="TargetLanguage.PofileWithPath" value="${OpenPetraRoot.dir}/i18n/${TargetLanguage.Pofile}"/>
     <property name="DoNotTranslatePofileWithPath" value="${OpenPetraRoot.dir}/i18n/doNotTranslate.po"/>
+
+    <target name="translationCompilePOFile">
+        <!-- compile the language file(s) for delivery -->
+        
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${OpenPetraRoot.dir}/i18n/*.po" />
+                    <exclude name="${OpenPetraRoot.dir}/i18n/doNotTranslate.po" />
+                </items>
+            </in>
+            <do>
+                <property name="TargetLanguage.PofileWithPath" value="${filename}"/>
+
+                <mkdir dir="${Delivery.dir}/i18n" failonerror="false"/>
+                
+                <property name="TempLanguageFile" value="${TargetLanguage.PofileWithPath}"/>
+                <property name="CustomLanguageFile" value="${TargetLanguage.PofileWithPath}.my"/>
+                <if test="${file::exists(CustomLanguageFile)}">
+                    <!-- we want to merge the custom language file with the default language file, overwriting the default language file where the custom file contains translations -->
+                    <property name="TempLanguageFile" value="${Tmp.dir}/temp.po"/>
+                    <exec program="${Poedit.msgcat}" commandline="${CustomLanguageFile} ${TargetLanguage.PofileWithPath} --use-first -o ${TempLanguageFile}"/>
+                </if>
+
+                <exec program="${Poedit.msgfmt}" commandline="${TempLanguageFile} -d ${Delivery.dir}/i18n/ --locale=${path::get-file-name-without-extension(filename)} --resource=OpenPetra --csharp">
+                    <environment>
+                        <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                    </environment>
+                </exec>
+            </do>
+        </foreach>
+    </target>
 
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution, but ignore those in region CATALOGI18N;
-        also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-gettext:&quot;${Poedit.gettext}&quot; -solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
+             also resolve calls to Table.GetFieldnameHelp etc; result is in tmp directory, solutionName.CollectedGettext.cs -->
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-gettext:&quot;${Poedit.gettext}&quot; -solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml -tmpPath:${Tmp.dir} -poFile:${TargetLanguage.PofileWithPath}"/>
+
         <!-- use solutionName.CollectedGettext.cs as input for po file -->
-        <property name="collectedGettext.file" value="csharp/ICT/${solutionName}.CollectedGettext.cs"/>
+        <property name="collectedGettext.file" value="${Tmp.dir}/${solutionName}.CollectedGettext.cs"/>
         <if test="${file::exists(collectedGettext.file)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ../${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
+            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
         </if>
-    </target>
-
-    <target name="translationBankimport">
-        <!-- create initial version of .po file if it does not exist yet -->
-        <property name="WorkingDir" value="${OpenPetraRoot.dir}/csharp/ICT/experimenting/bankimport"/>
-        <property name="LocalPofileWithPath" value="${WorkingDir}/${Translation.TargetLanguage}.po"/>
-
-        <if test="${not file::exists(LocalPofileWithPath)}">
-            <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="--force-po --no-location --from-code=UTF-8 ${WorkingDir}/Program.cs -o ${TargetLanguage.Pofile}"/>
-            <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
-            <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
-            <echo message='${script::ReplaceInFile(LocalPofileWithPath, toReplace, newValue)}'/>
-        </if>
-
-        <!-- first collect all Catalog.GetString from all source files in solution; also resolve calls to Table.GetFieldnameHelp etc; result is in solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-solution:${OpenPetraRoot.dir}/csharp/ICT/Experimenting/bankimport/bankimport.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
-        <!-- use solutionName.CollectedGettext.cs as input for po file -->
-        <property name="collectedGettext.file" value="bankimport.CollectedGettext.cs"/>
-        <exec program="${Poedit.gettext}" workingdir="${WorkingDir}" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
-    </target>
-
-    <target name="translationCompilePOFile">
-        <!-- compile the language file for delivery -->
-        <mkdir dir="${Delivery.dir}/i18n" failonerror="false"/>
-        
-        <property name="TempLanguageFile" value="${TargetLanguage.PofileWithPath}"/>
-        <property name="CustomLanguageFile" value="${TargetLanguage.PofileWithPath}.my"/>
-        <if test="${file::exists(CustomLanguageFile)}">
-            <!-- we want to merge the custom language file with the default language file, overwriting the default language file where the custom file contains translations -->
-            <property name="TempLanguageFile" value="${Tmp.dir}/temp.po"/>
-            <exec program="${Poedit.msgcat}" commandline="${CustomLanguageFile} ${TargetLanguage.PofileWithPath} --use-first -o ${TempLanguageFile}"/>
-        </if>
-
-        <exec program="${Poedit.msgfmt}" commandline="${TempLanguageFile} -d ${Delivery.dir}/i18n/ --locale=${Translation.TargetLanguage} --resource=OpenPetra --csharp">
-            <environment>
-                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-            </environment>
-        </exec>
     </target>
 
     <target name="translation">
 
-        <!-- create initial version of .po file if it does not exist yet -->
-        <if test="${not file::exists(TargetLanguage.PofileWithPath)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
-            <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
-            <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
-            <echo message='${script::ReplaceInFile(TargetLanguage.PofileWithPath, toReplace, newValue)}'/>
+        <!-- drop the whole template, if it exists -->
+        <if test="${file::exists(TargetLanguage.PofileWithPath)}">
+            <delete failonerror="false" file="${TargetLanguage.PofileWithPath}" />
         </if>
+
+        <!-- create initial version of .po file -->
+        <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
+        <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
+        <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
+        <echo message='${script::ReplaceInFile(TargetLanguage.PofileWithPath, toReplace, newValue)}'/>
 
         <property name="solutionName" value="Common"/>
         <call target="translationTemplate"/>
@@ -78,7 +76,7 @@
         <call target="translationTemplate"/>
         <property name="solutionName" value="ServerAdmin"/>
         <call target="translationTemplate"/>
-        
+
         <!-- remove all strings that should not be translated: demo labels, etc -->
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate -dntFile:${DoNotTranslatePofileWithPath}  -poFile:${TargetLanguage.PofileWithPath}"/>
 
