@@ -209,7 +209,7 @@
 			<calculation id="Due" returnsFormat="currency" returns="amount">
 				<caption><value text="Due"/></caption>
 				<query>
-					<queryDetail condition="and(gt({DueDate}, {param_date_selection}), le({DueDate}, {param_date_selecion30}))">
+					<queryDetail condition="and(gt({DueDate}, {param_date_selection}), le({DueDate}, {param_date_selection30}))">
 						<value variable="NetAmount"/>
 					</queryDetail>
 				</query>
@@ -217,7 +217,7 @@
 			<calculation id="Due 30+" returnsFormat="currency" returns="amount">
 				<caption><value text="Due 30+"/></caption>
 				<query>
-					<queryDetail condition="and(gt({DueDate}, {param_date_selection30}), le({DueDate}, {param_date_selecion60}))">
+					<queryDetail condition="and(gt({DueDate}, {param_date_selection30}), le({DueDate}, {param_date_selection60}))">
 						<value variable="NetAmount"/>
 					</queryDetail>
 				</query>
