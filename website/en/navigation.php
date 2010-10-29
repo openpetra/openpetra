@@ -74,8 +74,9 @@
 
 				<ul class="tabbed">
 					<li <?php echo ($page == 'front'? 'class="current_page_item"':'');?>><a href="index.php?lang=en">Home</a></li>
+					<li <?php echo ($page == 'download-openpetraorg'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=download-openpetraorg&category=releases-en">Download</a></li>
 					<li <?php echo ($nav == 'product'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=product">Product Details</a></li>
-					<li <?php echo ($nav == 'news'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=news">News</a></li>
+					<li <?php echo ($nav == 'news' && $page != 'download-openpetraorg'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=news">News</a></li>
 					<li <?php echo ($nav == 'community'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=community">Community</a></li>
 					<li <?php echo ($nav == 'tech'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=tech">Tech Corner</a></li>
 					<li <?php echo ($nav == 'flyer'? 'class="current_page_item"':'');?>><a href="index.php?lang=en&page=flyer">Flyer</a></li>

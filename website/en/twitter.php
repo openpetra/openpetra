@@ -2,7 +2,6 @@
 define('CACHE_PATH_TO', dirname(__FILE__).DIRECTORY_SEPARATOR.'cache');
 define('CACHE_EXTENSION', 'cachetw');
 
-
 // it seems file_get_contents does not return the full page
 function curl_get_file_contents_from_twitter($URL)
 {
@@ -17,6 +16,7 @@ function curl_get_file_contents_from_twitter($URL)
 }
 
 function fetch_twitter_feed($user, $since = 0) {
+global $reload;
     $url = 'http://twitter.com/statuses/user_timeline.xml?screen_name=' . $user;
     if($since > 0) {
         $url .= '&since_id=' . $since;
@@ -25,7 +25,7 @@ function fetch_twitter_feed($user, $since = 0) {
     $data = false;
     $path_to_file = CACHE_PATH_TO.DIRECTORY_SEPARATOR.$user.'.'.CACHE_EXTENSION;
     $limit_in_hours=0.5;
-    if(!file_exists($path_to_file) || filemtime($path_to_file) <  time() - $limit_in_hours * 60 * 60)
+    if(!file_exists($path_to_file) || filemtime($path_to_file) <  time() - $limit_in_hours * 60 * 60 || isset($reload))
     {
         // try to get new version
         
@@ -83,7 +83,7 @@ function fetch_twitter_feed($user, $since = 0) {
            $id = $status->getElementsByTagName('id')->item(0)->nodeValue;
            $text = $status->getElementsByTagName('text')->item(0)->nodeValue;
            $text = str_replace("https://translations.launchpad.net/openpetraorg", "http://bit.ly/abcEtj", $text);
-	   $text = htmlspecialchars(utf8_decode($text));
+	   $text = htmlspecialchars($text);
 	   while (!(($poshttp = strpos($text, 'http://')) === false))
 	   {
 	   	$posspace = strpos($text, ' ', $poshttp);
@@ -97,7 +97,10 @@ function fetch_twitter_feed($user, $since = 0) {
 	   }
 	   $text = str_replace('REPLACEHTTP://', 'http://', $text);
            $date = strtotime($status->getElementsByTagName('created_at')->item(0)->nodeValue);
-           $updates[] = array($id, $text, $date);
+	   if ($text[0] != '@')
+	   {
+               $updates[] = array($id, $text, $date);
+	   }
         }
     }
     return $updates;
@@ -114,20 +117,20 @@ function get_relative_date ( $timestamp )
    $timediff /= 60*60;
    if ($timediff < 1) 
    {
-      return "vor ca. einer Stunde";
+      return "about an hour ago";
    }
-   if ($timediff < 12)
+   if ($timediff <  12)
    {
-      return "vor ca. ".floor($timediff)." Stunden";
+      return "about ".floor($timediff)." hours ago";
    }
    $timediff -= $hourtoday;
    $timediff /= 24;
    if ($timediff<1)
    {
-      return "gestern ".($hourofday < 12?'Vormittag':($hourofday < 18?'Nachmittag':'Abend'));
+      return "yesterday in the ".($hourofday < 12?'morning':($hourofday < 18?'afternoon':'evening'));
    }
    $timediff++;
-   return "vor ".floor($timediff)." Tagen am ".($hourofday < 12?'Vormittag':($hourofday < 18?'Nachmittag':'Abend'));
+   return floor($timediff)." days ago in the ".($hourofday < 12?'morning':($hourofday < 18?'afternoon':'evening'));
 }
 
 function getTweets($twittername, $numberTweets)
@@ -142,17 +145,12 @@ $tweeds = false;
      if ($count < $numberTweets)
      {
        //$msg .= '<div class="tweetdate">'.date('d-M-Y g:i A', $tweed[2]).'</div><div class="tweettext">';
-       $msg .= '<div class="tweetdate">'.get_relative_date( $tweed[2]).'</div><div class="tweettext">';
-       $msg .= $tweed[1].'</div>'."\n";
+       $msg .= '<li><span>'.get_relative_date( $tweed[2]).': </span>';
+       $msg .= $tweed[1].'</li>'."\n";
      }
      $count++;
   }
   return $msg;
 }
 ?>
-
-<br/><br/>
-<div class="twitter">Die neuesten Nachrichten auf <a href="http://www.twitter.com/openpetraorgde">Twitter</a>:
-<?php echo getTweets('openpetraorgde', 5); ?>
-<!-- Follow us on Twitter: <br/><a href="http://www.twitter.com/openpetraorgde"><img src="img/twitter.jpg" border="0"/></a>-->
-</div>
+<?php echo getTweets('openpetraorg', 3); ?>

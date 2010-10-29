@@ -82,6 +82,7 @@ function ParseRSSFeed($xmltext)
 {
         //$doc = new DOMDocument();
         //$doc->load($url);
+        $xmltext = str_replace('&', '&amp;', $xmltext);
         $doc = DOMDocument::loadXML(str_replace('content:encoded', 'content', $xmltext));
 	$arrFeeds = array();
 	foreach ($doc->getElementsByTagName('item') as $node) {
@@ -145,8 +146,37 @@ function curl_get_file_contents($URL)
     else return FALSE;
 }
 
+/// return value between first h2 tag
+function GetTitleFromPost($content)
+{
+    return getContent($content, '<h2>', '</h2>');
+}
+
+/// remove superflous divs from the end
+function fixDivs($result)
+{
+    $opendiv = substr_count($result, '<div');
+    $closediv = substr_count($result, '</div');
+    for ($count = 0; $count < $closediv - $opendiv; $count++)
+    {
+        $pos = strrpos($result, '</div>');
+        $result = substr($result, 0, $pos);
+    }
+    return $result;
+}
+
+/// return value between first h2 tag
+function GetContentFromPost($content)
+{
+    $result = getContent($content, '<div class="entry">', '^');
+    $result = fixDivs($result);
+   
+    return $result;
+}
+
 function GetPageContent($url, $page, $category, $post)
 {
+global $lang;
 // todo: post: display just one post; also need to change the permanent link in the title
 
     if (!isset($page) || strlen($page) == 0)
@@ -161,9 +191,8 @@ function GetPageContent($url, $page, $category, $post)
 	    return showError($url.'/'.$page.'/');
        }
 
-       $result = '<div class="item"><div>'.
-              getContent($pageTxt, '<div id="content" class="narrowcolumn" role="main">', '<div id="sidebar"').
-              '</div>';
+       $result = getContent($pageTxt, '<div id="content" class="narrowcolumn" role="main">', '<div id="sidebar"');
+       $result = fixDivs($result);
     }
 
     if (isset($category))
@@ -173,6 +202,9 @@ function GetPageContent($url, $page, $category, $post)
     }
     $result = str_replace('/apps/wordpress', 'http://sourceforge.net/apps/wordpress', $result);
     $result = str_replace('http://sourceforge.nethttp://sourceforge.net', 'http://sourceforge.net', $result);
+    $result = str_replace('index.php?', 'index.php?lang='.$lang.'&', $result);
+    $result = utf8_decode($result);
+    $result = str_replace('&amp;', '&', $result);
     return $result;
 }
 ?>
