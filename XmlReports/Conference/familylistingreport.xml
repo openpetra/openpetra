@@ -247,7 +247,7 @@
 		</detail>
 	</level>
 	
-      <level name="Attendee Details" identification="Family Key">
+      <level name="Attendee Details" identification="AttendeeKey">
 		<header>
 		</header>
 		<detail>
