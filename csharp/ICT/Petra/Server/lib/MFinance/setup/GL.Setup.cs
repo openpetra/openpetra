@@ -965,7 +965,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
             return myAT;
         }
-		/// <summary>
+
+        /// <summary>
         /// Check if a value in  AFREEFORMANALSYSIS cand be deleted (count the references in ATRansANALATTRIB)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
@@ -973,7 +974,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
         }
-		/// <summary>
+
+        /// <summary>
         /// Check if a TypeCode in  AnalysisType can be deleted (count the references in ATRansAnalysisAtrributes)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]

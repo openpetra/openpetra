@@ -104,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewATransaction();
+            ProcessAnalysisAttibutes();
         }
 
         /// <summary>
@@ -178,6 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                             TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
                                                 dtpDetailTransactionDate.Date.Value)
                                             ).ToString();
+
             if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
@@ -310,8 +312,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
                 int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-                FPreviouslySelectedDetailRow.Delete();
                 ((TFrmGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
+                FPreviouslySelectedDetailRow.Delete();
                 UpdateTotals(null);
                 FPetraUtilsObject.SetChangedFlag();
 
@@ -340,12 +342,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.FPreviouslySelectedDetailRow = null;
         }
+
         /// <summary>
         /// if the account code changes, analysis types/attributes  have to be updated
         /// </summary>
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
-        	((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes((String)cmbDetailAccountCode.SelectedValue);
+            ProcessAnalysisAttibutes();
+        }
+
+        private void ProcessAnalysisAttibutes()
+        {
+            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes((String)cmbDetailAccountCode.SelectedValue);
         }
     }
 }

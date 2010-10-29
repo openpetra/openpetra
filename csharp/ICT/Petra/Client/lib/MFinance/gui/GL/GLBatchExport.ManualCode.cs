@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
                 }
-            
+
                 Hashtable requestParams = new Hashtable();
 
                 Int32 ALedgerNumber = 0;

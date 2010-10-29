@@ -76,7 +76,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgTransactions.Enabled = true;
             this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber);
         }
-		/// <summary>
+
+        /// <summary>
         /// activate the attributes tab and load the attributes of the transaction
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -88,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgAttributes.Enabled = true;
             this.ucoAttributes.LoadAttributes(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber);
         }
-        
+
         /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
@@ -96,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgTransactions.Enabled = false;
         }
-        
+
         /// <summary>
         /// disable the attributes tab if we have no active transactions
         /// </summary>
@@ -104,7 +105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgAttributes.Enabled = false;
         }
-
 
         /// this window contains 3 tabs
         public enum eGLTabs
@@ -168,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return ucoTransactions;
         }
-        
+
         /// <summary>
         /// directly access the attributes control
         /// </summary>

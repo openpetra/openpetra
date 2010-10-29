@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.txtReadonlyDescription.Location = new System.Drawing.Point(2,2);
             this.txtReadonlyDescription.Name = "txtReadonlyDescription";
-            this.txtReadonlyDescription.Size = new System.Drawing.Size(150, 28);
+            this.txtReadonlyDescription.Size = new System.Drawing.Size(400, 28);
             this.txtReadonlyDescription.ReadOnly = true;
             this.txtReadonlyDescription.TabStop = false;
             //
