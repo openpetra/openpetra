@@ -203,6 +203,8 @@ global $lang;
     $result = str_replace('/apps/wordpress', 'http://sourceforge.net/apps/wordpress', $result);
     $result = str_replace('http://sourceforge.nethttp://sourceforge.net', 'http://sourceforge.net', $result);
     $result = str_replace('index.php?', 'index.php?lang='.$lang.'&', $result);
+    $result = utf8_decode($result);
+    $result = str_replace('&amp;', '&', $result);
     return $result;
 }
 ?>

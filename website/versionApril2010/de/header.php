@@ -22,7 +22,13 @@
 			<div id="header">
 
 				<div id="logo">
-					<img src="img/openpetra_logo_final_white_text.png" alt="OpenPetra.org" height="120px" align="middle"/>
+					<a href="index.php?lang=de"><img src="img/openpetra_logo_final_white_text.png" alt="OpenPetra.org" height="120px" align="middle"/></a>
+
+                </div>
+                <div id="web20">
+                                        <a href="/index.php?lang=de&amp;page=news"><img src="img/rss.png" alt="RSS abonnieren"/></a>
+                                        <a href="http://www.twitter.com/OpenPetraOrgDe" target="_blank"><img id="twitterimg" src="img/twitter.png" alt="Aktuelles von OpenPetra bei Twitter"/></a>
+                                        <a href="http://www.facebook.com/#!/group.php?gid=131053328375" target="_blank"><img id="facebookimg" src="img/facebook.gif" alt="OpenPetra Gruppe bei Facebook"/></a>
                 </div>
                 <div id="slogan">
 					<h2 id="site-slogan">Freie Softwarel&ouml;sung f&uuml;r gemeinn&uuml;tzige Werke und Vereine</h2>

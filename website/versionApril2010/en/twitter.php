@@ -16,6 +16,7 @@ function curl_get_file_contents_from_twitter($URL)
 }
 
 function fetch_twitter_feed($user, $since = 0) {
+global $reload;
     $url = 'http://twitter.com/statuses/user_timeline.xml?screen_name=' . $user;
     if($since > 0) {
         $url .= '&since_id=' . $since;

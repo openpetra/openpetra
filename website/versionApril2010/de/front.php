@@ -23,7 +23,7 @@ OpenPetra l&auml;uft auf einem Laptop, oder im Netzwerk, oder als SaaS</li>
 Wir brauchen jetzt Ihre Mithilfe, damit OpenPetra einsatzf&auml;hig wird</li>
 </ul>
         
-            <p class="large text-center"><a href="index.php?lang=de&page=german-site/screenshots-de">Rundgang</a> <span class="text-separator">|</span> <a href="index.php?lang=de&page=download-openpetraorg&category=releases-en">Download</a> <span class="text-separator">|</span> <a href="index.php?lang=de&page=about-openpetraorg">Mehr Informationen</a></p>
+            <p class="large text-center"><a href="index.php?lang=de&page=german-site/screenshots-de">Rundgang</a> <span class="text-separator">|</span> <a href="index.php?lang=de&page=german-site/download-openpetraorg-de&category=releases-de">Download</a> <span class="text-separator">|</span> <a href="index.php?lang=de&page=about-openpetraorg">Mehr Informationen</a></p>
 
         </div>
 
@@ -65,7 +65,9 @@ Wir brauchen jetzt Ihre Mithilfe, damit OpenPetra einsatzf&auml;hig wird</li>
             <ul class="nice-list">
                 <?php include "twitter.php"; ?>
             </ul>
-
+<iframe src="http://www.facebook.com/plugins/likebox.php?locale=de_DE&href=http%3A%2F%2Fwww.facebook.com%2F%23%21%2Fpages%2FOpenPetraorg%2F146243692080416&amp;width=400&amp;connections=10&amp;stream=false&amp;header=false&amp;height=255" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:400px; height:255px;" allowTransparency="true"></iframe>
+<br/>
+<br/>
 
             <h2 class="left">Die Ziele von OpenPetra.org</h2>
             <div class="right more large"><a href="index.php?lang=de&page=organisation-benefits-de">Mehr &#187;</a></div>
@@ -83,5 +85,4 @@ Wir brauchen jetzt Ihre Mithilfe, damit OpenPetra einsatzf&auml;hig wird</li>
         <div class="clearer">&nbsp;</div>
 
     </div>
-
 </div>

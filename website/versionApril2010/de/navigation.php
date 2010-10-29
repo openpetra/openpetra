@@ -33,6 +33,7 @@
     else if ($page == 'flyer')
     {
         $nav = 'flyer';
+        $page = 'german-site/flyer-de';
     }
     else if ($page == 'german-site/developers-joining-de'
         || $page == 'german-site/developers-get-started-de'
@@ -74,8 +75,9 @@
 
 				<ul class="tabbed">
 					<li <?php echo ($page == 'front'? 'class="current_page_item"':'');?>><a href="index.php?lang=de">Start</a></li>
+					<li <?php echo ($page == 'german-site/download-openpetraorg-de'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=german-site/download-openpetraorg-de&category=releases-de">Download</a></li>
 					<li <?php echo ($nav == 'product'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=product">Produkt</a></li>
-					<li <?php echo ($nav == 'news'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=news">Neuigkeiten</a></li>
+					<li <?php echo ($nav == 'news' && $page != 'german-site/download-openpetraorg-de'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=news">Neuigkeiten</a></li>
 					<li <?php echo ($nav == 'community'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=community">Benutzergemeinschaft</a></li>
 					<li <?php echo ($nav == 'tech'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=tech">Technische Ecke</a></li>
 					<li <?php echo ($nav == 'flyer'? 'class="current_page_item"':'');?>><a href="index.php?lang=de&page=flyer">Handzettel</a></li>

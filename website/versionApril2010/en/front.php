@@ -84,6 +84,9 @@ Join the OpenPetra effort to make this a success for your charity</li>
             <ul class="nice-list">
                 <?php include "twitter.php"; ?>
             </ul>
+<iframe src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2F%23%21%2Fpages%2FOpenPetraorg%2F146243692080416&amp;width=400&amp;connections=10&amp;stream=false&amp;header=false&amp;height=255" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:400px; height:255px;" allowTransparency="true"></iframe>
+<br/>
+<br/>
                                     
             <h2 class="left">The Goals of OpenPetra.org</h2>
             <div class="right more large"><a href="index.php?lang=en&page=organisation-benefits">View More &#187;</a></div>
