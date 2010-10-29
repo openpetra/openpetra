@@ -595,7 +595,7 @@
 		</footer>
 	</level>
 	
-      <level name="PartnerLevel1">
+      <level name="PartnerLevel1" identification="AssociatedPartnerKey">
 		<header>
 			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
 				<value variable="ChurchPartnerKey1"/>
@@ -614,7 +614,7 @@
 		</detail>
        </level><!-- Partner Level1 -->
 	   
-	<level name="PartnerLevel2">
+	<level name="PartnerLevel2" identification="AssociatedPartnerKey">
 		<header>
 			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
 				<value variable="ChurchPartnerKey1"/>
