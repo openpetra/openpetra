@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
 <project name="OpenPetra" default="help">
     <property name="sys.env.ProgramFiles" value="${environment::get-folder-path('ProgramFiles')}"/>
-    <property name="OpenPetraConfig.file" value="OpenPetra.build.config.my"/>
+    <property name="OpenPetraConfig.file" value="OpenPetra.build.config"/>
     <if test="${file::exists(OpenPetraConfig.file)}">
         <include buildfile="${OpenPetraConfig.file}" />
     </if>
     <if test="${not file::exists(OpenPetraConfig.file)}">
-        <property name="OpenPetraConfig.file" value="OpenPetra.build.config"/>
-        <include buildfile="${OpenPetraConfig.file}" />
+        <property name="OpenPetraConfig.file" value="OpenPetra.build.config.my"/>
+        <if test="${file::exists(OpenPetraConfig.file)}">
+            <include buildfile="${OpenPetraConfig.file}" />
+        </if>
+        <if test="${not file::exists(OpenPetraConfig.file)}">
+            <fail message="Make sure you have an OpenPetra.build.config file or OpenPetra.build.config.my" />
+        </if>
     </if>
     <include buildfile="OpenPetra.build.utils" />
     <include buildfile="OpenPetra.build.translation.tasks" />

@@ -10,30 +10,12 @@
     <property name="TestReportingConfigFile" value="${OpenPetraRoot.dir}/etc/TestReporting.config"/>
     <property name="TestClientConfigFile" value="${OpenPetraRoot.dir}/etc/TestClient.config"/>
 
-    <property name="CustomizedConfigFile" value="${WebConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="WebConfigFile" value="${WebConfigFile}.my"/>
-    </if>
-    <property name="CustomizedConfigFile" value="${ClientConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="ClientConfigFile" value="${ClientConfigFile}.my"/>
-    </if>
-    <property name="CustomizedConfigFile" value="${ServerConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="ServerConfigFile" value="${ServerConfigFile}.my"/>
-    </if>
-    <property name="CustomizedConfigFile" value="${ServerAdminConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="ServerAdminConfigFile" value="${ServerAdminConfigFile}.my"/>
-    </if>
-    <property name="CustomizedConfigFile" value="${TestReportingConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="TestReportingConfigFile" value="${TestReportingConfigFile}.my"/>
-    </if>
-    <property name="CustomizedConfigFile" value="${TestClientConfigFile}.my"/>
-    <if test="${file::exists(CustomizedConfigFile)}">
-        <property name="TestClientConfigFile" value="${TestClientConfigFile}.my"/>
-    </if>
+    <property name="WebConfigFile" value="${script::PickConfigFile(WebConfigFile)}"/>
+    <property name="ClientConfigFile" value="${script::PickConfigFile(ClientConfigFile)}"/>
+    <property name="ServerConfigFile" value="${script::PickConfigFile(ServerConfigFile)}"/>
+    <property name="ServerAdminConfigFile" value="${script::PickConfigFile(ServerAdminConfigFile)}"/>
+    <property name="TestReportingConfigFile" value="${script::PickConfigFile(TestReportingConfigFile)}"/>
+    <property name="TestClientConfigFile" value="${script::PickConfigFile(TestClientConfigFile)}"/>
 
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >

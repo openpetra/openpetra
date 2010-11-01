@@ -107,6 +107,24 @@
       return line.ToLower().IndexOf("auto generated with nant") != -1;
     }
 
+    [Function("PickConfigFile")]
+    public static string PickConfigFile(string filename)
+    {
+      // default to the filename which is not committed to repository
+      if (File.Exists(filename))
+      {
+         return filename;
+      }
+
+      // if there is no manually written and locally maintained file, use the .my customized version if it exists
+      if (File.Exists(filename + ".my"))
+      {
+         return filename + ".my";
+      }
+
+      return filename;
+    }
+
     [Function("CheckCode")]
     public static bool CheckCode(string filename)
     {
