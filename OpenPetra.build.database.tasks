@@ -186,10 +186,16 @@
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
             <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
-            <!-- this currently only works on Linux -->
             <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${path::get-temp-path()}/demodata-PostgreSQL.sql openpetra" />
-            <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
         </if>
+        <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+            <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${path::get-temp-path()}/demodata-PostgreSQL.sql&quot; openpetra">
+                <environment>
+                    <variable name="PGPASSWORD" value="${DBMS.Password}"/>
+                </environment>
+            </exec>
+        </if>
+        <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
     </target>
 
     <target name="createMySQLDB">
@@ -198,12 +204,12 @@
         <call target="resetDatabase"/>
 
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" overwrite="true"/>
-            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" overwrite="true"/>
-            <!-- this currently only works on Linux -->
-            <exec program="mysqldump" commandline="openpetra --no-create-info --user=root --password=${DBMS.Password}  --result-file=${path::get-temp-path()}/demodata-MySQL.sql" />
-            <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
+            <exec program="mysqldump" commandline="openpetra --no-create-info --user=root --password=${DBMS.Password} --result-file=${path::get-temp-path()}/demodata-MySQL.sql" />
         </if>
+        <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+            <exec program="${MySQLDump.exe}" commandline="openpetra --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${path::get-temp-path()}/demodata-MySQL.sql&quot;"/>
+        </if>
+        <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
     </target>
 
 </project>
