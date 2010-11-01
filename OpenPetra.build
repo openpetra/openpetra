@@ -20,6 +20,11 @@
     <include buildfile="OpenPetra.build.installer.tasks" />
     <include buildfile="OpenPetra.build.execute.tasks" />
 
+    <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/nantcontrib/NAnt.Contrib.Tasks.dll"/>
+    <if test="${file::exists(msbuildtask.file)}">
+        <loadtasks assembly="msbuildtask.file"/>
+    </if>
+
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
     <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
@@ -167,7 +172,14 @@
             </if>
         </if>
         <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
-            <solution configuration="${Configuration}" solutionfile="${solution.file}" />
+            <if test="${file::exists(msbuildtask.file)}">
+                <msbuild project="${solution.file}">        
+                    <property name="Configuration" value="${Configuration}"/>
+                </msbuild>
+            </if>
+            <if test="${not file::exists(msbuildtask.file)}">
+                <solution configuration="${Configuration}" solutionfile="${solution.file}" />
+            </if>
         </if>
     </target>
     <target name="compileCommon" description="compile Ict/Common">
