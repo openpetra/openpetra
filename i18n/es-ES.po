@@ -1,0 +1,5343 @@
+# Spanish translation for openpetraorg
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the openpetraorg package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openpetraorg\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2010-08-23 10:51+0200\n"
+"PO-Revision-Date: 2010-10-26 16:28+0000\n"
+"Last-Translator: Timotheus Pokorra <Unknown>\n"
+"Language-Team: Spanish <joejoe2010@users.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-11-01 08:08+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+"X-Poedit-Bookmarks: 1509,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
+"X-Poedit-Language: Spanish\n"
+
+msgid "invalid database system"
+msgstr "sistema de base de datos inválido"
+
+msgid "Cannot open CSV file, because it is missing the header line."
+msgstr "No se puede abir el archivo CSV por falta de la línea de cabecera"
+
+msgid ""
+"There must be a row with the column captions, each caption starting with the "
+"# character."
+msgstr ""
+"Debe haber una fila con los títulos de columna, cada título comenzando con "
+"el simbolo #"
+
+msgid "There is an empty column name. This is not allowed"
+msgstr "Hay un nombre de columna vacio. Esto no es permitido."
+
+msgid ""
+"Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|*.csv"
+msgstr ""
+"Archivo de texto (*.yml)|*.yml|XML archivo (*.xml)|*.xml|Archivo de hoja de "
+"cálculo (*.csv)|*.csv"
+
+msgid "Zipped Text file (*.yml.gz)|*.yml.gz"
+msgstr "archivo de texto cerrado (*.yml.gz)|*.yml.gz"
+
+msgid "Comma"
+msgstr "Coma"
+
+msgid "Tabulator"
+msgstr "Tabulador"
+
+msgid "Other Separator:"
+msgstr "otro separador"
+
+msgid "Semicolon"
+msgstr "Punto y coma"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "OK"
+msgstr "Aceptar"
+
+msgid "Date format:"
+msgstr "Formato de fecha:"
+
+msgid "Select CSV Separator"
+msgstr "Seleccionar separador CSV"
+
+msgid "Task"
+msgstr "Tarea"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Caption"
+msgstr "Leyenda"
+
+msgid "Invalid date entered."
+msgstr "Fecha inválida."
+
+#, csharp-format
+msgid "'{0}' cannot be later than '{1}'."
+msgstr "«{0}» no puede ser posterior que «{1}»."
+
+msgid "Invalid Data"
+msgstr "Datos inválidos"
+
+#, csharp-format
+msgid "'{0}' cannot be later or equal than '{1}'."
+msgstr "'{0}' no puede ser mayor o igual a '{1}'."
+
+#, csharp-format
+msgid "{0} must be a date.'"
+msgstr "{0} debe ser una fecha.'"
+
+#, csharp-format
+msgid "'{0}' may not be a past date.'"
+msgstr "'{0}' no debe ser una fecha pasada.'"
+
+#, csharp-format
+msgid "'{0}' may not be a future date.'"
+msgstr "'{0}' no debe ser una fecha futura.'"
+
+#, csharp-format
+msgid "'{0}' may not be empty.'"
+msgstr "'{0}' no debe estar vacio.'"
+
+#, csharp-format
+msgid "'{0}' cannot be earlier than '{1}'."
+msgstr "'{0}' no puede ser anterior a '{1}'."
+
+#, csharp-format
+msgid "'{0}' cannot be earlier or equal than '{1}'."
+msgstr "'{0}' no puede ser anterior o igual a '{1}'."
+
+msgid "Invalid number entered."
+msgstr "Número inválido introducido."
+
+#, csharp-format
+msgid "'{0}' must be an Integer (= a number without a fraction)."
+msgstr "'{0}' debe ser un entero (= un numero sin fracción)."
+
+msgid "Mr"
+msgstr "Señor"
+
+msgid "Mrs"
+msgstr "Señora"
+
+msgid "Family"
+msgstr "Familia"
+
+msgid "Dear {0} {1}{#PLURAL}"
+msgstr "Estimados {0} {1}{#PLURAL}"
+
+msgid "Dear {0} {1}{#MALE}"
+msgstr "Estimado {0} {1}{#MALE}"
+
+msgid "Ms"
+msgstr "Sra"
+
+msgid "Miss"
+msgstr "Señorita"
+
+msgid "Dear {0} {1}{#FEMALE}"
+msgstr "Estimada Señora {0} {1}{#FEMALE}"
+
+msgid "Dear Sir or Madam"
+msgstr "Señoras y Señores"
+
+msgid "Dear {0}{1}{#NOGENDER}"
+msgstr "Señoras y Señores {0} {1}{#NOGENDER}"
+
+msgid "This functionality is not yet implemented in OpenPetra."
+msgstr "Esta funcionalidad todavía no está realizada en OpenPetra."
+
+msgid "Not Implemented"
+msgstr "No implementado"
+
+msgid "Create Extract"
+msgstr "Crear extracción"
+
+msgid "Extract Name:"
+msgstr "Extraer Nombre:"
+
+msgid "Description:"
+msgstr "Descripción :"
+
+msgid "Failure"
+msgstr "Falla"
+
+msgid "The extract was not created"
+msgstr ""
+
+msgid "&User ID:"
+msgstr "ID de &usuario:"
+
+msgid "&Password:"
+msgstr "&Contraseña:"
+
+msgid " &Login"
+msgstr " &Inicio de sesión"
+
+msgid " &Cancel"
+msgstr " &Cancelar"
+
+msgid "Database:"
+msgstr "Base de datos:"
+
+msgid "Remember the username"
+msgstr "Recordar el nombre de usuario"
+
+msgid "Petra Login"
+msgstr "Inicia Petra"
+
+msgid " O P E N P E T R A "
+msgstr " O P E N P E T R A "
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "© 1995 - 2009 by OM International"
+msgstr "© 1995 - 2009 por OM International"
+
+msgid "Standalone / Network / Remote"
+msgstr ""
+
+msgid "New Navigation"
+msgstr "Navegación Nueva"
+
+msgid "Closes this window"
+msgstr "Cierra esta ventana"
+
+msgid "&Close"
+msgstr "&Cerrar"
+
+msgid "&File"
+msgstr "&Archivo"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "Petra &Main Menu"
+msgstr "&Menú principal de Petra"
+
+msgid "Pa&rtner"
+msgstr "S&ocio"
+
+msgid "&Finance"
+msgstr "&Finanzas"
+
+msgid "P&ersonnel"
+msgstr "P&ersonal"
+
+msgid "C&onference"
+msgstr "C&onferencia"
+
+msgid "Financial &Development"
+msgstr "&Desarrollo Financiero"
+
+msgid "&System Manager"
+msgstr "Administrador de &Sistemas"
+
+msgid "&OpenPetra"
+msgstr "&OpenPetra"
+
+msgid "&Petra Help"
+msgstr "Ayuda de &Petra"
+
+msgid "Bug &Report"
+msgstr "Informe de e&rrores"
+
+msgid "&About Petra"
+msgstr "&Acerca de Petra"
+
+msgid "&The Development Team..."
+msgstr "El Equipo de Desarrollo"
+
+msgid "&Help"
+msgstr "&Ayuda"
+
+msgid "Hospitality"
+msgstr ""
+
+msgid "F&inance"
+msgstr "F&inanzas"
+
+msgid "&Personnel"
+msgstr "&Personal"
+
+msgid "C&onference Management"
+msgstr "Administración de C&onferencias"
+
+msgid "Failed Logins:"
+msgstr "Inicios de sesión fallidos:"
+
+msgid "User:"
+msgstr "Usuario:"
+
+msgid "Last Failed Login:"
+msgstr "Último inicio de sesión fallido:"
+
+msgid "Last Login:"
+msgstr "Último inicio de sesión:"
+
+msgid "Go to Finance Module"
+msgstr "Ir al Módulo de finanzas"
+
+msgid "Go to Partner Module"
+msgstr "Ir al Módulo de socios"
+
+msgid "Cannot check for patches"
+msgstr "No se pueden buscar parches."
+
+msgid "Loading..."
+msgstr "Cargando..."
+
+msgid "Custom Text can be displayed here..."
+msgstr "Se puede mostrar texto personalizado aquí..."
+
+msgid ""
+"You need to finish editing by choosing the 'Done' button\n"
+"before you can close the window!"
+msgstr ""
+"Se ha de terminar la edición pulsando el botón \"Hecho\"\n"
+"antes de que se pueda cerrar la ventana."
+
+msgid "Need to Finish Editing!"
+msgstr "Termine la modificación."
+
+msgid "New Petra Screen"
+msgstr "Nueva pantalla de Petra"
+
+msgid "Security Violation"
+msgstr "Violación de seguridad"
+
+#, csharp-format
+msgid "You do not have permission to {0} {1} records."
+msgstr "No tiene permisos para {0} {1} registros."
+
+msgid "Contact Date:"
+msgstr "Fecha de contacto:"
+
+msgid "Contactor:"
+msgstr ""
+
+msgid "Comment Contains:"
+msgstr "Comentario contiene:"
+
+msgid "Module:"
+msgstr "Módulo:"
+
+msgid "Method Of Contact:"
+msgstr "Manera de contacto:"
+
+msgid "Mailing Code:"
+msgstr ""
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Delete Contacts"
+msgstr "Borrar contactos"
+
+msgid "Contacts with Partners"
+msgstr "Contactos con socio"
+
+msgid "Enter the date the contact was made"
+msgstr ""
+
+msgid "Enter the User ID"
+msgstr "Entre el ID de usuario"
+
+msgid "Enter the mailing code associated with the contact"
+msgstr ""
+
+#, csharp-format
+msgid "Do you really want to delete all {0} contacts?"
+msgstr ""
+
+msgid "Confirm deletion"
+msgstr "Confirmar eliminación"
+
+msgid "There was a problem deleting the contacts"
+msgstr ""
+
+msgid "Saves changed data"
+msgstr "Guarda los datos modificados"
+
+msgid "&Save"
+msgstr "&Guardar"
+
+msgid "&New Partner"
+msgstr "&Nuevo socio"
+
+msgid "Separator"
+msgstr "Separador"
+
+msgid "&Partner Data"
+msgstr "Data del &socio"
+
+msgid "P&ersonnel Data"
+msgstr "Datos del p&ersonal"
+
+msgid "&Finance Data"
+msgstr "Datos &Financieros"
+
+msgid "&New Partner..."
+msgstr "&Nuevo Socio"
+
+msgid "Add &Person with Shepherd..."
+msgstr "Agregar &persona con asistente"
+
+msgid "Add &Family with Shepherd..."
+msgstr "Agregar &familia con asistente"
+
+msgid "Add &Church with Shepherd..."
+msgstr "Agregar &iglesia con asistente"
+
+msgid "Add &Organisation with Shepherd..."
+msgstr "Agregar &organización con asistente"
+
+msgid "Add &Unit with Shepherd..."
+msgstr "Agregar &unidad con asistente"
+
+msgid "N&ew Partner (Shepherd)"
+msgstr "N&uveo Socio con asistente"
+
+msgid "&Print..."
+msgstr "&Imprimir..."
+
+msgid "Deactivate Partner"
+msgstr "Desactivar socio"
+
+msgid "&Delete THIS Partner..."
+msgstr "&Borrar este socio"
+
+msgid "Send E&mail to Partner"
+msgstr "Ma%ndar correo electrónico al socio"
+
+msgid "P&rint Section..."
+msgstr "Im&primir sección..."
+
+msgid "E&xport Partner"
+msgstr "E&xportar socio"
+
+msgid "Undo &Current Field"
+msgstr "Des&hacer campo actual"
+
+msgid "&Undo Screen"
+msgstr "Deshacer pantalla"
+
+msgid "&Find..."
+msgstr "&Buscar..."
+
+msgid "&Edit"
+msgstr "&Editar"
+
+msgid "&Addresses"
+msgstr "Direcciones"
+
+msgid "Partner &Details"
+msgstr "Detailles del &socio"
+
+msgid "Foundation Details"
+msgstr "Detalles de la fundación"
+
+msgid "&Subscriptions"
+msgstr "&Suscripciones"
+
+msgid "Special &Types"
+msgstr "&Tipos especiales"
+
+msgid "&Contacts"
+msgstr "&Contactos"
+
+msgid "Fa&mily Members"
+msgstr "Fa&miliares"
+
+msgid "&Relationships"
+msgstr "&Relaciones"
+
+msgid "&Interests"
+msgstr "&Intereses"
+
+msgid "&Reminders"
+msgstr "&Recordatorio"
+
+msgid "&Notes"
+msgstr "&Notas"
+
+msgid "&Local Partner Data"
+msgstr "&Datos de socios locales"
+
+msgid "&Worker Field"
+msgstr "&Campo del trabajador"
+
+msgid "&Personnel/Individual Data"
+msgstr "&Datos individuales"
+
+msgid "Donor &History"
+msgstr "&Historial del donante"
+
+msgid "Recipient Histor&y"
+msgstr "historia&l"
+
+msgid "Finance Report&s"
+msgstr "Informe financiero"
+
+msgid "Ban&k Accounts"
+msgstr "Cuentas Ban&carias"
+
+msgid "&Gift Receipting"
+msgstr "&Contabilidad de ofrendas"
+
+msgid "&Finance Details"
+msgstr "Detailles de las finanzas"
+
+msgid "Ma&intain"
+msgstr "M&antener"
+
+msgid "&Expanded"
+msgstr "&Expandido"
+
+msgid "&Collapsed"
+msgstr ""
+
+msgid "&Upper Screen Part"
+msgstr "Parte &arriba de la pantalla"
+
+msgid "Vie&w"
+msgstr "V&er"
+
+msgid "&Video Tutorial for Partner Edit Screen..."
+msgstr "Cursillo de Video para el Diálogo \"Editar socio\""
+
+msgid "Partner Edit"
+msgstr "Editar socio"
+
+#, csharp-format
+msgid "Hello {0}"
+msgstr "Hola {0}"
+
+msgid "Find by Partner Details"
+msgstr "Buscar por detalles de socio"
+
+msgid "Find by Bank Details"
+msgstr "Buscar por detalles bancarios"
+
+msgid "&Cancel"
+msgstr "&Cancelar"
+
+msgid "Fully load Data"
+msgstr "Cargar datos completamente"
+
+msgid "&Accept"
+msgstr "&Aceptar"
+
+msgid "&Search"
+msgstr "Bu&scar"
+
+msgid "&Work with Last Partner..."
+msgstr "&Seguir trabajando con último socio"
+
+msgid "&Recent Partners"
+msgstr "S&ocios recientes"
+
+msgid "&View Partner"
+msgstr "&Ver socio"
+
+msgid "&Edit Partner"
+msgstr "&Editar socio"
+
+msgid "Mer&ge Partners..."
+msgstr "&Fusionar socios..."
+
+msgid "&Delete Partner"
+msgstr "&Borrar socio"
+
+msgid "Copy Partner's &Address..."
+msgstr "C&opiar dirección del socio"
+
+msgid "Copy Partner's Partner &Key"
+msgstr "Copiar clave del socio"
+
+msgid "&Print Partner"
+msgstr "&Imprimir socio"
+
+msgid "&Import Partner"
+msgstr "I&mportar socio"
+
+msgid "&Addresses..."
+msgstr "&Direcciones..."
+
+msgid "Partner &Details..."
+msgstr "Detailles del &socio..."
+
+msgid "Foundation Details..."
+msgstr "Detailles de la &fundación..."
+
+msgid "&Subscriptions..."
+msgstr "&Suscripciones..."
+
+msgid "Special &Types..."
+msgstr "&Tipos especiales..."
+
+msgid "&Contacts..."
+msgstr "&Contactos..."
+
+msgid "Family &Members..."
+msgstr "&Miembros de la familia"
+
+msgid "&Relationships..."
+msgstr "&Relaciones..."
+
+msgid "&Interests..."
+msgstr "&Intereses..."
+
+msgid "R&eminders..."
+msgstr "R&ecordatorios..."
+
+msgid "&Notes..."
+msgstr "&Notas..."
+
+msgid "&Local Partner Data..."
+msgstr "&Datos de socios locales..."
+
+msgid "&Worker Field..."
+msgstr "&Campo del trabajado..."
+
+msgid "&Personnel/Individual Data..."
+msgstr "&Datos individuales..."
+
+msgid "Donor  &History..."
+msgstr "&Historial del donante..."
+
+msgid "Recipient  Histor&y..."
+msgstr "O&frendas para el socio"
+
+msgid "&Finance Details..."
+msgstr "Detalles &financieros..."
+
+msgid "Maintain"
+msgstr "Editar"
+
+msgid "&Generate Extract From Found Partners..."
+msgstr ""
+
+msgid "&Extracts..."
+msgstr "&Listas.."
+
+msgid "&Duplicate  Address Check..."
+msgstr "Encontrar direcciones duplicadas"
+
+msgid "&Merge  Addresses..."
+msgstr "&Fusionar direcciones"
+
+msgid "Find Partners at &Location..."
+msgstr ""
+
+msgid "Subscription Expiry &Notices..."
+msgstr ""
+
+msgid "Subscription  &Cancellation..."
+msgstr "&Cancelación de suscripción..."
+
+msgid "&Mailing"
+msgstr "&Envío"
+
+msgid "&Tools"
+msgstr "Herramien&tas"
+
+msgid "Partner Find OpenPetra.org"
+msgstr "Encontrar socio OpenPetra.org"
+
+msgid "&More >>"
+msgstr "&Más >>"
+
+msgid "Move &Up"
+msgstr "&Subir"
+
+msgid "Rearrange Find Criteria"
+msgstr "Reordenar criterio de búsqueda"
+
+msgid "R.List Items"
+msgstr ""
+
+msgid "L.List Items"
+msgstr ""
+
+msgid "Move &Down"
+msgstr "&Bajar"
+
+msgid "Move To &Left"
+msgstr "Ir a la &izquierda"
+
+msgid "Move To &Right"
+msgstr "Ir a la &derecha"
+
+msgid "Displayed Find Criteria"
+msgstr "M&ostrar criterio de búsqueda"
+
+msgid "&Partner Find Criteria:"
+msgstr "C&riterio de búsqueda para socio"
+
+msgid "&Address Find Criteria:"
+msgstr "C&riterio de búsqueda para dirección"
+
+msgid "O&ther Find Criteria:"
+msgstr "&Otros Criterios de búsqueda"
+
+msgid "Sho&w 'Matching Pattern' buttons"
+msgstr "Mostrar botón \"muestra de búsqueda\""
+
+msgid "Exact Partner &Key Match"
+msgstr ""
+
+msgid "&Reset"
+msgstr "&Reiniciar"
+
+msgid "Find Options"
+msgstr "Opciones de búsqueda"
+
+msgid "Filename:"
+msgstr "Nombre del archivo:"
+
+msgid "Select File"
+msgstr "Seleccione el archivo"
+
+msgid "Semi Automatic Import:"
+msgstr ""
+
+msgid "Current Import File Record Status:"
+msgstr ""
+
+msgid "Explanation:"
+msgstr "Explicación"
+
+msgid "Take Action:"
+msgstr "Tomar acción:"
+
+msgid "Skip Record"
+msgstr "Brincar registro"
+
+msgid "Create new Family and Person"
+msgstr "Crear nueva familia y persona"
+
+msgid "Use selected Person in list below"
+msgstr "Usar persona selecta en lista de abajo"
+
+msgid "Add as new Person to selected Family in list below"
+msgstr ""
+
+msgid "Create new Family Record only"
+msgstr ""
+
+msgid "Use selected Family in list below"
+msgstr "Usar familia selecta en lista de abajo"
+
+msgid "Find other Person to use for this Record..."
+msgstr ""
+
+msgid "Find other Family to add this Person to..."
+msgstr ""
+
+msgid "Replace current address in list below with imported one"
+msgstr ""
+
+msgid "Start Import"
+msgstr "empezar la importación"
+
+msgid "Cancel Import"
+msgstr "Cancelar la importación"
+
+msgid "Import Partners"
+msgstr "importar socios"
+
+msgid "Please cancel the current import before selecting a different file"
+msgstr "Cancele la importación actual antes de seleccionar otro archivo"
+
+msgid "Select the file for importing partners"
+msgstr "Seleccione el archivo para importar socios"
+
+msgid "Please select a text file containing the partners first"
+msgstr "Seleccione un archivo que contiene los socios por primero"
+
+msgid "Need a file to import"
+msgstr "Se necesita un archivo para poder importar algo"
+
+#, csharp-format
+msgid "{0} Records processed - Import finished"
+msgstr "{0} registros procesados - importación terminada"
+
+#, csharp-format
+msgid "Processing record {0} of {1}"
+msgstr "Procesando registro {0} de {1}"
+
+msgid "Attribute"
+msgstr "Atributo"
+
+msgid "Value"
+msgstr "Valor"
+
+msgid "Class"
+msgstr "Clase"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Address"
+msgstr "Dirección"
+
+msgid "City"
+msgstr "Ciudad"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "&Import"
+msgstr "&Importar"
+
+msgid "&Export"
+msgstr "&Exportar"
+
+msgid "&Find && Maintain..."
+msgstr "&Buscar && Mantener..."
+
+msgid "Work with &Last Partner..."
+msgstr "Traba&jar con último socio"
+
+msgid "&Recent Partners..."
+msgstr "S&ocios recientes..."
+
+msgid "&Partner By City Report (experiment)"
+msgstr ""
+
+msgid "Brief &Address Report"
+msgstr "reporte de &dirrecion en suma"
+
+msgid "Brief &Foundation Report"
+msgstr "reporte de &fundación en suma"
+
+msgid "Supporting &Churches Report"
+msgstr ""
+
+msgid "&Valid Bank Account Report"
+msgstr ""
+
+msgid "Publication &Statistical Report"
+msgstr ""
+
+msgid "&Bulk Address Report"
+msgstr ""
+
+msgid "Partner C&ontact Report"
+msgstr ""
+
+msgid "Subscri&ption Report"
+msgstr "Reporte de suscripciones"
+
+msgid "&Reports..."
+msgstr "&Reportes..."
+
+msgid "New &Partner..."
+msgstr "&Nuevo socio..."
+
+msgid "Add &Person"
+msgstr "Agregar &persona"
+
+msgid "Add &Family"
+msgstr "Agregar &familia"
+
+msgid "Add &Church"
+msgstr "Agregar &iglesia"
+
+msgid "&New Partner (assistant)"
+msgstr "&Nuevo socio(asistente)"
+
+msgid "&Merge Partners"
+msgstr "&Fusionar socios"
+
+msgid "D&elete Partner"
+msgstr "Borrar &socio"
+
+msgid "&Duplicate Address Check"
+msgstr "&Encontrar direcciones duplicadas"
+
+msgid "Mer&ge Addresses"
+msgstr "Fus&ionar direcciones"
+
+msgid "&View Partners at Location"
+msgstr ""
+
+msgid "P&artner"
+msgstr "&Socio"
+
+msgid "&Label Print"
+msgstr "Imprimir e&tiquetas"
+
+msgid "Mails&ort Label Print"
+msgstr ""
+
+msgid "Subscription Expiry &Notices"
+msgstr ""
+
+msgid "Subscription &Cancellation"
+msgstr "&Cancelar suscripción"
+
+msgid "&Form Letter Print"
+msgstr ""
+
+msgid "Extrac&t Mail Merge"
+msgstr ""
+
+msgid "Mailin&g"
+msgstr ""
+
+msgid "Todo"
+msgstr "Que haceres"
+
+msgid "Maintain &Tables"
+msgstr "Mantener &tablas"
+
+msgid "Partner Module OpenPetra.org"
+msgstr "Modulo de socios OpenPetra.org"
+
+msgid "Load Partners from File"
+msgstr "Cargar socios de archivo"
+
+msgid "Import of partners failed!"
+msgstr "Importación de socios falló!"
+
+msgid "Partner(s) have been imported successfully"
+msgstr ""
+
+msgid "Save Partners into File"
+msgstr "Guardar socios en un archivo"
+
+msgid "&OK"
+msgstr "&Aceptar"
+
+msgid "S&ites Available:"
+msgstr "S&itios disponibles:"
+
+msgid "Partner &Key:"
+msgstr "Clave de s&ocio"
+
+msgid "Partner C&lass:"
+msgstr "C&lase de socio"
+
+msgid "&Acquisition Code:"
+msgstr "Código de adquisición:"
+
+msgid "&Private Partner:"
+msgstr "Socio &privado:"
+
+msgid "Partner Key"
+msgstr "Clave de socio"
+
+msgid "&Family..."
+msgstr "&Familia..."
+
+msgid "New Partner"
+msgstr "Nuevo socio"
+
+msgid "Accept data and continue"
+msgstr "Aceptar datos y seguir"
+
+msgid "Cancel data entry and close"
+msgstr "Cerrar entrada de datos y salir"
+
+msgid "Help"
+msgstr "Ayuda"
+
+msgid "Please select an Acquisition Code"
+msgstr "Seleccione el código de adquisición"
+
+msgid "Please select a Site"
+msgstr "Seleccione un sitio"
+
+msgid "Please select a Partner Class"
+msgstr "Seleccione una clase de socio"
+
+msgid "Please enter a Partner Key or Accept the default Partner Key"
+msgstr "Entre una clave de socio o acepte la clave de socio predeterminada"
+
+msgid "Please select a Family that the Person should belong to"
+msgstr ""
+
+msgid "Previous Name:"
+msgstr "Nombre anterior:"
+
+msgid "Local Name:"
+msgstr "Nombre local:"
+
+msgid "Names"
+msgstr "Nombres"
+
+msgid "Bank/Branch Code:"
+msgstr "Código de banco/sucursal"
+
+msgid "BIC/SWIFT Code:"
+msgstr "Código BIFT/SWIFT"
+
+msgid "EP Format File:"
+msgstr ""
+
+msgid "Language Code:"
+msgstr "Código de idiomas:"
+
+msgid "Acquisition Code:"
+msgstr "Código de adquisición:"
+
+msgid "Find"
+msgstr "Buscar"
+
+msgid "Contact Partner:"
+msgstr "Contactar socio:"
+
+msgid "Miscellaneous"
+msgstr "Diversos"
+
+msgid "Enter the previously used Surname (eg before marriage)"
+msgstr ""
+
+msgid "Enter a short name for this partner in your local language"
+msgstr ""
+
+msgid ""
+"The bank code/branch code/sort code (synonymous country-specific terms) for "
+"identifying a bank branch with a number/code."
+msgstr ""
+
+msgid "Select the partner's preferred language"
+msgstr ""
+
+msgid "Select a method-of-acquisition code"
+msgstr ""
+"Seleccione como se estableció el contacto respectivamente de donde viene la "
+"dirección"
+
+msgid ""
+"Generally the contact person for the unit who will be addressed in any "
+"correspondence"
+msgstr ""
+
+msgid "Denomination Code:"
+msgstr "Código de denominación"
+
+msgid "Approximate Size:"
+msgstr "Tamaño aproximado:"
+
+msgid "Map On File"
+msgstr "Proyectar en archivo"
+
+msgid "Prayer Group"
+msgstr "Grupo de oración"
+
+msgid "Accomodation:"
+msgstr "Alojamiento:"
+
+msgid "Accomodation Size:"
+msgstr "Tamaño del alojamiento:"
+
+msgid "Accomodation Type:"
+msgstr "Tipo del alojamiento:"
+
+msgid "Enter a denomination code"
+msgstr "Entre el código de confesión"
+
+msgid "Enter the number of people in regular attendence"
+msgstr ""
+
+msgid "Mark if there is a map to the church on file"
+msgstr ""
+
+msgid "Mark if this church is a prayer group"
+msgstr ""
+
+msgid "Enter the partner who is to be addressed in correspondence"
+msgstr ""
+
+msgid "This church has accommodation for visitors, travelors or teams"
+msgstr ""
+
+msgid "How many people can they accomodate"
+msgstr "Maximo de personas que se pueden alojar"
+
+msgid "Select type of accomodation"
+msgstr "Seleccione tipo de alojamiento"
+
+msgid "Marital Status:"
+msgstr "Estado civil:"
+
+msgid "Marital Status Since:"
+msgstr "Estado civil desde:"
+
+msgid "Marital Status Comment:"
+msgstr ""
+
+msgid "Select marital status"
+msgstr "Seleccione estado civil:"
+
+msgid "Date from which the marital status is valid"
+msgstr ""
+
+msgid "Enter a comment for the marital status"
+msgstr ""
+
+msgid "Religious Organisation"
+msgstr "Organicación religiosa"
+
+msgid "Foundation"
+msgstr "Fundación"
+
+msgid "Business Code:"
+msgstr "Código de negocio:"
+
+msgid "Select if this is a religious Organisation"
+msgstr "Seleccione si se trata de una organisación religiosa"
+
+msgid "Select if this is a Foundation"
+msgstr "Seleccione si se trata de una fundación"
+
+msgid "Select a business code"
+msgstr "Seleccione un código de negocio"
+
+msgid "Preferred Name:"
+msgstr "Nombre preferido:"
+
+msgid "Date Of Birth:"
+msgstr "Fecha de nacimiento:"
+
+msgid "Decorations:"
+msgstr "Decoraciones:"
+
+msgid "Academic Title:"
+msgstr "Titulo académico:"
+
+msgid "Occupation:"
+msgstr "Ocupación:"
+
+msgid "Enter the name this person is commonly known by"
+msgstr ""
+
+msgid "Enter the date the person was born"
+msgstr ""
+
+msgid "ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."
+msgstr ""
+
+msgid "Enter the academic title for the person"
+msgstr ""
+
+msgid "Enter an occupation code"
+msgstr "Entre un código de ocupación"
+
+msgid "Country Code:"
+msgstr "Código de país:"
+
+msgid "Unit Type:"
+msgstr "Típo de unidad:"
+
+msgid "Xyz Tbd Code:"
+msgstr ""
+
+msgid "Xyz Tbd Cost:"
+msgstr ""
+
+msgid "Campaign Information"
+msgstr ""
+
+msgid "Country in which this Unit is found"
+msgstr ""
+
+msgid "todo"
+msgstr "que haceres"
+
+msgid "Enter the cost of this xyz_tbd"
+msgstr ""
+
+msgid "Currency used for the xyz_tbd cost"
+msgstr ""
+
+msgid "Venue Code:"
+msgstr "Código del lugar de encuentro:"
+
+msgid "Currency Code:"
+msgstr ""
+
+msgid "Currency used for the venue"
+msgstr ""
+
+msgid "Status Updated:"
+msgstr "Estado actualizado:"
+
+msgid "&Gender:"
+msgstr "&Género:"
+
+msgid "Title/Na&me:"
+msgstr "Título/N&ombre:"
+
+msgid "Partner &Status:"
+msgstr "E&stado de socio:"
+
+msgid "Addressee Type:"
+msgstr "Tipo de dirección:"
+
+msgid "No Solicitations"
+msgstr ""
+
+msgid "Class:"
+msgstr "Clase:"
+
+msgid "Key:"
+msgstr "Clave:"
+
+msgid "Na&me:"
+msgstr "No&mbre:"
+
+msgid "     &Field..."
+msgstr "     &Campo..."
+
+msgid "Currency + Amount, Given To"
+msgstr ""
+
+msgid "Last Gift:"
+msgstr "Última ofrenda:"
+
+msgid "Last Contact:"
+msgstr "Último contaco:"
+
+msgid "Set this if the partner does not want extra mailings"
+msgstr ""
+
+msgid "Enter an addressee type code"
+msgstr ""
+
+msgid "Select a partner status"
+msgstr "Seleccione estado de socio"
+
+msgid "e.g. Herr, Mr(s)., Frau, Miss., Senor(ita), M., Mme., Dr., et"
+msgstr ""
+
+msgid "Enter the person's full first name"
+msgstr "Entre el nombre completo de la persona"
+
+msgid "Enter the person's full middle name or initial"
+msgstr ""
+
+msgid "Enter a Last Name/Surname/Family Name"
+msgstr "Entre el apellido completo de la persona"
+
+msgid "Select the gender of the Person"
+msgstr ""
+
+msgid "e.g. Family, Mr & Mrs, Herr und Frau"
+msgstr ""
+
+msgid "Enter the name of the church"
+msgstr "Entre el nombre de la iglesia"
+
+msgid "Enter the name of the organisation"
+msgstr "Entre el nombre de la organización"
+
+msgid "Enter the name of the unit"
+msgstr "Entre el nombre de la unidad"
+
+msgid "Enter the name of the bank"
+msgstr "Entre el nombre del banco"
+
+msgid "Enter the name of the venue"
+msgstr "Entre el nombre del lugar de encuentro"
+
+#, csharp-format
+msgid "Addresses ({0})"
+msgstr "Direcciones ({0})"
+
+msgid "Partner Details"
+msgstr "Detailles del socio"
+
+#, csharp-format
+msgid "Subscriptions ({0})"
+msgstr "Suscripciones ({0})"
+
+#, csharp-format
+msgid "Special Types ({0})"
+msgstr "Tipos especiales ({0})"
+
+msgid "Family Members"
+msgstr "Miembros de la familia"
+
+#, csharp-format
+msgid "Notes ({0})"
+msgstr "Notas ({0})"
+
+msgid "Local Data"
+msgstr "Datos locales"
+
+msgid "&Addressee Type:"
+msgstr "Tipo del destinatario:"
+
+msgid "Key Partner Data"
+msgstr "Datos de socios locales"
+
+msgid "Enter the partner key (SiteID + Number)"
+msgstr ""
+
+msgid "Select a partner class"
+msgstr "Seleccione una clase de socio"
+
+#, csharp-format
+msgid "Unrecognised Partner Class '{0}'!"
+msgstr "Clase de socio desconocida '{0}'"
+
+msgid "this.FDelegateGetPartnerShortName could not be called!"
+msgstr ""
+
+msgid " &Search"
+msgstr " &Buscar"
+
+msgid "Detailed Results"
+msgstr "Resultados detallados"
+
+msgid "Clea&r"
+msgstr "Bo&rrar"
+
+msgid "Find Criteria"
+msgstr "Encontrar criterio"
+
+msgid "Custom Criteria Demo"
+msgstr ""
+
+msgid "Fin&d Result"
+msgstr "Encontrar resultado"
+
+msgid "Searching..."
+msgstr "Buscando..."
+
+msgid "Location Key"
+msgstr ""
+
+msgid "Worker Families O&nly"
+msgstr ""
+
+msgid "(trailing 0 = --*)"
+msgstr ""
+
+msgid "Private"
+msgstr "Privado"
+
+msgid "Acti&ve"
+msgstr "Acti&vo"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Status:"
+msgstr "Estado:"
+
+msgid "Phone Number:"
+msgstr "Número de teléfono:"
+
+msgid "Address &3:"
+msgstr "Dirección &3:"
+
+msgid "Address &2:"
+msgstr "Dirección &2:"
+
+msgid "&Email:"
+msgstr "&Correo electrónico:"
+
+msgid "Partner &Name:"
+msgstr "&Nombre de la persona:"
+
+msgid "Personal &(First) Name:"
+msgstr ""
+
+msgid "Address &1:"
+msgstr "Dirección &1:"
+
+msgid "P&ost Code:"
+msgstr "Código postal:"
+
+msgid "Cit&y/Town:"
+msgstr "Ciu&dad:"
+
+msgid "Co&unty:"
+msgstr "C&ondado/distrito:"
+
+msgid "Co&untry:"
+msgstr "P&aís:"
+
+msgid "Mailin&g Addresses Only:"
+msgstr ""
+
+msgid "Partner Info"
+msgstr "Información acerca del socio"
+
+msgid "Commitm. Field &Office:"
+msgstr ""
+
+msgid "From/To:"
+msgstr "Desde/hasta:"
+
+msgid "Only Current"
+msgstr ""
+
+msgid "Eve&nt/Confer./Camp.:"
+msgstr ""
+
+msgid "Lang&uage:"
+msgstr "Len&guaje:"
+
+msgid "Partner Key:"
+msgstr "Clave de socio:"
+
+msgid "Acquired:"
+msgstr ""
+
+msgid "Name:"
+msgstr "Nombre:"
+
+msgid "Details of the selected Address"
+msgstr ""
+
+msgid "Fax:"
+msgstr "Fax:"
+
+msgid "Telephone:"
+msgstr "Teléfono:"
+
+msgid "Alternate:"
+msgstr ""
+
+msgid "Mobile:"
+msgstr "Celular/Móvil:"
+
+msgid "Email:"
+msgstr "Correo electrónico:"
+
+msgid "Location Type:"
+msgstr "Tipo de localidad:"
+
+msgid "Mailing Addr.:"
+msgstr ""
+
+msgid "URL:"
+msgstr "URL:"
+
+msgid "Valid From:"
+msgstr "Valido desde:"
+
+msgid "Valid To:"
+msgstr "Valido hasta:"
+
+msgid "Types && Subscriptions"
+msgstr "Tipos && Suscripciones:"
+
+msgid "Subscriptions and Special Types of the Partner"
+msgstr ""
+
+msgid "Special Types:"
+msgstr "Tipos especiales"
+
+msgid "Subscriptions:"
+msgstr "Suscripciones:"
+
+msgid "Other"
+msgstr "Otros"
+
+msgid "Other details of the Partner"
+msgstr "Otros detalles del socio"
+
+msgid "Other Information:"
+msgstr "Otra información:"
+
+msgid "Parent Unit:"
+msgstr "Unidad matriz:"
+
+msgid "Field:"
+msgstr "&Campo"
+
+msgid "Partner Updated:"
+msgstr "Socio actualizado"
+
+msgid "guages):"
+msgstr ""
+
+msgid "Speaks (Lan-"
+msgstr ""
+
+msgid "Person / Family"
+msgstr "Persona / Familia"
+
+msgid "Family:"
+msgstr "Familia:"
+
+msgid "Date of Birth:"
+msgstr "Fecha de nacimiento:"
+
+msgid "Family Members:"
+msgstr "Miembros de la familia:"
+
+msgid "No Partner to display."
+msgstr "No hay socios que mostrar"
+
+msgid "Please wait."
+msgstr "Espere, por favor."
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Enter any additional comments (if full, use notebook)"
+msgstr ""
+
+msgid "Starts with search term --*"
+msgstr ""
+
+msgid "Ends with search term *--"
+msgstr ""
+
+msgid "Contains search term *-*"
+msgstr ""
+
+msgid "Exactly matches search term ---"
+msgstr ""
+
+msgid "Country Name"
+msgstr ""
+
+msgid "Replace Date With Today's Date?"
+msgstr ""
+
+msgid "PartnerKey"
+msgstr "Clave de socio:"
+
+msgid "Partner Name"
+msgstr "Nombre de socio"
+
+msgid "Partner Name:"
+msgstr "Nombre de socio:"
+
+msgid "PartnerKey:"
+msgstr "Calve de Socio:"
+
+msgid "Field Of Service"
+msgstr "Campo de trabajo"
+
+msgid "      &Delete"
+msgstr "      &Eliminar"
+
+msgid "       Edi&t"
+msgstr "       Edi&tar"
+
+msgid "       &New"
+msgstr "       &Nuevo"
+
+msgid "List expand button"
+msgstr ""
+
+msgid "Address list"
+msgstr "Lista de direcciones"
+
+msgid "Delete currently selected Address"
+msgstr ""
+
+msgid "Edit currently selected Address"
+msgstr ""
+
+msgid "Create new address"
+msgstr "Crear nueva dirección"
+
+msgid "Vali&d From:"
+msgstr "Válido desde:"
+
+msgid "&Phone:"
+msgstr "&Teléfono:"
+
+msgid "&Location Type:"
+msgstr "&Típo de unidad:"
+
+msgid "County/St&ate:"
+msgstr "Ciudad/Est&ado:"
+
+msgid "Po&st Code:"
+msgstr "Código po&stal:"
+
+msgid "Addr&3:"
+msgstr "Dirr.&3:"
+
+msgid "Street-&2:"
+msgstr "Calle-&2:"
+
+msgid "Addr&1:"
+msgstr "Dirr.&1:"
+
+msgid "TelExt"
+msgstr ""
+
+msgid "Phone No"
+msgstr ""
+
+msgid "Postal Code"
+msgstr "Código postal"
+
+msgid "County"
+msgstr ""
+
+msgid "Address Line 3"
+msgstr "Línea de dirección 3"
+
+msgid "Street Name"
+msgstr ""
+
+msgid "Locality"
+msgstr "Unidad"
+
+msgid "Fa&x:"
+msgstr "Fa&x:"
+
+msgid "Fax No"
+msgstr ""
+
+msgid "FaxExt"
+msgstr ""
+
+msgid "E&mail:"
+msgstr "C&orreo electrónico:"
+
+msgid "Email"
+msgstr "C&orreo electrónico:"
+
+msgid "Websi&te:"
+msgstr "Sitio w&eb:"
+
+msgid "Web URL"
+msgstr "Sitio w&eb URL:"
+
+msgid "Alte&rnate:"
+msgstr ""
+
+msgid "Alternate Phone No"
+msgstr ""
+
+msgid "Mobile Phone No"
+msgstr ""
+
+msgid "Mo&bile:"
+msgstr "Celular / móvil:"
+
+msgid "Partner-specific Data for this Address"
+msgstr ""
+
+msgid "Valid From"
+msgstr "Válido desde"
+
+msgid "Mailin&g Address:"
+msgstr ""
+
+msgid "Valid To"
+msgstr "Válido hasta"
+
+msgid "The part of the address preceding the street, eg business name"
+msgstr ""
+
+msgid "Enter the second part of the address (e.g. name of the street)"
+msgstr ""
+
+msgid "Enter the third part of the address, eg district of the city"
+msgstr ""
+
+msgid "Enter a post town or city"
+msgstr ""
+
+msgid "Enter a county/province/state/district/canton"
+msgstr ""
+
+msgid "Enter the international postal/zip code"
+msgstr ""
+
+msgid "Select a country code"
+msgstr "Seleccione un código de país"
+
+msgid "Select the address location type"
+msgstr "Seleccione el tipo de dirección de la unidad"
+
+msgid "Can or should, postal mail be sent to this address?"
+msgstr ""
+
+msgid "Enter a Telephone number for this address (if available)"
+msgstr ""
+
+msgid "Enter a Fax number for this address location (if available)"
+msgstr ""
+
+msgid "Enter an Alternative phone number (if available)"
+msgstr ""
+
+msgid "Enter a Mobile phone number for this address (if available)"
+msgstr ""
+
+msgid "Enter an Email address (if available)"
+msgstr ""
+
+msgid "URL for this Partner's Web Home Page"
+msgstr ""
+
+msgid "Enter the Telephone Extension (if available)"
+msgstr ""
+
+msgid "Enter the Fax Extension (if available)"
+msgstr ""
+
+msgid "Enter the date this address is effective"
+msgstr ""
+
+msgid "Enter the date this address expires on"
+msgstr ""
+
+msgid "Office Specific Data Labels"
+msgstr ""
+
+msgid "Reset Search"
+msgstr ""
+
+msgid "No e-mail address for this Partner in the selected address record."
+msgstr ""
+
+msgid "Cannot Send E-mail To Partner"
+msgstr "No se puede mandar correo electrónico al socio"
+
+msgid ""
+"No valid e-mail address for this Partner in the selected address record."
+msgstr ""
+
+msgid "Details: "
+msgstr "Detalles: "
+
+msgid "Female"
+msgstr "femenino"
+
+msgid "Male"
+msgstr "Masculino"
+
+msgid "married"
+msgstr "casado"
+
+msgid "engaged"
+msgstr "prometido"
+
+msgid "single"
+msgstr "sencillo"
+
+msgid "divorced"
+msgstr "divorciado"
+
+msgid "Close the preview"
+msgstr "Cerrar vista previa"
+
+msgid "&About Petra..."
+msgstr "&Acerca de Petra..."
+
+msgid "Status Bar"
+msgstr "Barra de estado"
+
+msgid "Ready"
+msgstr "Listo"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Print Preview"
+msgstr "Previsualización de la impresión"
+
+msgid "Text Preview"
+msgstr ""
+
+msgid "Text Output"
+msgstr ""
+
+msgid ""
+"Unfortunately this function is disabled. Please install a printer to use "
+"this page."
+msgstr ""
+
+msgid "Select Zoom"
+msgstr "Seleccionar zoom"
+
+msgid "Previous Page"
+msgstr "Página anterior"
+
+msgid "Next Page"
+msgstr "Página siguiente"
+
+msgid "Detail Reports"
+msgstr "Reporte detallado"
+
+msgid "Print"
+msgstr "Imprimir"
+
+msgid "Print the report"
+msgstr "Imprimir reporte"
+
+msgid "Export to CSV"
+msgstr ""
+
+msgid "Export to CSV or directly into Excel, if it is available"
+msgstr ""
+
+msgid "Save as Text file"
+msgstr "Guardar como archivo de texto"
+
+msgid "Save as a text file (e.g. for email)"
+msgstr "Guardar como archivo de texto(p.e. para correo electrónico)"
+
+msgid "Generate Chart"
+msgstr "Generar gráfico"
+
+msgid ""
+"Generates a chart in Excel (only available yet for few reports at the moment)"
+msgstr ""
+
+msgid "Settings cannot be loaded"
+msgstr "Imposible de cargar las propiedades"
+
+msgid "Settings cannot be saved"
+msgstr "Imposible de guardar las propiedades"
+
+msgid "Existing stored Settings:"
+msgstr ""
+
+msgid "Load"
+msgstr "Cargar"
+
+msgid "Load Report Settings"
+msgstr "Cargar las propiedades del reporte"
+
+msgid "Rename"
+msgstr "Renombrar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Maintain Report Settings"
+msgstr "Mantener las propiedades del reporte"
+
+msgid "New Name:"
+msgstr "Nombre nuevo:"
+
+msgid "Old Name:"
+msgstr "Mobre viejo:"
+
+msgid "New Name"
+msgstr "Nombre nuevo"
+
+msgid "OldName"
+msgstr "Nombre viejo"
+
+msgid "&Ok"
+msgstr "&Aceptar"
+
+msgid "Rename the Settings"
+msgstr "Renombrar las propiedades"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Please enter a name:"
+msgstr "Entre un nombre:"
+
+msgid "Save Report Settings"
+msgstr "Guardar las propiedades del reporte"
+
+msgid "DummyButton"
+msgstr ""
+
+msgid "Left:"
+msgstr "Izquierda:"
+
+msgid "Right"
+msgstr "Derecha"
+
+msgid "Add"
+msgstr "Añadir"
+
+msgid "Remove"
+msgstr "Eliminar"
+
+msgid ""
+"Hint: If you don't want quotes around your values, please choose a delimiter "
+"that"
+msgstr ""
+
+msgid "(e.g. , or ; or : or Space; or type TAB for tabulator)"
+msgstr ""
+
+msgid "Delimiter:"
+msgstr "Delimitador"
+
+msgid "Only save as CSV, don't print Report"
+msgstr ""
+
+msgid "Destination file"
+msgstr "Archivo destino"
+
+msgid "Content of Column::"
+msgstr "Contenido de columna:"
+
+msgid "Width of Column::"
+msgstr "Ancho de columna"
+
+msgid "cm:"
+msgstr ""
+
+msgid "A&pply"
+msgstr "A&plicar"
+
+msgid "Define Column"
+msgstr "Define columna"
+
+msgid "Partner"
+msgstr "Socio"
+
+msgid "Extract"
+msgstr "Extrar"
+
+msgid "Staff at"
+msgstr "Personal en"
+
+msgid "All Staff"
+msgstr ""
+
+msgid "Selection"
+msgstr "Selección"
+
+msgid "Sort First By:"
+msgstr "Ordenar primero por:"
+
+msgid "Sort Then By:"
+msgstr ""
+
+msgid "Sort Last By:"
+msgstr ""
+
+msgid "General Settings"
+msgstr "Propiedades generales"
+
+msgid "Sorting"
+msgstr "Ordenando"
+
+msgid "Get best address for partner"
+msgstr ""
+
+msgid "Get all addresses for partner"
+msgstr ""
+
+msgid "Address Details"
+msgstr ""
+
+msgid "Additional Settings"
+msgstr "Preferencias avanzadas"
+
+msgid "Columns"
+msgstr "Columna"
+
+msgid "Generate the report"
+msgstr "Generar reporte"
+
+msgid "&Generate"
+msgstr "&Generar"
+
+msgid "&Save Settings"
+msgstr "G&uardar propiedades"
+
+msgid "Save Settings &As..."
+msgstr "Gu&ardar propiedades como..."
+
+msgid "&Open..."
+msgstr "A&brir..."
+
+msgid "&Load Settings"
+msgstr "&Cargar propiedades"
+
+msgid "&Maintain Settings..."
+msgstr "&Mantener propiedades..."
+
+msgid "&Wrap Columns"
+msgstr ""
+
+msgid "Brief Address Report"
+msgstr "reporte de dirrecion en suma"
+
+msgid "Brief Foundation Report"
+msgstr "reporte de fundación en suma"
+
+msgid "Copies"
+msgstr "Copias"
+
+msgid "Subscription"
+msgstr "Suscripción"
+
+msgid "Bulk Address Report"
+msgstr ""
+
+msgid "Local Partner Data Report"
+msgstr ""
+
+msgid "Name of City:"
+msgstr ""
+
+msgid "Report parameters"
+msgstr "Parámetros del reporte"
+
+msgid "Partner by City"
+msgstr ""
+
+msgid "Contactor::"
+msgstr ""
+
+msgid "Contact:"
+msgstr "Contacto:"
+
+msgid "Date From::"
+msgstr "Fecha desde::"
+
+msgid "Date To::"
+msgstr "Fecha hasta::"
+
+msgid "Report Range"
+msgstr "Rango de reporte"
+
+msgid "AddDetail"
+msgstr "Agregar detalle"
+
+msgid "Remove Detail"
+msgstr "Remover detalle"
+
+msgid "Contact Attributes"
+msgstr "Atributos de contacto"
+
+msgid "Partner Contact Report"
+msgstr ""
+
+msgid ""
+"Select the country for which the statistical report should be generated:"
+msgstr ""
+
+msgid "Country"
+msgstr "Pais"
+
+msgid "Publication Statistical Report"
+msgstr ""
+
+msgid "Subscription Report"
+msgstr ""
+
+msgid "Sort by"
+msgstr "Ordenar por"
+
+msgid "Supporting Churches Report"
+msgstr ""
+
+msgid "Valid Bank Account Report"
+msgstr ""
+
+msgid "&Select Ledger"
+msgstr "&Seleccionar extracto"
+
+msgid "&New Ledger"
+msgstr "&Nuevo extracto"
+
+msgid "&Delete Ledger"
+msgstr "&Borrar extracto"
+
+msgid "&Parameters"
+msgstr "&Parámetros"
+
+msgid "&Todo"
+msgstr "&Que haceres"
+
+msgid "&Tables"
+msgstr "&Tablas"
+
+msgid "&Cost Centres"
+msgstr ""
+
+msgid "&Accounts"
+msgstr "&Cuentas"
+
+msgid "&Setup"
+msgstr "&Configuración"
+
+msgid "&Current Period"
+msgstr "&Periodo actual:"
+
+msgid "&Previous Periods"
+msgstr "P&eriodos previos"
+
+msgid "&Recurring"
+msgstr ""
+
+msgid "E&xport"
+msgstr "E&xportar"
+
+msgid "G&L Batch"
+msgstr ""
+
+msgid "&Month End Closing"
+msgstr ""
+
+msgid "&Year End Closing"
+msgstr ""
+
+msgid "&Period End"
+msgstr "Fin de periodo"
+
+msgid "Import &Bank statements"
+msgstr ""
+
+msgid "&Gift Batch"
+msgstr ""
+
+msgid "&Recurring Gift Batch"
+msgstr ""
+
+msgid "Gift &Import"
+msgstr "&Importar ofrenda"
+
+msgid "Gift E&xport"
+msgstr "&Exportar ofrenda"
+
+msgid "&Print Receipts"
+msgstr ""
+
+msgid "&Accounts Payable"
+msgstr ""
+
+msgid "&Budget"
+msgstr ""
+
+msgid "ICH &calculation"
+msgstr ""
+
+msgid "&Import file from field"
+msgstr ""
+
+msgid "ICH &reports..."
+msgstr ""
+
+msgid "&Clearing House"
+msgstr ""
+
+msgid "&Ledger"
+msgstr ""
+
+msgid "Account Detail"
+msgstr ""
+
+msgid "&GL"
+msgstr ""
+
+msgid "G&ift"
+msgstr "O&frenda"
+
+msgid "Accounts &Payable"
+msgstr ""
+
+msgid "&Reports"
+msgstr "&Reportes"
+
+msgid "&Consolidations"
+msgstr ""
+
+msgid "&Currency"
+msgstr "&Moneda"
+
+msgid "C&orporate Exchange Rate"
+msgstr ""
+
+msgid "&Daily Exchange Rate"
+msgstr ""
+
+msgid "Method of &Giving"
+msgstr ""
+
+msgid "Method of &Payment"
+msgstr ""
+
+msgid "A&nalysis Types"
+msgstr ""
+
+msgid "&Letters"
+msgstr ""
+
+msgid "Finance Module OpenPetra.org"
+msgstr "Modulo de finanzas OpenPetra.org"
+
+#, csharp-format
+msgid "You don't have enough permissions to access {0}."
+msgstr ""
+
+msgid "the finance module"
+msgstr "el módulo de finanzas"
+
+msgid "any ledger"
+msgstr "cualquier extracto"
+
+msgid "Code"
+msgstr "Codigo"
+
+msgid "Cost Centre Description"
+msgstr ""
+
+msgid "Account Description"
+msgstr ""
+
+msgid "Ledger:"
+msgstr ""
+
+msgid "Account Hierarchy:"
+msgstr ""
+
+msgid "Ledger Details"
+msgstr ""
+
+msgid "Currency:"
+msgstr "Moneda:"
+
+msgid "Currency"
+msgstr "Moneda"
+
+msgid "Period Range"
+msgstr "Rango de periodo"
+
+msgid "from:"
+msgstr "desde:"
+
+msgid "to:"
+msgstr "hasta:"
+
+msgid "Year:"
+msgstr "Año:"
+
+msgid "Date Range"
+msgstr "Rango de fecha"
+
+msgid "Period"
+msgstr ""
+
+msgid "Sort by Account"
+msgstr "Ordenar por cuenta"
+
+msgid "Sort by Cost Centre"
+msgstr ""
+
+msgid "Sort By Reference"
+msgstr "Ordenar por referencia"
+
+msgid "Sort By Analysis Type"
+msgstr ""
+
+msgid "Account Range"
+msgstr "Rango de cuenta"
+
+msgid "From:"
+msgstr "De:"
+
+msgid "To:"
+msgstr "Hasta:"
+
+msgid "Account List"
+msgstr "Lista de cuenta"
+
+msgid "Unselect All"
+msgstr ""
+
+msgid "Accounts"
+msgstr "Cuentas"
+
+msgid "Cost Centre Range"
+msgstr ""
+
+msgid "Cost Centre List"
+msgstr ""
+
+msgid "Cost Centres"
+msgstr ""
+
+msgid "Account/CostCentre Settings"
+msgstr ""
+
+msgid "Partner Key of Conference:"
+msgstr ""
+
+msgid "Motivation Codes:"
+msgstr "Códigos de motivación"
+
+msgid "Start of Payments:"
+msgstr "Principio de pagos:"
+
+msgid "Payments for Conference"
+msgstr ""
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
+msgstr ""
+
+msgid "Selected Cost Centres"
+msgstr ""
+
+msgid "All Cost Centres"
+msgstr ""
+
+msgid "All Active Cost Centres"
+msgstr ""
+
+msgid "Account Level"
+msgstr "Nivel de cuenta"
+
+msgid "Cost Centre Options"
+msgstr ""
+
+msgid "Cost Centre Breakdown"
+msgstr ""
+
+msgid "detail"
+msgstr "detalle"
+
+msgid "standard"
+msgstr "estándar"
+
+msgid "summary"
+msgstr "resumen"
+
+msgid "Depth"
+msgstr ""
+
+msgid "CostCentre Settings"
+msgstr ""
+
+msgid "Balance Sheet"
+msgstr ""
+
+msgid "Income Expense Statement"
+msgstr ""
+
+msgid "New User"
+msgstr "Nuevo usuario"
+
+msgid "Retire/Unretire"
+msgstr ""
+
+msgid "Set Password"
+msgstr ""
+
+msgid "User Id:"
+msgstr "ID de &usuario"
+
+msgid "First Name:"
+msgstr "Nombre:"
+
+msgid "Last Name:"
+msgstr "Apellido:"
+
+msgid "This User can access:"
+msgstr ""
+
+msgid "Maintain Users"
+msgstr "Mantener usuarios"
+
+msgid "Enter the Personal Name"
+msgstr "Entre el nombre del personal"
+
+msgid "Enter the Family Name"
+msgstr "Entre el nombre de la familia"
+
+msgid "Module"
+msgstr "Módulo"
+
+msgid "Please save the current changes first before creating a new user."
+msgstr ""
+
+msgid "Create a new user"
+msgstr "Crear un usuario nuevo"
+
+msgid "Please enter the user name:"
+msgstr "Introduzca el nombre de usuario:"
+
+msgid "Set the password of a user"
+msgstr ""
+
+msgid "Please enter the new password:"
+msgstr "Introduzca la contraseña nueva:"
+
+#, csharp-format
+msgid "User {0} has been created successfully."
+msgstr ""
+
+#, csharp-format
+msgid "There was a problem creating the user {0}"
+msgstr ""
+
+msgid "Please save the current changes first before changing the password."
+msgstr "Guarde los cambios actuales antes de cambiar la contraseña."
+
+msgid "Change the password"
+msgstr "Cambiar la contraseña"
+
+#, csharp-format
+msgid "Please enter the new password for user {0}:"
+msgstr ""
+
+#, csharp-format
+msgid "Password was successfully set for user {0}"
+msgstr ""
+
+#, csharp-format
+msgid "There was a problem setting the password for user {0}"
+msgstr ""
+
+msgid "This may take a while. Please just wait!"
+msgstr ""
+
+msgid "Save Database into File"
+msgstr "Guardar base de datos en archivo"
+
+msgid ""
+"WARNING: this will reset the database! Do you really want to delete the "
+"current database?"
+msgstr ""
+
+msgid "WARNING: this will reset the database!"
+msgstr ""
+
+msgid "Please select the file to import from"
+msgstr ""
+
+msgid ""
+"Import of database was successful. Please restart your OpenPetra client"
+msgstr ""
+
+msgid ""
+"Failed import of database. Please check the Server.log file on the server"
+msgstr ""
+
+msgid "Change your password"
+msgstr "Cambie su contraseña"
+
+msgid "Quarter"
+msgstr ""
+
+msgid "Quarter:"
+msgstr ""
+
+msgid "YTD"
+msgstr ""
+
+msgid "Depth:"
+msgstr ""
+
+msgid "FD Income by Fund"
+msgstr ""
+
+msgid "Use date"
+msgstr "Usar dato"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Include families"
+msgstr "Incluir familias"
+
+msgid "Include only persons of selected type(s)"
+msgstr ""
+
+msgid "Options"
+msgstr "Opciones"
+
+msgid "Birthday List Report"
+msgstr ""
+
+msgid "Campaign Code:"
+msgstr ""
+
+msgid "Insert Year and / or Campaign Code,"
+msgstr ""
+
+msgid "or leave empty to consider all campaign options."
+msgstr ""
+
+msgid "Choose Options"
+msgstr "Seleccionar opciones"
+
+msgid "Campaign Options Report"
+msgstr ""
+
+msgid "Emergency Contact Report"
+msgstr ""
+
+msgid "Show Family Members"
+msgstr ""
+
+msgid "Show Address"
+msgstr "Mostrar dirección"
+
+msgid "Show Passport"
+msgstr "Mostrar contraseña"
+
+msgid "Show Personal Documents"
+msgstr "Mostrar documentos personales"
+
+msgid "Show Driver License"
+msgstr "Mostrar permiso de conducir"
+
+msgid "Show Other Emergency Data"
+msgstr ""
+
+msgid "Show Special Needs"
+msgstr ""
+
+msgid "Show Abilities"
+msgstr ""
+
+msgid "Show Languages"
+msgstr "Mostrar idiomas"
+
+msgid "Show Emergency Contacts"
+msgstr ""
+
+msgid "Show Proof of Life Question"
+msgstr ""
+
+msgid "Report Details"
+msgstr ""
+
+msgid "Emergency Data Report"
+msgstr ""
+
+msgid "End of Commitment Report"
+msgstr ""
+
+msgid "Local Personnel Data Report"
+msgstr ""
+
+msgid "Passport Expiry Report"
+msgstr ""
+
+msgid "Show Personal Info"
+msgstr "Mostrar información personal"
+
+msgid "Show Local Partner Data"
+msgstr ""
+
+msgid "Show Local Personnel Data"
+msgstr ""
+
+msgid "Show Job Assignments"
+msgstr ""
+
+msgid "Show Commitments"
+msgstr ""
+
+msgid "Show Personal Budget"
+msgstr ""
+
+msgid "Show Visions"
+msgstr ""
+
+msgid "Show Qualifications"
+msgstr "Mostrar calificaciones"
+
+msgid "Show Previous Experiences"
+msgstr ""
+
+msgid "Show Valuable Items"
+msgstr ""
+
+msgid "Personal Data Report"
+msgstr ""
+
+msgid "Select Documents"
+msgstr "Seleccionar documentos"
+
+msgid "Use Expiry Dates"
+msgstr ""
+
+msgid "Expires between::"
+msgstr ""
+
+msgid "and:"
+msgstr "y:"
+
+msgid "Dates"
+msgstr "Fechas"
+
+msgid "Personal Documents Expiry Report"
+msgstr ""
+
+msgid "Previous Experience Report"
+msgstr ""
+
+msgid "Progress Report"
+msgstr ""
+
+msgid "Filter List by Relation Category:"
+msgstr ""
+
+msgid "Use Relationship"
+msgstr "Usar relación"
+
+msgid "Use Reciprocal Relationship"
+msgstr ""
+
+msgid "(Select from list below):"
+msgstr ""
+
+msgid "Select Relationship"
+msgstr "Seleccionar relación"
+
+msgid "Active Partners"
+msgstr "Socios activos"
+
+msgid "Mailing Addresses only"
+msgstr ""
+
+msgid "Exclude 'No Solicitations'"
+msgstr ""
+
+msgid "Miscellaneous Settings"
+msgstr "Preferencias diversas"
+
+msgid "Relationship Report"
+msgstr "Reporte de relaciones"
+
+msgid "Select at least one Relationship Type to run the report."
+msgstr ""
+
+msgid "No Relationship Type selected!"
+msgstr ""
+
+msgid "Relationship"
+msgstr "Relación"
+
+msgid "Column Settings"
+msgstr "Preferencias de columna"
+
+msgid "Abilities Report"
+msgstr "Reporte de"
+
+msgid "Languages Report"
+msgstr "Reporte de idiomas"
+
+msgid "Campaigns Only"
+msgstr "Solo campañas"
+
+msgid "Conferences Only"
+msgstr "Solo conferencias"
+
+msgid "Teenstreet Only"
+msgstr "Sólo Teenstreet"
+
+msgid "Current / Future Events Only:"
+msgstr ""
+
+msgid "Events"
+msgstr "Eventos"
+
+msgid "Accept"
+msgstr "Aceptar"
+
+msgid "Select Event"
+msgstr "Seleccionar evento"
+
+msgid "Short Termer Report"
+msgstr ""
+
+msgid "Hide empty lines"
+msgstr ""
+
+msgid "Print result on two lines (Sort by Partner Name)"
+msgstr ""
+
+msgid "Event..."
+msgstr ""
+
+msgid "Event Name:"
+msgstr "Nombre del evento:"
+
+msgid "Consider this event only"
+msgstr ""
+
+msgid "Consider this event and related options"
+msgstr ""
+
+msgid "Consider all events"
+msgstr ""
+
+msgid "Event"
+msgstr "Evento"
+
+msgid "List all participants"
+msgstr ""
+
+msgid "List participants from Extract"
+msgstr ""
+
+msgid "Participants at Event"
+msgstr ""
+
+msgid "Accepted:"
+msgstr ""
+
+msgid "Cancelled:"
+msgstr "Cancelado:"
+
+msgid "Hold:"
+msgstr ""
+
+msgid "Enquiry:"
+msgstr ""
+
+msgid "Rejected:"
+msgstr ""
+
+msgid "Application Status"
+msgstr "Estado de la aplicación"
+
+msgid "Commitment starts:"
+msgstr ""
+
+msgid "and::"
+msgstr "y::"
+
+msgid "Commitment Dates"
+msgstr ""
+
+msgid "Include only Persons with selected Commitment"
+msgstr ""
+
+msgid "Include Persons with no Commitment Status set"
+msgstr ""
+
+msgid "Commitment Status"
+msgstr ""
+
+msgid "Start of Commitment Report"
+msgstr ""
+
+msgid "Include Conferences and Campaigns:"
+msgstr ""
+
+msgid "Base Unit"
+msgstr ""
+
+msgid "Unit Hierarchy Report"
+msgstr ""
+
+msgid "New"
+msgstr "Nuevo"
+
+msgid "Acquisition Description:"
+msgstr "Descripción de adquisición:"
+
+msgid "Assignable:"
+msgstr ""
+
+msgid "Recruiting Mission:"
+msgstr ""
+
+msgid "Deletable:"
+msgstr ""
+
+msgid "New Acquisition Code"
+msgstr "Nuevo código de adquisición"
+
+msgid "Maintain Acquisition Codes"
+msgstr "Mantener códigos de adquisición"
+
+msgid "How has this Partner entered this system? By which Dept?"
+msgstr ""
+
+msgid "Enter the code description of how the partner was acquired"
+msgstr ""
+
+msgid "Select if this Acquisition Code is still in Use"
+msgstr "Seleccionar si este código de adquisición todavía está en uso"
+
+msgid "Indicates if acquisition code represents a recruiting effort."
+msgstr ""
+
+msgid "This code is Required for System operation by other code"
+msgstr ""
+
+msgid "NEWCODE"
+msgstr ""
+
+msgid "Addressee Type Code:"
+msgstr "Código del tipo de destinatario:"
+
+msgid "New Addressee Type"
+msgstr "Nuevo tipo de destinatario"
+
+msgid "Maintain Addressee Types"
+msgstr ""
+
+msgid "Enter a description"
+msgstr "Entrar una descripción"
+
+msgid "NEWTYPE"
+msgstr ""
+
+msgid "Business Description:"
+msgstr "Descripción de negocio:"
+
+msgid "New Business Code"
+msgstr "Nuevo código de negocio"
+
+msgid "Maintain Business Codes"
+msgstr "Mantener códigos de negocio"
+
+msgid "Enter a business code"
+msgstr "Entrar un código de negocio"
+
+msgid "Enter a Business Code Description"
+msgstr ""
+
+msgid "Contact Type:"
+msgstr "Tipo de contacto:"
+
+msgid "Valid Method:"
+msgstr ""
+
+msgid "New Contact Method"
+msgstr ""
+
+msgid "Maintain Contact Methods"
+msgstr "Mantener maneras de contacto"
+
+msgid "Enter a method of contact code"
+msgstr ""
+
+msgid "Enter the full description"
+msgstr ""
+
+msgid "Select a contact type"
+msgstr "Seleccione un tipo de contacto"
+
+msgid "Should this option be selectable by users"
+msgstr ""
+
+msgid "Denomination Name:"
+msgstr "Nombre de denominación"
+
+msgid "New Denomination Code"
+msgstr "Nuevo código de denominación"
+
+msgid "Maintain Denomination Codes"
+msgstr "Mantener códigos de denominación"
+
+msgid "Enter an approved denomination code"
+msgstr ""
+
+msgid "Enter the full name of the denomination for this code"
+msgstr ""
+
+msgid "Select if denomination can be selected by users"
+msgstr ""
+
+msgid "Category:"
+msgstr "Categoría:"
+
+msgid "Level Descriptions:"
+msgstr ""
+
+msgid "Level Range Lower:"
+msgstr ""
+
+msgid "Level Range Upper:"
+msgstr ""
+
+msgid "New Interest Category"
+msgstr ""
+
+msgid "Maintain Interest Categories"
+msgstr "Mantener categórías de interés"
+
+msgid "Unique key for the table"
+msgstr ""
+
+msgid ""
+"Description of all the interest intensity levels.  Leave empty if levels not "
+"needed."
+msgstr ""
+
+msgid "NEWREASON"
+msgstr ""
+
+msgid "Interest:"
+msgstr "Interes:"
+
+msgid "New Partner Interest"
+msgstr "Nuevo interés de socio"
+
+msgid "Maintain Partner Interests"
+msgstr "Mantener intereses de socio"
+
+msgid "Interest category"
+msgstr "Categoría de interés"
+
+msgid "Location Code:"
+msgstr "Código de ubicación"
+
+msgid "New Location Type"
+msgstr "Nuevo tipo de ubicación"
+
+msgid "Maintain Location Types"
+msgstr "Mantener tipos de ubicación"
+
+msgid "Marital Status Code:"
+msgstr ""
+
+msgid "Unassignable Date:"
+msgstr "Dato inasignable"
+
+msgid "New Marital Status Code"
+msgstr ""
+
+msgid "Maintain Marital Statuses"
+msgstr ""
+
+msgid "This code indicates the different marital statuses."
+msgstr ""
+
+msgid "This describes the marital statuses."
+msgstr ""
+
+msgid "Indicates if this code can still be assigned?"
+msgstr ""
+
+msgid "Date from which this code was made unassignable."
+msgstr ""
+
+msgid "Indicates if a record can be deleted."
+msgstr ""
+
+msgid "Occupation Code:"
+msgstr "Código de ocupación"
+
+msgid "Occupation Description:"
+msgstr "Descripción de ocupación:"
+
+msgid "New Occupation Code"
+msgstr "Nuevo código de ocupación"
+
+msgid "Maintain Occupation Codes"
+msgstr "Mantener códigos de ocupación"
+
+msgid "Enter an approved occupation code"
+msgstr ""
+
+msgid "Enter a full description or name"
+msgstr ""
+
+msgid "Select this to make this available to selection lists"
+msgstr ""
+
+msgid "Status Code:"
+msgstr "Código de estado"
+
+msgid "Active Partner:"
+msgstr "Socio activo:"
+
+msgid "Include Partners on Reports:"
+msgstr ""
+
+msgid "New Partner Status"
+msgstr "Nuevo estado de socio"
+
+msgid "Maintain Partner Statuses"
+msgstr "Mantener estados de socio"
+
+msgid "Enter a partner status"
+msgstr "Entrar un estado de socio"
+
+msgid "Enter a full description"
+msgstr ""
+
+msgid "Select if partner status should be considered as active"
+msgstr ""
+
+msgid "Select if partner should be included on reports"
+msgstr ""
+
+msgid "NEWSTATUS"
+msgstr ""
+
+msgid "Type Code:"
+msgstr "Tipo de código:"
+
+msgid "New Special Type"
+msgstr "Nuevo tipo especial"
+
+msgid "Maintain Special Types"
+msgstr "Mantener tipos especiales"
+
+msgid "Enter a type code"
+msgstr ""
+
+msgid "Select if this Type Code is selectable by users"
+msgstr ""
+
+msgid "Select if deletable"
+msgstr ""
+
+msgid "Publication Code:"
+msgstr "Código de publicación:"
+
+msgid "Publication Description:"
+msgstr "Descripción de publicación:"
+
+msgid "Publication Label Code:"
+msgstr ""
+
+msgid "Number Of Issues:"
+msgstr ""
+
+msgid "Number Of Reminders:"
+msgstr ""
+
+msgid "Frequency Code:"
+msgstr ""
+
+msgid "Valid Publication:"
+msgstr "Publicación valida:"
+
+msgid "New Publication Code"
+msgstr "Nuevo código de publicación"
+
+msgid "Maintain Publications"
+msgstr "Mantener publicaciones"
+
+msgid "Enter a publication code"
+msgstr "Entrar un código de publicación"
+
+msgid "Enter a short code (max. 3 characters) for the publication."
+msgstr ""
+
+msgid "Enter the number of issues per subscription"
+msgstr ""
+
+msgid "Enter the number of issues and reminders to send out"
+msgstr ""
+
+msgid "Select how often this publication will be produced"
+msgstr ""
+
+msgid "Select if publication can be selected by users"
+msgstr ""
+
+msgid "Reason Cancelled Code:"
+msgstr ""
+
+msgid "New Reason Cancelled Code"
+msgstr ""
+
+msgid "Maintain Reason Subscription Cancelled List"
+msgstr ""
+
+msgid "Enter a code for reason cancelled"
+msgstr ""
+
+msgid "Enter a full description of reason cancelled"
+msgstr ""
+
+msgid "Reason Given Code:"
+msgstr ""
+
+msgid "New Reason Given Code"
+msgstr ""
+
+msgid "Maintain Reason Subscription Given List"
+msgstr ""
+
+msgid "Enter code for reason given"
+msgstr ""
+
+msgid "Enter a full description for reason Subscription is given"
+msgstr ""
+
+msgid "Relationship Category Code:"
+msgstr ""
+
+msgid "Unassignable:"
+msgstr ""
+
+msgid "New Relationship Category"
+msgstr ""
+
+msgid "Maintain Relationship Categories"
+msgstr ""
+
+msgid "This code indicates the category of a relation."
+msgstr ""
+
+msgid "This describes the relation category."
+msgstr ""
+
+msgid "Group:"
+msgstr "Grupo:"
+
+msgid "Detail:"
+msgstr "Detalle"
+
+msgid "Account:"
+msgstr "Cuenta"
+
+msgid "Cost Centre:"
+msgstr "Centro de costos:"
+
+msgid "Active:"
+msgstr "Activo:"
+
+msgid "Print Receipt:"
+msgstr "Imprimir recibo"
+
+msgid "New Motivation Detail"
+msgstr ""
+
+msgid "Maintain Gift Motivations"
+msgstr ""
+
+msgid "Enter a motivation group code"
+msgstr ""
+
+msgid "Enter a motivation detail code"
+msgstr ""
+
+msgid "Enter an account code"
+msgstr "Entrar un código de cuenta"
+
+msgid "Enter a cost centre code"
+msgstr ""
+
+msgid "Is this motivation code still in use?"
+msgstr ""
+
+msgid "Do you want receipts for gifts with this motivation code?"
+msgstr ""
+
+msgid "NEWDETAIL"
+msgstr ""
+
+msgid "Account Code:"
+msgstr "Código de cuenta:"
+
+msgid "Account Type:"
+msgstr "Tipo de cuenta:"
+
+msgid "Description Long English:"
+msgstr ""
+
+msgid "Description Short English:"
+msgstr ""
+
+msgid "Description Long Local:"
+msgstr ""
+
+msgid "Description Short Local:"
+msgstr ""
+
+msgid "Valid Cost Centres:"
+msgstr ""
+
+msgid "Bank Account:"
+msgstr "Cuenta de banco:"
+
+msgid "Add Account"
+msgstr "Agregar cuenta"
+
+msgid "Delete Account"
+msgstr "Borrar cuenta"
+
+msgid "Export Hierarchy"
+msgstr ""
+
+msgid "Import Hierarchy"
+msgstr ""
+
+msgid "GL Account Hierarchy"
+msgstr ""
+
+msgid "Enter a code for the account."
+msgstr ""
+
+msgid "Choose the type of account (e.g., Asset)"
+msgstr ""
+
+msgid "Enter a description in English (full)."
+msgstr ""
+
+msgid "Enter a short description in English."
+msgstr ""
+
+msgid "Enter a description of the account (full)."
+msgstr ""
+
+msgid "Enter a short description of the account."
+msgstr ""
+
+msgid "Select cost centre type that may be combined with this account."
+msgstr ""
+
+msgid "Is this account available for posting transactions?"
+msgstr ""
+
+msgid "You can only add a new account after selecting a parent account"
+msgstr ""
+
+msgid "NewAccount"
+msgstr ""
+
+msgid "Save Account Hierarchy to file"
+msgstr ""
+
+msgid "Load Account Hierarchy from file"
+msgstr ""
+
+msgid "Success"
+msgstr "Éxito"
+
+msgid "Account cannot be deleted"
+msgstr "La cuenta no puede ser eliminada"
+
+msgid "Cost Centre Code:"
+msgstr ""
+
+msgid "Cost Centre Type:"
+msgstr ""
+
+msgid "Cost Centre Name:"
+msgstr ""
+
+msgid "Add Cost Centre"
+msgstr ""
+
+msgid "GL Cost Centre Hierarchy"
+msgstr ""
+
+msgid "Type of cost centre (foreign or local)."
+msgstr ""
+
+msgid ""
+"You can only add a new cost centre after selecting a parent cost centre"
+msgstr ""
+
+msgid "NewCostCentre"
+msgstr ""
+
+msgid "Save Cost Centre Hierarchy to file"
+msgstr ""
+
+msgid "Load Cost Centre Hierarchy from file"
+msgstr ""
+
+msgid "Ledger Number:"
+msgstr "Número de extracto:"
+
+msgid "Ledger Name:"
+msgstr "Nombre de extracto:"
+
+msgid "Base Currency:"
+msgstr ""
+
+msgid "Intl Currency:"
+msgstr ""
+
+msgid "First Day of the Financial Year:"
+msgstr ""
+
+msgid "Number Of Periods:"
+msgstr "Número de periodos:"
+
+msgid "Current Period:"
+msgstr "Periodo actual:"
+
+msgid "Number Of Fwd Posting Periods:"
+msgstr ""
+
+msgid "&Create Ledger"
+msgstr "&Crear extracto"
+
+msgid "Create Ledger"
+msgstr "Crear extracto"
+
+msgid "Problem: No Ledger has been created"
+msgstr ""
+
+msgid "&New"
+msgstr "&Nuevo"
+
+msgid "&Delete"
+msgstr "&Eliminar"
+
+msgid "&From Currency Code:"
+msgstr ""
+
+msgid "&To Currency Code:"
+msgstr ""
+
+msgid "D&ate:"
+msgstr ""
+
+msgid "&Rate of exchange:"
+msgstr ""
+
+msgid "Value One Direction:"
+msgstr ""
+
+msgid "Value Other Direction:"
+msgstr ""
+
+msgid "Import"
+msgstr "Importar"
+
+msgid "Exchange Rates"
+msgstr ""
+
+msgid "Daily Exchange Rate List"
+msgstr ""
+
+msgid "Enter a currency code"
+msgstr ""
+
+msgid "Enter the date which the rate becomes effective"
+msgstr ""
+
+msgid "Enter the rate of exchange"
+msgstr ""
+
+msgid "Import exchange rates from spreadsheet file"
+msgstr ""
+
+msgid "Spreadsheet files (*.csv)|*.csv"
+msgstr ""
+
+msgid ""
+"Please select a yml file that describes the content of the spreadsheet"
+msgstr ""
+
+msgid "Data description files (*.yml)|*.yml"
+msgstr ""
+
+msgid ""
+"Cannot import exchange rates, please name the file after the currencies "
+"involved, eg. KES_EUR.csv"
+msgstr ""
+
+msgid "Country Name:"
+msgstr "Nombre de país:"
+
+msgid "Undercover:"
+msgstr ""
+
+msgid "Int'l Access Code:"
+msgstr ""
+
+msgid "Int'l Dialling Code:"
+msgstr ""
+
+msgid "Address Display Order:"
+msgstr ""
+
+msgid "Int'l Postal Type:"
+msgstr ""
+
+msgid "Time Zone From:"
+msgstr ""
+
+msgid "New Country"
+msgstr "Nuevo país"
+
+msgid "Maintain Countries"
+msgstr "Mantener países"
+
+msgid "Enter an internationally accepted (ISO) country code"
+msgstr ""
+
+msgid "Enter the full name of the country"
+msgstr "Entre el nombre completo del país"
+
+msgid "Select if the country is politically sensitive"
+msgstr ""
+
+msgid "International telephone access code needed to dial OUT"
+msgstr ""
+
+msgid "Enter the International Code needed to dial INTO the country"
+msgstr ""
+
+msgid "0 = International; 1 = European; 2 = American"
+msgstr ""
+
+msgid "Enter an international postal type code"
+msgstr ""
+
+msgid "Enter the minimum time zone +/- relative to GMT"
+msgstr ""
+
+msgid "Enter the maximum time zone +/- relative to GMT"
+msgstr ""
+
+msgid "Frequency Description:"
+msgstr ""
+
+msgid "Number Of Years:"
+msgstr "Número de años:"
+
+msgid "Number Of Months:"
+msgstr "Número de meses:"
+
+msgid "Number Of Days:"
+msgstr "Número de días:"
+
+msgid "Number Of Hours:"
+msgstr "Número de horas:"
+
+msgid "Number Of Minutes:"
+msgstr "Número de minutos:"
+
+msgid "New Frequency"
+msgstr ""
+
+msgid "Maintain Frequencies"
+msgstr ""
+
+msgid "Int. Postal Type Code:"
+msgstr ""
+
+msgid "New International Postal Type Code"
+msgstr ""
+
+msgid "Maintain International Postal Type Codes"
+msgstr ""
+
+msgid "Language Description:"
+msgstr "Descripción de idioma:"
+
+msgid "Congress Language:"
+msgstr "Idioma del congreso:"
+
+msgid "New Language Code"
+msgstr "Nuevo código de idioma"
+
+msgid "Maintain Language Codes"
+msgstr "Mantener código de idioma"
+
+msgid "Enter an internationally accepted language code"
+msgstr ""
+
+msgid "Indicates if the language is an 'official' Congress Language."
+msgstr ""
+
+msgid "Currency Name:"
+msgstr ""
+
+msgid "Currency Symbol:"
+msgstr ""
+
+msgid "Number of Decimals:"
+msgstr ""
+
+msgid "Currency List"
+msgstr ""
+
+msgid "Enter the currency name"
+msgstr ""
+
+msgid "Enter the symbol which represents this currency"
+msgstr ""
+
+msgid "Enter a valid country code."
+msgstr ""
+
+msgid "The format in which to display and accept input on a currency."
+msgstr ""
+
+msgid "General Short Termer Report"
+msgstr ""
+
+msgid "Short Termer Reports"
+msgstr ""
+
+msgid "Individual Data Report"
+msgstr ""
+
+msgid "Birthday List"
+msgstr "Lista de cumpleaños"
+
+msgid "Personal Document Expiry Report"
+msgstr ""
+
+msgid "Start Of Commitment Report"
+msgstr ""
+
+msgid "End Of Commitment Report"
+msgstr ""
+
+msgid "Campaign Options"
+msgstr "Opciones de campaña"
+
+msgid "Unit Hierarchy"
+msgstr ""
+
+msgid "Personnel Module OpenPetra.org"
+msgstr "Modulo de personal OpenPetra.org"
+
+msgid "Absentee Report"
+msgstr ""
+
+msgid "Brief Report"
+msgstr "reporte breve"
+
+msgid "Full Report"
+msgstr "Reporte completo"
+
+msgid "Detail Report"
+msgstr ""
+
+msgid "Report Detail"
+msgstr ""
+
+msgid "Start Date:"
+msgstr "Fecha de inicio:"
+
+msgid "End Date:"
+msgstr ""
+
+msgid "Conference Date"
+msgstr ""
+
+msgid "Earliest Arrival:"
+msgstr ""
+
+msgid "Latest Departure:"
+msgstr ""
+
+msgid "Arrival / Departure Dates"
+msgstr ""
+
+msgid "Select Date Range"
+msgstr ""
+
+msgid "Date Settings"
+msgstr ""
+
+msgid "Accommodation Report"
+msgstr "Reporte de acomodación"
+
+msgid "Age Summary Report"
+msgstr ""
+
+msgid "Arrival Group"
+msgstr ""
+
+msgid "Departure Group"
+msgstr ""
+
+msgid "Select Group"
+msgstr "Seleccionar grupo"
+
+msgid "Include people that are not assigned to a group"
+msgstr ""
+
+msgid "Other Settings"
+msgstr "Preferencias diferentes"
+
+msgid "Group Settings"
+msgstr ""
+
+msgid "Arrival Departure Group"
+msgstr ""
+
+msgid "Arrival"
+msgstr "Llegada"
+
+msgid "Departure"
+msgstr "Salida"
+
+msgid "Report Date:"
+msgstr "Fecha del reporte:"
+
+msgid "Report Date"
+msgstr "Fecha del reporte"
+
+msgid "Arrivals Listing Report"
+msgstr ""
+
+msgid "Attendance Summary Report"
+msgstr ""
+
+msgid "Change From-Date or To-Date"
+msgstr ""
+
+msgid "From Date must be smaller than To Date"
+msgstr ""
+
+msgid "Enter valid To- and From-Date."
+msgstr ""
+
+msgid "Dates must be a valid date"
+msgstr ""
+
+msgid "Attendee Report"
+msgstr ""
+
+msgid "Campaign Report"
+msgstr ""
+
+msgid "Charged Field Report"
+msgstr ""
+
+msgid "Select Age"
+msgstr "Seleccionar edad"
+
+msgid "Age Selection"
+msgstr "Selección de edad"
+
+msgid "Children Report"
+msgstr "Reporte de niños"
+
+msgid "Hide persons with no comments:"
+msgstr ""
+
+msgid "Comments"
+msgstr "Comentarios"
+
+msgid "Comments Report"
+msgstr "Reporte de comentarios"
+
+msgid "Conference Role Report"
+msgstr ""
+
+msgid "All Fields"
+msgstr "Todos los campos"
+
+msgid "Selected Fields"
+msgstr "Campos seleccionados"
+
+msgid "Select Fields"
+msgstr "Seleccionar campos"
+
+msgid "Charged Fields"
+msgstr ""
+
+msgid "Extra Costs Report"
+msgstr ""
+
+msgid "Select at least one field to calculate the extra costs."
+msgstr ""
+
+msgid "No field was selected!"
+msgstr "¡No se ha seleccionado ningún campo!"
+
+msgid "Field Key"
+msgstr "Clave de campo"
+
+msgid "Field Name"
+msgstr "Nombre del campo"
+
+msgid "Family Listing Report"
+msgstr ""
+
+msgid "Select All"
+msgstr "Seleccionar todo"
+
+msgid "Deselect All"
+msgstr ""
+
+msgid "Full"
+msgstr "Completo"
+
+msgid "Summaries"
+msgstr ""
+
+msgid "Mode"
+msgstr "Modo"
+
+msgid "Financial Report:"
+msgstr "Reporte financiero:"
+
+msgid "Accepted Applications Only:"
+msgstr ""
+
+msgid "List Extra Costs:"
+msgstr ""
+
+msgid "Sign Off Lines:"
+msgstr ""
+
+msgid "If charged field is not set:"
+msgstr ""
+
+msgid "Campaign Code"
+msgstr "Código de campaña"
+
+msgid "Unit Key"
+msgstr "Clave de unidad"
+
+msgid "Unit Name"
+msgstr "Nombre del unidad"
+
+msgid "Select at least one Unit Key from the Additional Settings tab."
+msgstr ""
+
+msgid "No Field for the report selected"
+msgstr ""
+
+msgid "All Groups"
+msgstr "Todos los grupos"
+
+msgid "Work Groups"
+msgstr ""
+
+msgid "Fellowship Groups"
+msgstr ""
+
+msgid "Discovery Groups"
+msgstr ""
+
+msgid "List all attendees"
+msgstr ""
+
+msgid "List only attendees whose role is a participant"
+msgstr ""
+
+msgid ""
+"List only attendees whose role is a participant and who have a group "
+"assigned to it"
+msgstr ""
+
+msgid "Select Participants"
+msgstr "Seleccionar participantes"
+
+msgid "Groups and Participants"
+msgstr ""
+
+msgid "Group Reports"
+msgstr "Reporte de grupos"
+
+msgid "Nationality Summary Report"
+msgstr ""
+
+msgid "Present Attendee Report"
+msgstr ""
+
+msgid "Receiving Field Report"
+msgstr ""
+
+msgid "Registering Field Report"
+msgstr ""
+
+msgid "There is more than one campaign option for this event."
+msgstr ""
+
+msgid "Please choose one or more options from the list."
+msgstr ""
+
+msgid "Select Campaign Option"
+msgstr ""
+
+msgid "Sending Field Report"
+msgstr ""
+
+msgid "List Arrivals"
+msgstr "Lista llegadas"
+
+msgid "List Departures"
+msgstr "Lista salidas"
+
+msgid "Arrival Departure"
+msgstr ""
+
+msgid "Only list people arriving on this day"
+msgstr ""
+
+msgid "Only list people that need transport from their arrival point"
+msgstr ""
+
+msgid "Only list people with incomplete arrival details"
+msgstr ""
+
+msgid "Listing"
+msgstr ""
+
+msgid "Travel Selection"
+msgstr "Selección de viajes"
+
+msgid "Transport Report"
+msgstr "Reporte de transporte"
+
+msgid "Please insert a valid date in the \"Travel Selection\" Settings."
+msgstr ""
+
+msgid "No valid date."
+msgstr "Fecha inválida"
+
+msgid "Only list people departing on this day"
+msgstr ""
+
+msgid "Only list people that need transport to their departing point"
+msgstr ""
+
+msgid "Only list people with incomplete departure details"
+msgstr ""
+
+msgid "Conference"
+msgstr ""
+
+msgid "All Conferences"
+msgstr "Todas las conferencias"
+
+msgid "Select Conference"
+msgstr "Seleccionar conferencia"
+
+msgid "All Attendees"
+msgstr ""
+
+msgid "From Extract"
+msgstr ""
+
+msgid "One Attendee"
+msgstr ""
+
+msgid "SelectAttendees"
+msgstr ""
+
+msgid "Conference:"
+msgstr ""
+
+msgid "Prefix:"
+msgstr "Prefijo:"
+
+msgid "Find Conference"
+msgstr "Buscar conferencia"
+
+msgid "Conference Find"
+msgstr ""
+
+msgid "Conference Module OpenPetra.org"
+msgstr "Modulo de conferencia OpenPetra.org"
+
+msgid "Ability Area:"
+msgstr ""
+
+msgid "New Ability Area"
+msgstr ""
+
+msgid "Maintain Ability Areas"
+msgstr ""
+
+msgid "Name for this area of ability, e.g. guitarist."
+msgstr ""
+
+msgid "Enter a description for this area of ability."
+msgstr ""
+
+msgid "Check box if ability area is no longer assignable."
+msgstr ""
+
+msgid "Date from which the ability area is unassignable."
+msgstr ""
+
+msgid "Batches"
+msgstr ""
+
+msgid "Transactions"
+msgstr ""
+
+msgid "Gift Batches"
+msgstr ""
+
+msgid "Date Effective:"
+msgstr ""
+
+msgid "Recipient Key:"
+msgstr "Clave de destinata:io:"
+
+msgid "Old Field Key:"
+msgstr ""
+
+msgid "No Receipt"
+msgstr ""
+
+msgid "&Adjust gifts after field change"
+msgstr ""
+
+msgid "Field Change Adjustment"
+msgstr ""
+
+msgid "Fix Gifts from this date onwards"
+msgstr ""
+
+msgid "Fix Gifts till this date (inclusive)"
+msgstr ""
+
+msgid "Date for adjusted Gift batch"
+msgstr ""
+
+msgid "tick this if the gift was already receipted last year"
+msgstr ""
+
+#, csharp-format
+msgid "Please check and post gift batch {0}"
+msgstr ""
+
+msgid "There was a problem creating the adjustment batch"
+msgstr ""
+
+msgid "Total Number Pages"
+msgstr ""
+
+msgid "Prev Page"
+msgstr "Página anterior"
+
+msgid "Print Current Page"
+msgstr "Imprimir página actual"
+
+msgid "&Generate Letters"
+msgstr "&Generar cartas"
+
+msgid "Add Contact History"
+msgstr ""
+
+msgid "Subscriptions for new Donors"
+msgstr ""
+
+#, csharp-format
+msgid "of {0}"
+msgstr ""
+
+msgid "There are no letters with valid addresses for your current parameters"
+msgstr ""
+
+msgid "Nothing to print"
+msgstr ""
+
+msgid "HTML file (*.html)|*.html;*.htm"
+msgstr "Archivos HTML (*.html;*.htm)|*.html;*.htm|"
+
+msgid "Select the template for the letter to the new donors"
+msgstr ""
+
+msgid "Letter for new donors announcing subscription to magazine"
+msgstr ""
+
+msgid "There was a problem setting the contact for the partners"
+msgstr ""
+
+msgid "The partner contacts have been updated successfully!"
+msgstr ""
+
+msgid "Print Annual Gift Receipts"
+msgstr ""
+
+msgid "There is no printer, so printing is not possible"
+msgstr ""
+
+msgid "Select the template for the gift receipt"
+msgstr ""
+
+msgid "There are no posted gifts in the date range"
+msgstr ""
+
+msgid "Posted"
+msgstr "Publicado"
+
+msgid "Editing"
+msgstr "Modificando"
+
+msgid "Show batches"
+msgstr ""
+
+msgid "&Add"
+msgstr "Aña&dir"
+
+msgid "&Post Batch"
+msgstr ""
+
+msgid "Batch Description:"
+msgstr ""
+
+msgid "GL Effective Date:"
+msgstr ""
+
+msgid "Valid Date Range:"
+msgstr ""
+
+msgid "Hash Total:"
+msgstr ""
+
+msgid "Exchange Rate To Base:"
+msgstr ""
+
+msgid "Method of Payment:"
+msgstr "Manera de pago:"
+
+msgid "Gift"
+msgstr "Ofrenda"
+
+msgid "GiftInKind"
+msgstr ""
+
+msgid "Gift Type"
+msgstr "Tipo de ofrenda"
+
+msgid "&Export Batches"
+msgstr ""
+
+msgid "&Import Batches"
+msgstr ""
+
+msgid "&Batch"
+msgstr ""
+
+msgid "Enter a description for the gift batch."
+msgstr ""
+
+msgid "Enter the bank account which this batch is for."
+msgstr ""
+
+msgid "Effective date to be used when posted to the general ledger."
+msgstr ""
+
+msgid "Select a currency code to use for the journal transactions."
+msgstr ""
+
+msgid "Enter the exchange rate from the transaction currency to base."
+msgstr ""
+
+#, csharp-format
+msgid "Valid between {0} and {1}"
+msgstr "Válido entre {0} y {1}"
+
+msgid "Do you really want to cancel this gift batch?"
+msgstr ""
+
+msgid "Confirm cancelling of Gift Batch"
+msgstr ""
+
+msgid "The batch was not posted due to problems during saving; "
+msgstr ""
+
+msgid "Please first save the batch, and then post it!"
+msgstr ""
+
+msgid "Do you really want to post this gift batch?"
+msgstr ""
+
+msgid "Confirm posting of Gift Batch"
+msgstr ""
+
+msgid "Posting failed"
+msgstr "Publicación falló"
+
+msgid "The batch has been posted successfully!"
+msgstr ""
+
+msgid "Gift Batch:"
+msgstr ""
+
+msgid "&Add Gift"
+msgstr "&Agregar ofrenda"
+
+msgid "Add Detai&l"
+msgstr "Agreg&ar detalle"
+
+msgid "&Delete Detail"
+msgstr "&Borrar detalle"
+
+msgid "Donor:"
+msgstr ""
+
+msgid "Date Entered:"
+msgstr ""
+
+msgid "Amount:"
+msgstr "Cantidad:"
+
+msgid "Recipient:"
+msgstr "Destinatario:"
+
+msgid "Motivation Group:"
+msgstr "Grupo de motivación:"
+
+msgid "Motivation Detail:"
+msgstr "Detalle de motivación:"
+
+msgid "Enter Your Currency Amount"
+msgstr ""
+
+msgid "Enter the partner key"
+msgstr ""
+
+msgid "Journals"
+msgstr ""
+
+msgid "GL Batches"
+msgstr ""
+
+msgid "label1"
+msgstr ""
+
+#, csharp-format
+msgid "valid dates from {0} to {1}"
+msgstr ""
+
+msgid "Select the posting date"
+msgstr ""
+
+msgid ""
+"Please select a date which is in the valid posting range of your ledger!"
+msgstr ""
+
+msgid "Invalid date"
+msgstr "Fecha inválida"
+
+msgid "Posting"
+msgstr ""
+
+msgid "Show batches available for"
+msgstr ""
+
+msgid "Batch Hash Total:"
+msgstr ""
+
+msgid "Effective Date:"
+msgstr ""
+
+msgid "Import From Spread Sheet"
+msgstr ""
+
+msgid "Enter a description for this general ledger batch."
+msgstr ""
+
+msgid "(Optional) Enter the total amount of the batch (hash total)."
+msgstr ""
+
+msgid "Enter the date for which this batch is to take effect."
+msgstr ""
+
+msgid "Import batches from spreadsheet file"
+msgstr ""
+
+msgid "GL Batches files (*.csv)|*.csv"
+msgstr ""
+
+msgid "Parsing first line"
+msgstr ""
+
+msgid "Parsing the hash value of the batch"
+msgstr ""
+
+msgid "Parsing the date effective of the batch"
+msgstr ""
+
+msgid "Expected a Batch line, but found a Journal"
+msgstr ""
+
+msgid "Parsing the sub system code of the journal"
+msgstr ""
+
+msgid "Parsing the transaction type of the journal"
+msgstr ""
+
+msgid "Parsing the currency of the journal"
+msgstr ""
+
+msgid "Parsing the exchange rate of the journal"
+msgstr ""
+
+msgid "Parsing the date effective of the journal"
+msgstr ""
+
+msgid "Expected a Journal or Batch line, but found a Transaction"
+msgstr ""
+
+msgid "Parsing the cost centre of the transaction"
+msgstr ""
+
+msgid "Parsing the account code of the transaction"
+msgstr ""
+
+msgid "Parsing the narrative of the transaction"
+msgstr ""
+
+msgid "Parsing the reference of the transaction"
+msgstr ""
+
+msgid "Parsing the transaction date"
+msgstr ""
+
+msgid "Parsing the debit amount of the transaction"
+msgstr ""
+
+msgid "Parsing the credit amount of the transaction"
+msgstr ""
+
+msgid "Either the debit amount or the debit amount must be greater than 0."
+msgstr ""
+
+msgid "You can not have a value for both debit and credit amount"
+msgstr ""
+
+#, csharp-format
+msgid "There is a problem parsing the file in row {0}. "
+msgstr ""
+
+#, csharp-format
+msgid ""
+"You have choosen to cancel this batch ({0}).\n"
+"\n"
+"Do you really want to cancel it?"
+msgstr ""
+
+msgid "Confirm Cancel"
+msgstr ""
+
+msgid "Cancel batch failed"
+msgstr ""
+
+msgid "The batch has been cancelled successfully!"
+msgstr ""
+
+msgid "Import transactions from spreadsheet file"
+msgstr ""
+
+msgid "Automatically generated balancing transaction"
+msgstr ""
+
+msgid "Batch:"
+msgstr ""
+
+msgid "Journal Description:"
+msgstr ""
+
+msgid "Sub System:"
+msgstr ""
+
+msgid "Transaction Type:"
+msgstr "Tipo de transacción:"
+
+msgid "Exchange Rate to Base:"
+msgstr ""
+
+msgid "Enter a description for this general ledger journal."
+msgstr ""
+
+msgid "The subsystem from which this journal came."
+msgstr ""
+
+msgid "Select the type of journal."
+msgstr ""
+
+msgid "Enter the date for the journal to come into effect."
+msgstr ""
+
+msgid "Journal:"
+msgstr "fichero de transacciones:"
+
+msgid "&Remove"
+msgstr "&Eliminar"
+
+msgid "Narrative:"
+msgstr ""
+
+msgid "Reference:"
+msgstr "Referencia"
+
+msgid "Transaction Date:"
+msgstr "Fecha de transacción:"
+
+msgid "Key Ministry:"
+msgstr "Ministerio clave:"
+
+msgid "TODOTransactionCurrency:"
+msgstr ""
+
+msgid "TODOBase Currency:"
+msgstr ""
+
+msgid "Dr Amount:"
+msgstr ""
+
+msgid "Cr Amount:"
+msgstr ""
+
+msgid "Debit Total:"
+msgstr ""
+
+msgid "Credit Total:"
+msgstr ""
+
+msgid "Enter a cost centre code (department or fund)."
+msgstr ""
+
+msgid "Enter an account code."
+msgstr "Entrar un código de cuenta."
+
+msgid "Enter a description of the transaction."
+msgstr ""
+
+msgid "(Optional) Enter a reference code."
+msgstr ""
+
+msgid "The date the transaction is to take effect (same as journal)."
+msgstr ""
+
+msgid ""
+"Key ministry to which this transaction applies (just for fund transfers)"
+msgstr ""
+
+#, csharp-format
+msgid "{0} (Base Currency)"
+msgstr ""
+
+#, csharp-format
+msgid "{0} (Transaction Currency)"
+msgstr ""
+
+msgid "Confirm Delete"
+msgstr ""
+
+msgid "Current Supplier:"
+msgstr "Proveedor actual:"
+
+msgid "Invoice &Number:"
+msgstr ""
+
+msgid "Invoice"
+msgstr ""
+
+msgid "T&ype:"
+msgstr "T&ipo:"
+
+msgid "&Reference:"
+msgstr "&Referencia:"
+
+msgid "&Date Issued:"
+msgstr ""
+
+msgid "Date D&ue:"
+msgstr ""
+
+msgid "Credit &Terms:"
+msgstr ""
+
+msgid "Discount &Days:"
+msgstr ""
+
+msgid "Discount &Value (%):"
+msgstr ""
+
+msgid "&Amount:"
+msgstr "&Cantidad:"
+
+msgid "E&xchange Rate:"
+msgstr ""
+
+msgid "Document Information"
+msgstr "Información acerca del documento"
+
+msgid "Add De&tail"
+msgstr "Agregar de&talle"
+
+msgid "&Remove Detail"
+msgstr "&Remover detalle"
+
+msgid "Analysis Attri&b."
+msgstr ""
+
+msgid "Narrati&ve:"
+msgstr ""
+
+msgid "Detail &Ref:"
+msgstr ""
+
+msgid "A&mount:"
+msgstr "&Cantidad:"
+
+msgid "C&ost Centre:"
+msgstr "&Centro de costos:"
+
+msgid "Use Ta&x Acct+CC"
+msgstr ""
+
+msgid "Base:"
+msgstr "Base:"
+
+msgid "Accou&nt:"
+msgstr "Cue&nta:"
+
+msgid "Details"
+msgstr "Detalles"
+
+msgid "Post Document"
+msgstr "Publicar documento"
+
+msgid "AP Document Edit"
+msgstr ""
+
+msgid "The currency code to use for this supplier."
+msgstr ""
+
+msgid ""
+"The code given on the document itself (be it invoice or credit note). This "
+"will have to be unique for each supplier."
+msgstr ""
+
+msgid "A flag to indicate if this document is an invoice or a credit note."
+msgstr ""
+
+msgid "Some kind of other reference needed."
+msgstr ""
+
+msgid "The date when this document was issued."
+msgstr ""
+
+msgid "Credit Terms is the number of days between date issued and due date"
+msgstr ""
+
+msgid "Credit terms allowed for this invoice."
+msgstr ""
+
+msgid "The number of days that the discount is valid for (0 for none)."
+msgstr ""
+
+msgid ""
+"The percentage discount you get for early payment of this document in the "
+"case that it is an invoice."
+msgstr ""
+
+msgid "The total amount of money that this document is worth."
+msgstr ""
+
+msgid ""
+"The exchange rate to the base currency at the time that the document was "
+"issued."
+msgstr ""
+
+msgid "A narrative about what this is."
+msgstr ""
+
+msgid "Some other reference to the item."
+msgstr ""
+
+msgid "The amount of money this detail is worth."
+msgstr ""
+
+msgid "Reference to the cost centre to use for this detail."
+msgstr ""
+
+msgid "Reference to the account to use for this detail"
+msgstr ""
+
+msgid "Select posting date"
+msgstr ""
+
+msgid "The date effective for posting"
+msgstr ""
+
+msgid "The payment was cancelled."
+msgstr "Se canceló el pago."
+
+msgid "The AP document has been posted successfully!"
+msgstr ""
+
+msgid "&Edit Partner info of Supplier"
+msgstr ""
+
+msgid "&Currency:"
+msgstr "&Moneda:"
+
+msgid "Supplier &Type:"
+msgstr "&Tipo de proveedor:"
+
+msgid "General Information"
+msgstr "Información general"
+
+msgid "Invoice A&ging (in months):"
+msgstr ""
+
+msgid "C&redit Terms (in days):"
+msgstr ""
+
+msgid "Default &Payment Type:"
+msgstr ""
+
+msgid "Number of Days for &Discount (0 for none):"
+msgstr ""
+
+msgid "Misc Defaults"
+msgstr ""
+
+msgid "&AP Account:"
+msgstr ""
+
+msgid "Default &Bank Account:"
+msgstr "Cuenta de &banco por omisión:"
+
+msgid "Default C&ost Centre:"
+msgstr ""
+
+msgid "Default &Expense Account:"
+msgstr ""
+
+msgid "Account Information"
+msgstr "Información acerca de la cuenta"
+
+msgid "AP Supplier Edit"
+msgstr ""
+
+msgid "Reference to the partner key for this supplier"
+msgstr ""
+
+msgid ""
+"What type of supplier this is - normal, credit card, maybe something else."
+msgstr ""
+
+msgid "Number of months to display invoices and credit notes"
+msgstr ""
+
+msgid "Default credit terms to use for invoices from this supplier."
+msgstr ""
+
+msgid "The default type of payment to use when paying this supplier."
+msgstr ""
+
+msgid "Default number of days in which the discount percentage has effect."
+msgstr ""
+
+msgid "Default percentage discount to receive for early payments."
+msgstr ""
+
+msgid "The default AP Account to use when paying this supplier."
+msgstr ""
+
+msgid "Reference to default bank account to use to pay supplier with."
+msgstr ""
+
+msgid "Reference to the default cost centre to use for invoice details."
+msgstr ""
+
+msgid "Reference to the default expense Account to use for invoice details."
+msgstr ""
+
+msgid "There is already a supplier record for this partner!"
+msgstr ""
+
+msgid "Please select an AP account (eg. 9100)"
+msgstr ""
+
+msgid "S&earch Supplier:"
+msgstr "&Buscar proveedor:"
+
+msgid "Due &Today"
+msgstr ""
+
+msgid "&Overdue"
+msgstr ""
+
+msgid "Due &Within Future"
+msgstr ""
+
+msgid "Days"
+msgstr "Días"
+
+msgid "&Reset Criteria"
+msgstr ""
+
+msgid "Show Outstanding &Amounts"
+msgstr ""
+
+msgid "Hide &Inactive Suppliers"
+msgstr ""
+
+msgid "C&urrency:"
+msgstr ""
+
+msgid "Suppliers"
+msgstr "Proveedores"
+
+msgid "Tag all Appro&vable"
+msgstr ""
+
+msgid "Tag a&ll Postable"
+msgstr ""
+
+msgid "Tag all Paya&ble"
+msgstr ""
+
+msgid "&Untag all"
+msgstr ""
+
+msgid "Sum of Tagged:"
+msgstr ""
+
+msgid "Outstanding Invoices"
+msgstr ""
+
+msgid "Open the transactions of the supplier"
+msgstr ""
+
+msgid "Open Transactions"
+msgstr "Abrir transacciones"
+
+msgid "Change the details and settings of an existing supplier"
+msgstr ""
+
+msgid "&Edit Supplier"
+msgstr "&Editar proveedor"
+
+msgid "Create a new supplier"
+msgstr "Crear un proveedor nuevo"
+
+msgid "&New Supplier"
+msgstr "&Proveedor nuevo"
+
+msgid "Create &Invoice"
+msgstr ""
+
+msgid "Create C&redit Note"
+msgstr ""
+
+msgid "Reprint Pa&yment Report"
+msgstr ""
+
+msgid "AP &Defaults"
+msgstr ""
+
+msgid "Supplier"
+msgstr "Proveedor"
+
+msgid "&Find Invoice..."
+msgstr "&Encontrar factura..."
+
+msgid "Accounts Payable"
+msgstr ""
+
+msgid "Search by supplier name or partner key"
+msgstr ""
+
+msgid "Suppliers to Pay"
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Payment T&ype:"
+msgstr ""
+
+msgid "Exchange Rate:"
+msgstr "Tasa de cambio:"
+
+msgid "Print Remittance"
+msgstr ""
+
+msgid "Print Label"
+msgstr "Imprimir etiquetas"
+
+msgid "Print Cheque"
+msgstr "Imprimir check"
+
+msgid "Cheque Number:"
+msgstr "Número de check:"
+
+msgid "Amount To Pay"
+msgstr ""
+
+msgid "Claim Discount"
+msgstr ""
+
+msgid "Amount To Pay:"
+msgstr ""
+
+msgid "Invoices in this payment"
+msgstr ""
+
+msgid "&Make Payment"
+msgstr "&Hacer pago"
+
+msgid "Split By Invoice"
+msgstr ""
+
+msgid "AP Payment"
+msgstr ""
+
+msgid "Enter the reference for this accounts payable payment"
+msgstr ""
+
+msgid "Select payment date"
+msgstr ""
+
+msgid "The date effective for the payment"
+msgstr ""
+
+msgid "Payment failed"
+msgstr "Pago falló"
+
+msgid "The AP payment has been posted successfully!"
+msgstr ""
+
+msgid "&Type:"
+msgstr "&Tipo:"
+
+msgid "&Date:"
+msgstr "&Fecha:"
+
+msgid "Date &Field:"
+msgstr "Campo de &fecha:"
+
+msgid "&Status:"
+msgstr "&Estado:"
+
+msgid "Hide &Aged Transactions"
+msgstr ""
+
+msgid "Tag all P&ostable"
+msgstr ""
+
+msgid "&Untag All"
+msgstr ""
+
+msgid "Displayed Balance:"
+msgstr ""
+
+msgid "New &Invoice"
+msgstr "Nueva &factura"
+
+msgid "New &Credit Note"
+msgstr ""
+
+msgid "&Open Selected"
+msgstr "&Abrir selectos"
+
+msgid "Re&verse Selected"
+msgstr ""
+
+msgid "&Approve Tagged"
+msgstr ""
+
+msgid "&Post Tagged"
+msgstr ""
+
+msgid "Add Tagged to Pa&yment"
+msgstr ""
+
+msgid "Reprint Re&mittance Advice"
+msgstr ""
+
+msgid "Reprint &Cheque"
+msgstr ""
+
+msgid "&New..."
+msgstr "&Nuevo.."
+
+msgid "&Action"
+msgstr "&Acción"
+
+msgid "Supplier Transactions"
+msgstr "Transacciones de proveedores"
+
+msgid "The AP documents have been posted successfully!"
+msgstr ""
+
+msgid "Select Bank Account:"
+msgstr "Seleccionar cuenta de banco:"
+
+msgid "ListAll"
+msgstr ""
+
+msgid "ListUnmatched"
+msgstr ""
+
+msgid "ListGift"
+msgstr ""
+
+msgid "ListGL"
+msgstr ""
+
+msgid "Select Transaction"
+msgstr "Seleccionar transacción"
+
+msgid "Unmatched"
+msgstr ""
+
+msgid "GL"
+msgstr ""
+
+msgid "Transaction Category"
+msgstr "Categoría de transacción"
+
+msgid "&Import new statement"
+msgstr "&Importar declaración nueva"
+
+msgid "Delete Statement"
+msgstr "Borrar declaración"
+
+msgid "Save Matches"
+msgstr ""
+
+msgid "Create Gift Batch"
+msgstr ""
+
+msgid "CreateGL Batch"
+msgstr ""
+
+msgid "Import Bank Statements"
+msgstr ""
+
+msgid "Nr"
+msgstr "No"
+
+msgid "Account Name"
+msgstr "Nombre de cuenta:"
+
+msgid "description"
+msgstr "Descripción"
+
+msgid "Date Effective"
+msgstr ""
+
+msgid "Transaction Amount"
+msgstr "Cantidad de transacción"
+
+msgid "Motivation"
+msgstr ""
+
+msgid "Cost Centre"
+msgstr "Centro de costos"
+
+msgid "Cost Centre Name"
+msgstr ""
+
+msgid "Amount"
+msgstr "Cantidad"
+
+msgid "Please install a valid plugin for the import of bank statements!"
+msgstr ""
+
+msgid "Please select a row before deleting a detail"
+msgstr ""
+
+msgid "Cannot delete the first detail"
+msgstr ""
+
+#, csharp-format
+msgid "Please check Gift Batch {0}"
+msgstr ""
+
+msgid "Problem: No gift batch has been created"
+msgstr ""
+
+#, csharp-format
+msgid "Please check GL Batch {0}"
+msgstr ""
+
+msgid "Problem: No GL batch has been created"
+msgstr ""
+
+msgid "Select a ledger"
+msgstr "Seleccionar extracto"
+
+msgid "Main"
+msgstr "General"
+
+msgid "Partners"
+msgstr "Socios"
+
+msgid "Search Boxes"
+msgstr ""
+
+msgid "Element"
+msgstr "Elemento"
+
+msgid "Add New Family"
+msgstr "Agregar familia nueva"
+
+msgid "Add New Person"
+msgstr "Agregar persona nuevo"
+
+msgid "Add New Organisation"
+msgstr "Agregar organicación nueva"
+
+msgid "Maintain Partner"
+msgstr "Mantener socio"
+
+msgid "Find Partner"
+msgstr "Buscar socio"
+
+msgid "Contacts"
+msgstr "Contactos"
+
+msgid "Find And Delete Contacts"
+msgstr "Buscar y borrar contactos"
+
+msgid "Import and Export"
+msgstr "Importar y exportar"
+
+msgid "Export Partners"
+msgstr "Exportar socios"
+
+msgid "Import from YAML"
+msgstr "Importar desde YAML"
+
+msgid "Import from CSV"
+msgstr "Importar desde CSV"
+
+msgid "Reports"
+msgstr "Reportes"
+
+msgid "Partner Reports"
+msgstr "Reportes de socio"
+
+msgid "Partner By City"
+msgstr "Socio por ciudad"
+
+msgid "Local Partner Data"
+msgstr "Datos de socios locales"
+
+msgid "Setup"
+msgstr "Configuración"
+
+msgid "Partner-related"
+msgstr ""
+
+msgid "Setup Countries"
+msgstr "Mantener países"
+
+msgid "Setup Language Codes"
+msgstr "Mantener códgio de países"
+
+msgid "Setup Frequencies"
+msgstr ""
+
+msgid "Setup Partner Statuses"
+msgstr "Mantener códigos de socios"
+
+msgid "Setup Acquisition Codes"
+msgstr "Mantener códigos de acquisición"
+
+msgid "Setup Special Types"
+msgstr "Mantener tipos especiales"
+
+msgid "Setup Denomination Codes"
+msgstr "Mantener códigos de denominación"
+
+msgid "Setup Business Codes"
+msgstr "Mantener códigos de negocio"
+
+msgid "Setup Occupation Codes"
+msgstr "Mantener códigos de ocupación"
+
+msgid "Setup Marital Statuses"
+msgstr "Mantener estados civiles"
+
+msgid "Setup Relationship Categories"
+msgstr "Mantener categorías de relación"
+
+msgid "Setup Contact Methods"
+msgstr "Mantener maneras de contacto"
+
+msgid "Setup Interest Categories"
+msgstr "Mantener categórías de interés"
+
+msgid "Setup Partner Interests"
+msgstr "Mantener intereses de socio"
+
+msgid "Subscription-related"
+msgstr ""
+
+msgid "Setup Publications"
+msgstr "Mantener publicaciones"
+
+msgid "Setup Reason Subscription Given List"
+msgstr ""
+
+msgid "Setup Reason Subscription Cancelled List"
+msgstr ""
+
+msgid "Address-related"
+msgstr ""
+
+msgid "Setup Addressee Types"
+msgstr "Mantener tipos de destinatario"
+
+msgid "Setup Location Types"
+msgstr "Mantener tipos de unidades"
+
+msgid "Setup International Postal Types"
+msgstr ""
+
+#, csharp-format
+msgid "Ledger {0} {1}"
+msgstr ""
+
+msgid "Gift Processing"
+msgstr "Procesamiento de ofrendas"
+
+msgid "Gift Entry"
+msgstr ""
+
+msgid "Import Gifts From Bank Statement"
+msgstr ""
+
+msgid "Gift Receipting"
+msgstr "Contabilidad de ofrendas"
+
+msgid "Print Annual Receipts"
+msgstr ""
+
+msgid "Form Letters"
+msgstr ""
+
+msgid "Print New Donor Subscription Letters"
+msgstr ""
+
+msgid "Setup Motivation Details"
+msgstr ""
+
+msgid "General Ledger"
+msgstr "Extracto general"
+
+msgid "General"
+msgstr "General"
+
+msgid "ImportGL Transactions From Bank Statement"
+msgstr ""
+
+msgid "Account Detail Report"
+msgstr ""
+
+msgid "Manage Accounts"
+msgstr "Mantener cuentas"
+
+msgid "Manage Cost Centres"
+msgstr ""
+
+msgid "Finance Module Setup"
+msgstr "Mantener módulo de finanzas"
+
+msgid "Setup Currencies"
+msgstr "Mantener monedas"
+
+msgid "Setup Daily Exchange Rate"
+msgstr ""
+
+msgid "Personnel"
+msgstr "Personal"
+
+msgid "Setup Ability Areas"
+msgstr ""
+
+msgid "Application-related"
+msgstr ""
+
+msgid "Personnel Reports"
+msgstr "Reporte de personal"
+
+msgid "Local Personnel Data"
+msgstr ""
+
+msgid "Conference Management"
+msgstr "Administración de Conferencias"
+
+msgid "Arrival Departure Group Report"
+msgstr ""
+
+msgid "Arrival Listing Report"
+msgstr ""
+
+msgid "Language Report"
+msgstr "Reporte de idiomas"
+
+msgid "Pressent Attenddee Report"
+msgstr ""
+
+msgid "Field Reports"
+msgstr ""
+
+#, csharp-format
+msgid "FinDev {0} {1}"
+msgstr ""
+
+msgid "Income By Fund"
+msgstr ""
+
+msgid "Settings"
+msgstr "Propiedades"
+
+msgid "Safety"
+msgstr "Seguridad"
+
+msgid "System Manager"
+msgstr "Administrador de Sistemas"
+
+msgid "Users"
+msgstr "Usuarios"
+
+msgid "Functions"
+msgstr "Funciones"
+
+msgid "Finance"
+msgstr "Finanzas"
+
+msgid "Ledger Operations"
+msgstr ""
+
+msgid "Database"
+msgstr "Base de datos"
+
+msgid "Import Export"
+msgstr "Importar Exportar"
+
+msgid "Export All Data"
+msgstr "Exportar todos los datos"
+
+msgid "Reset Database"
+msgstr "Reiniciar base de datos"
+
+msgid "bank statement (*.csv)|*.csv"
+msgstr ""
+
+msgid "Please select the bank statement to import"
+msgstr ""
+
+msgid "Missing setting in config file: BankImportCSV.FileStructure.Config"
+msgstr ""
+
+msgid "bank statement MT940 (*.sta)|*.sta"
+msgstr ""
+
+msgid "We don't support several bank statements per file at the moment"
+msgstr ""
+
+#, csharp-format
+msgid "No access for user {0} to module {1}"
+msgstr ""
+
+#, csharp-format
+msgid "No access for user {0} to either of the modules {1}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Module access permission was violated for method {0} in Connector class {1}: "
+"{2}"
+msgstr ""
+
+msgid "Invalid User ID/Password."
+msgstr "ID de usuario/contraseña no válida"
+
+msgid ""
+"  ID | Client          | Status           | Computer    | IP Address      | "
+"Type"
+msgstr ""
+
+msgid ""
+"     | Connected since | Last activity    | Server Port |                 |"
+msgstr ""
+
+msgid " * no connected Clients *"
+msgstr ""
+
+msgid " * no disconnected Clients *"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"  (Currently connected Clients: {0}; client connections since Server start: "
+"{1})"
+msgstr ""
+
+#, csharp-format
+msgid "PETRAServer {0} Build {1}  (OS: {2})"
+msgstr ""
+
+#, csharp-format
+msgid "PETRAServer is running and listening @ {0}:{1}"
+msgstr ""
+
+msgid "SERVER STOPPED!"
+msgstr "Servidor parado!"
+
+msgid "SHUTDOWN PROCEDURE INITIATED"
+msgstr ""
+
+msgid "SHUTDOWN: Executing step 1 of 2..."
+msgstr ""
+
+msgid "SHUTDOWN: Executing step 2 of 2..."
+msgstr ""
+
+msgid "SHUTDOWN PROCEDURE FINISHED"
+msgstr ""
+
+msgid "Connecting to Database..."
+msgstr ""
+
+msgid "Connected to Database."
+msgstr ""
+
+#, csharp-format
+msgid "Exception occured during manual load of Client AppDomain: {0}"
+msgstr ""
+
+msgid "SERVER>"
+msgstr "SERVIDOR>"
+
+msgid "Reading server remote configuration from config file..."
+msgstr ""
+
+msgid "-> Press \"m\" for menu."
+msgstr ""
+
+#, csharp-format
+msgid "Client connections since Server start: {0}"
+msgstr ""
+
+msgid "Clients currently connected: "
+msgstr ""
+
+msgid "** restricted **"
+msgstr "** restringido **"
+
+msgid "99"
+msgstr "99"
+
+msgid "Missing SiteKey Attribute"
+msgstr ""
+
+msgid "Missing status Attribute"
+msgstr ""
+
+msgid "Missing Country Attribute"
+msgstr ""
+
+msgid "Imported Data"
+msgstr "Dato importado"
+
+msgid "There was a problem with the syntax of the file."
+msgstr ""
+
+msgid "Creating Ledger"
+msgstr "Creando extracto"
+
+msgid "No valid address on file"
+msgstr ""
+
+msgid "Gifts"
+msgstr "Ofrendas"
+
+msgid "Personal Support"
+msgstr "Soporte personal"
+
+msgid "Gifts for Field"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post Batch {0} in Ledger {1}"
+msgstr ""
+
+msgid "The batch does not exist at all."
+msgstr ""
+
+#, csharp-format
+msgid "It has status {0}"
+msgstr "Tiene estado {0}"
+
+#, csharp-format
+msgid "It does not balance: Debit is {0}, Credit is {1}"
+msgstr ""
+
+msgid ""
+"It has no monetary value. Please cancel it or add meaningful transactions."
+msgstr ""
+
+#, csharp-format
+msgid "The control total {0} does not fit the Credit/Debit Total {1}."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The Date Effective {0:d-MMM-yyyy} does not fit any open accounting period."
+msgstr ""
+
+#, csharp-format
+msgid "The journal {0} does not balance: Debit is {1}, Credit is {2}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Transaction {0} in Journal {1} has invalid base transaction amount of 0."
+msgstr ""
+
+#, csharp-format
+msgid "Cannot cancel Batch {0} in Ledger {1}"
+msgstr ""
+
+msgid "It was already cancelled."
+msgstr "Ya fue cancelado."
+
+msgid "error during posting of AP document"
+msgstr ""
+
+#, csharp-format
+msgid "Document with Number {0} cannot be posted since the status is {1}."
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post the AP documents in Ledger {0}"
+msgstr ""
+
+msgid "Accounts Payable Batch"
+msgstr ""
+
+msgid "Accounts Payable Payment Batch"
+msgstr ""
+
+#, csharp-format
+msgid "posted on {0}"
+msgstr "Publicado en {0}"
+
+msgid "Gift Adjustment (Field Change)"
+msgstr ""
+
+msgid "** confidential **"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Cannot create a gift batch for date {0} since it is not in an open period of "
+"the ledger."
+msgstr ""
+
+msgid "Creating Gift Batch"
+msgstr ""
+
+#, csharp-format
+msgid "bank import for date {0}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Cannot create a GL batch for date {0} since it is not in an open period of "
+"the ledger."
+msgstr ""
+
+msgid "Creating GL Batch"
+msgstr ""
+
+msgid "Invalid User ID"
+msgstr "ID de Usuario no válida"

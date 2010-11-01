@@ -219,9 +219,9 @@
             </fileset>
         </copy>
 
-        <copy todir="${setupDir}/bin30/locale/">
-           <fileset basedir="${OpenPetraRoot.dir}/setup/petra0300/i18n/locale">
-               <include name="**/*.mo" />
+        <copy todir="${setupDir}/bin30/">
+           <fileset basedir="${Delivery.dir}/i18n/">
+               <include name="**/*.dll" />
            </fileset> 
         </copy>
         
