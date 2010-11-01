@@ -96,12 +96,27 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FPassword = String.Empty;
+        [TaskAttribute("password", Required = false)]
+        public string Password {
+            get
+            {
+                return FPassword;
+            }
+            set
+            {
+                FPassword = value;
+            }
+        }
+
         protected override void ExecuteTask()
         {
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
             process.StartInfo.FileName = FPsqlExecutable;
+
+            Environment.SetEnvironmentVariable("PGPASSWORD", FPassword, EnvironmentVariableTarget.Process);
 
             if (FSQLCommand.Length > 0)
             {
