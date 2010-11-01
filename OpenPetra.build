@@ -22,7 +22,7 @@
 
     <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/nantcontrib/NAnt.Contrib.Tasks.dll"/>
     <if test="${file::exists(msbuildtask.file)}">
-        <loadtasks assembly="msbuildtask.file"/>
+        <loadtasks assembly="${msbuildtask.file}"/>
     </if>
 
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
