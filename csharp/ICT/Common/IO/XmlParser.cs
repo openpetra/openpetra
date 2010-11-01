@@ -135,8 +135,8 @@ namespace Ict.Common.IO
                     if (!File.Exists(dtdFilename))
                     {
                         // we have some reports in a directory even two directories below where the reports.dtd is
-                        dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." + 
-                            Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
+                        dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." +
+                                      Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
                     }
 
                     return File.Open(dtdFilename, FileMode.Open, FileAccess.Read);

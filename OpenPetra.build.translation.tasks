@@ -18,17 +18,17 @@
             <do>
                 <property name="TargetLanguage.PofileWithPath" value="${filename}"/>
 
-                <mkdir dir="${Delivery.dir}/i18n" failonerror="false"/>
+                <mkdir dir="${Tmp.dir}/i18n" failonerror="false"/>
                 
                 <property name="TempLanguageFile" value="${TargetLanguage.PofileWithPath}"/>
                 <property name="CustomLanguageFile" value="${TargetLanguage.PofileWithPath}.my"/>
                 <if test="${file::exists(CustomLanguageFile)}">
                     <!-- we want to merge the custom language file with the default language file, overwriting the default language file where the custom file contains translations -->
                     <property name="TempLanguageFile" value="${Tmp.dir}/temp.po"/>
-                    <exec program="${Poedit.msgcat}" commandline="${CustomLanguageFile} ${TargetLanguage.PofileWithPath} --use-first -o ${TempLanguageFile}"/>
+                    <exec program="${Poedit.msgcat}" commandline="&quot;${CustomLanguageFile}&quot; &quot;${TargetLanguage.PofileWithPath}&quot; --use-first -o &quot;${TempLanguageFile}&quot;"/>
                 </if>
 
-                <exec program="${Poedit.msgfmt}" commandline="${TempLanguageFile} -d ${Delivery.dir}/i18n/ --locale=${path::get-file-name-without-extension(filename)} --resource=OpenPetra --csharp">
+                <exec program="${Poedit.msgfmt}" commandline="&quot;${TempLanguageFile}&quot; -d &quot;${Tmp.dir}/i18n/&quot; --locale=${path::get-file-name-without-extension(filename)} --resource=OpenPetra --csharp">
                     <environment>
                         <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
                     </environment>

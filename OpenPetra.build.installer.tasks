@@ -48,7 +48,7 @@
             <property name="toReplace" value="{#SERVERPORT}"/>
             <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
         </if>
-        <exec program="${Innosetup.ISCC}" commandline=" ${Current.File}"
+        <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
               workingdir="${path::get-directory-name(Current.File)}"/>
     </target>
     <target name="setupStandalone">
@@ -220,7 +220,7 @@
         </copy>
 
         <copy todir="${setupDir}/bin30/">
-           <fileset basedir="${Delivery.dir}/i18n/">
+           <fileset basedir="${Tmp.dir}/i18n/">
                <include name="**/*.dll" />
            </fileset> 
         </copy>
