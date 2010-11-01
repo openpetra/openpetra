@@ -2,6 +2,39 @@
 <!-- this contains the targets for starting the server or the client or the webserver;
      this build file is included by the main OpenPetra.build file -->
 <project name="OpenPetra" default="help">
+    <property name="WebServerInstall.dir" value="${OpenPetraRoot.dir}/webserver/"/>
+    <property name="WebConfigFile" value="${WebServerInstall.dir}/web.config"/>
+    <property name="ClientConfigFile" value="${OpenPetraRoot.dir}/etc/Client.config"/>
+    <property name="ServerConfigFile" value="${OpenPetraRoot.dir}/etc/Server.config"/>
+    <property name="ServerAdminConfigFile" value="${OpenPetraRoot.dir}/etc/ServerAdmin.config"/>
+    <property name="TestReportingConfigFile" value="${OpenPetraRoot.dir}/etc/TestReporting.config"/>
+    <property name="TestClientConfigFile" value="${OpenPetraRoot.dir}/etc/TestClient.config"/>
+
+    <property name="CustomizedConfigFile" value="${WebConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="WebConfigFile" value="${WebConfigFile}.my"/>
+    </if>
+    <property name="CustomizedConfigFile" value="${ClientConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="ClientConfigFile" value="${ClientConfigFile}.my"/>
+    </if>
+    <property name="CustomizedConfigFile" value="${ServerConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="ServerConfigFile" value="${ServerConfigFile}.my"/>
+    </if>
+    <property name="CustomizedConfigFile" value="${ServerAdminConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="ServerAdminConfigFile" value="${ServerAdminConfigFile}.my"/>
+    </if>
+    <property name="CustomizedConfigFile" value="${TestReportingConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="TestReportingConfigFile" value="${TestReportingConfigFile}.my"/>
+    </if>
+    <property name="CustomizedConfigFile" value="${TestClientConfigFile}.my"/>
+    <if test="${file::exists(CustomizedConfigFile)}">
+        <property name="TestClientConfigFile" value="${TestClientConfigFile}.my"/>
+    </if>
+
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 

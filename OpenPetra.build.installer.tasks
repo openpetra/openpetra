@@ -7,7 +7,27 @@
         <property name="Current.File" value="${SetupOriginal.File}.local"/>
 
         <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
-    
+
+        <property name="toReplace" value="{#UINAVIGATION}"/>
+        <property name="UINavigation.file" value="UINavigation.yml.my"/>
+        <if test="${file::exists(UINavigation.file)}">
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+        </if>
+        <if test="${not file::exists(UINavigation.file)}">
+            <property name="UINavigation.file" value="UINavigation.yml"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+        </if>
+
+        <property name="toReplace" value="{#REMOTECONFIG}"/>
+        <property name="Config.file" value="PetraClientRemote.config.my"/>
+        <if test="${file::exists(Config.file)}">
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        </if>
+        <if test="${not file::exists(Config.file)}">
+            <property name="Config.file" value="PetraClientRemote.config"/>
+            <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        </if>
+
         <property name="toReplace" value="{#RELEASEVERSION}"/>
         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
         <property name="toReplace" value="{#RELEASEID}"/>
@@ -51,15 +71,22 @@
         <property name="SetupOriginal.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
         <call target="setupTemplate"/>
         
-        <!-- create the linux scripts for the server side -->
+        <!-- ***************  create the linux scripts for the server side ***************  -->
         <copy todir="${Tmp.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/">
                 <include name="openpetraorg-server.sh" />
-                <include name="PetraServerConsole-mysql.config" />
                 <include name="PetraServerAdminConsole.config" />
                 <include name="initmysql.sh" />
             </fileset>
         </copy>
+
+        <property name="CustomConfig.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole.config.my"/>
+        <if test="${file::exists(CustomConfig.File)}">
+            <copy file="${CustomConfig.File}" tofile="${Tmp.dir}/PetraServerConsole.config"/>
+        </if>
+        <if test="${not file::exists(CustomConfig.File)}">
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole-mysql.config" tofile="${Tmp.dir}/PetraServerConsole.config"/>
+        </if>
 
         <!--  ***************  openpetraorg-server.sh ********************* -->
         <property name="Current.File" value="${Tmp.dir}/openpetraorg-server.sh"/>
@@ -71,8 +98,8 @@
         <property name="newValue" value="${OrgName}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
-        <!--  ***************  PetraServerConsole-mysql.config ********************* -->
-        <property name="Current.File" value="${Tmp.dir}/PetraServerConsole-mysql.config"/>
+        <!--  ***************  PetraServerConsole.config ********************* -->
+        <property name="Current.File" value="${Tmp.dir}/PetraServerConsole.config"/>
         <property name="toReplace" value="{#SERVERPORT}"/>
         <property name="newValue" value="${ServerPort}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
@@ -117,11 +144,8 @@
             generate private and public key, with GenerateEncryptionKey from PetraTools/_bin. write to 2 text files
             upload /var/www/keys/publickey.xml
             upload /usr/local/openpetra/OrgNameWithoutSpace/etc30/privatekey.xml
-            copy generated PetraServerAdminConsole.config and PetraServerConsole-mysql.config to etc30
+            copy generated PetraServerAdminConsole.config and PetraServerConsole.config to etc30
             copy generated initmysql.sh and openpetraorg-server.sh
-            cd etc30
-            rm PetraServerConsole.config
-            ln -s PetraServerConsole-mysql.config PetraServerConsole.config
             initmysql
 
             as root:

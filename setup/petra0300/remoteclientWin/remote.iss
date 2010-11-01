@@ -40,10 +40,10 @@ Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ICT\Petra\Definitions\{#UINAVIGATION}; DestDir: {app}/bin30
 Source: ..\..\..\delivery\i18n\*.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {app}/reports30/Settings; Flags: recursesubdirs createallsubdirs
-Source: PetraClientRemote.config; DestDir: {app}/etc30
+Source: {#REMOTECONFIG}; DestDir: {app}/etc30/PetraClientRemote.config
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
