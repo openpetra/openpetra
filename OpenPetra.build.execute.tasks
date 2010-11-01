@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!-- this contains the targets for starting the server or the client or the webserver;
+     this build file is included by the main OpenPetra.build file -->
+<project name="OpenPetra" default="help">
+    <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
+                    commandline="PetraServerConsole.exe -RunWithoutMenu:true -C:${ServerConfigFile}"
+                    spawn="true">
+                    <!-- todo: install newer version of nant that knows spawn;
+                         unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <exec program="cmd.exe" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
+                    commandline="/C start PetraServerConsole.exe -RunWithoutMenu:false -C:${ServerConfigFile}"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+    </target>
+
+    <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
+                    commandline="PetraClient.exe -C:${ClientConfigFile}"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <exec program="cmd.exe" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
+                    commandline="/C start PetraClient.exe -C:${ClientConfigFile}"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+    </target>
+
+    <target name="stopPetraServer" depends="" description="stop the local Petra Server">
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <exec program="mono" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
+                    commandline="PetraServerAdminConsole.exe -Command:Stop -C:${ServerAdminConfigFile}"
+                    spawn="true">
+               <environment>
+                  <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+               </environment>
+            </exec>
+        </if>
+        <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <exec program="PetraServerAdminConsole.exe" 
+                    basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}" 
+                    workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
+                    commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
+        </if>
+    </target>
+        
+    <target name="startXSPServer">
+        <exec program="cmd.exe" 
+                workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClientAsp"
+                commandline="/C start xsp2 --root . --port 8080 --applications /:."
+                spawn="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+            </environment>
+        </exec>
+    </target>
+
+    <target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+        <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
+                    tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
+        <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <!-- some unmanaged dlls cause problems for mono xsp -->
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
+                <include name="*.dll" />
+                <exclude name="Mono*" />
+                <exclude name="intl.dll" />
+            </fileset>
+        </copy>
+        <if test="${not file::exists(WebConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/web-${DBMS.Type}.config.sample"
+                tofile="${WebConfigFile}" overwrite="true"/>
+        </if>
+        <!-- TODO: run on linux as well? -->
+        <exec program="cmd.exe" 
+                workingdir="${WebServerInstall.dir}"
+                commandline="/C start xsp2.bat --verbose --root . --port 8081 --applications /:."
+                spawn="true">
+            <environment>
+                <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                <variable name="MONO_OPTIONS" value="--debug"/>
+            </environment>
+        </exec>
+        <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
+        
+        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg.qx/source for the qooxdoo test"/>
+        <echo message="                 or to http://localhost:8081/OpenPetraOrg.ext for the extjs test"/>
+    </target>
+</project>

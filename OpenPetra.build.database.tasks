@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<!-- this contains the targets for creating databases and resetting database content;
+     this build file is included by the main OpenPetra.build file -->
+<project name="OpenPetra" default="help">
+    <target name="createSQLStatements" depends="compileCommon, compilePetraTools" description="Create the SQL files.">
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
+        <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
+        <if test="${DBMS.Type!='sqlite'}">
+            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+        </if>
+    </target>
+
+    <target name="dbdoc">
+        <mkdir dir="${DBDoc.Output.dir}" failonerror="false"/>    
+        <mkdir dir="${DBDoc.Output.dir}/tables" failonerror="false"/>    
+        <mkdir dir="${DBDoc.Output.dir}/img" failonerror="false"/>    
+
+        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+        
+        <copy todir="${DBDoc.Output.dir}" overwrite="true">
+            <fileset basedir="${OpenPetraRoot.dir}/db/html/">
+                <include name="*.html" />
+                <include name="*.css" />
+                <include name="*.js" />
+            </fileset>
+        </copy>        
+        
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;rem ${ThirdParty.dir}/sql2dia/sql2dia.exe -d ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql > ${OpenPetraRoot.dir}/db/doc/master_alltables.prj&quot;"/>
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -g -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql > ${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj&quot;"/>
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql -p ${OpenPetraRoot.dir}/db/doc/master_alltables.prj&quot;"/>
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql -o ${OpenPetraRoot.dir}/db/doc/ -p ${OpenPetraRoot.dir}/db/doc/themed.prj&quot;"/>
+        
+        <foreach item="File" property="filename">
+            <in>
+                <items>
+                    <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
+                </items>
+            </in>
+            <do>
+                <property name="filenameWithoutExtension" value="${script::GetFilenameWithoutExtension(filename)}"/>
+                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${filenameWithoutExtension}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+            </do>
+        </foreach>
+    </target>
+    
+    <!-- todo: init pg database: initdb -->
+    <!-- todo: start and stop pg database -->
+
+    <target name="recreateDatabase" depends="createSQLStatements">
+        <if test="${DBMS.Type=='sqlite'}">
+             <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+             <if test="${platform::is-unix()}">
+                 <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+             </if>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS openpetra;" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE openpetra;" database="template1"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="openpetra" failonerror="false"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="openpetra" failonerror="false"/>
+             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
+             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
+                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
+             </if>
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
+
+             <psql exe="${PostgreSQL.exe}" 
+                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                outputfile="${tempfile}"
+                database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="openpetra"/>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
+             <echo message="this will now take a while..."/>
+             <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists openpetra;" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER';" database="openpetra" user="root" password="${DBMS.Password}"/>
+        </if>
+    </target>
+
+    <target name="resetDatabase" depends="" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
+         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+             <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
+         </if>
+         <if test="${framework::get-target-framework() == 'net-2.0'}" >
+            <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
+            <property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
+         </if>
+         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
+         <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
+
+         <copy file="${BaseData.Dir}/init.sql"
+            tofile="${BaseData.Dir}/init.sql.local" overwrite="true"/>
+         <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
+         <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, BaseData.Dir)}'/>
+         
+         <copy file="${DemoData.Dir}/init.sql"
+            tofile="${DemoData.Dir}/init.sql.local" overwrite="true"/>
+         <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
+         <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, DemoData.Dir)}'/>
+
+         <property name="toReplace" value="{#RELEASEVERSION}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
+         
+         <property name="passwordChangeme" value="CHANGEME"/>
+         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
+         <property name="toReplace" value="{#PASSWORDHASHSYSADMIN}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
+         <property name="toReplace" value="{#PASSWORDSALTSYSADMIN}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
+
+         <property name="passwordChangeme" value="demo"/>
+         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
+         <property name="toReplace" value="{#PASSWORDHASHDEMO}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
+         <property name="toReplace" value="{#PASSWORDSALTDEMO}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
+         
+        <if test="${DBMS.Type=='sqlite'}">
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+             <property name="toReplace" value="COPY"/>
+             <property name="newValue" value="\COPY"/>
+             <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
+             <echo message='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>         
+             <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
+             <echo message='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>         
+
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="openpetra"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="openpetra"/>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
+             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="openpetra" user="root" password="${DBMS.Password}"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:openpetra -username:root -password:${DBMS.Password}" failonerror="true"/>
+        </if>
+    </target>
+
+    <target name="createSQLiteDB">
+        <property name="DBMS.Type" value="sqlite"/>
+        <property name="DBMS.Password" value="CHANGEME"/>
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                <!-- Linux version of sqlite does not work with encryption; 
+                     use it only for testing purposes; 
+                     see also http://sqlite.phxsoftware.com/forums/p/1508/6579.aspx#6579 -->        
+                <property name="DBMS.Password" value=""/>
+        </if>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+        <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
+    </target>
+
+    <target name="refreshSudo">
+        <!-- make sure that sudo is working, this is called before buildRelease on Linux -->
+        <if test="${platform::is-unix()}">
+            <exec program="sudo" commandline="-u postgres echo refresh sudo" />
+        </if>
+    </target>
+    
+    <target name="createPostgreSQLDB">
+        <property name="DBMS.Type" value="postgresql"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
+            <!-- this currently only works on Linux -->
+            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${path::get-temp-path()}/demodata-PostgreSQL.sql openpetra" />
+            <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
+        </if>
+    </target>
+
+    <target name="createMySQLDB">
+        <property name="DBMS.Type" value="mysql"/>
+        <call target="recreateDatabase"/>
+        <call target="resetDatabase"/>
+
+        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" overwrite="true"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" overwrite="true"/>
+            <!-- this currently only works on Linux -->
+            <exec program="mysqldump" commandline="openpetra --no-create-info --user=root --password=${DBMS.Password}  --result-file=${path::get-temp-path()}/demodata-MySQL.sql" />
+            <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
+        </if>
+    </target>
+
+</project>
