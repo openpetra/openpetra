@@ -280,6 +280,13 @@ public class TFixProjectReferences : TCSProjTools
                         // check whether we should have a ProjectReference instead to help with the build order
                         string referencedDll = child2.Attributes["Include"].Value;
 
+                        // remove any specific version information. eg <Reference Include="Ict.Common, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+                        if (referencedDll.Contains(","))
+                        {
+                            referencedDll = referencedDll.Substring(0, referencedDll.IndexOf(","));
+                            child2.Attributes["Include"].Value = referencedDll;
+                        }
+
                         if (referencedDll == "Mono.Posix")
                         {
                             child2.Attributes["Include"].Value = "GNU.Gettext";
