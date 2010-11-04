@@ -273,6 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailAnalysisAttributeValue.Location = new System.Drawing.Point(2,2);
             this.cmbDetailAnalysisAttributeValue.Name = "cmbDetailAnalysisAttributeValue";
             this.cmbDetailAnalysisAttributeValue.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailAnalysisAttributeValue.SelectedValueChanged += new System.EventHandler(this.ValueChanged);
             //
             // lblDetailAnalysisAttributeValue
             //

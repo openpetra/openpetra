@@ -141,12 +141,17 @@ namespace Ict.Petra.Server.MFinance.GL
                     journal.BatchNumber,
                     journal.JournalNumber,
                     Transaction);
-            	
             }
+
             // load the atransanalattrib
             foreach (ATransactionRow trans in ADataSet.ATransaction.Rows)
             {
-            	ATransAnalAttribAccess.LoadViaATransaction(ADataSet, trans.LedgerNumber, trans.BatchNumber, trans.JournalNumber, trans.TransactionNumber, Transaction);
+                ATransAnalAttribAccess.LoadViaATransaction(ADataSet,
+                    trans.LedgerNumber,
+                    trans.BatchNumber,
+                    trans.JournalNumber,
+                    trans.TransactionNumber,
+                    Transaction);
             }
 
             // get all accounts that are referenced by all transactions of this batch
@@ -187,7 +192,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             return true;
@@ -444,28 +449,31 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                                 else
                                 {
-	                                AFreeformAnalysisRow afaRow= (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(new Object[] { ALedgerNumber,  attributeRow.AnalysisTypeCode , v});
-	                                if (afaRow == null)
-	                                {
-	                                	// this would cause a constraint error and is only possible in a development/sqlite environment
-	                                	AVerifications.Add(new TVerificationResult(
-	                                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-	                                            String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
-	                                                trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
-	                                            TResultSeverity.Resv_Critical));
-	                                }
-	                                else
-	                                {
-	                                	if (!afaRow.Active)
-	                                	{
-	                                		AVerifications.Add(new TVerificationResult(
-	                                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-	                                            String.Format(Catalog.GetString("Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"),v,
-	                                                trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
-	                                            TResultSeverity.Resv_Critical));
-	                                	}
-	                                		
-	                                }
+                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(
+                                        new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
+
+                                    if (afaRow == null)
+                                    {
+                                        // this would cause a constraint error and is only possible in a development/sqlite environment
+                                        AVerifications.Add(new TVerificationResult(
+                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                                String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
+                                                    trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                TResultSeverity.Resv_Critical));
+                                    }
+                                    else
+                                    {
+                                        if (!afaRow.Active)
+                                        {
+                                            AVerifications.Add(new TVerificationResult(
+                                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
+                                                        ALedgerNumber),
+                                                    String.Format(Catalog.GetString(
+                                                            "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
+                                                        trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
+                                    }
                                 }
                             }
 

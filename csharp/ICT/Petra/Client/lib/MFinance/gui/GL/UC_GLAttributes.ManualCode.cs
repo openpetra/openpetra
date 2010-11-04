@@ -42,6 +42,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
         private GLSetupTDS FCacheDS = null;
+        private void InitializeManualCode()
+        {
+            this.cmbDetailAnalysisAttributeValue.DropDown +=  new System.EventHandler(this.DropDown);
+            this.cmbDetailAnalysisAttributeValue.DropDownClosed +=  new System.EventHandler(this.ValueChanged);
+        }
 
         /// <summary>
         /// load the transactions into the grid
@@ -166,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             foreach (AFreeformAnalysisRow AFRow in  FCacheDS.AFreeformAnalysis.Rows)
             {
-                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber) && AFRow.Active)
+                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber) /*&& AFRow.Active*/)
                 {
                     cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
                 }
@@ -345,6 +350,47 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+        }
+
+        /// <summary>
+        /// if the value changes check if the new value is active
+        /// </summary>
+        private void ValueChanged(object sender, EventArgs e)
+        {
+        	Object sio= cmbDetailAnalysisAttributeValue.SelectedItem;
+        	int si= cmbDetailAnalysisAttributeValue.SelectedIndex;
+        	if (si <0 || sio == null) return;
+            String v = (String)sio;
+            AFreeformAnalysisRow afaRow =
+                (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { FLedgerNumber, txtReadonlyAnalysisTypeCode.Text,
+                                                                                          v });
+
+            if (afaRow == null)
+            {
+            	// this should never happen
+                cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                if (afaRow.Active)
+                {
+                    cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Black;
+                    cmbDetailAnalysisAttributeValue.Font = System.Windows.Forms.Control.DefaultFont;
+                }
+                else
+                {
+                    cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Gray;
+                    cmbDetailAnalysisAttributeValue.Font = new System.Drawing.Font(System.Windows.Forms.Control.DefaultFont,System.Drawing.FontStyle.Strikeout);
+                }
+            }
+        }
+         /// <summary>
+        /// reset the fonts on dropdown
+        /// </summary>
+        private void DropDown(object sender, EventArgs e)
+        {
+        	cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Black;
+            cmbDetailAnalysisAttributeValue.Font = System.Windows.Forms.Control.DefaultFont;
         }
     }
 }

@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
+      InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Analysis Type Code", FMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode);
       grdDetails.AddTextColumn("Analysis Attribute Value", FMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue);

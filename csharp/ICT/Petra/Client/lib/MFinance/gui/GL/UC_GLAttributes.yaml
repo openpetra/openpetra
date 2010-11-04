@@ -35,4 +35,4 @@ RootNode:
             Controls: [txtReadonlyAnalysisTypeCode, txtReadonlyDescription, cmbDetailAnalysisAttributeValue]     
         txtReadonlyAnalysisTypeCode: {Label=Type Code, ReadOnly=true}
         txtReadonlyDescription: {Label=Description, ReadOnly=true, Width=400}
-        cmbDetailAnalysisAttributeValue: {Label=Value}
+        cmbDetailAnalysisAttributeValue: {Label=Value, OnChange=ValueChanged}
