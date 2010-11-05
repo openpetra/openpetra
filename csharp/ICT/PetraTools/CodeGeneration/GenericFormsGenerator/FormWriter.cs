@@ -42,6 +42,8 @@ namespace Ict.Tools.CodeGeneration
         public abstract void CreateCode(TCodeStorage AStorage, string AXamlFilename, string ATemplate);
         public abstract void CreateResourceFile(string AResourceFile, string AResourceTemplate);
         public abstract void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir);
+        public abstract string CalculateDestinationFilename(string AYamlFilename);
+        public abstract string CalculateManualCodeFilename(string AYamlFilename);
         public abstract void SetControlProperty(string AControlName, string APropertyName, string APropertyValue);
 
         /// <summary>

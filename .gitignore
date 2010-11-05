@@ -47,3 +47,4 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /webserver/OpenPetraOrg.ext/js/ext-base.js
 /webserver/OpenPetraOrg.ext/css/ext-all.css
 *lang-template.js
+gen/

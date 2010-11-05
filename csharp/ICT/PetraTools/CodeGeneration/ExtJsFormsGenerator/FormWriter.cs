@@ -107,6 +107,31 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             // TODO
         }
 
+        public override string CalculateDestinationFilename(string AYamlFilename)
+        {
+            string generatedFilesPath = System.IO.Path.GetDirectoryName(AYamlFilename) +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        "gen";
+
+            if (!Directory.Exists(generatedFilesPath))
+            {
+                Directory.CreateDirectory(generatedFilesPath);
+            }
+
+            return generatedFilesPath +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   this.CodeFileExtension;
+        }
+
+        public override string CalculateManualCodeFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   ".ManualCode" + this.CodeFileExtension;
+        }
+
         public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
             // TODO
@@ -318,7 +343,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             {
                 FFormName = FFormName.Substring(0, FFormName.IndexOf("."));
             }
-            
+
             FFormName = FFormName.ToUpper()[0] + FFormName.Substring(1);
             FFormName += "Form";
 

@@ -49,7 +49,7 @@ private void CalculatePreferredLanguage()
     <script type="text/javascript" src="../../js/ext-all.js"></script>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-<%Response.Write(FSelectedLanguage);%>.js"></script>
 
-    <script type="text/javascript" src="main.<%Response.Write(FSelectedCountry);%>.js"></script>
+    <script type="text/javascript" src="gen/main.<%Response.Write(FSelectedCountry);%>.js"></script>
     <script type="text/javascript" src="main.<%Response.Write(FSelectedCountry);%>-lang.js"></script>
 <script type="text/javascript">
     <!-- 

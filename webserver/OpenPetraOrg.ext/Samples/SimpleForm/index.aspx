@@ -8,7 +8,7 @@
     <script type="text/javascript" src="../../js/ext-base.js"></script>
     <script type="text/javascript" src="../../js/ext-all.js"></script>
 
-    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="gen/main.js"></script>
 <script type="text/javascript">
     <!-- 
     Ext.BLANK_IMAGE_URL = '../../img/default_blank.gif';

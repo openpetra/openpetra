@@ -31,9 +31,9 @@ private string GetPreferredLanguage()
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js"></script>
     <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
     
-    <script type="text/javascript" src="js/PartnerForms/partnerdata.js"></script>
-    <script type="text/javascript" src="js/PartnerForms/partnerdata-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
-    <script type="text/javascript" src="js/PartnerForms/inquiry.js"></script>
+    <script type="text/javascript" src="gen/partnerdata.js"></script>
+    <script type="text/javascript" src="partnerdata-lang-<%Response.Write(GetPreferredLanguage());%>.js"></script>
+    <script type="text/javascript" src="gen/inquiry.js"></script>
 
 <script type="text/javascript">
     <!-- 
