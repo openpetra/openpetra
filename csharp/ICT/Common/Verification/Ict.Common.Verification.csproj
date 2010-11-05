@@ -41,8 +41,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SourceGrid">

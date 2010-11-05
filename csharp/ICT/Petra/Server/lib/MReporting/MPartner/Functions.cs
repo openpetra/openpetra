@@ -154,6 +154,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "ConvertIntToTime"))
+            {
+                value = new TVariant(ConvertIntToTime(ops[1].ToInt(), ops[2].ToInt()));
+                return true;
+            }
+
             if (StringHelper.IsSame(f, "DetermineAddressDateStatus"))
             {
                 value = new TVariant(DetermineAddressDateStatus(ops[1].ToString(), ops[2].ToString()));
@@ -873,6 +879,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 String PartnerType = row[0].ToString();
 
+                // TODO ORGANIZATION SPECIFIC PartnerType
                 if (PartnerType.StartsWith("EX-OMER"))
                 {
                     ++ANumberExParticipants;
@@ -1464,6 +1471,73 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 // Remove last comma
                 ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 1);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Converts a 4GL integer value as a string time. The format parameter defines the output.
+        /// AFormat = 1	"hh"
+        /// AFormat = 2	"hh:mm"
+        /// AFormat = 3	"hh:mm:ss"
+        /// </summary>
+        /// <param name="A4glTime"></param>
+        /// <param name="AFormat"></param>
+        /// <returns></returns>
+        private string ConvertIntToTime(int A4glTime, int AFormat)
+        {
+            String ReturnValue = "";
+            String Sseconds = "0";
+            String Sminutes = "0";
+            String Shours = "0";
+
+            int seconds = A4glTime % 60;
+
+            A4glTime = A4glTime / 60;
+            int minutes = A4glTime % 60;
+            int hours = A4glTime / 60;
+
+            if (seconds < 10)
+            {
+                Sseconds += seconds.ToString();
+            }
+            else
+            {
+                Sseconds = seconds.ToString();
+            }
+
+            if (minutes < 10)
+            {
+                Sminutes += minutes.ToString();
+            }
+            else
+            {
+                Sminutes = minutes.ToString();
+            }
+
+            if (hours < 10)
+            {
+                Shours += hours.ToString();
+            }
+            else
+            {
+                Shours = hours.ToString();
+            }
+
+            switch (AFormat)
+            {
+                case 1:
+                    ReturnValue = Shours;
+                    break;
+
+                case 2:
+                    ReturnValue = Shours + ":" + Sminutes;
+                    break;
+
+                case 3:
+                    ReturnValue = Shours + ":" + Sminutes + ":" + Sseconds;
+                    break;
             }
 
             return ReturnValue;

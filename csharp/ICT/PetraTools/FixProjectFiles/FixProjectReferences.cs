@@ -280,9 +280,29 @@ public class TFixProjectReferences : TCSProjTools
                         // check whether we should have a ProjectReference instead to help with the build order
                         string referencedDll = child2.Attributes["Include"].Value;
 
+                        // remove any specific version information. eg <Reference Include="Ict.Common, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+                        if (referencedDll.Contains(","))
+                        {
+                            referencedDll = referencedDll.Substring(0, referencedDll.IndexOf(","));
+                            child2.Attributes["Include"].Value = referencedDll;
+                        }
+
+                        if (referencedDll == "Mono.Posix")
+                        {
+                            child2.Attributes["Include"].Value = "GNU.Gettext";
+                            referencedDll = child2.Attributes["Include"].Value;
+                        }
+
                         if ((child2.FirstChild != null) && (child2.FirstChild.Name == "HintPath"))
                         {
                             string hintPath = child2.FirstChild.InnerText;
+
+                            if (hintPath.Contains("Mono.Posix.dll"))
+                            {
+                                hintPath = hintPath.Replace("Mono\\Mono.Posix.dll", "GNU\\GNU.Gettext.dll").
+                                           Replace("Mono/Mono.Posix.dll", "GNU/GNU.Gettext.dll");
+                                child2.FirstChild.InnerText = hintPath;
+                            }
 
                             if (hintPath.Contains("csharp"))
                             {
@@ -310,12 +330,13 @@ public class TFixProjectReferences : TCSProjTools
                                 }
                             }
 
-                            // check if the path exists (this works even before any dlls have been compiled)
+                            // check if the path exists
+                            // this currently does not work before any dlls have been compiled
                             if (!Directory.Exists(Path.GetDirectoryName(hintPath)))
                             {
                                 Console.WriteLine("PROBLEM: Please fix project reference to " + referencedDll);
                                 Console.WriteLine("directory does not exist: " + Path.GetDirectoryName(Path.GetFullPath(hintPath)));
-                                throw new Exception("path error");
+//                                throw new Exception("path error");
                             }
                         }
                     }

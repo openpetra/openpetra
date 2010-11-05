@@ -32,7 +32,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Plugins.Finance.SwiftParser;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Plugin.BankImportFromMT940
 {

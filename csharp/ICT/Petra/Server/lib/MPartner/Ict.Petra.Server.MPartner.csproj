@@ -110,8 +110,8 @@
     <Reference Include="Jayrock.Json">
       <HintPath>..\..\..\..\..\ThirdParty\Jayrock\Jayrock.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

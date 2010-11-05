@@ -31,7 +31,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using System.Resources;
@@ -167,6 +167,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
           ACalc.AddParameter("param_order_by", "PartnerKey");
       }
       ucoReportColumns.ReadControls(ACalc, AReportAction);
+      ReadControlsManual(ACalc, AReportAction);
 
     }
 

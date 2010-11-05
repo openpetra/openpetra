@@ -27,7 +27,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 using Ict.Common.Printing;
 using PdfSharp;
 using PdfSharp.Drawing;
@@ -56,7 +57,7 @@ namespace Tests.Common.Printing
 
             if (!File.Exists(FileName))
             {
-                txtHTMLText.Text = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), FileName) + "</body></html>";
+                txtHTMLText.Text = "<html><body>" + String.Format("Cannot find file {0}", FileName) + "</body></html>";
             }
             else
             {

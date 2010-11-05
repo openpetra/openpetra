@@ -31,7 +31,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using System.Resources;
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
       FPetraUtilsObject = new TFrmPetraReportingUtils(AParentFormHandle, this, stbMain);
 
-      FPetraUtilsObject.FXMLFiles = "Finance\\\\AccountsReceivable/ConferencePayments.xml";
+      FPetraUtilsObject.FXMLFiles = "Finance/AccountsReceivable/ConferencePayments.xml";
       FPetraUtilsObject.FReportName = "ConferencePayments";
       FPetraUtilsObject.FCurrentReport = "ConferencePayments";
       FPetraUtilsObject.FSettingsDirectory = "Finance";

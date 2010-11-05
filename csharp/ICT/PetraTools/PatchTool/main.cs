@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 
 namespace Ict.Tools.PatchTool

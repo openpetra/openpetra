@@ -39,7 +39,7 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Data;
 using System.Globalization;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.CommonControls
 {

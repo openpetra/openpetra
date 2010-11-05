@@ -519,7 +519,7 @@
 			<lowerLevelReport level="NoFieldLevel"></lowerLevelReport>
 			<lowerLevelReport level="DicountFlagExplanationLevel" condition="eq({param_report_detail}, Full)"></lowerLevelReport>
 			<lowerLevelReport level="DicountChildFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(C))"></lowerLevelReport>
-			<lowerLevelReport level="DicountOMFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(O))"></lowerLevelReport>
+			<lowerLevelReport level="DicountWorkerFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(O))"></lowerLevelReport>
 			<lowerLevelReport level="DicountAppliedFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(*))"></lowerLevelReport>
 			<lowerLevelReport level="DicountPreFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(P))"></lowerLevelReport>
 			<lowerLevelReport level="DicountPostFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(T))"></lowerLevelReport>
@@ -587,10 +587,10 @@
 		</header>
 		<detail/>
 	</level>
-	<level name="DicountOMFlagExplanationLevel">
+	<level name="DicountWorkerFlagExplanationLevel">
 		<header>
 			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="O = OMer"/>
+				<value text="O = Worker"/>
 			</field>
 		</header>
 		<detail/>

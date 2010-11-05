@@ -425,12 +425,13 @@
 				<!-- Hide rows when "mailing address only" is checked and we don't have a mailing address -->
 				<value function ="ConditionRow(not(and(and(eq({param_chkMailingAddressesOnly}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, true))))"/>
 			</queryDetail>
+			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 			<!-- Get the OM er field if partner is a person or family -->
 			<queryDetail condition="or(eq({Rel1PartnerClass}, PERSON), eq({Rel1PartnerClass}, FAMILY))">
 				<value function="assign(Rel1OMField, GetFieldOfPartner({Rel1PartnerKey}))"/>
 			</queryDetail>
 			<queryDetail condition="or(eq({Rel2PartnerClass}, PERSON), eq({Rel2PartnerClass}, FAMILY))">
-				<value function="assign(Rel2OMField, GetFieldOfPartner({Rel2PartnerKey}))"/>
+				<value function="assign(Rel2WorkerField, GetFieldOfPartner({Rel2PartnerKey}))"/>
 			</queryDetail>
 			
 			<!-- Assign specific values depending on the partner type -->
@@ -806,11 +807,11 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 1 OM Field" returns="text" returnsFormat="text">
-		<caption><value text="P1 OM Field"></value></caption>
+	<calculation align="left" id="Partner 1 Worker Field" returns="text" returnsFormat="text">
+		<caption><value text="P1 Worker Field"></value></caption>
 		<query>
 			<queryDetail>
-				<value variable="Rel1OMField"></value>
+				<value variable="Rel1WorkerField"></value>
 			</queryDetail>
 		</query>
 	</calculation>
@@ -898,11 +899,11 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 2 OM Field" returns="text" returnsFormat="text">
-		<caption><value text="P2 OM Field"></value></caption>
+	<calculation align="left" id="Partner 2 Worker Field" returns="text" returnsFormat="text">
+		<caption><value text="P2 Worker Field"></value></caption>
 		<query>
 			<queryDetail>
-				<value variable="Rel2OMField"></value>
+				<value variable="Rel2WorkerField"></value>
 			</queryDetail>
 		</query>
 	</calculation>

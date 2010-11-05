@@ -41,6 +41,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\..\ThirdParty\Npgsql\Mono.Security.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\..\..\ThirdParty\MySQL\MySql.Data.dll</HintPath>
     </Reference>

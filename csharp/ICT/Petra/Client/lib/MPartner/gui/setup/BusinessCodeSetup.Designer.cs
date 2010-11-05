@@ -27,7 +27,6 @@
 //
 using System;
 using System.Windows.Forms;
-using Mono.Unix;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
@@ -491,4 +490,3 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
-

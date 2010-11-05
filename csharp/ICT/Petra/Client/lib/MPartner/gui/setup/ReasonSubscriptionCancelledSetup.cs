@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ReasonSubscriptionCancelledSetup.yaml and template windowMaintainTable
+// auto generated with nant generateWinforms from ReasonSubscriptionCancelledSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -51,11 +51,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
   public partial class TFrmReasonSubscriptionCancelledSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
+
     private class FMainDS
     {
         public static PReasonSubscriptionCancelledTable PReasonSubscriptionCancelled;
     }
-
     /// constructor
     public TFrmReasonSubscriptionCancelledSetup(IntPtr AParentFormHandle) : base()
     {
@@ -96,7 +96,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
       this.txtDetailDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FPetraUtilsObject.SetStatusBarText(txtDetailCode, Catalog.GetString("Enter a code for reason cancelled"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailCode, Catalog.GetString("Enter a code for reason cancelled"));
       FPetraUtilsObject.SetStatusBarText(txtDetailDescription, Catalog.GetString("Enter a full description of reason cancelled"));
 
       /*
@@ -342,7 +342,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 if (SubmitDT == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                    // There is nothing to be saved.
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 

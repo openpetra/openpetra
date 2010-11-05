@@ -23,7 +23,7 @@
 //
 using System;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Client.MPartner.Gui;
 
 namespace checkDuplicatePartners

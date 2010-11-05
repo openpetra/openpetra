@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;

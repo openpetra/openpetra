@@ -23,7 +23,7 @@
 //
 using System;
 using System.Xml;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner.Partner.Data;

@@ -833,9 +833,11 @@ namespace Ict.Petra.Shared.MReporting
         /// then first the parameters will be checked for CSV_separator, and if that parameter does not exist,
         /// then the CurrentCulture is checked, for the local language settings</param>
         /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized
+        /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
+        /// otherwise all levels in AParameter are exported</param>
         /// </param>
         /// <returns>true for success</returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging)
+        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
         {
             bool ReturnValue;
             int i;
@@ -917,6 +919,13 @@ namespace Ict.Petra.Shared.MReporting
                         -1, eParameterFit.eBestFit).ToString(), separator);
             }
 
+            if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERCOLUMN,
+                    -1, eParameterFit.eBestFit))
+            {
+                strLine = StringHelper.AddCSV(strLine, "header 1", separator);
+                strLine = StringHelper.AddCSV(strLine, "header 0", separator);
+            }
+
             useIndented = false;
 
             for (i = 0; i <= FormattedParameters.Get("lowestLevel").ToInt(); i += 1)
@@ -953,9 +962,29 @@ namespace Ict.Petra.Shared.MReporting
             sortedList = new ArrayList();
             FormattedResult.CreateSortedListByMaster(sortedList, 0);
 
+            int LowestLevel = -1;
+
+            if (AExportOnlyLowestLevel)
+            {
+                // find the highest level
+                foreach (TResult element in sortedList)
+                {
+                    if (element.depth > LowestLevel)
+                    {
+                        LowestLevel = element.depth;
+                    }
+                }
+            }
+
             // write each row to CSV file
             foreach (TResult element in sortedList)
             {
+                if (AExportOnlyLowestLevel
+                    && (element.depth < LowestLevel))
+                {
+                    continue;
+                }
+
                 if (element.display)
                 {
                     strLine = "";
@@ -987,6 +1016,20 @@ namespace Ict.Petra.Shared.MReporting
                         else
                         {
                             strLine = StringHelper.AddCSV(strLine, element.descr[1].ToString(), separator);
+                        }
+                    }
+
+                    if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERCOLUMN, -1, eParameterFit.eBestFit))
+                    {
+                        if (ADebugging == true)
+                        {
+                            strLine = StringHelper.AddCSV(strLine, element.header[1].EncodeToString(), separator);
+                            strLine = StringHelper.AddCSV(strLine, element.header[0].EncodeToString(), separator);
+                        }
+                        else
+                        {
+                            strLine = StringHelper.AddCSV(strLine, element.header[1].ToString(), separator);
+                            strLine = StringHelper.AddCSV(strLine, element.header[0].ToString(), separator);
                         }
                     }
 
@@ -1048,6 +1091,19 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
+        /// overload; export all levels
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="csvfilename"></param>
+        /// <param name="separator"></param>
+        /// <param name="ADebugging"></param>
+        /// <returns></returns>
+        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging)
+        {
+            return WriteCSV(AParameters, csvfilename, separator, ADebugging, false);
+        }
+
+        /// <summary>
         /// overload; no debugging
         /// </summary>
         /// <param name="AParameters"></param>
@@ -1056,7 +1112,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns></returns>
         public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator)
         {
-            return WriteCSV(AParameters, csvfilename, separator, false);
+            return WriteCSV(AParameters, csvfilename, separator, false, false);
         }
 
         /// <summary>
@@ -1067,7 +1123,19 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns></returns>
         public bool WriteCSV(TParameterList AParameters, string csvfilename)
         {
-            return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false);
+            return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, false);
+        }
+
+        /// <summary>
+        /// overlaod; no specific separator, find the best for the current localisation
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="csvfilename"></param>
+        /// <param name="AExportOnlyLowestLevel"></param>
+        /// <returns></returns>
+        public bool WriteCSV(TParameterList AParameters, string csvfilename, Boolean AExportOnlyLowestLevel)
+        {
+            return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, AExportOnlyLowestLevel);
         }
 
         // needed for TRptSituation.processAllRows

@@ -23,7 +23,7 @@
 //
 using System;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;

@@ -97,6 +97,7 @@
 				</value>
 			</queryDetail>
 			<queryDetail>
+			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 				<value>
 						AND PUB_p_partner_type.p_type_code_c = 'CHURCH-OM'
 						AND PUB_p_church.p_partner_key_n = PUB_p_partner_type.p_partner_key_n
@@ -122,6 +123,7 @@
 		<!-- don't get the special type PUB_p_partner_type.p_type_code_c AS SpecialType here because
 			it will might print out the same partner twice -->
 			<queryDetail>
+			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 				<value>
 					SELECT DISTINCT 
 						PUB_p_partner.p_partner_short_name_c AS ShortName,
@@ -148,7 +150,7 @@
 					FROM   
 						PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
 					WHERE
-							PUB_p_partner_relationship.p_relation_key_n = {ChurchPartnerKey}
+							PUB_p_partner_relationship.p_relation_key_n = {{ChurchPartnerKey}}
 						AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
 					</value>
 			</queryDetail>
@@ -167,7 +169,7 @@
 					FROM   
 						PUB_p_partner, PUB_p_partner_relationship
 					WHERE  
-							PUB_p_partner_relationship.p_partner_key_n = {ChurchPartnerKey}
+							PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
 						AND 
 							PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
 						AND PUB_p_partner_relationship.p_relation_name_c &lt;&gt; 'SUPPCHURCH'
@@ -176,36 +178,17 @@
 		</query>
 	</calculation> <!-- Get Church Officers -->
 	
-	<calculation id="GetPartnerFieldAndType" returns="p_partner_short_name_c, SpecialType" returnsFormat="text">
+	<calculation id="GetPartnerType" returns="SpecialType" returnsFormat="text">
+	<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 		<query>
-			<queryDetail condition="eq({PartnerClass}, PERSON)">
+			<queryDetail>
 				<value>
 					SELECT DISTINCT
-						PUB.p_partner.p_partner_short_name_c,
 						PUB_p_partner_type.p_type_code_c AS SpecialType
 					FROM
-						PUB.p_person, PUB.p_partner, PUB_p_partner_type
+						PUB_p_partner_type
 					WHERE
-							PUB.p_person.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
-						AND PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
-						AND (
-							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'EX-OMER%')
-				</value>
-			</queryDetail>
-			<queryDetail condition="not(eq({PartnerClass}, PERSON))">
-				<value>
-					SELECT DISTINCT
-						PUB.p_partner.p_partner_short_name_c,
-						PUB_p_partner_type.p_type_code_c AS SpecialType
-					FROM
-						PUB.p_family, PUB.p_partner, PUB_p_partner_type
-					WHERE
-							PUB.p_family.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
-						AND PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
+							PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
 						AND (
 							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
 							OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
@@ -214,6 +197,34 @@
 			</queryDetail>
 		</query>
 	</calculation>
+	
+	<calculation id="GetPartnerField" returns="p_partner_short_name_c" returnsFormat="text">
+		<query>
+			<queryDetail condition="eq({PartnerClass}, PERSON)">
+				<value>
+					SELECT DISTINCT
+						PUB.p_partner.p_partner_short_name_c
+					FROM
+						PUB.p_person, PUB.p_partner
+					WHERE
+							PUB.p_person.p_partner_key_n = {AssociatedPartnerKey}
+						AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
+				</value>
+			</queryDetail>
+			<queryDetail condition="not(eq({PartnerClass}, PERSON))">
+				<value>
+					SELECT DISTINCT
+						PUB.p_partner.p_partner_short_name_c
+					FROM
+						PUB.p_family, PUB.p_partner
+					WHERE
+							PUB.p_family.p_partner_key_n = {AssociatedPartnerKey}
+						AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
+				</value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
 	
 	<calculation id="MakeChurchAddress" returns="ChurchAddress" returnsFormat="text">
 		<query>
@@ -230,6 +241,8 @@
 				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{CountryCode}))"/>
 				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Type:, 3))"/>
 				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, {LocationType}, 1))"/>
+				<!-- This is needed to print the ChurchPartnerKey nicely -->
+				<value function="assign(ChurchPartnerKey1, concatenateww({ChurchPartnerKey},  , 1))"/>
 			</queryDetail>
 			<queryDetail condition="not(eq(length({TelephoneNumber}), 0))">
 				<value text="NO-SQL"/>
@@ -245,12 +258,11 @@
 		</query>
 	</calculation>
 	
-	<calculation id="FormatChurchPartnerKey" returns="ChurchPartnerKey1" returnsFormat="text">
-	<!-- This is needed to print the ChurchPartnerKey nicely -->
+	<calculation id="IncrementChurchCount" returns="NumberChurches" returnsFormat="text">
 		<query>
 			<queryDetail>
 				<value text="NO-SQL"/>
-				<value function="assign(ChurchPartnerKey1, concatenateww({ChurchPartnerKey},  , 1))"/>
+				
 				<value function="assign (NumberChurches, add({NumberChurches}, 1))"/>
 			</queryDetail>
 		</query>
@@ -544,7 +556,7 @@
 			<lowerLevelReport calculation="Get Churches" level="ChurchesLevel"></lowerLevelReport>
 		</detail>
 		<footer space="above" >
-			<field whichfield="column 2" pos="0.5cm" width="3.5cm">
+			<field whichfield="column 2" pos="0.5cm" width="4.5cm">
 				<value text="Total Churches Printed:"/>
 				<value variable="NumberChurches"/>
 			</field>
@@ -566,10 +578,11 @@
 	
 	<level name="ChurchesLevel">
 		<header>
-			<field calculation="FormatChurchPartnerKey" whichfield="header 1" pos="0.2cm" width="2cm">
-				<value variable="ChurchPartnerKey1"/>
+			<field calculation="IncrementChurchCount" whichfield="header 1" pos="0.0cm" width="0.2cm">
 			</field>
-			<field calculation="MakeChurchAddress" whichfield="header 0" pos="3.0cm" width="25cm">
+			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+				<value variable="ChurchPartnerKey1"/>
+				<value text="   "/>
 				<value variable="ChurchAddress"/>
 			</field>
 		</header>
@@ -582,22 +595,38 @@
 		</footer>
 	</level>
 	
-      <level name="PartnerLevel1">
+      <level name="PartnerLevel1" identification="AssociatedPartnerKey">
+		<header>
+			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+				<value variable="ChurchPartnerKey1"/>
+				<value text="   "/>
+				<value variable="ChurchAddress"/>
+			</field>
+		</header>
 		<detail>
-			<field calculation="GetPartnerFieldAndType" whichfield="left 0" pos="0.0cm" width="1cm">
+			<field calculation="GetPartnerField" whichfield="left 0" pos="0.0cm" width="1cm">
+				<value text=" "/>
+			</field>
+			<field calculation="GetPartnerType" whichfield="left 0" pos="0.0cm" width="1cm">
 				<value text=" "/>
 			</field>
 			<field calculation="MakePartnerAddress" whichfield="Columns"></field>
 		</detail>
        </level><!-- Partner Level1 -->
 	   
-	<level name="PartnerLevel2">
+	<level name="PartnerLevel2" identification="AssociatedPartnerKey">
+		<header>
+			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+				<value variable="ChurchPartnerKey1"/>
+				<value text="   "/>
+				<value variable="ChurchAddress"/>
+			</field>
+		</header>
 		<detail>
 			<field calculation="MakePartnerAddress" whichfield="Columns"></field>
 			<field calculation="ClearField" whichfield="left 0" pos="0.0cm" width="1cm">
 				<value text=" "/>
 			</field>
-			
 		</detail>
        </level><!-- Partner Level2 -->
 	   

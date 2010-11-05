@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using System.Xml;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using System.Windows.Forms;
 

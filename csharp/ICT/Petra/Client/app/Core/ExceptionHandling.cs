@@ -26,7 +26,7 @@ using System.Threading;
 using System.IO;
 
 using Ict.Common;
-using Mono.Unix;
+using GNU.Gettext;
 using System.Windows.Forms;
 
 namespace Ict.Petra.Client.App.Core

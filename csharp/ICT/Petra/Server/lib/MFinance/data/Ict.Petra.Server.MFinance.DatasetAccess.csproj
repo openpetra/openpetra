@@ -69,28 +69,28 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Ict.Common, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Common">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Common.Data, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Common.DB, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Common.DB">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Common.Verification, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Common.Verification">
       <HintPath>..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MFinance.DataTables, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MPartner.DataTables, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Shared.MFinance.DataSets, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
     </Reference>

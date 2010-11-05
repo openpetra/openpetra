@@ -60,8 +60,8 @@
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.UserInfo.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
@@ -119,6 +119,20 @@
     </Compile>
     <Compile Include="AnalysisAttribute.ManualCode.cs">
       <DependentUpon>AnalysisAttribute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AP_AccountDetailReport.cs" />
+    <Compile Include="AP_AccountDetailReport.Designer.cs">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AP_AccountDetailReport.ManualCode.cs">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AP_AgedSupplierList.cs" />
+    <Compile Include="AP_AgedSupplierList.Designer.cs">
+      <DependentUpon>AP_AgedSupplierList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AP_AgedSupplierList.ManualCode.cs">
+      <DependentUpon>AP_AgedSupplierList.cs</DependentUpon>
     </Compile>
     <Compile Include="ARConferencePayments.cs" />
     <Compile Include="ARConferencePayments.Designer.cs">
@@ -273,6 +287,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AnalysisAttribute.resx">
       <DependentUpon>AnalysisAttribute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AP_AccountDetailReport.resx">
+      <DependentUpon>AP_AccountDetailReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AP_AgedSupplierList.resx">
+      <DependentUpon>AP_AgedSupplierList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ARConferencePayments.resx">
       <DependentUpon>ARConferencePayments.cs</DependentUpon>

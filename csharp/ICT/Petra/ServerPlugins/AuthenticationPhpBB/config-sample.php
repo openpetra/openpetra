@@ -1,0 +1,1 @@
+<?php $SecretKeyFile = "../../secretkey.dat"; ?>

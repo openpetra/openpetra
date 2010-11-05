@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.IO.IsolatedStorage;
 using Microsoft.Win32;
-using Mono.Unix;
+using GNU.Gettext;
 using System.Security.Principal;
 using Ict.Petra.Client.App.Core;
 using System.Threading;
@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    if (TAppSettingsManager.GetValueStatic("AutoLogin") != TAppSettingsManager.UNDEFINEDVALUE)
+                    if (TAppSettingsManager.GetValueStatic("AutoLogin", false) != TAppSettingsManager.UNDEFINEDVALUE)
                     {
                         txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
 

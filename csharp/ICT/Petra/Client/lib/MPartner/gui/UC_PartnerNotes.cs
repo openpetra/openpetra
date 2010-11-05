@@ -28,7 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Resources;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Controls;

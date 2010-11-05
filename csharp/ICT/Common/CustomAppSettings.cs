@@ -454,9 +454,10 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">Key of the AppSetting</param>
         /// <param name="ADefaultValue">the default value</param>
+        /// <param name="AShowWarning">log a warning if value cannot be found</param>
         /// <returns>Value of the AppSetting
         /// </returns>
-        public static String GetValueStatic(String AKey, String ADefaultValue)
+        public static String GetValueStatic(String AKey, String ADefaultValue, bool AShowWarning)
         {
             String ReturnValue = UNDEFINEDVALUE;
             TAppSettingsManager Config;
@@ -464,7 +465,7 @@ namespace Ict.Common
             try
             {
                 Config = new TAppSettingsManager(false);
-                ReturnValue = Config.GetValue(AKey, (ADefaultValue == UNDEFINEDVALUE));
+                ReturnValue = Config.GetValue(AKey, AShowWarning);
 
                 if (ReturnValue == UNDEFINEDVALUE)
                 {
@@ -495,7 +496,35 @@ namespace Ict.Common
         /// <returns>value of the parameter, or UNDEFINEDVALUE</returns>
         public static String GetValueStatic(String AKey)
         {
-            return GetValueStatic(AKey, UNDEFINEDVALUE);
+            return GetValueStatic(AKey, UNDEFINEDVALUE, true);
+        }
+
+        /// <summary>
+        /// Returns the Value of a specified AppSetting key.
+        /// This version of the function GetValue will automatically find the correct config file.
+        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
+        /// </summary>
+        /// <param name="AKey">the name of the parameter</param>
+        /// <param name="AShowWarning">log a warning if value cannot be found</param>
+        /// <returns>value of the parameter, or UNDEFINEDVALUE</returns>
+        public static String GetValueStatic(String AKey, bool AShowWarning)
+        {
+            return GetValueStatic(AKey, UNDEFINEDVALUE, AShowWarning);
+        }
+
+        /// <summary>
+        /// Returns the Value of a specified AppSetting key.
+        /// This version of the function GetValue will automatically find the correct config file.
+        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
+        /// This overload will log a warning if the value cannot be found.
+        /// </summary>
+        /// <param name="AKey">Key of the AppSetting</param>
+        /// <param name="ADefaultValue">the default value</param>
+        /// <returns>Value of the AppSetting
+        /// </returns>
+        public static String GetValueStatic(String AKey, String ADefaultValue)
+        {
+            return GetValueStatic(AKey, ADefaultValue, true);
         }
 
         /// <summary>

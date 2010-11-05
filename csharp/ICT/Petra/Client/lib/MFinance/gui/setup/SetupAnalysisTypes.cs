@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from SetupAnalysisTypes.yaml and template windowMaintainTable
+// auto generated with nant generateWinforms from SetupAnalysisTypes.yaml and template windowEdit
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -55,8 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// constructor
     public TFrmSetupAnalysisTypes(IntPtr AParentFormHandle) : base()
     {
-      Control[] FoundCheckBoxes;
-
       //
       // Required for Windows Form Designer support
       //
@@ -95,16 +93,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.txtDetailAnalysisTypeDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisTypeDescription, Catalog.GetString("Enter a description"));
       FPetraUtilsObject.SetStatusBarText(chkDetailSystemAnalysisType, Catalog.GetString("To indicate whether the user or system has set up the analysis type."));
       ucoValues.PetraUtilsObject = FPetraUtilsObject;
       ucoValues.MainDS = FMainDS;
       ucoValues.InitUserControl();
-
-      Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
-      FMainDS.AAnalysisType.Merge(TypedTable);
+      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Analysis Type Code", FMainDS.AAnalysisType.ColumnAnalysisTypeCode);
       grdDetails.AddTextColumn("Description", FMainDS.AAnalysisType.ColumnAnalysisTypeDescription);
@@ -114,24 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.AAnalysisType.Rows.Count == 0)
-      {
-        ShowDetails(null);
-      }
-
       FPetraUtilsObject.InitActionState();
-
-      /*
-       * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
-       * 'Deletable' flag is true are system records that must not be deleted)
-       */
-      FoundCheckBoxes = this.Controls.Find("chkDetailDeletable", true);
-
-      if (FoundCheckBoxes.Length > 0)
-      {
-          FoundCheckBoxes[0].Enabled = false;
-      }
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -220,30 +197,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     private void ShowDetails(AAnalysisTypeRow ARow)
     {
-        FPetraUtilsObject.DisableDataChangedEvent();
-        if (ARow == null)
+        txtDetailAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
+        txtDetailAnalysisTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+        txtDetailAnalysisTypeDescription.Text = ARow.AnalysisTypeDescription;
+        if (ARow.IsSystemAnalysisTypeNull())
         {
-            pnlDetails.Enabled = false;
-            ShowDetailsManual(ARow);
+            chkDetailSystemAnalysisType.Checked = false;
         }
         else
         {
-            FPreviouslySelectedDetailRow = ARow;
-            txtDetailAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
-            txtDetailAnalysisTypeCode.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailAnalysisTypeDescription.Text = ARow.AnalysisTypeDescription;
-            if (ARow.IsSystemAnalysisTypeNull())
-            {
-                chkDetailSystemAnalysisType.Checked = false;
-            }
-            else
-            {
-                chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
-            }
-            ShowDetailsManual(ARow);
-            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            chkDetailSystemAnalysisType.Checked = ARow.SystemAnalysisType;
         }
-        FPetraUtilsObject.EnableDataChangedEvent();
+        ShowDetailsManual(ARow);
     }
 
     private AAnalysisTypeRow FPreviouslySelectedDetailRow = null;
@@ -270,10 +235,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
     }
 
-    private void GetDataFromControls()
-    {
-        GetDataFromControlsManual();
-    }
 #region Implement interface functions
 
     /// auto generated
@@ -327,9 +288,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataRow InspectDR in FMainDS.AAnalysisType.Rows)
+            foreach (DataTable InspectDT in FMainDS.Tables)
             {
-                InspectDR.EndEdit();
+                foreach (DataRow InspectDR in InspectDT.Rows)
+                {
+                    InspectDR.EndEdit();
+                }
             }
 
             if (!FPetraUtilsObject.HasChanges)
@@ -343,14 +307,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
+
                 Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                 if (SubmitDS == null)
-
                 {
-                     // Thereis nothing to be saved
-                     // Update UI
-                    FPetraUtilsObject.WriteToStatusBar("No Data could be saved.");
+                    // There is nothing to be saved.
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
                     this.Cursor = Cursors.Default;
 
                     // We don't have unsaved changes anymore
@@ -362,7 +326,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
+                    // SubmissionResult = WEBCONNECTORMASTER.SaveAAnalysisType(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -420,6 +385,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
+
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                         FMainDS.AcceptChanges();
 
@@ -428,6 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         // need to accept the new modification ID
                         FMainDS.AcceptChanges();
+
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
                         this.Cursor = Cursors.Default;
@@ -463,7 +430,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         return false;
     }
-
 #endregion
 
 #region Action Handling

@@ -232,6 +232,7 @@
 						<value function="assign(PartnerType, GetType({PartnerKey}, {param_typecode}, BEGIN))"/>
 					</queryDetail>
 					<queryDetail condition="eq({param_chkSelectTypes}, false)">
+					<!-- TODO: ORGANIZATION SPECIFIC  GetType() -->
 						<value function="assign(PartnerType, GetType({PartnerKey}, OM;EX-OMER;ASSOC, BEGIN))"/>
 					</queryDetail>
 				</query>

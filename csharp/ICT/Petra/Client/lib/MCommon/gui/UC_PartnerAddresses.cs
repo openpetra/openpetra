@@ -31,7 +31,7 @@ using System.Resources;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.DataGrid;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;

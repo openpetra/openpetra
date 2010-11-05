@@ -25,9 +25,12 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -71,6 +74,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.AnalysisTypeCode = newName;
+        }
+
+        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
+        {
+             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref ASubmitChanges, out AVerificationResult);
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)

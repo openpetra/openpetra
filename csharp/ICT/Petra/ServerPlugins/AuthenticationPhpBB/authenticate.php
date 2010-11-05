@@ -6,6 +6,12 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 include ("../includes/auth/auth_db.php");
+
+// set the path to the secret key text file in variable SecretKeyFile
+// make sure the key file cannot be accessed from the outside
+// sample content in config-sample.php:
+include ("config.php");
+
 class mycrypt
 {
 var $mykey;
@@ -36,7 +42,7 @@ function decrypt($data, $iv) {
 }
 $mycr = new mycrypt();
 // make sure the path of secretkey.dat cannot be accessed from the outside
-$mycr->init("../../secretkey.dat");
+$mycr->init($SecretKeyFile);
 $msg = base64_decode($_GET["msg"]);
 $iv = base64_decode($_GET["msg2"]);
 $clearmsg = $mycr->decrypt($msg, $iv);
@@ -48,7 +54,7 @@ $result = login_db($username, $password);
 //print_r($result);
 echo base64_encode($mycr->encrypt( $result['status'] == LOGIN_SUCCESS? 'LOGIN_SUCCESS':($result['status'] == LOGIN_ERROR_ATTEMPTS ? 'LOGIN_ERROR_ATTEMPTS':'LOGIN_FAILURE'), $iv));
 /*
-$myFile = "../../secret.log";
+$myFile = "$SecretLogFile"; // could set that variable in config.php
 $fh = fopen($myFile, 'a') or die("can't open file");
 fwrite($fh, $clearmsg."\n");
 fwrite($fh, $password."\n");

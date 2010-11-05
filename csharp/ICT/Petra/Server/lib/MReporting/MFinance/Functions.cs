@@ -1204,10 +1204,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     pv_start_period_i = numberAccountingPeriods + 1;
                 }
             }
-            else
-            {
-                pv_start_period_i = pv_end_period_i;
-            }
 
             return CalculateBudget(pv_start_period_i, pv_end_period_i, pv_year_i, pv_currency_select_c);
         }

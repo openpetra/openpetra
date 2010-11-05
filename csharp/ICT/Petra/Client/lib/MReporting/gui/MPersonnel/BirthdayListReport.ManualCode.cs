@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 String TypeCode = (String)FTypesTable.Rows[Counter][PTypeTable.GetTypeCodeDBName()];
 
+                // TODO ORGANIZATION SPECIFIC TypeCode
                 if (!((TypeCode.StartsWith("OM"))
                       || (TypeCode.StartsWith("EX-OMER"))
                       || (TypeCode.StartsWith("ASSOC"))))

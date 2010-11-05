@@ -215,6 +215,8 @@
 						PUB_p_partner_relationship.p_relation_name_c = "CH-CNTACT2" OR
 						PUB_p_partner_relationship.p_relation_name_c = "NOK-OTHER")
 					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
+				ORDER BY
+					PUB_p_partner_relationship.p_relation_name_c
 			</value></queryDetail>
 		</query>
 	</calculation>

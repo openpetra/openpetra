@@ -26,7 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Printing;
 using Ict.Plugins.Finance.SwiftParser;

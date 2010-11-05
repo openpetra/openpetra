@@ -12,7 +12,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;

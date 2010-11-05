@@ -60,7 +60,6 @@ namespace Ict.Common
         /// Creates a new object of this class and copies all the parameters that were
         /// passed on the command line into a string list.
         /// Uses the array of strings returned by Environment.GetCommandLineArgs
-        /// { TCmdOpts
         /// </summary>
         /// <returns>void</returns>
         public TCmdOpts()
@@ -68,12 +67,17 @@ namespace Ict.Common
             FList = new StringCollection();
             string[] list = Environment.GetCommandLineArgs();
 
-            // allow space after : to allow automatic tab expansion for the filename on the Command line
             foreach (string s in list)
             {
                 if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":"))
                 {
+                    // allow space after : to allow automatic tab expansion for the filename on the Command line
                     FList[FList.Count - 1] += s.Trim();
+                }
+                else if ((FList.Count > 0) && !s.StartsWith("-"))
+                {
+                    // avoid splitting path names that would need quotes otherwise
+                    FList[FList.Count - 1] += " " + s.Trim();
                 }
                 else
                 {

@@ -44,11 +44,17 @@ public class TGenerateCatalogStrings
     /// <param name="AMainFilename"></param>
     /// <param name="ADataDefinitionStore"></param>
     /// <param name="ADbHelpTranslationWriter">dummy cs file that is used to provide the strings to gettext</param>
-    public static void Execute(string AMainFilename, TDataDefinitionStore ADataDefinitionStore, StreamWriter ADbHelpTranslationWriter)
+    /// <returns>true if the file should be parsed for translatable strings</returns>
+    public static bool Execute(string AMainFilename, TDataDefinitionStore ADataDefinitionStore, StreamWriter ADbHelpTranslationWriter)
     {
         string DesignerFileName = TCSProjTools.GetDesignerFilename(AMainFilename);
         StreamReader readerDesignerFile = null;
         StreamWriter writer = null;
+
+        if (AMainFilename.EndsWith(".Designer.cs") || AMainFilename.EndsWith("AssemblyInfo.cs"))
+        {
+            return false;
+        }
 
         if (File.Exists(DesignerFileName))
         {
@@ -60,12 +66,13 @@ public class TGenerateCatalogStrings
 
         // find the call to InitializeComponent
         string line = "";
+        bool ContainsCatalogGetStringCall = false;
 
         while (!readerMainFile.EndOfStream && !line.Contains("InitializeComponent();"))
         {
             line = readerMainFile.ReadLine();
 
-            if (line == "// Auto generated with nant generateORM")
+            if (line.ToLower() == "// auto generated with nant generateorm")
             {
                 // those files don't contain any translatable strings
                 // and they are too big to parse
@@ -76,10 +83,15 @@ public class TGenerateCatalogStrings
                     writer.Close();
                 }
 
-                return;
+                return false;
             }
 
             CheckLineAndAddDBHelp(line, ADataDefinitionStore, ADbHelpTranslationWriter);
+
+            if (line.Contains("Catalog.GetString"))
+            {
+                ContainsCatalogGetStringCall = true;
+            }
 
             if (writer != null)
             {
@@ -101,7 +113,7 @@ public class TGenerateCatalogStrings
 
             readerMainFile.Close();
 
-            return;
+            return ContainsCatalogGetStringCall;
         }
 
         if (readerMainFile.EndOfStream)
@@ -190,10 +202,11 @@ public class TGenerateCatalogStrings
         readerMainFile.Close();
 
         TTextFile.UpdateFile(AMainFilename);
+
+        return true;
     }
 
     /// <summary>
-    /// check for Catalog.GetString("something" + 'a' + "single quotes"): throw exception;
     /// also check for .SetStatusBarText([...]Table.Get[...]Help: add text from petra.xml to a separate dummy file so that it will be picked up by gettext
     /// </summary>
     /// <param name="ALine"></param>
@@ -201,25 +214,7 @@ public class TGenerateCatalogStrings
     /// <param name="ADbHelpTranslationWriter">dummy cs file that is used to provide the strings to gettext</param>
     private static void CheckLineAndAddDBHelp(string ALine, TDataDefinitionStore store, StreamWriter ADbHelpTranslationWriter)
     {
-        if (ALine.Contains("Catalog.GetString") && ALine.Contains(" + '"))
-        {
-            throw new Exception("problem with split string in call to Catalog.GetString: " + ALine);
-        }
-
-        // todo: what about several catalog.getstring in one line?
-
-        // question mark to find the smallest match (lazy vs greedy)
-        Match m = Regex.Match(ALine, "Catalog.GetString\\(\\\"(.*?)\\\"\\)");
-        string tempLine = ALine;
-
-        while (m.Success)
-        {
-            ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + m.Groups[1].Value + "\");");
-            tempLine = tempLine.Substring(m.Index + 5);
-            m = Regex.Match(tempLine, "Catalog.GetString\\(\\\"(.*?)\\\"\\)");
-        }
-
-        m = Regex.Match(ALine, ".*SetStatusBarText\\(.*, (.*)Table.Get(.*)Help\\(\\)");
+        Match m = Regex.Match(ALine, ".*SetStatusBarText\\(.*, (.*)Table.Get(.*)Help\\(\\)");
 
         if (m.Success)
         {

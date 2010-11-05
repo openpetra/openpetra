@@ -31,7 +31,8 @@ using System.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.MReporting.Logic;
 using System.IO;
-using Mono.Unix;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {

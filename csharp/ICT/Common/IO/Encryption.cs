@@ -23,7 +23,7 @@
 //
 using System;
 using System.IO;
-using Mono.Unix;
+using GNU.Gettext;
 using System.Security.Cryptography;
 
 namespace Ict.Common.IO

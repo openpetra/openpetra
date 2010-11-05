@@ -105,6 +105,9 @@ OpenPetra:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
+                        DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
+                        AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:
@@ -190,6 +193,7 @@ OpenPetra:
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
                         EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
                         StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
                         BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}
                         PassportExpiryReport: {ActionOpenScreen=TFrmPassportExpiryReport}

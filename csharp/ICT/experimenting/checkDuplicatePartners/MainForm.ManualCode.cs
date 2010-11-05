@@ -27,7 +27,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Printing;
 using Ict.Petra.Shared.MFinance.Account.Data;

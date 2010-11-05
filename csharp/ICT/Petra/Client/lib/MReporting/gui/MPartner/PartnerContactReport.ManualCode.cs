@@ -27,7 +27,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MPartner;
@@ -190,6 +190,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
 
             ACalc.AddParameter("NumberOfAddresses", 0);
+            ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);
+
+            // TODO: If you want to export only the lines with relevant data and not the higher level lines
+            // in csv export then enable this line
+            // ACalc.AddParameter("csv_export_only_lowest_level", true);
 
             if (AReportAction == TReportActionEnum.raSave)
             {

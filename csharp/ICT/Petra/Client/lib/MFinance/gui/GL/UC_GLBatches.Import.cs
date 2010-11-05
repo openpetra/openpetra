@@ -27,7 +27,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml;
 using System.Globalization;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;

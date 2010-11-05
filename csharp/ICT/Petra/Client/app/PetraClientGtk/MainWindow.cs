@@ -23,7 +23,7 @@
 //
 using System;
 using System.Collections;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.GTK;
 using Gtk;

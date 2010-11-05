@@ -28,7 +28,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Resources;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using SourceGrid;

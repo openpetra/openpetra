@@ -27,7 +27,7 @@ using System.Collections;
 using System.Windows.Forms;
 using System.Data;
 using System.Resources;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonForms;

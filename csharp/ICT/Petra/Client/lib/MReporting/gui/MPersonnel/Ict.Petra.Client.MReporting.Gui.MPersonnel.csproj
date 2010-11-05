@@ -80,8 +80,8 @@
     <Reference Include="Ict.Petra.Shared.MReporting">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MReporting.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix">
-      <HintPath>..\..\..\..\..\..\..\ThirdParty\Mono\Mono.Posix.dll</HintPath>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
@@ -112,6 +112,9 @@
     <Compile Include="EmergencyContactReportStaff.Designer.cs">
       <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
     </Compile>
+    <Compile Include="EmergencyContactReportStaff.ManualCode.cs">
+      <DependentUpon>EmergencyContactReportStaff.cs</DependentUpon>
+    </Compile>
     <Compile Include="EmergencyDataReport.cs" />
     <Compile Include="EmergencyDataReport.Designer.cs">
       <DependentUpon>EmergencyDataReport.cs</DependentUpon>
@@ -122,6 +125,10 @@
     <Compile Include="EndOfCommitmentReport.cs" />
     <Compile Include="EndOfCommitmentReport.Designer.cs">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JobAssignmentReport.cs" />
+    <Compile Include="JobAssignmentReport.Designer.cs">
+      <DependentUpon>JobAssignmentReport.cs</DependentUpon>
     </Compile>
     <Compile Include="LocalPersonnelDataReport.cs" />
     <Compile Include="LocalPersonnelDataReport.Designer.cs">
@@ -228,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EndOfCommitmentReport.resx">
       <DependentUpon>EndOfCommitmentReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JobAssignmentReport.resx">
+      <DependentUpon>JobAssignmentReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LocalPersonnelDataReport.resx">
       <DependentUpon>LocalPersonnelDataReport.cs</DependentUpon>

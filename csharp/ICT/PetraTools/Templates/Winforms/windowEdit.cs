@@ -12,7 +12,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -236,7 +236,14 @@ namespace {#NAMESPACE}
 
                 if (SubmitDS == null)
                 {
-                    // nothing to be saved, so it is ok to close the screen etc
+                    // There is nothing to be saved.
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+                    this.Cursor = Cursors.Default;
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.DisableSaveButton();
+
                     return true;
                 }
 

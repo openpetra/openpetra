@@ -5,7 +5,7 @@ using Gtk;
 using System;
 using System.Collections;
 using System.Data;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common.GTK;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MSysMan;

@@ -24,7 +24,7 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance;

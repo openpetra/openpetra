@@ -23,7 +23,7 @@
 //
 using Gtk;
 using System;
-using Mono.Unix;
+using GNU.Gettext;
 
 // this namespace is named GTK in capital letters on purpose,
 // so that we are still able to refer to Gtk.Window etc

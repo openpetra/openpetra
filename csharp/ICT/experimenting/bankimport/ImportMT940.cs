@@ -29,7 +29,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Gui.BankImport;
 using Ict.Plugins.Finance.SwiftParser;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Ict.Plugins.Finance.SwiftParser
 {

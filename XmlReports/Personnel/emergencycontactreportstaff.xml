@@ -16,7 +16,7 @@
 	
 	<reportheader></reportheader>
 	<pageheader>
-		<field whichfield="title1"><value text ="Emergency Data Report" /></field>
+		<field whichfield="title1"><value text ="Emergency Contact Report" /></field>
 		<field whichfield="title2"><value function = "getSiteName()"/></field>
 		<field whichfield="descr1">
 			<fielddetail>
@@ -101,18 +101,17 @@
 	
 	<level name="Partner Level" identification="PartnerKey">
 		<header>
-			<field whichfield="header 0" pos="0cm" width="8cm" calculation="MakePartnerHeader">
+			<field whichfield="header 0" pos="0cm" width="9cm" calculation="MakePartnerHeader">
 				<value text=""/>
 				<value variable="PartnerNameAndField"/>
 			</field>
-			<field whichfield="header 1" pos="8cm" width="15cm">
+			<field whichfield="header 1" pos="9cm" width="15cm">
 				<value text=""/>
 				<value variable="PartnerAddress"/>
 			</field>
 		</header>
 		<detail>
-			
-			<lowerLevelReport level="Emergency Detail Level" calculation="SelectRelationships"></lowerLevelReport>
+			<lowerLevelReport level="EmergencyDetailLevel" calculation="SelectRelationships"></lowerLevelReport>
 		</detail>
 		<footer space="below">
 			<field whichfield="left 0" pos="0cm" width="9cm" >
@@ -124,10 +123,17 @@
 		</footer>
 	</level>
 	
-	<level name="Emergency Detail Level" identification="EmergencyContactKey">
+	<level name="EmergencyDetailLevel" identification="EmergencyContactKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="0cm">
+				<value variable="ApplicantPartnerName"/>
+				<value text="   "/>
+				<value variable="PartnerKey" format="text"/>
+			</field>
+		</header>
 		<detail>
 			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=""/>
+				<value text=" "/>
 			</field>
 			<field whichfield="Columns" pos="1cm" calculation="Get Emergency Contact Details">
 			</field>

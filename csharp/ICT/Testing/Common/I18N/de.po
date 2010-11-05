@@ -19,5 +19,12 @@ msgstr ""
 msgid "Hello World!"
 msgstr "Hallo Welt!"
 #
+msgid ""
+"Test for two lines\n"
+"second line"
+msgstr ""
+"Zwei Zeilen Test\n"
+"zweite Zeile"
+#
 msgid "Press any key to continue . . . "
 msgstr "Irgendeine Taste drücken um weiterzumachen . . . "

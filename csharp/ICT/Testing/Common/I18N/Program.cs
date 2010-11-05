@@ -22,19 +22,24 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Mono.Unix;
+using System.Threading;
+using System.IO;
+using System.Globalization;
+using GNU.Gettext;
+using Ict.Common;
 
 namespace I18N
 {
 /// <summary>
-/// see http://mono-project.com/I18N_with_Mono.Unix
-/// c:\programme\poedit\bin\xgettext.exe --strict --no-location --from-code=UTF-8 u:\csharp\ICT\Common\Testing\I18N\Program.cs -o u:\csharp\ICT\Common\Testing\I18N\de.po
+/// see http://www.gnu.org/software/gettext/manual/gettext.html#C_0023
+/// c:\programme\poedit\bin\xgettext.exe --strict --no-location --from-code=UTF-8 u:\csharp\ICT\Testing\Common\I18N\Program.cs -o u:\csharp\ICT\Testing\Testing\Common\I18N\de.po
 /// use -j for second time
 /// --no-location, because if code changes, the lines will change, and -j will add a new position line
 /// in Notepad++: change format to UTF-8 without BOM
-/// in mono shell: msgfmt u:\csharp\Ict\Common\Testing\I18N\de.po -o u:\csharp\Ict\common\_bin\Debug\locale\de\LC_MESSAGES\i18n.mo
-/// set LANGUAGE=de
-/// i18n.exe (will need the Mono.Posix.dll, intl.dll, MonoPosixHelper.dll, Mono.Security.dll
+/// in mono shell, or with mono bin path in PATH: PATH=%PATH%;c:\Programme\Mono-2.4.3\bin;c:\Programme\Poedit\bin
+///     msgfmt csharp\Ict\Testing\Common\I18N\de.po -d csharp\ICT\Testing\_bin\Debug --locale=de-DE --resource=OpenPetra --csharp
+/// to merge a custom language file (eg. organisation specific), use msgcat:
+///     msgcat csharp\Ict\Testing\Common\I18N\de-custom.po csharp\Ict\Testing\Common\I18N\de.po --use-first -o csharp\Ict\Testing\Common\I18N\de-test.po
 /// </summary>
 class Program
 {
@@ -42,9 +47,23 @@ class Program
     {
         try
         {
-            // does not change anything: Environment.SetEnvironmentVariable("LANGUAGE", "en");
-            Catalog.Init("i18n", "locale");
+            if (!File.Exists("de-DE/OpenPetra.resources.dll"))
+            {
+                if (!Directory.Exists("de-DE"))
+                {
+                    Directory.CreateDirectory("de-DE");
+                }
+
+                File.Copy("../../Common/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
+            }
+
+            Catalog.Init("de-DE");
+            Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
             Console.WriteLine(Catalog.GetString("Hello World!"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
+            Catalog.Init("en-GB");
+            Console.WriteLine(Catalog.GetString("Hello World!"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
         }
         catch (Exception e)
         {

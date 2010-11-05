@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
-using Mono.Unix;
+using GNU.Gettext;
 
 namespace Plugin.AuthenticationPhpBB
 {
@@ -71,7 +71,7 @@ namespace Plugin.AuthenticationPhpBB
                 {
                     AMessage =
                         Catalog.GetString(
-                            "Your account has been disabled because you typed the wrong password too often." + Environment.NewLine +
+                            "Your account has been disabled because you typed the wrong password too often.\n" +
                             "Please login to the forum again, you will have to solve a captcha to verify that you are you. You can also reset your password there.");
                     return false;
                 }

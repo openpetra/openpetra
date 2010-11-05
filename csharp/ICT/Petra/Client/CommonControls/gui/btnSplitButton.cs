@@ -28,7 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Globalization;
-using Mono.Unix;
+using GNU.Gettext;
 using Ict.Common;
 
 namespace Ict.Petra.Client.CommonControls
