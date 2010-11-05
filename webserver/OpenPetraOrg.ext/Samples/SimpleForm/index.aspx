@@ -16,8 +16,8 @@
         Ext.QuickTips.init();
         Ext.form.Field.prototype.msgTarget = 'side';
 
-        mainForm = new TMainForm();
-        mainForm.render('mainFormDiv');
+        MainForm = new TMainForm();
+        MainForm.render('mainFormDiv');
         
         });
     -->

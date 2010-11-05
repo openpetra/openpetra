@@ -66,6 +66,8 @@ public class TOpenPetraOrg : WebService
     {
         if (TheServerManager == null)
         {
+            Catalog.Init(System.Threading.Thread.CurrentThread.CurrentUICulture.Name);
+
             TheServerManager = new TServerManager();
             try
             {
@@ -77,6 +79,7 @@ public class TOpenPetraOrg : WebService
             catch (Exception e)
             {
                 TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
                 throw;
             }
         }
@@ -101,6 +104,7 @@ public class TOpenPetraOrg : WebService
         catch (Exception e)
         {
             TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
             Session["LoggedIn"] = false;
             Ict.Common.DB.DBAccess.GDBAccessObj.RollbackTransaction();
             return false;

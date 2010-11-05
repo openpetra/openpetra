@@ -313,8 +313,8 @@ new Ext.form.ComboBox({
                     if (jsonData.failure == true)
                     {
                           Ext.Msg.show({
-                              title: partnerdata.btnSaveREQUESTFAILURETITLE,
-                              msg: partnerdata.btnSaveREQUESTFAILUREMESSAGE + "<br/>" + jsonData.data.result,
+                              title: {#FORMNAME}.{#REQUESTFAILURETITLE},
+                              msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE} + "<br/>" + jsonData.data.result,
                               modal: true,
                               icon: Ext.Msg.ERROR,
                               buttons: Ext.Msg.OK

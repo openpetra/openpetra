@@ -25,13 +25,14 @@ RootNode:
                 #Row9: [uplImage]
                 Row10: [txtExistingPartnerKey]
                 Row11: [txtGroupWish]
+        txtEmail: {vtype=email}
         rgrGender:
             OptionalValues: [male, female]
         btnConfirm:
             Label: Submit registration
             AjaxRequestUrl: DataImportFromForm
             AjaxRequestParameters:
-                    AFormID: EFSAnmeldung
+                    AFormID: RegisterPerson
             ValidationErrorTitle: "Input Error"
             ValidationErrorMessage: "Please check the flagged controls!"
             SendingMessageTitle: "Please wait"

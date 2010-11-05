@@ -25,6 +25,7 @@ RootNode:
                 #Row9: [uplImage]
                 Row10: [txtExistingPartnerKey]
                 Row11: [txtGroupWish]
+        txtEmail: {vtype=email}
         rgrGender:
             OptionalValues: [male, female]
         btnConfirm:

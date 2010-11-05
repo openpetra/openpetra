@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
         {
-            if (AFormID == "EFSAnmeldung")
+            if (AFormID == "RegisterPerson")
             {
                 try
                 {
@@ -206,6 +206,7 @@ namespace Ict.Petra.Server.MPartner.Import
             else
             {
                 string message = "The server does not know about a form called " + AFormID;
+                TLogging.Log(message);
                 return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
         }
