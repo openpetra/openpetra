@@ -333,8 +333,7 @@
     <target name="generateWebforms" description="Generate Web browser User Interface">
         <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/js/PartnerForms ${generateParameters}"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/SampleApplicationForm ${generateParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateParameters}"/>
     </target>
 
     <target name="generateWebform" description="Generate a single Web browser User Interface">

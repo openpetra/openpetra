@@ -71,6 +71,27 @@ class Program
         processor.ProcessDocument();
     }
 
+    private static void ProcessDirectory(string ADirName, string ASelectedLocalisation)
+    {
+        foreach (string file in System.IO.Directory.GetFiles(ADirName, "*.yaml"))
+        {
+            // reset the dataset each time to force reload
+            TDataBinding.FDatasetTables = null;
+
+            // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
+            if ((file[file.Length - 8] != '.') && (file[file.Length - 8] != '-'))
+            {
+                Console.WriteLine("working on " + file);
+                ProcessFile(file, ASelectedLocalisation);
+            }
+        }
+
+        foreach (string subdir in System.IO.Directory.GetDirectories(ADirName))
+        {
+            ProcessDirectory(subdir, ASelectedLocalisation);
+        }
+    }
+
     public static void Main(string[] args)
     {
         try
@@ -130,18 +151,7 @@ class Program
             }
             else if (System.IO.Directory.Exists(ymlfileParam))
             {
-                foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
-                {
-                    // reset the dataset each time to force reload
-                    TDataBinding.FDatasetTables = null;
-
-                    // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
-                    if ((file[file.Length - 8] != '.') && (file[file.Length - 8] != '-'))
-                    {
-                        Console.WriteLine("working on " + file);
-                        ProcessFile(file, SelectedLocalisation);
-                    }
-                }
+                ProcessDirectory(ymlfileParam, SelectedLocalisation);
             }
             else
             {
