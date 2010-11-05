@@ -36,6 +36,34 @@ class Program
 {
     private static void ProcessFile(string filename, string ASelectedLocalisation)
     {
+        if (ASelectedLocalisation == null)
+        {
+        	// check for all existing localisations
+        	foreach (string file in System.IO.Directory.GetFiles(
+        		Path.GetDirectoryName(filename),
+        		"*.yaml"))
+        	{
+        		if (!file.EndsWith(Path.GetFileName(filename)) 
+        		    && Path.GetFileName(file).StartsWith(Path.GetFileNameWithoutExtension(filename)))
+        		{
+        			ASelectedLocalisation = Path.GetExtension(Path.GetFileNameWithoutExtension(file)).Substring(1);
+	        		
+					TProcessYAMLForms processorLocalized = new TProcessYAMLForms(file, null);
+					
+					processorLocalized.AddWriter("SubmitForm", typeof(TExtJsFormsWriter));
+					
+					processorLocalized.ProcessDocument();
+        		}
+        	}
+        	
+        	if (ASelectedLocalisation != null)
+        	{
+        		// do not generate the root yaml file
+        		return;
+        	}
+        }
+
+        // by default, just generate the form for one (or default) localisation
         TProcessYAMLForms processor = new TProcessYAMLForms(filename, ASelectedLocalisation);
 
         processor.AddWriter("SubmitForm", typeof(TExtJsFormsWriter));
@@ -107,11 +135,11 @@ class Program
                     // reset the dataset each time to force reload
                     TDataBinding.FDatasetTables = null;
 
-                    // only look for main files, not language specific files (*.XY.yaml)
-                    if (file[file.Length - 8] != '.')
+                    // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
+                    if (file[file.Length - 8] != '.' && file[file.Length - 8] != '-')
                     {
                         Console.WriteLine("working on " + file);
-                        ProcessFile(file, SelectedLocalisation);
+                    	ProcessFile(file, SelectedLocalisation);
                     }
                 }
             }

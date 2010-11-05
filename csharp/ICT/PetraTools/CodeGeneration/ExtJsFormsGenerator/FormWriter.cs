@@ -318,6 +318,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             {
                 FFormName = FFormName.Substring(0, FFormName.IndexOf("."));
             }
+            
+            FFormName = FFormName.ToUpper()[0] + FFormName.Substring(1);
+            FFormName += "Form";
 
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
@@ -348,6 +351,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
             FTemplate.SetCodelet("LABELWIDTH", "140");
             FTemplate.SetCodelet("FORMNAME", FFormName);
+            FTemplate.SetCodelet("FORMTYPE", "T" + FFormName);
 
             string FormHeader = "true";
 
@@ -368,6 +372,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.SetCodelet("FORMFRAME", FormFrame);
 
             FLanguageFileTemplate.SetCodelet("FORMNAME", FFormName);
+            FLanguageFileTemplate.SetCodelet("FORMTYPE", "T" + FFormName);
         }
     }
 }

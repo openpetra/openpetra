@@ -79,7 +79,7 @@ var cardNav = function(incr){
 };
 {#ENDIF ASSISTANT}
 
-{#FORMNAME}Form = Ext.extend(Ext.FormPanel, {
+{#FORMTYPE} = Ext.extend(Ext.FormPanel, {
     {#RESOURCESTRINGS}
     strEmpty:'',
     initComponent : function(config) {
@@ -95,7 +95,7 @@ var cardNav = function(incr){
             items: [{#FORMITEMSDEFINITION}],
             buttons: [{#BUTTONS}]
         });
-        {#FORMNAME}Form.superclass.initComponent.apply(this, arguments);
+        {#FORMTYPE}.superclass.initComponent.apply(this, arguments);
     }
 });
     
@@ -347,8 +347,8 @@ new Ext.form.ComboBox({
 }
 
 {##LANGUAGEFILE}
-if({#FORMNAME}Form) {
-    Ext.apply({#FORMNAME}Form.prototype, {
+if({#FORMTYPE}) {
+    Ext.apply({#FORMTYPE}.prototype, {
     {#RESOURCESTRINGS}
    });
 }

@@ -42,3 +42,8 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /delivery
 *.patch
 /log
+/webserver/OpenPetraOrg.ext/images
+/webserver/OpenPetraOrg.ext/js/ext-all.js
+/webserver/OpenPetraOrg.ext/js/ext-base.js
+/webserver/OpenPetraOrg.ext/css/ext-all.css
+*lang-template.js

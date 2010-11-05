@@ -94,6 +94,7 @@
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="generateWebforms: generates the User Interface using the Ext.js AJAX framework"/>
+        <echo message="generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
@@ -330,11 +331,18 @@
     </target>
 
     <target name="generateWebforms" description="Generate Web browser User Interface">
-        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
-        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
+        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file}"/>
+        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/js/PartnerForms ${generateParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/SampleApplicationForm ${generateParameters}"/>
     </target>
 
+    <target name="generateWebform" description="Generate a single Web browser User Interface">
+        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file}"/>
+        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateParameters}"/>
+    </target>
+    
     <target name="loc">
         <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
         <echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
