@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref ASubmitChanges, out AVerificationResult);
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)

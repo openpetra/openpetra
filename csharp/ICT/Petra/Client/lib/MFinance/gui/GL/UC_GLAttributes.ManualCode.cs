@@ -43,8 +43,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private GLSetupTDS FCacheDS = null;
         private void InitializeManualCode()
         {
-            this.cmbDetailAnalysisAttributeValue.DropDown +=  new System.EventHandler(this.DropDown);
-            this.cmbDetailAnalysisAttributeValue.DropDownClosed +=  new System.EventHandler(this.ValueChanged);
+            this.cmbDetailAnalysisAttributeValue.DropDown += new System.EventHandler(this.DropDown);
+            this.cmbDetailAnalysisAttributeValue.DropDownClosed += new System.EventHandler(this.ValueChanged);
         }
 
         /// <summary>
@@ -356,9 +356,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ValueChanged(object sender, EventArgs e)
         {
-        	Object sio= cmbDetailAnalysisAttributeValue.SelectedItem;
-        	int si= cmbDetailAnalysisAttributeValue.SelectedIndex;
-        	if (si <0 || sio == null) return;
+            Object sio = cmbDetailAnalysisAttributeValue.SelectedItem;
+            int si = cmbDetailAnalysisAttributeValue.SelectedIndex;
+
+            if ((si < 0) || (sio == null))
+            {
+                return;
+            }
+
             String v = (String)sio;
             AFreeformAnalysisRow afaRow =
                 (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { FLedgerNumber, txtReadonlyAnalysisTypeCode.Text,
@@ -366,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (afaRow == null)
             {
-            	// this should never happen
+                // this should never happen
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
             else
@@ -379,16 +384,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Gray;
-                    cmbDetailAnalysisAttributeValue.Font = new System.Drawing.Font(System.Windows.Forms.Control.DefaultFont,System.Drawing.FontStyle.Strikeout);
+                    cmbDetailAnalysisAttributeValue.Font = new System.Drawing.Font(System.Windows.Forms.Control.DefaultFont,
+                        System.Drawing.FontStyle.Strikeout);
                 }
             }
         }
-         /// <summary>
+
+        /// <summary>
         /// reset the fonts on dropdown
         /// </summary>
         private void DropDown(object sender, EventArgs e)
         {
-        	cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Black;
+            cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Black;
             cmbDetailAnalysisAttributeValue.Font = System.Windows.Forms.Control.DefaultFont;
         }
     }

@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FPreviouslySelectedDetailRow = null;
                 txtDetailAnalysisValue.ResetText();
-                chkDetailActive.Checked=false;
+                chkDetailActive.Checked = false;
             }
         }
     }
