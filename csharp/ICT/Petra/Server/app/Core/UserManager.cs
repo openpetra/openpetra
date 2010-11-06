@@ -330,7 +330,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 }
             }
 
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser");
+            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
