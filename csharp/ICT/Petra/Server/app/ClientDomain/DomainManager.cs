@@ -638,6 +638,12 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void EstablishDBConnection()
         {
             DomainManager.ULogger = new TLogging(TSrvSetting.ServerLogFile);
+
+            // TODO load culture from config file etc
+            Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
+
+            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+
 #if  TESTMODE_WITHOUT_ODBC
 #else
 #if DEBUGMODE
