@@ -364,6 +364,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.txtOutput.TabIndex = 11;
             this.txtOutput.Text = "Text Output";
             this.txtOutput.WordWrap = false;
+            this.txtOutput.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtOutputKeyPress);
 
             //
             // tbpPreview
