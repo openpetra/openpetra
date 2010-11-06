@@ -179,6 +179,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 return;
             }
 
+            if (cmbSelectBankAccount.Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("Please create a bank account first, before importing bank statements!"),
+                    Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV
             // the dll has to be in the normal application directory
             string Namespace = BankStatementImportPlugin;

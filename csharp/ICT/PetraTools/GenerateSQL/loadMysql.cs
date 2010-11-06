@@ -88,6 +88,7 @@ public class TLoadMysql
 
                     while (CSVDataQuestionMark.Length > 0)
                     {
+                        bool quotedValue = CSVDataQuestionMark.StartsWith("\"");
                         string value = StringHelper.GetNextCSV(ref CSVDataQuestionMark, ",");
 
                         if (value == "?")
@@ -95,12 +96,13 @@ public class TLoadMysql
                             value = "NULL";
                         }
 
-                        if ((value == "false") || (value == "no"))
+                        // if true or false is written in quotes, do not convert to integer. needed for a_account_property
+                        if ((!quotedValue && (value == "false")) || (value == "no"))
                         {
                             value = "0";
                         }
 
-                        if ((value == "true") || (value == "yes"))
+                        if ((!quotedValue && (value == "true")) || (value == "yes"))
                         {
                             value = "1";
                         }
