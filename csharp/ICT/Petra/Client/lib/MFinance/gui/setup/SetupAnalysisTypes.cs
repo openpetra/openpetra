@@ -93,12 +93,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.txtDetailAnalysisTypeDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisTypeDescription, Catalog.GetString("Enter a description"));
       FPetraUtilsObject.SetStatusBarText(chkDetailSystemAnalysisType, Catalog.GetString("To indicate whether the user or system has set up the analysis type."));
       ucoValues.PetraUtilsObject = FPetraUtilsObject;
       ucoValues.MainDS = FMainDS;
       ucoValues.InitUserControl();
-      FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Analysis Type Code", FMainDS.AAnalysisType.ColumnAnalysisTypeCode);
       grdDetails.AddTextColumn("Description", FMainDS.AAnalysisType.ColumnAnalysisTypeDescription);

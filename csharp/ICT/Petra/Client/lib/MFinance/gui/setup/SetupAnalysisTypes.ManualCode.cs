@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
+
+                Ict.Common.Data.TTypedDataTable TypedTable;
+                TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+                FMainDS.AAnalysisType.Merge(TypedTable);
+
                 ucoValues.LedgerNumber = value;
                 ucoValues.LoadValues(FLedgerNumber);
             }

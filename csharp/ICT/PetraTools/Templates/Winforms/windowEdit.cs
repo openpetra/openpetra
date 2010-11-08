@@ -46,8 +46,8 @@ namespace {#NAMESPACE}
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#INITUSERCONTROLS}
       FMainDS = new {#DATASETTYPE}();
+      {#INITUSERCONTROLS}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
