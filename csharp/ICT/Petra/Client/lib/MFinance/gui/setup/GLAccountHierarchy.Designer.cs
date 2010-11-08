@@ -88,6 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailBankAccountFlag = new System.Windows.Forms.Label();
             this.chkDetailAccountActiveFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailAccountActiveFlag = new System.Windows.Forms.Label();
+            this.ucoAccountAnalysisAttributes = new Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbAddNewAccount = new System.Windows.Forms.ToolStripButton();
@@ -315,10 +316,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailAccountActiveFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAccountActiveFlag.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailAccountActiveFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // ucoAccountAnalysisAttributes
+            //
+            this.ucoAccountAnalysisAttributes.Name = "ucoAccountAnalysisAttributes";
+            this.ucoAccountAnalysisAttributes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 9;
+            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -337,6 +344,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.Controls.Add(this.lblDetailValidCcCombo, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailBankAccountFlag, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountActiveFlag, 0, 8);
+            this.tableLayoutPanel1.SetColumnSpan(this.ucoAccountAnalysisAttributes, 2);
+            this.tableLayoutPanel1.Controls.Add(this.ucoAccountAnalysisAttributes, 0, 9);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCode, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailAccountType, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailEngAccountCodeLongDesc, 1, 2);
@@ -652,6 +661,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblDetailBankAccountFlag;
         private System.Windows.Forms.CheckBox chkDetailAccountActiveFlag;
         private System.Windows.Forms.Label lblDetailAccountActiveFlag;
+        private Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes ucoAccountAnalysisAttributes;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbAddNewAccount;

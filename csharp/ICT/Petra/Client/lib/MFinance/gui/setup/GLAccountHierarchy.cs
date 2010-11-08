@@ -118,6 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeShortDesc, Catalog.GetString("Enter a short description of the account."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailValidCcCombo, Catalog.GetString("Select cost centre type that may be combined with this account."));
       FPetraUtilsObject.SetStatusBarText(chkDetailAccountActiveFlag, Catalog.GetString("Is this account available for posting transactions?"));
+      ucoAccountAnalysisAttributes.PetraUtilsObject = FPetraUtilsObject;
+      ucoAccountAnalysisAttributes.MainDS = FMainDS;
+      ucoAccountAnalysisAttributes.InitUserControl();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
@@ -218,6 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
+        ShowDetailsManual(ARow);
     }
 
     private void GetDataFromControls()
