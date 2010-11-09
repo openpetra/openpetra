@@ -117,8 +117,8 @@
                  see also http://laputa.sharpdevelop.net/EmbeddingManifests.aspx
                  we need that at least for the PatchTool
             -->
-            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchTool.exe;1"/> 
-            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest ${OpenPetraRoot.dir}/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchToolConsole.exe;1"/> 
+            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest &quot;${OpenPetraRoot.dir}&quot;/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:&quot;${OpenPetraRoot.dir}&quot;/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchTool.exe;1"/> 
+            <exec program="${framework::get-sdk-directory(framework::get-runtime-framework())}\mt.exe" commandline="-manifest &quot;${OpenPetraRoot.dir}&quot;/csharp/ICT/PetraTools/PatchTool/app.manifest -outputresource:&quot;${OpenPetraRoot.dir}&quot;/csharp/ICT/PetraTools/_bin/${Output.dir}/PatchToolConsole.exe;1"/> 
         </if>
     </target>
     <target name="compileTesting" description="compile the Testing module">
