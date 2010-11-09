@@ -56,6 +56,7 @@ namespace Ict.Petra.Server.MFinance.GL
         bool FTransactionsOnly;
         bool FDontSummarize;
         String FDontSummarizeAccount;
+        GLBatchTDS FMainDS;
 
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             FStringWriter = new StringWriter();
             StringBuilder line = new StringBuilder();
-            GLBatchTDS FMainDS = new GLBatchTDS();
+            FMainDS = new GLBatchTDS();
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
@@ -100,6 +101,18 @@ namespace Ict.Petra.Server.MFinance.GL
                         ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
                             journal.BatchNumber,
                             journal.JournalNumber,
+                            Transaction);
+                    }
+                }
+
+                foreach (ATransactionRow trans in FMainDS.ATransaction.Rows)
+                {
+                    if (trans.BatchNumber.Equals(ABatchNumber) && trans.LedgerNumber.Equals(FLedgerNumber))
+                    {
+                        ATransAnalAttribAccess.LoadViaATransaction(FMainDS, trans.LedgerNumber,
+                            trans.BatchNumber,
+                            trans.JournalNumber,
+                            trans.TransactionNumber,
                             Transaction);
                     }
                 }
@@ -253,7 +266,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted("GL");
             WriteStringQuoted("STD");
             WriteStringQuoted(journalSummary.TransactionCurrency);
-            WriteGeneralNumber(journalSummary.ExchangeRateToBase); // format ok ???
+            WriteGeneralNumber(journalSummary.ExchangeRateToBase);             // format ok ???
             WriteLineDate(FDateForSummary);
         }
 
@@ -303,9 +316,40 @@ namespace Ict.Petra.Server.MFinance.GL
                 WriteCurrency(amount);
             }
 
-            for (int i = 1; i <= 10; i++)
+            WriteAnalysisAttributesSuffix(transaction);
+        }
+
+        static int maxNumValuesExport = 5;
+        void WriteAnalysisAttributesSuffix(ATransactionRow transaction)
+        {
+            FMainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetAnalysisTypeCodeDBName();
+            FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
+                String.Format("{0}={1} and {2}={3} and {4}={5} and {6}={7}",
+                    ATransAnalAttribTable.GetLedgerNumberDBName(),
+                    transaction.LedgerNumber,
+                    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    transaction.BatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    transaction.JournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    transaction.TransactionNumber);
+
+
+            DataView anaView = FMainDS.ATransAnalAttrib.DefaultView;
+
+            for (int i = 1; i <= maxNumValuesExport; i++)
             {
-                WriteStringQuoted("", (i == 10));
+                if (i <= anaView.Count)
+                {
+                    ATransAnalAttribRow ar = (ATransAnalAttribRow)anaView[i-1].Row;
+                    WriteStringQuoted(ar.AnalysisTypeCode, false);
+                    WriteStringQuoted(ar.AnalysisAttributeValue, (i == maxNumValuesExport));
+                }
+                else
+                {
+                    WriteStringQuoted("", false);
+                    WriteStringQuoted("", (i == maxNumValuesExport));
+                }
             }
         }
 
