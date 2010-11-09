@@ -405,7 +405,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
 
-                PartnerLocationRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                PartnerLocationRow.PartnerKey = ANewPartnerDS.PPartner[0].PartnerKey;
                 ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
 
 
