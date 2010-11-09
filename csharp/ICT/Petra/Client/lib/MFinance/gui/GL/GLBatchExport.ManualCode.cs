@@ -214,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
+                	return;
                 }
 
                 requestParams.Add("ALedgerNumber", ALedgerNumber);
