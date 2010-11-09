@@ -842,12 +842,12 @@ namespace Ict.Petra.Shared
 
         /// <summary>
         /// Returns true if the DataTable with the specified TableName is in the
-        /// DataCache.
+        /// DataCache and does not need refreshing.
         ///
         /// </summary>
         /// <param name="ACacheableTableName">Name of the DataTable</param>
         /// <returns>true if the DataTable with the specified TableName is in the
-        /// DataCache, otherwise false
+        /// DataCache and is uptodate, otherwise false
         /// </returns>
         public Boolean IsTableCached(String ACacheableTableName)
         {
@@ -863,9 +863,11 @@ namespace Ict.Petra.Shared
 #endif
 
             // Thread.GetDomain.FriendlyName
-            if (GetContentsEntry(ACacheableTableName) != null)
+            CacheableTablesTDSContentsRow contentsRow = GetContentsEntry(ACacheableTableName);
+
+            if (contentsRow != null)
             {
-                ReturnValue = true;
+                ReturnValue = contentsRow.DataUpToDate;
             }
             else
             {
@@ -892,10 +894,14 @@ namespace Ict.Petra.Shared
         /// </exception>
         public void MarkCachedTableNeedsRefreshing(String ACacheableTableName)
         {
-            CacheableTablesTDSContentsRow ContentsEntryDR;
+            CacheableTablesTDSContentsRow ContentsEntryDR = null;
 
-            // Variable initialisation (just to prevent compiler warnings)
-            ContentsEntryDR = null;
+            if (!UDataCacheDataSet.Tables.Contains(ACacheableTableName))
+            {
+                // add an empty table so we can mark it as invalid
+                AddOrRefreshCachedTable(ACacheableTableName, new DataTable(), -1);
+            }
+
             try
             {
 #if DEBUGMODE
@@ -913,13 +919,6 @@ namespace Ict.Petra.Shared
                     TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing grabbed a ReaderLock.");
                 }
 #endif
-
-                if (!UDataCacheDataSet.Tables.Contains(ACacheableTableName))
-                {
-                    throw new ECacheableTablesMgrException(
-                        this.GetType().FullName + ".MarkCachedTableNeedsRefreshing: Cacheable DataTable '" + ACacheableTableName +
-                        "' does not exist in Cache");
-                }
 
                 ContentsEntryDR = GetContentsEntry(ACacheableTableName); // GetContentsEntry reuses the ReaderLock
             }

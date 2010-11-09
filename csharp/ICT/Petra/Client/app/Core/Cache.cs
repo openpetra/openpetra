@@ -231,7 +231,7 @@ namespace Ict.Petra.Client.App.Core
                     string CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
                     return TDataCache.GetCacheableDataTableFromCache(CacheableTableName);
                 }
-                catch (Exception)
+                catch (System.Runtime.Remoting.RemotingException)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
                     throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module"));
