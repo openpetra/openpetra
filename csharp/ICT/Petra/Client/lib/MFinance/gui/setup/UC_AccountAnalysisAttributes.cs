@@ -86,7 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         set
         {
             FMainDS = value;
-            MessageBox.Show("tst1> " + (FMainDS.AAnalysisAttribute == null).ToString());
         }
     }
 
