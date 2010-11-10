@@ -115,6 +115,11 @@
     </target>
 
     <target name="patchDatabase" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
+
+        <if test="${DBMS.Type=='sqlite'}">
+            <fail message="patchDatabase does not support sqlite. please use postgresql or mysql. otherwise please run nant resetDatabase"/>
+        </if>
+
         <call target="updateServerConfigFile"/>
         <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" 
             commandline="-action:patchDatabase -C:${ServerConfigFile} -DBPatches.Path:${OpenPetraRoot.dir}/db/patches -Server.LogFile:${Tmp.dir}/dbpatch.log -OpenPetra.PathTemp:${Tmp.dir}"
