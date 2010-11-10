@@ -76,8 +76,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbCountryCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblCountryCode = new System.Windows.Forms.Label();
-            this.cmbUnitType = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblUnitType = new System.Windows.Forms.Label();
+            this.cmbUnitTypeCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblUnitTypeCode = new System.Windows.Forms.Label();
             this.cmbLanguageCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblLanguageCode = new System.Windows.Forms.Label();
             this.cmbAcquisitionCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -196,22 +196,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCountryCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblCountryCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // cmbUnitType
+            // cmbUnitTypeCode
             //
-            this.cmbUnitType.Location = new System.Drawing.Point(2,2);
-            this.cmbUnitType.Name = "cmbUnitType";
-            this.cmbUnitType.Size = new System.Drawing.Size(300, 28);
-            this.cmbUnitType.ListTable = TCmbAutoPopulated.TListTableEnum.UnitTypeList;
+            this.cmbUnitTypeCode.Location = new System.Drawing.Point(2,2);
+            this.cmbUnitTypeCode.Name = "cmbUnitTypeCode";
+            this.cmbUnitTypeCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbUnitTypeCode.ListTable = TCmbAutoPopulated.TListTableEnum.UnitTypeList;
             //
-            // lblUnitType
+            // lblUnitTypeCode
             //
-            this.lblUnitType.Location = new System.Drawing.Point(2,2);
-            this.lblUnitType.Name = "lblUnitType";
-            this.lblUnitType.AutoSize = true;
-            this.lblUnitType.Text = "Unit Type:";
-            this.lblUnitType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblUnitType.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblUnitType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblUnitTypeCode.Location = new System.Drawing.Point(2,2);
+            this.lblUnitTypeCode.Name = "lblUnitTypeCode";
+            this.lblUnitTypeCode.AutoSize = true;
+            this.lblUnitTypeCode.Text = "Unit Type Code:";
+            this.lblUnitTypeCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblUnitTypeCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblUnitTypeCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // cmbLanguageCode
             //
@@ -255,11 +255,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblCountryCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblUnitType, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblUnitTypeCode, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblLanguageCode, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.lblAcquisitionCode, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.cmbCountryCode, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.cmbUnitType, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.cmbUnitTypeCode, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.cmbLanguageCode, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.cmbAcquisitionCode, 1, 3);
             this.grpMisc.Text = "Miscellaneous";
@@ -366,8 +366,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCountryCode;
         private System.Windows.Forms.Label lblCountryCode;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbUnitType;
-        private System.Windows.Forms.Label lblUnitType;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbUnitTypeCode;
+        private System.Windows.Forms.Label lblUnitTypeCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbLanguageCode;
         private System.Windows.Forms.Label lblLanguageCode;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAcquisitionCode;

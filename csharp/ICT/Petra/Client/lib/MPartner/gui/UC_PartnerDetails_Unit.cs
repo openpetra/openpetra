@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblLocalName.Text = Catalog.GetString("Local Name:");
       this.grpNames.Text = Catalog.GetString("Names");
       this.lblCountryCode.Text = Catalog.GetString("Country Code:");
-      this.lblUnitType.Text = Catalog.GetString("Unit Type:");
+      this.lblUnitTypeCode.Text = Catalog.GetString("Unit Type Code:");
       this.lblLanguageCode.Text = Catalog.GetString("Language Code:");
       this.lblAcquisitionCode.Text = Catalog.GetString("Acquisition Code:");
       this.grpMisc.Text = Catalog.GetString("Miscellaneous");
@@ -113,7 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         FPetraUtilsObject.SetStatusBarText(txtLocalName, Catalog.GetString("Enter a short name for this partner in your local language"));
         FPetraUtilsObject.SetStatusBarText(cmbCountryCode, Catalog.GetString("Country in which this Unit is found"));
         cmbCountryCode.InitialiseUserControl();
-        cmbUnitType.InitialiseUserControl();
+        FPetraUtilsObject.SetStatusBarText(cmbUnitTypeCode, Catalog.GetString("Enter the unit type"));
+        cmbUnitTypeCode.InitialiseUserControl();
         FPetraUtilsObject.SetStatusBarText(cmbLanguageCode, Catalog.GetString("Select the partner's preferred language"));
         cmbLanguageCode.InitialiseUserControl();
         FPetraUtilsObject.SetStatusBarText(cmbAcquisitionCode, Catalog.GetString("Select a method-of-acquisition code"));
@@ -161,6 +162,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         else
         {
             cmbCountryCode.SetSelectedString(ARow.CountryCode);
+        }
+        if (ARow.IsUnitTypeCodeNull())
+        {
+            cmbUnitTypeCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbUnitTypeCode.SetSelectedString(ARow.UnitTypeCode);
         }
         if (FMainDS.PPartner == null || ((FMainDS.PPartner.Rows.Count > 0) && (FMainDS.PPartner[0].IsLanguageCodeNull())))
         {
@@ -235,6 +244,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         else
         {
             ARow.CountryCode = cmbCountryCode.GetSelectedString();
+        }
+        if (cmbUnitTypeCode.SelectedIndex == -1)
+        {
+            ARow.SetUnitTypeCodeNull();
+        }
+        else
+        {
+            ARow.UnitTypeCode = cmbUnitTypeCode.GetSelectedString();
         }
         if ((FMainDS.PPartner != null) && (FMainDS.PPartner.Rows.Count > 0))
         {
