@@ -30,7 +30,9 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using System.Text.RegularExpressions;
+using System.Data;
 using Ict.Common;
+using Ict.Common.DB;
 
 namespace Ict.Tools.PatchTool
 {
@@ -342,6 +344,64 @@ namespace Ict.Tools.PatchTool
         {
             // TODO: run sql script or code from DLL to update the database
             // TODO: if last patch, send an email to central support etc
+            TLogging.Log("RunDBPatch " + ADesiredVersion.ToString());
+
+
+            // find appropriate sql script that updates to this version
+            string[] files = Directory.GetFiles(FPatchesPath,
+                String.Format("*_{0}.{1}.{2}.sql",
+                    ADesiredVersion.FileMajorPart,
+                    ADesiredVersion.FileMinorPart,
+                    ADesiredVersion.FileBuildPart));
+
+            if (files.Length > 1)
+            {
+                throw new Exception("There are too many files for upgrading to version " + ADesiredVersion.ToString() + " in " + FPatchesPath);
+            }
+
+            if (files.Length == 0)
+            {
+                throw new Exception("We cannot find a file for upgrading to version " + ADesiredVersion.ToString() + " in " + FPatchesPath);
+            }
+
+            TLogging.Log("Applying " + Path.GetFileName(files[0]));
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            // always upgrade the version number
+            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}.{1}.{2}-0' WHERE s_default_code_c='CurrentDatabaseVersion'",
+                    ADesiredVersion.FileMajorPart,
+                    ADesiredVersion.FileMinorPart,
+                    ADesiredVersion.FileBuildPart), Transaction);
+
+            StreamReader reader = new StreamReader(files[0]);
+            string line;
+            string stmt = string.Empty;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (!line.Trim().StartsWith("--"))
+                {
+                    if (!line.Trim().EndsWith(";"))
+                    {
+                        stmt += line.Trim() + " ";
+                    }
+                    else
+                    {
+                        stmt += line.Trim();
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
+                    }
+                }
+
+                if (stmt.Length > 0)
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, Transaction);
+                }
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
             return true;
         }
 
@@ -351,23 +411,38 @@ namespace Ict.Tools.PatchTool
         /// </summary>
         public Boolean RunDBPatches()
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
             TFileVersionInfo dbVersion;
             TFileVersionInfo appVersion;
             TFileVersionInfo desiredVersion;
             Boolean lastPatch;
 
+            TAppSettingsManager settings = new TAppSettingsManager();
+
+            DBAccess.GDBAccessObj = new TDataBase();
+            DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType")),
+                settings.GetValue("Server.PostgreSQLServer"),
+                settings.GetValue("Server.PostgreSQLServerPort"),
+                settings.GetValue("Server.PostgreSQLDatabaseName"),
+                settings.GetValue("Server.PostgreSQLUserName"),
+                settings.GetValue("Server.Credentials"),
+                "");
+
             dbVersion = GetDBPatchLevel();
-            TLogging.Log("Current version of the database is " + dbVersion.ToString().Substring(0, dbVersion.ToString().Length - 2));
-            ReturnValue = false;
+            dbVersion.FilePrivatePart = 0;
+            TLogging.Log("Current version of the database is " + dbVersion.ToString());
 
             if (dbVersion != null)
             {
                 ReturnValue = true;
 
-                appVersion = FCurrentlyInstalledVersion;
+                StreamReader sr = new StreamReader(FPatchesPath + Path.DirectorySeparatorChar + "version.txt");
+                appVersion = new TFileVersionInfo(sr.ReadLine());
+                appVersion.FilePrivatePart = 0;
+                TLogging.Log("We want to update to version " + appVersion.ToString());
+                sr.Close();
 
-                if (dbVersion.FileBuildPart == appVersion.FileBuildPart)
+                if (dbVersion.Compare(appVersion) == 0)
                 {
                     // rerun the last patch; perhaps the patch file itself was patched
                     ReturnValue = RunDBPatch(dbVersion, true);
@@ -391,7 +466,11 @@ namespace Ict.Tools.PatchTool
         private TFileVersionInfo GetDBPatchLevel()
         {
             // TODO: read current patch level from the database (table s_system_defaults, default code CurrentDatabaseVersion)
-            return new TFileVersionInfo();
+            string currentVersion = (string)DBAccess.GDBAccessObj.ExecuteScalar(
+                "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
+                IsolationLevel.ReadUncommitted);
+
+            return new TFileVersionInfo(currentVersion);
         }
 
         private void UndoPatchRecursively(String APatchRootDirectory, String APatchDirectory)

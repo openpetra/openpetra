@@ -316,36 +316,10 @@ namespace Ict.Petra.Client.App.Core
             Hashtable ARemotingURLs;
             try
             {
-                System.Version exeVersion;
-                Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
-
-                if (entryAssembly == null)
-                {
-                    // this is when the client is run with NUnit
-                    // assume the version is 0.9.0 for the moment
-                    exeVersion = System.Reflection.Assembly.GetAssembly(typeof(TConnectionManagement)).GetName().Version;
-                }
-                else
-                {
-                    exeVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-                }
-
-                // if there is a version.txt in the bin directory, use that.
-                // this allows better debugging etc
-                string BinPath = TClientSettings.Petra_Path_Bin;
-
-                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
-                {
-                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
-                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
-                    exeVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
-                    srVersion.Close();
-                }
-
                 AClientManager.ConnectClient(AUserName, APassword,
                     TClientInfo.ClientComputerName,
                     TClientInfo.ClientIPAddress,
-                    exeVersion,
+                    new Version(TClientInfo.ClientAssemblyVersion),
                     DetermineClientServerConnectionType(),
                     out FClientName,
                     out FClientID,

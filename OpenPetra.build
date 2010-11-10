@@ -24,7 +24,7 @@
 
     <property name="Output.dir" value="Debug" unless="${property::exists('Output.dir')}"/>
     <property name="Configuration" value="DEBUG" unless="${property::exists('Configuration')}"/>
-    <property name="ReleaseID" value="0.0.0.99" unless="${property::exists('ReleaseID')}"/>
+    <property name="ReleaseID" value="${script::GetReleaseIDFromVersionTxt(OpenPetraRoot.dir)}" unless="${property::exists('ReleaseID')}"/>
     <property name="ReleaseVersion" value="${script::CalculateRPMVersionFromDLLVersion(ReleaseID)}"/>
     <property name="PetraRelease" value="0300"/>
     <property name="SkipCompileClient" value="false" unless="${property::exists('SkipCompileClient')}"/>

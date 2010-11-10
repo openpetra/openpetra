@@ -60,7 +60,7 @@ Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerC
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 ; actual db will be copied to the user's userappdata directory
 Source: ..\petra.db; DestDir: {app}/db30; DestName: demo.db
-Source: patches\*.sql; DestDir: {app}/db30
+Source: ..\..\..\db\patches\*.sql; DestDir: {app}/db30
 Source: ..\..\..\demodata\*.*; DestDir: {app}/demo30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30

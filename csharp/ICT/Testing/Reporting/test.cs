@@ -225,6 +225,8 @@ namespace Tests.Reporting
                         {
                             /* compare the files */
                             /* requires compilation with directive TESTMODE being set, so that the date of the report printout is constant */
+                            // TODO: ignore the date, and also ignore the version number
+                            // TODO: define sections which should be compared, and which should be ignored. Overwrite with blanks?
                             Assert.AreEqual(true, TTextFile.SameContent(fileName + ".txt",
                                     fileName + ".txt.new"), "the txt files should be the same: " + fileName);
                             System.IO.File.Delete(fileName + ".txt.new");
@@ -513,13 +515,6 @@ namespace Tests.Reporting
                     "FIND_BEST_SEPARATOR", true);
                 ExportLocalizationReports("Acc");
             }
-        }
-
-        [Test]
-        public void CheckConfigFile()
-        {
-            // see also http://nunit.com/blogs/?p=9, How NUnit Finds Config Files
-            Assert.AreEqual("demo", System.Configuration.ConfigurationManager.AppSettings["AutoLogin"]);
         }
     }
 }

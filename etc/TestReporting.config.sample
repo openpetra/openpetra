@@ -19,7 +19,7 @@
 	</application>
   </system.runtime.remoting>
   <appSettings>
-	<add key="Petra.PathTemp" value="c:\tmp" />
+	<add key="OpenPetra.PathTemp" value="c:\tmp" />
 	<add key="Reporting.PathReportSettings" value="U:\openpetraorg\csharp\ICT\XmlReports\Settings" />
 	<add key="UseWindowsUserID" value="true" />
 	<add key="DelayedDataLoading" value="true" />
