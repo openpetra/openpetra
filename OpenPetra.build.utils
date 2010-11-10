@@ -300,7 +300,16 @@
 		}
         return versionnumbers[0] + "." + versionnumbers[1] + "." + versionnumbers[2] + "-" + versionnumbers[3];
 	}
-	
+
+    [Function("GetReleaseIDFromVersionTxt")]
+    public static string GetReleaseIDFromVersionTxt(string APath)
+    {
+        StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "patches" + Path.DirectorySeparatorChar + "version.txt");
+        string version = sr.ReadLine().Replace("-", ".");
+        sr.Close();
+        return version;
+    }
+
     [Function("GetMainVersionWithoutBuildNr")]
     public static string GetMainVersionWithoutBuildNr(string AReleaseVersion)
     {
