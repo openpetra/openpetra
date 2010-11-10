@@ -37,10 +37,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TUC_GLAttributes
     {
         private Int32 FLedgerNumber = -1;
+        /// <summary>
+        /// for fast init of the ledger number
+        /// </summary>
+        public int LedgerNumber {
+            get
+            {
+                return FLedgerNumber;
+            }
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
         private GLSetupTDS FCacheDS = null;
+
+        /// <summary>
+        /// for use of Analysis tables in other classes
+        /// </summary>
+        public GLSetupTDS CacheDS {
+            get
+            {
+                checkFCacheInitialised(); return FCacheDS;
+            }
+        }
         private void InitializeManualCode()
         {
             this.cmbDetailAnalysisAttributeValue.DropDown += new System.EventHandler(this.DropDown);
@@ -151,6 +174,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtJournalNumber.Text = FJournalNumber.ToString();
             txtTransactionNumber.Text = FTransactionNumber.ToString();
 
+
+            checkFCacheInitialised();
+        }
+
+        void checkFCacheInitialised()
+        {
             if ((FCacheDS == null) && (FLedgerNumber >= 0))
             {
                 FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);

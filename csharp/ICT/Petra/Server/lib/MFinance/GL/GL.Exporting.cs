@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (i <= anaView.Count)
                 {
-                    ATransAnalAttribRow ar = (ATransAnalAttribRow)anaView[i-1].Row;
+                    ATransAnalAttribRow ar = (ATransAnalAttribRow)anaView[i - 1].Row;
                     WriteStringQuoted(ar.AnalysisTypeCode, false);
                     WriteStringQuoted(ar.AnalysisAttributeValue, (i == maxNumValuesExport));
                 }

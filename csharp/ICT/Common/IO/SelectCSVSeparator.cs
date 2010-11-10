@@ -128,6 +128,7 @@ namespace Ict.Common.IO
                     FCSVRows.Add(reader.ReadLine());
                 }
 
+                reader.Close();
                 RbtCheckedChanged(null, null);
             }
         }
