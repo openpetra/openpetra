@@ -1,0 +1,42 @@
+RootNode:
+    BaseClass: Dummy
+    FormTitle: Application form
+    FormType: SubmitForm
+    Template: assistantForm
+    WindowWidth: 550
+    FormFrame: true
+    FormHeader: false
+    Controls:
+        pnlContent:
+            Controls: [aspWelcome, aspPage1, aspPage2]
+
+        # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
+        aspWelcome:
+            Label: Welcome
+            Controls: [lblWelcome, lblWelcome2]
+        lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
+        lblWelcome2: {Label="Please click on &quot;next&quot; to start your application!"}
+        aspPage1:
+            Label: "Address Details"
+            Controls:
+                Row0: [txtFirstName]
+                Row0b: [txtLastName]
+                Row1: [txtStreet]
+                Row2: [txtPostcode, txtCity]
+                Row4: [txtPhone]
+                Row5: [txtMobile]
+                Row6: [txtEmail]
+        aspPage2:
+            Label: "Other Details"
+            Controls: [grpOtherDetails]
+        grpOtherDetails:
+            Label: Personal Details
+            Controls:
+                Row7: [dtpDateOfBirth]
+                Row8: [rgrGender]
+                #Row9: [uplImage]
+                Row10: [txtExistingPartnerKey]
+                Row11: [txtGroupWish]
+        txtEmail: {vtype=email}
+        rgrGender:
+            OptionalValues: [male, female]
