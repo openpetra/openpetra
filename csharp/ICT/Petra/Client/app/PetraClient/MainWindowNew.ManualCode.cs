@@ -31,6 +31,7 @@ using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -45,7 +46,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // leave out 'Revision' and 'Build'
             this.Text = "OpenPetra.org " +
-                        System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);
+                        (new Version(TClientInfo.ClientAssemblyVersion)).ToString(3);
         }
 
         private void RunOnceOnActivationManual()

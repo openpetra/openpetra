@@ -6,6 +6,7 @@ INSERT INTO s_file(s_file_name_c) VALUES ('');
 
 -- load base data
 COPY p_location_type FROM '{#ABSOLUTEBASEDATAPATH}/p_location_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY u_unit_type FROM '{#ABSOLUTEBASEDATAPATH}/u_unit_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_international_postal_type FROM '{#ABSOLUTEBASEDATAPATH}/p_international_postal_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_country FROM '{#ABSOLUTEBASEDATAPATH}/p_country.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_language FROM '{#ABSOLUTEBASEDATAPATH}/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

@@ -94,10 +94,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
       this.txtDetailLastName.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+      FMainDS = new Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS();
       FPetraUtilsObject.SetStatusBarText(txtDetailUserId, Catalog.GetString("Enter the User ID"));
       FPetraUtilsObject.SetStatusBarText(txtDetailFirstName, Catalog.GetString("Enter the Personal Name"));
       FPetraUtilsObject.SetStatusBarText(txtDetailLastName, Catalog.GetString("Enter the Family Name"));
-      FMainDS = new Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS();
       InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("User ID", FMainDS.SUser.ColumnUserId);

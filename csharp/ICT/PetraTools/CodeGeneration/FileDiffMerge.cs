@@ -354,6 +354,20 @@ namespace Ict.Tools.CodeGeneration
                     FirstDifferentLineNumber++;
                 }
 
+                // check if there is an occurance of manual code, otherwise just overwrite the file
+                int SearchManualCode = FirstDifferentLineNumber;
+
+                while (SearchManualCode < sourceLines.Length && !sourceLines[SearchManualCode].Trim().StartsWith("#region ManualCode"))
+                {
+                    SearchManualCode++;
+                }
+
+                if (SearchManualCode == sourceLines.Length)
+                {
+                    File.WriteAllLines(ADestinationFilename, ANewLines);
+                    return true;
+                }
+
                 // the order of calculation hashes is important to keep commmented lines commented
                 Int32[] file1Indexes = TFileDiffMerge.CalculateHashes(sourceLines, FirstDifferentLineNumber, ref hashes, ref origLines, true);
                 Int32[] file2Indexes = TFileDiffMerge.CalculateHashes(ANewLines, FirstDifferentLineNumber, ref hashes, ref origLines, false);

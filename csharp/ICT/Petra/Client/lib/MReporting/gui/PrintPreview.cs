@@ -597,6 +597,17 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        private void TxtOutputKeyPress(Object ASender, KeyPressEventArgs e)
+        {
+            // catch Ctrl A and select all text in the text box
+            if ((System.Windows.Forms.Control.ModifierKeys == Keys.Control)
+                && (e.KeyChar == 1))
+            {
+                txtOutput.SelectAll();
+                e.Handled = true;
+            }
+        }
+
         #region interface implementation
 
         /// <summary>

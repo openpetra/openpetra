@@ -143,6 +143,17 @@ namespace Ict.Petra.Server.MFinance.GL
                     Transaction);
             }
 
+            // load the atransanalattrib
+            foreach (ATransactionRow trans in ADataSet.ATransaction.Rows)
+            {
+                ATransAnalAttribAccess.LoadViaATransaction(ADataSet,
+                    trans.LedgerNumber,
+                    trans.BatchNumber,
+                    trans.JournalNumber,
+                    trans.TransactionNumber,
+                    Transaction);
+            }
+
             // get all accounts that are referenced by all transactions of this batch
             string AccountTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(AAccountTable.TableId);
             string TransactionTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(ATransactionTable.TableId);
@@ -357,6 +368,117 @@ namespace Ict.Petra.Server.MFinance.GL
                                 String.Format(Catalog.GetString("Transaction {0} in Journal {1} has invalid base transaction amount of 0."),
                                     transaction.TransactionNumber, transaction.JournalNumber),
                                 TResultSeverity.Resv_Critical));
+                    }
+                }
+            }
+
+            return !AVerifications.HasCriticalError();
+        }
+
+        /// <summary>
+        /// validate the attributes of the tarnsactions
+        /// some things are even modified, eg. batch period etc from date effective
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        private static bool ValidateAnalysisAttributes(ref GLBatchTDS ADataSet,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+            // fetch all the analysis tables
+
+            GLSetupTDS analysisDS = new GLSetupTDS();
+            AAnalysisTypeAccess.LoadAll(analysisDS, null);
+            AFreeformAnalysisAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
+            AAnalysisAttributeAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
+
+            foreach (AJournalRow journal in ADataSet.AJournal.Rows)
+            {
+                if (journal.BatchNumber.Equals(ABatchNumber))
+                {
+                    DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
+                    TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+
+                    foreach (DataRowView transRowView in TransactionsOfJournalView)
+                    {
+                        ATransactionRow trans = (ATransactionRow)transRowView.Row;
+                        // 1. check that all atransanalattrib records are there for all analattributes entries
+                        DataView ANView = analysisDS.AAnalysisAttribute.DefaultView;
+                        ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
+                            AAnalysisAttributeTable.GetAccountCodeDBName(),
+                            trans.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
+                        int i = 0;
+
+                        while (i < ANView.Count)
+                        {
+                            AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
+
+
+                            ATransAnalAttribRow aTransAttribRow =
+                                (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
+                                                                                                        trans.JournalNumber,
+                                                                                                        trans.TransactionNumber,
+                                                                                                        attributeRow.AnalysisTypeCode });
+
+                            if (aTransAttribRow == null)
+                            {
+                                AVerifications.Add(new TVerificationResult(
+                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                        String.Format(Catalog.GetString(
+                                                "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
+                                            trans.JournalNumber,
+                                            trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                            else
+                            {
+                                String v = aTransAttribRow.AnalysisAttributeValue;
+
+                                if ((v == null) || (v.Length == 0))
+                                {
+                                    AVerifications.Add(new TVerificationResult(
+                                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                            String.Format(Catalog.GetString("Missing values at journal #{0} transaction #{1}  and TypeCode {2}"),
+                                                trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                            TResultSeverity.Resv_Critical));
+                                }
+                                else
+                                {
+                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(
+                                        new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
+
+                                    if (afaRow == null)
+                                    {
+                                        // this would cause a constraint error and is only possible in a development/sqlite environment
+                                        AVerifications.Add(new TVerificationResult(
+                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                                String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
+                                                    trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                TResultSeverity.Resv_Critical));
+                                    }
+                                    else
+                                    {
+                                        if (!afaRow.Active)
+                                        {
+                                            AVerifications.Add(new TVerificationResult(
+                                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
+                                                        ALedgerNumber),
+                                                    String.Format(Catalog.GetString(
+                                                            "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
+                                                        trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
+                                    }
+                                }
+                            }
+
+                            i++;
+                        }
                     }
                 }
             }
@@ -969,10 +1091,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 return false;
             }
 
-            // TODO: analysis attributes???
-
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
             if (!ValidateBatchAndTransactions(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            if (!ValidateAnalysisAttributes(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }

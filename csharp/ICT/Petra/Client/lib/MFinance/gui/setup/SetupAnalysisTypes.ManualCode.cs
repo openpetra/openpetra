@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
+
+                Ict.Common.Data.TTypedDataTable TypedTable;
+                TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+                FMainDS.AAnalysisType.Merge(TypedTable);
+
                 ucoValues.LedgerNumber = value;
                 ucoValues.LoadValues(FLedgerNumber);
             }
@@ -78,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref ASubmitChanges, out AVerificationResult);
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)

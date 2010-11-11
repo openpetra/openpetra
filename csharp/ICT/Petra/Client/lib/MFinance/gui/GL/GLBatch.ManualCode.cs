@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
+            this.tpgAttributes.Enabled = false;
         }
 
         /// <summary>
@@ -60,6 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = true;
             DisableTransactions();
+            DisableAttributes();
             this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
 
@@ -76,11 +78,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// activate the attributes tab and load the attributes of the transaction
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        {
+            this.tpgAttributes.Enabled = true;
+            this.ucoAttributes.LoadAttributes(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber);
+        }
+
+        /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
         public void DisableTransactions()
         {
             this.tpgTransactions.Enabled = false;
+        }
+
+        /// <summary>
+        /// disable the attributes tab if we have no active transactions
+        /// </summary>
+        public void DisableAttributes()
+        {
+            this.tpgAttributes.Enabled = false;
         }
 
         /// this window contains 3 tabs
@@ -144,6 +167,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TUC_GLTransactions GetTransactionsControl()
         {
             return ucoTransactions;
+        }
+
+        /// <summary>
+        /// directly access the attributes control
+        /// </summary>
+        public TUC_GLAttributes GetAttributesControl()
+        {
+            return ucoAttributes;
         }
     }
 }

@@ -46,7 +46,7 @@ RootNode:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
-        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList}
+        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative: {Label=Narrative}
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date}

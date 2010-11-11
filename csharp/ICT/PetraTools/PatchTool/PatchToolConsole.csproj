@@ -20,7 +20,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
     <IntermediateOutputPath>..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -47,6 +47,9 @@
     </Reference>
     <Reference Include="GNU.Gettext">
       <HintPath>..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\Common\_bin\Debug\Ict.Common.DB.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

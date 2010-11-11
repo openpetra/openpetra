@@ -60,10 +60,10 @@ class Program
             Catalog.Init("de-DE");
             Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
             Console.WriteLine(Catalog.GetString("Hello World!"));
-            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
             Catalog.Init("en-GB");
             Console.WriteLine(Catalog.GetString("Hello World!"));
-            Console.WriteLine(Catalog.GetString("Test for two lines\n" +"second line"));
+            Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
         }
         catch (Exception e)
         {

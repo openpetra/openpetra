@@ -17,7 +17,26 @@
     <property name="TestReportingConfigFile" value="${script::PickConfigFile(TestReportingConfigFile)}"/>
     <property name="TestClientConfigFile" value="${script::PickConfigFile(TestClientConfigFile)}"/>
 
+    <property name="Server.Port" value="9000" unless="${property::exists('Server.Port')}"/>
+
+    <target name="updateServerConfigFile">
+        <property name="ToReplace" value="RegEx:port=&quot;.*?&quot;"/>
+        <property name="NewValue" value="port=&quot;${Server.Port}&quot;"/>
+        <property name="temp" value="${script::ReplaceInFile(ServerConfigFile, ToReplace, NewValue)}"/>
+        <property name="ToReplace" value="RegEx:IPBasePort&quot; value=&quot;.*?&quot;"/>
+        <property name="NewValue" value="IPBasePort&quot; value=&quot;${Server.Port}&quot;"/>
+        <property name="temp" value="${script::ReplaceInFile(ServerConfigFile, ToReplace, NewValue)}"/>
+        <property name="ToReplace" value="RegEx:PostgreSQLDatabaseName&quot; value = &quot;.*?&quot;"/>
+        <property name="NewValue" value="PostgreSQLDatabaseName&quot; value = &quot;${DBMS.DBName}&quot;"/>
+        <property name="temp" value="${script::ReplaceInFile(ServerConfigFile, ToReplace, NewValue)}"/>
+    </target>
+
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
+        <call target="updateServerConfigFile"/>
+        
+        <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
+            tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/version.txt" overwrite="true"/>
+
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}"
@@ -43,6 +62,13 @@
     </target>
 
     <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
+        <property name="ToReplace" value="RegEx:localhost:.*?/Clientmanager"/>
+        <property name="NewValue" value="localhost:${Server.Port}/Clientmanager"/>
+        <property name="temp" value="${script::ReplaceInFile(ClientConfigFile, ToReplace, NewValue)}"/>
+
+        <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
+            tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/version.txt" overwrite="true"/>
+
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}"
@@ -66,6 +92,10 @@
     </target>
 
     <target name="stopPetraServer" depends="" description="stop the local Petra Server">
+        <property name="ToReplace" value="RegEx:localhost:.*?/Servermanager"/>
+        <property name="NewValue" value="localhost:${Server.Port}/Servermanager"/>
+        <property name="temp" value="${script::ReplaceInFile(ServerAdminConfigFile, ToReplace, NewValue)}"/>
+
         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
             <exec program="mono" 
                     workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/ServerAdmin/_bin/${Output.dir}"
@@ -83,7 +113,19 @@
                     commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
         </if>
     </target>
-        
+
+    <target name="patchDatabase" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
+
+        <if test="${DBMS.Type=='sqlite'}">
+            <fail message="patchDatabase does not support sqlite. please use postgresql or mysql. otherwise please run nant resetDatabase"/>
+        </if>
+
+        <call target="updateServerConfigFile"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" 
+            commandline="-action:patchDatabase -C:${ServerConfigFile} -DBPatches.Path:${OpenPetraRoot.dir}/db/patches -Server.LogFile:${Tmp.dir}/dbpatch.log -OpenPetra.PathTemp:${Tmp.dir}"
+            failonerror="true"/>
+    </target>
+
     <target name="startXSPServer">
         <exec program="cmd.exe" 
                 workingdir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/app/PetraClientAsp"

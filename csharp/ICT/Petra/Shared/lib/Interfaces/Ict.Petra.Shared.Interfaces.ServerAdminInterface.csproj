@@ -20,7 +20,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE; DEBUGMODE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
     <IntermediateOutputPath>..\..\_bin\Server_ServerAdmin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

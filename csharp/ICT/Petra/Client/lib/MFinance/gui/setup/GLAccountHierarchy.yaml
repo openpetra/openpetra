@@ -36,6 +36,7 @@ RootNode:
                 Row5: [cmbDetailValidCcCombo]
                 Row6: [chkDetailBankAccountFlag]
                 Row7: [chkDetailAccountActiveFlag]
+                Row8: [ucoAccountAnalysisAttributes]
         txtDetailAccountCode:
         cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
@@ -52,6 +53,9 @@ RootNode:
         chkDetailBankAccountFlag: {Label=Bank Account}
         # TODO: system account, standard account
         chkDetailAccountActiveFlag: {Label=Active}
+        ucoAccountAnalysisAttributes:
+            Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
+            Dock: Fill
     Menu:
         mniAccounts:
             mniAddNewAccount:

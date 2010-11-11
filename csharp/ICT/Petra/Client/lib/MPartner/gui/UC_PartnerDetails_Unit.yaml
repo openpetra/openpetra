@@ -26,14 +26,14 @@ RootNode:
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
                 Row0: [cmbCountryCode]
-                Row1: [cmbUnitType]
+                Row1: [cmbUnitTypeCode]
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
             ColWidths: [0=Fixed:120]
             
         cmbCountryCode: {List=CountryList}
         
-        cmbUnitType: {List=UnitTypeList}
+        cmbUnitTypeCode: {List=UnitTypeList}
         
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         

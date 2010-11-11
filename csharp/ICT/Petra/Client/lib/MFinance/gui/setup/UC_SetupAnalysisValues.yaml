@@ -17,7 +17,7 @@ RootNode:
         pnlGrid:
             Height: 150
             Dock: Fill
-            Controls: [txtDetailLedgerNumber,grdDetails, pnlButtons]
+            Controls: [txtHeaderLedgerNumber,grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
@@ -37,7 +37,7 @@ RootNode:
                 Row1: [chkDetailActive]
         txtDetailAnalysisValue: {Label=Value, Width=400}
         chkDetailActive: {Label=Active}
-        txtDetailLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}
+        txtHeaderLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}
     Menu:
         mniAnalysisValues:
     Toolbar:

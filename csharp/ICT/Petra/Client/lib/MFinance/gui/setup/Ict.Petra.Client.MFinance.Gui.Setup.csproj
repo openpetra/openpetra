@@ -29,7 +29,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;DEBUGMODE;SHOWCHANGES</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
     <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -132,6 +132,13 @@
     <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_AccountAnalysisAttributes.cs" />
+    <Compile Include="UC_AccountAnalysisAttributes.Designer.cs">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_AccountAnalysisAttributes.ManualCode.cs">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_SetupAnalysisValues.cs" />
     <Compile Include="UC_SetupAnalysisValues.Designer.cs">
       <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
@@ -156,6 +163,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupDailyExchangeRate.resx">
       <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_AccountAnalysisAttributes.resx">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_SetupAnalysisValues.resx">
       <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>

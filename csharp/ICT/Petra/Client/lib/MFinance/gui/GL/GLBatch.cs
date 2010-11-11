@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.tpgBatches.Text = Catalog.GetString("Batches");
       this.tpgJournals.Text = Catalog.GetString("Journals");
       this.tpgTransactions.Text = Catalog.GetString("Transactions");
+      this.tpgAttributes.Text = Catalog.GetString("Attributes");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -107,6 +108,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       ucoTransactions.PetraUtilsObject = FPetraUtilsObject;
       ucoTransactions.MainDS = FMainDS;
       ucoTransactions.InitUserControl();
+      ucoAttributes.PetraUtilsObject = FPetraUtilsObject;
+      ucoAttributes.MainDS = FMainDS;
+      ucoAttributes.InitUserControl();
       InitializeManualCode();
       tabGLBatch.SelectedIndex = 0;
       TabSelectionChanged(null, null);
@@ -147,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         ucoBatches.GetDataFromControls();
         ucoJournals.GetDataFromControls();
         ucoTransactions.GetDataFromControls();
+        ucoAttributes.GetDataFromControls();
     }
 
 #region Implement interface functions

@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ImportBatches()
         {
+            GLSetupTDS FCacheDS = ((TFrmGLBatch)ParentForm).GetAttributesControl().CacheDS;
             OpenFileDialog dialog = new OpenFileDialog();
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
@@ -193,7 +194,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                         NewBatch.BatchCreditTotal += CreditAmount;
                                     }
 
-                                    // TODO analysis attributes
+                                    for (int i = 0; i < 10; i++)
+                                    {
+                                        Message = String.Format(Catalog.GetString("Parsing Analysis Type/Value Pair #{0}. "), i);
+                                        String type = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                        String v = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+
+                                        //these data is only be imported if all corresponding values are there in the
+                                        if ((type.Length > 0) && (v.Length > 0))
+                                        {
+                                            DataRow atrow = FCacheDS.AAnalysisType.Rows.Find(new Object[] { type });
+                                            DataRow afrow = FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, v });
+                                            DataRow anrow =
+                                                FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
+                                                                                                     NewTransaction.AccountCode,
+                                                                                                     type });
+
+                                            if ((atrow != null) && (afrow != null) && (anrow != null))
+                                            {
+                                                ATransAnalAttribRow NewTransAnalAttrib = FMainDS.ATransAnalAttrib.NewRowTyped(true);
+                                                ((TFrmGLBatch)ParentForm).GetAttributesControl().NewRowManual(ref NewTransAnalAttrib, NewTransaction);
+                                                NewTransAnalAttrib.AnalysisTypeCode = type;
+                                                NewTransAnalAttrib.AnalysisAttributeValue = v;
+                                                NewTransAnalAttrib.AccountCode = NewTransaction.AccountCode;
+                                                FMainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
+                                            }
+                                        }
+                                    }
 
                                     // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
                                 }
@@ -206,12 +233,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         sr.Close();
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         MessageBox.Show(
                             String.Format(Catalog.GetString("There is a problem parsing the file in row {0}. "), RowNumber) +
                             Environment.NewLine +
-                            Message,
+                            Message + " " + e,
                             Catalog.GetString("Error"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         sr.Close();

@@ -22,7 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Reflection;
+using System.IO;
 using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -47,7 +50,8 @@ namespace Ict.Petra.Client.App.Core
         {
             Networking.DetermineNetworkConfig(out UClientComputerName, out UClientIPAddress);
             UClientOS = Utilities.DetermineExecutingOS();
-            UClientAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(3);              // leave out 'Build'
+
+            InitVersion();
 
             if (TClientSettings.RunAsRemote)
             {
@@ -63,6 +67,35 @@ namespace Ict.Petra.Client.App.Core
                 {
                     UInstallationKind = "Network Client";
                 }
+            }
+        }
+
+        /// find out the current version of the client
+        public static void InitVersion()
+        {
+            Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
+
+            if (entryAssembly == null)
+            {
+                // this is when the client is run with NUnit
+                // assume the version is 0.9.0 for the moment
+                entryAssembly = System.Reflection.Assembly.GetAssembly(typeof(TConnectionManagement));
+            }
+
+            UClientAssemblyVersion = entryAssembly.GetName().Version.ToString();
+
+            // if there is a version.txt in the bin directory, use that.
+            // this allows better debugging etc
+
+            string VersionTxtFile = Path.GetDirectoryName(entryAssembly.CodeBase.Replace("file:///", "")) +
+                                    Path.DirectorySeparatorChar + "version.txt";
+
+            if (File.Exists(VersionTxtFile))
+            {
+                StreamReader srVersion = new StreamReader(VersionTxtFile);
+                TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
+                UClientAssemblyVersion = v.ToString();
+                srVersion.Close();
             }
         }
 

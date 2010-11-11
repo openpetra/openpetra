@@ -144,7 +144,7 @@ namespace Ict.Tools.PatchTool
                             TempPath,
                             "",
                             "",
-                            appOpts.GetValue("OpenPetra.Path.Patches"),
+                            appOpts.GetValue("DBPatches.Path"),
                             "");
 
                         patchTools.RunDBPatches();

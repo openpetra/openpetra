@@ -17,6 +17,7 @@
         <Table sqltable="a_account_hierarchy_detail"/>
         <Table sqltable="a_general_ledger_master"/>
         <Table sqltable="a_general_ledger_master_period"/>
+        <Table sqltable="a_trans_anal_attrib" />	
     </DataSet> 
 
     <DataSet name="GLSetupTDS">

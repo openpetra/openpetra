@@ -229,6 +229,18 @@ public class TFixProjectReferences : TCSProjTools
                     child.AppendChild(targetPlatform);
                 }
 
+                if (TXMLParser.GetAttribute(child, "Condition") == " '$(Configuration)' == 'Debug' ")
+                {
+                    XmlNode constants = TXMLParser.GetChild(child, "DefineConstants");
+
+                    if (constants == null)
+                    {
+                        constants = doc.CreateElement("DefineConstants", xmlns);
+                    }
+
+                    constants.InnerText = "DEBUG;TRACE;DEBUGMODE";
+                }
+
                 firstPropertyGroup = false;
             }
 

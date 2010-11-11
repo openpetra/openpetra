@@ -709,7 +709,7 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                LogExceptionAndThrow(exp, ACommandText, "Error creating Command. The command was: ");
+                LogExceptionAndThrow(exp, ACommandText, AParametersArray, "Error creating Command. The command was: ");
 
                 throw;
             }
@@ -900,7 +900,7 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                LogExceptionAndThrow(exp, ASqlStatement, "Error fetching records.");
+                LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
 
 #if DEBUGMODE
@@ -1125,7 +1125,7 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                LogExceptionAndThrow(exp, ASqlStatement, "Error fetching records.");
+                LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
 
 #if DEBUGMODE
@@ -1165,7 +1165,7 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                LogExceptionAndThrow(exp, ASqlStatement, "Error fetching records.");
+                LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
 
             return ATypedDataTable;
@@ -1681,7 +1681,7 @@ namespace Ict.Common.DB
                 }
                 catch (Exception exp)
                 {
-                    LogExceptionAndThrow(exp, ASqlStatement, "Error executing non-query SQL statement.");
+                    LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");
                 }
             }
             else
@@ -1830,6 +1830,7 @@ namespace Ict.Common.DB
                     RollbackTransaction();
 
                     LogException(exp, CurrentBatchEntrySQLStatement,
+                        null,
                         "Exception occured while executing AStatementHashTable entry '" +
                         CurrentBatchEntryKey + "' (#" + SqlCommandNumber.ToString() +
                         ")! (The SQL Statement is a non-query SQL statement.)  All SQL statements executed so far were rolled back.");
@@ -2040,7 +2041,7 @@ namespace Ict.Common.DB
                 }
                 catch (Exception exp)
                 {
-                    LogExceptionAndThrow(exp, ASqlStatement, "Error executing scalar SQL statement.");
+                    LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                 }
 
 #if DEBUGMODE
@@ -2320,7 +2321,7 @@ namespace Ict.Common.DB
         /// (will be logged). Can be empty.</param>
         private void LogExceptionAndThrow(Exception AException, string AContext)
         {
-            LogException(AException, "", AContext, true);
+            LogException(AException, "", null, AContext, true);
         }
 
         /// <summary>
@@ -2330,11 +2331,12 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AException">Exception that should be logged.</param>
         /// <param name="ASqlStatement">SQL Statement that caused the Exception (will be logged).</param>
+        /// <param name="AParametersArray">the parameters for the query</param>
         /// <param name="AContext">Context where the Exception happened
         /// (will be logged). Can be empty.</param>
-        private void LogExceptionAndThrow(Exception AException, string ASqlStatement, string AContext)
+        private void LogExceptionAndThrow(Exception AException, string ASqlStatement, DbParameter[] AParametersArray, string AContext)
         {
-            LogException(AException, ASqlStatement, AContext, true);
+            LogException(AException, ASqlStatement, AParametersArray, AContext, true);
         }
 
         /// <summary>
@@ -2347,7 +2349,7 @@ namespace Ict.Common.DB
         /// (will be logged). Can be empty.</param>
         private void LogException(Exception AException, string AContext)
         {
-            LogException(AException, "", AContext, false);
+            LogException(AException, "", null, AContext, false);
         }
 
         /// <summary>
@@ -2357,11 +2359,12 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AException">Exception that should be logged.</param>
         /// <param name="ASqlStatement">SQL Statement that caused the Exception (will be logged).</param>
+        /// <param name="AParametersArray">the parameters for the query</param>
         /// <param name="AContext">Context where the Exception happened
         /// (will be logged). Can be empty.</param>
-        private void LogException(Exception AException, string ASqlStatement, string AContext)
+        private void LogException(Exception AException, string ASqlStatement, DbParameter[] AParametersArray, string AContext)
         {
-            LogException(AException, ASqlStatement, AContext, false);
+            LogException(AException, ASqlStatement, AParametersArray, AContext, false);
         }
 
         /// <summary>
@@ -2371,13 +2374,18 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AException">Exception that should be logged.</param>
         /// <param name="ASqlStatement">SQL Statement that caused the Exception (will be logged).</param>
+        /// <param name="AParametersArray">the parameters for the query</param>
         /// <param name="AContext">Context where the Exception happened
         /// (will be logged). Can be empty.</param>
         /// <param name="AThrowExceptionAfterLogging">If set to true, the Exception that is passed in in Argument
         /// <paramref name="AException" /> will be re-thrown.</param>
         /// <exception cref="Exception">Re-throws the Exception that is passed in in Argument
         /// <paramref name="AException" /> if <paramref name="AThrowExceptionAfterLogging" /> is set to true.</exception>
-        private void LogException(Exception AException, string ASqlStatement, string AContext, bool AThrowExceptionAfterLogging)
+        private void LogException(Exception AException,
+            string ASqlStatement,
+            DbParameter[] AParametersArray,
+            string AContext,
+            bool AThrowExceptionAfterLogging)
         {
 #if DEBUGMODE
             string ErrorMessage = "";
@@ -2389,6 +2397,32 @@ namespace Ict.Common.DB
 
                 FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
                                         ASqlStatement + Environment.NewLine;
+
+                if (AParametersArray != null)
+                {
+                    Int32 Counter = 1;
+
+                    foreach (OdbcParameter Parameter in AParametersArray)
+                    {
+                        if (Parameter.Value == System.DBNull.Value)
+                        {
+                            FormattedSqlStatement +=
+                                "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
+                                Environment.NewLine;
+                        }
+                        else
+                        {
+                            FormattedSqlStatement +=
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.Value.ToString() + ' ' + Parameter.Value.GetType().ToString() +
+                                ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString() +
+                                Environment.NewLine;
+                        }
+
+                        Counter = Counter + 1;
+                    }
+                }
             }
 
             FDataBaseRDBMS.LogException(AException, ref ErrorMessage);

@@ -51,8 +51,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
-
+                ucoAccountAnalysisAttributes.LedgerNumber = FLedgerNumber;
+                FMainDS.Clear();
+                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
                 PopulateTreeView();
             }
         }
@@ -161,6 +162,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                                                                          ReportingAccountCode }));
         }
 
+        private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
+        {
+            ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
+            ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
+        }
+
         private void AddNewAccount(Object sender, EventArgs e)
         {
             if (FCurrentNode == null)
@@ -259,7 +266,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 // refresh the screen
-                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber);
+                FMainDS.Clear();
+                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
                 PopulateTreeView();
 
                 MessageBox.Show("Import of new Account Hierarchy has been successful",

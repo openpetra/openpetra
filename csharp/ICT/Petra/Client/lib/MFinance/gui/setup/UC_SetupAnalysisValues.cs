@@ -63,14 +63,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.lblDetailLedgerNumber.Text = Catalog.GetString("Values for this Type and Ledger Number:");
+      this.lblHeaderLedgerNumber.Text = Catalog.GetString("Values for this Type and Ledger Number:");
       this.btnNew.Text = Catalog.GetString("&New");
       this.btnDelete.Text = Catalog.GetString("&Delete");
       this.lblDetailAnalysisValue.Text = Catalog.GetString("Value:");
       this.lblDetailActive.Text = Catalog.GetString("Active:");
       #endregion
 
-      this.txtDetailLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtHeaderLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAnalysisValue.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
@@ -95,7 +95,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-      FPetraUtilsObject.SetStatusBarText(txtDetailLedgerNumber, Catalog.GetString("Ledger Number "));
       FPetraUtilsObject.SetStatusBarText(txtDetailAnalysisValue, Catalog.GetString("Value of analysis code"));
       FPetraUtilsObject.SetStatusBarText(chkDetailActive, Catalog.GetString("Select if analysis attribute value can be used"));
       grdDetails.Columns.Clear();
@@ -198,8 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailLedgerNumber.Text = ARow.LedgerNumber.ToString();
-            txtDetailLedgerNumber.ReadOnly = (ARow.RowState != DataRowState.Added);
             txtDetailAnalysisValue.Text = ARow.AnalysisValue;
             txtDetailAnalysisValue.ReadOnly = (ARow.RowState != DataRowState.Added);
             if (ARow.IsActiveNull())

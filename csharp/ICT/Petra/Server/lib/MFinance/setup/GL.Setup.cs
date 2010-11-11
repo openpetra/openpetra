@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.App.ClientDomain;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -67,6 +68,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             // set Account BankAccountFlag if there exists a property
             foreach (AAccountPropertyRow accProp in MainDS.AAccountProperty.Rows)
@@ -177,7 +179,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
             }
 
-            return GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountList.ToString());
+            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
+
+            return returnValue;
         }
 
         /// <summary>
@@ -966,12 +975,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return myAT;
         }
 
+        /// <summary>
+        /// Check if a value in  AFREEFORMANALSYSIS cand be deleted (count the references in ATRansANALATTRIB)
+        /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
         {
             return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
         }
 
+        /// <summary>
+        /// Check if a TypeCode in  AnalysisType can be deleted (count the references in ATRansAnalysisAtrributes)
+        /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAAnalysisType(String ATypeCode)
         {

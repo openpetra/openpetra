@@ -95,7 +95,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 // next 6 characters: YYMMDD
                 // next 3 characters: currency
                 // last characters: balance with comma for decimal point
-                currentStatement.currency = swiftData.Substring(6, 3);
+                currentStatement.currency = swiftData.Substring(7, 3);
                 double balance = DebitCreditIndicator * Convert.ToDouble(swiftData.Substring(10).Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 

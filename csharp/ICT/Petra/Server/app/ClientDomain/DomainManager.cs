@@ -394,7 +394,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
                 IServerChannelSinkProvider EncryptionSink = TCPSink;
 
-                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile", "").Length > 0)
+                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
                 {
                     EncryptionSink = new EncryptionServerSinkProvider();
                     EncryptionSink.Next = TCPSink;
@@ -638,6 +638,12 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void EstablishDBConnection()
         {
             DomainManager.ULogger = new TLogging(TSrvSetting.ServerLogFile);
+
+            // TODO load culture from config file etc
+            Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
+
+            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+
 #if  TESTMODE_WITHOUT_ODBC
 #else
 #if DEBUGMODE

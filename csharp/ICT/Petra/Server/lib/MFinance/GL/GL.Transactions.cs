@@ -241,6 +241,43 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of attributes for the given transaction (identified by ledger,batch,Journal and Transactionnumber)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransAnalAttribAccess.LoadViaATransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads some necessary analysis attributes tables for the given ledger number
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>GLSetupTDS</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
+        {
+            GLSetupTDS CacheDS = new GLSetupTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
+            AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+            AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return CacheDS;
+        }
+
+        /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>
         /// <param name="AInspectDS"></param>
