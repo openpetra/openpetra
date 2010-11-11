@@ -20,7 +20,6 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
 Name: {app}/bin30; permissions: users-full
-Name: {app}/bin30/locale/de/LC_MESSAGES; permissions: users-full
 Name: {app}/patches30; permissions: users-full
 Name: {app}/manuals30; permissions: users-full
 Name: {app}/resources30; permissions: users-full
@@ -40,7 +39,7 @@ Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: 
 Source: ..\..\..\csharp\ICT\Petra\Definitions\{#UINAVIGATION}; DestDir: {app}/bin30
 Source: ..\..\..\tmp\i18n\*.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {app}/reports30/Settings; Flags: recursesubdirs createallsubdirs
-Source: {#REMOTECONFIG}; DestDir: {app}/etc30/PetraClientRemote.config
+Source: {#REMOTECONFIG}; DestDir: {app}/etc30
 Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
