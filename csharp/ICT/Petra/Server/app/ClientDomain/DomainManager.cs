@@ -381,15 +381,24 @@ namespace Ict.Petra.Server.App.ClientDomain
                 // LifetimeServices.LeaseManagerPollTime := TimeSpan.FromMilliseconds(5);
                 // More sensible settings for Lifetime Services
                 // TODO 1 ochristiank cRemoting : .NET Remoting LifetimeSettings should be flexible instead hardcoded in the future!
+                try
+                {
 #if DEBUGMODE
-                LifetimeServices.LeaseTime = TimeSpan.FromSeconds(20);
-                LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(20);
-                LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(1);
+                    LifetimeServices.LeaseTime = TimeSpan.FromSeconds(20);
+                    LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(20);
+                    LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(1);
 #else
-                LifetimeServices.LeaseTime = TimeSpan.FromSeconds(60);
-                LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(60);
-                LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(5);
+                    LifetimeServices.LeaseTime = TimeSpan.FromSeconds(60);
+                    LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(60);
+                    LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(5);
 #endif
+                }
+                catch (RemotingException)
+                {
+                    // ignore System.Runtime.Remoting.RemotingException : 'LeaseTime' can only be set once within an AppDomain.
+                    // this happens in the Server NUnit test, when running several tests, therefore reconnecting with the same AppDomain.
+                }
+
                 BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
                 IServerChannelSinkProvider EncryptionSink = TCPSink;
@@ -472,6 +481,8 @@ namespace Ict.Petra.Server.App.ClientDomain
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: after UClientManagerCallForwarderRef := nil",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
+
+            ChannelServices.UnregisterChannel(FTcpChannel);
         }
 
         /// <summary>
