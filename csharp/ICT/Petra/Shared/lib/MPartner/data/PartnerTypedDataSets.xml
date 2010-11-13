@@ -23,6 +23,7 @@
           <Field sqltable="p_unit" sqlfield="p_unit_name_c"/> 
         </Table>
         <Table sqltable="p_unit"/>
+        <Table sqltable="um_unit_structure"/>
         <Table sqltable="p_organisation"/>
         <Table sqltable="p_church"/>
         <Table sqltable="p_bank"/>

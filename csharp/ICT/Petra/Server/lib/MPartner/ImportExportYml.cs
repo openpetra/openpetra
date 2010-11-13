@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     {
         static Int64 NewPartnerKey = -1;
 
-        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode)
+        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode, ref TVerificationResultCollection AVerificationResult)
         {
             XmlNode LocalNode = ACurNode;
 
@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 if (LocalNode.Name.StartsWith("PartnerGroup"))
                 {
-                    ParsePartners(ref AMainDS, LocalNode.FirstChild);
+                    ParsePartners(ref AMainDS, LocalNode.FirstChild, ref AVerificationResult);
                 }
                 else if (LocalNode.Name.StartsWith("Partner"))
                 {
@@ -76,8 +76,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     // get a new partner key
                     Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
-                    newPartner.PartnerKey = TImportExportYml.NewPartnerKey;
-                    TImportExportYml.NewPartnerKey--;
+
+                    if (TYml2Xml.HasAttribute(LocalNode, "PartnerKey"))
+                    {
+                        newPartner.PartnerKey = Convert.ToInt64(TYml2Xml.GetAttribute(LocalNode, "PartnerKey"));
+                    }
+                    else
+                    {
+                        newPartner.PartnerKey = TImportExportYml.NewPartnerKey;
+                        TImportExportYml.NewPartnerKey--;
+                    }
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
@@ -107,7 +115,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
                     {
-                        // TODO
+                        POrganisationRow OrganisationRow = AMainDS.POrganisation.NewRowTyped();
+                        OrganisationRow.PartnerKey = newPartner.PartnerKey;
+                        OrganisationRow.OrganisationName = TYml2Xml.GetAttributeRecursive(LocalNode, "Name");
+                        AMainDS.POrganisation.Rows.Add(OrganisationRow);
+
+                        newPartner.PartnerShortName = OrganisationRow.OrganisationName;
+                        newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_ORGANISATION;
+                    }
+                    else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_UNIT)
+                    {
+                        PUnitRow UnitRow = AMainDS.PUnit.NewRowTyped();
+                        UnitRow.PartnerKey = newPartner.PartnerKey;
+                        UnitRow.UnitTypeCode = TYml2Xml.GetAttributeRecursive(LocalNode, "UnitTypeCode");
+                        UnitRow.UnitName = TYml2Xml.GetAttributeRecursive(LocalNode, "Name");
+                        AMainDS.PUnit.Rows.Add(UnitRow);
+
+                        if (newPartner.PartnerKey < -1)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("Importing Unit {0}"), UnitRow.UnitName),
+                                    Catalog.GetString("You need to provide a partner key for the unit"),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
+                        UmUnitStructureRow UnitStructureRow = AMainDS.UmUnitStructure.NewRowTyped();
+
+                        UnitStructureRow.ParentUnitKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "ParentUnitKey"));
+                        UnitStructureRow.ChildUnitKey = newPartner.PartnerKey;
+
+                        AMainDS.UmUnitStructure.Rows.Add(UnitStructureRow);
+
+                        newPartner.PartnerShortName = UnitRow.UnitName;
+                        newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                     }
                     else
                     {
@@ -217,7 +257,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // advantage: can inherit some common attributes, eg. partner class, etc
 
             TImportExportYml.NewPartnerKey = -1;
-            ParsePartners(ref MainDS, root);
+            ParsePartners(ref MainDS, root, ref AVerificationResult);
 
             return MainDS;
         }

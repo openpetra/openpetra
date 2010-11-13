@@ -28,26 +28,42 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '{#RELEASEVERSION}');
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('SiteKey', 'there has to be one site key for the database', '43000000');
 
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(43000000, 'Germany'); 
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(43000000, 'Germany', 'UNIT', 'ACTIVE'); 
 INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(43000000, 'LEDGER'); 
-INSERT INTO p_unit(p_partner_key_n) VALUES(43000000); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(43000000,'Germany','F'); 
 INSERT INTO p_location(p_site_key_n, p_location_key_i, p_street_name_c, p_country_code_c) VALUES(43000000, 0, 'No valid address on file', '99');
 INSERT INTO p_partner_ledger(p_partner_key_n, p_last_partner_id_i) VALUES(43000000, 5000); 
 INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(43000000, 43000000, 0);
 
--- setup foreign ledgers
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(4000000, 'International Clearing House'); 
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1000000, 'The Organisation', 'UNIT', 'ACTIVE'); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1000000,'The Organisation','R'); 
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,1000000);
+
+-- setup special funds
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(4000000, 'International Clearing House', 'UNIT', 'ACTIVE'); 
 INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(4000000, 'LEDGER'); 
-INSERT INTO p_unit(p_partner_key_n) VALUES(4000000); 
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(35000000, 'Switzerland'); 
-INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(35000000, 'LEDGER'); 
-INSERT INTO p_unit(p_partner_key_n) VALUES(35000000); 
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(73000000, 'Kenya'); 
-INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(73000000, 'LEDGER'); 
-INSERT INTO p_unit(p_partner_key_n) VALUES(73000000); 
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(95000000, 'Global Impact Fund'); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(4000000,'International Clearing House','D');
+INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(4000000, 0, 0);
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,4000000);
+
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(95000000, 'Global Impact Fund', 'UNIT', 'ACTIVE'); 
 INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(95000000, 'LEDGER'); 
-INSERT INTO p_unit(p_partner_key_n) VALUES(95000000); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(95000000,'Global Impact Fund','D'); 
+INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(95000000, 0, 0);
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,95000000);
+
+-- setup foreign ledgers
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(35000000, 'Switzerland', 'UNIT', 'ACTIVE'); 
+INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(35000000, 'LEDGER'); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(35000000,'Switzerland','F'); 
+INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(35000000, 0, 0);
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,35000000);
+
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(73000000, 'Kenya', 'UNIT', 'ACTIVE'); 
+INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(73000000, 'LEDGER'); 
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(73000000,'Kenya','F'); 
+INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(73000000, 0, 0);
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,73000000);
 
 -- setup sample ledger
 COPY a_ledger FROM '{#ABSOLUTEBASEDATAPATH}/a_ledger.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
