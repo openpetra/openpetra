@@ -143,7 +143,7 @@
         <property name="temp" value="${script::ReplaceInFile(TestClientConfigFile, ToReplace, NewValue)}"/>
 
         <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
-            tofile="${OpenPetraRoot.dir}/csharp/ICT/Petra/Testing/_bin/${Output.dir}/version.txt" overwrite="true"/>
+            tofile="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/version.txt" overwrite="true"/>
 
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
         <call target="compileTemplate"/>
