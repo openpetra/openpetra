@@ -82,6 +82,9 @@
     <Reference Include="Ict.Petra.Client.MFinance.Gui.GL">
       <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.GL.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui.Setup">
+      <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Client.MReporting.Logic">
       <HintPath>../../../Petra/Client/_bin/Debug/Ict.Petra.Client.MReporting.Logic.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

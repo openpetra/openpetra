@@ -22,18 +22,17 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
-using System.Configuration;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using NUnit.Extensions.Forms;
 using System.IO;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.IO;
-using Ict.Testing.NUnitPetraClient;
-using Ict.Testing.NUnitForms;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitPetraClient;
+using NUnit.Extensions.Forms;
+using NUnit.Framework;
 
 namespace Tests.MFinance.GLBatches
 {
@@ -48,6 +47,11 @@ namespace Tests.MFinance.GLBatches
         /// </summary>
         public override void Setup()
         {
+            // Before Execution of any Test we should do something like
+            // nant stopPetraServer
+            // nant ResetDatabase
+            // nant startPetraServer
+            // this may take some time ....
             new TLogging("TestClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
             FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
@@ -339,6 +343,94 @@ namespace Tests.MFinance.GLBatches
             System.IO.File.Delete(TestFile + ".new");
 
             frmBatchExport.Close();
+        }
+
+        /// <summary>
+        /// simple test to create a batch and save it
+        /// </summary>
+        [Test]
+        public void TestAnalysisAttributes()
+        {
+            // At the moment the initial state is unknown so we make a relative test
+
+
+            TFrmSetupAnalysisTypes frmAnalysistypes = new TFrmSetupAnalysisTypes(IntPtr.Zero);
+
+            frmAnalysistypes.LedgerNumber = FLedgerNumber;
+            frmAnalysistypes.Show();
+            // Tests schould be repeateable but at the moment we make only a relative test
+
+            // Press the new Button for the types
+            String randomNewValueString = RandomString();
+            ButtonTester btnNewType = new ButtonTester("btnNewType");
+            btnNewType.Click();
+
+            TextBoxTester txtDetailAnalysisTypeCode = new TextBoxTester("txtDetailAnalysisTypeCode");
+            txtDetailAnalysisTypeCode.Properties.Text = randomNewValueString;
+            TextBoxTester txtDetailAnalysisTypeDescription = new TextBoxTester("txtDetailAnalysisTypeDescription");
+            txtDetailAnalysisTypeDescription.Properties.Text = "Description for " + randomNewValueString;
+
+            // Press the new Button for the values
+            ButtonTester btnNewValue = new ButtonTester("btnNew");
+            btnNewValue.Click();
+
+            TextBoxTester txtDetailAnalysisValue = new TextBoxTester("txtDetailAnalysisValue");
+            txtDetailAnalysisValue.Properties.Text = randomNewValueString + "-1";
+            btnNewValue.Click();
+
+            txtDetailAnalysisValue.Properties.Text = randomNewValueString + "-2";
+            CheckBoxTester chkDetailActive = new CheckBoxTester("chkDetailActive");
+            Assert.IsTrue(chkDetailActive.Checked, "Active not set as default!");
+            chkDetailActive.Properties.Checked = false;
+
+
+            ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            // and save everything
+            btnSave.Click();
+            // Press the delete Button for the values
+            ButtonTester btnDeleteValue = new ButtonTester("btnDelete");
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.AreEqual("Confirm Delete", tester.Title);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteValue.Click();
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.AreEqual("Confirm Delete", tester.Title);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteValue.Click();
+            // Press the delete Button for the types
+            ButtonTester btnDeleteType = new ButtonTester("btnDeleteType");
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.AreEqual("Confirm Delete", tester.Title);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteType.Click();
+            btnSave.Click();
+        }
+
+        /// <summary>
+        /// Generate a random string with 8 characters
+        /// </summary>
+        /// <returns>random string</returns>
+        public String RandomString()
+        {
+            String s = "";
+            Random random = new Random();
+
+            for (int i = 0; i < 8; i++)
+            {
+                s += Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+            }
+
+            return s;
         }
     }
 }

@@ -22,10 +22,10 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
-        btnNew:
+            Controls: [btnNewType, btnDeleteType]
+        btnNewType:
             Action: actNew
-        btnDelete:
+        btnDeleteType:
             Action: actDelete
         grdDetails:
             Dock: Fill

@@ -71,8 +71,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlButtons = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnNew = new System.Windows.Forms.Button();
-            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnNewType = new System.Windows.Forms.Button();
+            this.btnDeleteType = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailAnalysisTypeCode = new System.Windows.Forms.TextBox();
@@ -161,28 +161,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlButtons.Controls.Add(this.tableLayoutPanel2);
             //
-            // btnNew
+            // btnNewType
             //
-            this.btnNew.Location = new System.Drawing.Point(2,2);
-            this.btnNew.Name = "btnNew";
-            this.btnNew.AutoSize = true;
-            this.btnNew.Click += new System.EventHandler(this.NewRow);
-            this.btnNew.Text = "&New";
+            this.btnNewType.Location = new System.Drawing.Point(2,2);
+            this.btnNewType.Name = "btnNewType";
+            this.btnNewType.AutoSize = true;
+            this.btnNewType.Click += new System.EventHandler(this.NewRow);
+            this.btnNewType.Text = "&New";
             //
-            // btnDelete
+            // btnDeleteType
             //
-            this.btnDelete.Location = new System.Drawing.Point(2,2);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.AutoSize = true;
-            this.btnDelete.Click += new System.EventHandler(this.DeleteRow);
-            this.btnDelete.Text = "&Delete";
+            this.btnDeleteType.Location = new System.Drawing.Point(2,2);
+            this.btnDeleteType.Name = "btnDeleteType";
+            this.btnDeleteType.AutoSize = true;
+            this.btnDeleteType.Click += new System.EventHandler(this.DeleteRow);
+            this.btnDeleteType.Text = "&Delete";
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.btnNew, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.btnDelete, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.btnNewType, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnDeleteType, 0, 1);
             //
             // pnlDetails
             //
@@ -508,8 +508,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button btnNew;
-        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnNewType;
+        private System.Windows.Forms.Button btnDeleteType;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TextBox txtDetailAnalysisTypeCode;
