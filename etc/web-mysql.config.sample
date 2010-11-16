@@ -19,6 +19,7 @@
 	<add key="Server.PostgreSQLDatabaseName" value = "openpetra"/>
 	<add key="Server.PostgreSQLUserName" value = "petraserver"/>
 	<add key="Server.Credentials" value="TOBESETBYINSTALLER" />     <!-- this is the password for user petraserver for the PostgreSQL databases -->
+    <add key="AnonymousUserPasswd" value="TOBESETBYINSTALLER2" />
 
 	<add key="Reporting.PathStandardReports" value="../XmlReports" />
 	<add key="Reporting.PathCustomReports" value="../XmlReports/custom" />

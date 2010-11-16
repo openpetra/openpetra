@@ -24,6 +24,7 @@
 using System;
 using System.Web.Services;
 using System.Data;
+using System.Collections;
 using Ict.Common;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
@@ -253,6 +254,45 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
+    private string parseJSonValues(IDictionary ARoot)
+    {
+        string result = "";
+
+        foreach (string key in ARoot.Keys)
+        {
+            if (key.ToString().StartsWith("ext-comp"))
+            {
+                if (result.Length > 0)
+                {
+                    result = "," + result;
+                }
+
+                result = parseJSonValues((IDictionary)ARoot[key]) + result;
+            }
+            else
+            {
+                if (result.Length > 0)
+                {
+                    result += ",";
+                }
+
+                result += "\"" + key + "\":\"" + ARoot[key] + "\"";
+            }
+        }
+
+        return result;
+    }
+
+    /// remove ext-comp controls, for multi-page forms
+    private string RemoveContainerControls(string AJSONFormData)
+    {
+        IDictionary root = (IDictionary)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+
+        string result = "{" + parseJSonValues(root) + "}";
+
+        return result;
+    }
+
     /// <summary>
     /// import data from a web form, ie partners are entering their own data
     /// </summary>
@@ -265,7 +305,7 @@ public class TOpenPetraOrg : WebService
         // user ANONYMOUS, can only write, not read
         if (!IsUserLoggedIn())
         {
-            if (!LoginInternal("ANONYMOUS", ""))
+            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValueStatic("AnonymousUserPasswd")))
             {
                 string message =
                     "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
@@ -280,6 +320,9 @@ public class TOpenPetraOrg : WebService
                 return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
         }
+
+        // remove ext-comp controls, for multi-page forms
+        AJSONFormData = RemoveContainerControls(AJSONFormData);
 
         AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"");
 

@@ -18,6 +18,7 @@
     <add key="Server.BaseDatabase" value = "../setup/petra0300/petra.db" />  <!-- database will be copied to the userappdata directory for a new user -->
     <add key="Server.PostgreSQLServerPort" value = "5432" />                                <!-- Default Value: "5432" -->
     <add key="Server.Credentials" value="" />     <!-- this is the password for user petraserver for the PostgreSQL databases -->
+    <add key="AnonymousUserPasswd" value="TOBESETBYINSTALLER2" />
 
 	<add key="Reporting.PathStandardReports" value="../XmlReports" />
 	<add key="Reporting.PathCustomReports" value="../XmlReports/custom" />

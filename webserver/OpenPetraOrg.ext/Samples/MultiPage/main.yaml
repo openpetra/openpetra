@@ -9,7 +9,7 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [aspWelcome, aspPage1, aspPage2]
-
+            Buttons: [btnConfirm]
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
             Label: Welcome
@@ -40,3 +40,15 @@ RootNode:
         txtEmail: {vtype=email}
         rgrGender:
             OptionalValues: [male, female]
+        btnConfirm:
+            Label: Submit registration
+            AjaxRequestUrl: DataImportFromForm
+            AjaxRequestParameters:
+                    AFormID: RegisterPerson
+            SendingMessageTitle: "Please wait"
+            SendingMessage: "Data are being sent to the server"
+            SuccessMessageTitle:"Success"
+            SuccessMessage: "Your application has been successful."
+            FailureMessageTitle:"Failure"
+            FailureMessage:"Something did not work on the server."
+            RedirectURLOnSuccess: ../../../index.html

@@ -132,6 +132,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
+            ctrlSnippet.SetCodelet("REDIRECTURLONSUCCESS", ctrl.GetAttribute("RedirectURLOnSuccess"));
 
             XmlNode AjaxParametersNode = TYml2Xml.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
 
