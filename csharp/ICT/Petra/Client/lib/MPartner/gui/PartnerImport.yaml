@@ -8,7 +8,7 @@ RootNode:
     Actions:
         actStartImport: {ActionClick=StartImport}
         actCancelImport: {ActionClick=CancelImport, InitiallyEnabled=false}
-        actCreateNewFamily: {ActionClick=CreateNewFamily}
+        actCreateNewPartner: {ActionClick=CreateNewPartner}
         actSkip: {ActionClick=SkipRecord}
     Controls:
         pnlContent:
@@ -44,25 +44,27 @@ RootNode:
                 Row0: [txtExplanation]
                 Row0a: [lblTakeAction]
                 Row1: [btnSkip]
-                Row2: [btnCreateNewFamilyAndPerson]
-                Row3: [btnUseSelectedPerson]
-                Row4: [btnCreateNewPersonForSelectedFamily]
-                Row5: [btnCreateNewFamily]
-                Row6: [btnUseSelectedFamily]
-                Row7: [btnFindOtherPerson]
-                Row8: [btnFindOtherFamily]
-                Row9: [chkReplaceAddress]
+                #Row2: [btnCreateNewFamilyAndPerson]
+                #Row3: [btnUseSelectedPerson]
+                #Row4: [btnCreateNewPersonForSelectedFamily]
+                #Row5: [btnCreateNewFamily]
+                Row5: [btnCreateNewPartner]
+                #Row6: [btnUseSelectedFamily]
+                #Row7: [btnFindOtherPerson]
+                #Row8: [btnFindOtherFamily]
+                #Row9: [chkReplaceAddress]
         txtExplanation: {ReadOnly=true, Multiline=true}
         lblTakeAction: 
         btnSkip: {Label=Skip Record}
-        btnCreateNewFamilyAndPerson: {Label=Create new Family and Person, Enabled=false}
-        btnUseSelectedPerson: {Label=Use selected Person in list below, Enabled=false}
-        btnCreateNewPersonForSelectedFamily: {Label=Add as new Person to selected Family in list below, Enabled=false}
-        btnCreateNewFamily: {Label=Create new Family Record only}
-        btnUseSelectedFamily: {Label=Use selected Family in list below, Enabled=false}
-        btnFindOtherPerson: {Label=Find other Person to use for this Record..., Enabled=false}
-        btnFindOtherFamily: {Label=Find other Family to add this Person to..., Enabled=false}
-        chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false, CheckBoxAttachedLabel=right}
+        #btnCreateNewFamilyAndPerson: {Label=Create new Family and Person, Enabled=false}
+        #btnUseSelectedPerson: {Label=Use selected Person in list below, Enabled=false}
+        #btnCreateNewPersonForSelectedFamily: {Label=Add as new Person to selected Family in list below, Enabled=false}
+        #btnCreateNewFamily: {Label=Create new Family Record only}
+        btnCreateNewPartner: {Label=Create new Partner Record}
+        #btnUseSelectedFamily: {Label=Use selected Family in list below, Enabled=false}
+        #btnFindOtherPerson: {Label=Find other Person to use for this Record..., Enabled=false}
+        #btnFindOtherFamily: {Label=Find other Family to add this Person to..., Enabled=false}
+        #chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false, CheckBoxAttachedLabel=right}
     Toolbar:
         tbbStartImport:
         tbbCancelImport:

@@ -134,6 +134,17 @@
             <property name="newValue" value="${OpenPetraRoot.dir}"/>
             <echo message='${script::ReplaceInFile(TestClientConfigFile, toReplace, newValue)}'/>
         </if>
+        <if test="${not file::exists(TestServerConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/TestServer.config.sample"
+                tofile="${TestServerConfigFile}"/>
+        </if>
+
+        <property name="ToReplace" value="RegEx:localhost:.*?/Clientmanager"/>
+        <property name="NewValue" value="localhost:${Server.Port}/Clientmanager"/>
+        <property name="temp" value="${script::ReplaceInFile(TestClientConfigFile, ToReplace, NewValue)}"/>
+
+        <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
+            tofile="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/${Output.dir}/version.txt" overwrite="true"/>
 
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
         <call target="compileTemplate"/>
@@ -171,7 +182,7 @@
         </if>
         <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
             <if test="${file::exists(msbuildtask.file)}">
-                <msbuild project="${solution.file}">        
+                <msbuild project="${solution.file}" verbosity="Minimal">
                     <property name="Configuration" value="${Configuration}"/>
                 </msbuild>
             </if>

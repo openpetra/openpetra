@@ -373,8 +373,14 @@ namespace Ict.Petra.Server.App.Main
             }
             else
             {
-                // this is effectively the bin directory (current directory)
-                ServerLogFile = "Server.log";
+                // maybe the log file has already been set, eg. by the NUnit Server Test
+                ServerLogFile = TLogging.GetLogFileName();
+
+                if (ServerLogFile.Length == 0)
+                {
+                    // this is effectively the bin directory (current directory)
+                    ServerLogFile = "Server.log";
+                }
             }
 
             // Server.IPBasePort

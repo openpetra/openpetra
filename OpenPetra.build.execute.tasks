@@ -9,6 +9,7 @@
     <property name="ServerAdminConfigFile" value="${OpenPetraRoot.dir}/etc/ServerAdmin.config"/>
     <property name="TestReportingConfigFile" value="${OpenPetraRoot.dir}/etc/TestReporting.config"/>
     <property name="TestClientConfigFile" value="${OpenPetraRoot.dir}/etc/TestClient.config"/>
+    <property name="TestServerConfigFile" value="${OpenPetraRoot.dir}/etc/TestServer.config"/>
 
     <property name="WebConfigFile" value="${script::PickConfigFile(WebConfigFile)}"/>
     <property name="ClientConfigFile" value="${script::PickConfigFile(ClientConfigFile)}"/>
@@ -16,6 +17,7 @@
     <property name="ServerAdminConfigFile" value="${script::PickConfigFile(ServerAdminConfigFile)}"/>
     <property name="TestReportingConfigFile" value="${script::PickConfigFile(TestReportingConfigFile)}"/>
     <property name="TestClientConfigFile" value="${script::PickConfigFile(TestClientConfigFile)}"/>
+    <property name="TestServerConfigFile" value="${script::PickConfigFile(TestServerConfigFile)}"/>
 
     <property name="Server.Port" value="9000" unless="${property::exists('Server.Port')}"/>
 

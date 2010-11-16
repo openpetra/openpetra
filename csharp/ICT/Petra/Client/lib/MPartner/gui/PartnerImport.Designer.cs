@@ -86,14 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblExplanation = new System.Windows.Forms.Label();
             this.lblTakeAction = new System.Windows.Forms.Label();
             this.btnSkip = new System.Windows.Forms.Button();
-            this.btnCreateNewFamilyAndPerson = new System.Windows.Forms.Button();
-            this.btnUseSelectedPerson = new System.Windows.Forms.Button();
-            this.btnCreateNewPersonForSelectedFamily = new System.Windows.Forms.Button();
-            this.btnCreateNewFamily = new System.Windows.Forms.Button();
-            this.btnUseSelectedFamily = new System.Windows.Forms.Button();
-            this.btnFindOtherPerson = new System.Windows.Forms.Button();
-            this.btnFindOtherFamily = new System.Windows.Forms.Button();
-            this.chkReplaceAddress = new System.Windows.Forms.CheckBox();
+            this.btnCreateNewPartner = new System.Windows.Forms.Button();
             this.grdMatchingRecords = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbStartImport = new System.Windows.Forms.ToolStripButton();
@@ -303,82 +296,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnSkip.Click += new System.EventHandler(this.SkipRecord);
             this.btnSkip.Text = "Skip Record";
             //
-            // btnCreateNewFamilyAndPerson
+            // btnCreateNewPartner
             //
-            this.btnCreateNewFamilyAndPerson.Location = new System.Drawing.Point(2,2);
-            this.btnCreateNewFamilyAndPerson.Name = "btnCreateNewFamilyAndPerson";
-            this.btnCreateNewFamilyAndPerson.Enabled = false;
-            this.btnCreateNewFamilyAndPerson.AutoSize = true;
-            this.btnCreateNewFamilyAndPerson.Text = "Create new Family and Person";
-            //
-            // btnUseSelectedPerson
-            //
-            this.btnUseSelectedPerson.Location = new System.Drawing.Point(2,2);
-            this.btnUseSelectedPerson.Name = "btnUseSelectedPerson";
-            this.btnUseSelectedPerson.Enabled = false;
-            this.btnUseSelectedPerson.AutoSize = true;
-            this.btnUseSelectedPerson.Text = "Use selected Person in list below";
-            //
-            // btnCreateNewPersonForSelectedFamily
-            //
-            this.btnCreateNewPersonForSelectedFamily.Location = new System.Drawing.Point(2,2);
-            this.btnCreateNewPersonForSelectedFamily.Name = "btnCreateNewPersonForSelectedFamily";
-            this.btnCreateNewPersonForSelectedFamily.Enabled = false;
-            this.btnCreateNewPersonForSelectedFamily.AutoSize = true;
-            this.btnCreateNewPersonForSelectedFamily.Text = "Add as new Person to selected Family in list below";
-            //
-            // btnCreateNewFamily
-            //
-            this.btnCreateNewFamily.Location = new System.Drawing.Point(2,2);
-            this.btnCreateNewFamily.Name = "btnCreateNewFamily";
-            this.btnCreateNewFamily.AutoSize = true;
-            this.btnCreateNewFamily.Click += new System.EventHandler(this.CreateNewFamily);
-            this.btnCreateNewFamily.Text = "Create new Family Record only";
-            //
-            // btnUseSelectedFamily
-            //
-            this.btnUseSelectedFamily.Location = new System.Drawing.Point(2,2);
-            this.btnUseSelectedFamily.Name = "btnUseSelectedFamily";
-            this.btnUseSelectedFamily.Enabled = false;
-            this.btnUseSelectedFamily.AutoSize = true;
-            this.btnUseSelectedFamily.Text = "Use selected Family in list below";
-            //
-            // btnFindOtherPerson
-            //
-            this.btnFindOtherPerson.Location = new System.Drawing.Point(2,2);
-            this.btnFindOtherPerson.Name = "btnFindOtherPerson";
-            this.btnFindOtherPerson.Enabled = false;
-            this.btnFindOtherPerson.AutoSize = true;
-            this.btnFindOtherPerson.Text = "Find other Person to use for this Record...";
-            //
-            // btnFindOtherFamily
-            //
-            this.btnFindOtherFamily.Location = new System.Drawing.Point(2,2);
-            this.btnFindOtherFamily.Name = "btnFindOtherFamily";
-            this.btnFindOtherFamily.Enabled = false;
-            this.btnFindOtherFamily.AutoSize = true;
-            this.btnFindOtherFamily.Text = "Find other Family to add this Person to...";
-            //
-            // chkReplaceAddress
-            //
-            this.chkReplaceAddress.Location = new System.Drawing.Point(2,2);
-            this.chkReplaceAddress.Name = "chkReplaceAddress";
-            this.chkReplaceAddress.Enabled = false;
-            this.chkReplaceAddress.AutoSize = true;
-            this.chkReplaceAddress.Text = "Replace current address in list below with imported one";
-            this.chkReplaceAddress.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.chkReplaceAddress.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            this.btnCreateNewPartner.Location = new System.Drawing.Point(2,2);
+            this.btnCreateNewPartner.Name = "btnCreateNewPartner";
+            this.btnCreateNewPartner.AutoSize = true;
+            this.btnCreateNewPartner.Click += new System.EventHandler(this.CreateNewPartner);
+            this.btnCreateNewPartner.Text = "Create new Partner Record";
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 11;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowCount = 4;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -388,22 +316,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel4.Controls.Add(this.lblTakeAction, 0, 1);
             this.tableLayoutPanel4.SetColumnSpan(this.btnSkip, 2);
             this.tableLayoutPanel4.Controls.Add(this.btnSkip, 0, 2);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewFamilyAndPerson, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewFamilyAndPerson, 0, 3);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnUseSelectedPerson, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnUseSelectedPerson, 0, 4);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewPersonForSelectedFamily, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewPersonForSelectedFamily, 0, 5);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewFamily, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewFamily, 0, 6);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnUseSelectedFamily, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnUseSelectedFamily, 0, 7);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnFindOtherPerson, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnFindOtherPerson, 0, 8);
-            this.tableLayoutPanel4.SetColumnSpan(this.btnFindOtherFamily, 2);
-            this.tableLayoutPanel4.Controls.Add(this.btnFindOtherFamily, 0, 9);
-            this.tableLayoutPanel4.SetColumnSpan(this.chkReplaceAddress, 2);
-            this.tableLayoutPanel4.Controls.Add(this.chkReplaceAddress, 0, 10);
+            this.tableLayoutPanel4.SetColumnSpan(this.btnCreateNewPartner, 2);
+            this.tableLayoutPanel4.Controls.Add(this.btnCreateNewPartner, 0, 3);
             this.tableLayoutPanel4.Controls.Add(this.txtExplanation, 1, 0);
             //
             // grdMatchingRecords
@@ -600,14 +514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblExplanation;
         private System.Windows.Forms.Label lblTakeAction;
         private System.Windows.Forms.Button btnSkip;
-        private System.Windows.Forms.Button btnCreateNewFamilyAndPerson;
-        private System.Windows.Forms.Button btnUseSelectedPerson;
-        private System.Windows.Forms.Button btnCreateNewPersonForSelectedFamily;
-        private System.Windows.Forms.Button btnCreateNewFamily;
-        private System.Windows.Forms.Button btnUseSelectedFamily;
-        private System.Windows.Forms.Button btnFindOtherPerson;
-        private System.Windows.Forms.Button btnFindOtherFamily;
-        private System.Windows.Forms.CheckBox chkReplaceAddress;
+        private System.Windows.Forms.Button btnCreateNewPartner;
         private Ict.Common.Controls.TSgrdDataGridPaged grdMatchingRecords;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbStartImport;

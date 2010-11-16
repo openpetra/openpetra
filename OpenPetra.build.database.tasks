@@ -160,6 +160,54 @@
         </if>
     </target>
 
+    <target name="dumpDatabase" description="dump the database to a DBMS specific file, eg. nant dumpDatabase -D:OutputDB.file=testmysql.sql">
+        <if test="${DBMS.Type=='sqlite'}">
+            <copy file="${SQLitedb.file}" tofile="${OutputDB.file}" overwrite="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
+                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
+                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${OutputDB.file} ${DBMS.DBName}" />
+            </if>
+            <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+                <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
+                    <environment>
+                        <variable name="PGPASSWORD" value="${DBMS.Password}"/>
+                    </environment>
+                </exec>
+            </if>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
+            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                <exec program="mysqldump" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=${OutputDB.file}" />
+            </if>
+            <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+                <exec program="${MySQLDump.exe}" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${OutputDB.file}&quot;"/>
+            </if>
+
+            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:^^','SET AUTOCOMMIT=0;SET FOREIGN_KEY_CHECKS=0;')}"/>
+            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:$$','SET FOREIGN_KEY_CHECKS=1;COMMIT;SET AUTOCOMMIT=1;')}"/>
+            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:INSERT INTO `seq_(?&lt;seq_name&gt;.*)`','DELETE FROM `seq_${seq_name}`; INSERT INTO `seq_${seq_name}`')}"/>
+        </if>
+    </target>
+
+    <target name="loadDatabase" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
+        <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
+    
+        <if test="${DBMS.Type=='sqlite'}">
+            <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+            <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
+            <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+        </if>
+    </target>
+
     <target name="createSQLiteDB">
         <property name="DBMS.Type" value="sqlite"/>
         <property name="DBMS.Password" value="CHANGEME"/>
@@ -185,34 +233,16 @@
         <property name="DBMS.Type" value="postgresql"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
-            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
-            <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${path::get-temp-path()}/demodata-PostgreSQL.sql ${DBMS.DBName}" />
-        </if>
-        <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
-            <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${path::get-temp-path()}/demodata-PostgreSQL.sql&quot; ${DBMS.DBName}">
-                <environment>
-                    <variable name="PGPASSWORD" value="${DBMS.Password}"/>
-                </environment>
-            </exec>
-        </if>
-        <copy file="${path::get-temp-path()}/demodata-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql" overwrite="true"/>
+        <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
+        <call target="dumpDatabase"/>
     </target>
 
     <target name="createMySQLDB">
         <property name="DBMS.Type" value="mysql"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <exec program="mysqldump" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=${path::get-temp-path()}/demodata-MySQL.sql" />
-        </if>
-        <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
-            <exec program="${MySQLDump.exe}" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${path::get-temp-path()}/demodata-MySQL.sql&quot;"/>
-        </if>
-        <copy file="${path::get-temp-path()}/demodata-MySQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql" overwrite="true"/>
+        <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
+        <call target="dumpDatabase"/>
     </target>
 
 </project>

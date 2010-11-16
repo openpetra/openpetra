@@ -16,11 +16,26 @@
       String line = "start";
       StreamReader sr = new StreamReader(filename);
       StreamWriter sw = new StreamWriter(filename + ".new");
+      bool attachToEnd = false;
       bool doRegExpr = false;
       if (oldValue.StartsWith("RegEx:"))
       {
         doRegExpr = true;
         oldValue = oldValue.Substring("RegEx:".Length);
+        if (oldValue=="^^")
+        {
+            // prepend to beginning of file
+            sw.WriteLine(newValue);
+            oldValue = "";
+            doRegExpr = false;
+        }
+        else if (oldValue=="$$")
+        {
+            // attach to end of file
+            oldValue = "";
+            doRegExpr = false;
+            attachToEnd = true;
+        }
       }
       bool firstLine = true;
       while (line != null)
@@ -39,13 +54,18 @@
                 Regex reg=new Regex(oldValue);
                 line=reg.Replace(line,newValue);
             }
-            else
+            else if (oldValue.Length > 0)
             {
                 line = line.Replace(oldValue, newValue);
             }
             
             sw.Write(line);
         }
+      }
+      if (attachToEnd)
+      {
+        sw.WriteLine();
+        sw.Write(newValue);
       }
       sr.Close();
       sw.Close();

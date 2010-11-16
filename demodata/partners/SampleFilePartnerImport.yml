@@ -32,3 +32,12 @@ RootNodeInternal:
             Partner7:{Name=IT Hardwarestore}
                 Address: {Street="P.O. Box 102, 8566 Justo. Road", City=Akron, PostCode="5656CN", Email="diam@liberoduinec.com"}
                 FinancialDetails: {AccountNumber=0834223, BankSortCode=87923289}
+        PartnerGroup4:{class=UNIT}
+            Partner0:{Name=Austria, PartnerKey=67000000, UnitTypeCode=F, ParentUnitKey=1000000}
+                Address:{Street="Hauptstrasse 1", City="Wien", PostCode="192034", Country="AT"}
+            Partner1:{Name=Feed The Hungry, PartnerKey=1800501, UnitTypeCode=KEY-MIN, ParentUnitKey=67000000}
+            Partner2:{Name=Free The Addicted, PartnerKey=1800502, UnitTypeCode=KEY-MIN, ParentUnitKey=67000000}
+            Partner3:{Name=Heal The Injured, PartnerKey=1800503, UnitTypeCode=KEY-MIN, ParentUnitKey=67000000}
+            Partner4:{Name=Australia, PartnerKey=68000000, UnitTypeCode=F, ParentUnitKey=1000000}
+            Partner5:{Name=Save The Forest, PartnerKey=1800504, UnitTypeCode=KEY-MIN, ParentUnitKey=68000000}
+            Partner6:{Name=Rescue the Dolphins, PartnerKey=1800505, UnitTypeCode=KEY-MIN, ParentUnitKey=68000000}

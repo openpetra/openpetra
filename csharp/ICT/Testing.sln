@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.MFinance.GLBatches", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Testing.NUnitForms", "Testing\NUnitForms\Ict.Testing.NUnitForms.csproj", "{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Testing.NUnitServer", "Testing\NUnitPetraServer\Ict.Testing.NUnitServer.csproj", "{3035042E-B3A7-41AC-8006-6DA996FA7741}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.MFinance.Server.Gift", "Testing\MFinance\server\Gift\Tests.MFinance.Server.Gift.csproj", "{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -74,5 +78,13 @@ Global
 		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Debug|x86.ActiveCfg = Debug|x86
 		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Release|x86.Build.0 = Release|x86
 		{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}.Release|x86.ActiveCfg = Release|x86
+		{3035042E-B3A7-41AC-8006-6DA996FA7741}.Debug|x86.Build.0 = Debug|x86
+		{3035042E-B3A7-41AC-8006-6DA996FA7741}.Debug|x86.ActiveCfg = Debug|x86
+		{3035042E-B3A7-41AC-8006-6DA996FA7741}.Release|x86.Build.0 = Release|x86
+		{3035042E-B3A7-41AC-8006-6DA996FA7741}.Release|x86.ActiveCfg = Release|x86
+		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Debug|x86.Build.0 = Debug|x86
+		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Debug|x86.ActiveCfg = Debug|x86
+		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Release|x86.Build.0 = Release|x86
+		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

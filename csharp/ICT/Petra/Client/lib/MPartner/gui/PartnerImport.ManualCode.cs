@@ -154,10 +154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    if (FCurrentNumberOfRecord < FMainDS.PPartner.Count)
-                    {
-                        FCurrentNumberOfRecord++;
-                    }
+                    FCurrentNumberOfRecord++;
                 }
             }
 
@@ -226,7 +223,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.FPetraUtilsObject.EnableAction("actStartImport", true);
                 this.FPetraUtilsObject.EnableAction("actCancelImport", false);
 
-                // TODO: finish the thread
+                // finish the thread
+                FNeedUserFeedback = true;
+
                 grdMatchingRecords.DataSource = null;
                 pnlImportRecord.Enabled = false;
                 return;
@@ -245,6 +244,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}",
                 PFamilyTable.GetPartnerKeyDBName(),
                 CurrentPartner.PartnerKey);
+
+            FMainDS.PUnit.DefaultView.RowFilter = String.Format("{0}={1}",
+                PUnitTable.GetPartnerKeyDBName(),
+                CurrentPartner.PartnerKey);
+
+            FMainDS.POrganisation.DefaultView.RowFilter = String.Format("{0}={1}",
+                POrganisationTable.GetPartnerKeyDBName(),
+                CurrentPartner.PartnerKey);
+
+            // TODO: filter for other partner classes as well
 
             FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
                 PPartnerLocationTable.GetPartnerKeyDBName(),
@@ -300,46 +309,71 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // get all partners with same surname in that city. using the first Plocation for the moment.
             // TODO should use getBestAddress?
-            PartnerFindTDS result =
-                TRemote.MPartner.Partner.WebConnectors.FindPartners(
-                    "",
-                    Ict.Petra.Shared.MPartner.Calculations.FormatShortName(CurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
-                    BestLocation.City,
-                    new StringCollection());
-
             grdMatchingRecords.Columns.Clear();
-            grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass, 50);
-            grdMatchingRecords.AddTextColumn(Catalog.GetString("Name"), result.SearchResult.ColumnPartnerShortName, 200);
-            grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName, 200);
-            grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity, 150);
-            result.SearchResult.DefaultView.AllowNew = false;
-            grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
+
+            bool FoundPartnerInDatabase = false;
+            bool FoundPossiblePartnersInDatabase = false;
+
+            // try to find an existing partner and set the partner key
+            if ((BestLocation != null) && (FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey < 0))
+            {
+                PartnerFindTDS result =
+                    TRemote.MPartner.Partner.WebConnectors.FindPartners(
+                        "",
+                        Ict.Petra.Shared.MPartner.Calculations.FormatShortName(CurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
+                        BestLocation.City,
+                        new StringCollection());
+
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass, 50);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Name"), result.SearchResult.ColumnPartnerShortName, 200);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName, 200);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity, 150);
+                result.SearchResult.DefaultView.AllowNew = false;
+                grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
+
+                if (FThreadAutomaticImport != null)
+                {
+                    FoundPossiblePartnersInDatabase = result.SearchResult.Rows.Count != 0;
+
+                    // check if the partner to import matches completely one of the search results
+                    foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
+                    {
+                        if ((row.StreetName == BestLocation.StreetName)
+                            && (row.City == BestLocation.City)
+                            && (row.PartnerShortName == CurrentPartner.PartnerShortName))
+                        {
+                            FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey = row.PartnerKey;
+                            FoundPartnerInDatabase = true;
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (FThreadAutomaticImport != null)
             {
-                // check if the partner to import matches completely one of the search results
-                foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
-                {
-                    if ((row.StreetName == BestLocation.StreetName)
-                        && (row.City == BestLocation.City)
-                        && (row.PartnerShortName == CurrentPartner.PartnerShortName))
-                    {
-                        FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey = row.PartnerKey;
-                        break;
-                    }
-                }
-
-                if (FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey > 0)
+                if (FoundPartnerInDatabase)
                 {
                     // TODO: if any data is different, wait for user interaction, or update data automatically?
                     // otherwise skip to next partner
                     SkipRecord(null, null);
                 }
-                else if (result.SearchResult.Count == 0)
+                else if (!FoundPossiblePartnersInDatabase)
                 {
                     // automatically create a new partner, and proceed to next partner
                     // TODO: create PERSON or FAMILY?
-                    CreateNewFamily(null, null);
+                    try
+                    {
+                        CreateNewPartner(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.Message);
+                        TLogging.Log(e.StackTrace);
+                        // TODO cleaner message box
+                        MessageBox.Show(e.Message);
+                        FNeedUserFeedback = true;
+                    }
                 }
                 else
                 {
@@ -408,37 +442,85 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerLocationRow.PartnerKey = ANewPartnerDS.PPartner[0].PartnerKey;
                 ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
 
+                if (PartnerLocationRow.LocationKey != 0)
+                {
+                    FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                        PLocationTable.GetLocationKeyDBName(),
+                        PartnerLocationRow.LocationKey,
+                        PLocationTable.GetSiteKeyDBName(),
+                        PartnerLocationRow.SiteKey);
 
-                FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                    PLocationTable.GetLocationKeyDBName(),
-                    PartnerLocationRow.LocationKey,
-                    PLocationTable.GetSiteKeyDBName(),
-                    PartnerLocationRow.SiteKey);
-
-                ANewPartnerDS.PLocation.ImportRow((PLocationRow)FMainDS.PLocation.DefaultView[0].Row);
+                    ANewPartnerDS.PLocation.ImportRow((PLocationRow)FMainDS.PLocation.DefaultView[0].Row);
+                }
             }
         }
 
-        private void CreateNewFamily(Object sender, EventArgs e)
+        private void CreateNewPartner(Object sender, EventArgs e)
         {
             if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
             {
                 return;
             }
 
-            if (FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey > 0)
-            {
-                // it would not make any sense to create a partner if there is already a partner key
-                return;
-            }
-
             PartnerEditTDS NewPartnerDS = new PartnerEditTDS();
 
             NewPartnerDS.PPartner.ImportRow(FMainDS.PPartner[FCurrentNumberOfRecord - 1]);
-            NewPartnerDS.PPartner[0].PartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
 
-            NewPartnerDS.PFamily.ImportRow((PFamilyRow)FMainDS.PFamily.DefaultView[0].Row);
-            NewPartnerDS.PFamily[0].PartnerKey = NewPartnerDS.PPartner[0].PartnerKey;
+            Int64 OrigPartnerKey = FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey;
+            Int64 NewPartnerKey = OrigPartnerKey;
+
+            // for UNITs we want to be able to specify the partner key in the import file
+            if (OrigPartnerKey < 0)
+            {
+                NewPartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
+            }
+
+            NewPartnerDS.PPartner[0].PartnerKey = NewPartnerKey;
+
+            if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                NewPartnerDS.PFamily.ImportRow((PFamilyRow)FMainDS.PFamily.DefaultView[0].Row);
+                NewPartnerDS.PFamily[0].PartnerKey = NewPartnerKey;
+            }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
+            {
+                NewPartnerDS.POrganisation.ImportRow((POrganisationRow)FMainDS.POrganisation.DefaultView[0].Row);
+                NewPartnerDS.POrganisation[0].PartnerKey = NewPartnerKey;
+            }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+            {
+                NewPartnerDS.PUnit.ImportRow((PUnitRow)FMainDS.PUnit.DefaultView[0].Row);
+                NewPartnerDS.PUnit[0].PartnerKey = NewPartnerKey;
+
+                FMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0}={1}",
+                    UmUnitStructureTable.GetChildUnitKeyDBName(),
+                    OrigPartnerKey);
+
+                foreach (DataRowView rv in FMainDS.UmUnitStructure.DefaultView)
+                {
+                    NewPartnerDS.UmUnitStructure.ImportRow((UmUnitStructureRow)rv.Row);
+                }
+
+                foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
+                {
+                    UnitStructureRow.ChildUnitKey = NewPartnerKey;
+                }
+            }
+
+            // TODO add special types etc
+            FMainDS.PPartnerType.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTypeTable.GetPartnerKeyDBName(),
+                OrigPartnerKey);
+
+            foreach (DataRowView rv in FMainDS.PPartnerType.DefaultView)
+            {
+                NewPartnerDS.PPartnerType.ImportRow((PPartnerTypeRow)rv.Row);
+            }
+
+            foreach (PPartnerTypeRow PartnerTypeRow in NewPartnerDS.PPartnerType.Rows)
+            {
+                PartnerTypeRow.PartnerKey = NewPartnerKey;
+            }
 
             AddAddresses(ref NewPartnerDS);
 

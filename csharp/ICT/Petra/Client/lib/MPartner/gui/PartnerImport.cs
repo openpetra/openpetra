@@ -67,14 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       this.lblExplanation.Text = Catalog.GetString("Explanation:");
       this.lblTakeAction.Text = Catalog.GetString("Take Action:");
       this.btnSkip.Text = Catalog.GetString("Skip Record");
-      this.btnCreateNewFamilyAndPerson.Text = Catalog.GetString("Create new Family and Person");
-      this.btnUseSelectedPerson.Text = Catalog.GetString("Use selected Person in list below");
-      this.btnCreateNewPersonForSelectedFamily.Text = Catalog.GetString("Add as new Person to selected Family in list below");
-      this.btnCreateNewFamily.Text = Catalog.GetString("Create new Family Record only");
-      this.btnUseSelectedFamily.Text = Catalog.GetString("Use selected Family in list below");
-      this.btnFindOtherPerson.Text = Catalog.GetString("Find other Person to use for this Record...");
-      this.btnFindOtherFamily.Text = Catalog.GetString("Find other Family to add this Person to...");
-      this.chkReplaceAddress.Text = Catalog.GetString("Replace current address in list below with imported one");
+      this.btnCreateNewPartner.Text = Catalog.GetString("Create new Partner Record");
       this.tbbStartImport.Text = Catalog.GetString("Start Import");
       this.tbbCancelImport.Text = Catalog.GetString("Cancel Import");
       this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
@@ -169,9 +162,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             btnSkip.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actCreateNewFamily")
+        if (e.ActionName == "actCreateNewPartner")
         {
-            btnCreateNewFamily.Enabled = e.Enabled;
+            btnCreateNewPartner.Enabled = e.Enabled;
         }
         if (e.ActionName == "actStartImport")
         {

@@ -53,6 +53,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         private PartnerEditTDSPPersonTable TablePPerson;
         private PartnerEditTDSPFamilyTable TablePFamily;
         private PUnitTable TablePUnit;
+        private UmUnitStructureTable TableUmUnitStructure;
         private POrganisationTable TablePOrganisation;
         private PChurchTable TablePChurch;
         private PBankTable TablePBank;
@@ -162,6 +163,15 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             get
             {
                 return this.TablePUnit;
+            }
+        }
+
+        /// auto generated
+        public UmUnitStructureTable UmUnitStructure
+        {
+            get
+            {
+                return this.TableUmUnitStructure;
             }
         }
 
@@ -371,6 +381,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
             this.Tables.Add(new PartnerEditTDSPFamilyTable("PFamily"));
             this.Tables.Add(new PUnitTable("PUnit"));
+            this.Tables.Add(new UmUnitStructureTable("UmUnitStructure"));
             this.Tables.Add(new POrganisationTable("POrganisation"));
             this.Tables.Add(new PChurchTable("PChurch"));
             this.Tables.Add(new PBankTable("PBank"));
@@ -428,6 +439,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             if ((ds.Tables.IndexOf("PUnit") != -1))
             {
                 this.Tables.Add(new PUnitTable("PUnit"));
+            }
+            if ((ds.Tables.IndexOf("UmUnitStructure") != -1))
+            {
+                this.Tables.Add(new UmUnitStructureTable("UmUnitStructure"));
             }
             if ((ds.Tables.IndexOf("POrganisation") != -1))
             {
@@ -552,6 +567,10 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.TablePUnit.InitVars();
             }
+            if ((this.TableUmUnitStructure != null))
+            {
+                this.TableUmUnitStructure.InitVars();
+            }
             if ((this.TablePOrganisation != null))
             {
                 this.TablePOrganisation.InitVars();
@@ -650,6 +669,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TablePPerson = ((PartnerEditTDSPPersonTable)(this.Tables["PPerson"]));
             this.TablePFamily = ((PartnerEditTDSPFamilyTable)(this.Tables["PFamily"]));
             this.TablePUnit = ((PUnitTable)(this.Tables["PUnit"]));
+            this.TableUmUnitStructure = ((UmUnitStructureTable)(this.Tables["UmUnitStructure"]));
             this.TablePOrganisation = ((POrganisationTable)(this.Tables["POrganisation"]));
             this.TablePChurch = ((PChurchTable)(this.Tables["PChurch"]));
             this.TablePBank = ((PBankTable)(this.Tables["PBank"]));
@@ -983,6 +1003,20 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 this.FConstraints.Add(new TTypedConstraint("FKVenue3", "PPartner", new string[] {
                                 "p_partner_key_n"}, "PVenue", new string[] {
                                 "p_contact_partner_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitStructure != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitStructure1", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitStructure", new string[] {
+                                "um_parent_unit_key_n"}));
+            }
+            if (((this.TablePUnit != null)
+                        && (this.TableUmUnitStructure != null)))
+            {
+                this.FConstraints.Add(new TTypedConstraint("FKUnitStructure2", "PUnit", new string[] {
+                                "p_partner_key_n"}, "UmUnitStructure", new string[] {
+                                "um_child_unit_key_n"}));
             }
             this.FRelations.Add(new TTypedRelation("Address", "PPartnerLocation", new string[] {
                             "p_site_key_n", "p_location_key_i"}, "PLocation", new string[] {
