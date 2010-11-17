@@ -49,6 +49,21 @@ new Ext.ux.Wiz.Card({
 })
 
 {##SUBMITBUTTONDEFINITION}
+onCancelClick: function() {
+    Ext.Msg.show({
+        title: {#FORMNAME}.{#CANCELQUESTIONTITLE},
+        msg: {#FORMNAME}.{#CANCELQUESTIONMESSAGE},
+        modal: true,
+        icon: Ext.Msg.QUESTION,
+        buttons: Ext.Msg.YESNO,
+        fn: function(btn, text){
+          if(btn === 'yes'){ 
+            location.href={#FORMNAME}.{#REDIRECTURLONCANCEL};
+          }
+        }
+    });
+},
+
 onFinish: function() {
     Ext.MessageBox.wait(this.{#SENDINGDATAMESSAGE}, this.{#SENDINGDATATITLE});
 
@@ -73,13 +88,13 @@ onFinish: function() {
             else
             {
                 Ext.Msg.show({
-                    title: MainForm.btnConfirmREQUESTSUCCESSTITLE,
-                    msg: MainForm.btnConfirmREQUESTSUCCESSMESSAGE,
+                    title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
+                    msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
                     modal: true,
                     icon: Ext.Msg.INFO,
                     buttons: Ext.Msg.OK,
                     fn: function(btn, text){
-                      location.href='{#REDIRECTURLONSUCCESS}';
+                      location.href={#FORMNAME}.{#REDIRECTURLONSUCCESS};
                     }
                 });
             }

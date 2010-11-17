@@ -132,7 +132,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
-            ctrlSnippet.SetCodelet("REDIRECTURLONSUCCESS", ctrl.GetAttribute("RedirectURLOnSuccess"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONSUCCESS", ctrl, ctrl.GetAttribute("RedirectURLOnSuccess"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONCANCEL", ctrl, ctrl.GetAttribute("RedirectURLOnCancel"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONTITLE", ctrl, ctrl.GetAttribute("CancelQuestionTitle"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONMESSAGE", ctrl, ctrl.GetAttribute("CancelQuestionMessage"));
 
             XmlNode AjaxParametersNode = TYml2Xml.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
 
@@ -271,10 +274,6 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
-                "DESCRIPTIONDOCUMENT",
-                ACtrl,
-                TYml2Xml.GetAttribute(ACtrl.xmlNode, "description"));
-            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
                 "URL",
                 ACtrl,
                 TYml2Xml.GetAttribute(ACtrl.xmlNode, "url"));
@@ -287,7 +286,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 String.Format("<iframe src=\"' + {0} + '\" width=\"100%\" height=\"250\"><p>{1}<a href=\"' + {0} + '\">' + {2} + '</a></p></iframe>",
                     "this." + ACtrl.controlName + "URL",
                     "' + this." + ACtrl.controlName + "BROWSERMISSINGIFRAMESUPPORT + '",
-                    "this." + ACtrl.controlName + "DESCRIPTIONDOCUMENT"));
+                    "this." + ACtrl.controlName + "LABEL"));
 
             return ctrlSnippet;
         }

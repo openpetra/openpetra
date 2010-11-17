@@ -154,7 +154,6 @@
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
                 <include name="*.dll" />
                 <exclude name="Mono*" />
-                <exclude name="intl.dll" />
             </fileset>
         </copy>
         <if test="${not file::exists(WebConfigFile)}">
@@ -168,6 +167,7 @@
                 spawn="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\2.0"/>
                 <variable name="MONO_OPTIONS" value="--debug"/>
             </environment>
         </exec>

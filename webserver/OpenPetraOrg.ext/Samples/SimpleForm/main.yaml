@@ -11,7 +11,7 @@ RootNode:
             Controls: [grpNameAndAddress]
             Buttons: [btnConfirm]
         grpNameAndAddress:
-            title: Personal Details
+            Label: Personal Details
             Controls:
                 Row0: [txtFirstName]
                 Row0b: [txtLastName]
