@@ -201,11 +201,6 @@
     <target name="compilePetraServer" description="compile Ict/Petra/Server">
         <!-- if this is just for the remote client build, we might want to skip the building of the server -->
         <if test="${not SkipCompileServer}">
-            <if test="${not file::exists(ServerConfigFile)}">
-                <copy file="${OpenPetraRoot.dir}/etc/Server-${DBMS.Type}.config.sample"
-                    tofile="${ServerConfigFile}"/>
-            </if>
-
             <call target="compilePetraServerAdmin"/>
 
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Server.sln"/>
@@ -223,20 +218,12 @@
         </if>
     </target>
     <target name="compilePetraServerAdmin" description="compile Ict/Petra/ServerAdmin">
-        <if test="${not file::exists(ServerAdminConfigFile)}">
-            <copy file="${OpenPetraRoot.dir}/etc/ServerAdmin.config.sample"
-                tofile="${ServerAdminConfigFile}"/>
-        </if>
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ServerAdmin.sln"/>
         <call target="compileTemplate"/>
     </target>
     <target name="compilePetraClient" description="compile Ict/Petra/Client">
         <!-- if this is just for the server build, we might want to skip the building of the client -->
         <if test="${not SkipCompileClient}">
-            <if test="${not file::exists(ClientConfigFile)}">
-                <copy file="${OpenPetraRoot.dir}/etc/Client.config.sample"
-                    tofile="${ClientConfigFile}"/>
-            </if>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Client.sln"/>
             <call target="compileTemplate"/>
             <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/ClientPlugins.sln"/>
