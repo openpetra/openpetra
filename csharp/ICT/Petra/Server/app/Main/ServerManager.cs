@@ -532,8 +532,6 @@ namespace Ict.Petra.Server.App.Main
         /// <returns>void</returns>
         public void EstablishDBConnection()
         {
-            TLogging.Log("  " + Catalog.GetString("Connecting to Database..."));
-
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
             try
@@ -585,7 +583,7 @@ namespace Ict.Petra.Server.App.Main
                         }
                         else
                         {
-                            throw new Exception("Cannot connect to old database, please restore the latest clean demo database");
+                            throw new Exception("Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
                         }
                     }
                 }
