@@ -74,8 +74,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtPeriodRange = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtStartPeriod = new System.Windows.Forms.TextBox();
-            this.lblStartPeriod = new System.Windows.Forms.Label();
             this.txtEndPeriod = new System.Windows.Forms.TextBox();
             this.lblEndPeriod = new System.Windows.Forms.Label();
             this.cmbPeriodYear = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -193,7 +191,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rbtPeriodRange.Location = new System.Drawing.Point(2,2);
             this.rbtPeriodRange.Name = "rbtPeriodRange";
             this.rbtPeriodRange.AutoSize = true;
-            this.rbtPeriodRange.Text = "Period Range";
             this.rbtPeriodRange.Checked = true;
             //
             // tableLayoutPanel3
@@ -201,22 +198,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.AutoSize = true;
-            //
-            // txtStartPeriod
-            //
-            this.txtStartPeriod.Location = new System.Drawing.Point(2,2);
-            this.txtStartPeriod.Name = "txtStartPeriod";
-            this.txtStartPeriod.Size = new System.Drawing.Size(30, 28);
-            //
-            // lblStartPeriod
-            //
-            this.lblStartPeriod.Location = new System.Drawing.Point(2,2);
-            this.lblStartPeriod.Name = "lblStartPeriod";
-            this.lblStartPeriod.AutoSize = true;
-            this.lblStartPeriod.Text = "from:";
-            this.lblStartPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblStartPeriod.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblStartPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtEndPeriod
             //
@@ -229,7 +210,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblEndPeriod.Location = new System.Drawing.Point(2,2);
             this.lblEndPeriod.Name = "lblEndPeriod";
             this.lblEndPeriod.AutoSize = true;
-            this.lblEndPeriod.Text = "to:";
+            this.lblEndPeriod.Text = "Period:";
             this.lblEndPeriod.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblEndPeriod.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblEndPeriod.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -250,21 +231,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.lblPeriodYear.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblPeriodYear.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblPeriodYear.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel3.ColumnCount = 6;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnCount = 4;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.lblStartPeriod, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtStartPeriod, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblEndPeriod, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.txtEndPeriod, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblPeriodYear, 4, 0);
-            this.tableLayoutPanel3.Controls.Add(this.cmbPeriodYear, 5, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblEndPeriod, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txtEndPeriod, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblPeriodYear, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.cmbPeriodYear, 3, 0);
             this.rbtPeriodRange.CheckedChanged += new System.EventHandler(this.rbtPeriodRangeCheckedChanged);
             //
             // rbtQuarter
@@ -272,7 +249,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             this.rbtQuarter.Location = new System.Drawing.Point(2,2);
             this.rbtQuarter.Name = "rbtQuarter";
             this.rbtQuarter.AutoSize = true;
-            this.rbtQuarter.Text = "Quarter";
             //
             // tableLayoutPanel4
             //
@@ -747,8 +723,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.RadioButton rbtPeriodRange;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TextBox txtStartPeriod;
-        private System.Windows.Forms.Label lblStartPeriod;
         private System.Windows.Forms.TextBox txtEndPeriod;
         private System.Windows.Forms.Label lblEndPeriod;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbPeriodYear;

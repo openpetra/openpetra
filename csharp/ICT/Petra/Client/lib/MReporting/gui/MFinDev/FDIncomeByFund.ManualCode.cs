@@ -49,7 +49,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 rbtPeriodRange.Checked = true;
-                txtStartPeriod.Text = "1";
                 txtEndPeriod.Text = "12";
                 txtQuarter.Text = "1";
                 cmbPeriodYear.SelectedIndex = 0;
@@ -64,6 +63,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_currency", "base");
             ACalc.AddParameter("param_ytd", "mixed");
+            ACalc.AddParameter("param_start_period_i", txtEndPeriod.Text);
+
+            if (rbtQuarter.Checked)
+            {
+                ACalc.AddParameter("param_end_period_i", (Convert.ToInt16(txtQuarter.Text) * 3).ToString());
+            }
 
             ACalc.AddParameter("param_explicit_motivation", "");
             ACalc.AddParameter("param_exclude_motivation", "");

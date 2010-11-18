@@ -30,13 +30,14 @@
             Controls: [rbtPeriodRange, rbtQuarter]
             Dock: Top
         rbtPeriodRange:
-            Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
+            Controls: [txtEndPeriod, cmbPeriodYear]
+            NoLabel: true
             ControlsOrientation: horizontal
         rbtQuarter:
+            NoLabel: true
             Controls: [txtQuarter, cmbPeriodYearQuarter]
             ControlsOrientation: horizontal
-        txtStartPeriod: {Label=from, ParameterName=param_start_period_i, Width=30}
-        txtEndPeriod: {Label=to, ParameterName=param_end_period_i, Width=30}
+        txtEndPeriod: {Label=Period, ParameterName=param_end_period_i, Width=30}
         cmbPeriodYear: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         cmbPeriodYearQuarter: {Label=Year, List=UserDefinedList, ParameterName=param_year_i}
         txtQuarter: {Label=Quarter, ParameterName=param_quarter, Width=30}
