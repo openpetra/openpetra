@@ -1344,6 +1344,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TTxtAutoPopulatedButtonLabelGenerator()
             : base("txt", "Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel")
         {
+            this.FChangeEventHandlerType = "TDelegatePartnerChanged";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
