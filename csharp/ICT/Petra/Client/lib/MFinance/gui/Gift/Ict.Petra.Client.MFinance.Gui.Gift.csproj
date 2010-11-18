@@ -115,6 +115,13 @@
     <Compile Include="GiftBatch.ManualCode.cs">
       <DependentUpon>GiftBatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="GiftBatchExport.cs" />
+    <Compile Include="GiftBatchExport.Designer.cs">
+      <DependentUpon>GiftBatchExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftBatchExport.ManualCode.cs">
+      <DependentUpon>GiftBatchExport.cs</DependentUpon>
+    </Compile>
     <Compile Include="GiftFieldAdjustment.cs" />
     <Compile Include="GiftFieldAdjustment.Designer.cs">
       <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>
@@ -153,6 +160,9 @@
     </Compile>
     <EmbeddedResource Include="GiftBatch.resx">
       <DependentUpon>GiftBatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GiftBatchExport.resx">
+      <DependentUpon>GiftBatchExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GiftFieldAdjustment.resx">
       <DependentUpon>GiftFieldAdjustment.cs</DependentUpon>

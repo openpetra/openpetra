@@ -482,6 +482,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         bool PostGiftBatch(Int32 ALedgerNumber,
                            Int32 ABatchNumber,
                            out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        bool ExportAllGiftBatchData(ref ArrayList batches,
+                                    Hashtable requestParams,
+                                    out String exportString);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
         GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>

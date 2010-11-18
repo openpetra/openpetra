@@ -460,7 +460,7 @@ namespace Ict.Common.DB
 
             try
             {
-                // always log to console and log file, which database we are connecting to. 
+                // always log to console and log file, which database we are connecting to.
                 // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
                 TLogging.Log("    Connecting to database " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
 

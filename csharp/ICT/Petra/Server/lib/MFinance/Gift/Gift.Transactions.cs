@@ -22,27 +22,25 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
+using System.Collections;
 using System.Collections.Specialized;
-using GNU.Gettext;
-using Ict.Petra.Shared;
+using System.Data;
+
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Gift;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -486,6 +484,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return ResultValue;
+        }
+
+        /// <summary>
+        /// export all the Data of the batches array list to a String
+        /// </summary>
+        /// <param name="batches"></param>
+        /// <param name="requestParams"></param>
+        /// <param name="exportString"></param>
+        /// <returns>false if batch does not exist at all</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ExportAllGiftBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        {
+            TGiftExporting exporting = new TGiftExporting();
+
+            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
         }
     }
 }
