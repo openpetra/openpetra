@@ -583,7 +583,8 @@ namespace Ict.Petra.Server.App.Main
                         }
                         else
                         {
-                            throw new Exception("Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
+                            throw new Exception(
+                                "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
                         }
                     }
                 }
