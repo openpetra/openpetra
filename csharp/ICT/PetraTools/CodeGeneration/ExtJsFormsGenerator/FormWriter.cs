@@ -67,6 +67,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new AssistantPageGenerator());
             AddControlGenerator(new InlineGenerator());
             AddControlGenerator(new UploadGenerator());
+            AddControlGenerator(new GridGenerator());
         }
 
         public override string CodeFileExtension

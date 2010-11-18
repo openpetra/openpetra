@@ -107,6 +107,23 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
         }
     }
+    public class GridGenerator : TControlGenerator
+    {
+        public GridGenerator()
+            : base("grd", "")
+        {
+            FControlDefinitionSnippetName = "GRIDDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            writer.FTemplate.SetCodelet("DATAGRID", "true");
+
+            return ctrlSnippet;
+        }
+    }
     public class ButtonGenerator : TControlGenerator
     {
         public ButtonGenerator()

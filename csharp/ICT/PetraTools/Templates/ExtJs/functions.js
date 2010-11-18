@@ -63,6 +63,12 @@ function XmlExtractJSONResponse(response)
 }
 {#ENDIF REQUESTPARAMETERS}
 
+{#IFDEF DATAGRID}
+var editor = new Ext.ux.grid.RowEditor({
+    saveText: 'Update'
+});
+{#ENDIF DATAGRID}
+
 {##LANGUAGEFILE}
 if({#FORMTYPE}) {
     Ext.apply({#FORMTYPE}.prototype, {

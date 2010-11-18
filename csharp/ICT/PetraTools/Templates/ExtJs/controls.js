@@ -151,3 +151,80 @@ new Ext.form.ComboBox({
     selectOnFocus:true,
     width:190
 })
+
+{##GRIDDEFINITION}
+new Ext.grid.GridPanel({
+    store: store,
+    width: 600,
+    height: 500,
+    region:'center',
+    margins: '0 5 5 5',
+    autoExpandColumn: 'name',
+    plugins: [editor],
+    view: new Ext.grid.GroupingView({
+        markDirty: false
+    }),
+
+    columns: [
+    new Ext.grid.RowNumberer(),
+    {
+        id: 'name',
+        header: 'First Name',
+        dataIndex: 'name',
+        width: 220,
+        sortable: true,
+        editor: {
+            xtype: 'textfield',
+            allowBlank: false
+        }
+    },{
+        header: 'Email',
+        dataIndex: 'email',
+        width: 150,
+        sortable: true,
+        editor: {
+            xtype: 'textfield',
+            allowBlank: false,
+            vtype: 'email'
+        }
+    },{
+        xtype: 'datecolumn',
+        header: 'Start Date',
+        dataIndex: 'start',
+        format: 'm/d/Y',
+        width: 100,
+        sortable: true,
+        groupRenderer: Ext.util.Format.dateRenderer('M y'),
+        editor: {
+            xtype: 'datefield',
+            allowBlank: false,
+            minValue: '01/01/2006',
+            minText: 'Can\'t have a start date before the company existed!',
+            maxValue: (new Date()).format('m/d/Y')
+        }
+    },{
+        xtype: 'numbercolumn',
+        header: 'Salary',
+        dataIndex: 'salary',
+        format: '$0,0.00',
+        width: 100,
+        sortable: true,
+        editor: {
+            xtype: 'numberfield',
+            allowBlank: false,
+            minValue: 1,
+            maxValue: 150000
+        }
+    },{
+        xtype: 'booleancolumn',
+        header: 'Active',
+        dataIndex: 'active',
+        align: 'center',
+        width: 50,
+        trueText: 'Yes',
+        falseText: 'No',
+        editor: {
+            xtype: 'checkbox'
+        }
+    }]
+})
