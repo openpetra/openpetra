@@ -451,6 +451,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     Int64 AOldField,
                                     DateTime ADateCorrection,
                                     bool AWithReceipt);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
+        Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
+                                            ref String motivationGroup,
+                                            ref String motivationDetail);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector)</summary>
         NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
                                              DateTime ASubscriptionStartFrom,

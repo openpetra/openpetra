@@ -323,6 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailRecipientKey.Location = new System.Drawing.Point(2,2);
             this.txtDetailRecipientKey.Name = "txtDetailRecipientKey";
             this.txtDetailRecipientKey.Size = new System.Drawing.Size(370, 28);
+            this.txtDetailRecipientKey.ValueChanged += new TDelegatePartnerChanged(this.RecipientKeyChanged);
             this.txtDetailRecipientKey.ASpecialSetting = true;
             this.txtDetailRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtDetailRecipientKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;

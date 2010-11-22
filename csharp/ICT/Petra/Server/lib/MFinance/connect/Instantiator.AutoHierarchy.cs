@@ -2125,6 +2125,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
+                                                   ref String motivationGroup,
+                                                   ref String motivationDetail)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools.GetMotivationGroupAndDetail(partnerKey, ref motivationGroup, ref motivationDetail);
+        }
+
+        /// generated method from connector
         public NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
                                                     DateTime ASubscriptionStartFrom,
                                                     DateTime ASubscriptionStartUntil,
