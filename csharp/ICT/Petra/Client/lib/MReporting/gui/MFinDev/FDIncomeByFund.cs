@@ -66,11 +66,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedger.Text = Catalog.GetString("Ledger:");
-      this.rbtPeriodRange.Text = Catalog.GetString("Period Range");
-      this.lblStartPeriod.Text = Catalog.GetString("from:");
-      this.lblEndPeriod.Text = Catalog.GetString("to:");
+      this.lblEndPeriod.Text = Catalog.GetString("Period:");
       this.lblPeriodYear.Text = Catalog.GetString("Year:");
-      this.rbtQuarter.Text = Catalog.GetString("Quarter");
       this.lblQuarter.Text = Catalog.GetString("Quarter:");
       this.lblPeriodYearQuarter.Text = Catalog.GetString("Year:");
       this.rgrPeriod.Text = Catalog.GetString("Period");
@@ -112,7 +109,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       #endregion
 
       this.txtLedger.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtStartPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtEndPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtQuarter.Font = TAppSettingsManager.GetDefaultBoldFont();
 
@@ -138,7 +134,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
     void rbtPeriodRangeCheckedChanged(object sender, System.EventArgs e)
     {
-      txtStartPeriod.Enabled = rbtPeriodRange.Checked;
       txtEndPeriod.Enabled = rbtPeriodRange.Checked;
       cmbPeriodYear.Enabled = rbtPeriodRange.Checked;
     }
@@ -184,7 +179,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       if (rbtPeriodRange.Checked)
       {
           ACalc.AddParameter("param_rgrPeriod", "PeriodRange");
-          ACalc.AddParameter("param_start_period_i", this.txtStartPeriod.Text);
           ACalc.AddParameter("param_end_period_i", this.txtEndPeriod.Text);
           ACalc.AddParameter("param_year_i", this.cmbPeriodYear.GetSelectedString());
       }
@@ -228,7 +222,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
       rbtPeriodRange.Checked = AParameters.Get("param_rgrPeriod").ToString() == "PeriodRange";
       if (rbtPeriodRange.Checked)
       {
-          txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
           txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
           cmbPeriodYear.SetSelectedString(AParameters.Get("param_year_i").ToString());
       }

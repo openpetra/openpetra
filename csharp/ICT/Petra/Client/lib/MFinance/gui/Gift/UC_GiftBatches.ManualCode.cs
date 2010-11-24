@@ -222,7 +222,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ExportBatches(System.Object sender, System.EventArgs e)
         {
-            // todo: get the batch numbers of all selected batches, and send to the server, to create an exportable file
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                    Catalog.GetString("Export Error"));
+                return;
+            }
+
+            TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(this.Handle);
+            exportForm.LedgerNumber = FLedgerNumber;
+            exportForm.MainDS = FMainDS;
+            exportForm.Show();
         }
 
         private void ImportBatches(System.Object sender, System.EventArgs e)

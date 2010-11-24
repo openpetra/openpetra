@@ -420,5 +420,54 @@
         <delete file="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
         <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>
     </target>
-  
+
+    <target name="packTestRelease">
+        <copy file="${OpenPetraRoot.dir}/etc/Server.config" tofile="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config" overwrite="true"/>
+        <copy file="${OpenPetraRoot.dir}/etc/Client.config" tofile="${OpenPetraRoot.dir}/tmp/PetraClient.exe.config" overwrite="true"/>
+        <echo file="${OpenPetraRoot.dir}/tmp/placeholder.txt">directory needed for Server.log</echo>
+        <zip zipfile="${Delivery.dir}/testRelease.zip">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug" prefix="csharp/ICT/Petra/Server/_bin/Debug">
+                <include name="*.exe" />
+                <include name="*.dll" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Debug" prefix="csharp/ICT/Petra/Client/_bin/Debug">
+                <include name="*.exe" />
+                <include name="*.dll" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="csharp/ICT/Petra/Server/_bin/Debug">
+                <include name="PetraServerConsole.exe.config" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="csharp/ICT/Petra/Client/_bin/Debug">
+                <include name="PetraClient.exe.config" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions" prefix="csharp/ICT/Petra/Definitions">
+                <include name="UINavigation.yml" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/resources" prefix="resources">
+                <include name="*.*" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/etc" prefix="etc">
+                <include name="*.sample" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="log">
+                <include name="placeholder.txt" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Testing/_bin/Debug" prefix="csharp/ICT/Testing/_bin/Debug">
+                <include name="*.dll" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/XmlReports" prefix="XmlReports">
+                <include name="**.dtd" />
+                <include name="**.xml" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Testing/Reporting/TestData" prefix="csharp/ICT/Testing/Reporting/TestData">
+                <include name="**.xml" />
+                <include name="**.csv" />
+                <include name="**.txt" />
+            </fileset>
+        </zip>        
+        <delete file="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
+        <delete file="${OpenPetraRoot.dir}/tmp/PetraClient.exe.config"/>
+        <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>
+    </target>
+
 </project>

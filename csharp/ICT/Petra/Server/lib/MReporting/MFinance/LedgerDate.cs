@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (StringHelper.IsSame(f, "getQuarterOrPeriod"))
             {
-                value = new TVariant(GetQuarterOrPeriod(ops[1].ToInt(), ops[2].ToBool(), ops[3].ToInt(), ops[4].ToInt()));
+                value = new TVariant(GetQuarterOrPeriod(ops[1].ToInt(), ops[2].ToInt(), ops[3].ToInt(), ops[4].ToInt()));
                 return true;
             }
 
@@ -332,20 +332,28 @@ namespace Ict.Petra.Server.MReporting.MFinance
         ///
         /// </summary>
         /// <returns></returns>
-        public String GetQuarterOrPeriod(int ledgernumber, Boolean quarter, int start_period, int end_period)
+        public String GetQuarterOrPeriod(int ledgernumber, int quarter, int start_period, int end_period)
         {
             String ReturnValue;
             TVariant reportytd;
             DateTime startDate;
             DateTime endDate;
 
-            if (quarter)
+            if (quarter > 0)
             {
-                ReturnValue = "Quarter " + Convert.ToString((end_period / 4) + 1);
+                ReturnValue = "Quarter " + quarter.ToString();
+                start_period = ((quarter - 1) * 3) + 1;
+                end_period = (quarter * 3);
             }
             else
             {
                 ReturnValue = "Period " + end_period.ToString();
+
+                // we only want to cover one period
+                if (start_period != end_period)
+                {
+                    throw new Exception("GetQuarterOrPeriod: start period and end period must be equal");
+                }
             }
 
             ReturnValue = ReturnValue + ": ";

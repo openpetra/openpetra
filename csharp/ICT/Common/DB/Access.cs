@@ -460,16 +460,9 @@ namespace Ict.Common.DB
 
             try
             {
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                {
-                    TLogging.Log("    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
-                }
-                else
-                {
-                    // always log to console which type of database and location/port we are connecting to
-                    TLogging.Log(
-                        "    Connecting to " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString(), TLoggingType.ToConsole);
-                }
+                // always log to console and log file, which database we are connecting to.
+                // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
+                TLogging.Log("    Connecting to database " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
 
                 FSqlConnection.Open();
 

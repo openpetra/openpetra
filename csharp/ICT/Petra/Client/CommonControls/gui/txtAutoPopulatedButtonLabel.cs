@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.CommonControls
     public delegate void TDelegatePartnerFound(Int64 APartnerKey, Int32 ALocationKey);
 
     /// <summary>Partner found</summary>
-    public delegate void TDelegateConferenceChanged(Int64 AConferenceKey, String AConferenceName, bool AValidConference);
+    public delegate void TDelegatePartnerChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection);
 
     class txtAutoPopulatedButtonLabel
     {
@@ -524,7 +524,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
         /// </summary>
-        public event TDelegateConferenceChanged ConferenceChanged;
+        public event TDelegatePartnerChanged ValueChanged;
 
         /// <summary>
         /// This property is used to provide a function which sets the Label''s and TextBox's Texts.
@@ -1603,10 +1603,20 @@ namespace Ict.Petra.Client.CommonControls
                         {
                             mPartnerShortName = "### ShortName not retrieved ###";
                         }
+                        else
+                        {
+                            ValidResult = true;
+                        }
                     }
                     else
                     {
+                        mPartnerKey = 0;
                         mPartnerShortName = "";
+                    }
+
+                    if (ValueChanged != null)
+                    {
+                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
                     }
 
                     ALabelText = mPartnerShortName;
@@ -1672,9 +1682,9 @@ namespace Ict.Petra.Client.CommonControls
                         mPartnerShortName = "";
                     }
 
-                    if (ConferenceChanged != null)
+                    if (ValueChanged != null)
                     {
-                        ConferenceChanged(mPartnerKey, mPartnerShortName, ValidResult);
+                        ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
                     }
 
                     ALabelText = mPartnerShortName;

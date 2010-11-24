@@ -284,10 +284,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <summary>
         /// Adds an event to the txtAutoPopulatedButtonLabel
         /// </summary>
-        /// <param name="AEventHandler">Conference changed event handler</param>
-        public void AddConfernceKeyChangedEventHandler(Ict.Petra.Client.CommonControls.TDelegateConferenceChanged AEventHandler)
+        /// <param name="AEventHandler">Partner changed event handler</param>
+        public void AddConfernceKeyChangedEventHandler(Ict.Petra.Client.CommonControls.TDelegatePartnerChanged AEventHandler)
         {
-            txtConference.ConferenceChanged += AEventHandler;
+            txtConference.ValueChanged += AEventHandler;
         }
 
         /// <summary>

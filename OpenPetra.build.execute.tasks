@@ -34,6 +34,15 @@
     </target>
 
     <target name="startPetraServer" depends="" description="start a local Petra Server"> <!-- compilePetra, startDatabase??? -->
+        <if test="${not file::exists(ServerConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/Server-${DBMS.Type}.config.sample"
+                tofile="${ServerConfigFile}"/>
+        </if>
+        <if test="${not file::exists(ServerAdminConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/ServerAdmin.config.sample"
+                tofile="${ServerAdminConfigFile}"/>
+        </if>
+
         <call target="updateServerConfigFile"/>
         
         <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
@@ -64,6 +73,11 @@
     </target>
 
     <target name="startPetraClient" depends="" description="start the Petra Client"> <!-- compilePetra, startPetraServer??? -->
+        <if test="${not file::exists(ClientConfigFile)}">
+            <copy file="${OpenPetraRoot.dir}/etc/Client.config.sample"
+                tofile="${ClientConfigFile}"/>
+        </if>
+
         <property name="ToReplace" value="RegEx:localhost:.*?/Clientmanager"/>
         <property name="NewValue" value="localhost:${Server.Port}/Clientmanager"/>
         <property name="temp" value="${script::ReplaceInFile(ClientConfigFile, ToReplace, NewValue)}"/>
@@ -169,6 +183,10 @@
             <copy file="${OpenPetraRoot.dir}/etc/web-${DBMS.Type}.config.sample"
                 tofile="${WebConfigFile}" overwrite="true"/>
         </if>
+        <property name="ToReplace" value="RegEx:PostgreSQLDatabaseName&quot; value = &quot;.*?&quot;"/>
+        <property name="NewValue" value="PostgreSQLDatabaseName&quot; value = &quot;${DBMS.DBName}&quot;"/>
+        <property name="temp" value="${script::ReplaceInFile(WebConfigFile, ToReplace, NewValue)}"/>
+
         <!-- TODO: run on linux as well? -->
         <exec program="cmd.exe" 
                 workingdir="${WebServerInstall.dir}"

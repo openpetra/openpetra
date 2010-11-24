@@ -107,5 +107,8 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Sub Systems, Gifts receivable</summary>
         public const String SUB_SYSTEM_GR = "GR";
+
+        /// <summary>Unit-Type is key-min</summary>
+        public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
     }
 }

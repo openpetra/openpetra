@@ -112,6 +112,8 @@
   <ItemGroup>
     <Compile Include="Gift.Adjustment.cs" />
     <Compile Include="Gift.cs" />
+    <Compile Include="Gift.Exporting.cs" />
+    <Compile Include="Gift.gui.tools.cs" />
     <Compile Include="Gift.NewDonorSubscription.cs" />
     <Compile Include="Gift.Receipting.cs" />
     <Compile Include="Gift.Transactions.cs" />

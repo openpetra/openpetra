@@ -62,8 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnNew.Text = Catalog.GetString("&New");
-      this.btnDelete.Text = Catalog.GetString("&Delete");
+      this.btnNewType.Text = Catalog.GetString("&New");
+      this.btnDeleteType.Text = Catalog.GetString("&Delete");
       this.lblDetailAnalysisTypeCode.Text = Catalog.GetString("&Analysis Type Code:");
       this.lblDetailAnalysisTypeDescription.Text = Catalog.GetString("Description:");
       this.lblDetailSystemAnalysisType.Text = Catalog.GetString("System Analysis Type:");
@@ -439,12 +439,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (e.ActionName == "actNew")
         {
-            btnNew.Enabled = e.Enabled;
+            btnNewType.Enabled = e.Enabled;
             tbbNew.Enabled = e.Enabled;
         }
         if (e.ActionName == "actDelete")
         {
-            btnDelete.Enabled = e.Enabled;
+            btnDeleteType.Enabled = e.Enabled;
         }
         if (e.ActionName == "actSave")
         {

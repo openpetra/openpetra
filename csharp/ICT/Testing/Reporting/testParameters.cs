@@ -59,13 +59,20 @@ namespace Tests.Reporting
             Assert.AreEqual("0", value.ToFormattedString(), "null value for currency should be 0");
             value = new TVariant(value.ToFormattedString());
             parameters.Add("amountdue", value, -1, 2, null, null, ReportingConsts.CALCULATIONPARAMETERS);
-            parameters.Save("test.csv", true);
+            parameters.Save("testDebug.csv", true);
             Assert.AreEqual(true, parameters.Exists("amountdue", -1, 1, eParameterFit.eBestFitEvenLowerLevel), "can find added parameter");
             Assert.AreEqual("0", parameters.Get("amountdue", -1, 2,
                     eParameterFit.eBestFit).ToFormattedString(), "currency parameter is stored not correctly");
             //Assert.AreEqual("0", parameters.Get("amountdue", -1, 1, eParameterFit.eBestFit).ToFormattedString(), "currency parameter is stored not correctly");
             Assert.AreEqual("0", parameters.Get("amountdue", -1, 1,
                     eParameterFit.eBestFitEvenLowerLevel).ToFormattedString(), "currency parameter cannot be accessed from level up");
+
+            parameters.Add("IntegerList", "300,400");
+            parameters.Save("test.csv", false);
+            parameters.Load(Path.GetFullPath("test.csv"));
+            Assert.AreEqual("eString:300,400", parameters.Get(
+                    "IntegerList").EncodeToString(), "integers separated by comma should be treated as string");
+            parameters.Save("test2.csv", true);
         }
     }
 }

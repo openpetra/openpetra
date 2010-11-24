@@ -2125,6 +2125,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
+                                                   ref String motivationGroup,
+                                                   ref String motivationDetail)
+        {
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools.GetMotivationGroupAndDetail(partnerKey, ref motivationGroup, ref motivationDetail);
+        }
+
+        /// generated method from connector
         public NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
                                                     DateTime ASubscriptionStartFrom,
                                                     DateTime ASubscriptionStartUntil,
@@ -2198,6 +2206,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public bool ExportAllGiftBatchData(ref ArrayList batches,
+                                           Hashtable requestParams,
+                                           out String exportString)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";ARRAYLIST;HASHTABLE;STRING;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
         }
 
         /// generated method from connector
