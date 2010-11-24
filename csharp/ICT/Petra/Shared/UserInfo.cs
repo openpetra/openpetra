@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Web;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Shared
 {
@@ -33,6 +35,33 @@ namespace Ict.Petra.Shared
     public class UserInfo
     {
         /// <summary>used internally to hold User Information</summary>
-        public static Ict.Petra.Shared.Security.TPetraPrincipal GUserInfo = null;
+        private static TPetraPrincipal MUserInfo = null;
+
+        /// <summary>used internally to hold User Information</summary>
+        public static TPetraPrincipal GUserInfo
+        {
+            set
+            {
+                if (HttpContext.Current == null)
+                {
+                    MUserInfo = value;
+                }
+                else
+                {
+                    HttpContext.Current.Session["USERINFO"] = value;
+                }
+            }
+            get
+            {
+                if (HttpContext.Current == null)
+                {
+                    return MUserInfo;
+                }
+                else
+                {
+                    return (TPetraPrincipal)HttpContext.Current.Session["USERINFO"];
+                }
+            }
+        }
     }
 }

@@ -135,6 +135,13 @@ public class TOpenPetraOrg : WebService
         return false;
     }
 
+    /// <summary>log the user out</summary>
+    [WebMethod(EnableSession = true)]
+    public void Logout()
+    {
+        Session["LoggedIn"] = false;
+    }
+
     /// <summary>
     /// check if there is already a supplier record for the given partner
     /// </summary>

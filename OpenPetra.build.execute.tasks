@@ -156,6 +156,15 @@
                 <exclude name="Mono*" />
             </fileset>
         </copy>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <!-- some unmanaged dlls cause problems for mono xsp -->
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Debug/">
+                <include name="*.dll" />
+                <exclude name="Mono*" />
+            </fileset>
+        </copy>
+        <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
+            tofile="${WebServerInstall.dir}/bin/version.txt" overwrite="true"/>
         <if test="${not file::exists(WebConfigFile)}">
             <copy file="${OpenPetraRoot.dir}/etc/web-${DBMS.Type}.config.sample"
                 tofile="${WebConfigFile}" overwrite="true"/>
