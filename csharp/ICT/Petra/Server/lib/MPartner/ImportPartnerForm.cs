@@ -93,6 +93,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// </summary>
         public string email;
         /// <summary>
+        /// Date of Birth of the person
+        /// </summary>
+        public DateTime? dateofbirth;
+        /// <summary>
         /// partner key of registration office
         /// </summary>
         public Int64 registrationoffice;
@@ -171,6 +175,12 @@ namespace Ict.Petra.Server.MPartner.Import
             newPerson.FamilyKey = AFamilyKey;
             newPerson.FirstName = APartnerData.firstname;
             newPerson.FamilyName = APartnerData.lastname;
+
+            if (APartnerData.dateofbirth.HasValue)
+            {
+                newPerson.DateOfBirth = APartnerData.dateofbirth;
+            }
+
             newPerson.Title = APartnerData.title;
 
             AMainDS.PPerson.Rows.Add(newPerson);

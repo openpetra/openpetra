@@ -45,7 +45,7 @@
             Resizable="false"
             Height="150" 
             Icon="Lock" 
-            Title="Login"
+            Title="Login to OpenPetra Preview"
             Draggable="false"
             Width="350"
             Modal="true"

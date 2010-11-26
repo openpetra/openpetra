@@ -17,7 +17,7 @@ RootNode:
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
         lblWelcome2: {Label="Please click on &quot;next&quot; to start your application!"}
         hidRegistrationOffice: {value=43000000}
-        hidEventID: {value=SC001CNGRSS08}
+        hidEventIdentifier: {value=SC001CNGRSS08}
         hidRole: {value=TS-SERVE}
         aspPage1:
             Label: "Address Details"

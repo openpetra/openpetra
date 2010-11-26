@@ -9,8 +9,21 @@
     </DataSet>
 
     <DataSet name="ConferenceApplicationTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="p_person"/>
         <Table sqltable="pm_general_application"/>
         <Table sqltable="pm_short_term_application"/>
+        <CustomTable name="ApplicationGrid">
+            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_gender_c"/>
+            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_gen_app_date_d"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_gen_application_status_c"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
+        </CustomTable>
+        
     </DataSet>
 
 </PetraDataSets>

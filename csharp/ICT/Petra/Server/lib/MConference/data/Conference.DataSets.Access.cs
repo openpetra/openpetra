@@ -159,6 +159,40 @@ namespace Ict.Petra.Server.MConference.Data.Access
                 {
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eDelete,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPartner, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+                if (SubmissionResult == TSubmitChangesResult.scrOK
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
+                            TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
+                            out AVerificationResult,
+                            UserInfo.GUserInfo.UserID))
+                {
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
                 if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.PmGeneralApplication != null)
                 {
                     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
