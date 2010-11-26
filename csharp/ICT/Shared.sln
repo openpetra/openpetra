@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 3.2.0.5505
+# SharpDevelop 3.2.0.5777
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared", "Petra\Shared\Ict.Petra.Shared.csproj", "{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Shared.MCommon.DataSets", "Petra\Shared\lib\MCommon\data\Ict.Petra.Shared.MCommon.DataSets.csproj", "{7009B78A-4870-44C6-B8C9-30DFC36FD410}"

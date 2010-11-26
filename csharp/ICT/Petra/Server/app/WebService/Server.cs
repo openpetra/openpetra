@@ -331,7 +331,8 @@ public class TOpenPetraOrg : WebService
         // remove ext-comp controls, for multi-page forms
         AJSONFormData = RemoveContainerControls(AJSONFormData);
 
-        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"");
+        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"").Replace("\"hid",
+            "\"");
 
         return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
     }

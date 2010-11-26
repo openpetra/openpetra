@@ -2751,7 +2751,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.SetNull(this.myTable.ColumnVenueKey);
             this.SetNull(this.myTable.ColumnBuildingCode);
             this.SetNull(this.myTable.ColumnRoomNumber);
-            this[this.myTable.ColumnConferenceKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnConferenceKey);
             this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
             this[this.myTable.ColumnBookWholeRoom.Ordinal] = true;
             this[this.myTable.ColumnNumberOfBeds.Ordinal] = 1;

@@ -13,9 +13,12 @@ RootNode:
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
             Label: Welcome
-            Controls: [lblWelcome, lblWelcome2]
+            Controls: [lblWelcome, lblWelcome2, hidRegistrationOffice, hidEventIdentifier, hidRole]
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
         lblWelcome2: {Label="Please click on &quot;next&quot; to start your application!"}
+        hidRegistrationOffice: {value=43000000}
+        hidEventID: {value=SC001CNGRSS08}
+        hidRole: {value=TS-SERVE}
         aspPage1:
             Label: "Address Details"
             Controls:
@@ -37,6 +40,12 @@ RootNode:
                 #Row9: [uplImage]
                 Row10: [txtExistingPartnerKey]
                 Row11: [txtGroupWish]
+        txtMobile:
+            allowBlank: true
+        txtExistingPartnerKey:
+            allowBlank: true
+        txtGroupWish:
+            allowBlank: true
         txtEmail: {vtype=email}
         rgrGender:
             OptionalValues: [male, female]

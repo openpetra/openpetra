@@ -92,6 +92,13 @@
     value: this.{#LABEL}
 }
 
+{##HIDDENFIELDDEFINITION}
+{
+    xtype: 'hidden',
+    value: {#VALUE},
+    name: '{#ITEMNAME}'
+}
+
 {##FILEUPLOADDEFINITION}
 {
     xtype: 'fileuploadfield',

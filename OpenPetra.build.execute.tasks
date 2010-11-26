@@ -177,6 +177,13 @@
                 <exclude name="Mono*" />
             </fileset>
         </copy>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <!-- load the shared variables, otherwise old client files might overwrite the uptodate shared files from the server directory -->
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/_bin/Server_Client/Debug/">
+                <include name="*.dll" />
+                <exclude name="Mono*" />
+            </fileset>
+        </copy>
         <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
             tofile="${WebServerInstall.dir}/bin/version.txt" overwrite="true"/>
         <if test="${not file::exists(WebConfigFile)}">

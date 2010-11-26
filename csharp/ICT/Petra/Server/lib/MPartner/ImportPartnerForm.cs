@@ -35,6 +35,10 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared.MConference;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Server.MConference.Data.Access;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Jayrock.Json;
 
 namespace Ict.Petra.Server.MPartner.Import
@@ -88,6 +92,18 @@ namespace Ict.Petra.Server.MPartner.Import
         /// email address
         /// </summary>
         public string email;
+        /// <summary>
+        /// partner key of registration office
+        /// </summary>
+        public Int64 registrationoffice;
+        /// <summary>
+        /// identifies the event
+        /// </summary>
+        public string eventidentifier;
+        /// <summary>
+        /// each applicant is given a role at the event (participant, volunteer, etc)
+        /// </summary>
+        public string role;
     }
 
     /// <summary>
@@ -127,6 +143,43 @@ namespace Ict.Petra.Server.MPartner.Import
 
             newPartner.PartnerShortName =
                 Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
+            return newPartnerKey;
+        }
+
+        private static Int64 CreatePerson(ref PartnerEditTDS AMainDS, Int64 AFamilyKey, TApplicationFormData APartnerData)
+        {
+            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
+
+            Int64 SiteKey = DomainManager.GSiteKey;
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(SiteKey);
+                TNewPartnerKey.SubmitNewPartnerKey(SiteKey, newPartnerKey, ref newPartnerKey);
+                newPartner.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            // TODO: new status UNAPPROVED?
+            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            AMainDS.PPartner.Rows.Add(newPartner);
+
+            PPersonRow newPerson = AMainDS.PPerson.NewRowTyped();
+            newPerson.PartnerKey = newPartner.PartnerKey;
+            newPerson.FamilyKey = AFamilyKey;
+            newPerson.FirstName = APartnerData.firstname;
+            newPerson.FamilyName = APartnerData.lastname;
+            newPerson.Title = APartnerData.title;
+
+            AMainDS.PPerson.Rows.Add(newPerson);
+
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+            newPartner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
+
+            newPartner.PartnerShortName =
+                Calculations.DeterminePartnerShortName(newPerson.FamilyName, newPerson.Title, newPerson.FirstName);
             return newPartnerKey;
         }
 
@@ -180,11 +233,51 @@ namespace Ict.Petra.Server.MPartner.Import
                     // TODO: check that email is unique. do not allow email to be associated with 2 records. this would cause trouble with authentication
                     // TODO: create a user for this partner
 
-                    Int64 NewPartnerKey = CreateFamily(ref MainDS, data);
-                    CreateAddress(ref MainDS, data, NewPartnerKey);
+                    Int64 NewFamilyPartnerKey = CreateFamily(ref MainDS, data);
+                    Int64 NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
+                    CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
                     TVerificationResultCollection VerificationResult;
                     PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+                    if (VerificationResult.HasCriticalError())
+                    {
+                        TLogging.Log(VerificationResult.BuildVerificationResultString());
+                        string message = "There is some critical error when saving to the database";
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+
+                    // add a record for the application
+                    ConferenceApplicationTDS ConfDS = new ConferenceApplicationTDS();
+                    PmGeneralApplicationRow GeneralApplicationRow = ConfDS.PmGeneralApplication.NewRowTyped();
+                    GeneralApplicationRow.PartnerKey = NewPersonPartnerKey;
+                    GeneralApplicationRow.ApplicationKey = -1;
+                    GeneralApplicationRow.RegistrationOffice = data.registrationoffice;
+                    GeneralApplicationRow.GenAppDate = DateTime.Today;
+                    GeneralApplicationRow.AppTypeName = MConferenceConstants.APPTYPE_CONFERENCE;
+
+                    // TODO pm_st_basic_camp_identifier_c is quite strange. will there be an overflow soon?
+                    // see ticket https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=161
+                    GeneralApplicationRow.OldLink = "";
+                    GeneralApplicationRow.GenApplicantType = "";
+                    GeneralApplicationRow.GenApplicationStatus = MConferenceConstants.APPSTATUS_ONHOLD;
+                    ConfDS.PmGeneralApplication.Rows.Add(GeneralApplicationRow);
+
+                    PmShortTermApplicationRow ShortTermApplicationRow = ConfDS.PmShortTermApplication.NewRowTyped();
+                    ShortTermApplicationRow.PartnerKey = NewPersonPartnerKey;
+                    ShortTermApplicationRow.ApplicationKey = -1;
+                    ShortTermApplicationRow.RegistrationOffice = data.registrationoffice;
+                    ShortTermApplicationRow.StAppDate = DateTime.Today;
+                    ShortTermApplicationRow.StApplicationType = MConferenceConstants.APPTYPE_CONFERENCE;
+                    ShortTermApplicationRow.StBasicXyzTbdIdentifier = GeneralApplicationRow.OldLink;
+                    ShortTermApplicationRow.StCongressCode = data.role;
+                    ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
+                    ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
+                    ConfDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
+
+                    // TODO ApplicationForms
+
+                    ConferenceApplicationTDSAccess.SubmitChanges(ConfDS, out VerificationResult);
 
                     if (VerificationResult.HasCriticalError())
                     {
@@ -199,6 +292,8 @@ namespace Ict.Petra.Server.MPartner.Import
                 {
                     TLogging.Log(e.Message);
                     TLogging.Log(e.StackTrace);
+                    string message = "There is some critical error when saving to the database";
+                    return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                 }
 
                 return "{\"success\":true}";

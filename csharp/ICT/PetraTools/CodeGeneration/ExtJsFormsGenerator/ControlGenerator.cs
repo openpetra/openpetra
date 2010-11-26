@@ -74,6 +74,28 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
     }
+    public class HiddenFieldGenerator : TControlGenerator
+    {
+        public HiddenFieldGenerator()
+            : base("hid", "hidden")
+        {
+            FControlDefinitionSnippetName = "HIDDENFIELDDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "VALUE",
+                ctrl,
+                TYml2Xml.GetAttribute(ctrl.xmlNode, "value"));
+
+            ctrlSnippet.SetCodelet("VALUE", "this." + ctrl.controlName + "VALUE");
+
+            return ctrlSnippet;
+        }
+    }
 
     public class UploadGenerator : TControlGenerator
     {
