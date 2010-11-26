@@ -28,17 +28,15 @@ using NUnit.Framework;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 
 
-	
 namespace Tests.MFinance.Server.Gift
 {
     /// The Webconnector class TSetMotivationGroupAndDetail is tested
     [TestFixture]
     public class SetMotivationGroupAndDetailTest
     {
-    	
-    	const string SMTH= "SMTH"; // Means Something
-    	const string KMIN= "KEYMIN"; // Special Result ...
-    	
+        const string SMTH = "SMTH"; // Means Something
+        const string KMIN = "KEYMIN"; // Special Result ...
+
         /// <summary>
         /// ...
         /// </summary>
@@ -65,18 +63,17 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void Test_nullPartner()
         {
-        	Int64 partnerKey = 0;
-        	Boolean partnerKeyIsValid;
-        	String motivationGroup = SMTH;
-        	String motivationDetail = SMTH;
-        	
-        	partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
-        		partnerKey, ref motivationGroup, ref motivationDetail);
-        	
-        	Assert.IsFalse(partnerKeyIsValid ,"Check if partnerKey=0 does not exist");
-        	Assert.AreEqual(SMTH,motivationGroup,"motivationGroup must not be changed");
-        	Assert.AreEqual(SMTH,motivationDetail,"motivationDetail must not be changed");
+            Int64 partnerKey = 0;
+            Boolean partnerKeyIsValid;
+            String motivationGroup = SMTH;
+            String motivationDetail = SMTH;
 
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+                partnerKey, ref motivationGroup, ref motivationDetail);
+
+            Assert.IsFalse(partnerKeyIsValid, "Check if partnerKey=0 does not exist");
+            Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
+            Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
         /// <summary>
@@ -86,66 +83,65 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void Test_invalidPartner()
         {
-        	Int64 partnerKey = 1234567;
-        	Boolean partnerKeyIsValid;
-        	String motivationGroup = SMTH;
-        	String motivationDetail = SMTH;
-        	
-        	partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
-        		partnerKey, ref motivationGroup, ref motivationDetail);
-        	
-        	Assert.IsFalse(partnerKeyIsValid ,"Check if partnerKey=1234567 does not exist");
-        	Assert.AreEqual(SMTH,motivationGroup,"motivationGroup must not be changed");
-        	Assert.AreEqual(SMTH,motivationDetail,"motivationDetail must not be changed");
+            Int64 partnerKey = 1234567;
+            Boolean partnerKeyIsValid;
+            String motivationGroup = SMTH;
+            String motivationDetail = SMTH;
+
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+                partnerKey, ref motivationGroup, ref motivationDetail);
+
+            Assert.IsFalse(partnerKeyIsValid, "Check if partnerKey=1234567 does not exist");
+            Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
+            Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
-        
+
         [Test]
         public void Test_Person()
         {
-        	Int64 partnerKey = 43005003;  // Valid Number for Pope, Dahlia
-        	Boolean partnerKeyIsValid;
-        	String motivationGroup = SMTH;
-        	String motivationDetail = SMTH;
-        	
-        	partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
-        		partnerKey, ref motivationGroup, ref motivationDetail);
-        	
-        	Assert.IsTrue(partnerKeyIsValid ,"Check if partnerKey=43005003 does not exist");
-        	Assert.AreEqual(SMTH,motivationGroup,"motivationGroup must not be changed");
-        	Assert.AreEqual(SMTH,motivationDetail,"motivationDetail must not be changed");
+            Int64 partnerKey = 43005003;      // Valid Number for Pope, Dahlia
+            Boolean partnerKeyIsValid;
+            String motivationGroup = SMTH;
+            String motivationDetail = SMTH;
+
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+                partnerKey, ref motivationGroup, ref motivationDetail);
+
+            Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=43005003 does not exist");
+            Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
+            Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
         [Test]
         public void Test_Unit_WithoutKeyMin()
         {
-        	Int64 partnerKey = 43000000;  // Valid Number for the unit Germany
-        	Boolean partnerKeyIsValid;
-        	String motivationGroup = SMTH;
-        	String motivationDetail = SMTH;
-        	
-        	partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
-        		partnerKey, ref motivationGroup, ref motivationDetail);
-        	
-        	Assert.IsTrue(partnerKeyIsValid ,"Check if partnerKey=43005003 does exist");
-        	Assert.AreEqual(SMTH,motivationGroup,"motivationGroup must not be changed");
-        	Assert.AreEqual(SMTH,motivationDetail,"motivationDetail must not be changed");
+            Int64 partnerKey = 43000000;      // Valid Number for the unit Germany
+            Boolean partnerKeyIsValid;
+            String motivationGroup = SMTH;
+            String motivationDetail = SMTH;
+
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+                partnerKey, ref motivationGroup, ref motivationDetail);
+
+            Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=43005003 does exist");
+            Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
+            Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
         [Test]
         public void Test_Unit_WithKeyMin()
         {
-        	Int64 partnerKey = 1800504;  // Valid Number for the unit ""Save The Forest""
-        	Boolean partnerKeyIsValid;
-        	String motivationGroup = SMTH;
-        	String motivationDetail = SMTH;
-        	
-        	partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
-        		partnerKey, ref motivationGroup, ref motivationDetail);
-        	
-        	Assert.IsTrue(partnerKeyIsValid ,"Check if partnerKey=1800504 does not exist");
-        	Assert.AreEqual(SMTH,motivationGroup,"motivationGroup must not be changed");
-        	Assert.AreEqual(KMIN,motivationDetail,"motivationDetail must be changed to " + KMIN);
-        }
+            Int64 partnerKey = 1800504;      // Valid Number for the unit ""Save The Forest""
+            Boolean partnerKeyIsValid;
+            String motivationGroup = SMTH;
+            String motivationDetail = SMTH;
 
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+                partnerKey, ref motivationGroup, ref motivationDetail);
+
+            Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=1800504 does not exist");
+            Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
+            Assert.AreEqual(KMIN, motivationDetail, "motivationDetail must be changed to " + KMIN);
+        }
     }
 }

@@ -83,22 +83,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowData();
         }
-        
-        private void RecipientKeyChanged(Int64 APartnerKey, 
-                                         String APartnerShortName, 
-                                         bool AValidSelection)
+
+        private void RecipientKeyChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
         {
-        	String strMotivationGroup;
-        	String strMotivationDetail;
-        	strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
-        	strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-        	if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-        		   APartnerKey, ref strMotivationGroup, ref strMotivationDetail)) {
-        		if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN)) {
-        			cmbDetailMotivationDetailCode.SelectedItem = 
-        				MFinanceConstants.GROUP_DETAIL_KEY_MIN;
-        		}
-        	} 
+            String strMotivationGroup;
+            String strMotivationDetail;
+
+            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
+            if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                    APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
+            {
+                if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                {
+                    cmbDetailMotivationDetailCode.SelectedItem =
+                        MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                }
+            }
         }
 
         private void FilterMotivationDetail(object sender, EventArgs e)
