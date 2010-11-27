@@ -7,9 +7,11 @@
 <%@ Assembly Name="Ict.Common" %>
 <%@ Assembly Name="PetraServerWebService" %>
 <%@ Assembly Name="Ict.Petra.Server.MConference" %>
+<%@ Assembly Name="Ict.Petra.Shared.MConference.Datasets" %>
 <%@ Import Namespace="Ict.Common" %>
 <%@ Import Namespace="PetraWebService" %>
 <%@ Import Namespace="Ict.Petra.Server.MConference.Applications" %>
+<%@ Import Namespace="Ict.Petra.Shared.MConference.Data" %>
 
 <script runat="server">
     protected void Page_Load(object sender, EventArgs e)
@@ -25,6 +27,8 @@
         if (!X.IsAjaxRequest)
         {
             MyData_Refresh(null, null);
+            RoleData_Refresh(null, null);
+            ApplicationStatus_Refresh(null, null);
         }
     }
 
@@ -51,12 +55,102 @@
         // TODO get the current sitekey of the user
         // TODO offer all available conferences???
 
-        DataTable test = TApplicationManagement.GetApplications("SC001CNGRSS08", 43000000);
-        
-        this.Store1.DataSource = DataTableToArray(test);
+        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+        if (CurrentApplicants == null || sender != null)
+        {
+            CurrentApplicants = TApplicationManagement.GetApplications("SC001CNGRSS08", 43000000);
+            Session["CURRENTAPPLICANTS"] = CurrentApplicants;
+            this.FormPanel1.SetValues(new {});
+            this.FormPanel1.Disabled = true;
+        }
+
+        this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
         this.Store1.DataBind();
     }
 
+    protected void RoleData_Refresh(object sender, StoreRefreshDataEventArgs e)
+    {
+        // TODO: load from database
+        this.StoreRole.DataSource = new object[]
+        {
+            new object[] { "TS-TEEN-A" },
+            new object[] { "TS-TEEN-O" },
+            new object[] { "TS-SERVE" }
+        };
+        
+        this.StoreRole.DataBind();
+    }
+
+    protected void ApplicationStatus_Refresh(object sender, StoreRefreshDataEventArgs e)
+    {
+        // TODO: load from database
+        this.StoreApplicationStatus.DataSource = new object[]
+        {
+            new object[] { "H", "On Hold" },
+            new object[] { "A", "Accepted" },
+            new object[] { "R", "Rejected" },
+            new object[] { "C", "Cancelled" }
+        };
+        
+        this.StoreApplicationStatus.DataBind();
+    }
+
+    protected void RowSelect(object sender, DirectEventArgs e)
+    {
+        Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
+
+        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+        CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
+
+        ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
+        Session["CURRENTROW"] = row;
+
+        this.FormPanel1.Disabled = false;
+
+        this.FormPanel1.SetValues(new {
+            row.PartnerKey,
+            row.FirstName,                          
+            row.FamilyName,
+            row.Gender,
+            row.DateOfBirth,
+            row.GenAppDate,
+            row.GenApplicationStatus,
+            row.StCongressCode
+        });
+    }
+
+    protected void SaveApplication(object sender, DirectEventArgs e)
+    {
+        ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+        
+        //Console.WriteLine(e.ExtraParams["Values"]);
+        
+        Dictionary<string,string> values = JSON.Deserialize<Dictionary<string, string>>(e.ExtraParams["Values"]);
+        
+        row.FamilyName = values["FamilyName"];
+        row.FirstName = values["FirstName"];
+        row.Gender = values["Gender"];
+        if (values["DateOfBirth"].Length == 0)
+        {
+            row.SetDateOfBirthNull();
+        }
+        else
+        {
+            row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+        }
+        row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+        row.StCongressCode = values["StCongressCode_Value"];
+        row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+
+        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+        if (TApplicationManagement.SaveApplications(ref CurrentApplicants) != TSubmitChangesResult.scrOK)
+        {
+            X.Msg.Alert("Error", "Saving did not work").Show();            
+        }
+        
+        MyData_Refresh(null, null);
+    }
+    
     protected void Logout_Click(object sender, DirectEventArgs e)
     {
         // Logout from Authenticated Session
@@ -105,51 +199,11 @@
         }
     </style>
     
-    <script type="text/javascript">
-        var alignPanels = function () {
-            pnlSample.getEl().alignTo(Ext.getBody(), "tr", [-505, 5], false)
-        };
-
-        var template = '<span style="color:{0};">{1}</span>';
-
-        var change = function (value) {
-            return String.format(template, (value > 0) ? "green" : "red", value);
-        };
-
-        var pctChange = function (value) {
-            return String.format(template, (value > 0) ? "green" : "red", value + "%");
-        };
-
-        var createDynamicWindow = function (app) {
-            var desk = app.getDesktop();
-
-            var w = desk.createWindow({
-                title  : "Dynamic Web Browser",
-                width  : 1000,
-                height : 600,
-                maximizable : true,
-                minimizable : true,
-                autoLoad : {
-                    url  : "http://ajaxian.com/archives/mad-cool-date-library/",
-                    mode : "iframe",
-                    showMask : true
-                }
-            });
-
-            w.center();
-            w.show();
-        };
-    </script>
 </head>
 <body>
     <form runat="server">
-        <ext:ResourceManager ID="ResourceManager1" runat="server">
-            <Listeners>
-                <DocumentReady Handler="alignPanels();" />
-                <WindowResize Handler="alignPanels();" />
-            </Listeners>
-        </ext:ResourceManager>
-        
+        <ext:ResourceManager runat="server" />
+    
         <ext:Desktop 
             ID="MyDesktop" 
             runat="server" 
@@ -211,8 +265,29 @@
                         <ext:RecordField Name="Gender"/>
                         <ext:RecordField Name="DateOfBirth" Type="Date" DateFormat="yyyy-MM-dd" />
                         <ext:RecordField Name="ApplicationDate" Type="Date" DateFormat="yyyy-MM-dd" />
-                        <ext:RecordField Name="ApplicationStatus" />
+                        <ext:RecordField Name="ApplicationStatus" /> 
                         <ext:RecordField Name="Role" />
+                    </Fields>
+                </ext:ArrayReader>
+            </Reader>
+        </ext:Store>
+
+        <ext:Store ID="StoreRole" runat="server" OnRefreshData="RoleData_Refresh">
+            <Reader>
+                <ext:ArrayReader>
+                    <Fields>
+                        <ext:RecordField Name="RoleCode" />
+                    </Fields>
+                </ext:ArrayReader>
+            </Reader>
+        </ext:Store>
+
+        <ext:Store ID="StoreApplicationStatus" runat="server" OnRefreshData="ApplicationStatus_Refresh">
+            <Reader>
+                <ext:ArrayReader>
+                    <Fields>
+                        <ext:RecordField Name="StatusCode" />
+                        <ext:RecordField Name="StatusDescription" />
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -225,33 +300,21 @@
             Title="Applications" 
             Icon="Lorry"             
             Width="700"
-            Height="320"
+            Height="520"
             PageX="200" 
             PageY="125"
-            Layout="Fit">
+            Layout="Border">
             <TopBar>
-                <ext:Toolbar ID="ToolBar1" runat="server">
-                    <Items>
-                        <ext:Button ID="btnLoad" runat="server" Text="Reload" Icon="ArrowRefresh">
-                            <Listeners>
-                                <Click Handler="#{GridPanel1}.load();" />
-                            </Listeners>
-                        </ext:Button>
-                        <ext:Button ID="extbtnedit" runat="server" Icon="Add">
-                            <ToolTips>
-                                <ext:ToolTip ID="ToolTip2" Title="Edit Entry" runat="server" Html="Edit" />
-                            </ToolTips>
-                        </ext:Button>
-                    </Items>
-                </ext:Toolbar>
             </TopBar>           
             <Items>
                 <ext:GridPanel 
                     ID="GridPanel1" 
                     runat="server" 
+                    Region="Center"
                     StoreID="Store1" 
                     StripeRows="true"
-                    Border="false">
+                    Border="false"
+                    Frame="true">
                     <ColumnModel runat="server">
                         <Columns>
                             <ext:Column Header="Person Key" Width="80" DataIndex="PartnerKey"/>
@@ -265,13 +328,86 @@
                         </Columns>
                     </ColumnModel>
                     <SelectionModel>
-                        <ext:RowSelectionModel ID="RowSelectionModel1" runat="server" />
+                        <ext:RowSelectionModel runat="server" SingleSelect="true">
+                            <DirectEvents>
+                                <RowSelect OnEvent="RowSelect" Buffer="100">
+                                    <EventMask ShowMask="true" Target="CustomTarget" CustomTarget="#{FormPanel1}" />
+                                    <ExtraParams>
+                                        <ext:Parameter Name="PartnerKey" Value="this.getSelected().data['PartnerKey']" Mode="Raw" />
+                                    </ExtraParams>
+                                </RowSelect>
+                            </DirectEvents>
+                        </ext:RowSelectionModel>
                     </SelectionModel>
                     <LoadMask ShowMask="true" />
                     <BottomBar>
                         <ext:PagingToolbar ID="PagingToolBar2" runat="server" PageSize="10" StoreID="Store1" />
                     </BottomBar>
                 </ext:GridPanel>
+                <ext:FormPanel 
+                    ID="FormPanel1" 
+                    runat="server" 
+                    Region="South"
+                    Split="true"
+                    Margins="0 5 5 5"
+                    Title="Application Details" 
+                    Height="280"
+                    Icon="User">
+                    <Items>
+                        <ext:Toolbar ID="ToolBar1" runat="server">
+                            <Items>
+                                <ext:Button ID="btnSave" runat="server" Text="Save" Icon="Disk">
+                                    <DirectEvents>
+                                        <Click OnEvent="SaveApplication">
+                                            <EventMask ShowMask="true" />
+                                            <ExtraParams>
+                                                <ext:Parameter Name="Values" Value="FormPanel1.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button>
+                            </Items>
+                        </ext:Toolbar>
+                        <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Partner Key" DataIndex="PartnerKey" ReadOnly="true"/>
+                        <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
+                        <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
+                        <ext:TextField ID="Gender" runat="server" FieldLabel="Gender" DataIndex="Gender" />
+                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="yyyy-MM-dd"/>
+                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="yyyy-MM-dd" />
+                        <ext:ComboBox 
+                            ID="GenApplicationStatus"
+                            runat="server" 
+                            FieldLabel="Application Status" 
+                            DataIndex="GenApplicationStatus"
+                            StoreID="StoreApplicationStatus"
+                            Editable="false"
+                            TypeAhead="true" 
+                            ForceSelection="true"
+                            EmptyText="Select a status..."
+                            DisplayField="StatusDescription"
+                            ValueField="StatusCode"
+                            Mode="Local"
+                            Resizable="true"
+                            SelectOnFocus="true"                            
+                        />
+                        <ext:ComboBox 
+                            ID="StCongressCode"
+                            runat="server" 
+                            FieldLabel="Role" 
+                            DataIndex="StCongressCode"
+                            StoreID="StoreRole"
+                            Editable="false"
+                            TypeAhead="true" 
+                            ForceSelection="true"
+                            EmptyText="Select a role..."
+                            DisplayField="RoleCode"
+                            ValueField="RoleCode"
+                            Mode="Local"
+                            Resizable="true"
+                            SelectOnFocus="true"                            
+                        />
+                    </Items>
+                </ext:FormPanel>
             </Items>
         </ext:DesktopWindow>
         

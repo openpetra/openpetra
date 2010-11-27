@@ -148,6 +148,10 @@
       <Project>{FB826CB1-81C5-47BB-B699-A7EB79CF800A}</Project>
       <Name>Ict.Petra.Server.MConference.DataAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MConference.DatasetAccess.csproj">
+      <Project>{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}</Project>
+      <Name>Ict.Petra.Server.MConference.DatasetAccess</Name>
+    </ProjectReference>
     <Compile Include="ConferenceApplications.cs" />
     <Compile Include="Cacheable.cs" />
   </ItemGroup>

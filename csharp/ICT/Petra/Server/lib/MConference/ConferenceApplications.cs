@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AEventCode"></param>
         /// <param name="ARegisteringOffice"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDSApplicationGridTable GetApplications(string AEventCode, Int64 ARegisteringOffice)
+        public static ConferenceApplicationTDS GetApplications(string AEventCode, Int64 ARegisteringOffice)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -62,34 +62,111 @@ namespace Ict.Petra.Server.MConference.Applications
 
             foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
             {
-                PPersonTable personTable = PPersonAccess.LoadByPrimaryKey(shortTermRow.PartnerKey, Transaction);
-                PmGeneralApplicationTable genAppTable = PmGeneralApplicationAccess.LoadByPrimaryKey(shortTermRow.PartnerKey,
+                PPersonAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey, Transaction);
+                PmGeneralApplicationAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey,
                     shortTermRow.ApplicationKey,
                     shortTermRow.RegistrationOffice,
                     Transaction);
 
+                MainDS.PPerson.DefaultView.RowFilter =
+                    String.Format("{0}={1}",
+                        PPersonTable.GetPartnerKeyDBName(),
+                        shortTermRow.PartnerKey);
+                MainDS.PmGeneralApplication.DefaultView.RowFilter =
+                    String.Format("{0}={1}",
+                        PmGeneralApplicationTable.GetPartnerKeyDBName(),
+                        shortTermRow.PartnerKey);
+
+                PPersonRow Person = (PPersonRow)MainDS.PPerson.DefaultView[0].Row;
+                PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)MainDS.PmGeneralApplication.DefaultView[0].Row;
+
                 ConferenceApplicationTDSApplicationGridRow newRow = MainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
-                newRow.FirstName = personTable[0].FirstName;
-                newRow.FamilyName = personTable[0].FamilyName;
+                newRow.FirstName = Person.FirstName;
+                newRow.FamilyName = Person.FamilyName;
 
-                if (!personTable[0].IsDateOfBirthNull())
+                if (!Person.IsDateOfBirthNull())
                 {
-                    newRow.DateOfBirth = personTable[0].DateOfBirth;
+                    newRow.DateOfBirth = Person.DateOfBirth;
                 }
 
-                newRow.Gender = personTable[0].Gender;
-                newRow.GenAppDate = genAppTable[0].GenAppDate;
+                newRow.Gender = Person.Gender;
+                newRow.GenAppDate = GeneralApplication.GenAppDate;
 
                 // TODO: display the description of that application status
-                newRow.GenApplicationStatus = genAppTable[0].GenApplicationStatus;
+                newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
                 MainDS.ApplicationGrid.Rows.Add(newRow);
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            return MainDS.ApplicationGrid;
+            MainDS.AcceptChanges();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// store the adjusted applications to the database
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <returns></returns>
+        public static TSubmitChangesResult SaveApplications(ref ConferenceApplicationTDS AMainDS)
+        {
+            try
+            {
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
+                    if (row.RowState == DataRowState.Modified)
+                    {
+                        AMainDS.PPerson.DefaultView.RowFilter =
+                            String.Format("{0}={1}",
+                                PPersonTable.GetPartnerKeyDBName(),
+                                row.PartnerKey);
+                        AMainDS.PmShortTermApplication.DefaultView.RowFilter =
+                            String.Format("{0}={1}",
+                                PmShortTermApplicationTable.GetPartnerKeyDBName(),
+                                row.PartnerKey);
+                        AMainDS.PmGeneralApplication.DefaultView.RowFilter =
+                            String.Format("{0}={1}",
+                                PmGeneralApplicationTable.GetPartnerKeyDBName(),
+                                row.PartnerKey);
+
+                        PPersonRow Person = (PPersonRow)AMainDS.PPerson.DefaultView[0].Row;
+                        PmShortTermApplicationRow ShortTermApplication = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[0].Row;
+                        PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[0].Row;
+
+                        Person.FirstName = row.FirstName;
+                        Person.FamilyName = row.FamilyName;
+
+                        if (row.DateOfBirth.HasValue)
+                        {
+                            Person.DateOfBirth = row.DateOfBirth;
+                        }
+                        else
+                        {
+                            Person.SetDateOfBirthNull();
+                        }
+
+                        Person.Gender = row.Gender;
+                        GeneralApplication.GenApplicationStatus = row.GenApplicationStatus;
+                        ShortTermApplication.StCongressCode = row.StCongressCode;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                return TSubmitChangesResult.scrError;
+            }
+
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
+
+            AMainDS.AcceptChanges();
+
+            return result;
         }
     }
 }

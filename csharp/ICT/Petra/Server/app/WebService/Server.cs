@@ -26,6 +26,7 @@ using System.Web.Services;
 using System.Data;
 using System.Collections;
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
@@ -85,6 +86,12 @@ public class TOpenPetraOrg : WebService
             }
         }
 
+        // create a database connection for each user
+        if (Ict.Common.DB.DBAccess.GDBAccessObj == null)
+        {
+            TheServerManager.EstablishDBConnection();
+        }
+
         return true;
     }
 
@@ -139,7 +146,8 @@ public class TOpenPetraOrg : WebService
     [WebMethod(EnableSession = true)]
     public void Logout()
     {
-        Session["LoggedIn"] = false;
+        DBAccess.GDBAccessObj.CloseDBConnection();
+        Session.Abandon();
     }
 
     /// <summary>
