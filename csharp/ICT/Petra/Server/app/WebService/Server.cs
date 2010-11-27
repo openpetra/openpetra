@@ -146,6 +146,7 @@ public class TOpenPetraOrg : WebService
     [WebMethod(EnableSession = true)]
     public void Logout()
     {
+        TLogging.Log("Logout from a session", TLoggingType.ToLogfile | TLoggingType.ToConsole);
         DBAccess.GDBAccessObj.CloseDBConnection();
         Session.Abandon();
     }

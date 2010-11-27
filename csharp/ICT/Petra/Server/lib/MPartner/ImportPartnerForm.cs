@@ -93,6 +93,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// </summary>
         public string email;
         /// <summary>
+        /// gender
+        /// </summary>
+        public string gender;
+        /// <summary>
         /// Date of Birth of the person
         /// </summary>
         public DateTime? dateofbirth;
@@ -175,6 +179,7 @@ namespace Ict.Petra.Server.MPartner.Import
             newPerson.FamilyKey = AFamilyKey;
             newPerson.FirstName = APartnerData.firstname;
             newPerson.FamilyName = APartnerData.lastname;
+            newPerson.Gender = APartnerData.gender;
 
             if (APartnerData.dateofbirth.HasValue)
             {

@@ -230,7 +230,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
                 string strName = "this." + ctrl.controlName + "OPTION" + counter.ToString();
 
-                valuesArray += "[" + strName + ", " + strName + "]";
+                valuesArray += "['" + optionalValues[counter] + "', " + strName + "]";
             }
 
             valuesArray += "]";
@@ -293,9 +293,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
             // TODO: adjust date format to localisation? see http://dev.sencha.com/deploy/dev/docs/?class=Date
-            ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", "format: 'd.m.Y'," +
-                Environment.NewLine +
-                "boxMaxWidth: 175,");
+            string customAttributes = "format: 'd.m.Y'," +
+                                      Environment.NewLine +
+                                      "boxMaxWidth: 175,";
+
+            ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", customAttributes);
 
             return ctrlSnippet;
         }

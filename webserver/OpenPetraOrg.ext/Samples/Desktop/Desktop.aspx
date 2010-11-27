@@ -263,8 +263,8 @@
                         <ext:RecordField Name="FirstName" />
                         <ext:RecordField Name="FamilyName" />
                         <ext:RecordField Name="Gender"/>
-                        <ext:RecordField Name="DateOfBirth" Type="Date" DateFormat="yyyy-MM-dd" />
-                        <ext:RecordField Name="ApplicationDate" Type="Date" DateFormat="yyyy-MM-dd" />
+                        <ext:RecordField Name="DateOfBirth" Type="Date"/>
+                        <ext:RecordField Name="ApplicationDate" Type="Date"/>
                         <ext:RecordField Name="ApplicationStatus" /> 
                         <ext:RecordField Name="Role" />
                     </Fields>
@@ -317,12 +317,13 @@
                     Frame="true">
                     <ColumnModel runat="server">
                         <Columns>
+                            <ext:RowNumbererColumn />
                             <ext:Column Header="Person Key" Width="80" DataIndex="PartnerKey"/>
                             <ext:Column ColumnID="FamilyName" Header="Family Name" Width="90" DataIndex="FamilyName" />
                             <ext:Column Header="First Name" Width="90" DataIndex="FirstName"/>
-                            <ext:Column Header="Date of Birth" Width="100" DataIndex="DateOfBirth"/>
                             <ext:Column Header="Gender" Width="90" DataIndex="Gender"/>
-                            <ext:Column Header="Date Applied" Width="100" DataIndex="ApplicationDate"/>
+                            <ext:DateColumn Header="Date of Birth" Width="100" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
+                            <ext:DateColumn Header="Date Applied" Width="100" DataIndex="ApplicationDate" Format="dd-MMM-yyyy"/>
                             <ext:Column Header="Application Status" Width="120" DataIndex="ApplicationStatus"/>
                             <ext:Column Header="Role" Width="120" DataIndex="Role"/>
                         </Columns>
@@ -371,9 +372,26 @@
                         <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Partner Key" DataIndex="PartnerKey" ReadOnly="true"/>
                         <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
                         <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
-                        <ext:TextField ID="Gender" runat="server" FieldLabel="Gender" DataIndex="Gender" />
-                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="yyyy-MM-dd"/>
-                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="yyyy-MM-dd" />
+                        <ext:ComboBox 
+                            ID="Gender"
+                            runat="server" 
+                            FieldLabel="Gender" 
+                            DataIndex="Gender"
+                            Editable="false"
+                            TypeAhead="true" 
+                            ForceSelection="true"
+                            EmptyText="Select a gender..."
+                            Mode="Local"
+                            Resizable="true"
+                            SelectOnFocus="true">
+                            <Items>
+                                <ext:ListItem Text="Male" Value="Male" />
+                                <ext:ListItem Text="Female" Value="Female" />
+                                <ext:ListItem Text="Unknown" Value="Unknown" />
+                            </Items>                        
+                        </ext:ComboBox>
+                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
+                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
                         <ext:ComboBox 
                             ID="GenApplicationStatus"
                             runat="server" 

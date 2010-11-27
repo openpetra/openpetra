@@ -36,7 +36,7 @@ RootNode:
             Label: Personal Details
             Controls:
                 Row7: [dtpDateOfBirth]
-                Row8: [rgrGender]
+                Row8: [cmbGender]
                 #Row9: [uplImage]
                 Row10: [txtExistingPartnerKey]
                 Row11: [txtGroupWish]
@@ -47,8 +47,15 @@ RootNode:
         txtGroupWish:
             allowBlank: true
         txtEmail: {vtype=email}
-        rgrGender:
-            OptionalValues: [male, female]
+        dtpDateOfBirth:
+            MinDateYear: 1995
+            MinDateMonth: 1
+            MinDateDay: 1
+            MaxDateYear: 2000
+            MaxDateMonth: 1
+            MaxDateDay: 31
+        cmbGender:
+            OptionalValues: [Male, Female]
         btnConfirm:
             Label: Submit registration
             AjaxRequestUrl: DataImportFromForm

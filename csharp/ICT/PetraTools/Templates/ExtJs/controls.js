@@ -76,6 +76,11 @@
 {#IFDEF WIDTH}
     width: {#WIDTH},
 {#ENDIF WIDTH}
+{#IFDEF DATERANGE}
+    minValue: new Date({#MINYEAR},{#MINMONTH}-1,{#MINDAY}),
+    maxValue: new Date({#MAXYEAR},{#MAXMONTH}-1,{#MAXDAY}),
+    value: new Date({#DEFAULTYEAR},{#DEFAULTMONTH}-1,{#DEFAULTDAY}),
+{#ENDIF DATERANGE}
 {#IFDEF HTML}
     html: '{#HTML}',
 {#ENDIF HTML}
