@@ -111,6 +111,9 @@ namespace Ict.Petra.Shared
         /// <summary>General Petra Access</summary>
         public const String PETRAGROUP_USER = "USER";
 
+        /// <summary>Key-Min used in Units</summary>
+        public const String UNIT_TYPE_KEYMIN = "key-min";
+
         /// <summary>Address View/Edit for CANs</summary>
         public const String PETRAGROUP_ADDRESSCAN = "ADDRESSCAN";
 

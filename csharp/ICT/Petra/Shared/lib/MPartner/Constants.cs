@@ -115,6 +115,10 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_UNIT = "UNIT";
 
+        /// <summary>Unit-Type is key-min</summary>
+        public const String UNIT_TYPE_KEYMIN = "KEY-MIN";
+
+
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_BANK = "BANK";
 

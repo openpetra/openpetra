@@ -23,13 +23,16 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+// using TRemote.MFinance.Gift.WebConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -79,6 +82,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
+        }
+
+        private void RecipientKeyChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+            String strMotivationGroup;
+            String strMotivationDetail;
+
+            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
+            if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                    APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
+            {
+                if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                {
+                    cmbDetailMotivationDetailCode.SelectedItem =
+                        MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                }
+            }
         }
 
         private void FilterMotivationDetail(object sender, EventArgs e)
