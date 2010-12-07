@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
+                ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
 
@@ -69,10 +70,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            // Switch to Tab. This ensures that FUcoTransations is existant (it gets dynamically loaded)
-            tabGiftBatch.SelectedIndex = tpgTransactions.TabIndex;
-
-            this.FUcoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            this.tpgTransactions.Enabled = true;
+            FPetraUtilsObject.DisableDataChangedEvent();
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -80,14 +81,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ClearCurrentSelections()
         {
-            if (this.FUcoBatches != null)
+            if (this.ucoBatches != null)
             {
-                this.FUcoBatches.ClearCurrentSelection();
+                this.ucoBatches.ClearCurrentSelection();
             }
 
-            if (this.FUcoTransactions != null)
+            if (this.ucoTransactions != null)
             {
-                this.FUcoTransactions.ClearCurrentSelection();
+                this.ucoTransactions.ClearCurrentSelection();
             }
         }
 
@@ -121,8 +122,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    LoadTransactions(FUcoBatches.GetSelectedDetailRow().LedgerNumber,
-                        FUcoBatches.GetSelectedDetailRow().BatchNumber);
+                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
+                        ucoBatches.GetSelectedDetailRow().BatchNumber);
 
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
@@ -135,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (ATabPageEventArgs.Tab == tpgBatches)
                 {
-                    FUcoBatches.LoadBatches(FLedgerNumber);
+                    ucoBatches.LoadBatches(FLedgerNumber);
                 }
             }
 

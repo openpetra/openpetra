@@ -107,6 +107,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
             ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
+            UpdateChangeableStatus();
+            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            ((TFrmGiftBatch)ParentForm).LoadTransactions(
+                ARow.LedgerNumber,
+                ARow.BatchNumber);
             FSelectedBatchNumber = ARow.BatchNumber;
         }
 
@@ -224,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (FPetraUtilsObject.HasChanges)
             {
-                // saving failed, therefore do not try to post
+                // without save the server does not have the current changes, so forbid it.
                 MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
                     Catalog.GetString("Export Error"));
                 return;
@@ -236,8 +241,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             exportForm.Show();
         }
 
-        private void ImportBatches(System.Object sender, System.EventArgs e)
+        /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void UpdateChangeableStatus()
         {
+            Boolean changeable = (FPreviouslySelectedDetailRow != null)
+                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            this.btnDelete.Enabled = changeable;
+            this.btnPostBatch.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
         }
     }
 }

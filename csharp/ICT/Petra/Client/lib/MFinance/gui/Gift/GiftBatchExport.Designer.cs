@@ -71,17 +71,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtDetail = new System.Windows.Forms.RadioButton();
             this.rbtSummary = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dtpDateSummary = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblDateSummary = new System.Windows.Forms.Label();
-            this.chkDontSummarize = new System.Windows.Forms.CheckBox();
-            this.lblDontSummarize = new System.Windows.Forms.Label();
-            this.cmbDontSummarizeAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-            this.lblDontSummarizeAccount = new System.Windows.Forms.Label();
             this.rgrCurrency = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtBaseCurrency = new System.Windows.Forms.RadioButton();
             this.rbtOriginalTransactionCurrency = new System.Windows.Forms.RadioButton();
+            this.pnlRecipient = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtDetailRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblDetailRecipientKey = new System.Windows.Forms.Label();
+            this.txtDetailFieldKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblDetailFieldKey = new System.Windows.Forms.Label();
             this.rgrDateOrBatchRange = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtDateRange = new System.Windows.Forms.RadioButton();
@@ -100,6 +100,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblIncludeUnposted = new System.Windows.Forms.Label();
             this.chkTransactionsOnly = new System.Windows.Forms.CheckBox();
             this.lblTransactionsOnly = new System.Windows.Forms.Label();
+            this.chkExtraColumns = new System.Windows.Forms.CheckBox();
+            this.lblExtraColumns = new System.Windows.Forms.Label();
             this.pnlFilename = new System.Windows.Forms.Panel();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.txtFilename = new System.Windows.Forms.TextBox();
@@ -134,8 +136,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1.SuspendLayout();
             this.rgrDetailSummary.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.rgrCurrency.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.pnlRecipient.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.rgrDateOrBatchRange.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
@@ -189,77 +192,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtSummary.Location = new System.Drawing.Point(2,2);
             this.rbtSummary.Name = "rbtSummary";
             this.rbtSummary.AutoSize = true;
-            this.rbtSummary.Text = "Summary";
-            //
-            // tableLayoutPanel3
-            //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
+            this.rbtSummary.Text = "Date for summary";
             //
             // dtpDateSummary
             //
             this.dtpDateSummary.Location = new System.Drawing.Point(2,2);
             this.dtpDateSummary.Name = "dtpDateSummary";
             this.dtpDateSummary.Size = new System.Drawing.Size(94, 28);
-            //
-            // lblDateSummary
-            //
-            this.lblDateSummary.Location = new System.Drawing.Point(2,2);
-            this.lblDateSummary.Name = "lblDateSummary";
-            this.lblDateSummary.AutoSize = true;
-            this.lblDateSummary.Text = "Date for summary:";
-            this.lblDateSummary.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDateSummary.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDateSummary.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // chkDontSummarize
-            //
-            this.chkDontSummarize.Location = new System.Drawing.Point(2,2);
-            this.chkDontSummarize.Name = "chkDontSummarize";
-            this.chkDontSummarize.Size = new System.Drawing.Size(30, 28);
-            this.chkDontSummarize.Text = "";
-            this.chkDontSummarize.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            //
-            // lblDontSummarize
-            //
-            this.lblDontSummarize.Location = new System.Drawing.Point(2,2);
-            this.lblDontSummarize.Name = "lblDontSummarize";
-            this.lblDontSummarize.AutoSize = true;
-            this.lblDontSummarize.Text = "Don't summarize with:";
-            this.lblDontSummarize.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDontSummarize.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDontSummarize.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbDontSummarizeAccount
-            //
-            this.cmbDontSummarizeAccount.Location = new System.Drawing.Point(2,2);
-            this.cmbDontSummarizeAccount.Name = "cmbDontSummarizeAccount";
-            this.cmbDontSummarizeAccount.Size = new System.Drawing.Size(300, 28);
-            this.cmbDontSummarizeAccount.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-            //
-            // lblDontSummarizeAccount
-            //
-            this.lblDontSummarizeAccount.Location = new System.Drawing.Point(2,2);
-            this.lblDontSummarizeAccount.Name = "lblDontSummarizeAccount";
-            this.lblDontSummarizeAccount.AutoSize = true;
-            this.lblDontSummarizeAccount.Text = "Account:";
-            this.lblDontSummarizeAccount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDontSummarizeAccount.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDontSummarizeAccount.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.lblDateSummary, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblDontSummarize, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblDontSummarizeAccount, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.dtpDateSummary, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.chkDontSummarize, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.cmbDontSummarizeAccount, 1, 2);
             this.rbtSummary.CheckedChanged += new System.EventHandler(this.rbtSummaryCheckedChanged);
             this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -270,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel2.SetColumnSpan(this.rbtDetail, 2);
             this.tableLayoutPanel2.Controls.Add(this.rbtDetail, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.rbtSummary, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDateSummary, 1, 1);
             this.rgrDetailSummary.Text = "Detail or Summary";
             //
             // rgrCurrency
@@ -279,12 +218,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rgrCurrency.Name = "rgrCurrency";
             this.rgrCurrency.AutoSize = true;
             //
-            // tableLayoutPanel4
+            // tableLayoutPanel3
             //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.rgrCurrency.Controls.Add(this.tableLayoutPanel4);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.rgrCurrency.Controls.Add(this.tableLayoutPanel3);
             //
             // rbtBaseCurrency
             //
@@ -300,14 +239,91 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtOriginalTransactionCurrency.Name = "rbtOriginalTransactionCurrency";
             this.rbtOriginalTransactionCurrency.AutoSize = true;
             this.rbtOriginalTransactionCurrency.Text = "Original Transaction Currency";
-            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rbtBaseCurrency, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtOriginalTransactionCurrency, 0, 1);
+            this.rgrCurrency.Text = "Currency";
+            //
+            // pnlRecipient
+            //
+            this.pnlRecipient.Location = new System.Drawing.Point(2,2);
+            this.pnlRecipient.Name = "pnlRecipient";
+            this.pnlRecipient.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.pnlRecipient.Controls.Add(this.tableLayoutPanel4);
+            //
+            // txtDetailRecipientKey
+            //
+            this.txtDetailRecipientKey.Location = new System.Drawing.Point(2,2);
+            this.txtDetailRecipientKey.Name = "txtDetailRecipientKey";
+            this.txtDetailRecipientKey.Size = new System.Drawing.Size(370, 28);
+            this.txtDetailRecipientKey.ASpecialSetting = true;
+            this.txtDetailRecipientKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtDetailRecipientKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtDetailRecipientKey.PartnerClass = "";
+            this.txtDetailRecipientKey.MaxLength = 32767;
+            this.txtDetailRecipientKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailRecipientKey.TextBoxWidth = 80;
+            this.txtDetailRecipientKey.ButtonWidth = 40;
+            this.txtDetailRecipientKey.ReadOnly = false;
+            this.txtDetailRecipientKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
+            this.txtDetailRecipientKey.ButtonText = "Find";
+            //
+            // lblDetailRecipientKey
+            //
+            this.lblDetailRecipientKey.Location = new System.Drawing.Point(2,2);
+            this.lblDetailRecipientKey.Name = "lblDetailRecipientKey";
+            this.lblDetailRecipientKey.AutoSize = true;
+            this.lblDetailRecipientKey.Text = "Recipient:";
+            this.lblDetailRecipientKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailRecipientKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailRecipientKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtDetailFieldKey
+            //
+            this.txtDetailFieldKey.Location = new System.Drawing.Point(2,2);
+            this.txtDetailFieldKey.Name = "txtDetailFieldKey";
+            this.txtDetailFieldKey.Size = new System.Drawing.Size(370, 28);
+            this.txtDetailFieldKey.ASpecialSetting = true;
+            this.txtDetailFieldKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtDetailFieldKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtDetailFieldKey.PartnerClass = "";
+            this.txtDetailFieldKey.MaxLength = 32767;
+            this.txtDetailFieldKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtDetailFieldKey.TextBoxWidth = 80;
+            this.txtDetailFieldKey.ButtonWidth = 40;
+            this.txtDetailFieldKey.ReadOnly = false;
+            this.txtDetailFieldKey.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
+            this.txtDetailFieldKey.ButtonText = "Find";
+            //
+            // lblDetailFieldKey
+            //
+            this.lblDetailFieldKey.Location = new System.Drawing.Point(2,2);
+            this.lblDetailFieldKey.Name = "lblDetailFieldKey";
+            this.lblDetailFieldKey.AutoSize = true;
+            this.lblDetailFieldKey.Text = "Field:";
+            this.lblDetailFieldKey.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailFieldKey.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailFieldKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.rbtBaseCurrency, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.rbtOriginalTransactionCurrency, 0, 1);
-            this.rgrCurrency.Text = "Currency";
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailRecipientKey, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDetailFieldKey, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailRecipientKey, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.txtDetailFieldKey, 1, 1);
             //
             // rgrDateOrBatchRange
             //
@@ -488,6 +504,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblTransactionsOnly.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblTransactionsOnly.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // chkExtraColumns
+            //
+            this.chkExtraColumns.Location = new System.Drawing.Point(2,2);
+            this.chkExtraColumns.Name = "chkExtraColumns";
+            this.chkExtraColumns.Size = new System.Drawing.Size(30, 28);
+            this.chkExtraColumns.Text = "";
+            this.chkExtraColumns.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            //
+            // lblExtraColumns
+            //
+            this.lblExtraColumns.Location = new System.Drawing.Point(2,2);
+            this.lblExtraColumns.Name = "lblExtraColumns";
+            this.lblExtraColumns.AutoSize = true;
+            this.lblExtraColumns.Text = "With extra columns:";
+            this.lblExtraColumns.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblExtraColumns.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblExtraColumns.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
             // pnlFilename
             //
             this.pnlFilename.Location = new System.Drawing.Point(2,2);
@@ -633,7 +667,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowCount = 12;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -648,22 +684,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1.Controls.Add(this.rgrDetailSummary, 0, 0);
             this.tableLayoutPanel1.SetColumnSpan(this.rgrCurrency, 2);
             this.tableLayoutPanel1.Controls.Add(this.rgrCurrency, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlRecipient, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlRecipient, 0, 2);
             this.tableLayoutPanel1.SetColumnSpan(this.rgrDateOrBatchRange, 2);
-            this.tableLayoutPanel1.Controls.Add(this.rgrDateOrBatchRange, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblIncludeUnposted, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblTransactionsOnly, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.rgrDateOrBatchRange, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblIncludeUnposted, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblTransactionsOnly, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lblExtraColumns, 0, 6);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlFilename, 2);
-            this.tableLayoutPanel1.Controls.Add(this.pnlFilename, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lblDelimiter, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblDateFormat, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.lblNumberFormat, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.pnlFilename, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblDelimiter, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblDateFormat, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblNumberFormat, 0, 10);
             this.tableLayoutPanel1.SetColumnSpan(this.pnlButtons, 2);
-            this.tableLayoutPanel1.Controls.Add(this.pnlButtons, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.chkIncludeUnposted, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.chkTransactionsOnly, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.cmbDelimiter, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.cmbDateFormat, 1, 7);
-            this.tableLayoutPanel1.Controls.Add(this.cmbNumberFormat, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.pnlButtons, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.chkIncludeUnposted, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.chkTransactionsOnly, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.chkExtraColumns, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDelimiter, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDateFormat, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.cmbNumberFormat, 1, 10);
             //
             // tbbExportBatches
             //
@@ -796,8 +836,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5.ResumeLayout(false);
             this.rgrDateOrBatchRange.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
-            this.rgrCurrency.ResumeLayout(false);
+            this.pnlRecipient.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.rgrCurrency.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.rgrDetailSummary.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -813,17 +854,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.RadioButton rbtDetail;
         private System.Windows.Forms.RadioButton rbtSummary;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateSummary;
-        private System.Windows.Forms.Label lblDateSummary;
-        private System.Windows.Forms.CheckBox chkDontSummarize;
-        private System.Windows.Forms.Label lblDontSummarize;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDontSummarizeAccount;
-        private System.Windows.Forms.Label lblDontSummarizeAccount;
         private System.Windows.Forms.GroupBox rgrCurrency;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.RadioButton rbtBaseCurrency;
         private System.Windows.Forms.RadioButton rbtOriginalTransactionCurrency;
+        private System.Windows.Forms.Panel pnlRecipient;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailRecipientKey;
+        private System.Windows.Forms.Label lblDetailRecipientKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailFieldKey;
+        private System.Windows.Forms.Label lblDetailFieldKey;
         private System.Windows.Forms.GroupBox rgrDateOrBatchRange;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.RadioButton rbtDateRange;
@@ -842,6 +883,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblIncludeUnposted;
         private System.Windows.Forms.CheckBox chkTransactionsOnly;
         private System.Windows.Forms.Label lblTransactionsOnly;
+        private System.Windows.Forms.CheckBox chkExtraColumns;
+        private System.Windows.Forms.Label lblExtraColumns;
         private System.Windows.Forms.Panel pnlFilename;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.TextBox txtFilename;

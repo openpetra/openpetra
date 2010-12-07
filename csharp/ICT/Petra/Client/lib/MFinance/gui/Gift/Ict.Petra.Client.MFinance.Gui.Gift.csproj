@@ -148,6 +148,9 @@
     <Compile Include="UC_GiftBatches.Designer.cs">
       <DependentUpon>UC_GiftBatches.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_GiftBatches.Import.cs">
+      <DependentUpon>UC_GiftBatches.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_GiftBatches.ManualCode.cs">
       <DependentUpon>UC_GiftBatches.cs</DependentUpon>
     </Compile>

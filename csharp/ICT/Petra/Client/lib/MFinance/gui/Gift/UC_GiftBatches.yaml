@@ -66,7 +66,7 @@ RootNode:
         txtDetailExchangeRateToBase:
         cmbDetailMethodOfPayment: {Label=Method of Payment}
         rgrDetailGiftType:
-            OptionalValues: [=Gift, GiftInKind, Other]
+            OptionalValues: [=Gift,Gift In Kind,Other]
             ControlsOrientation: Horizontal
         tbrTabPage:
         mnuTabPage:
@@ -76,5 +76,5 @@ RootNode:
             mniPost: {Action=actPostBatch}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
-        tbbExportBatches:
-        tbbImportBatches:
+        tbbExportBatches: {Action=actExportBatches}
+        tbbImportBatches: {Action=actImportBatches}

@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -77,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
+                //TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
             }
         }
 
@@ -224,20 +225,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
                 requestParams.Add("BaseCurrency", FMainDS.ALedger[0].BaseCurrency);
                 requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
-                requestParams.Add("bDontSummarize", chkDontSummarize.Checked);
-                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.SelectedItem);
+                requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
+                requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
                 requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+                requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
 
                 String exportString;
+                TVerificationResultCollection AMessages;
+
                 bool completed = false;
                 sw1 = new StreamWriter(fileName);
+                string ErrorMessages = String.Empty;
 
                 do
                 {
-                    completed = TRemote.MFinance.Gift.WebConnectors.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
+                    completed = TRemote.MFinance.Gift.WebConnectors.ExportAllGiftBatchData(ref batches,
+                        requestParams,
+                        out exportString,
+                        out AMessages);
                     sw1.Write(exportString);
-                } while (!completed);
+
+                    if (AMessages.Count > 0)
+                    {
+                        foreach (TVerificationResult message in AMessages)
+                        {
+                            ErrorMessages += "[" + message.ResultContext + "] " +
+                                             message.ResultTextCaption + ": " +
+                                             message.ResultText + Environment.NewLine;
+                        }
+                    }
+                }   while (!completed);
+
+                if (ErrorMessages.Length > 0)
+                {
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"),
+
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
 
                 MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
                     Catalog.GetString("Success"),
@@ -275,6 +301,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         void BtnHelpClick(object sender, EventArgs e)
+        {
+            // TODO
+        }
+
+        void BtnRecipientClick(object sender, EventArgs e)
+        {
+            // TODO
+        }
+
+        void BtnFieldClick(object sender, EventArgs e)
         {
             // TODO
         }

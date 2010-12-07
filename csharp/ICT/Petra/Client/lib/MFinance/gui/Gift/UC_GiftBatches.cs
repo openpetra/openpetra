@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate To Base:");
       this.lblDetailMethodOfPayment.Text = Catalog.GetString("Method of Payment:");
       this.rbtGift.Text = Catalog.GetString("Gift");
-      this.rbtGiftInKind.Text = Catalog.GetString("GiftInKind");
+      this.rbtGiftInKind.Text = Catalog.GetString("Gift In Kind");
       this.rbtOther.Text = Catalog.GetString("Other");
       this.rgrDetailGiftType.Text = Catalog.GetString("Gift Type");
       this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");

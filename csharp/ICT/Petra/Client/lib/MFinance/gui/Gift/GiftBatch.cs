@@ -54,8 +54,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
     private event TTabPageEventHandler FTabPageEvent;
-    private Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches FUcoBatches;
-    private Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions FUcoTransactions;
 
     /// <summary>
     /// Enumeration of dynamic loadable UserControls which are used
@@ -63,10 +61,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public enum TDynamicLoadableUserControls
     {
-        ///<summary>Denotes dynamic loadable UserControl FUcoBatches</summary>
-        dlucBatches,
-        ///<summary>Denotes dynamic loadable UserControl FUcoTransactions</summary>
-        dlucTransactions,
     }
 
     /// constructor
@@ -80,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.tpgBatches.Text = Catalog.GetString("Batches");
-      this.tpgTransactions.Text = Catalog.GetString("Transactions");
+      this.tpgTransactions.Text = Catalog.GetString("Details");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -103,6 +97,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
       FMainDS = new Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS();
+      ucoBatches.PetraUtilsObject = FPetraUtilsObject;
+      ucoBatches.MainDS = FMainDS;
+      ucoBatches.InitUserControl();
+      ucoTransactions.PetraUtilsObject = FPetraUtilsObject;
+      ucoTransactions.MainDS = FMainDS;
+      ucoTransactions.InitUserControl();
       InitializeManualCode();
       tabGiftBatch.SelectedIndex = 0;
       TabSelectionChanged(null, null);
@@ -135,14 +135,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
     private void GetDataFromControls()
     {
-        if(FUcoBatches != null)
-        {
-            FUcoBatches.GetDataFromControls();
-        }
-        if(FUcoTransactions != null)
-        {
-            FUcoTransactions.GetDataFromControls();
-        }
+        ucoBatches.GetDataFromControls();
+        ucoTransactions.GetDataFromControls();
     }
 
 #region Implement interface functions
@@ -385,86 +379,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void TabSelectionChanged(System.Object sender, EventArgs e)
         {
-            bool FirstTabPageSelectionChanged = false;
             TabPage currentTab = tabGiftBatch.TabPages[tabGiftBatch.SelectedIndex];
 
             if (FTabSetup == null)
             {
                 FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-                FirstTabPageSelectionChanged = true;
-            }
-
-            if (FirstTabPageSelectionChanged)
-            {
-                // The first time we run this Method we exit straight away!
-                return;
-            }
-
-            if (tabGiftBatch.SelectedTab == tpgBatches)
-            {
-                if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucBatches))
-                {
-                    if (TClientSettings.DelayedDataLoading)
-                    {
-                        // Signalise the user that data is beeing loaded
-                        this.Cursor = Cursors.AppStarting;
-                    }
-
-                    FUcoBatches = (Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucBatches);
-                    FUcoBatches.MainDS = FMainDS;
-                    FUcoBatches.PetraUtilsObject = FPetraUtilsObject;
-                    FUcoBatches.InitUserControl();
-
-                    OnTabPageEvent(new TTabPageEventArgs(tpgBatches, FUcoBatches, "InitialActivation"));
-
-                    this.Cursor = Cursors.Default;
-                }
-                else
-                {
-                    OnTabPageEvent(new TTabPageEventArgs(tpgBatches, FUcoBatches, "SubsequentActivation"));
-
-                    /*
-                     * The following command seems strange and unnecessary; however, it is necessary
-                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                     */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoBatches.AdjustAfterResizing();
-                    }
-                }
-            }
-            if (tabGiftBatch.SelectedTab == tpgTransactions)
-            {
-                if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucTransactions))
-                {
-                    if (TClientSettings.DelayedDataLoading)
-                    {
-                        // Signalise the user that data is beeing loaded
-                        this.Cursor = Cursors.AppStarting;
-                    }
-
-                    FUcoTransactions = (Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucTransactions);
-                    FUcoTransactions.MainDS = FMainDS;
-                    FUcoTransactions.PetraUtilsObject = FPetraUtilsObject;
-                    FUcoTransactions.InitUserControl();
-
-                    OnTabPageEvent(new TTabPageEventArgs(tpgTransactions, FUcoTransactions, "InitialActivation"));
-
-                    this.Cursor = Cursors.Default;
-                }
-                else
-                {
-                    OnTabPageEvent(new TTabPageEventArgs(tpgTransactions, FUcoTransactions, "SubsequentActivation"));
-
-                    /*
-                     * The following command seems strange and unnecessary; however, it is necessary
-                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                     */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoTransactions.AdjustAfterResizing();
-                    }
-                }
             }
 
             if (PreviouslyMergedToolbarItems != null)
@@ -510,87 +429,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-    private void OnTabPageEvent(TTabPageEventArgs e)
-    {
-        if (FTabPageEvent != null)
-        {
-            FTabPageEvent(this, e);
-        }
-    }
-
-    /// <summary>
-    /// Creates UserControls on request. AUTO-GENERATED, don't modify by hand!
-    /// </summary>
-    /// <param name="AUserControl">UserControl to load.</param>
-    private UserControl DynamicLoadUserControl(TDynamicLoadableUserControls AUserControl)
-    {
-        UserControl ReturnValue = null;
-
-        switch (AUserControl)
-        {
-            case TDynamicLoadableUserControls.dlucBatches:
-                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
-                Panel pnlHostForUCBatches = new Panel();
-                pnlHostForUCBatches.AutoSize = true;
-                pnlHostForUCBatches.Dock = System.Windows.Forms.DockStyle.Fill;
-                pnlHostForUCBatches.Location = new System.Drawing.Point(0, 0);
-                pnlHostForUCBatches.Padding = new System.Windows.Forms.Padding(2);
-                tpgBatches.Controls.Add(pnlHostForUCBatches);
-
-                // Create the UserControl
-                Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches ucoBatches = new Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches();
-                FTabSetup.Add(TDynamicLoadableUserControls.dlucBatches, ucoBatches);
-                ucoBatches.Location = new Point(0, 2);
-                ucoBatches.Dock = DockStyle.Fill;
-                pnlHostForUCBatches.Controls.Add(ucoBatches);
-
-                /*
-                 * The following four commands seem strange and unnecessary; however, they are necessary
-                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                 */
-                if (TClientSettings.GUIRunningOnNonStandardDPI)
-                {
-                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
-                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                    pnlHostForUCBatches.Dock = System.Windows.Forms.DockStyle.None;
-                    pnlHostForUCBatches.Dock = System.Windows.Forms.DockStyle.Fill;
-                }
-
-                ReturnValue = ucoBatches;
-                break;
-            case TDynamicLoadableUserControls.dlucTransactions:
-                // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
-                Panel pnlHostForUCTransactions = new Panel();
-                pnlHostForUCTransactions.AutoSize = true;
-                pnlHostForUCTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
-                pnlHostForUCTransactions.Location = new System.Drawing.Point(0, 0);
-                pnlHostForUCTransactions.Padding = new System.Windows.Forms.Padding(2);
-                tpgTransactions.Controls.Add(pnlHostForUCTransactions);
-
-                // Create the UserControl
-                Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions ucoTransactions = new Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions();
-                FTabSetup.Add(TDynamicLoadableUserControls.dlucTransactions, ucoTransactions);
-                ucoTransactions.Location = new Point(0, 2);
-                ucoTransactions.Dock = DockStyle.Fill;
-                pnlHostForUCTransactions.Controls.Add(ucoTransactions);
-
-                /*
-                 * The following four commands seem strange and unnecessary; however, they are necessary
-                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
-                 */
-                if (TClientSettings.GUIRunningOnNonStandardDPI)
-                {
-                    this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
-                    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                    pnlHostForUCTransactions.Dock = System.Windows.Forms.DockStyle.None;
-                    pnlHostForUCTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
-                }
-
-                ReturnValue = ucoTransactions;
-                break;
-        }
-
-        return ReturnValue;
-    }
   }
 }

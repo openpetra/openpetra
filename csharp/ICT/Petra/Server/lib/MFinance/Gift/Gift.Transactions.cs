@@ -489,16 +489,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// export all the Data of the batches array list to a String
         /// </summary>
-        /// <param name="batches"></param>
-        /// <param name="requestParams"></param>
-        /// <param name="exportString"></param>
-        /// <returns>false if batch does not exist at all</returns>
+        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if not completed</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ExportAllGiftBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        public static bool ExportAllGiftBatchData(ref ArrayList batches,
+            Hashtable requestParams,
+            out String exportString,
+            out TVerificationResultCollection AMessages)
         {
             TGiftExporting exporting = new TGiftExporting();
 
-            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
+            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
         }
     }
 }
