@@ -31,6 +31,7 @@
                 <exec program="${Poedit.msgfmt}" commandline="&quot;${TempLanguageFile}&quot; -d &quot;${Tmp.dir}/i18n/&quot; --locale=${path::get-file-name-without-extension(filename)} --resource=OpenPetra --csharp">
                     <environment>
                         <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                        <variable name="MONO_PATH" path="${OpenPetraRoot.dir}/csharp/ThirdParty/GNU"/>
                     </environment>
                 </exec>
             </do>
