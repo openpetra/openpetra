@@ -32,13 +32,9 @@ Name: {app}/demo30
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\Mono\intl.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Posix.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\Mono\Mono.Security.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\Mono\MonoPosixHelper.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\iconv.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\gtk-sharp\libxml2.dll; DestDir: {app}/bin30; Flags: ignoreversion
+
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
