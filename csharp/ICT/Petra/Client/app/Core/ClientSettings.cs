@@ -306,6 +306,21 @@ namespace Ict.Petra.Client.App.Core
             return UPathTemp;
         }
 
+        /// get export path in the user directory. used eg. by GL Batch or Gift Batch export
+        /// will create the directory if it does not exist yet.
+        public static string GetExportPath()
+        {
+            string ExportPath = TAppSettingsManager.GetValueStatic("OpenPetra.PathExport",
+                TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "export", false);
+
+            if (!Directory.Exists(ExportPath))
+            {
+                Directory.CreateDirectory(ExportPath);
+            }
+
+            return ExportPath;
+        }
+
         /// <summary>
         /// Loads settings from .NET Configuration File and Command Line.
         ///
