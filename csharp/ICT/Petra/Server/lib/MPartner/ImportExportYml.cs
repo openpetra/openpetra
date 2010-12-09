@@ -111,6 +111,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
+                        throw new Exception("We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
                         // TODO
                     }
                     else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
