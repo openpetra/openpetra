@@ -111,6 +111,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     // There is no valid entry for partnerKey
                     partnerKeyIsValid = false;
                 }
+
+                if (newTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
             else
             {
