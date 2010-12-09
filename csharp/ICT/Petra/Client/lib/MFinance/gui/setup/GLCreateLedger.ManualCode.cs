@@ -57,45 +57,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (txtLedgerName.Text.Length == 0)
             {
-                MessageBox.Show (
-                    Catalog.GetString("Please enter a name for your ledger!",
-                        Catalog.GetString("Problem: No Ledger has been created"));
-                    return;
-                    }
+                MessageBox.Show(
+                    Catalog.GetString("Please enter a name for your ledger!"),
+                    Catalog.GetString("Problem: No Ledger has been created"));
+                return;
+            }
 
-                    if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
-                            Convert.ToInt32(nudLedgerNumber.Value),
-                            txtLedgerName.Text,
-                            cmbCountryCode.GetSelectedString(),
-                            cmbBaseCurrency.GetSelectedString(),
-                            cmbIntlCurrency.GetSelectedString(),
-                            dtpCalendarStartDate.Date.Value,
-                            Convert.ToInt32(nudNumberOfPeriods.Value),
-                            Convert.ToInt32(nudCurrentPeriod.Value),
-                            Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),
-                            out VerificationResult))
-                    {
-                        if (VerificationResult != null)
-                        {
-                            MessageBox.Show(
-                                VerificationResult.GetVerificationResult(0).ResultText,
-                                Catalog.GetString("Problem: No Ledger has been created"));
-                        }
-                        else
-                        {
-                            MessageBox.Show(Catalog.GetString("Problem: No Ledger has been created"),
-                                Catalog.GetString("Error"));
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString(
-                                    "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
-                                txtLedgerName.Text,
-                                nudLedgerNumber.Value),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    }
-                    }
-                    }
+            if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
+                    Convert.ToInt32(nudLedgerNumber.Value),
+                    txtLedgerName.Text,
+                    cmbCountryCode.GetSelectedString(),
+                    cmbBaseCurrency.GetSelectedString(),
+                    cmbIntlCurrency.GetSelectedString(),
+                    dtpCalendarStartDate.Date.Value,
+                    Convert.ToInt32(nudNumberOfPeriods.Value),
+                    Convert.ToInt32(nudCurrentPeriod.Value),
+                    Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),
+                    out VerificationResult))
+            {
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.GetVerificationResult(0).ResultText,
+                        Catalog.GetString("Problem: No Ledger has been created"));
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Problem: No Ledger has been created"),
+                        Catalog.GetString("Error"));
+                }
+            }
+            else
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
+                        txtLedgerName.Text,
+                        nudLedgerNumber.Value),
+                    Catalog.GetString("Success"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+    }
+}
