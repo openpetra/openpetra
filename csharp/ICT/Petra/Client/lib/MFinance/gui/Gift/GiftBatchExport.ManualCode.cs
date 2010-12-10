@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // This is for compatibility with old Petra
             txtFilename.Text = TUserDefaults.GetStringDefault("Imp Filename",
-                Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "export" + Path.DirectorySeparatorChar + "export.csv");
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "export.csv");
             String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DTrans");
 
             // This is for compatibility with old Petra

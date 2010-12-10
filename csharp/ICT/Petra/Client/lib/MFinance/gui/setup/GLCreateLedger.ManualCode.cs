@@ -55,6 +55,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TVerificationResultCollection VerificationResult;
 
+            if (txtLedgerName.Text.Length == 0)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("Please enter a name for your ledger!"),
+                    Catalog.GetString("Problem: No Ledger has been created"));
+                return;
+            }
+
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,

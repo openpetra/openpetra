@@ -143,7 +143,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     throw new ArgumentException("missing closing bracket");
                 }
 
-                string modulesList = AModuleExpression.Substring(openingBracketPos + 1, closingBracketPos - openingBracketPos);
+                string modulesList = AModuleExpression.Substring(openingBracketPos + 1, closingBracketPos - openingBracketPos - 1);
                 string[] modules = modulesList.Split(new char[] { ',' });
                 bool oneTrue = false;
 
@@ -229,6 +229,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         ParameterName = ParameterName.Replace("Boolean", "bool");
                         ParameterName = ParameterName.Replace("Int32", "int");
                         ParameterName = ParameterName.Replace("Int64", "long");
+                        ParameterName = ParameterName.Replace("]", "?");
 
                         ParameterTypes += ParameterName + ";";
                     }

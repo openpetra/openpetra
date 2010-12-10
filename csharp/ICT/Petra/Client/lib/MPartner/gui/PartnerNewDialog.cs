@@ -253,6 +253,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
+                MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
+                    Environment.NewLine +
+                    "To avoid problems upgrading your database, please create a FAMILY partner rather than a PERSON partner!",
+                    "NO CREATION OF PERSONS AT THE MOMENT",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                return;
+
+#if TODO
                 FFamilyPartnerKey = Convert.ToInt32(txtFamilyPartnerBox.Text);
 
                 if (FFamilyPartnerKey == 0)
@@ -261,6 +270,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtFamilyPartnerBox.Focus();
                     return;
                 }
+#endif
             }
 
             NewPartnerKey = txtPartnerKey.PartnerKey;

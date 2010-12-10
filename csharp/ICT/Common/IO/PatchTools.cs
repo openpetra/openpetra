@@ -248,6 +248,21 @@ namespace Ict.Common.IO
 
             return patchStartVersion.Compare(this) == 0;
         }
+
+        /// <summary>
+        /// would this patch file apply to the current installed version
+        /// </summary>
+        /// <param name="APatchZipFile"></param>
+        /// <param name="AMaxVersion">maximum version to upgrade to, usually this is the version of the exe files</param>
+        /// <returns></returns>
+        public Boolean PatchApplies(String APatchZipFile, TFileVersionInfo AMaxVersion)
+        {
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+            TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
+
+            return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+        }
     }
 
     /// <summary>

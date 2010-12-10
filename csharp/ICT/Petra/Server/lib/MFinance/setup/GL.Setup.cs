@@ -661,6 +661,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBER}", ALedgerNumber.ToString());
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBERWITHLEADINGZEROS}", ALedgerNumber.ToString("00"));
+
+            if (ALedgerName.Length == 0)
+            {
+                throw new Exception("We need a name for the ledger, otherwise the yml will be invalid");
+            }
+
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNAME}", ALedgerName);
 
             string[] lines = XmlCostCentreHierarchy.Replace("\r", "").Split(new char[] { '\n' });
@@ -731,6 +737,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int64 PartnerKey = Convert.ToInt64(ALedgerNumber) * 1000000L;
 
             PPartnerRow partnerRow = MainDS.PPartner.NewRowTyped();
+            ledgerRow.PartnerKey = PartnerKey;
             partnerRow.PartnerKey = PartnerKey;
             partnerRow.PartnerShortName = ALedgerName;
             partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
