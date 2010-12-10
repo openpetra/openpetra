@@ -76,10 +76,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnFullyLoadData = new System.Windows.Forms.Button();
             this.btnAccept = new System.Windows.Forms.Button();
+            this.tbrMain = new System.Windows.Forms.ToolStrip();
+            this.tbbEditPartner = new System.Windows.Forms.ToolStripButton();
+            this.tbbNewPartner = new System.Windows.Forms.ToolStripButton();
+            this.tbbSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbPartnerInfo = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSearch = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileWorkWithLastPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileRecentPartners = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileRecentPartner1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,23 +95,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniFileRecentPartner8 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileRecentPartner9 = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileRecentPartner10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniFileSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileNewPartner = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileViewPartner = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileNewPartnerWithShepherd = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileNewPartnerWithShepherdFamily = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileNewPartnerWithShepherdChurch = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileNewPartnerWithShepherdOrganisation = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileNewPartnerWithShepherdUnit = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileEditPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileMergePartners = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileDeletePartner = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniFileCopyAddress = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileCopyPartnerKey = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniFileSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileSendEmail = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniFileSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFilePrintPartner = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniFileSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mniFileExportPartner = new System.Windows.Forms.ToolStripMenuItem();
             this.mniFileImportPartner = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniFileSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniFileSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEdit = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEditSearch = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEditSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.mniEditCopyPartnerKey = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEditCopyAddress = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniEditCopyEmailAddress = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintain = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainAddresses = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainPartnerDetails = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,13 +132,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniMaintainInterests = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainReminders = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainNotes = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainOfficeSpecific = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainOMerField = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniMaintainPersonnelIndividualData = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniMaintainSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniMaintainLocalPartnerData = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainWorkerField = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniMaintainPersonnelData = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mniMaintainDonorHistory = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainRecipientHistory = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainFinanceReports = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainBankAccounts = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniMaintainGiftReceipting = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMaintainFinanceDetails = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMailing = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMailingGenerateExtract = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,6 +154,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniMailingSubscriptionExpNotice = new System.Windows.Forms.ToolStripMenuItem();
             this.mniMailingSubscriptionCancellation = new System.Windows.Forms.ToolStripMenuItem();
             this.mniTools = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniToolsOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniView = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniViewPartnerInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraModules = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraMainMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.mniPetraPartnerModule = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,9 +167,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniPetraSysManModule = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpPetraHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.mniSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
             this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
@@ -163,6 +180,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tpgFindBankDetails.SuspendLayout();
             this.pnlModalButtons.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
 
@@ -257,22 +275,52 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.tableLayoutPanel1.Controls.Add(this.btnFullyLoadData, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnAccept, 0, 3);
             //
-            // mniFileSearch
+            // tbbEditPartner
             //
-            this.mniFileSearch.Name = "mniFileSearch";
-            this.mniFileSearch.AutoSize = true;
-            this.mniFileSearch.Text = "&Search";
+            this.tbbEditPartner.Name = "tbbEditPartner";
+            this.tbbEditPartner.AutoSize = true;
+            this.tbbEditPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.tbbEditPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbEditPartner.Glyph"));
+            this.tbbEditPartner.Text = "Edit Partner";
             //
-            // mniFileSeparator1
+            // tbbNewPartner
             //
-            this.mniFileSeparator1.Name = "mniFileSeparator1";
-            this.mniFileSeparator1.AutoSize = true;
-            this.mniFileSeparator1.Text = "-";
+            this.tbbNewPartner.Name = "tbbNewPartner";
+            this.tbbNewPartner.AutoSize = true;
+            this.tbbNewPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.tbbNewPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbNewPartner.Glyph"));
+            this.tbbNewPartner.Text = "New Partner";
+            //
+            // tbbSeparator0
+            //
+            this.tbbSeparator0.Name = "tbbSeparator0";
+            this.tbbSeparator0.AutoSize = true;
+            this.tbbSeparator0.Text = "Separator";
+            //
+            // tbbPartnerInfo
+            //
+            this.tbbPartnerInfo.Name = "tbbPartnerInfo";
+            this.tbbPartnerInfo.AutoSize = true;
+            this.tbbPartnerInfo.Click += new System.EventHandler(this.MniView_Click);
+            this.tbbPartnerInfo.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbPartnerInfo.Glyph"));
+            this.tbbPartnerInfo.Text = "Partner Info";
+            //
+            // tbrMain
+            //
+            this.tbrMain.Name = "tbrMain";
+            this.tbrMain.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tbrMain.AutoSize = true;
+            this.tbrMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           tbbEditPartner,
+                        tbbNewPartner,
+                        tbbSeparator0,
+                        tbbPartnerInfo});
             //
             // mniFileWorkWithLastPartner
             //
             this.mniFileWorkWithLastPartner.Name = "mniFileWorkWithLastPartner";
             this.mniFileWorkWithLastPartner.AutoSize = true;
+            this.mniFileWorkWithLastPartner.Click += new System.EventHandler(this.MniFile_Click);
             this.mniFileWorkWithLastPartner.Text = "&Work with Last Partner...";
             //
             // mniFileRecentPartner1
@@ -352,41 +400,92 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniFileRecentPartner10});
             this.mniFileRecentPartners.Text = "&Recent Partners";
             //
-            // mniFileSeparator2
+            // mniFileSeparator1
             //
-            this.mniFileSeparator2.Name = "mniFileSeparator2";
-            this.mniFileSeparator2.AutoSize = true;
-            this.mniFileSeparator2.Text = "-";
+            this.mniFileSeparator1.Name = "mniFileSeparator1";
+            this.mniFileSeparator1.AutoSize = true;
+            this.mniFileSeparator1.Text = "-";
             //
             // mniFileNewPartner
             //
             this.mniFileNewPartner.Name = "mniFileNewPartner";
             this.mniFileNewPartner.AutoSize = true;
+            this.mniFileNewPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileNewPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileNewPartner.Glyph"));
             this.mniFileNewPartner.Text = "&New Partner...";
             //
-            // mniFileViewPartner
+            // mniFileNewPartnerWithShepherdFamily
             //
-            this.mniFileViewPartner.Name = "mniFileViewPartner";
-            this.mniFileViewPartner.AutoSize = true;
-            this.mniFileViewPartner.Text = "&View Partner";
+            this.mniFileNewPartnerWithShepherdFamily.Name = "mniFileNewPartnerWithShepherdFamily";
+            this.mniFileNewPartnerWithShepherdFamily.AutoSize = true;
+            this.mniFileNewPartnerWithShepherdFamily.Text = "Add &Family with Shepherd...";
+            //
+            // mniFileNewPartnerWithShepherdChurch
+            //
+            this.mniFileNewPartnerWithShepherdChurch.Name = "mniFileNewPartnerWithShepherdChurch";
+            this.mniFileNewPartnerWithShepherdChurch.AutoSize = true;
+            this.mniFileNewPartnerWithShepherdChurch.Text = "Add &Church with Shepherd...";
+            //
+            // mniFileNewPartnerWithShepherdOrganisation
+            //
+            this.mniFileNewPartnerWithShepherdOrganisation.Name = "mniFileNewPartnerWithShepherdOrganisation";
+            this.mniFileNewPartnerWithShepherdOrganisation.AutoSize = true;
+            this.mniFileNewPartnerWithShepherdOrganisation.Text = "Add &Organisation with Shepherd...";
+            //
+            // mniFileNewPartnerWithShepherdUnit
+            //
+            this.mniFileNewPartnerWithShepherdUnit.Name = "mniFileNewPartnerWithShepherdUnit";
+            this.mniFileNewPartnerWithShepherdUnit.AutoSize = true;
+            this.mniFileNewPartnerWithShepherdUnit.Text = "Add &Unit with Shepherd...";
+            //
+            // mniFileNewPartnerWithShepherd
+            //
+            this.mniFileNewPartnerWithShepherd.Name = "mniFileNewPartnerWithShepherd";
+            this.mniFileNewPartnerWithShepherd.AutoSize = true;
+            this.mniFileNewPartnerWithShepherd.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniFileNewPartnerWithShepherdFamily,
+                        mniFileNewPartnerWithShepherdChurch,
+                        mniFileNewPartnerWithShepherdOrganisation,
+                        mniFileNewPartnerWithShepherdUnit});
+            this.mniFileNewPartnerWithShepherd.Text = "N&ew Partner (Shepherd)";
             //
             // mniFileEditPartner
             //
             this.mniFileEditPartner.Name = "mniFileEditPartner";
             this.mniFileEditPartner.AutoSize = true;
+            this.mniFileEditPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileEditPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileEditPartner.Glyph"));
             this.mniFileEditPartner.Text = "&Edit Partner";
             //
             // mniFileMergePartners
             //
             this.mniFileMergePartners.Name = "mniFileMergePartners";
             this.mniFileMergePartners.AutoSize = true;
+            this.mniFileMergePartners.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileMergePartners.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileMergePartners.Glyph"));
             this.mniFileMergePartners.Text = "Mer&ge Partners...";
             //
             // mniFileDeletePartner
             //
             this.mniFileDeletePartner.Name = "mniFileDeletePartner";
             this.mniFileDeletePartner.AutoSize = true;
+            this.mniFileDeletePartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileDeletePartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileDeletePartner.Glyph"));
             this.mniFileDeletePartner.Text = "&Delete Partner";
+            //
+            // mniFileSeparator2
+            //
+            this.mniFileSeparator2.Name = "mniFileSeparator2";
+            this.mniFileSeparator2.AutoSize = true;
+            this.mniFileSeparator2.Text = "-";
+            //
+            // mniFileSendEmail
+            //
+            this.mniFileSendEmail.Name = "mniFileSendEmail";
+            this.mniFileSendEmail.AutoSize = true;
+            this.mniFileSendEmail.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileSendEmail.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileSendEmail.Glyph"));
+            this.mniFileSendEmail.Text = "Send E&mail to Partner";
             //
             // mniFileSeparator3
             //
@@ -394,23 +493,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniFileSeparator3.AutoSize = true;
             this.mniFileSeparator3.Text = "-";
             //
-            // mniFileCopyAddress
+            // mniFilePrintPartner
             //
-            this.mniFileCopyAddress.Name = "mniFileCopyAddress";
-            this.mniFileCopyAddress.AutoSize = true;
-            this.mniFileCopyAddress.Text = "Copy Partner's &Address...";
-            //
-            // mniFileCopyPartnerKey
-            //
-            this.mniFileCopyPartnerKey.Name = "mniFileCopyPartnerKey";
-            this.mniFileCopyPartnerKey.AutoSize = true;
-            this.mniFileCopyPartnerKey.Text = "Copy Partner's Partner &Key";
-            //
-            // mniFileSendEmail
-            //
-            this.mniFileSendEmail.Name = "mniFileSendEmail";
-            this.mniFileSendEmail.AutoSize = true;
-            this.mniFileSendEmail.Text = "Send E&mail to Partner";
+            this.mniFilePrintPartner.Name = "mniFilePrintPartner";
+            this.mniFilePrintPartner.AutoSize = true;
+            this.mniFilePrintPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFilePrintPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFilePrintPartner.Glyph"));
+            this.mniFilePrintPartner.Text = "&Print Partner";
             //
             // mniFileSeparator4
             //
@@ -418,35 +507,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniFileSeparator4.AutoSize = true;
             this.mniFileSeparator4.Text = "-";
             //
-            // mniFilePrintPartner
-            //
-            this.mniFilePrintPartner.Name = "mniFilePrintPartner";
-            this.mniFilePrintPartner.AutoSize = true;
-            this.mniFilePrintPartner.Text = "&Print Partner";
-            //
-            // mniFileSeparator5
-            //
-            this.mniFileSeparator5.Name = "mniFileSeparator5";
-            this.mniFileSeparator5.AutoSize = true;
-            this.mniFileSeparator5.Text = "-";
-            //
             // mniFileExportPartner
             //
             this.mniFileExportPartner.Name = "mniFileExportPartner";
             this.mniFileExportPartner.AutoSize = true;
+            this.mniFileExportPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileExportPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileExportPartner.Glyph"));
             this.mniFileExportPartner.Text = "E&xport Partner";
             //
             // mniFileImportPartner
             //
             this.mniFileImportPartner.Name = "mniFileImportPartner";
             this.mniFileImportPartner.AutoSize = true;
+            this.mniFileImportPartner.Click += new System.EventHandler(this.MniFile_Click);
+            this.mniFileImportPartner.Image = ((System.Drawing.Bitmap)resources.GetObject("mniFileImportPartner.Glyph"));
             this.mniFileImportPartner.Text = "&Import Partner";
             //
-            // mniFileSeparator6
+            // mniFileSeparator5
             //
-            this.mniFileSeparator6.Name = "mniFileSeparator6";
-            this.mniFileSeparator6.AutoSize = true;
-            this.mniFileSeparator6.Text = "-";
+            this.mniFileSeparator5.Name = "mniFileSeparator5";
+            this.mniFileSeparator5.AutoSize = true;
+            this.mniFileSeparator5.Text = "-";
             //
             // mniClose
             //
@@ -462,142 +543,241 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniFile.Name = "mniFile";
             this.mniFile.AutoSize = true;
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                           mniFileSearch,
-                        mniFileSeparator1,
-                        mniFileWorkWithLastPartner,
+                           mniFileWorkWithLastPartner,
                         mniFileRecentPartners,
-                        mniFileSeparator2,
+                        mniFileSeparator1,
                         mniFileNewPartner,
-                        mniFileViewPartner,
+                        mniFileNewPartnerWithShepherd,
                         mniFileEditPartner,
                         mniFileMergePartners,
                         mniFileDeletePartner,
-                        mniFileSeparator3,
-                        mniFileCopyAddress,
-                        mniFileCopyPartnerKey,
+                        mniFileSeparator2,
                         mniFileSendEmail,
-                        mniFileSeparator4,
+                        mniFileSeparator3,
                         mniFilePrintPartner,
-                        mniFileSeparator5,
+                        mniFileSeparator4,
                         mniFileExportPartner,
                         mniFileImportPartner,
-                        mniFileSeparator6,
+                        mniFileSeparator5,
                         mniClose});
             this.mniFile.Text = "&File";
+            //
+            // mniEditSearch
+            //
+            this.mniEditSearch.Name = "mniEditSearch";
+            this.mniEditSearch.AutoSize = true;
+            this.mniEditSearch.Click += new System.EventHandler(this.MniEdit_Click);
+            this.mniEditSearch.Image = ((System.Drawing.Bitmap)resources.GetObject("mniEditSearch.Glyph"));
+            this.mniEditSearch.Text = "&Search";
+            //
+            // mniEditSeparator
+            //
+            this.mniEditSeparator.Name = "mniEditSeparator";
+            this.mniEditSeparator.AutoSize = true;
+            this.mniEditSeparator.Text = "-";
+            //
+            // mniEditCopyPartnerKey
+            //
+            this.mniEditCopyPartnerKey.Name = "mniEditCopyPartnerKey";
+            this.mniEditCopyPartnerKey.AutoSize = true;
+            this.mniEditCopyPartnerKey.Click += new System.EventHandler(this.MniEdit_Click);
+            this.mniEditCopyPartnerKey.Image = ((System.Drawing.Bitmap)resources.GetObject("mniEditCopyPartnerKey.Glyph"));
+            this.mniEditCopyPartnerKey.Text = "Copy Partner's Partner &Key";
+            //
+            // mniEditCopyAddress
+            //
+            this.mniEditCopyAddress.Name = "mniEditCopyAddress";
+            this.mniEditCopyAddress.AutoSize = true;
+            this.mniEditCopyAddress.Click += new System.EventHandler(this.MniEdit_Click);
+            this.mniEditCopyAddress.Image = ((System.Drawing.Bitmap)resources.GetObject("mniEditCopyAddress.Glyph"));
+            this.mniEditCopyAddress.Text = "Copy Partner's &Address...";
+            //
+            // mniEditCopyEmailAddress
+            //
+            this.mniEditCopyEmailAddress.Name = "mniEditCopyEmailAddress";
+            this.mniEditCopyEmailAddress.AutoSize = true;
+            this.mniEditCopyEmailAddress.Click += new System.EventHandler(this.MniEdit_Click);
+            this.mniEditCopyEmailAddress.Image = ((System.Drawing.Bitmap)resources.GetObject("mniEditCopyEmailAddress.Glyph"));
+            this.mniEditCopyEmailAddress.Text = "Copy Partner's E&mail Address";
+            //
+            // mniEdit
+            //
+            this.mniEdit.Name = "mniEdit";
+            this.mniEdit.AutoSize = true;
+            this.mniEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniEditSearch,
+                        mniEditSeparator,
+                        mniEditCopyPartnerKey,
+                        mniEditCopyAddress,
+                        mniEditCopyEmailAddress});
+            this.mniEdit.Text = "&Edit";
             //
             // mniMaintainAddresses
             //
             this.mniMaintainAddresses.Name = "mniMaintainAddresses";
             this.mniMaintainAddresses.AutoSize = true;
-            this.mniMaintainAddresses.Text = "&Addresses...";
+            this.mniMaintainAddresses.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainAddresses.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainAddresses.Glyph"));
+            this.mniMaintainAddresses.Text = "&Addresses";
             //
             // mniMaintainPartnerDetails
             //
             this.mniMaintainPartnerDetails.Name = "mniMaintainPartnerDetails";
             this.mniMaintainPartnerDetails.AutoSize = true;
-            this.mniMaintainPartnerDetails.Text = "Partner &Details...";
+            this.mniMaintainPartnerDetails.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainPartnerDetails.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainPartnerDetails.Glyph"));
+            this.mniMaintainPartnerDetails.Text = "Partner &Details";
             //
             // mniMaintainFoundationDetails
             //
             this.mniMaintainFoundationDetails.Name = "mniMaintainFoundationDetails";
             this.mniMaintainFoundationDetails.AutoSize = true;
-            this.mniMaintainFoundationDetails.Text = "Foundation Details...";
+            this.mniMaintainFoundationDetails.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainFoundationDetails.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainFoundationDetails.Glyph"));
+            this.mniMaintainFoundationDetails.Text = "Foundation Details";
             //
             // mniMaintainSubscriptions
             //
             this.mniMaintainSubscriptions.Name = "mniMaintainSubscriptions";
             this.mniMaintainSubscriptions.AutoSize = true;
-            this.mniMaintainSubscriptions.Text = "&Subscriptions...";
+            this.mniMaintainSubscriptions.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainSubscriptions.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainSubscriptions.Glyph"));
+            this.mniMaintainSubscriptions.Text = "&Subscriptions";
             //
             // mniMaintainSpecialTypes
             //
             this.mniMaintainSpecialTypes.Name = "mniMaintainSpecialTypes";
             this.mniMaintainSpecialTypes.AutoSize = true;
-            this.mniMaintainSpecialTypes.Text = "Special &Types...";
+            this.mniMaintainSpecialTypes.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainSpecialTypes.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainSpecialTypes.Glyph"));
+            this.mniMaintainSpecialTypes.Text = "Special &Types";
             //
             // mniMaintainContacts
             //
             this.mniMaintainContacts.Name = "mniMaintainContacts";
             this.mniMaintainContacts.AutoSize = true;
-            this.mniMaintainContacts.Text = "&Contacts...";
+            this.mniMaintainContacts.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainContacts.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainContacts.Glyph"));
+            this.mniMaintainContacts.Text = "&Contacts";
             //
             // mniMaintainFamilyMembers
             //
             this.mniMaintainFamilyMembers.Name = "mniMaintainFamilyMembers";
             this.mniMaintainFamilyMembers.AutoSize = true;
-            this.mniMaintainFamilyMembers.Text = "Family &Members...";
+            this.mniMaintainFamilyMembers.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainFamilyMembers.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainFamilyMembers.Glyph"));
+            this.mniMaintainFamilyMembers.Text = "Fa&mily Members";
             //
             // mniMaintainRelationships
             //
             this.mniMaintainRelationships.Name = "mniMaintainRelationships";
             this.mniMaintainRelationships.AutoSize = true;
-            this.mniMaintainRelationships.Text = "&Relationships...";
+            this.mniMaintainRelationships.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainRelationships.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainRelationships.Glyph"));
+            this.mniMaintainRelationships.Text = "&Relationships";
             //
             // mniMaintainInterests
             //
             this.mniMaintainInterests.Name = "mniMaintainInterests";
             this.mniMaintainInterests.AutoSize = true;
-            this.mniMaintainInterests.Text = "&Interests...";
+            this.mniMaintainInterests.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainInterests.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainInterests.Glyph"));
+            this.mniMaintainInterests.Text = "&Interests";
             //
             // mniMaintainReminders
             //
             this.mniMaintainReminders.Name = "mniMaintainReminders";
             this.mniMaintainReminders.AutoSize = true;
-            this.mniMaintainReminders.Text = "R&eminders...";
+            this.mniMaintainReminders.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainReminders.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainReminders.Glyph"));
+            this.mniMaintainReminders.Text = "&Reminders";
             //
             // mniMaintainNotes
             //
             this.mniMaintainNotes.Name = "mniMaintainNotes";
             this.mniMaintainNotes.AutoSize = true;
-            this.mniMaintainNotes.Text = "&Notes...";
+            this.mniMaintainNotes.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainNotes.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainNotes.Glyph"));
+            this.mniMaintainNotes.Text = "&Notes";
             //
-            // mniMaintainOfficeSpecific
+            // mniMaintainLocalPartnerData
             //
-            this.mniMaintainOfficeSpecific.Name = "mniMaintainOfficeSpecific";
-            this.mniMaintainOfficeSpecific.AutoSize = true;
-            this.mniMaintainOfficeSpecific.Text = "&Local Partner Data...";
+            this.mniMaintainLocalPartnerData.Name = "mniMaintainLocalPartnerData";
+            this.mniMaintainLocalPartnerData.AutoSize = true;
+            this.mniMaintainLocalPartnerData.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainLocalPartnerData.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainLocalPartnerData.Glyph"));
+            this.mniMaintainLocalPartnerData.Text = "&Local Partner Data";
             //
-            // mniMaintainOMerField
+            // mniMaintainWorkerField
             //
-            this.mniMaintainOMerField.Name = "mniMaintainOMerField";
-            this.mniMaintainOMerField.AutoSize = true;
-            this.mniMaintainOMerField.Text = "&Worker Field...";
+            this.mniMaintainWorkerField.Name = "mniMaintainWorkerField";
+            this.mniMaintainWorkerField.AutoSize = true;
+            this.mniMaintainWorkerField.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainWorkerField.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainWorkerField.Glyph"));
+            this.mniMaintainWorkerField.Text = "&Worker Field";
             //
-            // mniMaintainSeparator1
+            // mniSeparator0
             //
-            this.mniMaintainSeparator1.Name = "mniMaintainSeparator1";
-            this.mniMaintainSeparator1.AutoSize = true;
-            this.mniMaintainSeparator1.Text = "-";
+            this.mniSeparator0.Name = "mniSeparator0";
+            this.mniSeparator0.AutoSize = true;
+            this.mniSeparator0.Text = "Separator";
             //
-            // mniMaintainPersonnelIndividualData
+            // mniMaintainPersonnelData
             //
-            this.mniMaintainPersonnelIndividualData.Name = "mniMaintainPersonnelIndividualData";
-            this.mniMaintainPersonnelIndividualData.AutoSize = true;
-            this.mniMaintainPersonnelIndividualData.Text = "&Personnel/Individual Data...";
+            this.mniMaintainPersonnelData.Name = "mniMaintainPersonnelData";
+            this.mniMaintainPersonnelData.AutoSize = true;
+            this.mniMaintainPersonnelData.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainPersonnelData.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainPersonnelData.Glyph"));
+            this.mniMaintainPersonnelData.Text = "&Personnel/Individual Data";
             //
-            // mniMaintainSeparator2
+            // mniSeparator1
             //
-            this.mniMaintainSeparator2.Name = "mniMaintainSeparator2";
-            this.mniMaintainSeparator2.AutoSize = true;
-            this.mniMaintainSeparator2.Text = "-";
+            this.mniSeparator1.Name = "mniSeparator1";
+            this.mniSeparator1.AutoSize = true;
+            this.mniSeparator1.Text = "Separator";
             //
             // mniMaintainDonorHistory
             //
             this.mniMaintainDonorHistory.Name = "mniMaintainDonorHistory";
             this.mniMaintainDonorHistory.AutoSize = true;
-            this.mniMaintainDonorHistory.Text = "Donor  &History...";
+            this.mniMaintainDonorHistory.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainDonorHistory.Text = "Donor &History";
             //
             // mniMaintainRecipientHistory
             //
             this.mniMaintainRecipientHistory.Name = "mniMaintainRecipientHistory";
             this.mniMaintainRecipientHistory.AutoSize = true;
-            this.mniMaintainRecipientHistory.Text = "Recipient  Histor&y...";
+            this.mniMaintainRecipientHistory.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainRecipientHistory.Text = "Recipient Histor&y";
+            //
+            // mniMaintainFinanceReports
+            //
+            this.mniMaintainFinanceReports.Name = "mniMaintainFinanceReports";
+            this.mniMaintainFinanceReports.AutoSize = true;
+            this.mniMaintainFinanceReports.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainFinanceReports.Text = "Finance Report&s";
+            //
+            // mniMaintainBankAccounts
+            //
+            this.mniMaintainBankAccounts.Name = "mniMaintainBankAccounts";
+            this.mniMaintainBankAccounts.AutoSize = true;
+            this.mniMaintainBankAccounts.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainBankAccounts.Text = "Ban&k Accounts";
+            //
+            // mniMaintainGiftReceipting
+            //
+            this.mniMaintainGiftReceipting.Name = "mniMaintainGiftReceipting";
+            this.mniMaintainGiftReceipting.AutoSize = true;
+            this.mniMaintainGiftReceipting.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainGiftReceipting.Text = "&Gift Receipting";
             //
             // mniMaintainFinanceDetails
             //
             this.mniMaintainFinanceDetails.Name = "mniMaintainFinanceDetails";
             this.mniMaintainFinanceDetails.AutoSize = true;
-            this.mniMaintainFinanceDetails.Text = "&Finance Details...";
+            this.mniMaintainFinanceDetails.Click += new System.EventHandler(this.MniMaintain_Click);
+            this.mniMaintainFinanceDetails.Image = ((System.Drawing.Bitmap)resources.GetObject("mniMaintainFinanceDetails.Glyph"));
+            this.mniMaintainFinanceDetails.Text = "&Finance Details";
             //
             // mniMaintain
             //
@@ -615,13 +795,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMaintainInterests,
                         mniMaintainReminders,
                         mniMaintainNotes,
-                        mniMaintainOfficeSpecific,
-                        mniMaintainOMerField,
-                        mniMaintainSeparator1,
-                        mniMaintainPersonnelIndividualData,
-                        mniMaintainSeparator2,
+                        mniMaintainLocalPartnerData,
+                        mniMaintainWorkerField,
+                        mniSeparator0,
+                        mniMaintainPersonnelData,
+                        mniSeparator1,
                         mniMaintainDonorHistory,
                         mniMaintainRecipientHistory,
+                        mniMaintainFinanceReports,
+                        mniMaintainBankAccounts,
+                        mniMaintainGiftReceipting,
                         mniMaintainFinanceDetails});
             this.mniMaintain.Text = "Maintain";
             //
@@ -629,12 +812,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniMailingGenerateExtract.Name = "mniMailingGenerateExtract";
             this.mniMailingGenerateExtract.AutoSize = true;
+            this.mniMailingGenerateExtract.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingGenerateExtract.Text = "&Generate Extract From Found Partners...";
             //
             // mniMailingExtracts
             //
             this.mniMailingExtracts.Name = "mniMailingExtracts";
             this.mniMailingExtracts.AutoSize = true;
+            this.mniMailingExtracts.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingExtracts.Text = "&Extracts...";
             //
             // mniMailingSeparator1
@@ -647,18 +832,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniMailingDuplicateAddressCheck.Name = "mniMailingDuplicateAddressCheck";
             this.mniMailingDuplicateAddressCheck.AutoSize = true;
+            this.mniMailingDuplicateAddressCheck.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingDuplicateAddressCheck.Text = "&Duplicate  Address Check...";
             //
             // mniMailingMergeAddresses
             //
             this.mniMailingMergeAddresses.Name = "mniMailingMergeAddresses";
             this.mniMailingMergeAddresses.AutoSize = true;
+            this.mniMailingMergeAddresses.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingMergeAddresses.Text = "&Merge  Addresses...";
             //
             // mniMailingPartnersAtLocation
             //
             this.mniMailingPartnersAtLocation.Name = "mniMailingPartnersAtLocation";
             this.mniMailingPartnersAtLocation.AutoSize = true;
+            this.mniMailingPartnersAtLocation.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingPartnersAtLocation.Text = "Find Partners at &Location...";
             //
             // mniMailingSeparator2
@@ -671,12 +859,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.mniMailingSubscriptionExpNotice.Name = "mniMailingSubscriptionExpNotice";
             this.mniMailingSubscriptionExpNotice.AutoSize = true;
+            this.mniMailingSubscriptionExpNotice.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingSubscriptionExpNotice.Text = "Subscription Expiry &Notices...";
             //
             // mniMailingSubscriptionCancellation
             //
             this.mniMailingSubscriptionCancellation.Name = "mniMailingSubscriptionCancellation";
             this.mniMailingSubscriptionCancellation.AutoSize = true;
+            this.mniMailingSubscriptionCancellation.Click += new System.EventHandler(this.MniMailing_Click);
             this.mniMailingSubscriptionCancellation.Text = "Subscription  &Cancellation...";
             //
             // mniMailing
@@ -695,11 +885,37 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMailingSubscriptionCancellation});
             this.mniMailing.Text = "&Mailing";
             //
+            // mniToolsOptions
+            //
+            this.mniToolsOptions.Name = "mniToolsOptions";
+            this.mniToolsOptions.AutoSize = true;
+            this.mniToolsOptions.Click += new System.EventHandler(this.MniTools_Click);
+            this.mniToolsOptions.Image = ((System.Drawing.Bitmap)resources.GetObject("mniToolsOptions.Glyph"));
+            this.mniToolsOptions.Text = "&Options...";
+            //
             // mniTools
             //
             this.mniTools.Name = "mniTools";
             this.mniTools.AutoSize = true;
+            this.mniTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniToolsOptions});
             this.mniTools.Text = "&Tools";
+            //
+            // mniViewPartnerInfo
+            //
+            this.mniViewPartnerInfo.Name = "mniViewPartnerInfo";
+            this.mniViewPartnerInfo.AutoSize = true;
+            this.mniViewPartnerInfo.Click += new System.EventHandler(this.MniView_Click);
+            this.mniViewPartnerInfo.Image = ((System.Drawing.Bitmap)resources.GetObject("mniViewPartnerInfo.Glyph"));
+            this.mniViewPartnerInfo.Text = "Partner &Info Panel";
+            //
+            // mniView
+            //
+            this.mniView.Name = "mniView";
+            this.mniView.AutoSize = true;
+            this.mniView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                           mniViewPartnerInfo});
+            this.mniView.Text = "Vie&w";
             //
             // mniPetraMainMenu
             //
@@ -770,11 +986,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelpPetraHelp.AutoSize = true;
             this.mniHelpPetraHelp.Text = "&Petra Help";
             //
-            // mniSeparator0
+            // mniSeparator2
             //
-            this.mniSeparator0.Name = "mniSeparator0";
-            this.mniSeparator0.AutoSize = true;
-            this.mniSeparator0.Text = "-";
+            this.mniSeparator2.Name = "mniSeparator2";
+            this.mniSeparator2.AutoSize = true;
+            this.mniSeparator2.Text = "-";
             //
             // mniHelpBugReport
             //
@@ -782,11 +998,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelpBugReport.AutoSize = true;
             this.mniHelpBugReport.Text = "Bug &Report";
             //
-            // mniSeparator1
+            // mniSeparator3
             //
-            this.mniSeparator1.Name = "mniSeparator1";
-            this.mniSeparator1.AutoSize = true;
-            this.mniSeparator1.Text = "-";
+            this.mniSeparator3.Name = "mniSeparator3";
+            this.mniSeparator3.AutoSize = true;
+            this.mniSeparator3.Text = "-";
             //
             // mniHelpAboutPetra
             //
@@ -806,9 +1022,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mniHelp.AutoSize = true;
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
-                        mniSeparator0,
+                        mniSeparator2,
                         mniHelpBugReport,
-                        mniSeparator1,
+                        mniSeparator3,
                         mniHelpAboutPetra,
                         mniHelpDevelopmentTeam});
             this.mniHelp.Text = "&Help";
@@ -820,9 +1036,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.mnuMain.AutoSize = true;
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
+                        mniEdit,
                         mniMaintain,
                         mniMailing,
                         mniTools,
+                        mniView,
                         mniPetraModules,
                         mniHelp});
             //
@@ -841,6 +1059,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ClientSize = new System.Drawing.Size(740, 570);
 
             this.Controls.Add(this.pnlMain);
+            this.Controls.Add(this.tbrMain);
             this.Controls.Add(this.mnuMain);
             this.MainMenuStrip = mnuMain;
             this.Controls.Add(this.stbMain);
@@ -852,11 +1071,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.TFrmPetra_Closing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form_KeyDown);
-            this.Closed += new System.EventHandler(this.TFrmPetra_Closed);
             this.Load += new System.EventHandler(this.TPartnerFindScreen_Load);
+            this.Closed += new System.EventHandler(this.TPartnerFindScreen_Closed);
 
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
+            this.tbrMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlModalButtons.ResumeLayout(false);
             this.tpgFindBankDetails.ResumeLayout(false);
@@ -879,10 +1099,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnFullyLoadData;
         private System.Windows.Forms.Button btnAccept;
+        private System.Windows.Forms.ToolStrip tbrMain;
+        private System.Windows.Forms.ToolStripButton tbbEditPartner;
+        private System.Windows.Forms.ToolStripButton tbbNewPartner;
+        private System.Windows.Forms.ToolStripSeparator tbbSeparator0;
+        private System.Windows.Forms.ToolStripButton tbbPartnerInfo;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
-        private System.Windows.Forms.ToolStripMenuItem mniFileSearch;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniFileWorkWithLastPartner;
         private System.Windows.Forms.ToolStripMenuItem mniFileRecentPartners;
         private System.Windows.Forms.ToolStripMenuItem mniFileRecentPartner1;
@@ -895,23 +1118,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniFileRecentPartner8;
         private System.Windows.Forms.ToolStripMenuItem mniFileRecentPartner9;
         private System.Windows.Forms.ToolStripMenuItem mniFileRecentPartner10;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator2;
+        private System.Windows.Forms.ToolStripSeparator mniFileSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniFileNewPartner;
-        private System.Windows.Forms.ToolStripMenuItem mniFileViewPartner;
+        private System.Windows.Forms.ToolStripMenuItem mniFileNewPartnerWithShepherd;
+        private System.Windows.Forms.ToolStripMenuItem mniFileNewPartnerWithShepherdFamily;
+        private System.Windows.Forms.ToolStripMenuItem mniFileNewPartnerWithShepherdChurch;
+        private System.Windows.Forms.ToolStripMenuItem mniFileNewPartnerWithShepherdOrganisation;
+        private System.Windows.Forms.ToolStripMenuItem mniFileNewPartnerWithShepherdUnit;
         private System.Windows.Forms.ToolStripMenuItem mniFileEditPartner;
         private System.Windows.Forms.ToolStripMenuItem mniFileMergePartners;
         private System.Windows.Forms.ToolStripMenuItem mniFileDeletePartner;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem mniFileCopyAddress;
-        private System.Windows.Forms.ToolStripMenuItem mniFileCopyPartnerKey;
+        private System.Windows.Forms.ToolStripSeparator mniFileSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniFileSendEmail;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator4;
+        private System.Windows.Forms.ToolStripSeparator mniFileSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniFilePrintPartner;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator5;
+        private System.Windows.Forms.ToolStripSeparator mniFileSeparator4;
         private System.Windows.Forms.ToolStripMenuItem mniFileExportPartner;
         private System.Windows.Forms.ToolStripMenuItem mniFileImportPartner;
-        private System.Windows.Forms.ToolStripSeparator mniFileSeparator6;
+        private System.Windows.Forms.ToolStripSeparator mniFileSeparator5;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
+        private System.Windows.Forms.ToolStripMenuItem mniEdit;
+        private System.Windows.Forms.ToolStripMenuItem mniEditSearch;
+        private System.Windows.Forms.ToolStripSeparator mniEditSeparator;
+        private System.Windows.Forms.ToolStripMenuItem mniEditCopyPartnerKey;
+        private System.Windows.Forms.ToolStripMenuItem mniEditCopyAddress;
+        private System.Windows.Forms.ToolStripMenuItem mniEditCopyEmailAddress;
         private System.Windows.Forms.ToolStripMenuItem mniMaintain;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainAddresses;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainPartnerDetails;
@@ -924,13 +1155,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniMaintainInterests;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainReminders;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainNotes;
-        private System.Windows.Forms.ToolStripMenuItem mniMaintainOfficeSpecific;
-        private System.Windows.Forms.ToolStripMenuItem mniMaintainOMerField;
-        private System.Windows.Forms.ToolStripSeparator mniMaintainSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniMaintainPersonnelIndividualData;
-        private System.Windows.Forms.ToolStripSeparator mniMaintainSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainLocalPartnerData;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainWorkerField;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainPersonnelData;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainDonorHistory;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainRecipientHistory;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainFinanceReports;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainBankAccounts;
+        private System.Windows.Forms.ToolStripMenuItem mniMaintainGiftReceipting;
         private System.Windows.Forms.ToolStripMenuItem mniMaintainFinanceDetails;
         private System.Windows.Forms.ToolStripMenuItem mniMailing;
         private System.Windows.Forms.ToolStripMenuItem mniMailingGenerateExtract;
@@ -943,6 +1177,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniMailingSubscriptionExpNotice;
         private System.Windows.Forms.ToolStripMenuItem mniMailingSubscriptionCancellation;
         private System.Windows.Forms.ToolStripMenuItem mniTools;
+        private System.Windows.Forms.ToolStripMenuItem mniToolsOptions;
+        private System.Windows.Forms.ToolStripMenuItem mniView;
+        private System.Windows.Forms.ToolStripMenuItem mniViewPartnerInfo;
         private System.Windows.Forms.ToolStripMenuItem mniPetraModules;
         private System.Windows.Forms.ToolStripMenuItem mniPetraMainMenu;
         private System.Windows.Forms.ToolStripMenuItem mniPetraPartnerModule;
@@ -953,9 +1190,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.ToolStripMenuItem mniPetraSysManModule;
         private System.Windows.Forms.ToolStripMenuItem mniHelp;
         private System.Windows.Forms.ToolStripMenuItem mniHelpPetraHelp;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator0;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
-        private System.Windows.Forms.ToolStripSeparator mniSeparator1;
+        private System.Windows.Forms.ToolStripSeparator mniSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
         private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
