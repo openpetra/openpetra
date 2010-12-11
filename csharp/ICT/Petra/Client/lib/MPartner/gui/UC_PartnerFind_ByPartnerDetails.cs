@@ -787,8 +787,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         public void OpenPartnerInfoPane()
         {
-            this.pnlPartnerInfoContainer.Height = TUC_PartnerFind_PartnerInfo.EXPANDEDHEIGHT;
-
             OnPartnerInfoPaneExpanded();
 
             ucoPartnerInfo.Expand();
@@ -833,8 +831,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         public void ClosePartnerInfoPane()
         {
-            this.pnlPartnerInfoContainer.Height = TUC_PartnerFind_PartnerInfo.COLLAPSEDHEIGHT;
-
             OnPartnerInfoPaneCollapsed();
 
             ucoPartnerInfo.Collapse();
@@ -1704,6 +1700,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.Default;
 //#endif
+        }
+
+        /// <summary>todoComment</summary>
+        public void StopTimer()
+        {
+            ucoPartnerInfo.StopTimer();
         }
 
         /// <summary>
