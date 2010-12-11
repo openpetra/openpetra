@@ -1158,6 +1158,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO? TUserDefaults.NamedDefaults.SetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 
             ReleaseServerObject();
+
+            // Stop the Timer for the fetching of data for the Partner Info Panel (necessary for a Garbage Collection of this Form!)
+            ucoPartnerInfo.StopTimer();
         }
 
         #endregion
