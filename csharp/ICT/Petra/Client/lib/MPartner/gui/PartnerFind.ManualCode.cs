@@ -1160,7 +1160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ReleaseServerObject();
 
             // Stop the Timer for the fetching of data for the Partner Info Panel (necessary for a Garbage Collection of this Form!)
-            ucoPartnerInfo.StopTimer();
+            ucoFindByPartnerDetails.StopTimer();
         }
 
         #endregion
