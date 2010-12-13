@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="csharp-Build">
+
+<target name="thirdParty">
+  <nant inheritall="false" target="${target}" 
+        buildfile="ThirdParty/ThirdParty.build" />
+</target>
+
+<target name="ict" depends="thirdParty" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="ICT/ICT.build" />
+</target>
+
+<target name="internal-subdirs" depends="thirdParty,ict"/>
+
+<include buildfile="../inc/nant/OpenPetra.subdirs.xml"/> 
+
+</project>

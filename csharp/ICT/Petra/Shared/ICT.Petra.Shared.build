@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project name="Ict.Petra.Shared-Build">
+
+<property name="Namespace" value="Ict.Petra.Shared" />
+<property name="ProjectGuid" value="{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}" />
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+<patternset id="references">
+  <patternset refid="3rdPartyPattern" />
+  <patternset refid="Ict.Common" />
+</patternset>
+ 
+</project>

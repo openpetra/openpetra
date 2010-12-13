@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="Plugin.AuthenticationPetraProgress-Build">
+
+<property name="Namespace" value="Plugin.AuthenticationPetraProgress" />
+<property name="ProjectGuid" value="{D4A6D375-C135-4299-9E6D-4A1E74125BD8}" /> 
+
+<include buildfile="../../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+<patternset id="references">
+  <patternset refid="Ict.Petra.Server" />
+  <patternset refid="Ict.Petra.Shared" />
+  <patternset refid="Ict.Common" />
+  <patternset refid="3rdPartyPattern" />
+</patternset>
+ 
+</project>

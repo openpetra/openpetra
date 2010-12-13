@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="Plugin.AuthenticationPhpBB-Build">
+
+<property name="Namespace" value="Plugin.AuthenticationPhpBB" />
+<property name="ProjectGuid" value="{D7701A8B-F802-4E4C-ADAF-6A467B521851}" />
+
+<include buildfile="../../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+<patternset id="references">
+  <!-- <patternset refid="Ict.Petra.Server" /> -->
+  <patternset refid="Ict.Petra.Shared" />
+  <patternset refid="Ict.Common" />
+  <patternset refid="3rdPartyPattern" />
+</patternset>
+ 
+</project>

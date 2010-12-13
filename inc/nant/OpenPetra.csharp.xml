@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-csharp">
+
+<include buildfile="OpenPetra.default.targets.xml"/>
+
+
+<include buildfile="OpenPetra.references.xml"/>
+
+<property name="OutputType" value="library" overwrite="false"/>
+<property name="csc-ouput-ext" value="dll" if="${OutputType=='library'}" />
+<property name="csc-ouput-ext" value="exe" unless="${OutputType=='library'}" />
+<property name="AssemblyName" value="${Namespace}.${csc-ouput-ext}" />
+
+<target name="clean" >
+  <delete>
+    <fileset>
+      <include name="${dir.bin}/${AssemblyName}" asis="true" />
+      <include name="${dir.bin}/${Namespace}.xml" asis="true" />
+      <include name="${dir.bin}/${Namespace}.pdb" asis="true" />
+      <include name="${dir.projectfiles}/**/${Namespace+'.csproj'}" />
+    </fileset>
+  </delete>
+</target>
+
+<target name="setassemblyfileset-internal">
+ <assemblyfileset id="assemblyfileset-references">
+    <!-- duplicated below. References are set after the include -->
+    <lib>
+      <include name="${dir.bin}"/>
+    </lib>
+    <patternset refid="references" />
+    <patternset refid="csharpStdLibs" />
+  </assemblyfileset>
+</target>
+
+<target name="compile" depends="setassemblyfileset-internal">
+  <csc filealign="4096" output="${dir.bin}/${AssemblyName}" 
+       doc="${dir.bin}/${Namespace}.xml"
+       target="${OutputType}" debug="${compile.debug}" 
+       noconfig="true">
+    <references refid="assemblyfileset-references" /> 
+    <sources>
+      <include name="**/*.cs" />
+    </sources>
+    <resources>
+        <include name="**/*.resx" />
+    </resources>
+  </csc>
+</target>
+
+<target name="generateCsproject" depends="generate-csproject-sharpdevelop">
+</target>
+
+<target name="generate-csproject-sharpdevelop">
+  <property name="devenv-name" value="sharpdevelop" />
+  <call target="generate-csproject-internal" />
+</target>
+
+
+<target name="generate-csproject-internal" depends="setassemblyfileset-internal">
+  <!-- Add cs and resx files -->
+  <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
+
+  <property name="TemplateReferences" value="" />
+  <property name="TemplateProjectReferences" value="" />
+  <foreach item="File" property="reference-path">
+    <in>
+      <items refid="assemblyfileset-references" />
+    </in>
+    <do>  
+      <!-- Extract reference name from the reference path-->
+      <property name="reference-name" 
+                value="${path::get-file-name-without-extension(reference-path)}" />
+      <property name="reference-project-file"
+                value="${path::combine(dir.projectfiles,
+                                path::combine(devenv-name, reference-name+'.csproj'))}" />           
+      <if test="${file::exists(reference-project-file)}">
+        <!-- Reference to another project. Find GUID -->
+        <xmlpeek
+            file="${reference-project-file}"
+            xpath="/*[local-name()='Project']/*[local-name()='PropertyGroup']/*[local-name()='ProjectGuid']"
+            property="reference-project-guid"/>
+        <loadfile file="${path::combine(templatedir, 'template.csproj.projectreference')}"
+                  property="tempTemplateReferences" encoding="utf-8">  
+          <filterchain>
+            <expandproperties />
+          </filterchain>
+        </loadfile>
+        <property name="TemplateProjectReferences" value="${TemplateProjectReferences}${tempTemplateReferences}" />
+      </if>
+      <if test="${not file::exists(reference-project-file)}">
+        <loadfile file="${path::combine(templatedir, 'template.csproj.reference')}"
+                  property="tempTemplateReferences" encoding="utf-8">  
+          <filterchain>
+            <expandproperties />
+          </filterchain>
+        </loadfile>
+        <property name="TemplateReferences" value="${TemplateReferences}${tempTemplateReferences}" />
+      </if>
+    </do>
+  </foreach>    
+
+  <property name="TemplateResource" value="" />
+  <foreach item="File" property="filename">
+    <in>
+      <items>
+        <include name="**/*.resx" />
+      </items>
+    </in>
+    <do>  
+    <loadfile file="${path::combine(templatedir, 'template.csproj.resource')}"
+              property="tempTemplateResource" encoding="utf-8">  
+      <filterchain>
+        <expandproperties />
+      </filterchain>
+    </loadfile>
+    <property name="TemplateResource" value="${TemplateResource}${tempTemplateResource}" />
+    </do>
+  </foreach>
+  
+  <property name="TemplateCompile" value="" />
+  <foreach item="File" property="filename">
+    <in>
+      <items>
+        <include name="**/*.cs" />
+      </items>
+    </in>
+    <do>
+      <loadfile file="${path::combine(templatedir, 'template.csproj.compile')}"
+                property="tempTemplateCompile" encoding="utf-8">  
+        <filterchain>
+          <expandproperties />
+        </filterchain>
+      </loadfile>
+      <property name="TemplateCompile" value="${TemplateCompile}${tempTemplateCompile}" />  
+    </do>
+  </foreach>
+  <!-- Add the finshed project -->
+  <copy file="${path::combine(templatedir, 'template.csproj')}"
+        tofile="${path::combine(dir.projectfiles,
+                                path::combine(devenv-name, Namespace+'.csproj'))}" 
+        overwrite="true">  
+    <filterchain>
+      <expandproperties />
+    </filterchain>
+  </copy>
+
+
+</target>
+
+</project>

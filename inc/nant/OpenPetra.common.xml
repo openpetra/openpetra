@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-tasks">
+
+<!-- Get OpenPetra root directory 
+ @hack: We are accessing the private variable from the include task of nant.
+        This is the only place, where this information is saved! -->
+<script language="C#" prefix="OP" >
+  <imports>
+    <import namespace="NAnt.Core.Tasks" />
+    <import namespace="System.Reflection" />
+  </imports>
+  <code>
+    <![CDATA[
+    [Function("get-current-buildfile")]
+    public static string getCurrentBuildfile( ) {
+      const BindingFlags eFlags = BindingFlags.Static | BindingFlags.Public 
+                                  | BindingFlags.NonPublic | BindingFlags.GetField; 
+      System.Reflection.FieldInfo field = typeof(NAnt.Core.Tasks.IncludeTask).GetField("_currentBasedir", eFlags); 
+      if (field == null) {
+        throw new ArgumentException("'_currentBasedir' is not a valid static member in '" + 
+          typeof(NAnt.Core.Tasks.IncludeTask) + "'.");
+      }
+      string returnvalue = (string) field.GetValue(null);
+      return returnvalue;
+    }
+    ]]>
+  </code>
+</script>
+
+<script language="C#" prefix="OP" >
+    <code>
+      <![CDATA[
+        [Function("GUIDGen")]
+        public static string GUIDGen(  ) {
+            return Guid.NewGuid().ToString("D").ToUpper();
+        }
+       ]]>
+    </code>
+</script>
+
+
+
+<!-- directories -->
+<property name="dir.buildfiles" value="${OP::get-current-buildfile()}" 
+          overwrite="false" />
+<property name="dir.incdir" value="${directory::get-parent-directory(dir.buildfiles)}"
+          overwrite="false" />
+<property name="dir.root" value="${directory::get-parent-directory(dir.incdir)}"
+          overwrite="false" />
+
+<!-- Import user specific properties, if available -->
+
+
+<!-- more directories -->
+ <!-- incdir -->
+<property name="dir.incdir.template" value="${path::combine(dir.incdir, 'template')}"
+          overwrite="false" />
+<property name="dir.incdir.template.etc" value="${path::combine(dir.incdir.template, 'etc')}"
+          overwrite="false" />
+ <!-- csharp -->
+<property name="dir.csharp" value="${path::combine(dir.root, 'csharp')}"
+          overwrite="false" />
+<property name="dir.3rdParty" value="${path::combine(dir.csharp, 'ThirdParty')}"
+          overwrite="false" />
+ <!-- delivery -->
+<property name="dir.delivery" value="${path::combine(dir.root, 'delivery')}"
+          overwrite="false" />
+<property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
+          overwrite="false" />
+ <!-- projectfiles -->
+<property name="dir.projectfiles" value="${path::combine(dir.root, 'projectfiles')}"
+          overwrite="false" />
+ <!-- db -->
+<property name="dir.db" value="${path::combine(dir.root, 'db')}"
+          overwrite="false" />
+<property name="dir.db.patches" value="${path::combine(dir.db, 'patches')}"
+          overwrite="false" />
+
+
+<!-- etc files -->
+<property name="dir.etc" value="${path::combine(dir.root, 'etc')}"
+          overwrite="false" />
+<property name="ClientConfigFile" value="${path::combine(dir.etc, 'Client.config')}"
+          overwrite="false" />
+<property name="ServerConfigFile" value="${path::combine(dir.etc, 'Server.config')}"
+          overwrite="false" />
+<property name="ServerAdminConfigFile" value="${dir.root}/etc/ServerAdmin.config"
+          overwrite="false" />
+
+<!-- Server configuration -->
+<property name="Server.Port" value="9000" 
+          overwrite="false" />
+<property name="SelectedLanguage" value="en" overwrite="false" />
+
+<!-- database -->
+<property name="DBMS.Type" value="postgresql"
+          overwrite="false" />
+<property name="DBMS.DBName" value="openpetra" 
+          overwrite="false"/>          
+<property name="DBMS.Password" value="hm5MMxmjthwalVK2PXwN"
+          overwrite="false" />
+
+
+<!-- Set correct .NET platform -->
+<property name="NETframework-version" value ="2.0" overwrite="false" />
+<property name="nant.settings.currentframework" value="net-${NETframework-version}"
+          overwrite="false" if="${platform::is-windows()}" />
+<property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
+          overwrite="false" if="${platform::is-unix()}" />
+<!-- compiler flags -->
+<property name="compile.debug" value="true" 
+          overwrite="false" />
+
+
+
+</project>
