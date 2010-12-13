@@ -12,7 +12,7 @@ var {#FORMNAME} = null;
             header: {#FORMHEADER},
             closable: false,
             // monitorValid:true,
-            fileUpload: {#CONTAINSFILEUPLOAD},
+            fileUpload: false,
             title: ' ',
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},

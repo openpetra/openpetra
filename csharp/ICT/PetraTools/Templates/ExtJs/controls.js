@@ -106,15 +106,22 @@
 
 {##FILEUPLOADDEFINITION}
 {
-    xtype: 'fileuploadfield',
-    id: '{#ITEMNAME}-file',
-    emptyText: this.{#HELP},
-    fieldLabel: this.{#LABEL},
-    name: '{#ITEMNAME}',
-    buttonText: '',
-    buttonCfg: {
-        iconCls: 'upload-icon'
-    }
+    xtype: 'hidden',
+    name: 'hidImageID',
+},
+{
+    columnWidth:1,
+    layout: 'form',
+    border:false,
+    items: [{
+                xtype: 'displayfield',
+                fieldLabel: this.{#LABEL},
+                allowBlank: false,
+                width: 300,
+                html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div><div id="uploadDiv2" style="width:30px; height:20px"></div>',
+                name: '{#ITEMNAME}',
+                anchor: '97.5%'
+    }]
 }
 
 {##CHECKBOXDEFINITION}

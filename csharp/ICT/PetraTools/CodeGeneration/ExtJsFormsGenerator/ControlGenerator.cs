@@ -109,7 +109,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            writer.FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "true");
+            ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
+
+            writer.FTemplate.InsertSnippet("UPLOADFORM", uploadSnippet);
+
+            ProcessTemplate uploadCheckSnippet = writer.FTemplate.GetSnippet("VALIDUPLOADCHECK");
+            writer.FTemplate.InsertSnippet("CHECKFORVALIDUPLOAD", uploadCheckSnippet);
 
             return ctrlSnippet;
         }

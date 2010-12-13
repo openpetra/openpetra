@@ -356,7 +356,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
 
-            FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "false");
+            FTemplate.SetCodelet("UPLOADFORM", "");
+            FTemplate.SetCodelet("CHECKFORVALIDUPLOAD", "");
 
             FLanguageFileTemplate = FTemplate.GetSnippet("LANGUAGEFILE");
 

@@ -11,7 +11,7 @@ var {#FORMNAME} = null;
             frame: {#FORMFRAME},
             header: {#FORMHEADER},
             // monitorValid:true,
-            fileUpload: {#CONTAINSFILEUPLOAD},
+            fileUpload: false,
             title: this.{#FORMCAPTION},
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},
