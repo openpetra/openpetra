@@ -327,6 +327,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // pnlPartnerInfoContainer
             //
+            this.pnlPartnerInfoContainer.AutoSize = true;
+            this.pnlPartnerInfoContainer.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             this.pnlPartnerInfoContainer.Controls.Add(ucoPartnerInfo);
             this.pnlPartnerInfoContainer.BackColor = System.Drawing.SystemColors.Control;
             this.pnlPartnerInfoContainer.Dock = System.Windows.Forms.DockStyle.Bottom;

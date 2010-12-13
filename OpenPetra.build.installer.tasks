@@ -3,6 +3,8 @@
      this build file is included by the main OpenPetra.build file, and only that should be called (on Linux call target: buildRelease) -->
 <project name="OpenPetra" default="help">
 
+    <property name="SkipDatabases" value="false" unless="${property::exists('SkipDatabases')}"/>
+
     <target name="setupTemplate">
         <property name="Current.File" value="${SetupOriginal.File}.local"/>
 

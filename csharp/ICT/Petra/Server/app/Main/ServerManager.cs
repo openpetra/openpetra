@@ -626,7 +626,7 @@ namespace Ict.Petra.Server.App.Main
 
                     foreach (string sqlFile in sqlFiles)
                     {
-                        if (ADBVersion.PatchApplies(sqlFile))
+                        if (ADBVersion.PatchApplies(sqlFile, AExeVersion))
                         {
                             foundUpdate = true;
                             StreamReader sr = new StreamReader(sqlFile);
@@ -659,7 +659,8 @@ namespace Ict.Petra.Server.App.Main
                 else
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception("Cannot connect to old database, there are some missing sql patch files");
+                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
+                            ADBVersion));
                 }
             }
             catch (Exception e)
