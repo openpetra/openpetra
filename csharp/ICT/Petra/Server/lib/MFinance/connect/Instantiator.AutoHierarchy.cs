@@ -2219,6 +2219,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public bool ImportGiftBatchData(Hashtable requestParams,
+                                        String importString,
+                                        out TVerificationResultCollection AMessages,
+                                        out GiftBatchTDS FMainDS)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatchData", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;GIFTBATCHTDS;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "LoadMotivationDetails", ";INT;");

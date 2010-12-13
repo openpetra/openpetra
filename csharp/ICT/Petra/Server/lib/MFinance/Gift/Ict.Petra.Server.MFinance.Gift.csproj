@@ -118,6 +118,7 @@
     <Compile Include="Gift.Receipting.cs" />
     <Compile Include="Gift.Transactions.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Gift.Importing.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../../app/ClientDomain/Ict.Petra.Server.App.ClientDomain.csproj">

@@ -491,6 +491,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     Hashtable requestParams,
                                     out String exportString,
                                     out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        bool ImportGiftBatchData(Hashtable requestParams,
+                                 String importString,
+                                 out TVerificationResultCollection AMessages,
+                                 out GiftBatchTDS FMainDS);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
         GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
