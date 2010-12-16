@@ -73,6 +73,10 @@
     <Compile Include="pnlAccordion.Designer.cs">
       <DependentUpon>pnlAccordion.cs</DependentUpon>
     </Compile>
+    <Compile Include="pnlCollapsible.cs" />
+    <Compile Include="pnlCollapsible.Designer.cs">
+      <DependentUpon>pnlCollapsible.cs</DependentUpon>
+    </Compile>
     <Compile Include="pnlDashboard.cs" />
     <Compile Include="pnlGradient.cs" />
     <Compile Include="rbtNavigationButton.cs" />
@@ -108,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="lblVarioText.resx">
       <DependentUpon>lblVarioText.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="pnlCollapsible.resx">
+      <DependentUpon>pnlCollapsible.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="sgrdDataGrid.resx">
       <DependentUpon>sgrdDataGrid.cs</DependentUpon>
