@@ -62,7 +62,7 @@ namespace Ict.Common.IO
             }
             set
             {
-            	txtDateFormat.Text=value;
+                txtDateFormat.Text = value;
             }
         }
 

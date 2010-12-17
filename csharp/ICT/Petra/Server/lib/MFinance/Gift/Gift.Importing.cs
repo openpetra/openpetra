@@ -54,16 +54,12 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDelimiter;
         Int32 FLedgerNumber;
         String FDateFormatString;
-        CultureInfo FCultureInfo;
-        bool FSummary;
-        bool FUseBaseCurrency;
-        String FBaseCurrency;
-        DateTime FDateForSummary;
-        bool FTransactionsOnly;
+
+
         bool FExtraColumns;
         TDBTransaction FTransaction;
-        Int64 FRecipientNumber;
-        Int64 FFieldNumber;
+
+
         GLSetupTDS FSetupTDS;
 
         private String FImportMessage;
@@ -117,16 +113,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             //AGiftRow gift = null;
             FImportMessage = Catalog.GetString("Parsing first line");
             Int32 RowNumber = 0;
-            bool ok=false;
+            bool ok = false;
 
             try
             {
-            	ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
 
-			
-			
-
-			
                 while ((FImportLine = sr.ReadLine()) != null)
                 {
                     RowNumber++;
@@ -138,7 +130,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         if (RowType == "B")
                         {
-                            giftBatch = TTransactionWebConnector.CreateANewGiftBatchRow(ref FMainDS, ref FTransaction, ref LedgerTable, FLedgerNumber, DateTime.Today);
+                            giftBatch = TTransactionWebConnector.CreateANewGiftBatchRow(ref FMainDS,
+                                ref FTransaction,
+                                ref LedgerTable,
+                                FLedgerNumber,
+                                DateTime.Today);
                             giftBatch.BatchDescription = ImportString("batch description");
                             giftBatch.BankAccountCode = ImportString("bank account  code");
                             giftBatch.HashTotal = ImportDouble("hash total");
@@ -148,6 +144,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.ExchangeRateToBase = ImportDouble("exchange rate to base");
                             giftBatch.BankCostCentre = ImportString("bank cost centre");
                             giftBatch.GiftType = ImportString("gift type");
+							FImportMessage = "writing gift batch";
+                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                            {
+                                return false;
+                            }
+                            FMainDS.AGiftBatch.AcceptChanges();
                         }
                         else if (RowType == "T")
                         {
@@ -162,15 +164,15 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
-                                        gift.LedgerNumber =giftBatch.LedgerNumber;
-            gift.BatchNumber = giftBatch.BatchNumber;
-            gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
-            giftBatch.LastGiftNumber++;
-            gift.LastDetailNumber = 1;
-            FMainDS.AGift.Rows.Add(gift);
+                            gift.LedgerNumber = giftBatch.LedgerNumber;
+                            gift.BatchNumber = giftBatch.BatchNumber;
+                            gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
+                            giftBatch.LastGiftNumber++;
+                            gift.LastDetailNumber = 1;
+                            FMainDS.AGift.Rows.Add(gift);
                             AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
-							giftDetails.DetailNumber =1;
-							giftDetails.LedgerNumber = gift.LedgerNumber;
+                            giftDetails.DetailNumber = 1;
+                            giftDetails.LedgerNumber = gift.LedgerNumber;
                             giftDetails.BatchNumber = giftBatch.BatchNumber;
                             giftDetails.GiftTransactionNumber = gift.GiftTransactionNumber;
                             FMainDS.AGiftDetail.Rows.Add(giftDetails);
@@ -226,33 +228,43 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftCommentThree = ImportString("gift comment three");
                             giftDetails.CommentThreeType = ImportString("comment three type");
                             giftDetails.TaxDeductable = ImportBoolean("tax deductable");
+							FImportMessage = "writing gift";
+                            if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
+                            {
+                                return false;
+                            }
+                            FMainDS.AGift.AcceptChanges();
+							FImportMessage = "writing giftdetails";
+                            if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
+                            {
+                                return false;
+                            }
+                            FMainDS.AGiftDetail.AcceptChanges();
                         }
                     }
                 }
 
-                sr.Close();
-                
+                FImportMessage = Catalog.GetString("Saving all data into the database");
 
-				FImportMessage = Catalog.GetString("Saving all data into the database");
-				if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
-				{
-					if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out AMessages))
-					{
-						if (AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
-						{
-							if (AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
-							{
-								ok = true;
-							}
-						}
-			
-					}
-				}
-
-	
+                //Finally save all outstanding changes (lastxxxnumber)
+                if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                {
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out AMessages))
+                    {
+                        if (AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
+                        {
+                            if (AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
+                            {
+                                ok = true;
+                            }
+                        }
+                    }
+                }
+                FMainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
+            	// TODO Replace error Messages from contraints with speaking messages
                 AMessages.Add(new TVerificationResult("Import",
 
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}. "), RowNumber) +
@@ -260,21 +272,32 @@ namespace Ict.Petra.Server.MFinance.Gift
                         FImportMessage + " " + ex,
                         TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                sr.Close();
                 return false;
             }
+            finally
+            {
+                try
+                {
+                    sr.Close();
+                }
+                catch
+                {
+                };
+            }
+
             if (ok)
-			{
-				FMainDS.AGiftBatch.AcceptChanges();
-				DBAccess.GDBAccessObj.CommitTransaction();
-			}
-			else
-			{
-					DBAccess.GDBAccessObj.RollbackTransaction();
-				 AMessages.Add(new TVerificationResult("Import",
-                        Catalog.GetString("Data could not be saved. ") ,
+            {
+                FMainDS.AGiftBatch.AcceptChanges();
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                AMessages.Add(new TVerificationResult("Import",
+                        Catalog.GetString("Data could not be saved. "),
                         TResultSeverity.Resv_Critical));
-			}
+            }
+
             return true;
         }
 
@@ -282,7 +305,12 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            if (sReturn.Length == 0 ) return null;
+
+            if (sReturn.Length == 0)
+            {
+                return null;
+            }
+
             return sReturn;
         }
 
