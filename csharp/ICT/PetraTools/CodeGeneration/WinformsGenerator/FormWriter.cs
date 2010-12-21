@@ -711,6 +711,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
+            FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
             FTemplate.AddToCodelet("CLEARDETAILS", "");
             FTemplate.AddToCodelet("CATALOGI18N", "");

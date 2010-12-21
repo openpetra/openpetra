@@ -106,6 +106,11 @@ namespace {#NAMESPACE}
 {#ENDIF UICONNECTORCREATE}
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+
 {#IFDEF SHOWDATA}
     private void ShowData({#MASTERTABLETYPE}Row ARow)
     {
@@ -319,6 +324,8 @@ namespace {#NAMESPACE}
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

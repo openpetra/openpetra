@@ -226,6 +226,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        cmbDetailFromCurrencyCode.Enabled = AReadOnly;
+        cmbDetailToCurrencyCode.Enabled = AReadOnly;
+        dtpDetailDateEffectiveFrom.Enabled = AReadOnly;
+    }
+
     private void ShowDetails(ADailyExchangeRateRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -438,6 +445,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;
