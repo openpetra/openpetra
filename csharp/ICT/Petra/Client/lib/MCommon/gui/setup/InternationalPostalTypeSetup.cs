@@ -218,6 +218,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailInternatPostalTypeCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(PInternationalPostalTypeRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -425,6 +430,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

@@ -146,6 +146,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        ucoBatches.SetPrimaryKeyReadOnly(AReadOnly);
+        ucoJournals.SetPrimaryKeyReadOnly(AReadOnly);
+        ucoTransactions.SetPrimaryKeyReadOnly(AReadOnly);
+        ucoAttributes.SetPrimaryKeyReadOnly(AReadOnly);
+    }
+
     private void GetDataFromControls()
     {
         ucoBatches.GetDataFromControls();
@@ -321,6 +329,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;
