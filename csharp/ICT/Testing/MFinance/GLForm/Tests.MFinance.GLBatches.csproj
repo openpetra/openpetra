@@ -1,18 +1,17 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{F66C325F-C85B-4897-B949-2E2710AE755C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Tests.MFinance.GLForm</RootNamespace>
+    <RootNamespace>Tests.MFinance.GLBatches</RootNamespace>
     <AssemblyName>Tests.MFinance.GLBatches</AssemblyName>
-    <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>../../_bin/Debug/Tests.MFinance.GLForm.xml</DocumentationFile>
+    <DocumentationFile>../../_bin/Debug/Tests.MFinance.GLBatches.xml</DocumentationFile>
     <NoWarn>0067</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -123,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="test.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">
