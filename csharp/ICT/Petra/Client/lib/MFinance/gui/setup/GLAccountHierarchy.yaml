@@ -37,7 +37,7 @@ RootNode:
                 Row6: [chkDetailBankAccountFlag]
                 Row7: [chkDetailAccountActiveFlag]
                 Row8: [ucoAccountAnalysisAttributes]
-        txtDetailAccountCode:
+        txtDetailAccountCode: {OnLeave=ChangeAccountCodeValue}
         cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
         # TODO: still need english and local description? easier to use different account hierarchies?
