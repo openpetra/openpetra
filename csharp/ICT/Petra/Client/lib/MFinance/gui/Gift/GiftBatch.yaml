@@ -15,10 +15,16 @@ RootNode:
         pnlContent:
             Controls: [tabGiftBatch]
             Dock: Fill
-        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false, LoadPagesDynamically=true, IgnoreFirstTabPageSelectionChange=true}            
-        tpgBatches: {LoadPageDynamically=true}
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}        
+        tpgBatches: 
             Label: Batches
-            DynamicControlType: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
-        tpgTransactions: {LoadPageDynamically=true}
-            Label: Transactions
-            DynamicControlType: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions
+            Controls: [ucoBatches]
+        tpgTransactions: 
+            Label: Details
+            Controls: [ucoTransactions]
+        ucoBatches:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches
+            Dock: Fill
+        ucoTransactions:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions
+            Dock: Fill    

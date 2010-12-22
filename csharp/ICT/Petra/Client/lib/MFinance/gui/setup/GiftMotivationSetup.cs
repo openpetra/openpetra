@@ -241,6 +241,12 @@ object FFilter;
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailMotivationGroupCode.ReadOnly = AReadOnly;
+        txtDetailMotivationDetailCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(AMotivationDetailRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -464,6 +470,8 @@ object FFilter;
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

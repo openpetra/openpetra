@@ -86,11 +86,11 @@
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
         <echo message="resetDatabase: just resets the data, resets the permissions"/>
+        <echo message="patchDatabase: update the database to the latest development version"/>
         <echo message="translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery"/>
         <echo message="translationCompilePOFile: create the dlls required to be delivered with a new release"/>
         <echo message="generateORM: generates the typed tables and typed datastore from the petra.xml"/>
         <echo message="generateGlue: generates the interfaces and instantiators, which is the glue between client and server"/>
-        <echo message="generateGTK: generates the User Interface using GTK"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="generateWebforms: generates the User Interface using the Ext.js AJAX framework"/>
@@ -98,7 +98,7 @@
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
-        <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
+        <echo message="compileTesting: build the testing projects and copy the version.txt"/>
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>

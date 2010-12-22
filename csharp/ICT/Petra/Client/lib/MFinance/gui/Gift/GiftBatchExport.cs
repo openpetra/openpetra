@@ -60,14 +60,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.rbtDetail.Text = Catalog.GetString("Detail");
-      this.rbtSummary.Text = Catalog.GetString("Summary");
-      this.lblDateSummary.Text = Catalog.GetString("Date for summary:");
-      this.lblDontSummarize.Text = Catalog.GetString("Don't summarize with:");
-      this.lblDontSummarizeAccount.Text = Catalog.GetString("Account:");
+      this.rbtSummary.Text = Catalog.GetString("Date for summary");
       this.rgrDetailSummary.Text = Catalog.GetString("Detail or Summary");
       this.rbtBaseCurrency.Text = Catalog.GetString("Base Currency");
       this.rbtOriginalTransactionCurrency.Text = Catalog.GetString("Original Transaction Currency");
       this.rgrCurrency.Text = Catalog.GetString("Currency");
+      this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
+      this.lblDetailRecipientKey.Text = Catalog.GetString("Recipient:");
+      this.txtDetailFieldKey.ButtonText = Catalog.GetString("Find");
+      this.lblDetailFieldKey.Text = Catalog.GetString("Field:");
       this.lblDateFrom.Text = Catalog.GetString("Date from:");
       this.lblDateTo.Text = Catalog.GetString("To:");
       this.lblBatchNumberStart.Text = Catalog.GetString("Batch Number from:");
@@ -75,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.rgrDateOrBatchRange.Text = Catalog.GetString("Date Or Batch Range");
       this.lblIncludeUnposted.Text = Catalog.GetString("Include Unposted Batches:");
       this.lblTransactionsOnly.Text = Catalog.GetString("Transactions Only:");
+      this.lblExtraColumns.Text = Catalog.GetString("With extra columns:");
       this.lblFilename.Text = Catalog.GetString("Filename:");
       this.btnBrowseFilename.Text = Catalog.GetString("Browse Filename");
       this.lblDelimiter.Text = Catalog.GetString("Delimiter:");
@@ -110,8 +112,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     void rbtSummaryCheckedChanged(object sender, System.EventArgs e)
     {
       dtpDateSummary.Enabled = rbtSummary.Checked;
-      chkDontSummarize.Enabled = rbtSummary.Checked;
-      cmbDontSummarizeAccount.Enabled = rbtSummary.Checked;
     }
 
     void rbtDateRangeCheckedChanged(object sender, System.EventArgs e)

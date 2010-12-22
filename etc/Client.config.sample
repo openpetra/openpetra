@@ -18,6 +18,7 @@
 
   <appSettings>
     <add key="OpenPetra.PathTemp" value="../../../../../../log" />
+    <add key="OpenPetra.PathExport" value="../../../../../../tmp/export" />
     <add key="Reporting.PathReportSettings" value="../../../../../../XmlReports/Settings" />
     <add key="Reporting.PathReportUserSettings" value="../../../../../../tmp/Settings" />
     <add key="UINavigation.File" value="../../../Definitions/UINavigation.yml" />

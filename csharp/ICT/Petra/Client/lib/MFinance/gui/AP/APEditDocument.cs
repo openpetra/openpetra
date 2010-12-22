@@ -255,6 +255,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         return true;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData(AccountsPayableTDSAApDocumentRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -654,6 +658,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

@@ -114,10 +114,12 @@
     <Compile Include="Gift.cs" />
     <Compile Include="Gift.Exporting.cs" />
     <Compile Include="Gift.gui.tools.cs" />
+    <Compile Include="Gift.Batch.cs" />
     <Compile Include="Gift.NewDonorSubscription.cs" />
     <Compile Include="Gift.Receipting.cs" />
     <Compile Include="Gift.Transactions.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Gift.Importing.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../../app/ClientDomain/Ict.Petra.Server.App.ClientDomain.csproj">

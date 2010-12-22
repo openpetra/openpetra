@@ -176,6 +176,11 @@ namespace {#NAMESPACE}
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -415,6 +420,8 @@ namespace {#NAMESPACE}
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

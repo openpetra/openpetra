@@ -3,6 +3,8 @@
      this build file is included by the main OpenPetra.build file, and only that should be called (on Linux call target: buildRelease) -->
 <project name="OpenPetra" default="help">
 
+    <property name="SkipDatabases" value="false" unless="${property::exists('SkipDatabases')}"/>
+
     <target name="setupTemplate">
         <property name="Current.File" value="${SetupOriginal.File}.local"/>
 
@@ -62,6 +64,10 @@
         <call target="setupTemplate"/>
     </target>
     <target name="setupRemote">
+        <if test="${DBMS.Type!='postgresql' and DBMS.Type!='mysql'}">
+            <fail message="only postgresql and mysql are supported for nant remoteSetup"/>
+        </if>
+
         <echo file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
         
         <property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}"/>
@@ -72,24 +78,23 @@
         <call target="setupTemplate"/>
         
         <!-- ***************  create the linux scripts for the server side ***************  -->
-        <copy todir="${Tmp.dir}" overwrite="true">
+        <copy todir="${Delivery.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/">
                 <include name="openpetraorg-server.sh" />
                 <include name="PetraServerAdminConsole.config" />
-                <include name="initmysql.sh" />
             </fileset>
         </copy>
 
         <property name="CustomConfig.File" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole.config.my"/>
         <if test="${file::exists(CustomConfig.File)}">
-            <copy file="${CustomConfig.File}" tofile="${Tmp.dir}/PetraServerConsole.config"/>
+            <copy file="${CustomConfig.File}" tofile="${Delivery.dir}/PetraServerConsole.config"/>
         </if>
         <if test="${not file::exists(CustomConfig.File)}">
-            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole-mysql.config" tofile="${Tmp.dir}/PetraServerConsole.config"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole-${DBMS.Type}.config" tofile="${Delivery.dir}/PetraServerConsole.config"/>
         </if>
 
         <!--  ***************  openpetraorg-server.sh ********************* -->
-        <property name="Current.File" value="${Tmp.dir}/openpetraorg-server.sh"/>
+        <property name="Current.File" value="${Delivery.dir}/openpetraorg-server.sh"/>
         <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
         <property name="newValue" value="${OrgNameWithoutSpace}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
@@ -98,8 +103,12 @@
         <property name="newValue" value="${OrgName}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
+        <property name="toReplace" value="{#RDBMS}"/>
+        <property name="newValue" value="${DBMS.Type}"/>
+        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        
         <!--  ***************  PetraServerConsole.config ********************* -->
-        <property name="Current.File" value="${Tmp.dir}/PetraServerConsole.config"/>
+        <property name="Current.File" value="${Delivery.dir}/PetraServerConsole.config"/>
         <property name="toReplace" value="{#SERVERPORT}"/>
         <property name="newValue" value="${ServerPort}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
@@ -113,7 +122,7 @@
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
         
         <!--  ***************  PetraServerAdminConsole.config ********************* -->
-        <property name="Current.File" value="${Tmp.dir}/PetraServerAdminConsole.config"/>
+        <property name="Current.File" value="${Delivery.dir}/PetraServerAdminConsole.config"/>
         <property name="toReplace" value="{#SERVERPORT}"/>
         <property name="newValue" value="${ServerPort}"/>
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
@@ -123,14 +132,31 @@
         <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
         
         <!--  ***************  initmysql.sh ********************* -->
-        <property name="Current.File" value="${Tmp.dir}/initmysql.sh"/>
-        <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-        <property name="newValue" value="${OrgNameWithoutSpace}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        <if test="${DBMS.Type=='mysql'}">
+            <property name="Current.File" value="${Delivery.dir}/initmysql.sh"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/initmysql.sh" tofile="${Current.File}"/>
+            <property name="Current.File" value="${Delivery.dir}/initmysql.sh"/>
+            <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
+            <property name="newValue" value="${OrgNameWithoutSpace}"/>
+            <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
 
-        <property name="toReplace" value="{#DBPASSWORD}"/>
-        <property name="newValue" value="${RandomDBPassword}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+            <property name="toReplace" value="{#DBPASSWORD}"/>
+            <property name="newValue" value="${RandomDBPassword}"/>
+            <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        </if>
+
+        <!--  ***************  initpg.sh ********************* -->
+        <if test="${DBMS.Type=='postgresql'}">
+            <property name="Current.File" value="${Delivery.dir}/initpg.sh"/>
+            <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/remoteClientWin/initpg.sh" tofile="${Current.File}"/>
+            <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
+            <property name="newValue" value="${OrgNameWithoutSpace}"/>
+            <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+
+            <property name="toReplace" value="{#DBPASSWORD}"/>
+            <property name="newValue" value="${RandomDBPassword}"/>
+            <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
+        </if>
 
         <!-- todo on Server: 
             mkdir /usr/local/openpetra

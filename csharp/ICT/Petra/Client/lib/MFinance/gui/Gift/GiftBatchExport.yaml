@@ -15,14 +15,16 @@ RootNode:
             Controls:
                 Row0: [rgrDetailSummary]
                 Row0b: [rgrCurrency]
-                Row1: [rgrDateOrBatchRange]
-                Row2: [chkIncludeUnposted]
-                Row3: [chkTransactionsOnly]
-                Row4: [pnlFilename]
-                Row5: [cmbDelimiter]
-                Row6: [cmbDateFormat]
-                Row7: [cmbNumberFormat]
-                Row8: [pnlButtons]
+                Row1: [pnlRecipient]
+                Row2: [rgrDateOrBatchRange]
+                Row3: [chkIncludeUnposted]
+                Row4: [chkTransactionsOnly]
+                Row5: [chkExtraColumns]
+                Row6: [pnlFilename]
+                Row7: [cmbDelimiter]
+                Row8: [cmbDateFormat]
+                Row9: [cmbNumberFormat]
+                Row10: [pnlButtons]
             Dock: Fill
         rgrDetailSummary:
             Label: Detail or Summary
@@ -30,7 +32,14 @@ RootNode:
         rbtDetail:
             Label: Detail
         rbtSummary:
-            Controls: [dtpDateSummary, chkDontSummarize, cmbDontSummarizeAccount]
+            Controls: [dtpDateSummary]
+        pnlRecipient:
+            Label: Recipient
+            Controls:
+                Row0: [txtDetailRecipientKey]
+                Row1: [txtDetailFieldKey]         
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey}
+        txtDetailFieldKey: {Label=Field, Type=PartnerKey}
         rgrCurrency:
             OptionalValues: [Base Currency, Original Transaction Currency]
         rgrDateOrBatchRange:
@@ -49,10 +58,7 @@ RootNode:
         txtBatchNumberEnd: {Label=To, Format=Integer}
         chkIncludeUnposted: {Label=Include Unposted Batches}
         chkTransactionsOnly:
-        chkDontSummarize: {Label=Don't summarize with}             
-        cmbDontSummarizeAccount:
-            List: UserDefinedList
-            Label: Account
+        chkExtraColumns: {Label= With extra columns}
         dtpDateSummary:
             Label: Date for summary
         pnlFilename:

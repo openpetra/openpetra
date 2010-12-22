@@ -91,17 +91,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Indicates whether the Form's initial setup is finished; used when checking for whether retrieval of parameters from Form is valid yet, or not</summary>
         private Boolean FFormSetupFinished;
 
+        private Boolean FRunAsModalForm;
+
         /// <summary>
         /// initialize (called by the constructor)
         /// </summary>
         public void InitializeManualCode()
         {
             FFormSetupFinished = false;
+            FRunAsModalForm = this.Modal;
 
             ArrangeMenuItemsAndToolBarButtons();
             SetupGridContextMenu();
             SetupFileMenu();
             SetupMaintainMenu();
+
+            tbbEditPartner.Enabled = false;
+            mniFileEditPartner.Enabled = false;
 
             // Initialise FRestrictToPartnerClasses Array
             FRestrictToPartnerClasses = new string[0];
@@ -113,6 +119,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
             this.KeyPreview = true;
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+
+            mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
+            mniEdit.DropDownOpening += new System.EventHandler(MniEdit_DropDownOpening);
+            mniMaintain.DropDownOpening += new System.EventHandler(MniMaintain_DropDownOpening);
+            mniMailing.DropDownOpening += new System.EventHandler(MniMailing_DropDownOpening);
+            mniFileRecentPartners.DropDownOpening += new System.EventHandler(MniFileRecentPartner_DropDownOpening);
+
+            ucoFindByPartnerDetails.PartnerAvailable += new TUC_PartnerFind_ByPartnerDetails.TPartnerAvailableChangeEventHandler(
+                ucoFindByPartnerDetails_PartnerAvailable);
+            ucoFindByPartnerDetails.SearchOperationStateChange += new TUC_PartnerFind_ByPartnerDetails.TSearchOperationStateChangeEventHandler(
+                ucoFindByPartnerDetails_SearchOperationStateChange);
+            ucoFindByPartnerDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
+            ucoFindByPartnerDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
+
+            ucoFindByPartnerDetails.SetupPartnerInfoPane();
+        }
+
+        void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
+        {
+            if (e.SearchOperationIsRunning)
+            {
+                mniEditSearch.Text = Resourcestrings.StrSearchMenuItemStopText;
+            }
+            else
+            {
+                mniEditSearch.Text = Resourcestrings.StrSearchButtonText;
+            }
+        }
+
+        private void ucoFindByPartnerDetails_PartnerAvailable(TPartnerAvailableEventArgs e)
+        {
+            tbbEditPartner.Enabled = e.PartnerAvailable;
+            mniFileEditPartner.Enabled = e.PartnerAvailable;
         }
 
         private void CatchEnterKey(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -134,21 +173,101 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Store the fact that this Partner is the 'Last Partner' that was worked with
              */
 
-// TODO            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(FLogic.PartnerKey, TLastPartnerUse.lpuMailroomPartner);
-
-            // TUserDefaults.SetDefault(TUserDefaults.PARTNER_LASTPARTNERWORKEDWITH, FLogic.DetermineCurrentPartnerKey);
-            // This needs to be saved instantaneously because the Partner Module main screen
-            // (mailroom.w) in Progress 4GL will read it when 'Partner' >
-            // 'Work with Last Partner' is chosen!
-            // TUserDefaults.SaveChangedUserDefault(TUserDefaults.PARTNER_LASTPARTNERWORKEDWITH);
+            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(ucoFindByPartnerDetails.PartnerKey, TLastPartnerUse.lpuMailroomPartner);
         }
 
-        private void MniMailing_Popup(System.Object sender, System.EventArgs e)
+        private void MniFile_DropDownOpening(System.Object sender, System.EventArgs e)
         {
-// TODO MniMailing_Popup
-#if TODO
             DataRowView[] GridRows;
-            GridRows = grdResult.SelectedDataRowsAsDataRowView;
+            int Counter;
+            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+
+            // Check if a Grid Row is selected
+            if (GridRows.Length <= 0)
+            {
+                for (Counter = 0; Counter <= mniFile.DropDownItems.Count - 1; Counter += 1)
+                {
+                    mniFile.DropDownItems[Counter].Enabled = false;
+                }
+
+                mniClose.Enabled = true;
+                mniFileRecentPartners.Enabled = true;
+                mniFileNewPartner.Enabled = true;
+                mniFileImportPartner.Enabled = true;
+                mniFileMergePartners.Enabled = true;
+            }
+            else
+            {
+                for (Counter = 0; Counter <= mniFile.DropDownItems.Count - 1; Counter += 1)
+                {
+                    mniFile.DropDownItems[Counter].Enabled = true;
+                }
+            }
+
+            // check if menu item "Work with last partner" can be enabled
+            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
+
+            if (ucoFindByPartnerDetails.CanAccessPartner(LastPartnerKey))
+            {
+                mniFileWorkWithLastPartner.Enabled = true;
+            }
+            else
+            {
+                mniFileWorkWithLastPartner.Enabled = false;
+            }
+        }
+
+        private void MniFileRecentPartner_DropDownOpening(System.Object sender, System.EventArgs e)
+        {
+            this.SetupRecentlyUsedPartnersMenu();
+        }
+
+        void MniEdit_DropDownOpening(object sender, EventArgs e)
+        {
+            DataRowView[] GridRows;
+            int Counter;
+
+            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+
+            // Check if we have access to the currently selected Partner or if we have Find Result
+            if (!(ucoFindByPartnerDetails.CanAccessPartner(-1))
+                || (GridRows.Length <= 0))
+            {
+                // Currently selected Partner is not accessible or no Find Result
+                for (Counter = 2; Counter <= mniEdit.DropDownItems.Count - 1; Counter += 1)
+                {
+                    // Disable all MenuItems, except for 'Copy Partner's Partner Key'
+                    if (mniEdit.DropDownItems[Counter] != mniEditCopyPartnerKey)
+                    {
+                        mniEdit.DropDownItems[Counter].Enabled = false;
+                    }
+                    else
+                    {
+                        if (GridRows.Length > 0)
+                        {
+                            mniEdit.DropDownItems[Counter].Enabled = true;
+                        }
+                        else
+                        {
+                            mniEdit.DropDownItems[Counter].Enabled = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Currently selected Partner is accessible
+                for (Counter = 1; Counter <= mniEdit.DropDownItems.Count - 1; Counter += 1)
+                {
+                    mniEdit.DropDownItems[Counter].Enabled = true;
+                }
+            }
+        }
+
+        private void MniMailing_DropDownOpening(System.Object sender, System.EventArgs e)
+        {
+            DataRowView[] GridRows;
+            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
@@ -159,91 +278,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 mniMailingGenerateExtract.Enabled = true;
             }
-#endif
-        }
-
-        private void MniFile_Popup(System.Object sender, System.EventArgs e)
-        {
-// TODO MniFile_Popup
-#if TODO
-            DataRowView[] GridRows;
-            int Counter;
-            GridRows = grdResult.SelectedDataRowsAsDataRowView;
-
-            // Check if a Grid Row is selected
-            if (GridRows.Length <= 0)
-            {
-                for (Counter = 0; Counter <= mniFile.MenuItems.Count - 1; Counter += 1)
-                {
-                    mniFile.MenuItems[Counter].Enabled = false;
-                }
-
-                mniFileSearch.Enabled = true;
-                mniFileClose.Enabled = true;
-                mniFileRecentPartners.Enabled = true;
-                mniFileNewPartner.Enabled = true;
-                mniFileImportPartner.Enabled = true;
-                mniFileMergePartners.Enabled = true;
-            }
-            else
-            {
-                for (Counter = 0; Counter <= mniFile.MenuItems.Count - 1; Counter += 1)
-                {
-                    mniFile.MenuItems[Counter].Enabled = true;
-                }
-            }
-
-            // check if menu item "Work with last partner" can be enabled
-            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
-
-            if (CanEditPartner(ref LastPartnerKey))
-            {
-                mniFileWorkWithLastPartner.Enabled = true;
-            }
-            else
-            {
-                mniFileWorkWithLastPartner.Enabled = false;
-            }
-#endif
-        }
-
-        private void MniMailing_Click(System.Object sender, System.EventArgs e)
-        {
-// TODO MniMailing_Click
-#if TODO
-            String ClickedMenuItemText;
-
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            if (ClickedMenuItemText == mniMailingExtracts.Text)
-            {
-                TMenuFunctions.OpenExtracts();
-            }
-            else if (ClickedMenuItemText == mniMailingDuplicateAddressCheck.Text)
-            {
-                TMenuFunctions.DuplicateAddressCheck();
-            }
-            else if (ClickedMenuItemText == mniMailingMergeAddresses.Text)
-            {
-                TMenuFunctions.MergeAddresses();
-            }
-            else if (ClickedMenuItemText == mniMailingPartnersAtLocation.Text)
-            {
-                OpenPartnerFindForLocation();
-            }
-            else if (ClickedMenuItemText == mniMailingSubscriptionCancellation.Text)
-            {
-                TMenuFunctions.SubscriptionCancellation();
-            }
-            else if (ClickedMenuItemText == mniMailingSubscriptionExpNotice.Text)
-            {
-                TMenuFunctions.SubscriptionExpiryNotices();
-            }
-            else if (ClickedMenuItemText == mniMailingGenerateExtract.Text)
-            {
-                CreateNewExtractFromFoundPartners();
-            }
-#endif
         }
 
         private void CreateNewExtractFromFoundPartners()
@@ -324,7 +358,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
         }
 
-        private void MniMaintain_Popup(System.Object sender, System.EventArgs e)
+        private void MniMaintain_DropDownOpening(System.Object sender, System.EventArgs e)
         {
 // TODO MniMaintain_Popup
 #if TODO
@@ -565,195 +599,36 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
         }
 
+        #region Menu/ToolBar command handling
+
+        private void MniFile_Click(System.Object sender, System.EventArgs e)
+        {
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniFile, (ToolStripItem)sender, FRunAsModalForm);
+        }
+
+        private void MniEdit_Click(System.Object sender, System.EventArgs e)
+        {
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
+        }
+
         private void MniMaintain_Click(System.Object sender, System.EventArgs e)
         {
-// TODO MniMaintain_Click
-#if TODO
-            String ClickedMenuItemText;
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
+        }
 
-            ClickedMenuItemText = ((MenuItem)sender).Text;
+        private void MniMailing_Click(System.Object sender, System.EventArgs e)
+        {
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniMailing, (ToolStripItem)sender, FRunAsModalForm);
+        }
 
-            if (ClickedMenuItemText == mniMaintainAddresses.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
-            }
-            else if (ClickedMenuItemText == mniMaintainPartnerDetails.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDetails);
-            }
-            else if (ClickedMenuItemText == mniMaintainFoundationDetails.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFoundationDetails);
-            }
-            else if (ClickedMenuItemText == mniMaintainSubscriptions.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpSubscriptions);
-            }
-            else if (ClickedMenuItemText == mniMaintainSpecialTypes.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPartnerTypes);
-            }
-            else if (ClickedMenuItemText == mniMaintainContacts.Text)
-            {
-                TMenuFunctions.OpenPartnerContacts();
-            }
-            else if ((ClickedMenuItemText == Resourcestrings.StrFamilyMembersMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrFamilyMenuItemText))
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFamilyMembers);
-            }
-            else if (ClickedMenuItemText == mniMaintainRelationships.Text)
-            {
-                TMenuFunctions.OpenPartnerRelationships();
-            }
-            else if (ClickedMenuItemText == mniMaintainInterests.Text)
-            {
-                TMenuFunctions.OpenPartnerInterests();
-                SetUserDefaultLastPartnerWorkedWith();
-            }
-            else if (ClickedMenuItemText == mniMaintainReminders.Text)
-            {
-                TMenuFunctions.OpenPartnerReminders();
-            }
-            else if (ClickedMenuItemText == mniMaintainNotes.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpNotes);
-            }
-            else if (ClickedMenuItemText == mniMaintainOfficeSpecific.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpOfficeSpecific);
-            }
-            else if (ClickedMenuItemText == mniMaintainWorkerField.Text)
-            {
-                TMenuFunctions.OpenWorkerField();
-            }
-            else if ((ClickedMenuItemText == Resourcestrings.StrPersonnelPersonMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrPersonnelUnitMenuItemText))
-            {
-                TMenuFunctions.OpenPersonnelIndivData();
-            }
-            else if (ClickedMenuItemText == mniMaintainDonorHistory.Text)
-            {
-                TMenuFunctions.OpenDonorGiftHistory(this);
-            }
-            else if (ClickedMenuItemText == mniMaintainRecipientHistory.Text)
-            {
-                TMenuFunctions.OpenRecipientGiftHistory(this);
-            }
-            else if (ClickedMenuItemText == mniMaintainFinanceDetails.Text)
-            {
-                TMenuFunctions.OpenPartnerFinanceDetails();
-            }
-#endif
+        private void MniTools_Click(System.Object sender, System.EventArgs e)
+        {
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniTools, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniView_Click(System.Object sender, System.EventArgs e)
         {
-// TODO MniView_Click
-#if TODO
-            String ClickedMenuItemText;
-
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            if (ClickedMenuItemText == mniViewPartnerInfo.Text)
-            {
-                if (!FPartnerInfoPaneOpen)
-                {
-                    OpenPartnerInfoPane();
-                }
-                else
-                {
-                    ClosePartnerInfoPane();
-                }
-            }
-            else if (ClickedMenuItemText == mniViewPartnerTasks.Text)
-            {
-                if (!FPartnerTasksPaneOpen)
-                {
-                    OpenPartnerTasksPane();
-                }
-                else
-                {
-                    ClosePartnerTasksPane();
-                }
-            }
-#endif
-        }
-
-        private void MniFile_Click(System.Object sender, System.EventArgs e)
-        {
-// TODO MniFile_Click
-#if TODO
-            String ClickedMenuItemText;
-
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            if (ClickedMenuItemText == mniFileSearch.Text)
-            {
-                BtnSearch_Click(this, new EventArgs());
-            }
-            else if (ClickedMenuItemText == mniFileNewPartner.Text)
-            {
-                OpenNewPartnerEditScreen();
-            }
-            else if (ClickedMenuItemText == mniFileEditPartner.Text)
-            {
-                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
-            }
-            else if (ClickedMenuItemText == mniFileMergePartners.Text)
-            {
-                TMenuFunctions.MergePartners();
-            }
-            else if (ClickedMenuItemText == mniFileDeletePartner.Text)
-            {
-                TMenuFunctions.DeletePartner();
-            }
-            else if (ClickedMenuItemText == mniFileCopyAddress.Text)
-            {
-                OpenCopyAddressToClipboardScreen();
-            }
-            else if (ClickedMenuItemText == mniFileCopyPartnerKey.Text)
-            {
-                TMenuFunctions.CopyPartnerKeyToClipboard();
-            }
-            else if (ClickedMenuItemText == mniFileSendEmail.Text)
-            {
-                TMenuFunctions.SendEmailToPartner();
-            }
-            else if (ClickedMenuItemText == mniFilePrintPartner.Text)
-            {
-                TMenuFunctions.PrintPartner();
-            }
-            else if (ClickedMenuItemText == mniFileExportPartner.Text)
-            {
-                TMenuFunctions.ExportPartner();
-            }
-            else if (ClickedMenuItemText == mniFileImportPartner.Text)
-            {
-                TMenuFunctions.ImportPartner();
-            }
-            else if (ClickedMenuItemText == mniFileClose.Text)
-            {
-                base.MniFile_Click(sender, e);
-            }
-            else if (ClickedMenuItemText == mniFileRecentPartners.Text)
-            {
-                SetupRecentlyUsedPartnersMenu();
-            }
-            else if (ClickedMenuItemText == mniFileWorkWithLastPartner.Text)
-            {
-                OpenLastUsedPartnerEditScreen();
-            }
-            else
-            {
-                NotifyFunctionNotYetImplemented(ClickedMenuItemText);
-            }
-#endif
-        }
-
-        private void MniFileRecentPartner_Popup(System.Object sender, System.EventArgs e)
-        {
-            this.SetupRecentlyUsedPartnersMenu();
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniView, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniFileRecentPartner_Click(System.Object sender, System.EventArgs e)
@@ -783,6 +658,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 #endif
         }
+
+        #endregion
 
         private void AddCopyContextMenuEntries(ContextMenu AMenuToAddInto)
         {
@@ -1128,6 +1005,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
+        #region Screen Parameters
+
         /// <summary>
         /// Used for passing parameters to the screen before it is actually shown.
         ///
@@ -1219,7 +1098,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 APassedLocationKey);
         }
 
+        #endregion
+
+
         #region Form events
+
         private void TPartnerFindScreen_Load(System.Object sender, System.EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -1275,92 +1158,37 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO? TUserDefaults.NamedDefaults.SetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 
             ReleaseServerObject();
+
+            // Stop the Timer for the fetching of data for the Partner Info Panel (necessary for a Garbage Collection of this Form!)
+            ucoFindByPartnerDetails.StopTimer();
         }
 
         #endregion
+
+
+        #region Event Handlers
+
+        void ucoFindByPartnerDetails_PartnerInfoPaneExpanded(object sender, EventArgs e)
+        {
+            tbbPartnerInfo.Checked = true;
+            mniViewPartnerInfo.Checked = true;
+        }
+
+        void ucoFindByPartnerDetails_PartnerInfoPaneCollapsed(object sender, EventArgs e)
+        {
+            tbbPartnerInfo.Checked = false;
+            mniViewPartnerInfo.Checked = false;
+        }
 
         private void BtnFullyLoadData_Click(System.Object sender, System.EventArgs e)
         {
             // FullLoadDataSet;
         }
 
-        private void OpenNewPartnerEditScreen()
-        {
-// TODO OpenNewPartnerEditScreen
-#if TODO
-            String miPartnerClass;
+        #endregion
 
-            this.Cursor = Cursors.WaitCursor;
 
-            try
-            {
-                if (!TPartnerFindScreen.URunAsModalForm)
-                {
-                    // Not modal, so no restrictions on valid partner classes
-                    TApplinkOrNetAutoSelector.OpenNewPartnerDialog(this, "", "");
-                }
-                else
-                {
-                    // Modal. May have restrictions, may not.
-
-                    // default behavior is to allow all
-                    miPartnerClass = "";
-
-                    if (FRestrictToPartnerClasses.Length > 0)
-                    {
-                        // at least one entry so use first one
-                        miPartnerClass = FRestrictToPartnerClasses[0];
-                    }
-
-                    miPartnerClass = miPartnerClass.Replace("WORKER-FAM", "FAMILY");
-                    TApplinkOrNetAutoSelector.OpenNewPartnerDialog(this, miPartnerClass, "");
-                }
-            }
-            finally
-            {
-                this.Cursor = Cursors.Default;
-            }
-#endif
-        }
-
-        /// <summary>
-        /// Opens the partner edit screen with the last partner worked on.
-        /// Checks if the partner is merged.
-        /// </summary>
-        private void OpenLastUsedPartnerEditScreen()
-        {
-// TODO OpenLastUsedPartnerEditScreen
-#if TODO
-            long MergedPartnerKey = 0;
-            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
-
-            // we don't need to validate the partner key
-            // because it's done in the mnuFile_Popup function.
-            // If we don't have a valid partner key, this code can't be called from the file menu.
-
-            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
-            {
-                // work with the merged partner
-                LastPartnerKey = MergedPartnerKey;
-            }
-            else if (MergedPartnerKey > 0)
-            {
-                // The partner is merged but user cancelled the action
-                return;
-            }
-
-            // Open the Partner Edit screen
-            TFrmPartnerEdit frmPEDS;
-
-            this.Cursor = Cursors.WaitCursor;
-
-            frmPEDS = new TFrmPartnerEdit();
-            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
-            frmPEDS.Show();
-
-            this.Cursor = Cursors.Default;
-#endif
-        }
+        #region Helper Methods
 
         /// <summary>
         /// Returns the values of the found partner.
@@ -1382,6 +1210,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return false;
         }
+
+        #endregion
     }
 
     /// <summary>
@@ -1489,6 +1319,91 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return false;
             }
+        }
+    }
+
+
+    /// <summary>
+    /// Event Arguments
+    /// </summary>
+    public class TPartnerAvailableEventArgs : System.EventArgs
+    {
+        private bool FPartnerAvailable;
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public bool PartnerAvailable
+        {
+            get
+            {
+                return FPartnerAvailable;
+            }
+
+            set
+            {
+                FPartnerAvailable = value;
+            }
+        }
+
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <returns>void</returns>
+        public TPartnerAvailableEventArgs() : base()
+        {
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="APartnerAvailable"></param>
+        public TPartnerAvailableEventArgs(bool APartnerAvailable) : base()
+        {
+            FPartnerAvailable = APartnerAvailable;
+        }
+    }
+
+    /// <summary>
+    /// Event Arguments
+    /// </summary>
+    public class TSearchOperationStateChangeEventArgs : System.EventArgs
+    {
+        private bool FSearchOperationIsRunning;
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public bool SearchOperationIsRunning
+        {
+            get
+            {
+                return FSearchOperationIsRunning;
+            }
+
+            set
+            {
+                FSearchOperationIsRunning = value;
+            }
+        }
+
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <returns>void</returns>
+        public TSearchOperationStateChangeEventArgs() : base()
+        {
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ASearchOperationIsRunning"></param>
+        public TSearchOperationStateChangeEventArgs(bool ASearchOperationIsRunning) : base()
+        {
+            FSearchOperationIsRunning = ASearchOperationIsRunning;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -31,9 +31,20 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Common.Verification;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+
+//using Ict.Petra.Server.MFinance.Account.Data.Access;
+//using Ict.Petra.Shared.MFinance.Account.Data;
+
+
 namespace Ict.Petra.Server.MFinance.Gift
 {
     /// <summary>
@@ -41,585 +52,673 @@ namespace Ict.Petra.Server.MFinance.Gift
     /// </summary>
     public class TGiftExporting
     {
-//        private const String quote = "\"";
-//        private const String summarizedData = "Summarised Transaction Data";
-//        StringWriter FStringWriter;
-//        String FDelimiter;
-//        Int32 FLedgerNumber;
-//        String FDateFormatString;
-//        CultureInfo FCultureInfo;
-//        bool FSummary;
-//        bool FUseBaseCurrency;
-//        String FBaseCurrency;
-//        DateTime FDateForSummary;
-//        bool FTransactionsOnly;
-//        bool FDontSummarize;
-//        String FDontSummarizeAccount;
-//        GiftBatchTDS FMainDS;
+        private const String quote = "\"";
+        private const String summarizedData = "Summarised Gift Data";
+        private const String sGift = "Gift";
+        private const String sConfidential = "Confidential";
+        StringWriter FStringWriter;
+        String FDelimiter;
+        Int32 FLedgerNumber;
+        String FDateFormatString;
+        CultureInfo FCultureInfo;
+        bool FSummary;
+        bool FUseBaseCurrency;
+        String FBaseCurrency;
+        DateTime FDateForSummary;
+        bool FTransactionsOnly;
+        bool FExtraColumns;
+        TDBTransaction FTransaction;
+        Int64 FRecipientNumber;
+        Int64 FFieldNumber;
+        GiftBatchTDS FMainDS;
+        GLSetupTDS FSetupTDS;
+        TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
 
         /// <summary>
         /// export all the Data of the batches array list to a String
         /// </summary>
-        /// <param name="batches"></param>
-        /// <param name="requestParams"></param>
-        /// <param name="exportString"></param>
-        /// <returns>false if batch does not exist at all</returns>
-        public bool ExportAllGiftBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if not completed</returns>
+        public bool ExportAllGiftBatchData(ref ArrayList batches,
+            Hashtable requestParams,
+            out String exportString,
+            out TVerificationResultCollection AMessages)
         {
-//            FStringWriter = new StringWriter();
-//            StringBuilder line = new StringBuilder();
-//            FMainDS = new GLBatchTDS();
-//            FDelimiter = (String)requestParams["Delimiter"];
-//            FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
-//            FDateFormatString = (String)requestParams["DateFormatString"];
-//            FSummary = (bool)requestParams["Summary"];
-//            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
-//            FBaseCurrency = (String)requestParams["BaseCurrency"];
-//            FDateForSummary = (DateTime)requestParams["DateForSummary"];
-//            String NumberFormat = (String)requestParams["NumberFormat"];
-//            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-//            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-//            FDontSummarize = (bool)requestParams["bDontSummarize"];
-//            FDontSummarizeAccount = (String)requestParams["DontSummarizeAccount"];
-//
-//            SortedDictionary <String, AJournalSummaryRow>sdSummary = new SortedDictionary <String, AJournalSummaryRow>();
-//
-//            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-//
-//            while (batches.Count > 0)
-//            {
-//                Int32 ABatchNumber = (Int32)batches[0];
-//                ABatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
-//                AJournalAccess.LoadViaABatch(FMainDS, FLedgerNumber, ABatchNumber, Transaction);
-//
-//                foreach (AJournalRow journal in FMainDS.AJournal.Rows)
-//                {
-//                    if (journal.BatchNumber.Equals(ABatchNumber) && journal.LedgerNumber.Equals(FLedgerNumber))
-//                    {
-//                        ATransactionAccess.LoadViaAJournal(FMainDS, journal.LedgerNumber,
-//                            journal.BatchNumber,
-//                            journal.JournalNumber,
-//                            Transaction);
-//                    }
-//                }
-//
-//                foreach (ATransactionRow trans in FMainDS.ATransaction.Rows)
-//                {
-//                    if (trans.BatchNumber.Equals(ABatchNumber) && trans.LedgerNumber.Equals(FLedgerNumber))
-//                    {
-//                        ATransAnalAttribAccess.LoadViaATransaction(FMainDS, trans.LedgerNumber,
-//                            trans.BatchNumber,
-//                            trans.JournalNumber,
-//                            trans.TransactionNumber,
-//                            Transaction);
-//                    }
-//                }
-//
-//                batches.RemoveAt(0);
-//            }
-//
-//            DBAccess.GDBAccessObj.RollbackTransaction();
-//            UInt32 counter = 0;
-//            AJournalSummaryRow journalSummary = null;
-//
-//            foreach (ABatchRow batch in FMainDS.ABatch.Rows)
-//            {
-//                if (!FTransactionsOnly & !FSummary)
-//                {
-//                    WriteBatchLine(batch);
-//                }
-//
-//                //foreach (AJournalRow journal in journalDS.AJournal.Rows)
-//                foreach (AJournalRow journal in FMainDS.AJournal.Rows)
-//                {
-//                    if (journal.BatchNumber.Equals(batch.BatchNumber) && journal.LedgerNumber.Equals(batch.LedgerNumber))
-//                    {
-//                        if (FSummary)
-//                        {
-//                            String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
-//                            double mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
-//
-//                            if (!sdSummary.TryGetValue(mapCurrency, out journalSummary))
-//                            {
-//                                journalSummary = new AJournalSummaryRow();
-//                                sdSummary.Add(mapCurrency, journalSummary);
-//                            }
-//
-//                            //overwrite always because we want to have the last
-//                            journalSummary.ExchangeRateToBase = mapExchangeRateToBase;
-//                            journalSummary.TransactionCurrency = mapCurrency;
-//                        }
+            FStringWriter = new StringWriter();
+            StringBuilder line = new StringBuilder();
+            FMainDS = new GiftBatchTDS();
+            FSetupTDS = new GLSetupTDS();
+            FDelimiter = (String)requestParams["Delimiter"];
+            FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            FDateFormatString = (String)requestParams["DateFormatString"];
+            FSummary = (bool)requestParams["Summary"];
+            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
+            FBaseCurrency = (String)requestParams["BaseCurrency"];
+            FDateForSummary = (DateTime)requestParams["DateForSummary"];
+            String NumberFormat = (String)requestParams["NumberFormat"];
+            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
+            FRecipientNumber = (Int64)requestParams["RecipientNumber"];
+            FFieldNumber = (Int64)requestParams["FieldNumber"];
+            FExtraColumns = (bool)requestParams["ExtraColumns"];
+
+
+            SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
+
+            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            while (batches.Count > 0)
+            {
+                Int32 ABatchNumber = (Int32)batches[0];
+                AGiftBatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, FTransaction);
+                AGiftAccess.LoadViaAGiftBatch(FMainDS, FLedgerNumber, ABatchNumber, FTransaction);
+
+                foreach (AGiftRow gift in FMainDS.AGift.Rows)
+                {
+                    if (gift.BatchNumber.Equals(ABatchNumber) && gift.LedgerNumber.Equals(FLedgerNumber))
+                    {
+                        AGiftDetailAccess.LoadViaAGift(FMainDS, gift.LedgerNumber,
+                            gift.BatchNumber,
+                            gift.GiftTransactionNumber,
+                            FTransaction);
+                    }
+                }
+
+                batches.RemoveAt(0);
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            UInt32 counter = 0;
+            AGiftSummaryRow giftSummary = null;
+
+            foreach (AGiftBatchRow giftBatch in FMainDS.AGiftBatch.Rows)
+            {
+                if (!FTransactionsOnly & !FSummary)
+                {
+                    WriteGiftBatchLine(giftBatch);
+                }
+
+                //foreach (AGiftRow gift in giftDS.AGift.Rows)
+                foreach (AGiftRow gift in FMainDS.AGift.Rows)
+                {
+                    String mapCurrency;
+
+                    if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
+                    {
 //                        else
 //                        {
 //                            if (!FTransactionsOnly)
 //                            {
-//                                WriteJournalLine(journal);
+////                                WriteGiftLine(gift);
 //                            }
 //                        }
-//
-//                        FMainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetTransactionNumberDBName();
-//                        FMainDS.ATransaction.DefaultView.RowFilter =
-//                            String.Format("{0}={1} and {2}={3} and {4}={5}",
-//                                ATransactionTable.GetLedgerNumberDBName(),
-//                                journal.LedgerNumber,
-//                                ATransactionTable.GetBatchNumberDBName(),
-//                                journal.BatchNumber,
-//                                ATransactionTable.GetJournalNumberDBName(),
-//                                journal.JournalNumber);
-//
-//                        foreach (DataRowView dv in FMainDS.ATransaction.DefaultView)
-//                        {
-//                            ATransactionRow transaction = (ATransactionRow)dv.Row;
-//
-//                            if (FSummary)
-//                            {
-//                                ATransactionSummaryRow transactionSummary;
-//                                counter++;
-//                                String DictionaryKey = transaction.CostCentreCode + ";" + transaction.AccountCode;
-//                                int signum = transaction.DebitCreditIndicator ? 1 : -1;
-//                                bool bDontSummarizeAccount = FDontSummarize && FDontSummarizeAccount != null && FDontSummarizeAccount.Length > 0
-//                                                             && transaction.AccountCode.Equals(FDontSummarizeAccount);
-//
-//                                if (bDontSummarizeAccount)
-//                                {
-//                                    DictionaryKey += ";" + counter.ToString("X");
-//                                }
-//
-//                                if (journalSummary.TransactionSummaries.TryGetValue(DictionaryKey, out transactionSummary))
-//                                {
-//                                    transactionSummary.TransactionAmount += signum * transaction.TransactionAmount;
-//                                    transactionSummary.AmountInBaseCurrency += signum * transaction.AmountInBaseCurrency;
-//                                }
-//                                else
-//                                {
-//                                    transactionSummary = new ATransactionSummaryRow();
-//                                    transactionSummary.CostCentreCode = transaction.CostCentreCode;
-//                                    transactionSummary.AccountCode = transaction.AccountCode;
-//                                    transactionSummary.TransactionAmount = signum * transaction.TransactionAmount;
-//                                    transactionSummary.AmountInBaseCurrency = signum * transaction.AmountInBaseCurrency;
-//
-//                                    if (bDontSummarizeAccount)
-//                                    {
-//                                        transactionSummary.Narrative = transaction.Narrative;
-//                                        transactionSummary.Reference = transaction.Reference;
-//                                    }
-//                                    else
-//                                    {
-//                                        transactionSummary.Narrative = summarizedData;
-//                                        transactionSummary.Reference = "";
-//                                    }
-//
-//                                    journalSummary.TransactionSummaries.Add(DictionaryKey, transactionSummary);
-//                                }
-//                            }
-//                            else
-//                            {
-//                                WriteTransactionLine(transaction);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (FSummary)
-//            {
-//                //To simplify matters this is always written even if there are no batches
-//                WriteBatchSummaryLine();
-//
-//                foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
-//                {
-//                    WriteJournalSummaryLine(kvp.Value);
-//
-//                    foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
-//                    {
-//                        WriteTransactionSummaryLine(kvpt.Value);
-//                    }
-//                }
-//            }
-//
-//            exportString = FStringWriter.ToString();
-            exportString = "dummy";
+
+                        FMainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
+                        FMainDS.AGiftDetail.DefaultView.RowFilter =
+                            String.Format("{0}={1} and {2}={3} and {4}={5}",
+                                AGiftDetailTable.GetLedgerNumberDBName(),
+                                gift.LedgerNumber,
+                                AGiftDetailTable.GetBatchNumberDBName(),
+                                gift.BatchNumber,
+                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                gift.GiftTransactionNumber);
+
+                        foreach (DataRowView dv in FMainDS.AGiftDetail.DefaultView)
+                        {
+                            AGiftDetailRow giftDetail = (AGiftDetailRow)dv.Row;
+                            Ict.Petra.Server.MPartner.Partner.Data.Access.PPartnerAccess.LoadByPrimaryKey(FSetupTDS,
+                                giftDetail.RecipientKey,
+                                FTransaction);
+
+                            if (FSummary)
+                            {
+                                mapCurrency = FUseBaseCurrency ? FBaseCurrency : giftBatch.CurrencyCode;
+                                double mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
+
+
+                                counter++;
+                                String DictionaryKey = mapCurrency + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
+                                                       giftDetail.RecipientKey + ";" + giftDetail.MotivationGroupCode + ";" +
+                                                       giftDetail.MotivationGroupCode;
+
+                                if (sdSummary.TryGetValue(DictionaryKey, out giftSummary))
+                                {
+                                    giftSummary.GiftTransactionAmount += giftDetail.GiftTransactionAmount;
+                                    giftSummary.GiftTransactionAmount += giftDetail.GiftAmount;
+                                }
+                                else
+                                {
+                                    giftSummary = new AGiftSummaryRow();
+
+                                    /*
+                                     * summary_data.a_transaction_currency_c = lv_stored_currency_c
+                                     * summary_data.a_bank_cost_centre_c = a_gift_batch.a_bank_cost_centre_c
+                                     * summary_data.a_bank_account_code_c = a_gift_batch.a_bank_account_code_c
+                                     * summary_data.a_recipient_key_n = a_gift_detail.p_recipient_key_n
+                                     * summary_data.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
+                                     * summary_data.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
+                                     * summary_data.a_exchange_rate_to_base_n = lv_exchange_rate_n
+                                     * summary_data.a_gift_type_c = a_gift_batch.a_gift_type_c */
+                                    giftSummary.CurrencyCode = mapCurrency;
+                                    giftSummary.BankCostCentre = giftBatch.BankCostCentre;
+                                    giftSummary.BankAccountCode = giftBatch.BankAccountCode;
+                                    giftSummary.GiftTransactionAmount = giftDetail.GiftTransactionAmount;
+                                    giftSummary.GiftAmount = giftDetail.GiftAmount;
+
+
+                                    sdSummary.Add(DictionaryKey, giftSummary);
+                                }
+
+                                //overwrite always because we want to have the last
+                                giftSummary.ExchangeRateToBase = mapExchangeRateToBase;
+                            }
+                            else
+                            {
+                                WriteGiftLine(gift, giftDetail);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (FSummary)
+            {
+                bool first = true;
+
+                foreach (KeyValuePair <string, AGiftSummaryRow>kvp in sdSummary)
+                {
+                    if (!FTransactionsOnly && first)
+                    {
+                        WriteGiftBatchSummaryLine(kvp.Value);
+                        first = false;
+                    }
+
+                    WriteGiftSummaryLine(kvp.Value);
+                }
+            }
+
+            exportString = FStringWriter.ToString();
+            AMessages = FMessages;
+            return true; //true=complete TODO (if needed) find reasonable limit for FStringWriter in main memory, interrupt
+        }
+
+        private bool GiftRestricted(AGiftRow GiftDR)
+        {
+            SGroupGiftTable GroupGiftDT;
+            SUserGroupTable UserGroupDT;
+            Int16 Counter;
+
+            DataRow[] FoundUserGroups;
+
+            if (GiftDR.Restricted)
+            {
+                GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
+                    GiftDR.LedgerNumber,
+                    GiftDR.BatchNumber,
+                    GiftDR.GiftTransactionNumber,
+                    FTransaction);
+                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, FTransaction);
+
+                // Loop over all rows of GroupGiftDT
+                for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
+                {
+                    // To be able to view a Gift, ReadAccess must be granted
+                    if (GroupGiftDT[Counter].ReadAccess)
+                    {
+                        // Find out whether the user has a row in s_user_group with the
+                        // GroupID of the GroupGift row
+                        FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
+
+                        if (FoundUserGroups.Length != 0)
+                        {
+                            // The gift is not restricted because there is a read access for the group
+                            return false;
+                            // don't evaluate further GroupGiftDT rows
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
             return true;
         }
 
-/*
- *      void WriteBatchSummaryLine()
- *      {
- *          WriteStringQuoted("B");
- *          WriteStringQuoted(summarizedData);
- *          WriteCurrency(0);
- *          WriteLineDate(FDateForSummary);
- *      }
- *
- *      void WriteBatchLine(ABatchRow batch)
- *      {
- *          WriteStringQuoted("B");
- *          WriteStringQuoted(batch.BatchDescription);
- *          WriteCurrency(batch.BatchControlTotal);
- *          WriteLineDate(batch.DateEffective);
- *      }
- *
- *      void WriteJournalSummaryLine(AJournalSummaryRow journalSummary)
- *      {
- *          WriteStringQuoted("J");
- *          WriteStringQuoted(summarizedData);
- *          WriteStringQuoted("GL");
- *          WriteStringQuoted("STD");
- *          WriteStringQuoted(journalSummary.TransactionCurrency);
- *          WriteGeneralNumber(journalSummary.ExchangeRateToBase);             // format ok ???
- *          WriteLineDate(FDateForSummary);
- *      }
- *
- *      void WriteJournalLine(AJournalRow journal)
- *      {
- *          WriteStringQuoted("J");
- *          WriteStringQuoted(journal.JournalDescription);
- *          WriteStringQuoted(journal.SubSystemCode);
- *          WriteStringQuoted(journal.TransactionTypeCode);
- *
- *          if (FUseBaseCurrency)
- *          {
- *              WriteStringQuoted(FBaseCurrency);
- *              WriteGeneralNumber(1);
- *          }
- *          else
- *          {
- *              WriteStringQuoted(journal.TransactionCurrency);
- *              WriteGeneralNumber(journal.ExchangeRateToBase);
- *          }
- *
- *          WriteLineDate(journal.DateEffective);
- *      }
- *
- *      void WriteTransactionLine(ATransactionRow transaction)
- *      {
- *          if (!FTransactionsOnly)
- *          {
- *              WriteStringQuoted("T");
- *          }
- *
- *          WriteStringQuoted(transaction.CostCentreCode);
- *          WriteStringQuoted(transaction.AccountCode);
- *          WriteStringQuoted(transaction.Narrative);
- *          WriteStringQuoted(transaction.Reference);
- *          WriteDate(transaction.TransactionDate);
- *          double amount = (FUseBaseCurrency) ? transaction.AmountInBaseCurrency : transaction.TransactionAmount;
- *
- *          if (transaction.DebitCreditIndicator)
- *          {
- *              WriteCurrency(amount);
- *              WriteCurrency(0);
- *          }
- *          else
- *          {
- *              WriteCurrency(0);
- *              WriteCurrency(amount);
- *          }
- *
- *          WriteAnalysisAttributesSuffix(transaction);
- *      }
- *
- *      static int maxNumValuesExport = 5;
- *      void WriteAnalysisAttributesSuffix(ATransactionRow transaction)
- *      {
- *          FMainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetAnalysisTypeCodeDBName();
- *          FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
- *              String.Format("{0}={1} and {2}={3} and {4}={5} and {6}={7}",
- *                  ATransAnalAttribTable.GetLedgerNumberDBName(),
- *                  transaction.LedgerNumber,
- *                  ATransAnalAttribTable.GetBatchNumberDBName(),
- *                  transaction.BatchNumber,
- *                  ATransAnalAttribTable.GetJournalNumberDBName(),
- *                  transaction.JournalNumber,
- *                  ATransAnalAttribTable.GetTransactionNumberDBName(),
- *                  transaction.TransactionNumber);
- *
- *
- *          DataView anaView = FMainDS.ATransAnalAttrib.DefaultView;
- *
- *          for (int i = 1; i <= maxNumValuesExport; i++)
- *          {
- *              if (i <= anaView.Count)
- *              {
- *                  ATransAnalAttribRow ar = (ATransAnalAttribRow)anaView[i - 1].Row;
- *                  WriteStringQuoted(ar.AnalysisTypeCode, false);
- *                  WriteStringQuoted(ar.AnalysisAttributeValue, (i == maxNumValuesExport));
- *              }
- *              else
- *              {
- *                  WriteStringQuoted("", false);
- *                  WriteStringQuoted("", (i == maxNumValuesExport));
- *              }
- *          }
- *      }
- *
- *      void WriteTransactionSummaryLine(ATransactionSummaryRow transactionSummary)
- *      {
- *          if (!FTransactionsOnly)
- *          {
- *              WriteStringQuoted("T");
- *          }
- *
- *          WriteStringQuoted(transactionSummary.CostCentreCode);
- *          WriteStringQuoted(transactionSummary.AccountCode);
- *          WriteStringQuoted(transactionSummary.Narrative);
- *          WriteStringQuoted(transactionSummary.Reference);
- *          WriteDate(FDateForSummary);
- *          double amount = (FUseBaseCurrency) ? transactionSummary.AmountInBaseCurrency : transactionSummary.TransactionAmount;
- *
- *          if (amount > 0)
- *          {
- *              WriteCurrency(amount);
- *              WriteLineCurrency(0);
- *          }
- *          else
- *          {
- *              WriteCurrency(0);
- *              WriteLineCurrency(-amount);
- *          }
- *      }
- *
- *      void WriteDelimiter(bool bLineEnd)
- *      {
- *          if (bLineEnd)
- *          {
- *              FStringWriter.WriteLine();
- *          }
- *          else
- *          {
- *              FStringWriter.Write(FDelimiter);
- *          }
- *      }
- *
- *      void WriteStringQuoted(String theString, bool bLineEnd)
- *      {
- *          FStringWriter.Write(quote);
- *          FStringWriter.Write(theString);
- *          FStringWriter.Write(quote);
- *          WriteDelimiter(bLineEnd);
- *      }
- *
- *      /*
- * void WriteCurrency(double currencyField, bool bLineEnd)
- * {
- * Int64 integerNumber = Convert.ToInt64(currencyField);
- *
- * if (Convert.ToDouble(integerNumber) == currencyField)
- * {
- * FStringWriter.Write(String.Format("{0:d}", integerNumber));
- * }
- * else
- * {
- * FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
- * }
- *
- * WriteDelimiter(bLineEnd);
- * }
- */
+        private String PartnerShortName(Int64 partnerKey)
+        {
+            if (partnerKey > 0)
+            {
+                // Get Partner ShortName
+                PPartnerTable pt = PPartnerAccess.LoadByPrimaryKey(partnerKey,
+                    StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), FTransaction, null, 0, 0);
 
-        /*
-         * void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
-         * {
-         *  Int64 integerNumber = Convert.ToInt64(generalNumberField);
-         *
-         *
-         *  FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
-         *
-         *
-         *  WriteDelimiter(bLineEnd);
-         * }
-         *
-         * void WriteDate(DateTime dateField, bool bLineEnd)
-         * {
-         *  FStringWriter.Write(String.Format(FDateFormatString, dateField));
-         *  WriteDelimiter(bLineEnd);
-         * }
-         *
-         * void WriteStringQuoted(String theString)
-         * {
-         *  WriteStringQuoted(theString, false);
-         * }
-         *
-         * void WriteCurrency(double currencyField)
-         * {
-         *  WriteGeneralNumber(currencyField, false);
-         * }
-         *
-         * void WriteGeneralNumber(double generalNumberField)
-         * {
-         *  WriteGeneralNumber(generalNumberField, false);
-         * }
-         *
-         * void WriteDate(DateTime dateField)
-         * {
-         *  WriteDate(dateField, false);
-         * }
-         *
-         * void WriteLineStringQuoted(String theString)
-         * {
-         *  WriteStringQuoted(theString, true);
-         * }
-         *
-         * void WriteLineCurrency(double currencyField)
-         * {
-         *  WriteGeneralNumber(currencyField, true);
-         * }
-         *
-         * void WriteLineGeneralNumber(double generalNumberField)
-         * {
-         *  WriteGeneralNumber(generalNumberField, true);
-         * }
-         *
-         * void WriteLineDate(DateTime dateField)
-         * {
-         *  WriteDate(dateField, true);
-         * }
-         * }
-         * /// <summary>
-         * /// provides the outer structure for summarizing journals
-         * /// </summary>
-         * public class AJournalSummaryRow
-         * {
-         * private String transactionCurrency;
-         * private double exchangeRateToBase;
-         * private SortedDictionary <String, ATransactionSummaryRow>transactionSummaries = new SortedDictionary <String, ATransactionSummaryRow>();
-         * /// <summary>A SortedDictinary contains the subordinate Summary Rows.</summary>
-         * public SortedDictionary <string, ATransactionSummaryRow>TransactionSummaries {
-         *  get
-         *  {
-         *      return transactionSummaries;
-         *  }
-         *  set
-         *  {
-         *      transactionSummaries = value;
-         *  }
-         * }
-         *
-         * /// <summary>
-         * /// Exchange Rate
-         * /// </summary>
-         * public double ExchangeRateToBase {
-         *  get
-         *  {
-         *      return exchangeRateToBase;
-         *  }
-         *  set
-         *  {
-         *      exchangeRateToBase = value;
-         *  }
-         * }
-         *
-         * /// <summary>
-         * /// Transaction Currency
-         * /// </summary>
-         * public string TransactionCurrency {
-         *  get
-         *  {
-         *      return transactionCurrency;
-         *  }
-         *  set
-         *  {
-         *      transactionCurrency = value;
-         *  }
-         * }
-         * }
-         * /// <summary>
-         * /// provides the inner structure for summarising transactions
-         * /// </summary>
-         * public class ATransactionSummaryRow
-         * {
-         * private String costCentreCode;
-         *
-         * /// <summary>
-         * /// Cost Centre
-         * /// </summary>
-         * public string CostCentreCode {
-         *  get
-         *  {
-         *      return costCentreCode;
-         *  }
-         *  set
-         *  {
-         *      costCentreCode = value;
-         *  }
-         * }
-         * private String accountCode;
-         *
-         * /// <summary>
-         * /// Account Code
-         * /// </summary>
-         * public string AccountCode {
-         *  get
-         *  {
-         *      return accountCode;
-         *  }
-         *  set
-         *  {
-         *      accountCode = value;
-         *  }
-         * }
-         * private String narrative;
-         *
-         * /// <summary>
-         * /// Narrative
-         * /// </summary>
-         * public string Narrative {
-         *  get
-         *  {
-         *      return narrative;
-         *  }
-         *  set
-         *  {
-         *      narrative = value;
-         *  }
-         * }
-         *
-         * private String reference;
-         *
-         * /// <summary>
-         * /// Reference
-         * /// </summary>
-         * public string Reference {
-         *  get
-         *  {
-         *      return reference;
-         *  }
-         *  set
-         *  {
-         *      reference = value;
-         *  }
-         * }
-         *
-         * private double transactionAmount;
-         *
-         * /// <summary>
-         * /// Transaction Amount (may be negative!!!)
-         * /// </summary>
-         * public double TransactionAmount {
-         *  get
-         *  {
-         *      return transactionAmount;
-         *  }
-         *  set
-         *  {
-         *      transactionAmount = value;
-         *  }
-         * }
-         * private double amountInBaseCurrency;
-         *
-         * /// <summary>
-         * /// Amount in Base currency (may be negative!!!)
-         * /// </summary>
-         * public double AmountInBaseCurrency {
-         *  get
-         *  {
-         *      return amountInBaseCurrency;
-         *  }
-         *  set
-         *  {
-         *      amountInBaseCurrency = value;
-         *  }
-         * } */
+                if (pt.Rows.Count == 1)
+                {
+                    return pt[0].PartnerShortName;
+                }
+            }
+
+            return "";
+        }
+
+        void WriteGiftBatchSummaryLine(AGiftSummaryRow giftSummary)
+        {
+            WriteStringQuoted("B");
+            WriteStringQuoted(summarizedData);
+            WriteStringQuoted(giftSummary.BankAccountCode);
+            WriteCurrency(0);
+            WriteDate(FDateForSummary);
+            WriteStringQuoted(giftSummary.CurrencyCode);
+            WriteGeneralNumber(giftSummary.ExchangeRateToBase);
+            WriteStringQuoted(giftSummary.BankCostCentre);
+            WriteLineStringQuoted(giftSummary.GiftType);
+        }
+
+        void WriteGiftBatchLine(AGiftBatchRow giftBatch)
+        {
+            WriteStringQuoted("B");
+            WriteStringQuoted(giftBatch.BatchDescription);
+            WriteStringQuoted(giftBatch.BankAccountCode);
+            WriteCurrency(giftBatch.HashTotal);
+            WriteDate(giftBatch.GlEffectiveDate);
+            WriteStringQuoted(giftBatch.CurrencyCode);
+            WriteGeneralNumber(giftBatch.ExchangeRateToBase);
+            WriteStringQuoted(giftBatch.BankCostCentre);
+            WriteLineStringQuoted(giftBatch.GiftType);
+        }
+
+        void WriteGiftLine(AGiftRow gift, AGiftDetailRow giftDetails)
+        {
+            if (!FTransactionsOnly)
+            {
+                WriteStringQuoted("T");
+            }
+
+            if (GiftRestricted(gift))
+            {
+                WriteGeneralNumber(0);
+                WriteStringQuoted("Confidential");
+                ProcessConfidentialMessage();
+            }
+            else
+            {
+                WriteGeneralNumber(gift.DonorKey);
+                WriteStringQuoted(PartnerShortName(gift.DonorKey));
+            }
+
+            WriteStringQuoted(gift.MethodOfGivingCode);
+            WriteStringQuoted(gift.MethodOfPaymentCode);
+            WriteStringQuoted(gift.Reference);
+            WriteStringQuoted(gift.ReceiptLetterCode);
+
+            if (FExtraColumns)
+            {
+                WriteGeneralNumber(gift.ReceiptNumber);
+                WriteBoolean(gift.FirstTimeGift);
+                WriteBoolean(gift.ReceiptPrinted);
+            }
+
+            WriteGeneralNumber(giftDetails.RecipientKey);
+            WriteStringQuoted(PartnerShortName(giftDetails.RecipientKey));
+
+            if (FExtraColumns)
+            {
+                WriteGeneralNumber(giftDetails.RecipientLedgerNumber);
+            }
+
+            if (FUseBaseCurrency)
+            {
+                WriteCurrency(giftDetails.GiftAmount);
+            }
+            else
+            {
+                WriteCurrency(giftDetails.GiftTransactionAmount);
+            }
+
+            if (FExtraColumns)
+            {
+                WriteCurrency(giftDetails.GiftAmountIntl);
+            }
+
+            WriteBoolean(giftDetails.ConfidentialGiftFlag);
+            WriteStringQuoted(giftDetails.MotivationGroupCode);
+            WriteStringQuoted(giftDetails.MotivationDetailCode);
+            WriteStringQuoted(giftDetails.CostCentreCode);
+            WriteStringQuoted(giftDetails.GiftCommentOne);
+            WriteStringQuoted(giftDetails.CommentOneType);
+
+            if (giftDetails.MailingCode.Equals("?"))
+            {
+                WriteStringQuoted("");
+            }
+            else
+            {
+                WriteStringQuoted(giftDetails.MailingCode);
+            }
+
+            WriteStringQuoted(giftDetails.GiftCommentTwo);
+            WriteStringQuoted(giftDetails.CommentTwoType);
+            WriteStringQuoted(giftDetails.GiftCommentThree);
+            WriteStringQuoted(giftDetails.CommentThreeType);
+            WriteLineBoolean(giftDetails.TaxDeductable);
+        }
+
+        private Boolean confidentialMessageGiven = false;
+        void ProcessConfidentialMessage()
+        {
+            if (!confidentialMessageGiven)
+            {
+                FMessages.Add(new TVerificationResult(
+                        Catalog.GetString("Gift Details"), Catalog.GetString("Please mote that some gifts in this report are restricted.\n" +
+                            "To include full details of these gifts, the report\n" +
+                            "must be run by someone with a higher level of access."),
+                        TResultSeverity.Resv_Noncritical));
+                confidentialMessageGiven = true;
+            }
+        }
+
+        void WriteGiftSummaryLine(AGiftSummaryRow giftSummary)
+        {
+            if (!FTransactionsOnly)
+            {
+                WriteStringQuoted("T");
+            }
+
+            Int64 tempKey = FLedgerNumber * 1000000;
+            WriteGeneralNumber(tempKey);                        //is this the right Ledger Number?
+            WriteStringQuoted(PartnerShortName(tempKey));
+            WriteStringQuoted("");
+            WriteStringQuoted("");
+            WriteStringQuoted("");
+            WriteStringQuoted("");
+            WriteGeneralNumber(giftSummary.RecipientKey);
+            WriteStringQuoted(PartnerShortName(giftSummary.RecipientKey));                        //TODO: Replaces this by p_partner.short_name
+
+            if (FUseBaseCurrency)
+            {
+                WriteCurrency(giftSummary.GiftAmount);
+            }
+            else
+            {
+                WriteCurrency(giftSummary.GiftTransactionAmount);
+            }
+        }
+
+        void WriteDelimiter(bool bLineEnd)
+        {
+            if (bLineEnd)
+            {
+                FStringWriter.WriteLine();
+            }
+            else
+            {
+                FStringWriter.Write(FDelimiter);
+            }
+        }
+
+        void WriteStringQuoted(String theString, bool bLineEnd)
+        {
+            FStringWriter.Write(quote);
+            FStringWriter.Write(theString);
+            FStringWriter.Write(quote);
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteCurrency(double currencyField, bool bLineEnd)
+        {
+            Int64 integerNumber = Convert.ToInt64(currencyField);
+
+            if (Convert.ToDouble(integerNumber) == currencyField)
+            {
+                FStringWriter.Write(String.Format("{0:d}", integerNumber));
+            }
+            else
+            {
+                FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
+            }
+
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
+        {
+            Int64 integerNumber = Convert.ToInt64(generalNumberField);
+
+
+            FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
+
+
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteBoolean(bool aBool, bool bLineEnd)
+        {
+            FStringWriter.Write(aBool ? "yes" : "no");
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteDate(DateTime dateField, bool bLineEnd)
+        {
+            FStringWriter.Write(String.Format(FDateFormatString, dateField));
+            WriteDelimiter(bLineEnd);
+        }
+
+        void WriteStringQuoted(String theString)
+        {
+            WriteStringQuoted(theString, false);
+        }
+
+        void WriteCurrency(double currencyField)
+        {
+            WriteGeneralNumber(currencyField, false);
+        }
+
+        void WriteGeneralNumber(double generalNumberField)
+        {
+            WriteGeneralNumber(generalNumberField, false);
+        }
+
+        void WriteBoolean(bool aBool)
+        {
+            WriteBoolean(aBool, false);
+        }
+
+        void WriteDate(DateTime dateField)
+        {
+            WriteDate(dateField, false);
+        }
+
+        void WriteLineStringQuoted(String theString)
+        {
+            WriteStringQuoted(theString, true);
+        }
+
+        void WriteLineCurrency(double currencyField)
+        {
+            WriteGeneralNumber(currencyField, true);
+        }
+
+        void WriteLineGeneralNumber(double generalNumberField)
+        {
+            WriteGeneralNumber(generalNumberField, true);
+        }
+
+        void WriteLineBoolean(bool aBool)
+        {
+            WriteBoolean(aBool, true);
+        }
+
+        void WriteLineDate(DateTime dateField)
+        {
+            WriteDate(dateField, true);
+        }
+    }
+    /// <summary>
+    /// provides the (outer and inner) structure for summarizing gifts
+    /// </summary>
+    public class AGiftSummaryRow
+    {
+        private String currencyCode;
+
+        private Int64 recipientKey;
+
+        /// <summary>
+        /// Recipient Key
+        /// </summary>
+        public long RecipientKey {
+            get
+            {
+                return recipientKey;
+            }
+            set
+            {
+                recipientKey = value;
+            }
+        }
+        private String motivationGroupCode;
+
+        /// <summary>
+        /// Motivation Group Code
+        /// </summary>
+        public string MotivationGroupCode {
+            get
+            {
+                return motivationGroupCode;
+            }
+            set
+            {
+                motivationGroupCode = value;
+            }
+        }
+        private String motivationDetailCode;
+
+        /// <summary>
+        /// Motivation Detail Code
+        /// </summary>
+        public string MotivationDetailCode {
+            get
+            {
+                return motivationDetailCode;
+            }
+            set
+            {
+                motivationDetailCode = value;
+            }
+        }
+        private double exchangeRateToBase;
+
+
+        /// <summary>
+        /// Exchange Rate
+        /// </summary>
+        public double ExchangeRateToBase {
+            get
+            {
+                return exchangeRateToBase;
+            }
+            set
+            {
+                exchangeRateToBase = value;
+            }
+        }
+
+        /// <summary>
+        /// Transaction Currency
+        /// </summary>
+        public string CurrencyCode {
+            get
+            {
+                return currencyCode;
+            }
+            set
+            {
+                currencyCode = value;
+            }
+        }
+
+        private String bankCostCentre;
+
+        /// <summary>
+        /// Cost Centre
+        /// </summary>
+        public string BankCostCentre {
+            get
+            {
+                return bankCostCentre;
+            }
+            set
+            {
+                bankCostCentre = value;
+            }
+        }
+        private String bankAccountCode;
+
+        /// <summary>
+        /// Account Code
+        /// </summary>
+        public string BankAccountCode {
+            get
+            {
+                return bankAccountCode;
+            }
+            set
+            {
+                bankAccountCode = value;
+            }
+        }
+
+
+        private double giftTransactionAmount;
+
+        /// <summary>
+        /// >Gift Transaction Amount
+        /// </summary>
+        public double GiftTransactionAmount {
+            get
+            {
+                return giftTransactionAmount;
+            }
+            set
+            {
+                giftTransactionAmount = value;
+            }
+        }
+        private double giftAmount;
+
+        /// <summary>
+        /// Amount in Base currency
+        /// </summary>
+        public double GiftAmount {
+            get
+            {
+                return giftAmount;
+            }
+            set
+            {
+                giftAmount = value;
+            }
+        }
+
+        private String giftType;
+
+        /// <summary>
+        /// Amount in Base currency (may be negative!!!)
+        /// </summary>
+        public String GiftType {
+            get
+            {
+                return giftType;
+            }
+            set
+            {
+                giftType = value;
+            }
+        }
     }
 }

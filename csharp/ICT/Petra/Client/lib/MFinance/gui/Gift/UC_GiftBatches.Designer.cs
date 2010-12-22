@@ -492,7 +492,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.rbtGiftInKind.Location = new System.Drawing.Point(2,2);
             this.rbtGiftInKind.Name = "rbtGiftInKind";
             this.rbtGiftInKind.AutoSize = true;
-            this.rbtGiftInKind.Text = "GiftInKind";
+            this.rbtGiftInKind.Text = "Gift In Kind";
             //
             // rbtOther
             //

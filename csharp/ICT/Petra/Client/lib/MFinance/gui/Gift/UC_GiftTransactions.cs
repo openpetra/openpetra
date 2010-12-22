@@ -190,6 +190,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();

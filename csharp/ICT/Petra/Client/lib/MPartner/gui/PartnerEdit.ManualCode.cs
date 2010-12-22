@@ -1389,6 +1389,12 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             LoadData();
 
+            if ((FMainDS == null) || (FMainDS.PPartner == null) || (FMainDS.PPartner.Count == 0))
+            {
+                // screen has been cancelled, most probably the new partner dialog was cancelled
+                return;
+            }
+
             /*
              * From here on we have access to the Server Object and the DataSet is filled
              * with data.

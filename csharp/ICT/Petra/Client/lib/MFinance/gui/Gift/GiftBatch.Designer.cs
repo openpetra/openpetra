@@ -53,20 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-           /*
-            * The following Dispose calls are necessary to get dynamically created Controls out
-            * of memory if they were created in the Constructor (because of running on
-            * 'Large Fonts (120 DPI)'.
-            */
-            if (FUcoBatches != null)
-            {
-                FUcoBatches.Dispose();
-            }
-            if (FUcoTransactions != null)
-            {
-                FUcoTransactions.Dispose();
-            }
-
             base.Dispose(disposing);
         }
 
@@ -82,7 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.pnlContent = new System.Windows.Forms.Panel();
             this.tabGiftBatch = new Ict.Common.Controls.TTabVersatile();
             this.tpgBatches = new System.Windows.Forms.TabPage();
+            this.ucoBatches = new Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches();
             this.tpgTransactions = new System.Windows.Forms.TabPage();
+            this.ucoTransactions = new Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
@@ -127,6 +115,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgBatches.Location = new System.Drawing.Point(2,2);
             this.tpgBatches.Name = "tpgBatches";
             this.tpgBatches.AutoSize = true;
+            this.tpgBatches.Controls.Add(this.ucoBatches);
+            //
+            // ucoBatches
+            //
+            this.ucoBatches.Name = "ucoBatches";
+            this.ucoBatches.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tpgBatches.Text = "Batches";
             this.tpgBatches.Dock = System.Windows.Forms.DockStyle.Fill;
             //
@@ -135,7 +129,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Location = new System.Drawing.Point(2,2);
             this.tpgTransactions.Name = "tpgTransactions";
             this.tpgTransactions.AutoSize = true;
-            this.tpgTransactions.Text = "Transactions";
+            this.tpgTransactions.Controls.Add(this.ucoTransactions);
+            //
+            // ucoTransactions
+            //
+            this.ucoTransactions.Name = "ucoTransactions";
+            this.ucoTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tpgTransactions.Text = "Details";
             this.tpgTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
             //
             // tabGiftBatch
@@ -352,7 +352,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Panel pnlContent;
         private Ict.Common.Controls.TTabVersatile tabGiftBatch;
         private System.Windows.Forms.TabPage tpgBatches;
+        private Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftBatches ucoBatches;
         private System.Windows.Forms.TabPage tpgTransactions;
+        private Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions ucoTransactions;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.MenuStrip mnuMain;

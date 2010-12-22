@@ -60,53 +60,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            ALedgerTable LedgerTable;
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
-            AGiftBatchRow NewRow = MainDS.AGiftBatch.NewRowTyped(true);
-            NewRow.LedgerNumber = ALedgerNumber;
-            LedgerTable[0].LastGiftBatchNumber++;
-            NewRow.BatchNumber = LedgerTable[0].LastGiftBatchNumber;
 
-            Int32 BatchYear, BatchPeriod;
-
-            // if DateEffective is outside the range of open periods, use the most fitting date
-            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out BatchYear, out BatchPeriod, Transaction, true);
-            NewRow.BatchYear = BatchYear;
-            NewRow.BatchPeriod = BatchPeriod;
-            NewRow.GlEffectiveDate = ADateEffective;
-            NewRow.ExchangeRateToBase = 1.0;
-
-            // TODO: bank account as a parameter, set on the gift matching screen, etc
-            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
-                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
-
-            if (NewRow.BankAccountCode.Length == 0)
-            {
-                // use the first bank account
-                AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                          MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                          AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
-
-                if (accountProperties.DefaultView.Count > 0)
-                {
-                    NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                }
-                else
-                {
-                    // needed for old Petra 2.x database
-                    NewRow.BankAccountCode = "6000";
-                }
-
-                // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
-            }
-
-            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
-            NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
-            MainDS.AGiftBatch.Rows.Add(NewRow);
+            TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
 
             TVerificationResultCollection VerificationResult;
             bool success = false;
@@ -489,16 +449,41 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// export all the Data of the batches array list to a String
         /// </summary>
-        /// <param name="batches"></param>
-        /// <param name="requestParams"></param>
-        /// <param name="exportString"></param>
-        /// <returns>false if batch does not exist at all</returns>
+        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if not completed</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ExportAllGiftBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
+        public static bool ExportAllGiftBatchData(ref ArrayList batches,
+            Hashtable requestParams,
+            out String exportString,
+            out TVerificationResultCollection AMessages)
         {
             TGiftExporting exporting = new TGiftExporting();
 
-            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
+            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
+        }
+
+        /// <summary>
+        /// export all the Data of the batches array list to a String
+        /// </summary>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="importString">Big parts of the export file as a simple String</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <param name="FMainDS">DataSet for reloading the gift batches</param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGiftBatchData(
+            Hashtable requestParams,
+            String importString,
+            out TVerificationResultCollection AMessages,
+            out GiftBatchTDS FMainDS
+            )
+        {
+            TGiftImporting importing = new TGiftImporting();
+
+            return importing.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
         }
     }
 }

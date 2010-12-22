@@ -23,32 +23,92 @@
 //
 using System;
 
+using Ict.Petra.Shared;
+
 namespace Ict.Petra.Client.App.Gui
 {
     /// <summary>
-    /// todoComment
+    /// Operation Mode of a Screen.
     /// </summary>
     public enum TScreenMode
     {
-        /// <summary>todoComment</summary>
+        /// <summary>Entering of new record(s).</summary>
         smNew,
 
-        /// <summary>todoComment</summary>
+        /// <summary>Editing of an existing record.</summary>
         smEdit,
 
-        /// <summary>todoComment</summary>
+        /// <summary>Editing of an existing record, no navigation to other records allowed.</summary>
         smEditCurrent,
 
-        /// <summary>todoComment</summary>
+        /// <summary>Read-only viewing of an existing record, no navigation to other records allowed.</summary>
         smInquireCurrent,
 
-        /// <summary>todoComment</summary>
+        /// <summary>Read-only viewing of existing records.</summary>
         smInquireAll,
 
-        /// <summary>todoComment</summary>
+        /// <summary>Read-only viewing of existing records and entering of new record(s).</summary>
         smNewInquireAll
     };
 
-    /// <summary>todoComment</summary>
+    /// <summary>Event Handler for a generic Data Change Event.</summary>
     public delegate void THookupDataChangeEventHandler(System.Object Sender, System.EventArgs e);
+
+
+    /// <summary>
+    /// Contains Types which can be used anywhere in the Petra Client. They are not
+    /// specific for a certain Petra Module.
+    /// </summary>
+    public class Types
+    {
+        /// <summary>
+        /// Data structure for Partner Key Data.
+        /// </summary>
+        public class TPartnerKeyData
+        {
+            private Int64 FPartnerKey;
+            private String FPartnerShortName;
+            private TPartnerClass FPartnerClass;
+
+            /// <summary>PartnerKey of a Partner.</summary>
+            public long PartnerKey
+            {
+                get
+                {
+                    return FPartnerKey;
+                }
+            }
+
+            /// <summary>Short Name of a Partner.</summary>
+            public string PartnerShortName
+            {
+                get
+                {
+                    return FPartnerShortName;
+                }
+            }
+
+            /// <summary>Partner Class of a Partner.</summary>
+            public TPartnerClass PartnerClass
+            {
+                get
+                {
+                    return FPartnerClass;
+                }
+            }
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="APartnerKey">PartnerKey of a Partner.</param>
+            /// <param name="APartnerShortName">ShortName of a Partner.</param>
+            /// <param name="APartnerClass">Partner Class of a Partner.</param>
+            public TPartnerKeyData(Int64 APartnerKey, string APartnerShortName, TPartnerClass APartnerClass)
+            {
+                FPartnerKey = APartnerKey;
+                FPartnerShortName = APartnerShortName;
+                FPartnerClass = APartnerClass;
+            }
+        }
+    }
 }

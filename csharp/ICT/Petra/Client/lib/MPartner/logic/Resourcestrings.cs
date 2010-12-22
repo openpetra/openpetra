@@ -252,6 +252,9 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>todoComment</summary>
         public const String StrSearchButtonStopText = "&Stop";
 
+        /// <summary>todoComment</summary>
+        public const String StrSearchMenuItemStopText = "&Stop Search";
+
         // Partner Info related resourcestrings
         /// <summary>todoComment</summary>
         public const String StrPartnerOrLocationNotExistantText =

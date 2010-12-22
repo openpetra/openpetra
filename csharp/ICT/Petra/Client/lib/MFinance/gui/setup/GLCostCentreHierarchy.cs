@@ -128,6 +128,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailCostCentreCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(ACostCentreRow ARow)
     {
         txtDetailCostCentreCode.Text = ARow.CostCentreCode;
@@ -341,6 +346,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

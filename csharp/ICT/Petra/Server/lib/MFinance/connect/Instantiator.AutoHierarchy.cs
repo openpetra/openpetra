@@ -2211,10 +2211,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         /// generated method from connector
         public bool ExportAllGiftBatchData(ref ArrayList batches,
                                            Hashtable requestParams,
-                                           out String exportString)
+                                           out String exportString,
+                                           out TVerificationResultCollection AMessages)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";ARRAYLIST;HASHTABLE;STRING;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(ref batches, requestParams, out exportString);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";ARRAYLIST;HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
+        }
+
+        /// generated method from connector
+        public bool ImportGiftBatchData(Hashtable requestParams,
+                                        String importString,
+                                        out TVerificationResultCollection AMessages,
+                                        out GiftBatchTDS FMainDS)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatchData", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;GIFTBATCHTDS;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
         }
 
         /// generated method from connector

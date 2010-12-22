@@ -153,6 +153,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailAccountCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(GLSetupTDSAAccountRow ARow)
     {
         txtDetailAccountCode.Text = ARow.AccountCode;
@@ -454,6 +459,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

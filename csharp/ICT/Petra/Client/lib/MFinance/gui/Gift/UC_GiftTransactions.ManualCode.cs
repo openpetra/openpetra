@@ -301,8 +301,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftDetail.Rows.Add(newRow);
 
             // TODO: use previous gifts of donor?
-            // newRow.MotivationGroupCode = "GIFT";
-            // newRow.MotivationDetailCode = "SUPPORT";
+            newRow.MotivationGroupCode = "GIFT";
+            newRow.MotivationDetailCode = "SUPPORT";
 
             return newRow;
         }

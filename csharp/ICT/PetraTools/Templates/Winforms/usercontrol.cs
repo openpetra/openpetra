@@ -88,6 +88,12 @@ namespace {#NAMESPACE}
     
     {#EVENTHANDLERSIMPLEMENTATION}
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+
 {#IFDEF SHOWDATA}
     private void ShowData({#MASTERTABLE}Row ARow)
     {

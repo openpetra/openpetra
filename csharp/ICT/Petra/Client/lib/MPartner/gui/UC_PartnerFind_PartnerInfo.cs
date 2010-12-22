@@ -25,9 +25,13 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using GNU.Gettext;
+
 using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -36,16 +40,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// UserControl for displaying Partner Info data in the Partner
     /// Find screen.
     /// </summary>
-    public partial class TUC_PartnerFind_PartnerInfo : TPetraUserControl, IPartnerInfoMethods
+    public partial class TUC_PartnerFind_PartnerInfo : TPnlCollapsible, IPartnerInfoMethods
     {
-        /// <summary>todoComment</summary>
-        public const Int16 COLLAPSEDHEIGHT = 29;
-
-        /// <summary>todoComment</summary>
-        public const Int16 EXPANDEDHEIGHT = 153;
-
-        private bool FIsCollapsed = false;
-
         /// <summary>
         /// constructor
         /// </summary>
@@ -58,8 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblDetailHeading.Text = Catalog.GetString("Partner Info");
-            this.btnTogglePartnerDetails.Text = Catalog.GetString("v");
+            this.Text = Catalog.GetString("Partner Info");
             #endregion
 
             //
@@ -67,77 +62,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
         }
 
-        /// <summary>todoComment</summary>
-        public bool IsCollapsed
-        {
-            get
-            {
-                return FIsCollapsed;
-            }
-
-            set
-            {
-                FIsCollapsed = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public event System.EventHandler Collapsed;
-
-        /// <summary>todoComment</summary>
-        public event System.EventHandler Expanded;
-
-        private void OnCollapsed()
-        {
-            if (Collapsed != null)
-            {
-                Collapsed(this, new EventArgs());
-            }
-        }
-
-        private void OnExpanded()
-        {
-            if (Expanded != null)
-            {
-                Expanded(this, new EventArgs());
-            }
-        }
-
         /// <summary>
-        /// todoComment
+        /// Stops the Timer for the fetching of data. This is needed to allow a garbage-collection of the UC_PartnerInfo UserControl
+        /// (a System.Threading.Timer is an unmanaged resource and needs manual Disposal, plus it holds a reference to the Class that instantiated it!)
         /// </summary>
-        public void Collapse()
+        public void StopTimer()
         {
-            FIsCollapsed = true;
-
-            this.btnTogglePartnerDetails.Text = "^";
-            this.Height = COLLAPSEDHEIGHT;
+            ucoPartnerInfo.StopTimer();
         }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void Expand()
-        {
-            FIsCollapsed = false;
-
-            this.btnTogglePartnerDetails.Text = "v";
-            this.Height = EXPANDEDHEIGHT;
-        }
-
-        private void BtnTogglePartnerDetailsClick(object sender, EventArgs e)
-        {
-            if (FIsCollapsed)
-            {
-                Expand();
-                OnExpanded();
-            }
-            else
-            {
-                Collapse();
-                OnCollapsed();
-            }
-        }
 
         #region Method calls that get passed through to ucoPartnerInfo
 
