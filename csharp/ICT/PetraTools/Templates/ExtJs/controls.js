@@ -108,6 +108,7 @@
 {
     xtype: 'hidden',
     name: 'hidImageID',
+    id: 'hidImageID'
 },
 {
     columnWidth:1,
@@ -118,7 +119,7 @@
                 fieldLabel: this.{#LABEL},
                 allowBlank: false,
                 width: 300,
-                html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div><div id="uploadDiv2" style="width:30px; height:20px"></div>',
+                html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div>',
                 name: '{#ITEMNAME}',
                 anchor: '97.5%'
     }]

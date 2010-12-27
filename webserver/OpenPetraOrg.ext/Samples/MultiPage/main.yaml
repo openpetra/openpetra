@@ -8,7 +8,7 @@ RootNode:
     FormHeader: false
     Controls:
         pnlContent:
-            Controls: [aspWelcome, aspPage1, aspPage2]
+            Controls: [aspWelcome, aspPage1, aspPagePhoto, aspPage2]
             Buttons: [btnConfirm]
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
@@ -29,6 +29,13 @@ RootNode:
                 Row4: [txtPhone]
                 Row5: [txtMobile]
                 Row6: [txtEmail]
+        aspPagePhoto:
+            Label: "Photo"
+            Controls:
+                Row0: [lblPhoto]
+                Row1: [uplPhoto]
+        lblPhoto:
+            Label: "Please upload a photo of your face. It will be printed on your badge."
         aspPage2:
             Label: "Other Details"
             Controls: [grpOtherDetails]
@@ -37,7 +44,6 @@ RootNode:
             Controls:
                 Row7: [dtpDateOfBirth]
                 Row8: [cmbGender]
-                #Row9: [uplImage]
                 Row10: [txtExistingPartnerKey]
                 Row11: [txtGroupWish]
         txtMobile:

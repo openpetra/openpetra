@@ -109,6 +109,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
+            writer.FTemplate.InsertSnippet("CUSTOMFUNCTIONS", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOAD"));
+
             ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
 
             writer.FTemplate.InsertSnippet("UPLOADFORM", uploadSnippet);
@@ -398,6 +400,17 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
             ctrlSnippet.SetCodelet("PAGENUMBER", PageCounter.ToString());
+
+            if (writer.FTemplate.FCodelets.Contains("CUSTOMFUNCTIONS"))
+            {
+                ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", writer.FTemplate.FCodelets["CUSTOMFUNCTIONS"].ToString());
+                writer.FTemplate.FCodelets.Remove("CUSTOMFUNCTIONS");
+            }
+            else
+            {
+                ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", String.Empty);
+            }
+
             PageCounter++;
 
             return ctrlSnippet;

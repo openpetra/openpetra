@@ -2,6 +2,7 @@ var {#FORMNAME} = null;
 
 {#INCLUDE functions.js}
 {#INCLUDE controls.js}
+{#INCLUDE upload.js}
 
 {#FORMTYPE} = Ext.extend(Ext.ux.Wiz, {
     {#RESOURCESTRINGS}
@@ -38,10 +39,13 @@ var {#FORMNAME} = null;
     }
 });
 
+{#UPLOADFORM}
+
 {##ASSISTANTPAGEDEFINITION}
 new Ext.ux.Wiz.Card({
     title : this.{#LABEL},
     monitorValid : true,
+    {#CUSTOMFUNCTIONS}
     defaults     : {
         labelStyle : 'font-size:11px'
     },

@@ -18,7 +18,16 @@
     <script type="text/javascript" src="../../js/Ext.ux.Wiz/Header.js"></script>
     <script type="text/javascript" src="../../js/Ext.ux.Wiz/Card.js"></script>
     
+    <link rel="stylesheet" type="text/css" href="../../css/fileuploadfield.css"/>
+    <script type="text/javascript" src="../../js/FileUploadField.js"></script>
+
     <script type="text/javascript" src="gen/main.js"></script>
+    <style type=text/css>
+        .upload-icon {
+            background: url('../../img/image_add.png') no-repeat 0 0 !important;
+        }
+    </style>
+
 <script type="text/javascript">
     <!-- 
     Ext.BLANK_IMAGE_URL = '../../img/default_blank.gif';
@@ -29,6 +38,11 @@
         MainForm = new TMainForm();
         MainForm.show();
         
+
+        
+        UploadForm = new TUploadForm();
+        UploadForm.render('uploadDiv');
+        
         });
     -->
 </script>    
@@ -36,6 +50,6 @@
 
 <body>
 <div id="mainFormDiv"></div>
-
+<div id="uploadDiv" style="visibility:hidden"></div>
 </body>
 </html>

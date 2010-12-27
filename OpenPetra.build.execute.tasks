@@ -171,6 +171,11 @@
             </fileset>
         </copy>
         <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ThirdParty/ext.net">
+                <include name="*.dll" />
+            </fileset>
+        </copy>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
             <!-- some unmanaged dlls cause problems for mono xsp -->
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
                 <include name="*.dll" />
