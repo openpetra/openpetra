@@ -1,6 +1,8 @@
 <%@ Page Language="C#" %>
 <%@ Assembly Name="Ict.Common" %>
+<%@ Assembly Name="Ict.Common.IO" %>
 <%@ Import Namespace="Ict.Common" %>
+<%@ Import Namespace="Ict.Common.IO" %>
 
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web" %>
@@ -9,11 +11,10 @@
 
 private void UploadFile()
 {
-    Console.WriteLine("Uploading");
     if (Request.Files.Count != 1)
     {
         Console.WriteLine("invalid file count " + Request.Files.Count.ToString());
-        Response.Write(String.Format("{{success:false, msg:{0}}}", "invalid file count " + Request.Files.Count.ToString()));
+        Response.Write(String.Format("{{success:false, msg:'{0}'}}", "invalid file count " + Request.Files.Count.ToString()));
         return;
         // throw new Exception("Need one file to be uploaded");
     }
@@ -24,7 +25,7 @@ private void UploadFile()
     if (FileLen > 10*1024*1024)
     {
         Console.WriteLine("we do not support files greater than 10 MB " + FileLen.ToString());
-        Response.Write(String.Format("{{success:false, msg:{0}}}", "we do not support files greater than 10 MB " + FileLen.ToString()));
+        Response.Write(String.Format("{{success:false, msg:'{0}'}}", "we do not support files greater than 10 MB " + FileLen.ToString()));
         return;
         // throw new Exception("we do not support files greater than 10 MB");
     }
@@ -33,7 +34,7 @@ private void UploadFile()
     if (Path.GetExtension(MyFile.FileName).ToLower() != ".jpg" && Path.GetExtension(MyFile.FileName).ToLower() != ".jpeg")
     {
         Console.WriteLine("we only support jpg files");
-        Response.Write(String.Format("{{success:false, msg:{0}}}", "we only support jpg files"));
+        Response.Write(String.Format("{{success:false, msg:'{0}'}}", "we only support jpg files"));
         return;
     }
     
@@ -41,41 +42,57 @@ private void UploadFile()
     // TODO: rotate image
     // TODO: allow editing of image, select the photo from a square image etc
     
-    string Filename;
+    string Filename = Path.GetTempFileName();
     
-    do
-    {
-        Filename = Path.GetTempFileName();
-        Filename = Path.ChangeExtension(Filename, Path.GetExtension(MyFile.FileName));
-    }
-    while (File.Exists(Filename));
-
     MyFile.SaveAs(Filename);
     
-    Response.Write(String.Format("{{success:true, file:'{0}'}}", Path.GetFileName(Filename)));
+    string md5SumFileName = TAppSettingsManager.GetValueStatic("Server.PathTemp") + 
+        Path.DirectorySeparatorChar +
+        TPatchTools.GetMd5Sum(Filename) + Path.GetExtension(MyFile.FileName);
+    
+    if (!File.Exists(md5SumFileName))
+    {
+        File.Move(Filename, md5SumFileName);
+    }
+    else
+    {
+        File.Delete(Filename);
+    }
+    
+    Response.Write(String.Format("{{success:true, file:'{0}'}}", Path.GetFileName(md5SumFileName)));
     return;
 }
 
 </script>
 
 <%
-if (Request.Files.Count == 1)
+new TAppSettingsManager("web.config");
+new TLogging(TAppSettingsManager.GetValueStatic("Server.LogFile"));
+try
 {
-    UploadFile();
-}
-else
-{
-    if (HttpContext.Current.Request.Params["image-id"].Length > 0)
+    if (Request.Files.Count == 1)
     {
-        string Filename = Path.GetDirectoryName(Path.GetTempFileName()) + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["image-id"]);
-        Response.Buffer = true;
-        Response.Clear();
-        Response.ClearContent(); 
-        Response.ClearHeaders();         
-        Response.ContentType = "image/jpeg";
-        Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
-        Response.TransmitFile( Filename );
-        Response.End();        
+        UploadFile();
+    }
+    else
+    {
+        if (HttpContext.Current.Request.Params["image-id"] != null && HttpContext.Current.Request.Params["image-id"].Length > 0)
+        {
+            string Filename = TAppSettingsManager.GetValueStatic("Server.PathTemp") + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["image-id"]);
+            Response.Buffer = true;
+            Response.Clear();
+            Response.ClearContent(); 
+            Response.ClearHeaders();         
+            Response.ContentType = "image/jpeg";
+            Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
+            Response.TransmitFile( Filename );
+            // Response.End(); avoid System.Threading.ThreadAbortException 
+        }
     }
 }
+catch (Exception e)
+{
+    TLogging.Log(e.ToString() + ": " + e.Message);
+    TLogging.Log(e.StackTrace);
+}    
 %>

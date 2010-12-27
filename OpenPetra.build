@@ -35,6 +35,7 @@
     <property name="Logging.dir" value="${OpenPetraRoot.dir}/log"/>
     <property name="Delivery.dir" value="${OpenPetraRoot.dir}/delivery"/>
     <property name="Tmp.dir" value="${OpenPetraRoot.dir}/tmp"/>
+    <property name="Data.dir" value="${OpenPetraRoot.dir}/data"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
@@ -71,6 +72,9 @@
     </if>
     <if test="${not directory::exists(Tmp.dir)}">
         <mkdir dir="${Tmp.dir}" />
+    </if>
+    <if test="${not directory::exists(Data.dir)}">
+        <mkdir dir="${Data.dir}" />
     </if>
 
     <!-- could use nant -projecthelp instead -->

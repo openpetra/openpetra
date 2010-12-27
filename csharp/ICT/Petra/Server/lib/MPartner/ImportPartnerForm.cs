@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Data;
 
 using Ict.Common;
@@ -112,6 +113,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// each applicant is given a role at the event (participant, volunteer, etc)
         /// </summary>
         public string role;
+        /// <summary>
+        /// the temp filename of the photo of the participant, which has been uploaded by upload.aspx
+        /// </summary>
+        public string imageid;
     }
 
     /// <summary>
@@ -299,6 +304,28 @@ namespace Ict.Petra.Server.MPartner.Import
                         TLogging.Log(VerificationResult.BuildVerificationResultString());
                         string message = "There is some critical error when saving to the database";
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+
+                    // process Photo
+                    string imageTmpPath = TAppSettingsManager.GetValueStatic("Server.PathTemp") +
+                                          Path.DirectorySeparatorChar +
+                                          Path.GetFileName(data.imageid);
+
+                    if (File.Exists(imageTmpPath))
+                    {
+                        string photosPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                                            "photos";
+
+                        if (!Directory.Exists(photosPath))
+                        {
+                            Directory.CreateDirectory(photosPath);
+                        }
+
+                        File.Move(imageTmpPath,
+                            photosPath +
+                            Path.DirectorySeparatorChar +
+                            NewPersonPartnerKey +
+                            Path.GetExtension(imageTmpPath));
                     }
 
                     // TODO create PDF, send email

@@ -38,7 +38,17 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
                                             var imgPhoto = Ext.get('photoPreview');
                                             imgPhoto.dom.src = 'upload.aspx?image-id=' + o.result.file;
                                             var imgID = Ext.get('hidImageID');
-                                            imgID.value = o.result.file;
+                                            imgID.set({value: o.result.file});
+                                        },
+                                        failure: function(fp, o){
+                                            console.log("failure");
+                                                Ext.Msg.show({
+                                                    title: 'Problems with upload',
+                                                    msg: o.result.msg,
+                                                    modal: true,
+                                                    icon: Ext.Msg.ERROR,
+                                                    buttons: Ext.Msg.OK
+                                                });
                                         }
                                     });
                                 }
@@ -74,7 +84,7 @@ onShow: function() {
 },
 isValid: function() {
     // use the little trick of setting the z-index so that the message box does not get displayed when the form is shown the first time
-    if (Ext.get('hidImageID').value == undefined && Ext.get('hidImageID').getStyle('z-index') != 'auto')
+    if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
     {
         Ext.Msg.show({
             title: 'Please upload photo',
@@ -87,7 +97,7 @@ isValid: function() {
     }
     Ext.get('hidImageID').setStyle('z-index', '20000');
 
-    return (Ext.get('hidImageID').value != undefined);
+    return (Ext.get('hidImageID').getValue().length != 0);
 },
 onHide: function() {
     Ext.ux.Wiz.Card.superclass.onHide.call(this);

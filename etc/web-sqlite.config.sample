@@ -14,6 +14,8 @@
 	<add key="Server.DebugLevel" value="0" />						<!-- Default Value: "0" -->
     <add key="Server.RDBMSType" value="SQLite" />
     <add key="Server.LogFile" value="../log/WebServer.log" />   <!-- Default Value: "Server.log" in current working directory -->
+    <add key="Server.PathTemp" value="../log" />
+    <add key="Server.PathData" value="../data" />
     <add key="Server.PostgreSQLServer" value = "../setup/petra0300/demo.db" />                <!-- Default Value: "Dns.GetHostName()" -->
     <add key="Server.BaseDatabase" value = "../setup/petra0300/petra.db" />  <!-- database will be copied to the userappdata directory for a new user -->
     <add key="Server.PostgreSQLServerPort" value = "5432" />                                <!-- Default Value: "5432" -->
