@@ -2,6 +2,7 @@
 
 <%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.IO" %>
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
 <%@ Assembly Name="Ict.Common" %>
@@ -26,6 +27,7 @@
         
         if (!X.IsAjaxRequest)
         {
+            Session["CURRENTROW"] = null;
             MyData_Refresh(null, null);
             RoleData_Refresh(null, null);
             ApplicationStatus_Refresh(null, null);
@@ -56,7 +58,7 @@
         // TODO offer all available conferences???
 
         ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-        if (CurrentApplicants == null || sender != null)
+        if (CurrentApplicants == null || sender != null || Session["CURRENTROW"] == null)
         {
             CurrentApplicants = TApplicationManagement.GetApplications("SC001CNGRSS08", 43000000);
             Session["CURRENTAPPLICANTS"] = CurrentApplicants;
@@ -117,6 +119,9 @@
             row.GenApplicationStatus,
             row.StCongressCode
         });
+        
+        Random rand = new Random();
+        Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1,10000).ToString();
     }
 
     protected void SaveApplication(object sender, DirectEventArgs e)
@@ -159,6 +164,71 @@
         this.Response.Redirect("Default.aspx");
     }
 
+    protected void UploadClick(object sender, DirectEventArgs e)
+    {
+    try
+    {
+        Dictionary<string,string> values = JSON.Deserialize<Dictionary<string, string>>(e.ExtraParams["Values"]);
+        
+        Int64 PartnerKey = Convert.ToInt64(values["PartnerKey"]);
+        
+        if (this.FileUploadField1.HasFile)
+        {
+            // TODO: use a generic upload function for images, with max size and dimension parameters, same as in upload.aspx for the participants
+            int FileLen = this.FileUploadField1.PostedFile.ContentLength;
+            if (FileLen > 10*1024*1024)
+            {
+               X.Msg.Show(new MessageBoxConfig
+                {
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.ERROR,
+                    Title = "Fail",
+                    Message = "We do not support files greater than 10 MB " + FileLen.ToString()
+                });
+                return;
+            }
+
+            // TODO: convert to jpg
+            if (Path.GetExtension(this.FileUploadField1.PostedFile.FileName).ToLower() != ".jpg" && Path.GetExtension(this.FileUploadField1.PostedFile.FileName).ToLower() != ".jpeg")
+            {
+               X.Msg.Show(new MessageBoxConfig
+                {
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.ERROR,
+                    Title = "Fail",
+                    Message = "we only support jpg files"
+                });
+                return;
+            }
+
+            // TODO: scale image
+            // TODO: rotate image
+            // TODO: allow editing of image, select the photo from a square image etc
+           
+            this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValueStatic("Server.PathData") + 
+                    Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + PartnerKey.ToString() + ".jpg");
+            Random rand = new Random();
+            Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1,10000).ToString();
+           
+            // hide wait message, uploading
+            X.Msg.Hide();
+        }
+        else
+        {
+           X.Msg.Show(new MessageBoxConfig
+            {
+                Buttons = MessageBox.Button.OK,
+                Icon = MessageBox.Icon.ERROR,
+                Title = "Fail",
+                Message = "No file uploaded"
+            });
+        }
+    }
+    catch (Exception ex)
+    {  
+        Console.WriteLine(ex.Message);
+    }
+    }    
 </script>
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -292,7 +362,80 @@
                 </ext:ArrayReader>
             </Reader>
         </ext:Store>
+
+        <ext:DesktopWindow 
+            ID="winUpload" 
+            runat="server" 
+            Title="Upload another photo" 
+            Width="500"
+            Height="120"
+            PageX="200" 
+            PageY="125"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="UploadForm" 
+                            runat="server"
+                            Region="Center"
+                            Width="300"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="50">                
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:FileUploadField 
+                                    ID="FileUploadField1" 
+                                    runat="server" 
+                                    EmptyText="Select an image"
+                                    FieldLabel="Photo"
+                                    ButtonText=""
+                                    Icon="ImageAdd"
+                                    />
+                            </Items>
+                            <Listeners>
+                                <ClientValidation Handler="#{SaveButton}.setDisabled(!valid);" />
+                            </Listeners>
+                            <Buttons>
+                                <ext:Button ID="SaveButton" runat="server" Text="Upload">
+                                    <DirectEvents>
+                                        <Click 
+                                            OnEvent="UploadClick"
+                                            Before="if (!#{UploadForm}.getForm().isValid()) { return false; } 
+                                                Ext.Msg.wait('Uploading your photo...', 'Uploading');"
+                                            Success="#{winUpload}.hide(); #{UploadForm}.getForm().reset();"
+                                            Failure="Ext.Msg.show({ 
+                                                title   : 'Error', 
+                                                msg     : 'Error during uploading', 
+                                                minWidth: 200, 
+                                                modal   : true, 
+                                                icon    : Ext.Msg.ERROR, 
+                                                buttons : Ext.Msg.OK 
+                                            });">
+                                            <ExtraParams>
+                                                <ext:Parameter Name="Values" Value="FormPanel1.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winUpload}.hide();#{UploadForm}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
         
+            </Items>
+        </ext:DesktopWindow>
+
         <ext:DesktopWindow 
             ID="winApplications" 
             runat="server" 
@@ -369,7 +512,11 @@
                                 </ext:Button>
                             </Items>
                         </ext:Toolbar>
-                        <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Partner Key" DataIndex="PartnerKey" ReadOnly="true"/>
+                        <ext:Container runat="server" Layout="Column" Height="400">
+                        <Items>
+                        <ext:Container runat="server" LabelAlign="Left" Layout="Form" ColumnWidth=".7">
+                            <Items>
+                                <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Partner Key" DataIndex="PartnerKey" ReadOnly="true"/>
                         <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
                         <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
                         <ext:ComboBox 
@@ -424,6 +571,27 @@
                             Resizable="true"
                             SelectOnFocus="true"                            
                         />
+                            </Items>
+                        </ext:Container>
+                        <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">
+                            <Items>
+                                <ext:Image ID="Image1" runat="server"
+                                        Width="100"
+                                        ImageUrl="../../img/default_blank.gif"
+                                    >
+                                    <Listeners>
+                                    </Listeners>
+                                </ext:Image>   
+                                <ext:Button ID="btnUpload" runat="server" Text="Upload new Photo" Icon="Disk">
+                                    <Listeners>
+                                        <Click Handler="#{winUpload}.show();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Items>
+                        </ext:Container>
+                        
+                            </Items>
+                        </ext:Container>
                     </Items>
                 </ext:FormPanel>
             </Items>
