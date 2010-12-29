@@ -42,10 +42,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         private Int32 FLedgerNumber;
         private string FSelectedHierarchy = "STANDARD";
-        
-        // The routine ChangeAccountCodeValue() needs the old value of 
+
+        // The routine ChangeAccountCodeValue() needs the old value of
         // txtDetailAccountCode and the new actual value.
-        // This string is used to store the old value. 
+        // This string is used to store the old value.
         private string strOldDetailAccountCode;
 
         /// <summary>
@@ -68,6 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void PopulateTreeView()
         {
+            FCurrentNode = null;
+
             trvAccounts.BeginUpdate();
             trvAccounts.Nodes.Clear();
 
@@ -175,8 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void AddNewAccount(Object sender, EventArgs e)
         {
-        	
-        	if (FCurrentNode == null)
+            if (FCurrentNode == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new account after selecting a parent account"));
                 return;
@@ -194,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 newName += countNewAccount.ToString();
             }
-            
+
             // ChangeAccountCodeValue() needs this value!
             strOldDetailAccountCode = newName;
 
@@ -325,7 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-        
+
         /// <summary>
         /// This routine is the manual part of FileSave()
         /// </summary>
@@ -334,64 +335,64 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // TODO: report to (drag/drop)
             // TODO: report order (drag/drop)
             // TODO: posting/summary (new/delete)
-            
-            // If txtDetailAccountCode is not readonly it may have been changed. 
+
+            // If txtDetailAccountCode is not readonly it may have been changed.
             // Here it shall be tested ...
-            if (!txtDetailAccountCode.ReadOnly) {
-            	ChangeAccountCodeValue();
+            if (!txtDetailAccountCode.ReadOnly)
+            {
+                ChangeAccountCodeValue();
             }
 
             if (FCurrentNode != null)
             {
                 GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                    new object[] { FLedgerNumber, 
-            			((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
-            	GetDetailsFromControls(currentAccount);
+                    new object[] { FLedgerNumber,
+                                   ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                GetDetailsFromControls(currentAccount);
             }
         }
-        
+
         /// <summary>
-        /// Event which shall invoke ChangeAccountCodeValue(), for details see 
+        /// Event which shall invoke ChangeAccountCodeValue(), for details see
         /// the description of ChangeAccountCodeValue()
         /// </summary>
         /// <param name="sender">Actually it is only txtDetailAccountCode</param>
         /// <param name="e">Actually it is only the Leave-Event</param>
         public void ChangeAccountCodeValue(object sender, EventArgs e)
         {
-        	ChangeAccountCodeValue();
+            ChangeAccountCodeValue();
         }
-        
+
         /// <summary>
-        /// ChangeAccountCodeValue shall be invoked if txtDetailAccountCode has been changed and 
-        /// the field is left. This is normally done by the 
+        /// ChangeAccountCodeValue shall be invoked if txtDetailAccountCode has been changed and
+        /// the field is left. This is normally done by the
         /// ChangeAccountCodeValue(object sender, EventArgs e).
-        /// 
-        /// But if the user invokes an other event - i.E. FileSave the FileSave-Event runs first. 
+        ///
+        /// But if the user invokes an other event - i.E. FileSave the FileSave-Event runs first.
         /// </summary>
-        
+
         public void ChangeAccountCodeValue()
         {
-        	
-        	String strNewDetailAccountCode = txtDetailAccountCode.Text;
-        	if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
-        	{
-        		// Find the records defined by "strOldDetailAccountCode"
-        		AAccountHierarchyDetailRow accountHDetail =
-        			(AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
-        				new object[] { FLedgerNumber, FSelectedHierarchy, strOldDetailAccountCode });
-        		AAccountRow account = (AAccountRow)FMainDS.AAccount.Rows.Find(
-        			new object[] { FLedgerNumber, strOldDetailAccountCode });
+            String strNewDetailAccountCode = txtDetailAccountCode.Text;
 
-        		account.AccountCode = strNewDetailAccountCode;
-        		accountHDetail.ReportingAccountCode = strNewDetailAccountCode;
+            if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
+            {
+                // Find the records defined by "strOldDetailAccountCode"
+                AAccountHierarchyDetailRow accountHDetail =
+                    (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
+                        new object[] { FLedgerNumber, FSelectedHierarchy, strOldDetailAccountCode });
+                AAccountRow account = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                    new object[] { FLedgerNumber, strOldDetailAccountCode });
 
-        		trvAccounts.BeginUpdate();
-        		trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
-        		trvAccounts.EndUpdate();
-        	
-        		strOldDetailAccountCode = strNewDetailAccountCode;
-        	}
+                account.AccountCode = strNewDetailAccountCode;
+                accountHDetail.ReportingAccountCode = strNewDetailAccountCode;
+
+                trvAccounts.BeginUpdate();
+                trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
+                trvAccounts.EndUpdate();
+
+                strOldDetailAccountCode = strNewDetailAccountCode;
+            }
         }
-        
     }
 }
