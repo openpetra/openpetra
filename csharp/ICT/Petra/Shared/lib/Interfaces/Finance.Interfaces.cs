@@ -757,7 +757,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
         GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
-        TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
+        TSubmitChangesResult SaveGLSetupTDS(Int32 ALedgerNumber,
+                                            ref GLSetupTDS AInspectDS,
                                             out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
         string ExportAccountHierarchy(Int32 ALedgerNumber,

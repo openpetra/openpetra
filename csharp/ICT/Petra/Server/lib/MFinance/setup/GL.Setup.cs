@@ -114,15 +114,38 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
+        private static void DropAccountProperties(
+            ref GLSetupTDS AInspectDS,
+            Int32 ALedgerNumber,
+            String AAccountCode)
+        {
+            AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                AAccountPropertyTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                AAccountPropertyTable.GetAccountCodeDBName(),
+                AAccountCode);
+
+            foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+            {
+                AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
+                accountPropertyRow.Delete();
+            }
+
+            AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+        }
+
         /// <summary>
         /// save modified account hierarchy etc; does not support moving accounts;
         /// also used for saving cost centre hierarchy and cost centre details
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
+        public static TSubmitChangesResult SaveGLSetupTDS(
+            Int32 ALedgerNumber,
+            ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
@@ -134,13 +157,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if ((AInspectDS.AAccount != null) && (AInspectDS.AAccount.Count > 0))
             {
-                // load all account properties, there are not so many anyways
-                AInspectDS.Merge(AAccountPropertyAccess.LoadViaALedger(AInspectDS.AAccount[0].LedgerNumber, null));
-                AInspectDS.AAccountProperty.AcceptChanges();
-
                 // check AAccount, if BankAccountFlag is not null, then create AAccountProperty or delete it
                 foreach (GLSetupTDSAAccountRow acc in AInspectDS.AAccount.Rows)
                 {
+                    // special treatment of deleted accounts
+                    if (acc.RowState == DataRowState.Deleted)
+                    {
+                        // delete all account properties as well
+                        string AccountCodeToDelete = acc[AAccountPropertyTable.ColumnAccountCodeId, DataRowVersion.Original].ToString();
+
+                        DropAccountProperties(ref AInspectDS, ALedgerNumber, AccountCodeToDelete);
+
+                        continue;
+                    }
+
                     // if the flag has been changed by the client, it will not be null
                     if (!acc.IsBankAccountFlagNull())
                     {
@@ -223,6 +253,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 accountNode.SetAttribute("locallongdesc", account.AccountCodeLongDesc);
             }
 
+            if (AMainDS.AAccountProperty.Rows.Find(new object[] { account.LedgerNumber, account.AccountCode,
+                                                                  MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT, "true" }) != null)
+            {
+                accountNode.SetAttribute("bankaccount", "true");
+            }
+
             AParentNode.AppendChild(accountNode);
 
             AMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
@@ -252,6 +288,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
@@ -325,6 +362,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         private static void CreateAccountHierarchyRecursively(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
             ref StringCollection AImportedAccountNames,
             XmlNode ACurrentNode,
             string AParentAccountCode)
@@ -337,11 +375,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // does this account already exist?
             bool newRow = false;
-            DataRow existingAccount = AMainDS.AAccount.Rows.Find(new object[] { AMainDS.AAccountHierarchy[0].LedgerNumber, AccountCode });
+            DataRow existingAccount = AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
 
             if (existingAccount != null)
             {
                 newAccount = (AAccountRow)existingAccount;
+                DropAccountProperties(ref AMainDS, ALedgerNumber, AccountCode);
+                ((GLSetupTDSAAccountRow)newAccount).BankAccountFlag = false;
             }
             else
             {
@@ -390,7 +430,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AMainDS.AAccount.Rows.Add(newAccount);
             }
 
-            // todo: create bank account flag, or delete bank account flag
+            if (TYml2Xml.GetAttributeRecursive(ACurrentNode, "bankaccount") == "true")
+            {
+                AAccountPropertyRow accProp = AMainDS.AAccountProperty.NewRowTyped(true);
+                accProp.LedgerNumber = newAccount.LedgerNumber;
+                accProp.AccountCode = newAccount.AccountCode;
+                accProp.PropertyCode = MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT;
+                accProp.PropertyValue = "true";
+                AMainDS.AAccountProperty.Rows.Add(accProp);
+                ((GLSetupTDSAAccountRow)newAccount).BankAccountFlag = true;
+            }
 
             // account hierarchy has been deleted, so always add
             AAccountHierarchyDetailRow newAccountHDetail = AMainDS.AAccountHierarchyDetail.NewRowTyped();
@@ -403,7 +452,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
-                CreateAccountHierarchyRecursively(ref AMainDS, ref AImportedAccountNames, child, newAccount.AccountCode);
+                CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, newAccount.AccountCode);
             }
         }
 
@@ -449,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
-            CreateAccountHierarchyRecursively(ref MainDS, ref ImportedAccountNames, root, MainDS.AAccountHierarchy[0].LedgerNumber.ToString());
+            CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, root, ALedgerNumber.ToString());
 
             foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
             {
@@ -466,7 +515,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResult;
             GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
-            return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            return SaveGLSetupTDS(ALedgerNumber, ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         private static void CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
@@ -549,7 +598,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResult;
             GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
-            return SaveGLSetupTDS(ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            return SaveGLSetupTDS(ALedgerNumber, ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -644,7 +693,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             StringCollection ImportedAccountNames = new StringCollection();
 
-            CreateAccountHierarchyRecursively(ref AMainDS, ref ImportedAccountNames, root, ALedgerNumber.ToString());
+            CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref ImportedAccountNames, root, ALedgerNumber.ToString());
         }
 
         private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, string ALedgerName)

@@ -3556,11 +3556,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
+        public TSubmitChangesResult SaveGLSetupTDS(Int32 ALedgerNumber,
+                                                   ref GLSetupTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "SaveGLSetupTDS", ";GLSETUPTDS;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AInspectDS, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "SaveGLSetupTDS", ";INT;GLSETUPTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ALedgerNumber, ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector
