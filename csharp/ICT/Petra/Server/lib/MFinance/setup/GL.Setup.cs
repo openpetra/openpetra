@@ -104,6 +104,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -155,7 +156,32 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            if ((AInspectDS.AAccount != null) && (AInspectDS.AAccount.Count > 0))
+            if (AInspectDS.ACostCentre != null)
+            {
+                // check for removed cost centres, and also delete the AValidLedgerNumber row if there is one for the removed cost centre
+                foreach (ACostCentreRow cc in AInspectDS.ACostCentre.Rows)
+                {
+                    if (cc.RowState == DataRowState.Deleted)
+                    {
+                        string CostCentreCodeToDelete = cc[ACostCentreTable.ColumnCostCentreCodeId, DataRowVersion.Original].ToString();
+                        AInspectDS.AValidLedgerNumber.DefaultView.RowFilter =
+                            String.Format("{0}='{1}'",
+                                AValidLedgerNumberTable.GetCostCentreCodeDBName(),
+                                CostCentreCodeToDelete);
+
+                        foreach (DataRowView rv in AInspectDS.AValidLedgerNumber.DefaultView)
+                        {
+                            AValidLedgerNumberRow ValidLedgerNumberRow = (AValidLedgerNumberRow)rv.Row;
+
+                            ValidLedgerNumberRow.Delete();
+                        }
+                    }
+                }
+
+                AInspectDS.AValidLedgerNumber.DefaultView.RowFilter = "";
+            }
+
+            if (AInspectDS.AAccount != null)
             {
                 // check AAccount, if BankAccountFlag is not null, then create AAccountProperty or delete it
                 foreach (GLSetupTDSAAccountRow acc in AInspectDS.AAccount.Rows)
@@ -164,7 +190,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     if (acc.RowState == DataRowState.Deleted)
                     {
                         // delete all account properties as well
-                        string AccountCodeToDelete = acc[AAccountPropertyTable.ColumnAccountCodeId, DataRowVersion.Original].ToString();
+                        string AccountCodeToDelete = acc[GLSetupTDSAAccountTable.ColumnAccountCodeId, DataRowVersion.Original].ToString();
 
                         DropAccountProperties(ref AInspectDS, ALedgerNumber, AccountCodeToDelete);
 
@@ -203,10 +229,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 accProp.PropertyValue = "true";
                             }
                         }
+
+                        AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
                     }
                 }
-
-                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
             }
 
             TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
@@ -514,8 +540,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             TVerificationResultCollection VerificationResult;
-            GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
-            return SaveGLSetupTDS(ALedgerNumber, ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         private static void CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
@@ -597,8 +622,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             TVerificationResultCollection VerificationResult;
-            GLSetupTDS InspectDS = MainDS.GetChangesTyped(true);
-            return SaveGLSetupTDS(ALedgerNumber, ref InspectDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
