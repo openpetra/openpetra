@@ -107,6 +107,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     /// <summary>todoComment</summary>
     public event System.EventHandler DataLoadingFinished;
 
+    /// to avoid warning CS0067: unused event
+    private void OnDataLoadingStarted(object sender, EventArgs e)
+    {
+        if (DataLoadingStarted != null)
+        {
+            DataLoadingStarted(sender, e);
+        }
+    }
+
+    /// to avoid warning CS0067: unused event
+    private void OnDataLoadingFinished(object sender, EventArgs e)
+    {
+        if (DataLoadingFinished != null)
+        {
+            DataLoadingFinished(sender, e);
+        }
+    }
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {

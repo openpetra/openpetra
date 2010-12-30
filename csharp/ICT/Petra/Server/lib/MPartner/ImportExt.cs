@@ -114,8 +114,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
-                throw new Exception(
-                    "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
                 PPersonRow PersonRow = FMainDS.PPerson.NewRowTyped();
                 FMainDS.PPerson.Rows.Add(PersonRow);
                 PersonRow.PartnerKey = FPartnerKey;
@@ -136,6 +134,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PersonRow.FieldKey = ReadInt64();
                 PersonRow.FamilyKey = ReadInt64();
                 PersonRow.FamilyId = ReadInt32();
+
+                throw new Exception(
+                    "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
             }
             else if (APartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {

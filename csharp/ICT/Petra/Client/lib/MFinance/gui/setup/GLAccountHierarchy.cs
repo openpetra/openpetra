@@ -384,7 +384,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 try
                 {
                     SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
-
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

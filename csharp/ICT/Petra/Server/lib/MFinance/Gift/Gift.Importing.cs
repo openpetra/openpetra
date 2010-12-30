@@ -54,17 +54,21 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDelimiter;
         Int32 FLedgerNumber;
         String FDateFormatString;
+        bool FExtraColumns;
+        TDBTransaction FTransaction;
+        GLSetupTDS FSetupTDS;
+
+        // exclude the following variables from compiling for the moment, to avoid confusing warning messages, eg. Warning CS0169: The private field '...' is never used
+#if TODO
         CultureInfo FCultureInfo;
         bool FSummary;
         bool FUseBaseCurrency;
         String FBaseCurrency;
         DateTime FDateForSummary;
         bool FTransactionsOnly;
-        bool FExtraColumns;
-        TDBTransaction FTransaction;
         Int64 FRecipientNumber;
         Int64 FFieldNumber;
-        GLSetupTDS FSetupTDS;
+#endif
 
         private String FImportMessage;
         private String FImportLine;
