@@ -164,7 +164,7 @@ namespace Ict.Common.Testing
                     StringHelper.FormatCurrency(2.23M, "->>>,>>>,>>>,>>9.99"), FormatTestName("decimal parameter"));
                 Assert.AreEqual("223", StringHelper.FormatCurrency(223234, "#;(#);0;"), FormatTestName("just display the thousands"));
                 Assert.AreEqual("0027045678", StringHelper.FormatCurrency(27045678, "0000000000;;;"), FormatTestName("partner key"));
-                Assert.AreEqual("3%", StringHelper.FormatCurrency(3.0, "0%;-0%;0;"), FormatTestName("percentage"));
+                Assert.AreEqual("3%", StringHelper.FormatCurrency(3.0M, "0%;-0%;0;"), FormatTestName("percentage"));
                 Assert.AreEqual("0029112233", StringHelper.FormatCurrency(29112233, "partnerkey"), FormatTestName("partnerkey"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%",
                     StringHelper.FormatCurrency(31.3053682781472M, "percentage2decimals"), FormatTestName("percentage2decimals"));
@@ -174,7 +174,7 @@ namespace Ict.Common.Testing
                     StringHelper.FormatCurrency(TVariant.DecodeFromString(new TVariant(
                                 31.3053682781472).EncodeToString()), "percentage2decimals"), FormatTestName("percentage2decimals TVariant Encoded"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%",
-                    StringHelper.FormatCurrency(TVariant.DecodeFromString(new TVariant(31.3053682781472,
+                    StringHelper.FormatCurrency(TVariant.DecodeFromString(new TVariant(31.3053682781472M,
                                 "percentage2decimals").EncodeToString()),
                         "percentage2decimals"), FormatTestName("percentage2decimals TVariant Encoded 2"));
                 v = new TVariant(31.3053682781472);
@@ -368,19 +368,19 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             s =
-                "eInteger:1|\"eComposite: :eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"\"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"";
+                "eInteger:1|\"eComposite: :eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"\"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"";
             Assert.AreEqual("eInteger:1", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 1");
             Assert.AreEqual("eComposite: :eInteger:2|\"eString:\"\" test \"\"\"", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 2");
             Assert.AreEqual(
-                "\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"",
+                "\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"",
                 s,
                 "split composite CSV 4");
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|\"eString:\"\" test \"\"\"|eDateTime:29/03/2004",
+                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"eString:\"\" test \"\"\"|eDateTime:29/03/2004",
                 StringHelper.GetNextCSV(ref s, "|"),
                 "split composite CSV 6");
             Assert.AreEqual(
-                "eComposite: :eInteger:1|\"eComposite: :eInteger:2|eString: test \"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
+                "eComposite: :eInteger:1|\"eComposite: :eInteger:2|eString: test \"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
                 v3.EncodeToString(),
                 "EncodeToString1 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
@@ -392,7 +392,7 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             Assert.AreEqual(
-                "eComposite: :eInteger:2|eString: test|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
+                "eComposite: :eInteger:2|eString: test|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
                 v3.EncodeToString(),
                 "EncodeToString2 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
@@ -513,12 +513,12 @@ namespace Ict.Common.Testing
                 Assert.AreEqual("#,##0.00;(#,##0.00);0.00;0", StringHelper.GetFormatString("", "Currency"), "Problem currency string");
 
                 /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
-                Assert.AreEqual("0", new TVariant(0.00, "Currency").ToFormattedString(
+                Assert.AreEqual("0", new TVariant(0.00M, "Currency").ToFormattedString(
                         "CurrencyWithoutDecimals"), "format currency 0 without decimals");
-                Assert.AreEqual("0", new TVariant(0.00, "Currency").ToFormattedString("CurrencyThousands"), "format currency 0 thousands");
-                Assert.AreEqual("0", new TVariant(0.00, "->>>,>>>,>>>,>>9.99").ToFormattedString(
+                Assert.AreEqual("0", new TVariant(0.00M, "Currency").ToFormattedString("CurrencyThousands"), "format currency 0 thousands");
+                Assert.AreEqual("0", new TVariant(0.00M, "->>>,>>>,>>>,>>9.99").ToFormattedString(
                         "CurrencyWithoutDecimals"), "format progress currency 0 without decimals");
-                Assert.AreEqual("0", new TVariant(0.00, "->>>,>>>,>>>,>>9.99").ToFormattedString(
+                Assert.AreEqual("0", new TVariant(0.00M, "->>>,>>>,>>>,>>9.99").ToFormattedString(
                         "CurrencyThousands"), "format progress currency 0 thousands");
                 Assert.AreEqual("", new TVariant("", true).ToFormattedString(
                         "Currency"), "format empty string in the column heading of a column that has currency values");
@@ -541,13 +541,13 @@ namespace Ict.Common.Testing
                 v.ApplyFormatString("partnerkey");
                 Assert.AreEqual("eInt64:partnerkey:-1", v.EncodeToString(), "format empty partnerkey 1");
                 Assert.AreEqual("0000000000", v.ToFormattedString(), "format empty partnerkey 2");
-                v = new TVariant(0.00, "Currency");
+                v = new TVariant(0.00M, "Currency");
                 v.ApplyFormatString("partnerkey");
                 Assert.AreEqual("eInt64:partnerkey:0", v.EncodeToString(), "format empty partnerkey 3");
                 Assert.AreEqual("0000000000", v.ToFormattedString(), "format empty partnerkey 4");
                 Assert.AreEqual("100" + DecimalSeparator + "00%", TVariant.DecodeFromString(
-                        "eDouble:percentage2decimals:4636737291354636288").ToFormattedString(), "format percentage");
-                v = new TVariant(-1003.25, "Currency");
+                        "eDecimal:percentage2decimals:4636737291354636288").ToFormattedString(), "format percentage");
+                v = new TVariant(-1003.25M, "Currency");
                 Assert.AreEqual("eCurrency:Currency:-4571336140711264256",
                     v.EncodeToString(), "format negative number with format that only prints negative values 1");
                 Assert.AreEqual("(1" + ThousandsOperator + "003" + DecimalSeparator + "25)",
@@ -556,36 +556,36 @@ namespace Ict.Common.Testing
                 Assert.AreEqual("eEmpty:\"#,##0.00; ; ; ;\":",
                     v.EncodeToString(), "format negative number with format that only prints negative values 3");
                 Assert.AreEqual("", v.ToFormattedString(), "format negative number with format that only prints negative values 4");
-                Assert.AreEqual("12" + ThousandsOperator + "346", new TVariant(12345.67, "Currency").ToFormattedString(
+                Assert.AreEqual("12" + ThousandsOperator + "346", new TVariant(12345.67M, "Currency").ToFormattedString(
                         "CurrencyWithoutDecimals"), "Problem D format currency");
-                Assert.AreEqual("eCurrency:Currency:4668012718187306025", new TVariant(12345.67,
+                Assert.AreEqual("eCurrency:Currency:4668012718187306025", new TVariant(12345.67M,
                         "Currency").EncodeToString(), "Problem E format currency");
                 Assert.AreEqual("12" + ThousandsOperator + "345" + DecimalSeparator + "67",
                     StringHelper.FormatCurrency(new TVariant(12345.67), "Currency"), "Problem F format currency");
                 Assert.AreEqual("12345" + DecimalSeparator + "67", new TVariant(12345.67).ToString(), "Problem G format currency");
                 Assert.AreEqual("12" + ThousandsOperator + "345" + DecimalSeparator + "67",
-                    TVariant.DecodeFromString(new TVariant(12345.67, "Currency").EncodeToString()).ToFormattedString(
+                    TVariant.DecodeFromString(new TVariant(12345.67M, "Currency").EncodeToString()).ToFormattedString(
                         "Currency"), "Problem H format currency");
                 Assert.AreEqual("12",
-                    TVariant.DecodeFromString(new TVariant(12345.67, "Currency").EncodeToString()).ToFormattedString(
+                    TVariant.DecodeFromString(new TVariant(12345.67M, "Currency").EncodeToString()).ToFormattedString(
                         "CurrencyThousands"), "Problem I format currency");
-                Assert.AreEqual("12", TVariant.DecodeFromString(new TVariant(12345.67, "CurrencyThousands").EncodeToString()).ToFormattedString(
+                Assert.AreEqual("12", TVariant.DecodeFromString(new TVariant(12345.67M, "CurrencyThousands").EncodeToString()).ToFormattedString(
                         ""), "Problem J format currency");
-                Assert.AreEqual("12", TVariant.DecodeFromString(new TVariant(12345.67,
+                Assert.AreEqual("12", TVariant.DecodeFromString(new TVariant(12345.67M,
                             "#,##0.00;(#,##0.00);0.00;0").EncodeToString()).ToFormattedString(
                         "CurrencyThousands"), "Problem J2 access format currency thousands");
 
                 /* we don't support thousands only with the progress format, too complicated */
                 /* Assert.AreEqual('12', TVariant.DecodeFromString(TVariant.CreateCurrency(12345.67,'>>>,>>>,>>>,>>9.99').EncodeToString("CurrencyThousands")).toFormattedString(''), 'Problem J3 progress format currency thousands'); */
                 Assert.AreEqual("12" + ThousandsOperator + "346",
-                    TVariant.DecodeFromString(new TVariant(12345.67,
+                    TVariant.DecodeFromString(new TVariant(12345.67M,
                             "#,##0.00;(#,##0.00);0.00;0").EncodeToString()).ToFormattedString(
                         "CurrencyWithoutDecimals"), "Problem J2 access format currency w/o decimals");
                 Assert.AreEqual("12" + ThousandsOperator + "346",
-                    TVariant.DecodeFromString(new TVariant(12345.67, "->>>,>>>,>>>,>>9.99").EncodeToString()).ToFormattedString(
+                    TVariant.DecodeFromString(new TVariant(12345.67M, "->>>,>>>,>>>,>>9.99").EncodeToString()).ToFormattedString(
                         "CurrencyWithoutDecimals"), "Problem J3 progress format currency w/o decimals");
                 Assert.AreEqual("12" + ThousandsOperator + "346",
-                    TVariant.DecodeFromString(new TVariant(12345.67, "CurrencyWithoutDecimals").EncodeToString()).ToFormattedString(
+                    TVariant.DecodeFromString(new TVariant(12345.67M, "CurrencyWithoutDecimals").EncodeToString()).ToFormattedString(
                         ""), "Problem K format currency");
             }
 
@@ -628,9 +628,9 @@ namespace Ict.Common.Testing
             Assert.AreEqual("one hundred and twenty-three thousand one hundred and thirty-one Euro",
                 NumberToWords.AmountToWords(123131, "Euro", "Cent"));
             Assert.AreEqual("one hundred and twenty-three thousand two hundred and thirteen Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
-            Assert.AreEqual("three Euro twenty-three Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
-            Assert.AreEqual("three Euro seventy-five Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
-            Assert.AreEqual("zero Euro one Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
+            Assert.AreEqual("three Euro twenty-three Cent", NumberToWords.AmountToWords(3.23M, "Euro", "Cent"));
+            Assert.AreEqual("three Euro seventy-five Cent", NumberToWords.AmountToWords(3.75M, "Euro", "Cent"));
+            Assert.AreEqual("zero Euro one Cent", NumberToWords.AmountToWords(0.01M, "Euro", "Cent"));
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
 
@@ -643,9 +643,9 @@ namespace Ict.Common.Testing
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteins Euro", NumberToWords.AmountToWords(123101, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendeinhunderteinunddreißig Euro", NumberToWords.AmountToWords(123131, "Euro", "Cent"));
             Assert.AreEqual("Einhundertdreiundzwanzigtausendzweihundertdreizehn Euro", NumberToWords.AmountToWords(123213, "Euro", "Cent"));
-            Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23, "Euro", "Cent"));
-            Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75, "Euro", "Cent"));
-            Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Dreiundzwanzig Cent", NumberToWords.AmountToWords(3.23M, "Euro", "Cent"));
+            Assert.AreEqual("Drei Euro Fünfundsiebzig Cent", NumberToWords.AmountToWords(3.75M, "Euro", "Cent"));
+            Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01M, "Euro", "Cent"));
 
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }

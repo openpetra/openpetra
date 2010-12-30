@@ -1646,6 +1646,7 @@ namespace Ict.Common
                     }
                 }
                 else if ((value.TypeVariant == eVariantTypes.eDecimal)
+                         || (value.TypeVariant == eVariantTypes.eCurrency)
                          || (value.TypeVariant == eVariantTypes.eInteger))
                 {
                     d = value.ToDecimal();
@@ -1660,7 +1661,7 @@ namespace Ict.Common
                     }
                     else
                     {
-                        // (d = 0)
+                        // (d == 0)
                         ReturnValue = FormatCurrencyInternal(d, formatZero);
                     }
                 }
