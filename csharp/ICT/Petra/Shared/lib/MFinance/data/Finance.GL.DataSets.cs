@@ -447,8 +447,8 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_primary_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_transaction_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_transaction_amount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_in_base_currency_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_transaction_amount_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_in_base_currency_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_analysis_indicator_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_reconciled_status_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_narrative_c", typeof(String)));
@@ -462,7 +462,7 @@ namespace Ict.Petra.Shared.MFinance.GL.Data
             this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_source_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_system_generated_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_in_intl_currency_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_key_ministry_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));

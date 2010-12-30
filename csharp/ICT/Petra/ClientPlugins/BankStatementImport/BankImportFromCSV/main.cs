@@ -207,7 +207,7 @@ namespace Plugin.BankImportFromCSV
                         Value = Value.Replace(ThousandsSeparator, "");
                         Value = Value.Replace(DecimalSeparator, ".");
 
-                        row.TransactionAmount = Convert.ToDouble(Value, System.Globalization.CultureInfo.InvariantCulture);
+                        row.TransactionAmount = Convert.ToDecimal(Value, System.Globalization.CultureInfo.InvariantCulture);
                     }
                 }
 

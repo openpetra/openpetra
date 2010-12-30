@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewBatch.BatchDescription = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     FImportMessage = Catalog.GetString("Parsing the hash value of the batch");
                                     NewBatch.BatchControlTotal =
-                                        Convert.ToDouble(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
                                     string NextString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     FImportMessage = Catalog.GetString("Parsing the date effective of the batch: " + NextString);
                                     NewBatch.DateEffective = Convert.ToDateTime(NextString, culture);
@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     // TODO test if Currency exists in cached table
                                     FImportMessage = Catalog.GetString("Parsing the exchange rate of the journal");
                                     NewJournal.ExchangeRateToBase =
-                                        Convert.ToDouble(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
                                     FImportMessage = Catalog.GetString("Parsing the date effective of the journal");
                                     NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine,
                                             FdlgSeparator.SelectedSeparator), culture);
@@ -168,10 +168,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                     FImportMessage = Catalog.GetString("Parsing the debit amount of the transaction");
                                     string DebitAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-                                    Double DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0 : Convert.ToDouble(DebitAmountString);
+                                    decimal DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(DebitAmountString);
                                     FImportMessage = Catalog.GetString("Parsing the credit amount of the transaction");
                                     string CreditAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-                                    Double CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0 : Convert.ToDouble(CreditAmountString);
+                                    decimal CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(CreditAmountString);
 
                                     if ((DebitAmount == 0) && (CreditAmount == 0))
                                     {

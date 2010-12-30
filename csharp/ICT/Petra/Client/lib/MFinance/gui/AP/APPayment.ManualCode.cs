@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             supplierPaymentsRow.BankAccount = supplier.DefaultBankAccount;
 
                             // TODO: use uptodate exchange rate?
-                            supplierPaymentsRow.ExchangeRateToBase = 1.0;
+                            supplierPaymentsRow.ExchangeRateToBase = 1.0M;
 
                             // TODO: leave empty
                             supplierPaymentsRow.Reference = "TODO";

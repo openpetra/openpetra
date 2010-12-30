@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.DateOfEntry = DateTime.Now;
 
             // TODO journal.ExchangeRateToBase and journal.ExchangeRateTime
-            journal.ExchangeRateToBase = 1.0;
+            journal.ExchangeRateToBase = 1.0M;
             GLDataset.AJournal.Rows.Add(journal);
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)

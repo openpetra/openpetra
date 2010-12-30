@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.BankAccountCode = cmbDetailBankAccountCode.GetSelectedString();
             ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
-            ARow.ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
+            ARow.ExchangeRateToBase = Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
             ARow.EndEdit();
         }
     }

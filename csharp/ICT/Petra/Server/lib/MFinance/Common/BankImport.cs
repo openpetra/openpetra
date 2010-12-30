@@ -408,7 +408,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
             giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
 
-            double HashTotal = 0.0;
+            decimal HashTotal = 0.0M;
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -521,9 +521,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             glbatchRow.DateEffective = DateEffective;
             glbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
 
-            double HashTotal = 0.0;
-            double DebitTotal = 0.0;
-            double CreditTotal = 0.0;
+            decimal HashTotal = 0.0M;
+            decimal DebitTotal = 0.0M;
+            decimal CreditTotal = 0.0M;
 
             // TODO: support several journals
             // TODO: support several currencies, support other currencies than the base currency

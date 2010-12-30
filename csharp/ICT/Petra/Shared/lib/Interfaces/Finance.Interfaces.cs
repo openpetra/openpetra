@@ -240,7 +240,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                                    Int32 AApNumber,
                                                    string AApSupplier_DefaultExpAccount,
                                                    string AApSupplier_DefaultCostCentre,
-                                                   double AAmount,
+                                                   decimal AAmount,
                                                    Int32 ALastDetailNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
@@ -587,14 +587,14 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         string GetStandardCostCentre(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        double GetDailyExchangeRate(string ACurrencyFrom,
-                                    string ACurrencyTo,
-                                    DateTime ADateEffective);
+        decimal GetDailyExchangeRate(string ACurrencyFrom,
+                                     string ACurrencyTo,
+                                     DateTime ADateEffective);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        double GetCorporateExchangeRate(string ACurrencyFrom,
-                                        string ACurrencyTo,
-                                        DateTime AStartDate,
-                                        DateTime AEndDate);
+        decimal GetCorporateExchangeRate(string ACurrencyFrom,
+                                         string ACurrencyTo,
+                                         DateTime AStartDate,
+                                         DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         bool CancelGLBatch(out GLBatchTDS MainDS,
                            Int32 ALedgerNumber,

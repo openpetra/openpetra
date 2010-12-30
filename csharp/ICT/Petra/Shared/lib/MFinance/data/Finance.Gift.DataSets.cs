@@ -311,7 +311,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_recipient_ledger_number_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_one_type_c", typeof(String)));
@@ -321,9 +321,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("p_recipient_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_charge_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_modified_detail_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_two_type_c", typeof(String)));
@@ -1053,7 +1053,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_recipient_ledger_number_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_one_type_c", typeof(String)));
@@ -1063,9 +1063,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("p_recipient_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_charge_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_modified_detail_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_two_type_c", typeof(String)));
@@ -1763,7 +1763,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_bank_account_number_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_iban_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_transaction_type_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_transaction_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_date_effective_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_ep_match_key_i", typeof(Int32)));
@@ -2013,7 +2013,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_comment_two_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_three_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_gift_comment_three_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_home_admin_charges_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_ilt_admin_charges_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_receipt_letter_code_c", typeof(String)));

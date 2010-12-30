@@ -3622,7 +3622,7 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_validity_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_up_to_age_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_percentage_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("pc_discount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_discount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -4021,7 +4021,7 @@ namespace Ict.Petra.Shared.MConference.Data
         }
 
         /// Amount of discount (in percent or total)
-        public Double Discount
+        public Decimal Discount
         {
             get
             {
@@ -4033,13 +4033,13 @@ namespace Ict.Petra.Shared.MConference.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDiscount)
-                            || (((Double)(this[this.myTable.ColumnDiscount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnDiscount])) != value)))
                 {
                     this[this.myTable.ColumnDiscount] = value;
                 }
@@ -5650,7 +5650,7 @@ namespace Ict.Petra.Shared.MConference.Data
         {
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_option_days_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("pc_charge_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_charge_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -5893,7 +5893,7 @@ namespace Ict.Petra.Shared.MConference.Data
         }
 
         ///
-        public Double Charge
+        public Decimal Charge
         {
             get
             {
@@ -5905,13 +5905,13 @@ namespace Ict.Petra.Shared.MConference.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCharge)
-                            || (((Double)(this[this.myTable.ColumnCharge])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCharge])) != value)))
                 {
                     this[this.myTable.ColumnCharge] = value;
                 }
@@ -6268,7 +6268,7 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_extra_cost_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_cost_type_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pc_cost_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_cost_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pc_comment_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_authorising_field_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_authorising_person_c", typeof(String)));
@@ -6631,7 +6631,7 @@ namespace Ict.Petra.Shared.MConference.Data
         }
 
         ///
-        public Double CostAmount
+        public Decimal CostAmount
         {
             get
             {
@@ -6643,13 +6643,13 @@ namespace Ict.Petra.Shared.MConference.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCostAmount)
-                            || (((Double)(this[this.myTable.ColumnCostAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCostAmount])) != value)))
                 {
                     this[this.myTable.ColumnCostAmount] = value;
                 }
@@ -7139,7 +7139,7 @@ namespace Ict.Petra.Shared.MConference.Data
             this.Columns.Add(new System.Data.DataColumn("pc_applicable_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pc_type_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pc_amount_percent_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("pc_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pc_percent_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -7474,7 +7474,7 @@ namespace Ict.Petra.Shared.MConference.Data
         }
 
         ///
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -7486,13 +7486,13 @@ namespace Ict.Petra.Shared.MConference.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -8541,7 +8541,7 @@ namespace Ict.Petra.Shared.MConference.Data
         {
             this.Columns.Add(new System.Data.DataColumn("pc_conference_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pc_xyz_tbd_type_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pc_supplement_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_supplement_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pc_apply_discounts_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -8798,7 +8798,7 @@ namespace Ict.Petra.Shared.MConference.Data
         }
 
         ///
-        public Double Supplement
+        public Decimal Supplement
         {
             get
             {
@@ -8810,13 +8810,13 @@ namespace Ict.Petra.Shared.MConference.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnSupplement)
-                            || (((Double)(this[this.myTable.ColumnSupplement])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnSupplement])) != value)))
                 {
                     this[this.myTable.ColumnSupplement] = value;
                 }

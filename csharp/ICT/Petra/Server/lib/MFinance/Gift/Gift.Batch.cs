@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.BatchYear = BatchYear;
             NewRow.BatchPeriod = BatchPeriod;
             NewRow.GlEffectiveDate = ADateEffective;
-            NewRow.ExchangeRateToBase = 1.0;
+            NewRow.ExchangeRateToBase = 1.0M;
             // TODO: bank account as a parameter, set on the gift matching screen, etc
             NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());

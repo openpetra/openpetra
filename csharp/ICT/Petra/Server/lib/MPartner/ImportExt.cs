@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadInt32(); // was um_default_entry_conf_key_n
                 UnitRow.UnitTypeCode = ReadString();
                 UnitRow.CountryCode = ReadString();
-                UnitRow.XyzTbdCost = ReadDouble();
+                UnitRow.XyzTbdCost = ReadDecimal();
                 UnitRow.XyzTbdCostCurrencyCode = ReadString();
                 UnitRow.PrimaryOffice = ReadInt64();
             }
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StPreCongressCode = ReadString();
             ShortTermApplicationRow.StProgramFeeReceived = ReadBoolean();
             ShortTermApplicationRow.StRecruitEfforts = ReadString();
-            ShortTermApplicationRow.StScholarshipAmount = ReadDouble();
+            ShortTermApplicationRow.StScholarshipAmount = ReadDecimal();
             ShortTermApplicationRow.StScholarshipApprovedBy = ReadString();
             ShortTermApplicationRow.StScholarshipPeriod = ReadString();
             ShortTermApplicationRow.StScholarshipReviewDate = ReadNullableDate();
@@ -318,8 +318,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             YearProgramApplicationRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
 
             YearProgramApplicationRow.HoOrientConfBookingKey = ReadString();
-            YearProgramApplicationRow.YpAgreedJoiningCharge = ReadDouble();
-            YearProgramApplicationRow.YpAgreedSupportFigure = ReadDouble();
+            YearProgramApplicationRow.YpAgreedJoiningCharge = ReadDecimal();
+            YearProgramApplicationRow.YpAgreedSupportFigure = ReadDecimal();
             YearProgramApplicationRow.YpAppFeeReceived = ReadBoolean();
             YearProgramApplicationRow.YpBasicDeleteFlag = ReadBoolean();
             YearProgramApplicationRow.YpJoiningConf = ReadInt32();
@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             YearProgramApplicationRow.YpScholarshipAthrizedBy = ReadString();
             YearProgramApplicationRow.YpScholarshipBeginDate = ReadNullableDate();
             YearProgramApplicationRow.YpScholarshipEndDate = ReadNullableDate();
-            YearProgramApplicationRow.YpScholarship = ReadDouble();
+            YearProgramApplicationRow.YpScholarship = ReadDecimal();
             YearProgramApplicationRow.YpScholarshipPeriod = ReadString();
             YearProgramApplicationRow.YpScholarshipReviewDate = ReadNullableDate();
             YearProgramApplicationRow.YpSupportPeriod = ReadString();
@@ -668,14 +668,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             UnitCostRow.ValidFromDate = ReadDate();
             UnitCostRow.ChargePeriod = ReadString();
-            UnitCostRow.CoupleJoiningChargeIntl = ReadDouble();
-            UnitCostRow.AdultJoiningChargeIntl = ReadDouble();
-            UnitCostRow.ChildJoiningChargeIntl = ReadDouble();
-            UnitCostRow.CoupleCostsPeriodIntl = ReadDouble();
-            UnitCostRow.SingleCostsPeriodIntl = ReadDouble();
-            UnitCostRow.Child1CostsPeriodIntl = ReadDouble();
-            UnitCostRow.Child2CostsPeriodIntl = ReadDouble();
-            UnitCostRow.Child3CostsPeriodIntl = ReadDouble();
+            UnitCostRow.CoupleJoiningChargeIntl = ReadDecimal();
+            UnitCostRow.AdultJoiningChargeIntl = ReadDecimal();
+            UnitCostRow.ChildJoiningChargeIntl = ReadDecimal();
+            UnitCostRow.CoupleCostsPeriodIntl = ReadDecimal();
+            UnitCostRow.SingleCostsPeriodIntl = ReadDecimal();
+            UnitCostRow.Child1CostsPeriodIntl = ReadDecimal();
+            UnitCostRow.Child2CostsPeriodIntl = ReadDecimal();
+            UnitCostRow.Child3CostsPeriodIntl = ReadDecimal();
         }
 
         private void ImportJob()
@@ -818,8 +818,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             RoomRow.BuildingCode = ReadString();
             RoomRow.RoomNumber = ReadString();
             RoomRow.Beds = ReadInt32();
-            RoomRow.BedCharge = ReadDouble();
-            RoomRow.BedCost = ReadDouble();
+            RoomRow.BedCharge = ReadDecimal();
+            RoomRow.BedCost = ReadDecimal();
             RoomRow.MaxOccupancy = ReadInt32();
             RoomRow.GenderPreference = ReadString();
         }

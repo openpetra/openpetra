@@ -819,9 +819,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
-            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
             {
-                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
+                return "Convert.ToDecimal(" + ctrl.controlName + ".Text)";
             }
 
             return ctrl.controlName + ".Text";
@@ -1419,9 +1419,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".Text)";
             }
-            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
             {
-                return "Convert.ToDouble(" + ctrl.controlName + ".Text)";
+                return "Convert.ToDecimal(" + ctrl.controlName + ".Text)";
             }
 
             return ctrl.controlName + ".Text";
@@ -1494,6 +1494,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //Console.WriteLine("TTxtNumericTextBoxGenerator ControlFitsNode");
             if (base.ControlFitsNode(curNode))
             {
+                FDefaultWidth = 80;
+
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
@@ -1516,7 +1518,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (NumberFormat.StartsWith("Currency(")))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
-
+                    FDefaultWidth = 150;
                     ReturnValue = true;
                 }
 
@@ -1566,8 +1568,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-                FDefaultWidth = 80;
-
                 return ReturnValue;
             }
 
@@ -1581,7 +1581,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
                     || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
                 {
-                    return ctrl.controlName + ".NumberValueDouble = null;";
+                    return ctrl.controlName + ".NumberValueDecimal = null;";
                 }
                 else
                 {
@@ -1599,14 +1599,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     return ctrl.controlName + ".NumberValueInt = " + AFieldOrNull + ";";
                 }
-                else if (AFieldTypeDotNet.ToLower().Contains("double"))
+                else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
                 {
                     if (AFieldOrNull == null)
                     {
-                        return ctrl.controlName + ".NumberValueDouble = null;";
+                        return ctrl.controlName + ".NumberValueDecimal = null;";
                     }
 
-                    return ctrl.controlName + ".NumberValueDouble = Convert.ToDouble(" + AFieldOrNull + ");";
+                    return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
                 }
                 else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
                 {
@@ -1631,7 +1631,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
                     || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
                 {
-                    return ctrl.controlName + ".NumberValueDouble == null";
+                    return ctrl.controlName + ".NumberValueDecimal == null";
                 }
                 else
                 {
@@ -1647,9 +1647,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".NumberValueInt)";
             }
-            else if (AFieldTypeDotNet.ToLower().Contains("double"))
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
             {
-                return "Convert.ToDouble(" + ctrl.controlName + ".NumberValueDouble)";
+                return "Convert.ToDecimal(" + ctrl.controlName + ".NumberValueDecimal)";
             }
             else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
             {
