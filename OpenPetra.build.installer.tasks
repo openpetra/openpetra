@@ -362,7 +362,7 @@
         <delete dir="${setupDir}"/>
     </target>
     
-    <target name="createPatch">
+    <target name="createPatch" depends="init">
         <ExecDotNet program="${PetraToolsExe.dir}/PatchToolConsole.exe" commandline="-action:create -OpenPetra.PathTemp:${Tmp.dir}/patch -deliverypath:${Delivery.dir} -appname:openpetraorg-client-backup -oldversion:${OldVersion} -newversion:${NewVersion}" failonerror="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${OpenPetraRoot.dir}/csharp/ThirdParty/bsdiff"/>
