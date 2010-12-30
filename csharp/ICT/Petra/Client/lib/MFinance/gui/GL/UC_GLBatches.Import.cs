@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     culture.DateTimeFormat.ShortDatePattern = FdlgSeparator.DateFormat;
 
                     StreamReader sr = new StreamReader(dialog.FileName);
-                    TLogging.Log(dialog.FileName);
+
                     ABatchRow NewBatch = null;
                     AJournalRow NewJournal = null;
                     FImportMessage = Catalog.GetString("Parsing first line");
@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             FImportLine = sr.ReadLine();
                             RowNumber++;
-                            TLogging.Log(FImportLine);
+
                             // skip empty lines and commented lines
                             if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#")
                                 && !FImportLine.StartsWith(","))
