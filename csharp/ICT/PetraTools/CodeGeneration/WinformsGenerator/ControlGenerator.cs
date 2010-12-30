@@ -1494,6 +1494,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //Console.WriteLine("TTxtNumericTextBoxGenerator ControlFitsNode");
             if (base.ControlFitsNode(curNode))
             {
+                FDefaultWidth = 80;
+
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
@@ -1516,7 +1518,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (NumberFormat.StartsWith("Currency(")))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
-
+                    FDefaultWidth = 150;
                     ReturnValue = true;
                 }
 
@@ -1565,8 +1567,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
                 }
-
-                FDefaultWidth = 80;
 
                 return ReturnValue;
             }

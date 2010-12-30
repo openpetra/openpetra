@@ -146,8 +146,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FMainDS.ALedger.Count == 1)
             {
-                lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), FMainDS.ALedger[0].BaseCurrency);
-                lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), GetJournalRow().TransactionCurrency);
+                string TransactionCurrency = GetJournalRow().TransactionCurrency;
+                string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+                lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
+                lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
+                txtDebitAmountBase.CurrencySymbol = BaseCurrency;
+                txtCreditAmountBase.CurrencySymbol = BaseCurrency;
+                txtDebitAmount.CurrencySymbol = TransactionCurrency;
+                txtCreditAmount.CurrencySymbol = TransactionCurrency;
+                txtCreditTotalAmountBase.CurrencySymbol = BaseCurrency;
+                txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
+                txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
+                txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
             }
         }
 
@@ -155,30 +165,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (ARow.DebitCreditIndicator)
             {
-                txtDebitAmountBase.Text = ARow.AmountInBaseCurrency.ToString();
-                txtCreditAmountBase.Text = "0";
-                txtDebitAmount.Text = ARow.TransactionAmount.ToString();
-                txtCreditAmount.Text = "0";
+                txtDebitAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
+                txtCreditAmountBase.NumberValueDecimal = 0;
+                txtDebitAmount.NumberValueDecimal = ARow.TransactionAmount;
+                txtCreditAmount.NumberValueDecimal = 0;
             }
             else
             {
-                txtDebitAmountBase.Text = "0";
-                txtCreditAmountBase.Text = ARow.AmountInBaseCurrency.ToString();
-                txtDebitAmount.Text = "0";
-                txtCreditAmount.Text = ARow.TransactionAmount.ToString();
+                txtDebitAmountBase.NumberValueDecimal = 0;
+                txtCreditAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
+                txtDebitAmount.NumberValueDecimal = 0;
+                txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
             }
 
             AJournalRow journal = GetJournalRow();
-            txtCreditTotalAmount.Text = journal.JournalCreditTotal.ToString();
-            txtDebitTotalAmount.Text = journal.JournalDebitTotal.ToString();
-            txtCreditTotalAmountBase.Text = (journal.JournalCreditTotal *
-                                             TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                                                 dtpDetailTransactionDate.Date.Value)
-                                             ).ToString();
-            txtDebitTotalAmountBase.Text = (journal.JournalDebitTotal *
-                                            TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                                                dtpDetailTransactionDate.Date.Value)
-                                            ).ToString();
+            txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
+            txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
+            txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotal *
+                                                          TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
+                FMainDS.ALedger[0].BaseCurrency,
+                dtpDetailTransactionDate.Date.Value);
+            txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotal *
+                                                         TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
+                FMainDS.ALedger[0].BaseCurrency,
+                dtpDetailTransactionDate.Date.Value);
 
             if (ARow == null)
             {
@@ -197,18 +207,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
         {
-            Decimal oldTransactionAmount = Convert.ToDecimal(ARow.TransactionAmount);
+            Decimal oldTransactionAmount = ARow.TransactionAmount;
             bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
-            ARow.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDecimal(txtDebitAmount.Text) > 0);
+            ARow.DebitCreditIndicator = (txtDebitAmount.NumberValueDecimal.Value > 0);
 
             if (ARow.DebitCreditIndicator)
             {
-                ARow.TransactionAmount = Math.Abs(Convert.ToDecimal(txtDebitAmount.Text));
+                ARow.TransactionAmount = Math.Abs(txtDebitAmount.NumberValueDecimal.Value);
             }
             else
             {
-                ARow.TransactionAmount = Math.Abs(Convert.ToDecimal(txtCreditAmount.Text));
+                ARow.TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
             }
 
             if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
@@ -218,7 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// update amount in other currencys (optional) and recalculate all totals for current batch and journal
+        /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
         /// <param name="ARow"></param>
         public void UpdateTotals(ATransactionRow ARow)
@@ -281,12 +291,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 AJournalRow journal = GetJournalRow();
 
-                txtDebitAmountBase.Text =
+                txtDebitAmountBase.NumberValueDecimal =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * Convert.ToDecimal(txtDebitAmount.Text)).ToString();
-                txtCreditAmountBase.Text =
+                         dtpDetailTransactionDate.Date.Value) * txtDebitAmount.NumberValueDecimal.Value);
+                txtCreditAmountBase.NumberValueDecimal =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * Convert.ToDecimal(txtCreditAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Date.Value) * txtCreditAmount.NumberValueDecimal.Value);
             }
             catch (Exception)
             {
