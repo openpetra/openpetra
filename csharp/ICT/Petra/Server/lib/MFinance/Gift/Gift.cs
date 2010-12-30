@@ -65,7 +65,7 @@ namespace Ict.Petra.Server.MFinance
         {
             Boolean LastGiftAvailable;
             DateTime LastGiftDate;
-            double LastGiftAmount;
+            decimal LastGiftAmount;
             Int64 LastGiftGivenToPartnerKey;
             Int64 LastGiftRecipientLedger;
             String LastGiftCurrencyCode;
@@ -177,7 +177,7 @@ namespace Ict.Petra.Server.MFinance
         /// <returns></returns>
         public static Boolean GetLastGiftDetails(Int64 APartnerKey,
             out DateTime ALastGiftDate,
-            out double ALastGiftAmount,
+            out decimal ALastGiftAmount,
             out Int64 ALastGiftGivenToPartnerKey,
             out Int64 ALastGiftRecipientLedger,
             out String ALastGiftCurrencyCode,

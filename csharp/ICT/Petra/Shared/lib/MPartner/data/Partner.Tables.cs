@@ -12315,7 +12315,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("um_present_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("um_part_timers_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_xyz_tbd_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_xyz_tbd_cost_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("p_xyz_tbd_cost_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_xyz_tbd_cost_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_country_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_primary_office_n", typeof(Int64)));
@@ -12877,7 +12877,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// This is the cost of the Xyz_tbd/Event
-        public Double XyzTbdCost
+        public Decimal XyzTbdCost
         {
             get
             {
@@ -12889,13 +12889,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnXyzTbdCost)
-                            || (((Double)(this[this.myTable.ColumnXyzTbdCost])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnXyzTbdCost])) != value)))
                 {
                     this[this.myTable.ColumnXyzTbdCost] = value;
                 }
@@ -33575,8 +33575,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_data_label_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_value_char_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_value_num_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("p_value_currency_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("p_value_num_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_value_currency_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_value_int_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_value_bool_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_value_date_d", typeof(System.DateTime)));
@@ -33955,7 +33955,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Label value for type Numeric.
-        public Double ValueNum
+        public Decimal ValueNum
         {
             get
             {
@@ -33967,13 +33967,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnValueNum)
-                            || (((Double)(this[this.myTable.ColumnValueNum])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnValueNum])) != value)))
                 {
                     this[this.myTable.ColumnValueNum] = value;
                 }
@@ -33981,7 +33981,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// Label value for type Currency.
-        public Double ValueCurrency
+        public Decimal ValueCurrency
         {
             get
             {
@@ -33993,13 +33993,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnValueCurrency)
-                            || (((Double)(this[this.myTable.ColumnValueCurrency])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnValueCurrency])) != value)))
                 {
                     this[this.myTable.ColumnValueCurrency] = value;
                 }

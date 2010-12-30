@@ -389,10 +389,10 @@ namespace Ict.Petra.Server.MReporting
         /// a function to calculate the sum of the rows that report to this row
         /// </summary>
         /// <returns>void</returns>
-        private double GetSumChildren(ref ArrayList children, int column, Boolean AUseDebitCreditIndicator)
+        private decimal GetSumChildren(ref ArrayList children, int column, Boolean AUseDebitCreditIndicator)
         {
-            double sum;
-            double value;
+            decimal sum;
+            decimal value;
             Boolean debit_credit_indicator;
 
             // true if there is no parameter for this row and ReportingConsts.COLUMN(s)
@@ -443,7 +443,7 @@ namespace Ict.Petra.Server.MReporting
                         }
                     }
 
-                    value = element.column[column].ToDouble();
+                    value = element.column[column].ToDecimal();
 
                     if ((!AUseDebitCreditIndicator) || (debit_credit_indicator == element.debit_credit_indicator))
                     {
@@ -470,7 +470,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="children"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        private double GetSumChildren(ref ArrayList children, int column)
+        private decimal GetSumChildren(ref ArrayList children, int column)
         {
             return GetSumChildren(ref children, column, true);
         }
@@ -481,9 +481,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="lineId"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        protected double GetSumLowerReportCredit(int lineId, int column)
+        protected decimal GetSumLowerReportCredit(int lineId, int column)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             ArrayList children;
 
             GetParameters().Add("debit_credit_indicator", new TVariant(false), column, Depth);
@@ -501,9 +501,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="column"></param>
         /// <param name="AUseDebitCreditIndicator"></param>
         /// <returns></returns>
-        protected double GetSumLowerReport(int lineId, int column, Boolean AUseDebitCreditIndicator)
+        protected decimal GetSumLowerReport(int lineId, int column, Boolean AUseDebitCreditIndicator)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             ArrayList children;
 
             children = new ArrayList();
@@ -519,7 +519,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="lineId"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        protected double GetSumLowerReport(int lineId, int column)
+        protected decimal GetSumLowerReport(int lineId, int column)
         {
             return GetSumLowerReport(lineId, column, true);
         }
@@ -529,9 +529,9 @@ namespace Ict.Petra.Server.MReporting
         /// This is needed e.g. in the account details report
         /// </summary>
         /// <returns>void</returns>
-        protected double GetSumLower2Report(int lineId, int column, Boolean AUseDebitCreditIndicator)
+        protected decimal GetSumLower2Report(int lineId, int column, Boolean AUseDebitCreditIndicator)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             ArrayList children;
 
             children = new ArrayList();
@@ -547,7 +547,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="lineId"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        protected double GetSumLower2Report(int lineId, int column)
+        protected decimal GetSumLower2Report(int lineId, int column)
         {
             return GetSumLower2Report(lineId, column, true);
         }
@@ -595,7 +595,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="val"></param>
         /// <param name="masterlevel"></param>
         /// <returns></returns>
-        protected Boolean GetParentLine(int child, int col, ref int master, ref double val, ref int masterlevel)
+        protected Boolean GetParentLine(int child, int col, ref int master, ref decimal val, ref int masterlevel)
         {
             Boolean ReturnValue;
             TResult row;
@@ -608,7 +608,7 @@ namespace Ict.Petra.Server.MReporting
             {
                 master = row.masterRow;
                 masterlevel = row.depth;
-                val = row.column[col].ToDouble();
+                val = row.column[col].ToDecimal();
                 ReturnValue = true;
             }
 
@@ -669,12 +669,12 @@ namespace Ict.Petra.Server.MReporting
         {
             TVariant ReturnValue;
             int master;
-            double masterval;
+            decimal masterval;
             int masterlevel;
 
             ReturnValue = new TVariant();
             master = child;
-            masterval = CurrentColumns[col].ToDouble();
+            masterval = CurrentColumns[col].ToDecimal();
             masterlevel = Depth;
 
             while (masterlevel > 2)
@@ -701,12 +701,12 @@ namespace Ict.Petra.Server.MReporting
         {
             TVariant ReturnValue;
             int master;
-            double masterval;
+            decimal masterval;
             int masterlevel;
 
             ReturnValue = new TVariant();
             master = child;
-            masterval = CurrentColumns[col].ToDouble();
+            masterval = CurrentColumns[col].ToDecimal();
             masterlevel = Depth;
 
             while (masterlevel > 1)
@@ -796,7 +796,7 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (f == "sub")
             {
-                ReturnValue = new TVariant(ops[1].ToDouble() - ops[2].ToDouble());
+                ReturnValue = new TVariant(ops[1].ToDecimal() - ops[2].ToDecimal());
             }
             else if (f == "adddays")
             {
@@ -804,39 +804,39 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (f == "add")
             {
-                ReturnValue = new TVariant(ops[1].ToDouble() + ops[2].ToDouble());
+                ReturnValue = new TVariant(ops[1].ToDecimal() + ops[2].ToDecimal());
             }
             else if (f == "additems")
             {
                 length = ops[1].ToInt() + 1;
 
-                double result = 0.0;
+                decimal result = 0.0M;
 
                 for (counter = 2; counter <= length; ++counter)
                 {
-                    result += ops[counter].ToDouble();
+                    result += ops[counter].ToDecimal();
                 }
 
                 ReturnValue = new TVariant(result);
             }
             else if (f == "mul")
             {
-                ReturnValue = new TVariant(ops[1].ToDouble() * ops[2].ToDouble());
+                ReturnValue = new TVariant(ops[1].ToDecimal() * ops[2].ToDecimal());
             }
             else if (f == "div")
             {
-                if (ops[2].ToDouble() == 0)
+                if (ops[2].ToDecimal() == 0)
                 {
                     ReturnValue = new TVariant(0.0);
                 }
                 else
                 {
-                    ReturnValue = new TVariant(ops[1].ToDouble() / ops[2].ToDouble());
+                    ReturnValue = new TVariant(ops[1].ToDecimal() / ops[2].ToDecimal());
                 }
             }
             else if (f == "mod")
             {
-                if (ops[2].ToDouble() == 0)
+                if (ops[2].ToDecimal() == 0)
                 {
                     ReturnValue = new TVariant(0.0);
                 }
@@ -847,11 +847,11 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (f == "floor")
             {
-                ReturnValue = new TVariant(Math.Floor(ops[1].ToDouble()));
+                ReturnValue = new TVariant(Math.Floor(ops[1].ToDecimal()));
             }
             else if (f == "round")
             {
-                ReturnValue = new TVariant(Math.Round(ops[1].ToDouble()));
+                ReturnValue = new TVariant(Math.Round(ops[1].ToDecimal()));
             }
             else if (f == "not")
             {

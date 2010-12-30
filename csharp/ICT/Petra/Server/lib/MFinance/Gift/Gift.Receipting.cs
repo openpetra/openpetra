@@ -207,12 +207,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string RowTemplate;
             msg = TPrinterHtml.GetTableRow(msg, "#AMOUNT", out RowTemplate);
             string rowTexts = "";
-            double sum = 0;
+            decimal sum = 0;
 
             foreach (DataRow rowGifts in ADonations.Rows)
             {
                 DateTime dateEntered = Convert.ToDateTime(rowGifts["DateEntered"]);
-                Double amount = Convert.ToDouble(rowGifts["Amount"]);
+                decimal amount = Convert.ToDecimal(rowGifts["Amount"]);
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();

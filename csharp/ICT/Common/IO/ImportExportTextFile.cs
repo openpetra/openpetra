@@ -332,7 +332,7 @@ namespace Ict.Common.IO
         /// write a decimal value
         /// </summary>
         /// <param name="AValue"></param>
-        public void Write(Double AValue)
+        public void Write(Decimal AValue)
         {
             if (!FStartOfLine)
             {
@@ -346,11 +346,11 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// read a Double value
+        /// read a Decimal value
         /// </summary>
-        public Double ReadDouble()
+        public decimal ReadDecimal()
         {
-            return Convert.ToDouble(ReadNextStringItem(), CultureInfo.InvariantCulture);
+            return Convert.ToDecimal(ReadNextStringItem(), CultureInfo.InvariantCulture);
         }
 
         /// <summary>

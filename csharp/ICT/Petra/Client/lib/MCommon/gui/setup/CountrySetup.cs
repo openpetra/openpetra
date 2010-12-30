@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
             if (ARow.IsTimeZoneMinimumNull())
             {
-                txtDetailTimeZoneMinimum.NumberValueDouble = null;
+                txtDetailTimeZoneMinimum.NumberValueDecimal = null;
             }
             else
             {
@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
             if (ARow.IsTimeZoneMaximumNull())
             {
-                txtDetailTimeZoneMaximum.NumberValueDouble = null;
+                txtDetailTimeZoneMaximum.NumberValueDecimal = null;
             }
             else
             {
@@ -402,7 +402,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 ARow.InternatPostalTypeCode = cmbDetailInternatPostalTypeCode.GetSelectedString();
             }
-            if (txtDetailTimeZoneMinimum.NumberValueDouble == null)
+            if (txtDetailTimeZoneMinimum.NumberValueDecimal == null)
             {
                 ARow.SetTimeZoneMinimumNull();
             }
@@ -410,7 +410,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 ARow.TimeZoneMinimum = Convert.ToDecimal(txtDetailTimeZoneMinimum.NumberValueDecimal);
             }
-            if (txtDetailTimeZoneMaximum.NumberValueDouble == null)
+            if (txtDetailTimeZoneMaximum.NumberValueDecimal == null)
             {
                 ARow.SetTimeZoneMaximumNull();
             }

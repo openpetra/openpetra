@@ -200,15 +200,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Decimal oldTransactionAmount = Convert.ToDecimal(ARow.TransactionAmount);
             bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
-            ARow.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDouble(txtDebitAmount.Text) > 0);
+            ARow.DebitCreditIndicator = (txtDebitAmount.Text.Length > 0 && Convert.ToDecimal(txtDebitAmount.Text) > 0);
 
             if (ARow.DebitCreditIndicator)
             {
-                ARow.TransactionAmount = Math.Abs(Convert.ToDouble(txtDebitAmount.Text));
+                ARow.TransactionAmount = Math.Abs(Convert.ToDecimal(txtDebitAmount.Text));
             }
             else
             {
-                ARow.TransactionAmount = Math.Abs(Convert.ToDouble(txtCreditAmount.Text));
+                ARow.TransactionAmount = Math.Abs(Convert.ToDecimal(txtCreditAmount.Text));
             }
 
             if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
@@ -238,8 +238,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // transactions are filtered for this journal; add up the total amounts
-            double sumDebits = 0.0;
-            double sumCredits = 0.0;
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
 
             foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
             {
@@ -258,8 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             journal.JournalCreditTotal = sumCredits;
             journal.JournalDebitTotal = sumDebits;
 
-            sumDebits = 0.0;
-            sumCredits = 0.0;
+            sumDebits = 0.0M;
+            sumCredits = 0.0M;
 
             foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
@@ -283,10 +283,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 txtDebitAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * Convert.ToDouble(txtDebitAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Date.Value) * Convert.ToDecimal(txtDebitAmount.Text)).ToString();
                 txtCreditAmountBase.Text =
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * Convert.ToDouble(txtCreditAmount.Text)).ToString();
+                         dtpDetailTransactionDate.Date.Value) * Convert.ToDecimal(txtCreditAmount.Text)).ToString();
             }
             catch (Exception)
             {

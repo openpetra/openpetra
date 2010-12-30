@@ -46,7 +46,12 @@ namespace Ict.Tools.CodeGeneration
         /// convert the type from the xml file to an ODBC type
         public static string ToOdbcTypeString(TTableField tableField)
         {
-            if ((tableField.strType == "number") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int64")))
+            if ((tableField.strType == "number") && (tableField.iLength == 24))
+            {
+                // currency valuse
+                return "OdbcType.Decimal";
+            }
+            else if ((tableField.strType == "number") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int64")))
             {
                 return "OdbcType.Decimal";
             }

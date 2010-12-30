@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Int32 AApNumber,
             string AApSupplier_DefaultExpAccount,
             string AApSupplier_DefaultCostCentre,
-            double AAmount,
+            decimal AAmount,
             Int32 ALastDetailNumber)
         {
             // create the DataSet that will later be passed to the Client
@@ -411,7 +411,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateOfEntry = DateTime.Now;
 
                 // TODO journal.ExchangeRateToBase
-                journal.ExchangeRateToBase = 1.0;
+                journal.ExchangeRateToBase = 1.0M;
 
                 // TODO journal.ExchangeRateTime
                 GLDataset.AJournal.Rows.Add(journal);
@@ -658,7 +658,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateOfEntry = DateTime.Now;
 
                 // TODO journal.ExchangeRateToBase
-                journal.ExchangeRateToBase = 1.0;
+                journal.ExchangeRateToBase = 1.0M;
 
                 // TODO journal.ExchangeRateTime
                 GLDataset.AJournal.Rows.Add(journal);
@@ -798,7 +798,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 paymentRow.PaymentDate = APostingDate;
 
-                paymentRow.Amount = 0.0;
+                paymentRow.Amount = 0.0M;
 
                 foreach (AccountsPayableTDSAApDocumentPaymentRow docPaymentRow in MainDS.AApDocumentPayment.Rows)
                 {

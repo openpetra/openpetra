@@ -1767,15 +1767,15 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_status_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_mailing_cost_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_mailing_cost_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_bulk_rate_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_next_response_status_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_activate_partner_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_number_sent_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_number_of_responses_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_target_number_of_responses_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_target_amount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_received_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_target_amount_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_received_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_recipient_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_autopopdesc_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_receipt_l", typeof(Boolean)));
@@ -2468,7 +2468,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units
-        public Double MailingCost
+        public Decimal MailingCost
         {
             get
             {
@@ -2480,13 +2480,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnMailingCost)
-                            || (((Double)(this[this.myTable.ColumnMailingCost])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnMailingCost])) != value)))
                 {
                     this[this.myTable.ColumnMailingCost] = value;
                 }
@@ -2650,7 +2650,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units
-        public Double TargetAmount
+        public Decimal TargetAmount
         {
             get
             {
@@ -2662,13 +2662,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnTargetAmount)
-                            || (((Double)(this[this.myTable.ColumnTargetAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnTargetAmount])) != value)))
                 {
                     this[this.myTable.ColumnTargetAmount] = value;
                 }
@@ -2676,7 +2676,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units
-        public Double AmountReceived
+        public Decimal AmountReceived
         {
             get
             {
@@ -2688,13 +2688,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmountReceived)
-                            || (((Double)(this[this.myTable.ColumnAmountReceived])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmountReceived])) != value)))
                 {
                     this[this.myTable.ColumnAmountReceived] = value;
                 }
@@ -4204,7 +4204,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_fee_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_period_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_periodic_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_periodic_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
@@ -4595,7 +4595,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// Total Amount of the fee for the given period.
-        public Double PeriodicAmount
+        public Decimal PeriodicAmount
         {
             get
             {
@@ -4607,13 +4607,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPeriodicAmount)
-                            || (((Double)(this[this.myTable.ColumnPeriodicAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPeriodicAmount])) != value)))
                 {
                     this[this.myTable.ColumnPeriodicAmount] = value;
                 }
@@ -5205,8 +5205,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_hash_total_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_batch_total_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_hash_total_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_batch_total_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_bank_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_gift_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
@@ -5585,7 +5585,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// hash total for the gift batch
-        public Double HashTotal
+        public Decimal HashTotal
         {
             get
             {
@@ -5597,13 +5597,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnHashTotal)
-                            || (((Double)(this[this.myTable.ColumnHashTotal])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnHashTotal])) != value)))
                 {
                     this[this.myTable.ColumnHashTotal] = value;
                 }
@@ -5611,7 +5611,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// total for the gift batch
-        public Double BatchTotal
+        public Decimal BatchTotal
         {
             get
             {
@@ -5623,13 +5623,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnBatchTotal)
-                            || (((Double)(this[this.myTable.ColumnBatchTotal])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnBatchTotal])) != value)))
                 {
                     this[this.myTable.ColumnBatchTotal] = value;
                 }
@@ -7541,7 +7541,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_recipient_ledger_number_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_one_type_c", typeof(String)));
@@ -8111,7 +8111,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units
-        public Double GiftAmount
+        public Decimal GiftAmount
         {
             get
             {
@@ -8123,13 +8123,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftAmount)
-                            || (((Double)(this[this.myTable.ColumnGiftAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnGiftAmount])) != value)))
                 {
                     this[this.myTable.ColumnGiftAmount] = value;
                 }
@@ -9155,8 +9155,8 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_batch_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_description_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_hash_total_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_batch_total_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_hash_total_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_batch_total_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_bank_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_gift_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_batch_status_c", typeof(String)));
@@ -9164,7 +9164,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_batch_year_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_gl_effective_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_bank_cost_centre_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_gift_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_code_c", typeof(String)));
@@ -9644,7 +9644,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// hash total for the gift batch
-        public Double HashTotal
+        public Decimal HashTotal
         {
             get
             {
@@ -9656,13 +9656,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnHashTotal)
-                            || (((Double)(this[this.myTable.ColumnHashTotal])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnHashTotal])) != value)))
                 {
                     this[this.myTable.ColumnHashTotal] = value;
                 }
@@ -9670,7 +9670,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// total for the gift batch
-        public Double BatchTotal
+        public Decimal BatchTotal
         {
             get
             {
@@ -9682,13 +9682,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnBatchTotal)
-                            || (((Double)(this[this.myTable.ColumnBatchTotal])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnBatchTotal])) != value)))
                 {
                     this[this.myTable.ColumnBatchTotal] = value;
                 }
@@ -9878,7 +9878,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// The rate of exchange
-        public Double ExchangeRateToBase
+        public Decimal ExchangeRateToBase
         {
             get
             {
@@ -9890,13 +9890,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExchangeRateToBase)
-                            || (((Double)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
                 {
                     this[this.myTable.ColumnExchangeRateToBase] = value;
                 }
@@ -12113,7 +12113,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_detail_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_recipient_ledger_number_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_group_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_motivation_detail_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_one_type_c", typeof(String)));
@@ -12123,9 +12123,9 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("p_recipient_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("a_charge_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_cost_centre_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_amount_intl_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_modified_detail_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_gift_transaction_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_ich_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_mailing_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_comment_two_type_c", typeof(String)));
@@ -12725,7 +12725,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units of the ledger base currency.
-        public Double GiftAmount
+        public Decimal GiftAmount
         {
             get
             {
@@ -12737,13 +12737,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftAmount)
-                            || (((Double)(this[this.myTable.ColumnGiftAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnGiftAmount])) != value)))
                 {
                     this[this.myTable.ColumnGiftAmount] = value;
                 }
@@ -12985,7 +12985,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units in the International Currency
-        public Double GiftAmountIntl
+        public Decimal GiftAmountIntl
         {
             get
             {
@@ -12997,13 +12997,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftAmountIntl)
-                            || (((Double)(this[this.myTable.ColumnGiftAmountIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnGiftAmountIntl])) != value)))
                 {
                     this[this.myTable.ColumnGiftAmountIntl] = value;
                 }
@@ -13037,7 +13037,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// This is a number of currency units in the entered Currency
-        public Double GiftTransactionAmount
+        public Decimal GiftTransactionAmount
         {
             get
             {
@@ -13049,13 +13049,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnGiftTransactionAmount)
-                            || (((Double)(this[this.myTable.ColumnGiftTransactionAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnGiftTransactionAmount])) != value)))
                 {
                     this[this.myTable.ColumnGiftTransactionAmount] = value;
                 }

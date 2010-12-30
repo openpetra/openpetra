@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.XyzTbdCode = txtXyzTbdCode.Text;
         }
-        ARow.XyzTbdCost = Convert.ToDouble(txtXyzTbdCost.Text);
+        ARow.XyzTbdCost = Convert.ToDecimal(txtXyzTbdCost.Text);
         if (cmbXyzTbdCostCurrencyCode.SelectedIndex == -1)
         {
             ARow.SetXyzTbdCostCurrencyCodeNull();

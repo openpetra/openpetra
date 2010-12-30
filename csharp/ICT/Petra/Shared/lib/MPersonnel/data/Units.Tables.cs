@@ -9147,24 +9147,24 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("um_valid_from_date_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("um_single_costs_period_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_couple_costs_period_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child1_costs_period_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child2_costs_period_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child3_costs_period_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_adult_joining_charge_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_couple_joining_charge_intl_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child_joining_charge_intl_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("um_single_costs_period_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_couple_costs_period_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child1_costs_period_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child2_costs_period_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child3_costs_period_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_adult_joining_charge_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_couple_joining_charge_intl_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child_joining_charge_intl_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_local_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("um_charge_period_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("um_single_costs_period_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_couple_costs_period_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child1_costs_period_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child2_costs_period_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child3_costs_period_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_adult_joining_charge_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_couple_joining_charge_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("um_child_joining_charge_base_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("um_single_costs_period_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_couple_costs_period_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child1_costs_period_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child2_costs_period_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child3_costs_period_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_adult_joining_charge_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_couple_joining_charge_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("um_child_joining_charge_base_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -9628,7 +9628,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a single to be on the team.
-        public Double SingleCostsPeriodIntl
+        public Decimal SingleCostsPeriodIntl
         {
             get
             {
@@ -9640,13 +9640,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnSingleCostsPeriodIntl)
-                            || (((Double)(this[this.myTable.ColumnSingleCostsPeriodIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnSingleCostsPeriodIntl])) != value)))
                 {
                     this[this.myTable.ColumnSingleCostsPeriodIntl] = value;
                 }
@@ -9654,7 +9654,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a couple to be on the team.
-        public Double CoupleCostsPeriodIntl
+        public Decimal CoupleCostsPeriodIntl
         {
             get
             {
@@ -9666,13 +9666,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCoupleCostsPeriodIntl)
-                            || (((Double)(this[this.myTable.ColumnCoupleCostsPeriodIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCoupleCostsPeriodIntl])) != value)))
                 {
                     this[this.myTable.ColumnCoupleCostsPeriodIntl] = value;
                 }
@@ -9680,7 +9680,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child1CostsPeriodIntl
+        public Decimal Child1CostsPeriodIntl
         {
             get
             {
@@ -9692,13 +9692,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild1CostsPeriodIntl)
-                            || (((Double)(this[this.myTable.ColumnChild1CostsPeriodIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild1CostsPeriodIntl])) != value)))
                 {
                     this[this.myTable.ColumnChild1CostsPeriodIntl] = value;
                 }
@@ -9706,7 +9706,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child2CostsPeriodIntl
+        public Decimal Child2CostsPeriodIntl
         {
             get
             {
@@ -9718,13 +9718,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild2CostsPeriodIntl)
-                            || (((Double)(this[this.myTable.ColumnChild2CostsPeriodIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild2CostsPeriodIntl])) != value)))
                 {
                     this[this.myTable.ColumnChild2CostsPeriodIntl] = value;
                 }
@@ -9732,7 +9732,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child3CostsPeriodIntl
+        public Decimal Child3CostsPeriodIntl
         {
             get
             {
@@ -9744,13 +9744,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild3CostsPeriodIntl)
-                            || (((Double)(this[this.myTable.ColumnChild3CostsPeriodIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild3CostsPeriodIntl])) != value)))
                 {
                     this[this.myTable.ColumnChild3CostsPeriodIntl] = value;
                 }
@@ -9758,7 +9758,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for adults.
-        public Double AdultJoiningChargeIntl
+        public Decimal AdultJoiningChargeIntl
         {
             get
             {
@@ -9770,13 +9770,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAdultJoiningChargeIntl)
-                            || (((Double)(this[this.myTable.ColumnAdultJoiningChargeIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAdultJoiningChargeIntl])) != value)))
                 {
                     this[this.myTable.ColumnAdultJoiningChargeIntl] = value;
                 }
@@ -9784,7 +9784,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for couples.
-        public Double CoupleJoiningChargeIntl
+        public Decimal CoupleJoiningChargeIntl
         {
             get
             {
@@ -9796,13 +9796,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCoupleJoiningChargeIntl)
-                            || (((Double)(this[this.myTable.ColumnCoupleJoiningChargeIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCoupleJoiningChargeIntl])) != value)))
                 {
                     this[this.myTable.ColumnCoupleJoiningChargeIntl] = value;
                 }
@@ -9810,7 +9810,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for a child.
-        public Double ChildJoiningChargeIntl
+        public Decimal ChildJoiningChargeIntl
         {
             get
             {
@@ -9822,13 +9822,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChildJoiningChargeIntl)
-                            || (((Double)(this[this.myTable.ColumnChildJoiningChargeIntl])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChildJoiningChargeIntl])) != value)))
                 {
                     this[this.myTable.ColumnChildJoiningChargeIntl] = value;
                 }
@@ -9888,7 +9888,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a single to be on the team.
-        public Double SingleCostsPeriodBase
+        public Decimal SingleCostsPeriodBase
         {
             get
             {
@@ -9900,13 +9900,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnSingleCostsPeriodBase)
-                            || (((Double)(this[this.myTable.ColumnSingleCostsPeriodBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnSingleCostsPeriodBase])) != value)))
                 {
                     this[this.myTable.ColumnSingleCostsPeriodBase] = value;
                 }
@@ -9914,7 +9914,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a couple to be on the team.
-        public Double CoupleCostsPeriodBase
+        public Decimal CoupleCostsPeriodBase
         {
             get
             {
@@ -9926,13 +9926,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCoupleCostsPeriodBase)
-                            || (((Double)(this[this.myTable.ColumnCoupleCostsPeriodBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCoupleCostsPeriodBase])) != value)))
                 {
                     this[this.myTable.ColumnCoupleCostsPeriodBase] = value;
                 }
@@ -9940,7 +9940,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child1CostsPeriodBase
+        public Decimal Child1CostsPeriodBase
         {
             get
             {
@@ -9952,13 +9952,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild1CostsPeriodBase)
-                            || (((Double)(this[this.myTable.ColumnChild1CostsPeriodBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild1CostsPeriodBase])) != value)))
                 {
                     this[this.myTable.ColumnChild1CostsPeriodBase] = value;
                 }
@@ -9966,7 +9966,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child2CostsPeriodBase
+        public Decimal Child2CostsPeriodBase
         {
             get
             {
@@ -9978,13 +9978,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild2CostsPeriodBase)
-                            || (((Double)(this[this.myTable.ColumnChild2CostsPeriodBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild2CostsPeriodBase])) != value)))
                 {
                     this[this.myTable.ColumnChild2CostsPeriodBase] = value;
                 }
@@ -9992,7 +9992,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates amount it costs a child to be on the team.
-        public Double Child3CostsPeriodBase
+        public Decimal Child3CostsPeriodBase
         {
             get
             {
@@ -10004,13 +10004,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChild3CostsPeriodBase)
-                            || (((Double)(this[this.myTable.ColumnChild3CostsPeriodBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChild3CostsPeriodBase])) != value)))
                 {
                     this[this.myTable.ColumnChild3CostsPeriodBase] = value;
                 }
@@ -10018,7 +10018,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for adults.
-        public Double AdultJoiningChargeBase
+        public Decimal AdultJoiningChargeBase
         {
             get
             {
@@ -10030,13 +10030,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAdultJoiningChargeBase)
-                            || (((Double)(this[this.myTable.ColumnAdultJoiningChargeBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAdultJoiningChargeBase])) != value)))
                 {
                     this[this.myTable.ColumnAdultJoiningChargeBase] = value;
                 }
@@ -10044,7 +10044,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for couples.
-        public Double CoupleJoiningChargeBase
+        public Decimal CoupleJoiningChargeBase
         {
             get
             {
@@ -10056,13 +10056,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCoupleJoiningChargeBase)
-                            || (((Double)(this[this.myTable.ColumnCoupleJoiningChargeBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCoupleJoiningChargeBase])) != value)))
                 {
                     this[this.myTable.ColumnCoupleJoiningChargeBase] = value;
                 }
@@ -10070,7 +10070,7 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
         }
 
         /// Indicates the joining charge for a child.
-        public Double ChildJoiningChargeBase
+        public Decimal ChildJoiningChargeBase
         {
             get
             {
@@ -10082,13 +10082,13 @@ namespace Ict.Petra.Shared.MPersonnel.Units.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChildJoiningChargeBase)
-                            || (((Double)(this[this.myTable.ColumnChildJoiningChargeBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChildJoiningChargeBase])) != value)))
                 {
                     this[this.myTable.ColumnChildJoiningChargeBase] = value;
                 }

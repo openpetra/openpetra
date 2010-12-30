@@ -161,13 +161,13 @@ namespace Ict.Common.Testing
                     StringHelper.FormatCurrency(new TVariant(2345.23),
                         "->>>,>>>,>>>,>>9.99"), FormatTestName("variant parameter; positive; format: Progress Style, thousand separator"));
                 Assert.AreEqual('2' + DecimalSeparator + "23",
-                    StringHelper.FormatCurrency(2.23, "->>>,>>>,>>>,>>9.99"), FormatTestName("double parameter"));
+                    StringHelper.FormatCurrency(2.23M, "->>>,>>>,>>>,>>9.99"), FormatTestName("decimal parameter"));
                 Assert.AreEqual("223", StringHelper.FormatCurrency(223234, "#;(#);0;"), FormatTestName("just display the thousands"));
                 Assert.AreEqual("0027045678", StringHelper.FormatCurrency(27045678, "0000000000;;;"), FormatTestName("partner key"));
                 Assert.AreEqual("3%", StringHelper.FormatCurrency(3.0, "0%;-0%;0;"), FormatTestName("percentage"));
                 Assert.AreEqual("0029112233", StringHelper.FormatCurrency(29112233, "partnerkey"), FormatTestName("partnerkey"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%",
-                    StringHelper.FormatCurrency(31.3053682781472, "percentage2decimals"), FormatTestName("percentage2decimals"));
+                    StringHelper.FormatCurrency(31.3053682781472M, "percentage2decimals"), FormatTestName("percentage2decimals"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%", StringHelper.FormatCurrency(new TVariant(
                             31.3053682781472), "percentage2decimals"), FormatTestName("percentage2decimals TVariant"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%",
@@ -179,7 +179,7 @@ namespace Ict.Common.Testing
                         "percentage2decimals"), FormatTestName("percentage2decimals TVariant Encoded 2"));
                 v = new TVariant(31.3053682781472);
                 v.FormatString = "percentage2decimals";
-                Assert.AreEqual("eDouble:percentage2decimals:4629504895489138888", v.EncodeToString(),
+                Assert.AreEqual("eDecimal:percentage2decimals:4629504895489138888", v.EncodeToString(),
                     FormatTestName("percentage2decimals encodetostring"));
                 Assert.AreEqual("31" + DecimalSeparator + "31%", StringHelper.FormatCurrency(TVariant.DecodeFromString(
                             v.EncodeToString()), ""), FormatTestName("percentage2decimals TVariant Encoded 3"));
@@ -337,21 +337,21 @@ namespace Ict.Common.Testing
             Assert.AreEqual("eString:test", v.EncodeToString(), "before EncodeToString1");
             v.Add(new TVariant(true));
             Assert.AreEqual("eComposite: :eString:test|eBoolean:true", v.EncodeToString(), "EncodeToString1");
-            v.Add(new TVariant(2.23, "Currency"));
-            v.Add(new TVariant(2.23));
+            v.Add(new TVariant(2.23M, "Currency"));
+            v.Add(new TVariant(2.23M));
             v.Add(new TVariant(2));
-            Assert.AreEqual("eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2",
+            Assert.AreEqual("eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2",
                 v.EncodeToString(),
                 "EncodeToString2");
             v.Add(new TVariant(" test "));
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|eString: test ",
+                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test ",
                 v.EncodeToString(),
                 "EncodeToString3");
             v.Add(new TVariant(new DateTime(2004, 03, 29)));
             v2 = new TVariant(v); /// copy constructor
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDouble:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004",
+                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004",
                 v2.EncodeToString(),
                 "EncodeToString4");
             Assert.AreEqual("eComposite: :eString:test|eBoolean:true", TVariant.DecodeFromString(

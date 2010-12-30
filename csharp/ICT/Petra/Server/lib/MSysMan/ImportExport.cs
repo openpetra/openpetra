@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if ((col.DataType == typeof(double)) || (col.DataType == typeof(decimal)))
                         {
                             // store decimals always with decimal point, no thousands separator
-                            double dval = Convert.ToDouble(row[col]);
+                            decimal dval = Convert.ToDecimal(row[col]);
                             rowNode.SetAttribute(col.ColumnName, dval.ToString("G", CultureInfo.InvariantCulture));
                         }
                         else

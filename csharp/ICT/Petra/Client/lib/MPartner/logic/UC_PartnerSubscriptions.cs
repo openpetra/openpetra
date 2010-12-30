@@ -742,7 +742,7 @@ namespace Ict.Petra.Client.MPartner
         /// </summary>
         /// <param name="APublicationCost"></param>
         /// <param name="ACurrencyCode"></param>
-        public void DeterminePublicationCost(out double APublicationCost, out String ACurrencyCode)
+        public void DeterminePublicationCost(out decimal APublicationCost, out String ACurrencyCode)
         {
             DataRow[] PublicationCostRows;
             PublicationCostRows = FPublicationCostDT.Select(PPublicationTable.GetPublicationCodeDBName() + " = '" + FPublicationCode + "'");
