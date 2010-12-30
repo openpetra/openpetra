@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private String FImportMessage;
         private String FImportLine;
-        private TDlgSelectCSVSeparator FdlgSeparator = null;
+        private TDlgSelectCSVSeparator FdlgSeparator;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     culture.DateTimeFormat.ShortDatePattern = FdlgSeparator.DateFormat;
 
                     StreamReader sr = new StreamReader(dialog.FileName);
+                    TLogging.Log(dialog.FileName);
                     ABatchRow NewBatch = null;
                     AJournalRow NewJournal = null;
                     FImportMessage = Catalog.GetString("Parsing first line");
@@ -78,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             FImportLine = sr.ReadLine();
                             RowNumber++;
-
+                            TLogging.Log(FImportLine);
                             // skip empty lines and commented lines
                             if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#")
                                 && !FImportLine.StartsWith(","))
