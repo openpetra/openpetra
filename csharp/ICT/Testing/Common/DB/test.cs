@@ -73,7 +73,7 @@ namespace Ict.Common.DB.Testing
         public void Init()
         {
             new TLogging("test.log");
-            settings = new TAppSettingsManager("Tests.Common.DB.dll.config");
+            settings = new TAppSettingsManager("../../../../../etc/TestServer.config");
 
             EstablishDBConnection();
         }
@@ -133,6 +133,21 @@ namespace Ict.Common.DB.Testing
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
             Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(WrongOrderSqlStatements));
             Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
+        }
+
+        [Test]
+        public void TestSequence()
+        {
+            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            Int64 PreviousSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+            Int64 NextSequence = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+
+            Assert.AreEqual(PreviousSequence + 1, NextSequence, "next sequence is one more than previous sequence");
+            Int64 CurrentSequence = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
+            Assert.AreEqual(CurrentSequence, NextSequence, "current sequence value should be the last used sequence value");
+            DBAccess.GDBAccessObj.RestartSequence("seq_statement_number", t, CurrentSequence);
+            Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
+            Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
         }
     }
 }
