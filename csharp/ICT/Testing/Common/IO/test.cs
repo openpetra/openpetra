@@ -165,6 +165,27 @@ namespace Ict.Common.IO.Testing
         }
 
         [Test]
+        public void TestYMLBackSlashValue()
+        {
+            string filename = PathToTestData + "testBackslash.yml";
+            string backslashValue = "data\\Kontoauszuege\\test.csv";
+            TYml2Xml converterYml = new TYml2Xml(filename);
+            XmlDocument docFromYML = converterYml.ParseYML2XML();
+
+            XmlNode node = TXMLParser.FindNodeRecursive(docFromYML.DocumentElement, "testname");
+
+            Assert.AreEqual(backslashValue, TXMLParser.GetAttribute(node, "Filename"));
+
+            // does writing of the backslash value work as well?
+            TXMLParser.SetAttribute(node, "Filename", backslashValue);
+            TYml2Xml.Xml2Yml(docFromYML, filename + ".new");
+
+            Assert.AreEqual(true, TTextFile.SameContent(filename,
+                    filename + ".new"), "the files should be the same: " + filename);
+            System.IO.File.Delete(filename + ".new");
+        }
+
+        [Test]
         public void TestCompressingString()
         {
             string testText = "<test>blablablablabla</test>";
