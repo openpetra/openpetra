@@ -176,7 +176,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         {
             string matchtext = ABankAccount + tr.AccountName + tr.Description;
 
-            matchtext += tr.TransactionAmount;
+            matchtext += tr.TransactionAmount.ToString("0.##");
 
             matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
 

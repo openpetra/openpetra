@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         {
                             // store decimals always with decimal point, no thousands separator
                             decimal dval = Convert.ToDecimal(row[col]);
-                            rowNode.SetAttribute(col.ColumnName, dval.ToString("G", CultureInfo.InvariantCulture));
+                            rowNode.SetAttribute(col.ColumnName, dval.ToString("0.########", CultureInfo.InvariantCulture));
                         }
                         else
                         {
