@@ -258,9 +258,12 @@ namespace Ict.Common.IO
         public static string XmlToString(XmlDocument ADoc)
         {
             StringWriter sw = new StringWriter();
-            XmlTextWriter xw = new XmlTextWriter(sw);
+            XmlWriterSettings settings = new XmlWriterSettings();
 
+            settings.Indent = false;
+            XmlWriter xw = XmlWriter.Create(sw, settings);
             ADoc.WriteTo(xw);
+            xw.Flush();
             return sw.ToString();
         }
 
@@ -272,11 +275,12 @@ namespace Ict.Common.IO
         public static string XmlToStringIndented(XmlDocument ADoc)
         {
             StringWriter sw = new StringWriter();
-            XmlTextWriter xw = new XmlTextWriter(sw);
+            XmlWriterSettings settings = new XmlWriterSettings();
 
-            xw.Formatting = Formatting.Indented;
-
+            settings.Indent = true;
+            XmlWriter xw = XmlWriter.Create(sw, settings);
             ADoc.WriteTo(xw);
+            xw.Flush();
             return sw.ToString();
         }
 

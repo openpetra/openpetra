@@ -45,13 +45,12 @@ namespace Ict.Common.IO.Testing
         public void Init()
         {
             new TLogging("test.log");
-            new TAppSettingsManager("Tests.Common.IO.dll.config");
+            new TAppSettingsManager("../../../../../etc/TestClient.config");
 
             PathToTestData = "../../Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
-        [Test]
-        public void TestYmlXmlCSVImportExport()
+        private XmlDocument CreateTestDoc()
         {
             XmlDocument doc = new XmlDocument();
 
@@ -83,46 +82,81 @@ namespace Ict.Common.IO.Testing
             grandChild2Node.SetAttribute("active", false.ToString());
             childNode.AppendChild(grandChild2Node);
 
+            return doc;
+        }
+
+        [Test]
+        public void TestXmlWriter()
+        {
+            XmlDocument doc = CreateTestDoc();
+
             // first see if the xml file is still the same
             string filename = PathToTestData + "test.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
+
             sw.Write(TXMLParser.XmlToString(doc));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "the files should be the same: " + filename);
             System.IO.File.Delete(filename + ".new");
+        }
+
+        [Test]
+        public void TestYmlWriter()
+        {
+            XmlDocument doc = CreateTestDoc();
 
             // now test the yml file
-            filename = PathToTestData + "test.yml";
+            string filename = PathToTestData + "test.yml";
+
             TYml2Xml.Xml2Yml(doc, filename + ".new");
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "the files should be the same: " + filename);
             System.IO.File.Delete(filename + ".new");
+        }
 
+        [Test]
+        public void TestCSVWriter()
+        {
+            XmlDocument doc = CreateTestDoc();
             // now test the csv file
-            filename = PathToTestData + "test.csv";
+            string filename = PathToTestData + "test.csv";
+
             TCsv2Xml.Xml2Csv(doc, filename + ".new");
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "the files should be the same: " + filename);
             System.IO.File.Delete(filename + ".new");
+        }
+
+        [Test]
+        public void TestCSVParser()
+        {
+            XmlDocument doc = CreateTestDoc();
 
             // load from csv, is it the same xml code?
-            filename = PathToTestData + "test.csv";
+            string filename = PathToTestData + "test.csv";
             XmlDocument docFromCSV = TCsv2Xml.ParseCSV2Xml(filename);
+
             filename = PathToTestData + "test.xml";
-            sw = new StreamWriter(filename + ".new");
+            StreamWriter sw = new StreamWriter(filename + ".new");
             sw.Write(TXMLParser.XmlToString(docFromCSV, true));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "after importing from csv: the files should be the same: " + filename);
             System.IO.File.Delete(filename + ".new");
+        }
 
+        [Test]
+        public void TestYMLParser()
+        {
+            XmlDocument doc = CreateTestDoc();
             // load from yml, is it the same xml code?
-            filename = PathToTestData + "test.yml";
+            string filename = PathToTestData + "test.yml";
             TYml2Xml converterYml = new TYml2Xml(filename);
             XmlDocument docFromYML = converterYml.ParseYML2XML();
+
             filename = PathToTestData + "testWithInheritedAttributes.xml";
-            sw = new StreamWriter(filename + ".new");
+            StreamWriter sw = new StreamWriter(filename + ".new");
             sw.Write(TXMLParser.XmlToString(docFromYML, true));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
