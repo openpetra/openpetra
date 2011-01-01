@@ -146,6 +146,8 @@ namespace Ict.Common.DB.Testing
             Int64 CurrentSequence = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
             Assert.AreEqual(CurrentSequence, NextSequence, "current sequence value should be the last used sequence value");
             DBAccess.GDBAccessObj.RestartSequence("seq_statement_number", t, CurrentSequence);
+            Int64 CurrentSequenceAfterReset = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_statement_number", t);
+            Assert.AreEqual(CurrentSequence, CurrentSequenceAfterReset, "after reset we want the same current sequence");
             Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
             Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
         }
