@@ -161,11 +161,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return Convert.ToInt32(sReturn);
         }
 
-        private Double ImportDouble(String message)
+        private Decimal ImportDecimal(String message)
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToDouble(sReturn);
+            return Convert.ToDecimal(sReturn);
         }
     }
 }

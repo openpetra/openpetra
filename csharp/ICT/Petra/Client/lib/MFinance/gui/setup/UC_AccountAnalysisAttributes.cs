@@ -165,6 +165,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        cmbDetailAnalysisTypeCode.Enabled = AReadOnly;
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();

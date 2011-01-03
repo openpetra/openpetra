@@ -710,12 +710,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ctrl.controlTypePrefix == "uco")
             {
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
+                writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
+                    ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
                 writer.Template.AddToCodelet("SAVEDATA", "if(FUco" + ctrl.controlName.Substring(
                         3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
                     "    FUco" + ctrl.controlName.Substring(3) + ".GetDataFromControls();" + Environment.NewLine + "}" + Environment.NewLine);
+                writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "if(FUco" + ctrl.controlName.Substring(
+                        3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
+                    "    FUco" + ctrl.controlName.Substring(
+                        3) + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine + "}" + Environment.NewLine);
             }
 
             /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
@@ -860,6 +866,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // check if the current row is new; then allow changing the primary key; otherwise make the control readonly
                 writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
                     "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
+                writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
+                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")

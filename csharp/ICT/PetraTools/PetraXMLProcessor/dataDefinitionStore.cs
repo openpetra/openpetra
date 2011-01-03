@@ -1129,7 +1129,7 @@ namespace Ict.Tools.DBXML
             }
             else if ((strType.ToLower() == "number") && (iLength == 24))
             {
-                return "Double";  // 'currency'
+                return "Decimal";  // 'currency'
             }
             else if ((strType.ToLower() == "number") && (iLength == 10))
             {

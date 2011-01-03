@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (StringHelper.IsSame(f, "getAccountDetailAmount"))
             {
-                value = GetAccountDetailAmount(ops[1].ToDouble(), ops[2].ToBool());
+                value = GetAccountDetailAmount(ops[1].ToDecimal(), ops[2].ToBool());
                 return true;
             }
 
@@ -221,11 +221,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return false;
         }
 
-        private double GetAssetsMinusLiabs(int master, int column)
+        private decimal GetAssetsMinusLiabs(int master, int column)
         {
-            double ReturnValue;
-            double assets;
-            double liabs;
+            decimal ReturnValue;
+            decimal assets;
+            decimal liabs;
             Boolean notnull;
             ArrayList list;
 
@@ -240,12 +240,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 if (element.code.IndexOf("ASSETS") != -1)
                 {
-                    assets = element.column[column].ToDouble();
+                    assets = element.column[column].ToDecimal();
                 }
 
                 if (element.code.IndexOf("LIABS") != -1)
                 {
-                    liabs = element.column[column].ToDouble();
+                    liabs = element.column[column].ToDecimal();
                 }
 
                 notnull = true;
@@ -455,28 +455,28 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetTransactionAmount(String currency_s)
+        private decimal GetTransactionAmount(String currency_s)
         {
-            double ReturnValue;
+            decimal ReturnValue;
 
             ReturnValue = 0;
             currency_s = currency_s.ToLower();
 
             if (currency_s.ToLower().CompareTo("transaction") == 0)
             {
-                ReturnValue = parameters.Get("a_transaction_amount_n", situation.GetColumn(), situation.GetDepth()).ToDouble();
+                ReturnValue = parameters.Get("a_transaction_amount_n", situation.GetColumn(), situation.GetDepth()).ToDecimal();
             }
             else
             {
                 if (currency_s.ToLower().CompareTo("base") == 0)
                 {
-                    ReturnValue = parameters.Get("a_amount_in_base_currency_n", situation.GetColumn(), situation.GetDepth()).ToDouble();
+                    ReturnValue = parameters.Get("a_amount_in_base_currency_n", situation.GetColumn(), situation.GetDepth()).ToDecimal();
                 }
                 else
                 {
                     if (currency_s.ToLower().CompareTo("international") == 0)
                     {
-                        ReturnValue = parameters.Get("a_amount_in_intl_currency_n", situation.GetColumn(), situation.GetDepth()).ToDouble();
+                        ReturnValue = parameters.Get("a_amount_in_intl_currency_n", situation.GetColumn(), situation.GetDepth()).ToDecimal();
                     }
                 }
             }
@@ -489,7 +489,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// else returns the positive amount
         /// </summary>
         /// <returns>void</returns>
-        public TVariant GetAccountDetailAmount(double amount, Boolean debit_credit_indicator)
+        public TVariant GetAccountDetailAmount(decimal amount, Boolean debit_credit_indicator)
         {
             TVariant ReturnValue;
 
@@ -505,20 +505,20 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetNetBalance(int line)
+        private decimal GetNetBalance(int line)
         {
-            double ReturnValue;
-            double col1;
-            double col2;
+            decimal ReturnValue;
+            decimal col1;
+            decimal col2;
             TResult element;
 
-            ReturnValue = 0.0;
+            ReturnValue = 0.0M;
             element = situation.GetResults().GetFirstChildRow(line);
 
             if (element != null)
             {
-                col1 = element.column[0].ToDouble();
-                col2 = element.column[1].ToDouble();
+                col1 = element.column[0].ToDecimal();
+                col2 = element.column[1].ToDecimal();
                 ReturnValue = col1 + col2;
             }
 
@@ -647,7 +647,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetActualValue(TFinancialPeriod period, String pv_currency_select_c)
+        private decimal GetActualValue(TFinancialPeriod period, String pv_currency_select_c)
         {
             string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n " + "FROM PUB_a_general_ledger_master_period " +
                             "WHERE a_glm_sequence_i = " + StringHelper.IntToStr(period.realGlmSequence.glmSequence) + ' ' +
@@ -659,25 +659,25 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 if (StringHelper.IsSame(pv_currency_select_c, "Base"))
                 {
-                    return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]);
+                    return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]);
                 }
                 else if (StringHelper.IsSame(pv_currency_select_c, "Intl") || StringHelper.IsSame(pv_currency_select_c, "International"))
                 {
-                    return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]) * period.exchangeRateToIntl;
+                    return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]) * period.exchangeRateToIntl;
                 }
                 else if (StringHelper.IsSame(pv_currency_select_c, "Transaction"))
                 {
                     if (tab.Rows[0].IsNull("a_actual_foreign_n"))
                     {
                         // this is not a foreign currency account, so it must be base currency
-                        return Convert.ToDouble(tab.Rows[0]["a_actual_base_n"]);
+                        return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]);
                     }
 
-                    return Convert.ToDouble(tab.Rows[0]["a_actual_foreign_n"]);
+                    return Convert.ToDecimal(tab.Rows[0]["a_actual_foreign_n"]);
                 }
             }
 
-            return 0.0;
+            return 0.0M;
         }
 
         /// <summary>
@@ -688,17 +688,17 @@ namespace Ict.Petra.Server.MReporting.MFinance
         ///
         /// </summary>
         /// <returns>void</returns>
-        private double GetActualSummary(TFinancialPeriod periodParent,
+        private decimal GetActualSummary(TFinancialPeriod periodParent,
             int pv_period_number_i,
             int pv_year_i,
             Boolean pv_ytd_l,
             String pv_currency_select_c,
             String accountHierarchy)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             string accountChildren;
             string accountChild;
-            double subAccountAmount;
+            decimal subAccountAmount;
             TFinancialPeriod subAccountPeriod;
             bool childDebitCreditIndicator;
 
@@ -753,7 +753,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="pv_ytd_l"></param>
         /// <param name="pv_currency_select_c"></param>
         /// <returns></returns>
-        public double GetActual(int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
+        public decimal GetActual(int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
             return GetActual(new TFinancialPeriod(situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, situation.GetParameters(),
                     situation.GetColumn()), pv_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
@@ -775,19 +775,19 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="pv_ytd_l"></param>
         /// <param name="pv_currency_select_c"></param>
         /// <returns></returns>
-        private double GetActual(TFinancialPeriod period, int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
+        private decimal GetActual(TFinancialPeriod period, int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
             TFinancialPeriod firstPeriod;
             TFinancialPeriod beforeFirstPeriodOfYear;
             TFinancialPeriod lastPeriodOfPrevYear;
-            double lv_currency_amount_n;
-            double lv_prev_year_amount_n;
+            decimal lv_currency_amount_n;
+            decimal lv_prev_year_amount_n;
             string strSql;
             DataTable tab;
 
             if ((period == null) || (period.realGlmSequence == null))
             {
-                return 0.0;
+                return 0.0M;
             }
 
             if (!period.RealPeriodExists())
@@ -799,7 +799,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 }
                 else
                 {
-                    return 0.0;
+                    return 0.0M;
                 }
             }
 
@@ -824,24 +824,24 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 {
                     if (pv_currency_select_c == "Base")
                     {
-                        lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_base_n"]);
+                        lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]);
                     }
                     else
                     {
                         if (pv_currency_select_c == "Intl")
                         {
-                            lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_base_n"]) * period.exchangeRateToIntl;
+                            lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]) * period.exchangeRateToIntl;
                         }
                         else
                         {
                             if (tab.Rows[0].IsNull("a_start_balance_foreign_n"))
                             {
                                 // there is no foreign currency, this is an account in base currency
-                                lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_base_n"]);
+                                lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]);
                             }
                             else
                             {
-                                lv_currency_amount_n = Convert.ToDouble(tab.Rows[0]["a_start_balance_foreign_n"]);
+                                lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_foreign_n"]);
                             }
                         }
                     }
@@ -945,7 +945,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         ///
         /// </summary>
         /// <returns>void</returns>
-        private double GetActualEndOfLastYear(int pv_period_number_i, int pv_year_i, String pv_currency_select_c)
+        private decimal GetActualEndOfLastYear(int pv_period_number_i, int pv_year_i, String pv_currency_select_c)
         {
             int numberAccountingPeriods;
 
@@ -966,13 +966,13 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)
         /// </summary>
         /// <returns>void</returns>
-        private double GetActualPeriods(int pv_start_period_number_i,
+        private decimal GetActualPeriods(int pv_start_period_number_i,
             int pv_end_period_number_i,
             int pv_year_i,
             Boolean pv_ytd_l,
             String pv_currency_select_c)
         {
-            double ReturnValue;
+            decimal ReturnValue;
 
             if (pv_ytd_l)
             {
@@ -996,13 +996,13 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)  special version for Income &amp; Expense: the values are reset at the year end
         /// </summary>
         /// <returns>void</returns>
-        private double GetActualPeriodsIE(int pv_start_period_number_i,
+        private decimal GetActualPeriodsIE(int pv_start_period_number_i,
             int pv_end_period_number_i,
             int pv_year_i,
             Boolean pv_ytd_l,
             String pv_currency_select_c)
         {
-            double ReturnValue = GetActualPeriods(pv_start_period_number_i, pv_end_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
+            decimal ReturnValue = GetActualPeriods(pv_start_period_number_i, pv_end_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
 
             if (pv_ytd_l)
             {
@@ -1017,16 +1017,16 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetBudgetSummary(TFinancialPeriod StartPeriodParent,
+        private decimal GetBudgetSummary(TFinancialPeriod StartPeriodParent,
             TFinancialPeriod EndPeriodParent,
             int pv_period_number_i,
             int pv_year_i,
             String accountHierarchy)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             string accountChildren;
             string accountChild;
-            double subAccountAmount;
+            decimal subAccountAmount;
             TFinancialPeriod subAccountEndPeriod;
             TFinancialPeriod subAccountStartPeriod;
             bool childDebitCreditIndicator;
@@ -1075,9 +1075,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetBudget(TFinancialPeriod startperiod, TFinancialPeriod endperiod, Int32 periodNr, Int32 yearNr)
+        private decimal GetBudget(TFinancialPeriod startperiod, TFinancialPeriod endperiod, Int32 periodNr, Int32 yearNr)
         {
-            double ReturnValue;
+            decimal ReturnValue;
             string strSql;
             DataTable tab;
             string accountHierarchy;
@@ -1111,22 +1111,22 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (tab.Rows.Count > 0)
             {
-                ReturnValue = ReturnValue + Convert.ToDouble(tab.Rows[0][0]);
+                ReturnValue = ReturnValue + Convert.ToDecimal(tab.Rows[0][0]);
             }
 
             return ReturnValue;
         }
 
-        private double CalculateBudget(int pv_start_period_i, int pv_end_period_i, int pv_year_i, String pv_currency_select_c)
+        private decimal CalculateBudget(int pv_start_period_i, int pv_end_period_i, int pv_year_i, String pv_currency_select_c)
         {
-            double ReturnValue;
+            decimal ReturnValue;
 
             //int lv_ytd_period_i;
             TFinancialPeriod startPeriod;
             TFinancialPeriod endPeriod;
             TFinancialPeriod endOfYearPeriod;
             TFinancialPeriod beginOfYearPeriod;
-            double lastExchangeRate;
+            decimal lastExchangeRate;
 
             System.Int32 Counter;
             ReturnValue = 0;
@@ -1190,7 +1190,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        private double GetBudgetPeriods(int pv_start_period_i, int pv_end_period_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
+        private decimal GetBudgetPeriods(int pv_start_period_i, int pv_end_period_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
             int numberAccountingPeriods;
 

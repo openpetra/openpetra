@@ -146,6 +146,12 @@ namespace {#NAMESPACE}
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();

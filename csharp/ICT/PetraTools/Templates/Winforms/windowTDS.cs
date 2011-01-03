@@ -106,6 +106,11 @@ namespace {#NAMESPACE}
 {#ENDIF UICONNECTORCREATE}
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+
 {#IFDEF SHOWDATA}
     private void ShowData({#MASTERTABLETYPE}Row ARow)
     {
@@ -243,7 +248,12 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
+{#IFDEF STOREMANUALCODE}
+                    {#STOREMANUALCODE}
+{#ENDIF STOREMANUALCODE}
+{#IFNDEF STOREMANUALCODE}
                     SubmissionResult = {#WEBCONNECTORTDS}.Save{#SHORTDATASETTYPE}(ref SubmitDS, out VerificationResult);
+{#ENDIFN STOREMANUALCODE}
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -319,6 +329,8 @@ namespace {#NAMESPACE}
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

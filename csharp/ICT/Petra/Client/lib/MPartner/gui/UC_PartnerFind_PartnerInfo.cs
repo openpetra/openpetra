@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 
@@ -39,16 +40,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// UserControl for displaying Partner Info data in the Partner
     /// Find screen.
     /// </summary>
-    public partial class TUC_PartnerFind_PartnerInfo : TPetraUserControl, IPartnerInfoMethods
+    public partial class TUC_PartnerFind_PartnerInfo : TPnlCollapsible, IPartnerInfoMethods
     {
-        /// <summary>todoComment</summary>
-        private const Int16 COLLAPSEDHEIGHT = 29;
-
-        /// <summary>todoComment</summary>
-        private const Int16 EXPANDEDHEIGHT = 153;
-
-        private bool FIsCollapsed = false;
-
         /// <summary>
         /// constructor
         /// </summary>
@@ -61,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblDetailHeading.Text = Catalog.GetString("Partner Info");
+            this.Text = Catalog.GetString("Partner Info");
             #endregion
 
             //
@@ -77,153 +70,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ucoPartnerInfo.StopTimer();
         }
-
-        /// <summary>todoComment</summary>
-        public bool IsCollapsed
-        {
-            get
-            {
-                return FIsCollapsed;
-            }
-
-            set
-            {
-                FIsCollapsed = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public int CollapsedHeight
-        {
-            get
-            {
-                if (TClientSettings.GUIRunningOnNonStandardDPI)
-                {
-                    return (int)(COLLAPSEDHEIGHT * ((double)this.ParentForm.AutoScaleBaseSize.Width /
-                                                    (double)PetraForm.AUTOSCALEBASESIZEWIDTHFOR96DPI));
-                }
-                else
-                {
-                    return COLLAPSEDHEIGHT;
-                }
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public int ExpandedHeight
-        {
-            get
-            {
-                int HeightOnNonStandardDPI;
-
-                if (TClientSettings.GUIRunningOnNonStandardDPI)
-                {
-                    HeightOnNonStandardDPI = (int)(EXPANDEDHEIGHT * ((double)this.ParentForm.AutoScaleBaseSize.Width /
-                                                                     (double)PetraForm.AUTOSCALEBASESIZEWIDTHFOR96DPI));
-
-                    // We only need 96% of that calculated value - otherwise it's to high (at least at 120DPI)...
-                    return (HeightOnNonStandardDPI / 100) * 96;
-                }
-                else
-                {
-                    return EXPANDEDHEIGHT;
-                }
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public event System.EventHandler Collapsed;
-
-        /// <summary>todoComment</summary>
-        public event System.EventHandler Expanded;
-
-        private void OnCollapsed()
-        {
-            if (Collapsed != null)
-            {
-                Collapsed(this, new EventArgs());
-            }
-        }
-
-        private void OnExpanded()
-        {
-            if (Expanded != null)
-            {
-                Expanded(this, new EventArgs());
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void Collapse()
-        {
-            FIsCollapsed = true;
-
-            btnTogglePartnerDetails.ImageIndex = 1;
-            this.Height = this.CollapsedHeight;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void Expand()
-        {
-            FIsCollapsed = false;
-
-            btnTogglePartnerDetails.ImageIndex = 0;
-            this.Height = this.ExpandedHeight;
-        }
-
-        #region Event Handlers
-
-        private void BtnTogglePartnerDetailsClick(object sender, EventArgs e)
-        {
-            if (FIsCollapsed)
-            {
-                Expand();
-                OnExpanded();
-            }
-            else
-            {
-                Collapse();
-                OnCollapsed();
-            }
-        }
-
-        void BtnTogglePartnerDetailsMouseEnter(object sender, EventArgs e)
-        {
-//            TLogging.Log("BtnTogglePartnerDetailsMouseEnter: btnTogglePartnerDetails.ImageIndex: " + btnTogglePartnerDetails.ImageIndex.ToString());
-            if (btnTogglePartnerDetails.ImageIndex == 0)
-            {
-                btnTogglePartnerDetails.ImageIndex = 3;
-            }
-            else
-            {
-                btnTogglePartnerDetails.ImageIndex = 2;
-            }
-
-            lblDetailHeading.ForeColor = System.Drawing.Color.RoyalBlue;      // RoyalBlue;  SteelBlue     // Blue
-//            TLogging.Log("BtnTogglePartnerDetailsMouseEnter END: btnTogglePartnerDetails.ImageIndex: " + btnTogglePartnerDetails.ImageIndex.ToString());
-        }
-
-        void BtnTogglePartnerDetailsMouseLeave(object sender, EventArgs e)
-        {
-//            TLogging.Log("BtnTogglePartnerDetailsMouseLeave: btnTogglePartnerDetails.ImageIndex: " + btnTogglePartnerDetails.ImageIndex.ToString());
-            if (btnTogglePartnerDetails.ImageIndex == 3)
-            {
-                btnTogglePartnerDetails.ImageIndex = 0;
-            }
-            else if (btnTogglePartnerDetails.ImageIndex != 0)
-            {
-                btnTogglePartnerDetails.ImageIndex = 1;
-            }
-
-            lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;  // Blue     // DarkBlue
-//            TLogging.Log("BtnTogglePartnerDetailsMouseLeave END: btnTogglePartnerDetails.ImageIndex: " + btnTogglePartnerDetails.ImageIndex.ToString());
-        }
-
-        #endregion
 
         #region Method calls that get passed through to ucoPartnerInfo
 

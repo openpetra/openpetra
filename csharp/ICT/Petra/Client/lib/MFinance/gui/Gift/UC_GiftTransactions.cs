@@ -190,6 +190,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -274,7 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         if (ARow != null)
         {
             ARow.BeginEdit();
-            ARow.GiftTransactionAmount = Convert.ToDouble(txtDetailGiftTransactionAmount.Text);
+            ARow.GiftTransactionAmount = Convert.ToDecimal(txtDetailGiftTransactionAmount.Text);
             ARow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
             ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();

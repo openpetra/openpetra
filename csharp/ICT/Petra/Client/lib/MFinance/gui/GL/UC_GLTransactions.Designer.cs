@@ -98,21 +98,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.lblTransactionCurrency = new System.Windows.Forms.Label();
             this.lblBaseCurrency = new System.Windows.Forms.Label();
-            this.txtDebitAmount = new System.Windows.Forms.TextBox();
+            this.txtDebitAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDebitAmount = new System.Windows.Forms.Label();
-            this.txtDebitAmountBase = new System.Windows.Forms.TextBox();
+            this.txtDebitAmountBase = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDebitAmountBase = new System.Windows.Forms.Label();
-            this.txtCreditAmount = new System.Windows.Forms.TextBox();
+            this.txtCreditAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblCreditAmount = new System.Windows.Forms.Label();
-            this.txtCreditAmountBase = new System.Windows.Forms.TextBox();
+            this.txtCreditAmountBase = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblCreditAmountBase = new System.Windows.Forms.Label();
-            this.txtDebitTotalAmount = new System.Windows.Forms.TextBox();
+            this.txtDebitTotalAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDebitTotalAmount = new System.Windows.Forms.Label();
-            this.txtDebitTotalAmountBase = new System.Windows.Forms.TextBox();
+            this.txtDebitTotalAmountBase = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDebitTotalAmountBase = new System.Windows.Forms.Label();
-            this.txtCreditTotalAmount = new System.Windows.Forms.TextBox();
+            this.txtCreditTotalAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblCreditTotalAmount = new System.Windows.Forms.Label();
-            this.txtCreditTotalAmountBase = new System.Windows.Forms.TextBox();
+            this.txtCreditTotalAmountBase = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblCreditTotalAmountBase = new System.Windows.Forms.Label();
 
             this.pnlContent.SuspendLayout();
@@ -415,6 +415,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitAmount.Name = "txtDebitAmount";
             this.txtDebitAmount.Size = new System.Drawing.Size(150, 28);
             this.txtDebitAmount.TextChanged += new System.EventHandler(this.UpdateBaseAndTotals);
+            this.txtDebitAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebitAmount.DecimalPlaces = 2;
+            this.txtDebitAmount.NullValueAllowed = true;
             //
             // lblDebitAmount
             //
@@ -433,6 +436,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtDebitAmountBase.ReadOnly = true;
             this.txtDebitAmountBase.TabStop = false;
+            this.txtDebitAmountBase.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebitAmountBase.DecimalPlaces = 2;
+            this.txtDebitAmountBase.NullValueAllowed = true;
             //
             // lblDebitAmountBase
             //
@@ -450,6 +456,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditAmount.Name = "txtCreditAmount";
             this.txtCreditAmount.Size = new System.Drawing.Size(150, 28);
             this.txtCreditAmount.TextChanged += new System.EventHandler(this.UpdateBaseAndTotals);
+            this.txtCreditAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCreditAmount.DecimalPlaces = 2;
+            this.txtCreditAmount.NullValueAllowed = true;
             //
             // lblCreditAmount
             //
@@ -468,6 +477,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtCreditAmountBase.ReadOnly = true;
             this.txtCreditAmountBase.TabStop = false;
+            this.txtCreditAmountBase.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCreditAmountBase.DecimalPlaces = 2;
+            this.txtCreditAmountBase.NullValueAllowed = true;
             //
             // lblCreditAmountBase
             //
@@ -486,6 +498,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitTotalAmount.Size = new System.Drawing.Size(150, 28);
             this.txtDebitTotalAmount.ReadOnly = true;
             this.txtDebitTotalAmount.TabStop = false;
+            this.txtDebitTotalAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebitTotalAmount.DecimalPlaces = 2;
+            this.txtDebitTotalAmount.NullValueAllowed = true;
             //
             // lblDebitTotalAmount
             //
@@ -504,6 +519,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebitTotalAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtDebitTotalAmountBase.ReadOnly = true;
             this.txtDebitTotalAmountBase.TabStop = false;
+            this.txtDebitTotalAmountBase.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebitTotalAmountBase.DecimalPlaces = 2;
+            this.txtDebitTotalAmountBase.NullValueAllowed = true;
             //
             // lblDebitTotalAmountBase
             //
@@ -522,6 +540,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditTotalAmount.Size = new System.Drawing.Size(150, 28);
             this.txtCreditTotalAmount.ReadOnly = true;
             this.txtCreditTotalAmount.TabStop = false;
+            this.txtCreditTotalAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCreditTotalAmount.DecimalPlaces = 2;
+            this.txtCreditTotalAmount.NullValueAllowed = true;
             //
             // lblCreditTotalAmount
             //
@@ -540,6 +561,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCreditTotalAmountBase.Size = new System.Drawing.Size(150, 28);
             this.txtCreditTotalAmountBase.ReadOnly = true;
             this.txtCreditTotalAmountBase.TabStop = false;
+            this.txtCreditTotalAmountBase.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCreditTotalAmountBase.DecimalPlaces = 2;
+            this.txtCreditTotalAmountBase.NullValueAllowed = true;
             //
             // lblCreditTotalAmountBase
             //
@@ -668,21 +692,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Label lblTransactionCurrency;
         private System.Windows.Forms.Label lblBaseCurrency;
-        private System.Windows.Forms.TextBox txtDebitAmount;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebitAmount;
         private System.Windows.Forms.Label lblDebitAmount;
-        private System.Windows.Forms.TextBox txtDebitAmountBase;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebitAmountBase;
         private System.Windows.Forms.Label lblDebitAmountBase;
-        private System.Windows.Forms.TextBox txtCreditAmount;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCreditAmount;
         private System.Windows.Forms.Label lblCreditAmount;
-        private System.Windows.Forms.TextBox txtCreditAmountBase;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCreditAmountBase;
         private System.Windows.Forms.Label lblCreditAmountBase;
-        private System.Windows.Forms.TextBox txtDebitTotalAmount;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebitTotalAmount;
         private System.Windows.Forms.Label lblDebitTotalAmount;
-        private System.Windows.Forms.TextBox txtDebitTotalAmountBase;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebitTotalAmountBase;
         private System.Windows.Forms.Label lblDebitTotalAmountBase;
-        private System.Windows.Forms.TextBox txtCreditTotalAmount;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCreditTotalAmount;
         private System.Windows.Forms.Label lblCreditTotalAmount;
-        private System.Windows.Forms.TextBox txtCreditTotalAmountBase;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCreditTotalAmountBase;
         private System.Windows.Forms.Label lblCreditTotalAmountBase;
     }
 }

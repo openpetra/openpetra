@@ -128,16 +128,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             NewRow.BatchPeriod = BatchPeriod;
             NewRow.GlEffectiveDate = ADateEffective;
             NewRow.ExchangeRateToBase = 1.0;
-            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
-                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 
-            if (NewRow.BankAccountCode.Length == 0)
-            {
-                AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                          MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                          AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
-
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 if (accountProperties.DefaultView.Count > 0)
                 {
                     NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
@@ -148,9 +140,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
-            NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
-            MainDS.AGiftBatch.Rows.Add(NewRow);
+            TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
             return NewRow;
         }
 
@@ -297,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.DateOfEntry = DateTime.Now;
 
             // TODO journal.ExchangeRateToBase and journal.ExchangeRateTime
-            journal.ExchangeRateToBase = 1.0;
+            journal.ExchangeRateToBase = 1.0M;
             GLDataset.AJournal.Rows.Add(journal);
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)

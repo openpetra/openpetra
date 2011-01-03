@@ -5,7 +5,7 @@
 #
 ### BEGIN INIT INFO
 # Provides:             openpetraorg
-# Required-Start:       $mysql
+# Required-Start:       ${#RDBMS}
 # Required-Stop:
 # Should-Start:
 # Should-Stop:

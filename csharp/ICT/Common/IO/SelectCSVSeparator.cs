@@ -64,6 +64,7 @@ namespace Ict.Common.IO
             {
                 txtDateFormat.Text = value;
             }
+            
         }
 
         /// <summary>

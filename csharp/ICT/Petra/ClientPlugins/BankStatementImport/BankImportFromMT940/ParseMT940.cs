@@ -96,7 +96,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 // next 3 characters: currency
                 // last characters: balance with comma for decimal point
                 currentStatement.currency = swiftData.Substring(7, 3);
-                double balance = DebitCreditIndicator * Convert.ToDouble(swiftData.Substring(10).Replace(",",
+                decimal balance = DebitCreditIndicator * Convert.ToDecimal(swiftData.Substring(10).Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
                 // we only want to use the first start balance
@@ -180,7 +180,7 @@ namespace Ict.Plugins.Finance.SwiftParser
 
                 // the amount, finishing with N
                 transaction.amount =
-                    debitCreditIndicator * Convert.ToDouble(swiftData.Substring(0, swiftData.IndexOf("N")).Replace(",",
+                    debitCreditIndicator * Convert.ToDecimal(swiftData.Substring(0, swiftData.IndexOf("N")).Replace(",",
                             Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
                 Console.WriteLine("amount: " + transaction.amount.ToString());
                 currentStatement.endBalance += transaction.amount;
@@ -286,7 +286,7 @@ namespace Ict.Plugins.Finance.SwiftParser
                 }
 
                 // end balance
-                double shouldBeBalance = debitCreditIndicator * Convert.ToDouble(swiftData.Replace(",",
+                decimal shouldBeBalance = debitCreditIndicator * Convert.ToDecimal(swiftData.Replace(",",
                         Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator));
 
                 currentStatement.endBalance = Math.Round(currentStatement.endBalance, 2);
@@ -498,7 +498,7 @@ namespace Ict.Plugins.Finance.SwiftParser
         public DateTime inputDate;
 
         /// todoComment
-        public double amount;
+        public decimal amount;
 
         /// todoComment
         public string text;
@@ -535,10 +535,10 @@ namespace Ict.Plugins.Finance.SwiftParser
         public string currency;
 
         /// todoComment
-        public double startBalance;
+        public decimal startBalance;
 
         /// todoComment
-        public double endBalance;
+        public decimal endBalance;
 
         /// todoComment
         public DateTime date;

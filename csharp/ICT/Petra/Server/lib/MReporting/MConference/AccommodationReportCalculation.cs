@@ -120,7 +120,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             }
 
             Column = new DataColumn();
-            Column.DataType = Type.GetType("System.Double");
+            Column.DataType = Type.GetType("System.Decimal");
             Column.ColumnName = "Total Cost";
             Column.DefaultValue = 0.0;
             FAccommodationTable.Columns.Add(Column);
@@ -510,8 +510,8 @@ namespace Ict.Petra.Server.MReporting.MConference
             {
                 PcRoomRow RoomRow = (PcRoomRow)RoomTable.Rows[0];
 
-                double cost = RoomRow.BedCost * ANumberOfBookedDays;
-                double ChildDiscount;
+                decimal cost = RoomRow.BedCost * ANumberOfBookedDays;
+                decimal ChildDiscount;
                 bool InPercent;
 
                 if (TAccommodationReportCalculation.GetChildDiscount(AAge, AConferenceKey, "ACCOMMODATION", out ChildDiscount, out InPercent,
@@ -529,7 +529,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
 
                 FAccommodationTable.Rows[ARoomRow]["Total Cost"] =
-                    (double)FAccommodationTable.Rows[ARoomRow]["Total Cost"] + cost;
+                    (decimal)FAccommodationTable.Rows[ARoomRow]["Total Cost"] + cost;
             }
 
             return true;
@@ -613,9 +613,9 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="ASituation">The current report situation</param>
         /// <returns></returns>
         public static bool GetChildDiscount(int AAge, long AConferenceKey, String ACostType,
-            out double ADiscount, out bool AInPercent, ref TRptSituation ASituation)
+            out decimal ADiscount, out bool AInPercent, ref TRptSituation ASituation)
         {
-            ADiscount = 0.0;
+            ADiscount = 0.0M;
             AInPercent = false;
 
             PcDiscountTable DiscountTable;

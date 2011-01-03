@@ -197,6 +197,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailUserId.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(SUserRow ARow)
     {
         txtDetailUserId.Text = ARow.UserId;
@@ -427,6 +432,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

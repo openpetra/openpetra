@@ -771,8 +771,8 @@ namespace Ict.Petra.Shared.MHospitality.Data
             this.Columns.Add(new System.Data.DataColumn("pc_room_name_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_beds_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("pc_max_occupancy_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("pc_bed_charge_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pc_bed_cost_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pc_bed_charge_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pc_bed_cost_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pc_usage_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_gender_preference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pc_layout_xpos_i", typeof(Int32)));
@@ -1268,7 +1268,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         ///
-        public Double BedCharge
+        public Decimal BedCharge
         {
             get
             {
@@ -1280,13 +1280,13 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnBedCharge)
-                            || (((Double)(this[this.myTable.ColumnBedCharge])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnBedCharge])) != value)))
                 {
                     this[this.myTable.ColumnBedCharge] = value;
                 }
@@ -1294,7 +1294,7 @@ namespace Ict.Petra.Shared.MHospitality.Data
         }
 
         ///
-        public Double BedCost
+        public Decimal BedCost
         {
             get
             {
@@ -1306,13 +1306,13 @@ namespace Ict.Petra.Shared.MHospitality.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnBedCost)
-                            || (((Double)(this[this.myTable.ColumnBedCost])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnBedCost])) != value)))
                 {
                     this[this.myTable.ColumnBedCost] = value;
                 }

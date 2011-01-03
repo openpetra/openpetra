@@ -171,7 +171,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_default_ap_account_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_default_credit_terms_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_default_discount_percentage_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_default_discount_percentage_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_default_discount_days_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_supplier_type_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_default_exp_account_c", typeof(String)));
@@ -665,7 +665,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// Default percentage discount to receive for early payments.
-        public Double DefaultDiscountPercentage
+        public Decimal DefaultDiscountPercentage
         {
             get
             {
@@ -677,13 +677,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDefaultDiscountPercentage)
-                            || (((Double)(this[this.myTable.ColumnDefaultDiscountPercentage])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnDefaultDiscountPercentage])) != value)))
                 {
                     this[this.myTable.ColumnDefaultDiscountPercentage] = value;
                 }
@@ -1306,9 +1306,9 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("a_date_issued_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_date_entered_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_credit_terms_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_discount_percentage_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_discount_percentage_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_discount_days_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ap_account_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_last_detail_number_i", typeof(Int32)));
@@ -1906,7 +1906,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The total amount of money that this document is worth.
-        public Double TotalAmount
+        public Decimal TotalAmount
         {
             get
             {
@@ -1918,13 +1918,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnTotalAmount)
-                            || (((Double)(this[this.myTable.ColumnTotalAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnTotalAmount])) != value)))
                 {
                     this[this.myTable.ColumnTotalAmount] = value;
                 }
@@ -1932,7 +1932,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The exchange rate to the base currency at the time that the document was issued.
-        public Double ExchangeRateToBase
+        public Decimal ExchangeRateToBase
         {
             get
             {
@@ -1944,13 +1944,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExchangeRateToBase)
-                            || (((Double)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
                 {
                     this[this.myTable.ColumnExchangeRateToBase] = value;
                 }
@@ -1958,7 +1958,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The percentage discount you get for early payment of this document in the case that it is an invoice.
-        public Double DiscountPercentage
+        public Decimal DiscountPercentage
         {
             get
             {
@@ -1970,13 +1970,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDiscountPercentage)
-                            || (((Double)(this[this.myTable.ColumnDiscountPercentage])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnDiscountPercentage])) != value)))
                 {
                     this[this.myTable.ColumnDiscountPercentage] = value;
                 }
@@ -3269,7 +3269,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("a_account_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_item_ref_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_narrative_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_approval_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -3760,7 +3760,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The amount of money this detail is worth.
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -3772,13 +3772,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -4255,8 +4255,8 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_payment_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_exchange_rate_to_base_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_payment_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_user_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_method_of_payment_c", typeof(String)));
@@ -4582,7 +4582,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The amount of money that was paid
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -4594,13 +4594,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -4608,7 +4608,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The exchange rate to the base currency at the time of payment.
-        public Double ExchangeRateToBase
+        public Decimal ExchangeRateToBase
         {
             get
             {
@@ -4620,13 +4620,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExchangeRateToBase)
-                            || (((Double)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExchangeRateToBase])) != value)))
                 {
                     this[this.myTable.ColumnExchangeRateToBase] = value;
                 }
@@ -5170,7 +5170,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ap_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_payment_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -5452,7 +5452,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The amount of money that was paid
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -5464,13 +5464,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -5828,7 +5828,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_payment_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_user_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_bank_account_c", typeof(String)));
@@ -6113,7 +6113,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The amount of money that was paid
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -6125,13 +6125,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -6584,7 +6584,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
             this.Columns.Add(new System.Data.DataColumn("a_ledger_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ap_number_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_payment_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -6866,7 +6866,7 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
         }
 
         /// The amount of money that was paid
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -6878,13 +6878,13 @@ namespace Ict.Petra.Shared.MFinance.AP.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }

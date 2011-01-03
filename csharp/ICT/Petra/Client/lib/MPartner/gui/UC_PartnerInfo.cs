@@ -306,7 +306,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-
+        /// <summary>
+        /// event triggered when the process of getting the data for the partner has been finished
+        /// </summary>
         public event TPartnerKeyDataEventHandler DataLoaded;
 
         /// <summary>
@@ -546,7 +548,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FServerCallError = TMessages.MsgSecurityExceptionString(Exp, this.GetType());
                 }
-                catch (Exception Exp)
+                catch (Exception)
                 {
                     FServerCallError = "An error occured while trying to retrieve data for the Partner.";
                 }
@@ -1707,6 +1709,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
-
+    /// <summary>
+    /// event triggered when the process of getting the data for the partner has been finished
+    /// </summary>
     public delegate void TPartnerKeyDataEventHandler(System.Object Sender, Ict.Petra.Client.App.Gui.Types.TPartnerKeyData e);
 }

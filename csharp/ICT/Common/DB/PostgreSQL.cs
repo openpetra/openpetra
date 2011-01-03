@@ -528,7 +528,7 @@ namespace Ict.Common.DB
             Int64 ARestartValue)
         {
             ADatabase.ExecuteScalar(
-                "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", false);", ATransaction, false);
+                "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", true);", ATransaction, false);
         }
 
         /// <summary>

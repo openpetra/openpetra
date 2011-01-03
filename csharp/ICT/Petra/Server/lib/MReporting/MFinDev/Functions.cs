@@ -88,13 +88,13 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             if (StringHelper.IsSame(f, "IsTopDonor"))
             {
-                value = new TVariant(IsTopDonor(ops[1].ToDouble(), ops[2].ToDouble(), ops[3].ToDouble()));
+                value = new TVariant(IsTopDonor(ops[1].ToDecimal(), ops[2].ToDecimal(), ops[3].ToDecimal()));
                 return true;
             }
 
             if (StringHelper.IsSame(f, "MakeTopDonor"))
             {
-                value = new TVariant(MakeTopDonor(ops[1].ToDouble(), ops[2].ToDouble(), ops[3].ToDouble(),
+                value = new TVariant(MakeTopDonor(ops[1].ToDecimal(), ops[2].ToDecimal(), ops[3].ToDecimal(),
                         ops[4].ToBool(), ops[5].ToString(), ops[6].ToDate(), ops[7].ToDate(),
                         ops[8].ToInt64(), ops[9].ToString(), ops[10].ToString()));
                 return true;
@@ -126,12 +126,12 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             DataTable tab;
             int numberOfGifts;
             int numberOfPeriods;
-            double giftAmount;
-            double minAmount;
-            double maxAmount;
-            double averagePerGift;
-            double averagePerPeriod;
-            double totalAmount;
+            decimal giftAmount;
+            decimal minAmount;
+            decimal maxAmount;
+            decimal averagePerGift;
+            decimal averagePerPeriod;
+            decimal totalAmount;
             int percentageRegular;
 
             rptDateFunctions = new TRptUserFunctionsDate(situation);
@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             foreach (DataRow row in tab.Rows)
             {
                 numberOfGifts++;
-                giftAmount = Convert.ToDouble(row["a_gift_amount_n"]);
+                giftAmount = Convert.ToDecimal(row["a_gift_amount_n"]);
 
                 if (((minAmount == 0) || (giftAmount < minAmount)) && (giftAmount > 0))
                 {
@@ -186,8 +186,8 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                 totalAmount = totalAmount + giftAmount;
             }
 
-            averagePerGift = (double)totalAmount / (double)numberOfGifts;
-            averagePerPeriod = (double)totalAmount / (double)numberOfPeriods;
+            averagePerGift = (decimal)totalAmount / (decimal)numberOfGifts;
+            averagePerPeriod = (decimal)totalAmount / (decimal)numberOfPeriods;
             percentageRegular = 0;
 
             // has given same amount, one gift for a period => full regular donor
@@ -490,14 +490,14 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             DataTable Table = situation.GetDatabaseConnection().SelectDT(StrSql, "table",
                 situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
 
-            double TotalYear_0 = 0.0;
-            double TotalYear_1 = 0.0;
-            double TotalYear_2 = 0.0;
+            decimal TotalYear_0 = 0.0M;
+            decimal TotalYear_1 = 0.0M;
+            decimal TotalYear_2 = 0.0M;
 
             foreach (DataRow Row in Table.Rows)
             {
                 DateTime DateEntered = (DateTime)Row[AGiftTable.GetDateEnteredDBName()];
-                Double CurrentAmount = Convert.ToDouble(Row["CurrentAmount"]);
+                decimal CurrentAmount = Convert.ToDecimal(Row["CurrentAmount"]);
 
                 if (DateEntered.Year == ALastGiftDate.Year)
                 {
@@ -569,7 +569,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             if (Table.Rows.Count > 0)
             {
                 DateTime DateEntered = (DateTime)Table.Rows[0][AGiftTable.GetDateEnteredDBName()];
-                Double CurrentAmount = Convert.ToDouble(Table.Rows[0]["CurrentAmount"]);
+                decimal CurrentAmount = Convert.ToDecimal(Table.Rows[0]["CurrentAmount"]);
                 String MotivationDetail = (String)Table.Rows[0][AGiftDetailTable.GetMotivationDetailCodeDBName()];
                 String MotivationGroup = (String)Table.Rows[0][AGiftDetailTable.GetMotivationGroupCodeDBName()];
 
@@ -591,7 +591,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
         /// <param name="ABottomXAmount">the Minimum Amount</param>
         /// <param name="ACummulativeAmount">The accummalated amount of all donors</param>
         /// <returns></returns>
-        private bool IsTopDonor(double ATopXAmount, double ABottomXAmount, double ACummulativeAmount)
+        private bool IsTopDonor(decimal ATopXAmount, decimal ABottomXAmount, decimal ACummulativeAmount)
         {
             if ((ACummulativeAmount <= ATopXAmount)
                 && (ACummulativeAmount >= ABottomXAmount))
@@ -620,7 +620,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
         /// <param name="AMotivationGroup">Limit gifts to this motivation group. If % use all motivation groups</param>
         /// <param name="AMotivationDetail">Limit gifts to this motivation detail. If % use all motivation details</param>
         /// <returns></returns>
-        private bool MakeTopDonor(double ATotalAmount, double ATopXPercent, double ABottomXPercent,
+        private bool MakeTopDonor(decimal ATotalAmount, decimal ATopXPercent, decimal ABottomXPercent,
             bool AExtract, String AExtractName, DateTime AStartDate, DateTime AEndDate,
             Int64 ARecipientKey, String AMotivationGroup, String AMotivationDetail)
         {
@@ -713,9 +713,9 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             DataTable Table = situation.GetDatabaseConnection().SelectDT(SqlString.ToString(), "table",
                 situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { });
 
-            double CummulativeAmount = 0;
-            double TopAmount = ATotalAmount * ATopXPercent / 100;
-            double BottomAmount = ATotalAmount * ABottomXPercent / 100;
+            decimal CummulativeAmount = 0;
+            decimal TopAmount = ATotalAmount * ATopXPercent / 100;
+            decimal BottomAmount = ATotalAmount * ABottomXPercent / 100;
 
             int NumColumns = 7;
             int ChildRow = 1;
@@ -723,7 +723,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             for (int Counter = 0; Counter < Table.Rows.Count; ++Counter)
             {
-                double CurrentAmount = Convert.ToDouble(Table.Rows[Counter]["Amount"]);
+                decimal CurrentAmount = Convert.ToDecimal(Table.Rows[Counter]["Amount"]);
 
                 if (CurrentAmount < 0)
                 {

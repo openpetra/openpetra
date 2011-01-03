@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // get the entered amounts, so that we can calculate the missing amount for the new detail
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
-            double DetailAmount = FMainDS.AApDocument[0].TotalAmount;
+            decimal DetailAmount = FMainDS.AApDocument[0].TotalAmount;
 
             if (FMainDS.AApDocumentDetail != null)
             {

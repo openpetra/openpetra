@@ -667,16 +667,16 @@ namespace Ict.Petra.Server.MReporting
 
             if (cmpos != -1)
             {
-                GetParameters().Add("ColumnPosition", new TVariant(StringHelper.TryStrToFloat(rptField.strPos.Substring(0,
-                                cmpos), 0.0)), column, Depth);
+                GetParameters().Add("ColumnPosition", new TVariant(StringHelper.TryStrToDecimal(rptField.strPos.Substring(0,
+                                cmpos), 0.0M)), column, Depth);
             }
 
             cmpos = rptField.strWidth.IndexOf("cm");
 
             if (cmpos != -1)
             {
-                GetParameters().Add("ColumnWidth", new TVariant(StringHelper.TryStrToFloat(rptField.strWidth.Substring(0,
-                                cmpos), 0.0)), column, Depth);
+                GetParameters().Add("ColumnWidth", new TVariant(StringHelper.TryStrToDecimal(rptField.strWidth.Substring(0,
+                                cmpos), 0.0M)), column, Depth);
             }
 
             if (rptField.strCalculation.Length != 0)
