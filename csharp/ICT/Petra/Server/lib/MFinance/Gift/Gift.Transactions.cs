@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
 
-            CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+            TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
 
             TVerificationResultCollection VerificationResult;
             bool success = false;
@@ -90,58 +90,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 throw new Exception("Error in CreateAGiftBatch");
             }
-        }
-
-        // if DateEffective is outside the range of open periods, use the most fitting date
-
-        // TODO: bank account as a parameter, set on the gift matching screen, etc
-
-        // use the first bank account
-
-        // needed for old Petra 2.x database
-
-        // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
-        /// <summary>
-        /// create a new batch with a consecutive batch number in the ledger,
-        /// and immediately store the batch and the new number in the database
-        /// </summary>
-        /// <param name="MainDS"></param>
-        /// <param name="Transaction"></param>
-        /// <param name="LedgerTable"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADateEffective"></param>
-        /// <returns>the new gift batch row</returns>
-        public static AGiftBatchRow CreateANewGiftBatchRow(ref GiftBatchTDS MainDS,
-            ref TDBTransaction Transaction,
-            ref ALedgerTable LedgerTable,
-            Int32 ALedgerNumber,
-            DateTime ADateEffective)
-        {
-            AGiftBatchRow NewRow = MainDS.AGiftBatch.NewRowTyped(true);
-
-            NewRow.LedgerNumber = ALedgerNumber;
-            LedgerTable[0].LastGiftBatchNumber++;
-            NewRow.BatchNumber = LedgerTable[0].LastGiftBatchNumber;
-            Int32 BatchYear, BatchPeriod;
-            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out BatchYear, out BatchPeriod, Transaction, true);
-            NewRow.BatchYear = BatchYear;
-            NewRow.BatchPeriod = BatchPeriod;
-            NewRow.GlEffectiveDate = ADateEffective;
-            NewRow.ExchangeRateToBase = 1.0;
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                if (accountProperties.DefaultView.Count > 0)
-                {
-                    NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                }
-                else
-                {
-                    NewRow.BankAccountCode = "6000";
-                }
-            }
-
-            TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-            return NewRow;
         }
 
         /// <summary>

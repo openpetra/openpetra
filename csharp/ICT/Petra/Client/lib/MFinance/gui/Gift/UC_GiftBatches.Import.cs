@@ -124,12 +124,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FMainDS.Merge(FMergeDS);
                     MessageBox.Show(Catalog.GetString("Your data was importeded successfully!"),
-                    Catalog.GetString("Success"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     //TODO refresh the gui
                 }
-                ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment 
+
+                ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment
             }
         }
 
