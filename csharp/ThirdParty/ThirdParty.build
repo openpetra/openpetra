@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="ThirdParty-Build">
+
+<include buildfile="../../inc/nant/OpenPetra.references.xml"/> 
+
+<target name="clean" >
+  <delete>
+    <fileset basedir="${dir.bin}">
+      <patternset refid="3rdPartyPattern" />
+    </fileset>
+  </delete>
+</target>
+
+<target name="compile" description="Copy Thirdparty DLLs to bin directory">
+  <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
+    <copy todir="${dir.bin}">
+      <fileset basedir="${foldername}">
+        <patternset refid="3rdPartyPattern" />
+      </fileset>
+    </copy>
+  </foreach>
+</target>
+
+<target name="generateCsproject" />
+
+
+</project>
