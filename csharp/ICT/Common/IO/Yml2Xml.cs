@@ -174,7 +174,7 @@ namespace Ict.Common.IO
                     || !AInheritedAttributes.ContainsKey(attr.Name)
                     || (AInheritedAttributes[attr.Name] != attr.Value))
                 {
-                    if (!((ANode.Name == XMLELEMENT) && (attr.Name == "name")))
+                    if (!((ANode.Name == XMLELEMENT) && (attr.Name == "name")) && (attr.Name != "depth"))
                     {
                         attributesToWrite.Add(attr);
                     }
@@ -195,6 +195,7 @@ namespace Ict.Common.IO
 
                 attributesYml.Append(attrToWrite.Name + "=");
 
+                attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
                 attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
 
                 if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")

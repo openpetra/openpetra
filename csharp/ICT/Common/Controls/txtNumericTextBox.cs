@@ -69,7 +69,7 @@ namespace Ict.Common.Controls
         private TNumberPrecision FNumberPrecision = TNumberPrecision.Decimal;
         private int FDecimalPlaces = 2;
         private string FCurrencySymbol = "###";
-        private bool FCurrencySybolRightAligned = true;
+        private bool FCurrencySymbolRightAligned = true;
         private bool FNullValueAllowed = false;
 
         private string FNumberDecimalSeparator = ".";
@@ -248,16 +248,16 @@ namespace Ict.Common.Controls
          Description(
              "Determines where the currency symbol is shown in relation to the value of the control. Only has an effect if ControlMode is 'Currency'.")
         ]
-        public bool CurrencySybolRightAligned
+        public bool CurrencySymbolRightAligned
         {
             get
             {
-                return FCurrencySybolRightAligned;
+                return FCurrencySymbolRightAligned;
             }
 
             set
             {
-                FCurrencySybolRightAligned = value;
+                FCurrencySymbolRightAligned = value;
 
                 if (DesignMode)
                 {
@@ -386,7 +386,7 @@ namespace Ict.Common.Controls
                 if ((FControlMode == TNumericTextBoxMode.Decimal)
                     || (FControlMode == TNumericTextBoxMode.Currency))
                 {
-                    FNumberPrecision = TNumberPrecision.Double;
+                    FNumberPrecision = TNumberPrecision.Decimal;
 
                     if (value != null)
                     {
@@ -661,7 +661,7 @@ namespace Ict.Common.Controls
                                         }
                                         else if (ControlMode == TNumericTextBoxMode.Currency)
                                         {
-                                            if (FCurrencySybolRightAligned)
+                                            if (FCurrencySymbolRightAligned)
                                             {
                                                 bolDecimalplaceValid = ((this.Text.Length - (FCurrencySymbol.Length + 1)) - intActDecPlace) >
                                                                        FDecimalPlaces;
@@ -984,13 +984,17 @@ namespace Ict.Common.Controls
                             }
                         }
 
-                        if (FCurrencySybolRightAligned)
+                        // only add the currency symbol if it has a reasonable value
+                        //if (FCurrencySymbol != "###")
                         {
-                            base.Text = strnumformat + " " + FCurrencySymbol;
-                        }
-                        else
-                        {
-                            base.Text = FCurrencySymbol + " " + strnumformat;
+                            if (FCurrencySymbolRightAligned)
+                            {
+                                base.Text = strnumformat + " " + FCurrencySymbol;
+                            }
+                            else
+                            {
+                                base.Text = FCurrencySymbol + " " + strnumformat;
+                            }
                         }
 
                         break;

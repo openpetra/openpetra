@@ -139,7 +139,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (FSummary)
                         {
                             String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
-                            double mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
+                            decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : journal.ExchangeRateToBase;
 
                             if (!sdSummary.TryGetValue(mapCurrency, out journalSummary))
                             {
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted(transaction.Narrative);
             WriteStringQuoted(transaction.Reference);
             WriteDate(transaction.TransactionDate);
-            double amount = (FUseBaseCurrency) ? transaction.AmountInBaseCurrency : transaction.TransactionAmount;
+            decimal amount = (FUseBaseCurrency) ? transaction.AmountInBaseCurrency : transaction.TransactionAmount;
 
             if (transaction.DebitCreditIndicator)
             {
@@ -365,7 +365,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted(transactionSummary.Narrative);
             WriteStringQuoted(transactionSummary.Reference);
             WriteDate(FDateForSummary);
-            double amount = (FUseBaseCurrency) ? transactionSummary.AmountInBaseCurrency : transactionSummary.TransactionAmount;
+            decimal amount = (FUseBaseCurrency) ? transactionSummary.AmountInBaseCurrency : transactionSummary.TransactionAmount;
 
             if (amount > 0)
             {
@@ -400,11 +400,11 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /*
-         * void WriteCurrency(double currencyField, bool bLineEnd)
+         * void WriteCurrency(decimal currencyField, bool bLineEnd)
          * {
          * Int64 integerNumber = Convert.ToInt64(currencyField);
          *
-         * if (Convert.ToDouble(integerNumber) == currencyField)
+         * if (Convert.ToDecimal(integerNumber) == currencyField)
          * {
          * FStringWriter.Write(String.Format("{0:d}", integerNumber));
          * }
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.MFinance.GL
          * WriteDelimiter(bLineEnd);
          * }
          */
-        void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(generalNumberField);
 
@@ -438,12 +438,12 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted(theString, false);
         }
 
-        void WriteCurrency(double currencyField)
+        void WriteCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, false);
         }
 
-        void WriteGeneralNumber(double generalNumberField)
+        void WriteGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, false);
         }
@@ -458,12 +458,12 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted(theString, true);
         }
 
-        void WriteLineCurrency(double currencyField)
+        void WriteLineCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, true);
         }
 
-        void WriteLineGeneralNumber(double generalNumberField)
+        void WriteLineGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, true);
         }
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MFinance.GL
     public class AJournalSummaryRow
     {
         private String transactionCurrency;
-        private double exchangeRateToBase;
+        private decimal exchangeRateToBase;
         private SortedDictionary <String, ATransactionSummaryRow>transactionSummaries = new SortedDictionary <String, ATransactionSummaryRow>();
         /// <summary>A SortedDictinary contains the subordinate Summary Rows.</summary>
         public SortedDictionary <string, ATransactionSummaryRow>TransactionSummaries {
@@ -496,7 +496,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Exchange Rate
         /// </summary>
-        public double ExchangeRateToBase {
+        public decimal ExchangeRateToBase {
             get
             {
                 return exchangeRateToBase;
@@ -588,12 +588,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        private double transactionAmount;
+        private decimal transactionAmount;
 
         /// <summary>
         /// Transaction Amount (may be negative!!!)
         /// </summary>
-        public double TransactionAmount {
+        public decimal TransactionAmount {
             get
             {
                 return transactionAmount;
@@ -603,12 +603,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 transactionAmount = value;
             }
         }
-        private double amountInBaseCurrency;
+        private decimal amountInBaseCurrency;
 
         /// <summary>
         /// Amount in Base currency (may be negative!!!)
         /// </summary>
-        public double AmountInBaseCurrency {
+        public decimal AmountInBaseCurrency {
             get
             {
                 return amountInBaseCurrency;

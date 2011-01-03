@@ -227,6 +227,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         return null;
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(PReasonSubscriptionGivenRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -432,6 +437,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

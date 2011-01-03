@@ -153,6 +153,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
     }
 
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailAccountCode.ReadOnly = AReadOnly;
+    }
+
     private void ShowDetails(GLSetupTDSAAccountRow ARow)
     {
         txtDetailAccountCode.Text = ARow.AccountCode;
@@ -378,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -454,6 +459,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

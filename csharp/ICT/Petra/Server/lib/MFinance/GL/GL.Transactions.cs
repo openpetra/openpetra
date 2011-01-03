@@ -327,11 +327,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ADateEffective"></param>
         /// <returns></returns>
         [RequireModulePermission("NONE")]
-        public static double GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             if (ACurrencyFrom == ACurrencyTo)
             {
-                return 1.0;
+                return 1.0M;
             }
 
             bool NewTransaction;
@@ -398,7 +398,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 if (oppositeRate)
                 {
-                    return 1.0 / fittingRate.RateOfExchange;
+                    return 1.0M / fittingRate.RateOfExchange;
                 }
 
                 return fittingRate.RateOfExchange;
@@ -406,7 +406,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
-            return 1.0;
+            return 1.0M;
         }
 
         /// <summary>
@@ -418,9 +418,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AEndDate"></param>
         /// <returns></returns>
         [RequireModulePermission("NONE")]
-        public static double GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
+        public static decimal GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
         {
-            double ExchangeRate = 1.0;
+            decimal ExchangeRate = 1.0M;
 
             if (ACurrencyFrom == ACurrencyTo)
             {
@@ -431,7 +431,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 if (!GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
                 {
-                    ExchangeRate = 1.0;
+                    ExchangeRate = 1.0M;
                     TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
                 }
             }
@@ -452,9 +452,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ACurrencyTo,
             DateTime AStartDate,
             DateTime AEndDate,
-            out double AExchangeRate)
+            out decimal AExchangeRate)
         {
-            AExchangeRate = double.MinValue;
+            AExchangeRate = decimal.MinValue;
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AExchangeRate == double.MinValue)
+            if (AExchangeRate == decimal.MinValue)
             {
                 // try other way round
                 templateRow.FromCurrencyCode = ACurrencyTo;
@@ -511,7 +511,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            if (AExchangeRate == double.MinValue)
+            if (AExchangeRate == decimal.MinValue)
             {
                 return false;
             }
@@ -532,9 +532,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ACurrencyTo,
             DateTime AStartDate,
             DateTime AEndDate,
-            out double AExchangeRate)
+            out decimal AExchangeRate)
         {
-            AExchangeRate = double.MinValue;
+            AExchangeRate = decimal.MinValue;
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
@@ -562,7 +562,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AExchangeRate == double.MinValue)
+            if (AExchangeRate == decimal.MinValue)
             {
                 // try other way round
                 PrevTemplateRow.FromCurrencyCode = ACurrencyTo;
@@ -591,7 +591,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            if (AExchangeRate == double.MinValue)
+            if (AExchangeRate == decimal.MinValue)
             {
                 return false;
             }

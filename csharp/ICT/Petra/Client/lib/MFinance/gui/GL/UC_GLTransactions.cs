@@ -92,14 +92,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.txtJournalNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailNarrative.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDebitAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDebitAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCreditAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCreditAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDebitTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDebitTotalAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCreditTotalAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCreditTotalAmountBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -206,6 +198,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         return null;
+    }
+
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
     }
 
     private void ShowData()

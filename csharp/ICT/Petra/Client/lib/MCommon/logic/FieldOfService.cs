@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.MCommon
         private const String StrPetraServerTooBusyTitle = "Petra Server Too Busy";
 
         /// <summary>Main DataSet for the Screen</summary>
-        private FieldOfServiceTDS FMainDS;
+        private FieldOfServiceTDS FMainDS = new FieldOfServiceTDS();
 
         /// <summary>Reference to the screen's UIConnector (serverside Business Object)</summary>
         private IPartnerUIConnectorsFieldOfService FUIConnector;

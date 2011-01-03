@@ -970,10 +970,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
                                                           Int32 AApNumber,
                                                           string AApSupplier_DefaultExpAccount,
                                                           string AApSupplier_DefaultCostCentre,
-                                                          double AAmount,
+                                                          decimal AAmount,
                                                           Int32 ALastDetailNumber)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreateAApDocumentDetail", ";INT;INT;STRING;STRING;DOUBLE;INT;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreateAApDocumentDetail", ";INT;INT;STRING;STRING;DECIMAL;INT;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
         }
 
@@ -2219,6 +2219,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public bool ImportGiftBatchData(Hashtable requestParams,
+                                        String importString,
+                                        out TVerificationResultCollection AMessages,
+                                        out GiftBatchTDS FMainDS)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatchData", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;GIFTBATCHTDS;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "LoadMotivationDetails", ";INT;");
@@ -2613,19 +2623,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public double GetDailyExchangeRate(string ACurrencyFrom,
-                                           string ACurrencyTo,
-                                           DateTime ADateEffective)
+        public decimal GetDailyExchangeRate(string ACurrencyFrom,
+                                            string ACurrencyTo,
+                                            DateTime ADateEffective)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetDailyExchangeRate", ";STRING;STRING;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
 
         /// generated method from connector
-        public double GetCorporateExchangeRate(string ACurrencyFrom,
-                                               string ACurrencyTo,
-                                               DateTime AStartDate,
-                                               DateTime AEndDate)
+        public decimal GetCorporateExchangeRate(string ACurrencyFrom,
+                                                string ACurrencyTo,
+                                                DateTime AStartDate,
+                                                DateTime AEndDate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCorporateExchangeRate", ";STRING;STRING;DATETIME;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
@@ -3546,11 +3556,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveGLSetupTDS(ref GLSetupTDS AInspectDS,
+        public TSubmitChangesResult SaveGLSetupTDS(Int32 ALedgerNumber,
+                                                   ref GLSetupTDS AInspectDS,
                                                    out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "SaveGLSetupTDS", ";GLSETUPTDS;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ref AInspectDS, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "SaveGLSetupTDS", ";INT;GLSETUPTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.SaveGLSetupTDS(ALedgerNumber, ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector

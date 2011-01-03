@@ -55,21 +55,21 @@ namespace Ict.Petra.Server.MReporting.MConference
         private TConferenceCostTypeEnum FConferenceCostType;
 
         // Values for the different discount types
-        private double FParticipantDiscountAccommodationPre;
-        private double FParticipantDiscountConferencePre;
-        private double FVolunteerDiscountAccommodationPre;
-        private double FVolunteerDiscountAccommodationConference;
-        private double FVolunteerDiscountConferencePre;
-        private double FVolunteerDiscountConferenceConference;
-        private double FRoleDiscountAccommodationPre;
-        private double FRoleDiscountAccommodationConference;
-        private double FRoleDiscountAccommodationPost;
-        private double FRoleDiscountConferencePre;
-        private double FRoleDiscountConferenceConference;
-        private double FRoleDiscountConferencePost;
+        private decimal FParticipantDiscountAccommodationPre;
+        private decimal FParticipantDiscountConferencePre;
+        private decimal FVolunteerDiscountAccommodationPre;
+        private decimal FVolunteerDiscountAccommodationConference;
+        private decimal FVolunteerDiscountConferencePre;
+        private decimal FVolunteerDiscountConferenceConference;
+        private decimal FRoleDiscountAccommodationPre;
+        private decimal FRoleDiscountAccommodationConference;
+        private decimal FRoleDiscountAccommodationPost;
+        private decimal FRoleDiscountConferencePre;
+        private decimal FRoleDiscountConferenceConference;
+        private decimal FRoleDiscountConferencePost;
 
-        private double FConferenceDayRate;
-        private double FConferenceRate;
+        private decimal FConferenceDayRate;
+        private decimal FConferenceRate;
 
         private String FConferenceCurrency;
 
@@ -81,16 +81,16 @@ namespace Ict.Petra.Server.MReporting.MConference
         private DateTime FAttendeeStartDate;
         private DateTime FAttendeeEndDate;
 
-        private double FSupportCost;
-        private double FExtraCost;
+        private decimal FSupportCost;
+        private decimal FExtraCost;
 
-        private double FCongressCosts;
-        private double FCampaignCosts;
-        private double FAccommodationCosts;
-        private double FPreAccommodationCosts;
-        private double FPreConferenceCosts;
-        private double FPostAccommodationCosts;
-        private double FPostConferenceCosts;
+        private decimal FCongressCosts;
+        private decimal FCampaignCosts;
+        private decimal FAccommodationCosts;
+        private decimal FPreAccommodationCosts;
+        private decimal FPreConferenceCosts;
+        private decimal FPostAccommodationCosts;
+        private decimal FPostConferenceCosts;
 
         // These values define where to add the result
         private bool FIsCongressVolunteer;
@@ -176,8 +176,8 @@ namespace Ict.Petra.Server.MReporting.MConference
             FIsCongressOnly = false;
             FIsCampaignOnly = false;
 
-            double ChildDiscount;
-            double ChildDiscountAccommodation;
+            decimal ChildDiscount;
+            decimal ChildDiscountAccommodation;
 
             bool InPercent;
             bool GeneralDiscountApplied = false;
@@ -249,8 +249,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                 FConferenceFlags = FConferenceFlags + "C";
             }
 
-            double UsedConferenceDiscountPre = FParticipantDiscountConferencePre;
-            double UsedAccommodationDiscountPre = FParticipantDiscountAccommodationPre;
+            decimal UsedConferenceDiscountPre = FParticipantDiscountConferencePre;
+            decimal UsedAccommodationDiscountPre = FParticipantDiscountAccommodationPre;
 
             if (IsAttendeeARole(ref ASituation, ShortTermerRow.StCongressCode))
             {
@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                  * Note: volunteers and short stays override this calculation
                  * Note: this does not include pre and post congress stays
                  */
-                double TmpCost = GetCampaignCost(ref ASituation);
+                decimal TmpCost = GetCampaignCost(ref ASituation);
 
                 FCongressCosts = FConferenceRate * (100 - ChildDiscount) / 100;
 
@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             }
 
             // Early and late booking charges
-            double EarlyAmount, LateAmount;
+            decimal EarlyAmount, LateAmount;
             int EarlyPercent, LatePercent;
             GetEarlyLateCharges(ref ASituation, ARegistrationDate, ShortTermerRow, out EarlyPercent, out EarlyAmount,
                 out LatePercent, out LateAmount);
@@ -845,7 +845,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             if (ConferenceCostTable.Rows.Count > 0)
             {
-                FConferenceDayRate = (double)ConferenceCostTable.Rows[0][PcConferenceCostTable.GetChargeDBName()];
+                FConferenceDayRate = (decimal)ConferenceCostTable.Rows[0][PcConferenceCostTable.GetChargeDBName()];
             }
             else
             {
@@ -1182,7 +1182,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             if (ConferenceCostTable.Rows.Count > 0)
             {
-                FConferenceRate = (double)ConferenceCostTable.Rows[0][PcConferenceCostTable.GetChargeDBName()];
+                FConferenceRate = (decimal)ConferenceCostTable.Rows[0][PcConferenceCostTable.GetChargeDBName()];
             }
 
             return true;
@@ -1197,7 +1197,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="AChildDiscount"></param>
         /// <returns></returns>
         private bool DetermineCampaignSupplements(ref TRptSituation ASituation, String ACampaignType,
-            String ACongressCode, double AChildDiscount)
+            String ACongressCode, decimal AChildDiscount)
         {
             PcSupplementTable SupplementTable;
 
@@ -1334,7 +1334,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                         FConferenceFlags = FConferenceFlags + "T";
                     }
 
-                    double BedCharge = (double)RoomTable.Rows[0][PcRoomTable.GetBedChargeDBName()];
+                    decimal BedCharge = (decimal)RoomTable.Rows[0][PcRoomTable.GetBedChargeDBName()];
 
                     FPreAccommodationCosts = FPreAccommodationCosts + PreNights * BedCharge;
                     FAccommodationCosts = FAccommodationCosts + ConferenceNights * BedCharge;
@@ -1440,7 +1440,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// </summary>
         /// <param name="ASituation"></param>
         /// <returns></returns>
-        private double GetCampaignCost(ref TRptSituation ASituation)
+        private decimal GetCampaignCost(ref TRptSituation ASituation)
         {
             PcConferenceCostTable ConferenceCostTable;
 
@@ -1492,7 +1492,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="LateAmount"></param>
         private void GetEarlyLateCharges(ref TRptSituation ASituation, DateTime ARegistrationDate,
             PmShortTermApplicationRow AShortTermerRow, out int EarlyPercent,
-            out double EarlyAmount, out int LatePercent, out double LateAmount)
+            out decimal EarlyAmount, out int LatePercent, out decimal LateAmount)
         {
             EarlyAmount = 0;
             EarlyPercent = 0;
@@ -1612,22 +1612,22 @@ namespace Ict.Petra.Server.MReporting.MConference
             newColumn = new DataColumn("Campaign Only", Type.GetType("System.Int32"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Conference Fees", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Conference Fees", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Campaign Fees", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Campaign Fees", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Supplement", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Supplement", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Extra Costs", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Extra Costs", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Accommodation", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Accommodation", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Total Fees", Type.GetType("System.Double"));
+            newColumn = new DataColumn("Total Fees", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
         }
@@ -1656,17 +1656,17 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             DataRow CurrentRow = FResultDataTable.Rows[ResultTableRowIndex];
 
-            double TotalFees = 0;
+            decimal TotalFees = 0;
             // Add the costs
-            CurrentRow["Conference Fees"] = (double)CurrentRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
-            CurrentRow["Campaign Fees"] = (double)CurrentRow["Campaign Fees"] + FCampaignCosts;
-            CurrentRow["Supplement"] = (double)CurrentRow["Supplement"] + FSupportCost;
-            CurrentRow["Extra Costs"] = (double)CurrentRow["Extra Costs"] + FExtraCost;
-            CurrentRow["Accommodation"] = (double)CurrentRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts +
+            CurrentRow["Conference Fees"] = (decimal)CurrentRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
+            CurrentRow["Campaign Fees"] = (decimal)CurrentRow["Campaign Fees"] + FCampaignCosts;
+            CurrentRow["Supplement"] = (decimal)CurrentRow["Supplement"] + FSupportCost;
+            CurrentRow["Extra Costs"] = (decimal)CurrentRow["Extra Costs"] + FExtraCost;
+            CurrentRow["Accommodation"] = (decimal)CurrentRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts +
                                           FPostAccommodationCosts;
             TotalFees = FCongressCosts + FPreConferenceCosts + FPostConferenceCosts +
                         FCampaignCosts + FSupportCost + FExtraCost + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
-            CurrentRow["Total Fees"] = (double)CurrentRow["Total Fees"] + TotalFees;
+            CurrentRow["Total Fees"] = (decimal)CurrentRow["Total Fees"] + TotalFees;
 
             // Add the counts of the attendees
             CurrentRow["Total"] = (Int32)CurrentRow["Total"] + 1;
@@ -1699,7 +1699,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="ATotalFees"></param>
         /// <param name="ASituation"></param>
         /// <returns></returns>
-        private bool AddCalculationsToTotalRow(String AField, double ATotalFees, ref TRptSituation ASituation)
+        private bool AddCalculationsToTotalRow(String AField, decimal ATotalFees, ref TRptSituation ASituation)
         {
             int ResultTableRowIndex = -1;
             Char RowType = 'T';
@@ -1708,12 +1708,12 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             DataRow TotalRow = FResultDataTable.Rows[ResultTableRowIndex];
 
-            TotalRow["Conference Fees"] = (double)TotalRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
-            TotalRow["Campaign Fees"] = (double)TotalRow["Campaign Fees"] + FCampaignCosts;
-            TotalRow["Supplement"] = (double)TotalRow["Supplement"] + FSupportCost;
-            TotalRow["Extra Costs"] = (double)TotalRow["Extra Costs"] + FExtraCost;
-            TotalRow["Accommodation"] = (double)TotalRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
-            TotalRow["Total Fees"] = (double)TotalRow["Total Fees"] + ATotalFees;
+            TotalRow["Conference Fees"] = (decimal)TotalRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
+            TotalRow["Campaign Fees"] = (decimal)TotalRow["Campaign Fees"] + FCampaignCosts;
+            TotalRow["Supplement"] = (decimal)TotalRow["Supplement"] + FSupportCost;
+            TotalRow["Extra Costs"] = (decimal)TotalRow["Extra Costs"] + FExtraCost;
+            TotalRow["Accommodation"] = (decimal)TotalRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
+            TotalRow["Total Fees"] = (decimal)TotalRow["Total Fees"] + ATotalFees;
 
             TotalRow["Total"] = (Int32)TotalRow["Total"] + 1;
 
@@ -1806,8 +1806,8 @@ namespace Ict.Petra.Server.MReporting.MConference
             GetChildDiscountList(out AgeList, ref ASituation);
 
             int PreviousAge = 0;
-            double ChildDiscount;
-            double ChildAccommodationDiscount;
+            decimal ChildDiscount;
+            decimal ChildAccommodationDiscount;
             Boolean InPercent;
 
             // Add Cost to the table
@@ -2130,7 +2130,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             // Get the total amount
             Char RowType = 'T';
             int TotalRowIndex = GetResultTableRowIndex(AFieldName, ref RowType, 0, ref ASituation);
-            double TotalFees = (double)FResultDataTable.Rows[TotalRowIndex]["Total Fees"];
+            decimal TotalFees = (decimal)FResultDataTable.Rows[TotalRowIndex]["Total Fees"];
 
             Columns[0] = new TVariant("I agree that the above attendances are accurate. Any differences over the amount");
             Columns[4] = new TVariant("Total amount due from Field:");

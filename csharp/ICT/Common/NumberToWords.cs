@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -114,7 +114,7 @@ namespace Ict.Common
             "eighty", "ninety"
         };
 
-        private static string AmountToWordsInternalUK(Double AValue)
+        private static string AmountToWordsInternalUK(Decimal AValue)
         {
             string Result = "";
 
@@ -179,7 +179,7 @@ namespace Ict.Common
         /// <param name="ACurrencyName"></param>
         /// <param name="ACentName"></param>
         /// <returns></returns>
-        public static string AmountToWords(Double AValue, string ACurrencyName, string ACentName)
+        public static string AmountToWords(decimal AValue, string ACurrencyName, string ACentName)
         {
             Int64 IntValue = Convert.ToInt64(Math.Floor(AValue));
             Int32 Decimals = Convert.ToInt32(Math.Floor(AValue * 100)) % 100;

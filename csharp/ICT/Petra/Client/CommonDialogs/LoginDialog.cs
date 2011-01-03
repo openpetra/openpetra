@@ -165,7 +165,10 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    if (TAppSettingsManager.GetValueStatic("AutoLogin", false) != TAppSettingsManager.UNDEFINEDVALUE)
+                    string UserNameStr = String.Empty;
+
+                    if ((TAppSettingsManager.GetValueStatic("AutoLogin",
+                             false) != TAppSettingsManager.UNDEFINEDVALUE) && !ReadRememberedUserName(ref UserNameStr))
                     {
                         txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
 
@@ -215,7 +218,7 @@ namespace Ict.Petra.Client.CommonDialogs
             FConnectionEstablished = false;
 
             // Get the selected User Name and Password
-            FSelUserName = this.txtUserName.Text;
+            FSelUserName = this.txtUserName.Text.ToUpper();
             FSelPassWord = (this.txtPassword.Text);
 
             if ((FSelUserName.Length == 0) || (FSelPassWord.Length == 0))
@@ -420,7 +423,8 @@ namespace Ict.Petra.Client.CommonDialogs
         /// the user name is not always equals the windows login name
         /// there is a a checkbox to avoid remembering the login name
         /// do not use registry, but isolated storage
-        private void ReadRememberedUserName(ref string AUsername)
+        /// <returns>true if there is a remembered user name</returns>
+        private bool ReadRememberedUserName(ref string AUsername)
         {
             IsolatedStorageFileStream stream = null;
             StreamReader sr = null;
@@ -466,6 +470,8 @@ namespace Ict.Petra.Client.CommonDialogs
                     stream.Close();
                 }
             }
+
+            return chkRememberUserName.Checked;
         }
 
         private void StoreUserName(string AUsername)

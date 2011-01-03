@@ -91,10 +91,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
 
+        /// <summary>
+        /// event for when the search result changes, and more or less partners match the search criteria
+        /// </summary>
         public delegate void TPartnerAvailableChangeEventHandler(TPartnerAvailableEventArgs e);
+        /// <summary>
+        /// event for when the search result changes, and more or less partners match the search criteria
+        /// </summary>
         public event TPartnerAvailableChangeEventHandler PartnerAvailable;
 
+        /// <summary>
+        /// event that is triggered when the search starts and when it finishes
+        /// </summary>
         public delegate void TSearchOperationStateChangeEventHandler(TSearchOperationStateChangeEventArgs e);
+        /// <summary>
+        /// event that is triggered when the search starts and when it finishes
+        /// </summary>
         public event TSearchOperationStateChangeEventHandler SearchOperationStateChange;
 
         /// <summary>todoComment</summary>
@@ -135,6 +147,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// read the partner key of the currently selected partner
+        /// </summary>
         public Int64 PartnerKey
         {
             get
@@ -143,6 +158,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// is the partner info pane opened?
+        /// </summary>
         public bool PartnerInfoPaneOpen
         {
             get
@@ -151,6 +169,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// access to the currently selected partners
+        /// </summary>
         public DataRowView[] SelectedDataRowsAsDataRowView
         {
             get
@@ -219,6 +240,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        /// <summary>
+        /// close or open the partner info pane depending on user defaults
+        /// </summary>
         public void SetupPartnerInfoPane()
         {
             // Set up Partner Info pane
@@ -412,7 +436,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #region Menu/ToolBar command handling
-
+        /// <summary>
+        /// Menu/ToolBar command handling: call functions for each menu item/toolbar button
+        /// </summary>
+        /// <param name="ATopLevelMenuItem"></param>
+        /// <param name="AToolStripItem"></param>
+        /// <param name="ARunAsModalForm"></param>
         public void HandleMenuItemOrToolBarButton(ToolStripMenuItem ATopLevelMenuItem, ToolStripItem AToolStripItem, bool ARunAsModalForm)
         {
             if (ATopLevelMenuItem.Name == "mniFile")
@@ -785,7 +814,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        public void OpenPartnerInfoPane()
+        private void OpenPartnerInfoPane()
         {
             OnPartnerInfoPaneExpanded();
 
@@ -829,7 +858,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPartnerInfoPaneOpen = true;
         }
 
-        public void ClosePartnerInfoPane()
+        private void ClosePartnerInfoPane()
         {
             OnPartnerInfoPaneCollapsed();
 

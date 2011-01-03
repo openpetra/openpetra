@@ -105,9 +105,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             FRecipientNumber = (Int64)requestParams["RecipientNumber"];
             FFieldNumber = (Int64)requestParams["FieldNumber"];
             FExtraColumns = (bool)requestParams["ExtraColumns"];
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine(Ict.Petra.Shared.UserInfo.GUserInfo.UserID);
-#endif
 
 
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
@@ -180,7 +177,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (FSummary)
                             {
                                 mapCurrency = FUseBaseCurrency ? FBaseCurrency : giftBatch.CurrencyCode;
-                                double mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
+                                decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
 
 
                                 counter++;
@@ -343,33 +340,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                 WriteStringQuoted("T");
             }
 
-            /*
-             *  (IF lv_restricted_l THEN ? ELSE a_gift.p_donor_key_n) ~
-             * lv_stored_donor_name_c ~
-             * a_gift.a_method_of_giving_code_c ~
-             * a_gift.a_method_of_payment_code_c ~
-             * a_gift.a_reference_c ~
-             * a_gift.a_receipt_letter_code_c ~
-             * a_gift.a_receipt_number_i ~
-             * a_gift.a_first_time_gift_l ~
-             * a_gift.a_receipt_printed_l ~
-             * a_gift_detail.p_recipient_key_n ~
-             * lv_stored_recipient_name_c ~
-             * a_gift_detail.a_recipient_ledger_number_n ~
-             * (IF lv_base_currency_l THEN a_gift_detail.a_gift_amount_n ELSE a_gift_detail.a_gift_transaction_amount_n) ~
-             * a_gift_detail.a_gift_amount_intl_n ~
-             * a_gift_detail.a_confidential_gift_flag_l ~
-             * a_gift_detail.a_motivation_group_code_c ~
-             * a_gift_detail.a_motivation_detail_code_c ~
-             * a_gift_detail.a_cost_centre_code_c ~
-             * a_gift_detail.a_gift_comment_one_c ~
-             * a_gift_detail.a_comment_one_type_c ~
-             * IF a_gift_detail.p_mailing_code_c = ? THEN "" ELSE a_gift_detail.p_mailing_code_c ~
-             * a_gift_detail.a_gift_comment_two_c ~
-             * a_gift_detail.a_comment_two_type_c ~
-             * a_gift_detail.a_gift_comment_three_c ~
-             * a_gift_detail.a_comment_three_type_c ~
-             * a_gift_detail.a_tax_deductable_l */
             if (GiftRestricted(gift))
             {
                 WriteGeneralNumber(0);
@@ -455,27 +425,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteGiftSummaryLine(AGiftSummaryRow giftSummary)
         {
-            /*    (pv_ledger_number_i * 1000000) ~
-             * lv_stored_donor_name_c ~
-             * "" ~
-             * "" ~
-             * "" ~
-             * "" ~
-             * summary_data.a_recipient_key_n ~
-             * lv_stored_recipient_name_c ~
-             * IF lv_base_currency_l THEN summary_data.a_amt_in_base_currency_n ELSE summary_data.a_transaction_amount_n ~
-             * "No" ~
-             * summary_data.a_motivation_group_code_c ~
-             * summary_data.a_motivation_detail_code_c ~
-             * "" ~
-             * "BOTH"  */
             if (!FTransactionsOnly)
             {
                 WriteStringQuoted("T");
             }
 
             Int64 tempKey = FLedgerNumber * 1000000;
-            WriteGeneralNumber(tempKey);                        //is this the right Ledger NUmber?
+            WriteGeneralNumber(tempKey);                        //is this the right Ledger Number?
             WriteStringQuoted(PartnerShortName(tempKey));
             WriteStringQuoted("");
             WriteStringQuoted("");
@@ -514,11 +470,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(double currencyField, bool bLineEnd)
+        void WriteCurrency(decimal currencyField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
-            if (Convert.ToDouble(integerNumber) == currencyField)
+            if (Convert.ToDecimal(integerNumber) == currencyField)
             {
                 FStringWriter.Write(String.Format("{0:d}", integerNumber));
             }
@@ -530,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(generalNumberField);
 
@@ -558,12 +514,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(theString, false);
         }
 
-        void WriteCurrency(double currencyField)
+        void WriteCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, false);
         }
 
-        void WriteGeneralNumber(double generalNumberField)
+        void WriteGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, false);
         }
@@ -583,12 +539,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(theString, true);
         }
 
-        void WriteLineCurrency(double currencyField)
+        void WriteLineCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, true);
         }
 
-        void WriteLineGeneralNumber(double generalNumberField)
+        void WriteLineGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, true);
         }
@@ -655,13 +611,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 motivationDetailCode = value;
             }
         }
-        private double exchangeRateToBase;
+        private decimal exchangeRateToBase;
 
 
         /// <summary>
         /// Exchange Rate
         /// </summary>
-        public double ExchangeRateToBase {
+        public decimal ExchangeRateToBase {
             get
             {
                 return exchangeRateToBase;
@@ -718,12 +674,12 @@ namespace Ict.Petra.Server.MFinance.Gift
         }
 
 
-        private double giftTransactionAmount;
+        private decimal giftTransactionAmount;
 
         /// <summary>
         /// >Gift Transaction Amount
         /// </summary>
-        public double GiftTransactionAmount {
+        public decimal GiftTransactionAmount {
             get
             {
                 return giftTransactionAmount;
@@ -733,12 +689,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 giftTransactionAmount = value;
             }
         }
-        private double giftAmount;
+        private decimal giftAmount;
 
         /// <summary>
         /// Amount in Base currency
         /// </summary>
-        public double GiftAmount {
+        public decimal GiftAmount {
             get
             {
                 return giftAmount;

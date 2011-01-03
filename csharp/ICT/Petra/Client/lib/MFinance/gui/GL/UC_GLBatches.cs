@@ -187,6 +187,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -281,7 +286,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                ARow.BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
+                ARow.BatchControlTotal = Convert.ToDecimal(txtDetailBatchControlTotal.Text);
             }
             ARow.DateEffective = dtpDetailDateEffective.Date.Value;
             ARow.EndEdit();

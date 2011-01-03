@@ -216,6 +216,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
+        {
+            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+        }
+
         private void GetDataFromControlsManual()
         {
             // TODO: report to (drag/drop)

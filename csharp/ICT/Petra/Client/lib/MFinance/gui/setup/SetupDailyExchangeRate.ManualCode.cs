@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                             Replace(ThousandsSeparator, "").
                                             Replace(DecimalSeparator, ".");
 
-                double ExchangeRate = Convert.ToDouble(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
+                decimal ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
 
                 ADailyExchangeRateRow exchangeRow =
                     (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.Rows.Find(new object[] { Currencies[0], Currencies[1], dateEffective,

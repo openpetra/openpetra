@@ -30,7 +30,7 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// cache for daily exchange rates
     public class TExchangeRateCache
     {
-        private static SortedList <string, double>FCachedExchangeRates = new SortedList <string, double>();
+        private static SortedList <string, decimal>FCachedExchangeRates = new SortedList <string, decimal>();
 
         /// reset cache
         public static void ResetCache()
@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ACurrencyTo"></param>
         /// <param name="ADateEffective"></param>
         /// <returns></returns>
-        public static double GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
+        public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             string key = ACurrencyFrom + ACurrencyTo + ADateEffective.ToShortDateString();
 
@@ -56,10 +56,10 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (ACurrencyFrom == ACurrencyTo)
             {
-                return 1.0;
+                return 1.0M;
             }
 
-            double rate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
+            decimal rate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
 
             FCachedExchangeRates.Add(key, rate);
 

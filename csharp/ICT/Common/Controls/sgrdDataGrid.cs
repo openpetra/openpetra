@@ -790,12 +790,12 @@ namespace Ict.Common.Controls
         public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
         {
             SourceGrid.DataGridColumn gridColumn;
-            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(double));
+            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(decimal));
             gridColumn.Width = 100;
-            SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(double));
+            SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
 
-            //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(double));
-            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(double), "N");
+            //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(decimal));
+            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N");
 
             // could also use format string "#,###.00"
             gridColumn.DataCell.Editor = CurrencyEditor;
@@ -815,7 +815,8 @@ namespace Ict.Common.Controls
                                                                    int gridRow, object itemRow)
                                                           {
                                                               DataRowView row = (DataRowView)itemRow;
-                                                              return row[ADataColumn.ColumnName] is double && (double)row[ADataColumn.ColumnName] < 0;
+                                                              return row[ADataColumn.ColumnName] is decimal
+                                                              && (decimal)row[ADataColumn.ColumnName] < 0;
                                                           });
             gridColumn.Conditions.Add(selectedConditionNegative);
         }

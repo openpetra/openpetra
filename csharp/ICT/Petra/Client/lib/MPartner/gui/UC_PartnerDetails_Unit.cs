@@ -130,6 +130,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData(PUnitRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -283,7 +288,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.XyzTbdCode = txtXyzTbdCode.Text;
         }
-        ARow.XyzTbdCost = Convert.ToDouble(txtXyzTbdCost.Text);
+        ARow.XyzTbdCost = Convert.ToDecimal(txtXyzTbdCost.Text);
         if (cmbXyzTbdCostCurrencyCode.SelectedIndex == -1)
         {
             ARow.SetXyzTbdCostCurrencyCodeNull();

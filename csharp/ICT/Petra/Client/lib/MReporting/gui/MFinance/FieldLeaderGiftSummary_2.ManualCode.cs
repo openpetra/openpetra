@@ -43,7 +43,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmFieldLeaderGiftSummary_2
     {
         private Int32 FLedgerNumber;
-        private DataTable FFieldTable;
 
         /// <summary>
         /// the report should be run for this ledger

@@ -361,6 +361,8 @@ namespace Ict.Petra.Server.App.ClientDomain
             FRemotingURL = "NOT YET SET!!!"; // as default
             FClientTasksManager = new TClientTasksManager();
             FTearDownAppDomainMonitor = new System.Object();
+            Random random = new Random();
+            FRandomAppDomainTearDownToken = random.Next(Int32.MinValue, Int32.MaxValue).ToString();
 
             //
             // Set up .NET Remoting Lifetime Services and TCP Channel for this AppDomain.

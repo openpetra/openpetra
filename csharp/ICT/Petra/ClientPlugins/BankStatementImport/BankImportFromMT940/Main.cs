@@ -86,7 +86,7 @@ namespace Plugin.BankImportFromMT940
 
             BankImportTDS MainDS = new BankImportTDS();
 
-            double StartBalance, EndBalance;
+            decimal StartBalance, EndBalance;
             DateTime DateEffective;
             string BankName;
 
@@ -141,8 +141,8 @@ namespace Plugin.BankImportFromMT940
         /// </summary>
         public bool ImportFromFile(string AFilename,
             ref BankImportTDS AMainDS,
-            out double AStartBalance,
-            out double AEndBalance,
+            out decimal AStartBalance,
+            out decimal AEndBalance,
             out DateTime ADateEffective,
             out string ABankName)
         {
