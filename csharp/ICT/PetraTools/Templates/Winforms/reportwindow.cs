@@ -302,7 +302,7 @@ ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
 
 {##DECIMALTEXTBOXSETCONTROLS}
-{#CONTROLNAME}.NumberValueDouble = AParameters.Get("{#PARAMNAME}").ToDouble();
+{#CONTROLNAME}.NumberValueDecimal = AParameters.Get("{#PARAMNAME}").ToDecimal();
 
 {##TCLBVERSATILEREADCONTROLS}
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());

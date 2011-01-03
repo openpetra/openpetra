@@ -130,7 +130,7 @@
         </if>
     </target>
 
-    <target name="patchDatabase" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
+    <target name="patchDatabase" depends="init" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
 
         <if test="${DBMS.Type=='sqlite'}">
             <fail message="patchDatabase does not support sqlite. please use postgresql or mysql. otherwise please run nant resetDatabase"/>

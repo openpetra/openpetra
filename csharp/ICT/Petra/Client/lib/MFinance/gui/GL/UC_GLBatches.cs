@@ -286,7 +286,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                ARow.BatchControlTotal = Convert.ToDouble(txtDetailBatchControlTotal.Text);
+                ARow.BatchControlTotal = Convert.ToDecimal(txtDetailBatchControlTotal.Text);
             }
             ARow.DateEffective = dtpDetailDateEffective.Date.Value;
             ARow.EndEdit();

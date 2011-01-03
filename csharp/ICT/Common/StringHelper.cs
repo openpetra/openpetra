@@ -919,19 +919,19 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// this method attempts to convert a string to a double value;
+        /// this method attempts to convert a string to a decimal value;
         /// if it fails, no exception is thrown, but a default value is used instead
         /// </summary>
         /// <param name="s">string that should contain a float</param>
         /// <param name="ADefault">value to be used if there is no float in the string</param>
-        /// <returns>the double value or the default value</returns>
-        public static double TryStrToFloat(string s, double ADefault)
+        /// <returns>the decimal value or the default value</returns>
+        public static decimal TryStrToDecimal(string s, decimal ADefault)
         {
-            double ReturnValue;
+            decimal ReturnValue;
 
             try
             {
-                ReturnValue = Convert.ToDouble(s);
+                ReturnValue = Convert.ToDecimal(s);
             }
             catch (Exception)
             {
@@ -983,14 +983,14 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// attempt to parse a string for an double
+        /// attempt to parse a string for an decimal
         /// this is a little special for currencies, which was more important in Delphi than it is now in C#
         /// </summary>
         /// <param name="s">the string containing a currency value</param>
-        /// <returns>the double value</returns>
-        public static System.Double TryStrToCurr(string s)
+        /// <returns>the decimal value</returns>
+        public static decimal TryStrToCurr(string s)
         {
-            return Convert.ToDouble(s);
+            return Convert.ToDecimal(s);
         }
 
         /// <summary>
@@ -1261,7 +1261,7 @@ namespace Ict.Common
         /// <param name="d">the double value to be formatted</param>
         /// <param name="format">format to be used to print the double</param>
         /// <returns>the formatted currency string</returns>
-        public static String FormatCurrencyInternal(double d, String format)
+        public static String FormatCurrencyInternal(decimal d, String format)
         {
             String ReturnValue;
             Int32 counter;
@@ -1316,7 +1316,7 @@ namespace Ict.Common
             // display only the thousands?
             if ((format.IndexOf(">>") == -1) && (format.IndexOf('0') == -1))
             {
-                d = d / 1000.0;
+                d = d / 1000.0M;
             }
 
             d = Math.Round(d, decimalPlaces);
@@ -1324,7 +1324,7 @@ namespace Ict.Common
 
             if (decimalPlaces > 0)
             {
-                group = Convert.ToString(Convert.ToInt64((d - Math.Floor(d)) * Math.Pow(10, decimalPlaces)));
+                group = Convert.ToString(Convert.ToInt64((d - Math.Floor(d)) * (decimal)Math.Pow(10, decimalPlaces)));
                 ReturnValue = ReturnValue + group;
                 ReturnValue = new String('0', decimalPlaces - group.Length).ToString() + ReturnValue;
                 ReturnValue = DecimalSeparator + ReturnValue;
@@ -1344,7 +1344,7 @@ namespace Ict.Common
             {
                 group = Convert.ToString((Convert.ToInt64(Math.Floor(d)) % thousands));
                 ReturnValue = group + ReturnValue;
-                d = Math.Floor(d / Math.Pow(10, CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSizes[0]));
+                d = Math.Floor(d / (decimal)Math.Pow(10, CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSizes[0]));
 
                 if (d != 0)
                 {
@@ -1540,7 +1540,7 @@ namespace Ict.Common
             {
                 // To convert the Progress format (e.g. >>>,>>>,>>>,>>9.99, stored in a_currency.a_display_format_c) to the Access format
                 // for 0.00, get the format of 0.01 and replace the number 1 with 0); need to replace the decimal operator again.
-                formatZero = FormatCurrencyInternal(0.01, format.Substring(1)).Replace('1', '0').Replace(
+                formatZero = FormatCurrencyInternal(0.01M, format.Substring(1)).Replace('1', '0').Replace(
                     CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator,
                     ".");
                 ReturnValue = format.Substring(1) + ';' + format + ';' + formatZero + ';' + formatZero;
@@ -1579,7 +1579,7 @@ namespace Ict.Common
         public static String FormatCurrency(TVariant value, String format)
         {
             String ReturnValue;
-            double d;
+            decimal d;
             DateTime ThisYearDate;
             String formatNegative;
             String formatPositive;
@@ -1642,13 +1642,14 @@ namespace Ict.Common
                     }
                     else
                     {
-                        ReturnValue = FormatCurrencyInternal(value.ToDouble(), formatPositive);
+                        ReturnValue = FormatCurrencyInternal(value.ToDecimal(), formatPositive);
                     }
                 }
-                else if ((value.TypeVariant == eVariantTypes.eDouble) || (value.TypeVariant == eVariantTypes.eCurrency)
+                else if ((value.TypeVariant == eVariantTypes.eDecimal)
+                         || (value.TypeVariant == eVariantTypes.eCurrency)
                          || (value.TypeVariant == eVariantTypes.eInteger))
                 {
-                    d = value.ToDouble();
+                    d = value.ToDecimal();
 
                     if (d > 0)
                     {
@@ -1660,7 +1661,7 @@ namespace Ict.Common
                     }
                     else
                     {
-                        // (d = 0)
+                        // (d == 0)
                         ReturnValue = FormatCurrencyInternal(d, formatZero);
                     }
                 }
@@ -1678,12 +1679,12 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// overload for FormatCurrency, using a double value
+        /// overload for FormatCurrency, using a decimal value
         /// </summary>
         /// <param name="value">value to be formatted</param>
         /// <param name="format">format to be used</param>
         /// <returns>the formatted string</returns>
-        public static String FormatCurrency(double value, String format)
+        public static String FormatCurrency(decimal value, String format)
         {
             return FormatCurrency(new TVariant(value), format);
         }

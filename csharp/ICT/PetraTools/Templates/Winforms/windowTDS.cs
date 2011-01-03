@@ -248,7 +248,12 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
+{#IFDEF STOREMANUALCODE}
+                    {#STOREMANUALCODE}
+{#ENDIF STOREMANUALCODE}
+{#IFNDEF STOREMANUALCODE}
                     SubmissionResult = {#WEBCONNECTORTDS}.Save{#SHORTDATASETTYPE}(ref SubmitDS, out VerificationResult);
+{#ENDIFN STOREMANUALCODE}
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

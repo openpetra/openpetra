@@ -10790,7 +10790,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.Columns.Add(new System.Data.DataColumn("pm_st_program_fee_received_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pm_st_application_on_hold_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pm_st_application_hold_reason_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_st_scholarship_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_st_scholarship_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_st_scholarship_approved_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_st_scholarship_review_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pm_st_scholarship_period_c", typeof(String)));
@@ -12140,7 +12140,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Enter the amount of the scholarship.
-        public Double StScholarshipAmount
+        public Decimal StScholarshipAmount
         {
             get
             {
@@ -12152,13 +12152,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStScholarshipAmount)
-                            || (((Double)(this[this.myTable.ColumnStScholarshipAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnStScholarshipAmount])) != value)))
                 {
                     this[this.myTable.ColumnStScholarshipAmount] = value;
                 }
@@ -14826,9 +14826,9 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.Columns.Add(new System.Data.DataColumn("pm_yp_basic_delete_flag_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pm_yp_app_fee_received_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("pm_ho_orient_conf_booking_key_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_yp_agreed_support_figure_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_yp_agreed_joining_charge_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_yp_scholarship_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_yp_agreed_support_figure_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_yp_agreed_joining_charge_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_yp_scholarship_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_yp_scholarship_athrized_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_yp_scholarship_begin_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pm_yp_scholarship_end_date_d", typeof(System.DateTime)));
@@ -15513,7 +15513,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The agreed support figure.
-        public Double YpAgreedSupportFigure
+        public Decimal YpAgreedSupportFigure
         {
             get
             {
@@ -15525,13 +15525,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpAgreedSupportFigure)
-                            || (((Double)(this[this.myTable.ColumnYpAgreedSupportFigure])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnYpAgreedSupportFigure])) != value)))
                 {
                     this[this.myTable.ColumnYpAgreedSupportFigure] = value;
                 }
@@ -15540,7 +15540,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
 
         /// Indicates the agreed upon joining charge for the conference
         /// and / or the summer xyz_tbd.
-        public Double YpAgreedJoiningCharge
+        public Decimal YpAgreedJoiningCharge
         {
             get
             {
@@ -15552,13 +15552,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpAgreedJoiningCharge)
-                            || (((Double)(this[this.myTable.ColumnYpAgreedJoiningCharge])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnYpAgreedJoiningCharge])) != value)))
                 {
                     this[this.myTable.ColumnYpAgreedJoiningCharge] = value;
                 }
@@ -15566,7 +15566,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Enter the amount of the scholarship.
-        public Double YpScholarship
+        public Decimal YpScholarship
         {
             get
             {
@@ -15578,13 +15578,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnYpScholarship)
-                            || (((Double)(this[this.myTable.ColumnYpScholarship])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnYpScholarship])) != value)))
                 {
                     this[this.myTable.ColumnYpScholarship] = value;
                 }
@@ -23001,32 +23001,32 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pm_record_number_i", typeof(Int32)));
-            this.Columns.Add(new System.Data.DataColumn("pm_allowance_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_allowance_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_period_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_admin_grant_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_housing_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_vehicle_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_food_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_travel_conferences_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_insurance_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_pension_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_childrens_education_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_home_assignment_holiday_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_medical_dental_care_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_postage_telephone_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_study_training_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_ministry_costs_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_personal_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_other_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_admin_grant_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_housing_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_vehicle_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_food_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_travel_conferences_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_insurance_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_pension_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_childrens_education_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_home_assignment_holiday_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_medical_dental_care_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_postage_telephone_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_study_training_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_ministry_costs_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_personal_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_other_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_extra_cost1_label_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost1_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost1_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_extra_cost2_label_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost2_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost2_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_extra_cost3_label_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost3_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_actual_support_figure_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("pm_agreed_support_figure_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_extra_cost3_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_actual_support_figure_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("pm_agreed_support_figure_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("pm_agreement_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("pm_review_date_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
@@ -23622,7 +23622,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This field represents the monthly allowance.
-        public Double Allowance
+        public Decimal Allowance
         {
             get
             {
@@ -23634,13 +23634,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAllowance)
-                            || (((Double)(this[this.myTable.ColumnAllowance])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAllowance])) != value)))
                 {
                     this[this.myTable.ColumnAllowance] = value;
                 }
@@ -23700,7 +23700,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Amount of any administrative grants.
-        public Double AdminGrant
+        public Decimal AdminGrant
         {
             get
             {
@@ -23712,13 +23712,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAdminGrant)
-                            || (((Double)(this[this.myTable.ColumnAdminGrant])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAdminGrant])) != value)))
                 {
                     this[this.myTable.ColumnAdminGrant] = value;
                 }
@@ -23726,7 +23726,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Housing costs
-        public Double Housing
+        public Decimal Housing
         {
             get
             {
@@ -23738,13 +23738,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnHousing)
-                            || (((Double)(this[this.myTable.ColumnHousing])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnHousing])) != value)))
                 {
                     this[this.myTable.ColumnHousing] = value;
                 }
@@ -23752,7 +23752,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Vehicle costs.
-        public Double Vehicle
+        public Decimal Vehicle
         {
             get
             {
@@ -23764,13 +23764,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnVehicle)
-                            || (((Double)(this[this.myTable.ColumnVehicle])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnVehicle])) != value)))
                 {
                     this[this.myTable.ColumnVehicle] = value;
                 }
@@ -23778,7 +23778,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Food costs.
-        public Double Food
+        public Decimal Food
         {
             get
             {
@@ -23790,13 +23790,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnFood)
-                            || (((Double)(this[this.myTable.ColumnFood])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnFood])) != value)))
                 {
                     this[this.myTable.ColumnFood] = value;
                 }
@@ -23804,7 +23804,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Travel and/or conference costs.
-        public Double TravelConferences
+        public Decimal TravelConferences
         {
             get
             {
@@ -23816,13 +23816,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnTravelConferences)
-                            || (((Double)(this[this.myTable.ColumnTravelConferences])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnTravelConferences])) != value)))
                 {
                     this[this.myTable.ColumnTravelConferences] = value;
                 }
@@ -23830,7 +23830,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Insurance costs.
-        public Double Insurance
+        public Decimal Insurance
         {
             get
             {
@@ -23842,13 +23842,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnInsurance)
-                            || (((Double)(this[this.myTable.ColumnInsurance])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnInsurance])) != value)))
                 {
                     this[this.myTable.ColumnInsurance] = value;
                 }
@@ -23856,7 +23856,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Pension costs.
-        public Double Pension
+        public Decimal Pension
         {
             get
             {
@@ -23868,13 +23868,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPension)
-                            || (((Double)(this[this.myTable.ColumnPension])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPension])) != value)))
                 {
                     this[this.myTable.ColumnPension] = value;
                 }
@@ -23882,7 +23882,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Education costs.
-        public Double ChildrensEducation
+        public Decimal ChildrensEducation
         {
             get
             {
@@ -23894,13 +23894,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnChildrensEducation)
-                            || (((Double)(this[this.myTable.ColumnChildrensEducation])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnChildrensEducation])) != value)))
                 {
                     this[this.myTable.ColumnChildrensEducation] = value;
                 }
@@ -23908,7 +23908,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Home travel or holiday costs.
-        public Double HomeAssignmentHoliday
+        public Decimal HomeAssignmentHoliday
         {
             get
             {
@@ -23920,13 +23920,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnHomeAssignmentHoliday)
-                            || (((Double)(this[this.myTable.ColumnHomeAssignmentHoliday])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnHomeAssignmentHoliday])) != value)))
                 {
                     this[this.myTable.ColumnHomeAssignmentHoliday] = value;
                 }
@@ -23934,7 +23934,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Medical and/or Dental costs
-        public Double MedicalDentalCare
+        public Decimal MedicalDentalCare
         {
             get
             {
@@ -23946,13 +23946,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnMedicalDentalCare)
-                            || (((Double)(this[this.myTable.ColumnMedicalDentalCare])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnMedicalDentalCare])) != value)))
                 {
                     this[this.myTable.ColumnMedicalDentalCare] = value;
                 }
@@ -23960,7 +23960,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Postage and/or telephone costs.
-        public Double PostageTelephone
+        public Decimal PostageTelephone
         {
             get
             {
@@ -23972,13 +23972,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPostageTelephone)
-                            || (((Double)(this[this.myTable.ColumnPostageTelephone])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPostageTelephone])) != value)))
                 {
                     this[this.myTable.ColumnPostageTelephone] = value;
                 }
@@ -23986,7 +23986,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Study and/or training costs
-        public Double StudyTraining
+        public Decimal StudyTraining
         {
             get
             {
@@ -23998,13 +23998,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnStudyTraining)
-                            || (((Double)(this[this.myTable.ColumnStudyTraining])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnStudyTraining])) != value)))
                 {
                     this[this.myTable.ColumnStudyTraining] = value;
                 }
@@ -24012,7 +24012,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Ministry costs.
-        public Double MinistryCosts
+        public Decimal MinistryCosts
         {
             get
             {
@@ -24024,13 +24024,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnMinistryCosts)
-                            || (((Double)(this[this.myTable.ColumnMinistryCosts])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnMinistryCosts])) != value)))
                 {
                     this[this.myTable.ColumnMinistryCosts] = value;
                 }
@@ -24038,7 +24038,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Personal costs.
-        public Double Personal
+        public Decimal Personal
         {
             get
             {
@@ -24050,13 +24050,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPersonal)
-                            || (((Double)(this[this.myTable.ColumnPersonal])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPersonal])) != value)))
                 {
                     this[this.myTable.ColumnPersonal] = value;
                 }
@@ -24064,7 +24064,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Other  miscellaneous costs.
-        public Double Other
+        public Decimal Other
         {
             get
             {
@@ -24076,13 +24076,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnOther)
-                            || (((Double)(this[this.myTable.ColumnOther])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnOther])) != value)))
                 {
                     this[this.myTable.ColumnOther] = value;
                 }
@@ -24116,7 +24116,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Extra Cost 1
-        public Double ExtraCost1
+        public Decimal ExtraCost1
         {
             get
             {
@@ -24128,13 +24128,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExtraCost1)
-                            || (((Double)(this[this.myTable.ColumnExtraCost1])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExtraCost1])) != value)))
                 {
                     this[this.myTable.ColumnExtraCost1] = value;
                 }
@@ -24168,7 +24168,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Extra Cost 2
-        public Double ExtraCost2
+        public Decimal ExtraCost2
         {
             get
             {
@@ -24180,13 +24180,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExtraCost2)
-                            || (((Double)(this[this.myTable.ColumnExtraCost2])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExtraCost2])) != value)))
                 {
                     this[this.myTable.ColumnExtraCost2] = value;
                 }
@@ -24220,7 +24220,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Extra Cost 3
-        public Double ExtraCost3
+        public Decimal ExtraCost3
         {
             get
             {
@@ -24232,13 +24232,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnExtraCost3)
-                            || (((Double)(this[this.myTable.ColumnExtraCost3])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnExtraCost3])) != value)))
                 {
                     this[this.myTable.ColumnExtraCost3] = value;
                 }
@@ -24246,7 +24246,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The actual support figure coming in.
-        public Double ActualSupportFigure
+        public Decimal ActualSupportFigure
         {
             get
             {
@@ -24258,13 +24258,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnActualSupportFigure)
-                            || (((Double)(this[this.myTable.ColumnActualSupportFigure])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnActualSupportFigure])) != value)))
                 {
                     this[this.myTable.ColumnActualSupportFigure] = value;
                 }
@@ -24272,7 +24272,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// The agreed support figure.
-        public Double AgreedSupportFigure
+        public Decimal AgreedSupportFigure
         {
             get
             {
@@ -24284,13 +24284,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAgreedSupportFigure)
-                            || (((Double)(this[this.myTable.ColumnAgreedSupportFigure])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAgreedSupportFigure])) != value)))
                 {
                     this[this.myTable.ColumnAgreedSupportFigure] = value;
                 }
@@ -27463,7 +27463,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("pt_valuable_item_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("pm_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("pm_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_identifier_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_marks_of_identification_c", typeof(String)));
@@ -27777,7 +27777,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// This field represents the approximate value of a valuable item.
-        public Double Amount
+        public Decimal Amount
         {
             get
             {
@@ -27789,13 +27789,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAmount)
-                            || (((Double)(this[this.myTable.ColumnAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnAmount])) != value)))
                 {
                     this[this.myTable.ColumnAmount] = value;
                 }
@@ -43690,8 +43690,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.Columns.Add(new System.Data.DataColumn("pm_registration_office_n", typeof(Int64)));
             this.Columns.Add(new System.Data.DataColumn("p_data_label_key_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_value_char_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_value_num_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("p_value_currency_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("p_value_num_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_value_currency_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_value_int_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("p_value_bool_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("p_value_date_d", typeof(System.DateTime)));
@@ -44148,7 +44148,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Label value for type Numeric.
-        public Double ValueNum
+        public Decimal ValueNum
         {
             get
             {
@@ -44160,13 +44160,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnValueNum)
-                            || (((Double)(this[this.myTable.ColumnValueNum])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnValueNum])) != value)))
                 {
                     this[this.myTable.ColumnValueNum] = value;
                 }
@@ -44174,7 +44174,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         }
 
         /// Label value for type Currency.
-        public Double ValueCurrency
+        public Decimal ValueCurrency
         {
             get
             {
@@ -44186,13 +44186,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnValueCurrency)
-                            || (((Double)(this[this.myTable.ColumnValueCurrency])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnValueCurrency])) != value)))
                 {
                     this[this.myTable.ColumnValueCurrency] = value;
                 }

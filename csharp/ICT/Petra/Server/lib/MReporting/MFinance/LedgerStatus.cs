@@ -74,7 +74,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         public TGlmSequence realGlmSequence;
 
         /// <summary>todoComment</summary>
-        public double exchangeRateToIntl;
+        public decimal exchangeRateToIntl;
 
         /// <summary>todoComment</summary>
         public int FCurrentFinancialYear;
@@ -683,7 +683,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         public int year_i;
 
         /// <summary>todoComment</summary>
-        public double rate_n;
+        public decimal rate_n;
     }
 
     /// <summary>
@@ -701,7 +701,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             exchangeRates = new ArrayList();
         }
 
-        private double GetExchangeRateFromDB(TDataBase databaseConnection,
+        private decimal GetExchangeRateFromDB(TDataBase databaseConnection,
             int pv_ledger_number_i,
             int pv_year_i,
             int pv_period_i,
@@ -746,13 +746,13 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="pv_period_i"></param>
         /// <param name="currentFinancialYear"></param>
         /// <returns></returns>
-        public double GetExchangeRate(TDataBase databaseConnection,
+        public decimal GetExchangeRate(TDataBase databaseConnection,
             int pv_ledger_number_i,
             int pv_year_i,
             int pv_period_i,
             int currentFinancialYear)
         {
-            double ReturnValue;
+            decimal ReturnValue;
 
             foreach (TExchangeRate exchangeRateElement in exchangeRates)
             {

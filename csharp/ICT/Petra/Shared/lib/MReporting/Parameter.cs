@@ -513,21 +513,21 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// Procedure to add a parameter of type Double
+        /// Procedure to add a parameter of type Decimal
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void Add(String parameterId, double value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
+        public void Add(String parameterId, decimal value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
         {
             Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
         }
 
         /// <summary>
-        /// overloaded add for double
+        /// overloaded add for Decimal
         /// </summary>
         /// <param name="parameterId"></param>
         /// <param name="value"></param>
-        public void Add(String parameterId, double value)
+        public void Add(String parameterId, decimal value)
         {
             Add(parameterId, value, -1, -1, null, null, -1);
         }
@@ -1007,7 +1007,7 @@ namespace Ict.Petra.Shared.MReporting
             int levelNr;
             int columnNr;
             int subreport;
-            String potentialDouble;
+            String potentialDecimal;
 
             myDoc = new TXMLParser(filename, false);
             try
@@ -1038,13 +1038,13 @@ namespace Ict.Petra.Shared.MReporting
                                 levelNr = (int)StringHelper.StrToInt(level);
                             }
 
-                            // doubles are always stored with decimal point; need to adjust to local settings
-                            potentialDouble = TXMLParser.GetAttribute(node, "value").Replace(".",
+                            // decimals are always stored with decimal point; need to adjust to local settings
+                            potentialDecimal = TXMLParser.GetAttribute(node, "value").Replace(".",
                                 CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
 
-                            if (new TVariant(potentialDouble).TypeVariant == eVariantTypes.eDouble)
+                            if (new TVariant(potentialDecimal).TypeVariant == eVariantTypes.eDecimal)
                             {
-                                Add(TXMLParser.GetAttribute(node, "id"), new TVariant(potentialDouble), columnNr, levelNr, subreport);
+                                Add(TXMLParser.GetAttribute(node, "id"), new TVariant(potentialDecimal), columnNr, levelNr, subreport);
                             }
                             else
                             {
@@ -1126,7 +1126,7 @@ namespace Ict.Petra.Shared.MReporting
                         // store the date not in its string representation (e.g. with month name), but independent of local format
                         textWriter.WriteString(element.value.DateToString("#yyyyMMdd#"));
                     }
-                    else if (element.value.TypeVariant == eVariantTypes.eDouble)
+                    else if (element.value.TypeVariant == eVariantTypes.eDecimal)
                     {
                         // store always with decimal point, don't use localized settings
                         textWriter.WriteString(element.value.ToString().Replace(CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator,

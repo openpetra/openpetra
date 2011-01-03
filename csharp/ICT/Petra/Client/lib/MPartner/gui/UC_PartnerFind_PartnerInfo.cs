@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerInfo.StopTimer();
         }
 
-
         #region Method calls that get passed through to ucoPartnerInfo
 
         /// <summary>

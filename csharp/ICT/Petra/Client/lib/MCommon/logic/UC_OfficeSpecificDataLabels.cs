@@ -419,7 +419,7 @@ namespace Ict.Petra.Client.MCommon
             // Create currency field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
             {
-                TextBoxCurrencyEditor = new SourceGrid.Cells.Editors.TextBoxCurrency(typeof(double));
+                TextBoxCurrencyEditor = new SourceGrid.Cells.Editors.TextBoxCurrency(typeof(decimal));
 
                 // prepare currency editor (suppress currency symbol since it is shown in cell behind amount cell)
                 CurrencyCultureInfo = new CultureInfo(CultureInfo.CurrentCulture.Name);
@@ -996,7 +996,7 @@ namespace Ict.Petra.Client.MCommon
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueNum = (double)CellValue;
+                            DataLabelValuePartnerRow.ValueNum = (decimal)CellValue;
                         }
                         else
                         {
@@ -1007,7 +1007,7 @@ namespace Ict.Petra.Client.MCommon
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueNum = (double)CellValue;
+                            DataLabelValueApplicationRow.ValueNum = (decimal)CellValue;
                         }
                         else
                         {
@@ -1077,7 +1077,7 @@ namespace Ict.Petra.Client.MCommon
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueCurrency = (double)CellValue;
+                            DataLabelValuePartnerRow.ValueCurrency = (decimal)CellValue;
                         }
                         else
                         {
@@ -1088,7 +1088,7 @@ namespace Ict.Petra.Client.MCommon
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueCurrency = (double)CellValue;
+                            DataLabelValueApplicationRow.ValueCurrency = (decimal)CellValue;
                         }
                         else
                         {

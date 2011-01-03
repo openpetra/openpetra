@@ -383,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(ref SubmitDS, out VerificationResult);
+                    SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

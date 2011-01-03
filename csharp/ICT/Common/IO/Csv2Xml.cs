@@ -187,7 +187,12 @@ namespace Ict.Common.IO
                         throw new Exception(Catalog.GetString("There is an empty column name. This is not allowed"));
                     }
 
-                    AllAttributes.Add(StringHelper.UpperCamelCase(attrName, " ", false, false));
+                    if (attrName.Length > 1)
+                    {
+                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, " ", false, false).Substring(1);
+                    }
+
+                    AllAttributes.Add(attrName);
                 }
 
                 while (!sr.EndOfStream)

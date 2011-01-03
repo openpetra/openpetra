@@ -547,7 +547,7 @@ namespace Ict.Petra.Server.MReporting
             }
 
             Parameters.Add("CurrentSubReport", new TVariant(-1), -1);
-            Parameters.Add("ReportWidth", MostRightPosition);
+            Parameters.Add("ReportWidth", new TVariant(MostRightPosition));
         }
 
         /// <summary>

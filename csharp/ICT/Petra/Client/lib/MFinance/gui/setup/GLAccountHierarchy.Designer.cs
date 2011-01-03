@@ -172,6 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.txtDetailAccountCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailAccountCode.Name = "txtDetailAccountCode";
             this.txtDetailAccountCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailAccountCode.Leave += new System.EventHandler(this.ChangeAccountCodeValue);
             //
             // lblDetailAccountCode
             //

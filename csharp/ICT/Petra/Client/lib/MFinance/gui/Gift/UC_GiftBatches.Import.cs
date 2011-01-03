@@ -55,10 +55,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
             bool ok = false;
-            String dateFormatString=TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
+
             dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
-            TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
@@ -67,10 +68,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
-                if (dateFormatString.Equals("MDY")) FdlgSeparator.DateFormat="MM/dd/yyyy";
+
+                if (dateFormatString.Equals("MDY"))
+                {
+                    FdlgSeparator.DateFormat = "MM/dd/yyyy";
+                }
                 else
-                	FdlgSeparator.DateFormat="dd/MM/yyyy";
-                
+                {
+                    FdlgSeparator.DateFormat = "dd/MM/yyyy";
+                }
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
@@ -150,11 +156,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return Convert.ToInt32(sReturn);
         }
 
-        private Double ImportDouble(String message)
+        private Decimal ImportDecimal(String message)
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToDouble(sReturn);
+            return Convert.ToDecimal(sReturn);
         }
     }
 }

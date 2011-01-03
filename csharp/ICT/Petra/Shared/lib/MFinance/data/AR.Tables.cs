@@ -677,7 +677,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_valid_from_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_description_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("a_tax_rate_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_tax_rate_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -1051,7 +1051,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// Tax rate
-        public Double TaxRate
+        public Decimal TaxRate
         {
             get
             {
@@ -1063,13 +1063,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnTaxRate)
-                            || (((Double)(this[this.myTable.ColumnTaxRate])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnTaxRate])) != value)))
                 {
                     this[this.myTable.ColumnTaxRate] = value;
                 }
@@ -2838,7 +2838,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         {
             this.Columns.Add(new System.Data.DataColumn("a_ar_article_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_date_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_ar_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_ar_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -3095,7 +3095,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// the value of the item in base currency
-        public Double ArAmount
+        public Decimal ArAmount
         {
             get
             {
@@ -3107,13 +3107,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArAmount)
-                            || (((Double)(this[this.myTable.ColumnArAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnArAmount])) != value)))
                 {
                     this[this.myTable.ColumnArAmount] = value;
                 }
@@ -3560,8 +3560,8 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_adhoc_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_active_l", typeof(Boolean)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_discount_percentage_n", typeof(Decimal)));
-            this.Columns.Add(new System.Data.DataColumn("a_ar_discount_absolute_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("a_ar_absolute_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_ar_discount_absolute_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("a_ar_absolute_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_number_of_items_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_minimum_number_of_items_i", typeof(Int32)));
@@ -4088,7 +4088,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// the absolute discount that is substracted from the article price; can be negative as well
-        public Double ArDiscountAbsolute
+        public Decimal ArDiscountAbsolute
         {
             get
             {
@@ -4100,13 +4100,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArDiscountAbsolute)
-                            || (((Double)(this[this.myTable.ColumnArDiscountAbsolute])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnArDiscountAbsolute])) != value)))
                 {
                     this[this.myTable.ColumnArDiscountAbsolute] = value;
                 }
@@ -4114,7 +4114,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// the absolute amount that is charged if this discount applies; e.g. 3 books for 5 Pound
-        public Double ArAbsoluteAmount
+        public Decimal ArAbsoluteAmount
         {
             get
             {
@@ -4126,13 +4126,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnArAbsoluteAmount)
-                            || (((Double)(this[this.myTable.ColumnArAbsoluteAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnArAbsoluteAmount])) != value)))
                 {
                     this[this.myTable.ColumnArAbsoluteAmount] = value;
                 }
@@ -6294,7 +6294,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_special_tax_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_special_tax_rate_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_special_tax_valid_from_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_total_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -6863,7 +6863,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The total amount of money that this invoice is worth; this includes all discounts, even the early payment discount; if the early payment discount does not apply anymore at the time of payment, this total amount needs to be updated
-        public Double TotalAmount
+        public Decimal TotalAmount
         {
             get
             {
@@ -6875,13 +6875,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnTotalAmount)
-                            || (((Double)(this[this.myTable.ColumnTotalAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnTotalAmount])) != value)))
                 {
                     this[this.myTable.ColumnTotalAmount] = value;
                 }
@@ -7404,7 +7404,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
             this.Columns.Add(new System.Data.DataColumn("a_ar_reference_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_number_of_item_i", typeof(Int32)));
             this.Columns.Add(new System.Data.DataColumn("a_ar_article_price_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("a_calculated_amount_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("a_calculated_amount_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("a_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_type_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("a_tax_rate_code_c", typeof(String)));
@@ -7898,7 +7898,7 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
         }
 
         /// The total amount of money that this invoice detail is worth; includes the discounts
-        public Double CalculatedAmount
+        public Decimal CalculatedAmount
         {
             get
             {
@@ -7910,13 +7910,13 @@ namespace Ict.Petra.Shared.MFinance.AR.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnCalculatedAmount)
-                            || (((Double)(this[this.myTable.ColumnCalculatedAmount])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnCalculatedAmount])) != value)))
                 {
                     this[this.myTable.ColumnCalculatedAmount] = value;
                 }

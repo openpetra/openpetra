@@ -54,17 +54,21 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDelimiter;
         Int32 FLedgerNumber;
         String FDateFormatString;
+        bool FExtraColumns;
+        TDBTransaction FTransaction;
+        GLSetupTDS FSetupTDS;
+
+        // exclude the following variables from compiling for the moment, to avoid confusing warning messages, eg. Warning CS0169: The private field '...' is never used
+#if TODO
         CultureInfo FCultureInfo;
         bool FSummary;
         bool FUseBaseCurrency;
         String FBaseCurrency;
         DateTime FDateForSummary;
         bool FTransactionsOnly;
-        bool FExtraColumns;
-        TDBTransaction FTransaction;
         Int64 FRecipientNumber;
         Int64 FFieldNumber;
-        GLSetupTDS FSetupTDS;
+#endif
 
         private String FImportMessage;
         private String FImportLine;
@@ -141,11 +145,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 DateTime.Today);
                             giftBatch.BatchDescription = ImportString("batch description");
                             giftBatch.BankAccountCode = ImportString("bank account  code");
-                            giftBatch.HashTotal = ImportDouble("hash total");
+                            giftBatch.HashTotal = ImportDecimal("hash total");
                             string NextString = ImportString("effective of the batch");
                             giftBatch.GlEffectiveDate = Convert.ToDateTime(NextString, culture);
                             giftBatch.CurrencyCode = ImportString("currency code");
-                            giftBatch.ExchangeRateToBase = ImportDouble("exchange rate to base");
+                            giftBatch.ExchangeRateToBase = ImportDecimal("exchange rate to base");
                             giftBatch.BankCostCentre = ImportString("bank cost centre");
                             giftBatch.GiftType = ImportString("gift type");
                         }
@@ -203,12 +207,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.RecipientLedgerNumber = ImportInt32("recipient Ledger number");
                             }
 
-                            giftDetails.GiftAmount = ImportDouble("Gift amount");
+                            giftDetails.GiftAmount = ImportDecimal("Gift amount");
                             //giftDetails.GiftTransactionAmount= ???
 
                             if (FExtraColumns)
                             {
-                                giftDetails.GiftAmountIntl = ImportDouble("gift amount intl");
+                                giftDetails.GiftAmountIntl = ImportDecimal("gift amount intl");
                             }
 
                             giftDetails.ConfidentialGiftFlag = ImportBoolean("confidential gift");
@@ -312,11 +316,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             return Convert.ToInt32(sReturn);
         }
 
-        private Double ImportDouble(String message)
+        private decimal ImportDecimal(String message)
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            return Convert.ToDouble(sReturn);
+            return Convert.ToDecimal(sReturn);
         }
     }
 }

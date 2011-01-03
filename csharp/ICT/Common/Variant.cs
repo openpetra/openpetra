@@ -47,12 +47,12 @@ namespace Ict.Common
         eDateTime,
 
         /// <summary>
-        /// double
+        /// decimal
         /// </summary>
-        eDouble,
+        eDecimal,
 
         /// <summary>
-        /// currency (double, but with 2 fixed decimals)
+        /// currency (decimal, but with 2 fixed decimals)
         /// </summary>
         eCurrency,
 
@@ -122,8 +122,7 @@ namespace Ict.Common
         public String FormatString = "";
         private System.Object EmptyValue;
         private System.DateTime DateValue;
-        private double DoubleValue;
-        private double CurrencyValue;
+        private decimal DecimalValue;
         private System.Int32 IntegerValue;
         private System.Int64 Int64Value;
         private String StringValue;
@@ -150,11 +149,11 @@ namespace Ict.Common
             }
             else if (value.GetType() == typeof(double))
             {
-                this.Assign(new TVariant(Convert.ToDouble(value), "Currency"));
+                this.Assign(new TVariant(Convert.ToDecimal(value), "Currency"));
             }
             else if (value.GetType() == typeof(System.Decimal))
             {
-                this.Assign(new TVariant(Convert.ToDouble(value), "Currency"));
+                this.Assign(new TVariant((decimal)value, "Currency"));
             }
             else if (value.GetType() == typeof(System.Int16))
             {
@@ -230,25 +229,36 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// constructor for double
+        /// constructor for decimal
         /// </summary>
-        /// <param name="value">double value</param>
+        /// <param name="value">decimal value</param>
         /// <param name="AFormat">requested format</param>
-        public TVariant(double value, String AFormat)
+        public TVariant(decimal value, String AFormat)
         {
             TypeVariant = eVariantTypes.eCurrency;
-            CurrencyValue = value;
+            DecimalValue = value;
             FormatString = AFormat;
         }
 
         /// <summary>
-        /// constructor for double
+        /// constructor for decimal
+        /// </summary>
+        /// <param name="value">decimal value</param>
+        public TVariant(decimal value)
+        {
+            TypeVariant = eVariantTypes.eDecimal;
+            DecimalValue = (decimal)value;
+            FormatString = "";
+        }
+
+        /// <summary>
+        /// constructor for double (will be converted to decimal)
         /// </summary>
         /// <param name="value">double value</param>
         public TVariant(double value)
         {
-            TypeVariant = eVariantTypes.eDouble;
-            DoubleValue = value;
+            TypeVariant = eVariantTypes.eDecimal;
+            DecimalValue = (decimal)value;
             FormatString = "";
         }
 
@@ -346,11 +356,11 @@ namespace Ict.Common
                     TypeVariant = eVariantTypes.eInteger;
                 }
             }
-            else if (this.ToDouble().ToString() == StripDecimalAndZeros(StringValue))
+            else if (this.ToDecimal().ToString() == StripDecimalAndZeros(StringValue))
             {
                 // has to work for 0.0 as well!
-                DoubleValue = this.ToDouble();
-                TypeVariant = eVariantTypes.eDouble;
+                DecimalValue = this.ToDecimal();
+                TypeVariant = eVariantTypes.eDecimal;
             }
             else if ((StringValue.Length == 10) && (StringValue[0] == '#') && (StringValue[9] == '#'))
             {
@@ -400,7 +410,7 @@ namespace Ict.Common
         /// This either adds the new value to an already existing composite (list of several values),
         /// or it changes the current non composite variable to be a composite,
         /// by adding the current value as the first member to the list, and then adding the new value;
-        /// ToString will concatenate the values, but ToDouble, ToBoolean etc will only convert the first value in the composite
+        /// ToString will concatenate the values, but ToDecimal, ToBoolean etc will only convert the first value in the composite
         ///
         /// </summary>
         /// <returns>void</returns>
@@ -588,13 +598,13 @@ namespace Ict.Common
                                     Convert.ToInt32(valueSeparated[0]), hour, minute, second, 0));
                         value.FormatString = currencyFormat;
                     }
-                    else if (typestr == eVariantTypes.eDouble.ToString())
+                    else if ((typestr == eVariantTypes.eDecimal.ToString()) || (typestr == "eDouble"))
                     {
                         value = new TVariant(BitConverter.Int64BitsToDouble(Convert.ToInt64(valuestr)));
                     }
                     else if (typestr == eVariantTypes.eCurrency.ToString())
                     {
-                        value = new TVariant(BitConverter.Int64BitsToDouble(Convert.ToInt64(valuestr)), "Currency");
+                        value = new TVariant((decimal)BitConverter.Int64BitsToDouble(Convert.ToInt64(valuestr)), "Currency");
                     }
                     else if (typestr == eVariantTypes.eInteger.ToString())
                     {
@@ -651,7 +661,7 @@ namespace Ict.Common
                     ReturnValue = ReturnValue + StringHelper.AddCSV("", FormatString) + ':';
                 }
 
-                if ((this.TypeVariant == eVariantTypes.eDouble) || (this.TypeVariant == eVariantTypes.eCurrency))
+                if ((this.TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
                 {
                     // what about decimal point/comma? BitConverter saves it as int; that way no trouble with decimal point
                     ReturnValue = ReturnValue + BitConverter.DoubleToInt64Bits(this.ToDouble()).ToString();
@@ -699,8 +709,7 @@ namespace Ict.Common
             TypeVariant = value.TypeVariant;
             EmptyValue = value.EmptyValue;
             DateValue = value.DateValue;
-            DoubleValue = value.DoubleValue;
-            CurrencyValue = value.CurrencyValue;
+            DecimalValue = value.DecimalValue;
             FormatString = value.FormatString;
             IntegerValue = value.IntegerValue;
             Int64Value = value.Int64Value;
@@ -738,13 +747,9 @@ namespace Ict.Common
             {
                 ReturnValue = DateValue;
             }
-            else if (TypeVariant == eVariantTypes.eDouble)
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
             {
-                ReturnValue = (System.Object)(DoubleValue);
-            }
-            else if (TypeVariant == eVariantTypes.eCurrency)
-            {
-                ReturnValue = (System.Object)(CurrencyValue);
+                ReturnValue = (System.Object)(DecimalValue);
             }
             else if (TypeVariant == eVariantTypes.eInteger)
             {
@@ -790,13 +795,9 @@ namespace Ict.Common
             {
                 ReturnValue = StringHelper.TryStrToInt32(StringValue, -1);
             }
-            else if (TypeVariant == eVariantTypes.eDouble)
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
             {
-                ReturnValue = Convert.ToInt32(DoubleValue);
-            }
-            else if (TypeVariant == eVariantTypes.eCurrency)
-            {
-                ReturnValue = Convert.ToInt32(CurrencyValue);
+                ReturnValue = Convert.ToInt32(DecimalValue);
             }
             else
             {
@@ -839,13 +840,9 @@ namespace Ict.Common
             {
                 ReturnValue = StringHelper.TryStrToInt(StringValue, -1);
             }
-            else if (TypeVariant == eVariantTypes.eDouble)
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
             {
-                ReturnValue = Convert.ToInt64(DoubleValue);
-            }
-            else if (TypeVariant == eVariantTypes.eCurrency)
-            {
-                ReturnValue = Convert.ToInt64(CurrencyValue);
+                ReturnValue = Convert.ToInt64(DecimalValue);
             }
             else
             {
@@ -904,13 +901,9 @@ namespace Ict.Common
             {
                 ReturnValue = FirstCompositeValue().ToDouble();
             }
-            else if (TypeVariant == eVariantTypes.eDouble)
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
             {
-                ReturnValue = DoubleValue;
-            }
-            else if (TypeVariant == eVariantTypes.eCurrency)
-            {
-                ReturnValue = CurrencyValue;
+                ReturnValue = (double)DecimalValue;
             }
             else if (TypeVariant == eVariantTypes.eInteger)
             {
@@ -922,7 +915,41 @@ namespace Ict.Common
             }
             else if (TypeVariant == eVariantTypes.eString)
             {
-                ReturnValue = StringHelper.TryStrToFloat(StringValue, 0.0);
+                ReturnValue = (double)StringHelper.TryStrToDecimal(StringValue, 0.0M);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// convert to Decimal
+        /// </summary>
+        /// <returns>a decimal representation</returns>
+        public decimal ToDecimal()
+        {
+            decimal ReturnValue;
+
+            ReturnValue = 0.0M;
+
+            if (TypeVariant == eVariantTypes.eComposite)
+            {
+                ReturnValue = FirstCompositeValue().ToDecimal();
+            }
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
+            {
+                ReturnValue = DecimalValue;
+            }
+            else if (TypeVariant == eVariantTypes.eInteger)
+            {
+                ReturnValue = IntegerValue;
+            }
+            else if (TypeVariant == eVariantTypes.eInt64)
+            {
+                ReturnValue = Int64Value;
+            }
+            else if (TypeVariant == eVariantTypes.eString)
+            {
+                ReturnValue = StringHelper.TryStrToDecimal(StringValue, 0.0M);
             }
 
             return ReturnValue;
@@ -995,13 +1022,9 @@ namespace Ict.Common
                     // don't use DateToLocalizedString, because the server might not understand the format of the client
                 }
             }
-            else if (TypeVariant == eVariantTypes.eDouble)
+            else if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
             {
-                ReturnValue = DoubleValue.ToString();
-            }
-            else if (TypeVariant == eVariantTypes.eCurrency)
-            {
-                ReturnValue = CurrencyValue.ToString();
+                ReturnValue = DecimalValue.ToString();
             }
             else if (TypeVariant == eVariantTypes.eInteger)
             {
@@ -1050,7 +1073,7 @@ namespace Ict.Common
             }
             else if (TypeVariant == eVariantTypes.eString)
             {
-                // todo: need to decode, similar to ToDouble?
+                // todo: need to decode, similar to ToDecimal?
                 // should we raise an Exception?
                 ReturnValue = System.DateTime.MinValue;
 
@@ -1112,7 +1135,7 @@ namespace Ict.Common
                     if (StringHelper.IsCurrencyFormatString(this.FormatString) == true)
                     {
                         // don't bother with format, print the whole number
-                        ReturnValue = StringHelper.FormatCurrency(ToDouble(), "#,##0.00;-#,##0.00;0.00;0");
+                        ReturnValue = StringHelper.FormatCurrency(ToDecimal(), "#,##0.00;-#,##0.00;0.00;0");
                     }
                     else
                     {
@@ -1212,7 +1235,7 @@ namespace Ict.Common
             }
             else if ((ACurrencyFormat.Length != 0) || (this.FormatString.Length != 0))
             {
-                // format also other types, e.g. integer and double, for percentage or partnerkey etc.
+                // format also other types, e.g. integer and decimal, for percentage or partnerkey etc.
                 ReturnValue = CurrencyToFormattedString(ACurrencyFormat, AOutputType);
             }
             else
@@ -1330,10 +1353,8 @@ namespace Ict.Common
                               && (IntegerValue == 0))
                           || ((TypeVariant == eVariantTypes.eInt64)
                               && (Int64Value == 0))
-                          || ((TypeVariant == eVariantTypes.eDouble)
-                              && (DoubleValue == 0.0))
-                          || ((TypeVariant == eVariantTypes.eCurrency)
-                              && (CurrencyValue == 0.0))
+                          || ((TypeVariant == eVariantTypes.eDecimal || TypeVariant == eVariantTypes.eCurrency)
+                              && (DecimalValue == 0.0M))
                           || ((TypeVariant == eVariantTypes.eString)
                               && ((StringValue.CompareTo("NOTFOUND") == 0)
                                   || (StringValue.Length == 0)))
@@ -1381,14 +1402,14 @@ namespace Ict.Common
             System.Int16 ReturnValue;
             ReturnValue = 0;
 
-            if ((TypeVariant == eVariantTypes.eDouble) || (TypeVariant == eVariantTypes.eInteger) || (TypeVariant == eVariantTypes.eInt64)
+            if ((TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eInteger) || (TypeVariant == eVariantTypes.eInt64)
                 || (TypeVariant == eVariantTypes.eCurrency))
             {
-                if (ToDouble() == v.ToDouble())
+                if (ToDecimal() == v.ToDecimal())
                 {
                     ReturnValue = 0;
                 }
-                else if (ToDouble() < v.ToDouble())
+                else if (ToDecimal() < v.ToDecimal())
                 {
                     ReturnValue = -1;
                 }

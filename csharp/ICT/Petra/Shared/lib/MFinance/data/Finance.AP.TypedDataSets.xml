@@ -9,11 +9,11 @@
         </Table>
         <Table sqltable="a_ap_document_detail"/>
         <Table sqltable="a_ap_document_payment">
-            <CustomField name="TotalAmountToPay" type="Double"/>
+            <CustomField name="TotalAmountToPay" type="Decimal"/>
             <CustomField name="UseDiscount" type="Boolean"/>
             <CustomField name="PayFullInvoice" type="Boolean"/>
             <CustomField name="HasValidDiscount" type="Boolean"/>
-            <CustomField name="DiscountPercentage" type="Double"/>
+            <CustomField name="DiscountPercentage" type="Decimal"/>
         </Table>
         <Table sqltable="a_ap_payment">
             <CustomField name="SupplierKey" type="Int64"/>

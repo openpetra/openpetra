@@ -177,7 +177,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (FSummary)
                             {
                                 mapCurrency = FUseBaseCurrency ? FBaseCurrency : giftBatch.CurrencyCode;
-                                double mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
+                                decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
 
 
                                 counter++;
@@ -470,11 +470,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(double currencyField, bool bLineEnd)
+        void WriteCurrency(decimal currencyField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
-            if (Convert.ToDouble(integerNumber) == currencyField)
+            if (Convert.ToDecimal(integerNumber) == currencyField)
             {
                 FStringWriter.Write(String.Format("{0:d}", integerNumber));
             }
@@ -486,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(double generalNumberField, bool bLineEnd)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(generalNumberField);
 
@@ -514,12 +514,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(theString, false);
         }
 
-        void WriteCurrency(double currencyField)
+        void WriteCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, false);
         }
 
-        void WriteGeneralNumber(double generalNumberField)
+        void WriteGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, false);
         }
@@ -539,12 +539,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(theString, true);
         }
 
-        void WriteLineCurrency(double currencyField)
+        void WriteLineCurrency(decimal currencyField)
         {
             WriteGeneralNumber(currencyField, true);
         }
 
-        void WriteLineGeneralNumber(double generalNumberField)
+        void WriteLineGeneralNumber(decimal generalNumberField)
         {
             WriteGeneralNumber(generalNumberField, true);
         }
@@ -611,13 +611,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 motivationDetailCode = value;
             }
         }
-        private double exchangeRateToBase;
+        private decimal exchangeRateToBase;
 
 
         /// <summary>
         /// Exchange Rate
         /// </summary>
-        public double ExchangeRateToBase {
+        public decimal ExchangeRateToBase {
             get
             {
                 return exchangeRateToBase;
@@ -674,12 +674,12 @@ namespace Ict.Petra.Server.MFinance.Gift
         }
 
 
-        private double giftTransactionAmount;
+        private decimal giftTransactionAmount;
 
         /// <summary>
         /// >Gift Transaction Amount
         /// </summary>
-        public double GiftTransactionAmount {
+        public decimal GiftTransactionAmount {
             get
             {
                 return giftTransactionAmount;
@@ -689,12 +689,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 giftTransactionAmount = value;
             }
         }
-        private double giftAmount;
+        private decimal giftAmount;
 
         /// <summary>
         /// Amount in Base currency
         /// </summary>
-        public double GiftAmount {
+        public decimal GiftAmount {
             get
             {
                 return giftAmount;

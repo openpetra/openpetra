@@ -276,7 +276,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
             ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
             ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Date.Value;
-            ARow.RateOfExchange = Convert.ToDouble(txtDetailRateOfExchange.Text);
+            ARow.RateOfExchange = Convert.ToDecimal(txtDetailRateOfExchange.Text);
             GetDetailDataFromControlsManual(ARow);
         }
     }

@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     }
 
     /// automatically generated, create a new record of AApDocumentDetail and display on the edit screen
-    public bool CreateAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, double AAmount, Int32 ALastDetailNumber)
+    public bool CreateAApDocumentDetail(Int32 ALedgerNumber, Int32 AApNumber, string AApSupplier_DefaultExpAccount, string AApSupplier_DefaultCostCentre, decimal AAmount, Int32 ALastDetailNumber)
     {
         FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber));
         FMainDS.InitVars();
@@ -430,16 +430,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
         else
         {
-            ARow.DiscountPercentage = Convert.ToDouble(txtDiscountPercentage.Text);
+            ARow.DiscountPercentage = Convert.ToDecimal(txtDiscountPercentage.Text);
         }
-        ARow.TotalAmount = Convert.ToDouble(txtTotalAmount.Text);
+        ARow.TotalAmount = Convert.ToDecimal(txtTotalAmount.Text);
         if (txtExchangeRateToBase.Text.Length == 0)
         {
             ARow.SetExchangeRateToBaseNull();
         }
         else
         {
-            ARow.ExchangeRateToBase = Convert.ToDouble(txtExchangeRateToBase.Text);
+            ARow.ExchangeRateToBase = Convert.ToDecimal(txtExchangeRateToBase.Text);
         }
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
@@ -470,7 +470,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
-                ARow.Amount = Convert.ToDouble(txtDetailAmount.Text);
+                ARow.Amount = Convert.ToDecimal(txtDetailAmount.Text);
             }
             if (cmbDetailCostCentreCode.SelectedIndex == -1)
             {

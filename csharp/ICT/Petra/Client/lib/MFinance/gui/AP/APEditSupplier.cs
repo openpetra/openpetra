@@ -279,7 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
         else
         {
-            ARow.DefaultDiscountPercentage = Convert.ToDouble(txtDiscountValue.Text);
+            ARow.DefaultDiscountPercentage = Convert.ToDecimal(txtDiscountValue.Text);
         }
         if (cmbAPAccount.SelectedIndex == -1)
         {
