@@ -10,6 +10,8 @@
 <property name="csc-ouput-ext" value="dll" if="${OutputType=='library'}" />
 <property name="csc-ouput-ext" value="exe" unless="${OutputType=='library'}" />
 <property name="AssemblyName" value="${Namespace}.${csc-ouput-ext}" />
+<property name="namespace-temp-dir" value="${path::combine(dir.bin,Namespace)}" />
+<property name="AssemblyNameInfo.cs" value="${path::combine(namespace-temp-dir,'AssemblyInfo.cs')}" />
 
 <target name="clean" >
   <delete>
@@ -17,7 +19,6 @@
       <include name="${dir.bin}/${AssemblyName}" asis="true" />
       <include name="${dir.bin}/${Namespace}.xml" asis="true" />
       <include name="${dir.bin}/${Namespace}.pdb" asis="true" />
-      <include name="${dir.projectfiles}/**/${Namespace+'.csproj'}" />
     </fileset>
   </delete>
 </target>
@@ -34,6 +35,27 @@
 </target>
 
 <target name="compile" depends="setassemblyfileset-internal">
+  <!-- Create assembly info -->
+  <mkdir dir="${namespace-temp-dir}" />
+  <asminfo output="${AssemblyNameInfo.cs}" language="CSharp">
+    <imports>
+      <import namespace="System.Reflection" />
+      <import namespace="System.Runtime.CompilerServices" />
+      <import namespace="System.Runtime.InteropServices" />
+    </imports>
+    <attributes>
+      <attribute type="AssemblyTitle" value='"${Namespace}"' asis="true" />
+      <attribute type="AssemblyDescription" value='""' asis="true" />
+      <attribute type="AssemblyConfiguration" value='""' asis="true" />
+      <attribute type="AssemblyCompany" value='"ICT"' asis="true" />
+      <attribute type="AssemblyProduct" value='"OpenPetra"' asis="true" />
+      <attribute type="AssemblyCopyright" value='"(c) OM International 2004-2010"' asis="true" />
+      <attribute type="AssemblyTrademark" value='""' asis="true" />
+      <attribute type="AssemblyCulture" value='""' asis="true" />       
+      <attribute type="ComVisible" value="false" asis="true" /> 
+      <attribute type="AssemblyVersion" value='"0.0.9.0"' asis="true" /> 
+    </attributes>
+  </asminfo>
   <csc filealign="4096" output="${dir.bin}/${AssemblyName}" 
        doc="${dir.bin}/${Namespace}.xml"
        target="${OutputType}" debug="${compile.debug}" 
@@ -41,9 +63,10 @@
     <references refid="assemblyfileset-references" /> 
     <sources>
       <include name="**/*.cs" />
+      <include name="${AssemblyNameInfo.cs}" />
     </sources>
     <resources>
-        <include name="**/*.resx" />
+      <include name="**/*.resx" />
     </resources>
   </csc>
 </target>
@@ -107,8 +130,13 @@
         <include name="**/*.resx" />
       </items>
     </in>
-    <do>  
-    <loadfile file="${path::combine(templatedir, 'template.csproj.resource')}"
+    <do>
+    <property name="DependentUpon" value="${path::change-extension(filename,'.cs')}" />
+    <property name="template" value="template.csproj.resource" />
+    <if test="${file::exists(DependentUpon)}">
+      <property name="template" value="template.csproj.resource.DependentUpon" />
+    </if>
+    <loadfile file="${path::combine(templatedir, template)}"
               property="tempTemplateResource" encoding="utf-8">  
       <filterchain>
         <expandproperties />
@@ -123,6 +151,7 @@
     <in>
       <items>
         <include name="**/*.cs" />
+        <include name="${AssemblyNameInfo.cs}" />
       </items>
     </in>
     <do>
