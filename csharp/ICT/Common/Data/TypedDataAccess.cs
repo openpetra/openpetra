@@ -938,8 +938,8 @@ namespace Ict.Common.Data
 
             System.Object CurrentValue;
             System.Object OriginalValue;
-            double CurrentValueDouble;
-            double OriginalValueDouble;
+            decimal CurrentValueDecimal;
+            decimal OriginalValueDecimal;
 
             // special treatment for mono: sometimes the value can be nil
             OriginalValue = GetSafeValue(ADataRow, AColumnNr, DataRowVersion.Original);
@@ -961,10 +961,10 @@ namespace Ict.Common.Data
                 if ((OriginalValue.GetType() == typeof(System.Int32)) || (OriginalValue.GetType() == typeof(double))
                     || (OriginalValue.GetType() == typeof(System.Decimal)))
                 {
-                    // convert all to double
-                    CurrentValueDouble = Convert.ToDouble(CurrentValue);
-                    OriginalValueDouble = Convert.ToDouble(OriginalValue);
-                    ReturnValue = OriginalValueDouble != CurrentValueDouble;
+                    // convert all to decimal
+                    CurrentValueDecimal = Convert.ToDecimal(CurrentValue);
+                    OriginalValueDecimal = Convert.ToDecimal(OriginalValue);
+                    ReturnValue = OriginalValueDecimal != CurrentValueDecimal;
                 }
                 else
                 {

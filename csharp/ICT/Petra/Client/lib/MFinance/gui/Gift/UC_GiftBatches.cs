@@ -195,6 +195,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         return null;
     }
 
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -283,7 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.BankAccountCode = cmbDetailBankAccountCode.GetSelectedString();
             ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
-            ARow.ExchangeRateToBase = Convert.ToDouble(txtDetailExchangeRateToBase.Text);
+            ARow.ExchangeRateToBase = Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
             ARow.EndEdit();
         }
     }

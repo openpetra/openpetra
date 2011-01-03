@@ -258,9 +258,12 @@ namespace Ict.Common.IO
         public static string XmlToString(XmlDocument ADoc)
         {
             StringWriter sw = new StringWriter();
-            XmlTextWriter xw = new XmlTextWriter(sw);
+            XmlWriterSettings settings = new XmlWriterSettings();
 
+            settings.Indent = false;
+            XmlWriter xw = XmlWriter.Create(sw, settings);
             ADoc.WriteTo(xw);
+            xw.Flush();
             return sw.ToString();
         }
 
@@ -272,11 +275,12 @@ namespace Ict.Common.IO
         public static string XmlToStringIndented(XmlDocument ADoc)
         {
             StringWriter sw = new StringWriter();
-            XmlTextWriter xw = new XmlTextWriter(sw);
+            XmlWriterSettings settings = new XmlWriterSettings();
 
-            xw.Formatting = Formatting.Indented;
-
+            settings.Indent = true;
+            XmlWriter xw = XmlWriter.Create(sw, settings);
             ADoc.WriteTo(xw);
+            xw.Flush();
             return sw.ToString();
         }
 
@@ -626,24 +630,22 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// retrieve the double value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
+        /// retrieve the decimal value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
         /// </summary>
         /// <param name="cur">the current node</param>
         /// <param name="attrib">the name of the attribute</param>
         /// <returns>the value of the attribute, or -1 if it is not existing
         /// </returns>
-        public static double GetDoubleAttribute(XmlNode cur, string attrib)
+        public static decimal GetDecimalAttribute(XmlNode cur, string attrib)
         {
-            double ReturnValue;
-            XmlNode node;
+            decimal ReturnValue = -1;
+            XmlNode node = cur.Attributes.GetNamedItem(attrib);
 
-            ReturnValue = -1;
-            node = cur.Attributes.GetNamedItem(attrib);
             try
             {
                 if (node != null)
                 {
-                    ReturnValue = Convert.ToDouble(node.Value);
+                    ReturnValue = Convert.ToDecimal(node.Value);
                 }
             }
             catch (Exception)

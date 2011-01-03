@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common.Controls;
 using Ict.Common;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner;
 using Ict.Common.Verification;
@@ -373,6 +374,44 @@ namespace Ict.Petra.Client.MPartner
             {
                 Ict.Petra.Client.App.Core.TServerLookup.TMPartner.GetPartnerFoundationStatus(PartnerKey, out AIsFoundation);
             }
+        }
+
+        /// <summary>
+        /// Checks if the current user can access this Partner.
+        /// </summary>
+        /// <param name="APartnerKey">The PartnerKey to check. Pass in -1 to use the
+        /// PartnerKey of the currently selected Partner in the Search Result Grid.</param>
+        /// <returns>True if the Partner can be accessed, otherwise false.</returns>
+        public bool CanAccessPartner(Int64 APartnerKey)
+        {
+            TPartnerClass PartnerClass;
+            String PartnerShortName;
+            Boolean ValidPartner;
+            Boolean PartnerIsMerged;
+            Boolean UserCanAccessPartner;
+
+            if (APartnerKey > 0)
+            {
+                ValidPartner = TServerLookup.TMPartner.VerifyPartner(APartnerKey,
+                    out PartnerShortName, out PartnerClass, out PartnerIsMerged,
+                    out UserCanAccessPartner);
+
+                if (ValidPartner
+                    && UserCanAccessPartner)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if ((APartnerKey == -1)
+                    && (FPartnerKey != -1))
+                {
+                    return CanAccessPartner(FPartnerKey);
+                }
+            }
+
+            return false;
         }
 
         #endregion

@@ -124,6 +124,13 @@ namespace {#NAMESPACE}
         return null;
     }
 
+{#IFDEF PRIMARYKEYCONTROLSREADONLY}
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        {#PRIMARYKEYCONTROLSREADONLY}
+    }
+{#ENDIF PRIMARYKEYCONTROLSREADONLY}
+
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
@@ -327,6 +334,10 @@ namespace {#NAMESPACE}
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+{#IFDEF PRIMARYKEYCONTROLSREADONLY}
+                        SetPrimaryKeyReadOnly(true);
+{#ENDIF PRIMARYKEYCONTROLSREADONLY}
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

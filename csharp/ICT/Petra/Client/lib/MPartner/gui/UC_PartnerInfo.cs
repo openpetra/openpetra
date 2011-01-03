@@ -30,12 +30,14 @@ using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -66,9 +68,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int64 FPartnerKey;
         private Int64 FLastPartnerKey;
         private TPartnerClass FPartnerClass;
+        private string FPartnerShortName;
         private DataRow FPartnerDR;
         private PartnerInfoTDS FPartnerInfoDS;
         private bool FLocationDataServerRetrieved;
+        private bool FHeadDataServerRetrieved;
 
         /// <summary>True is the server is fetching Partner Info data at the moment,
         /// otherwise false.</summary>
@@ -87,18 +91,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Holds a reference to a Delegate Method that is executed when the Timer fires.
         /// </summary>
-        private TDataFetcher FDataFetcher;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo.TDataFetcher FDataFetcher;
 
         /// <summary>Holds Parameters for a requested Server-side call for retrieval of Partner
         /// Info data.</summary>
-        private TServerCallParams FServerCallParams;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo.TServerCallParams FServerCallParams;
 
         /// <summary>Holds Parameters for the curent Server-side call for retrieval of Partner
         /// Info data.</summary>
-        private TServerCallParams FCurrentServerCallParams;
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo.TServerCallParams FCurrentServerCallParams;
 
         /// <summary>Lock object that is used for thread-save access to <see cref="FServerCallParams" />.</summary>
         private static object FServerCallParamsLock;
+
+        private string FServerCallError = "";
+
 
         /// <summary>Scope of data that is already available client-side.</summary>
         public enum TPartnerInfoAvailDataEnum
@@ -110,7 +117,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             piadHeadOnly,
 
             /// <summary>All PartnerInfo data</summary>
-            pisFull
+            piadFull,
+
+            /// <summary>No PartnerInfo data</summary>
+            piadNone
         }
 
         /// <summary>
@@ -264,13 +274,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             public bool IsIdentical(TServerCallParams AServerCallParams)
             {
                 if ((FPartnerKey == AServerCallParams.PartnerKey)
-                    && (FLocationKey.SiteKey == AServerCallParams.LocationKey.SiteKey)
-                    && (FLocationKey.LocationKey == AServerCallParams.LocationKey.LocationKey)
                     && (FScope == AServerCallParams.Scope)
                     && (FLoadRestOfData == AServerCallParams.LoadRestOfData)
                     && (FPartnerInfoScope == AServerCallParams.PartnerInfoScope))
                 {
-                    return true;
+                    if (FLocationKey == null)
+                    {
+                        if ((AServerCallParams.LocationKey == null))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else if ((FLocationKey.SiteKey == AServerCallParams.LocationKey.SiteKey)
+                             && (FLocationKey.LocationKey == AServerCallParams.LocationKey.LocationKey))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
@@ -279,6 +306,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// event triggered when the process of getting the data for the partner has been finished
+        /// </summary>
+        public event TPartnerKeyDataEventHandler DataLoaded;
 
         /// <summary>
         /// Default constructor.
@@ -340,21 +371,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             lblLoadingOther.Text = Catalog.GetString("Loading...") + Environment.NewLine + Catalog.GetString("Please wait.");
             lblLoadingPersonFamily.Text = Catalog.GetString("Loading...") + Environment.NewLine + Catalog.GetString("Please wait.");
 
-            // Initially we hide the Person/Family Tab.
-            ShowHidePersonFamilyTab(false);
-
             // Initially we don't show Partner Info data (no Partner loaded yet...).
             ClearControls(false);
 
-            // Set up the Delegate that will be passed to the Timer
+            // Set up the Delegate that will be passed to the Timer for the fetching of data
             FDataFetcher = new TDataFetcher(FetchDataFromServer);
 
-            // Set up Timer
+            // Set up Timer for the fetching of data
             FTimer = new System.Threading.Timer(new TimerCallback(FDataFetcher),
                 null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             // Set up lock object that is used for thread-save access to FServerCallParams.
             FServerCallParamsLock = new object();
+        }
+
+        /// <summary>
+        /// Stops the Timer for the fetching of data. This is needed to allow a garbage-collection of the UserControl
+        /// (a System.Threading.Timer is an unmanaged resource and needs manual Disposal, plus it holds a reference to the Class that instantiated it!)
+        /// </summary>
+        public void StopTimer()
+        {
+            FTimer.Dispose();
+            FTimer = null;
         }
 
         /// <summary>
@@ -365,7 +403,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerDR">DataRow containing Partner and Location data.</param>
         public void PassPartnerDataPartialWithLocation(Int64 APartnerKey, DataRow APartnerDR)
         {
-            UpdateControls(APartnerKey, APartnerDR, TPartnerInfoAvailDataEnum.piadHeadAndLocationOnly);
+            UpdateControls(APartnerKey, APartnerDR, null, TPartnerInfoAvailDataEnum.piadHeadAndLocationOnly);
         }
 
         /// <summary>
@@ -377,7 +415,30 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         public void PassPartnerDataPartialWithoutLocation(Int64 APartnerKey, DataRow APartnerDR)
         {
-            UpdateControls(APartnerKey, APartnerDR, TPartnerInfoAvailDataEnum.piadHeadOnly);
+            UpdateControls(APartnerKey, APartnerDR, null, TPartnerInfoAvailDataEnum.piadHeadOnly);
+        }
+
+        /// <summary>
+        /// Call this Method to pass in no Partner Data at all.
+        /// The UserControl will make a round-trip to the PetraServer and fetch all of the Partner Info data.
+        /// Location and PartnerLocation Data will be fetched for the 'Best Address' of the Partner!
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key of Partner for which Partner Info data should be retrieved.</param>
+        public void PassPartnerDataNone(Int64 APartnerKey)
+        {
+            UpdateControls(APartnerKey, null, null, TPartnerInfoAvailDataEnum.piadNone);
+        }
+
+        /// <summary>
+        /// Call this Method to pass in no Partner Data at all.
+        /// The UserControl will make a round-trip to the PetraServer and fetch all of the Partner Info data.
+        /// Location and PartnerLocation Data will be fetched for the 'Best Address' of the Partner!
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key of Partner for which Partner Info data should be retrieved.</param>
+        /// <param name="ALocationPK">Location PrimaryKey of the Location for which Address data should be retrieved.</param>
+        public void PassPartnerDataNone(Int64 APartnerKey, TLocationPK ALocationPK)
+        {
+            UpdateControls(APartnerKey, null, ALocationPK, TPartnerInfoAvailDataEnum.piadNone);
         }
 
         /// <summary>
@@ -395,6 +456,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             //            UpdateControls(APartnerKey, APartnerDR, TDataBindingScopeEnum.dbsFull);
         }
 
+        private void OnDataLoaded()
+        {
+            if (DataLoaded != null)
+            {
+                DataLoaded(this, new Ict.Petra.Client.App.Gui.Types.TPartnerKeyData(FPartnerKey, FPartnerShortName, FPartnerClass));
+            }
+        }
+
         /// <summary>
         /// Fetches Partner Info data from the Petra Server.
         /// </summary>
@@ -403,6 +472,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TimeSpan Duration;
             PartnerInfoTDS PartlyPopulatedPartnerInfoDS = null;
+
+            if (FTimer == null)  // prevent execution of this Method if Timer is already disposed!
+            {
+                return;
+            }
 
             if (FLastDataFeched != DateTime.MinValue)
             {
@@ -436,53 +510,92 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                             FCurrentServerCallParams.PartnerKey.ToString() + ". FCurrentServerCallParams.PartnerInfoScope: " +
 //                             FCurrentServerCallParams.PartnerInfoScope.ToString("G") + "...");
 
-                /*
-                 * Actual PetraServer calls!
-                 */
-                if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly)
-                    || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly))
+
+                FServerCallError = String.Empty;
+                FCurrentServerCallParams.ServerCallOK = false;
+
+                try
                 {
-                    FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
-                        FCurrentServerCallParams.LocationKey,
-                        FCurrentServerCallParams.PartnerInfoScope,
-                        out FPartnerInfoDS);
+                    /*
+                     * Actual PetraServer calls!
+                     */
+                    if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly)
+                        || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly))
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.LocationKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out FPartnerInfoDS);
+                    }
+                    else if (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisFull)
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out FPartnerInfoDS);
+
+                        FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerInfoDS.PartnerHeadInfo[0].PartnerClass);
+                        FPartnerShortName = FPartnerInfoDS.PartnerHeadInfo[0].PartnerShortName;
+                    }
+                    else
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.LocationKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out PartlyPopulatedPartnerInfoDS);
+                    }
+                }
+                catch (ESecurityPartnerAccessDeniedException Exp)
+                {
+                    FServerCallError = TMessages.MsgSecurityExceptionString(Exp, this.GetType());
+                }
+                catch (Exception)
+                {
+                    FServerCallError = "An error occured while trying to retrieve data for the Partner.";
+                }
+
+//MessageBox.Show("FCurrentServerCallParams.ServerCallOK: " + FCurrentServerCallParams.ServerCallOK.ToString());
+                if (FServerCallError == String.Empty)
+                {
+                    /*
+                     * Find out if the User requested a different Partner/LocationKey combination
+                     * in the meantime. If so, don't update the UI with the currently retrieved data,
+                     * but retrive the data for the new Partner/LocationKey combination and update the
+                     * UI with that!
+                     */
+                    if (FCurrentServerCallParams.IsIdentical(FServerCallParams))
+                    {
+                        if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationOnly)
+                            || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly))
+                        {
+                            FPartnerInfoDS.PLocation.Rows.Clear();
+                            FPartnerInfoDS.PPartnerLocation.Rows.Clear();
+                            FPartnerInfoDS.Merge(PartlyPopulatedPartnerInfoDS);
+                        }
+
+                        /*
+                         * Update the User Interface with the data that was retrieved from the PetraServer!
+                         */
+                        UpdateUI();
+
+                        // we don't fetch data from the PetraServer anymore.
+                        FFetchingData = false;
+                    }
+                    else
+                    {
+                        //                    TLogging.Log("Newer FServerCallParams available; making new Server call!");
+                        FetchDataFromServer(null);
+                    }
                 }
                 else
                 {
-                    FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
-                        FCurrentServerCallParams.LocationKey,
-                        FCurrentServerCallParams.PartnerInfoScope,
-                        out PartlyPopulatedPartnerInfoDS);
-                }
-
-                /*
-                 * Find out if the User requested a different Partner/LocationKey combination
-                 * in the meantime. If so, don't update the UI with the currently retrieved data,
-                 * but retrive the data for the new Partner/LocationKey combination and update the
-                 * UI with that!
-                 */
-                if (FCurrentServerCallParams.IsIdentical(FServerCallParams))
-                {
-                    if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationOnly)
-                        || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly))
-                    {
-                        FPartnerInfoDS.PLocation.Rows.Clear();
-                        FPartnerInfoDS.PPartnerLocation.Rows.Clear();
-                        FPartnerInfoDS.Merge(PartlyPopulatedPartnerInfoDS);
-                    }
-
                     /*
-                     * Update the User Interface with the data that was retrieved from the PetraServer!
+                     * An Exception occured while making the call to the PetraServer ->
+                     * inform user about that!
                      */
                     UpdateUI();
 
                     // we don't fetch data from the PetraServer anymore.
                     FFetchingData = false;
-                }
-                else
-                {
-//                    TLogging.Log("Newer FServerCallParams available; making new Server call!");
-                    FetchDataFromServer(null);
                 }
             }
         }
@@ -504,7 +617,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // We are not running on the UI Thread -> need to use Invoke to
                 // make us run on the UI Thread!
                 MyUpdateDelegate = new TMyUpdateDelegate(UpdateUI);
-                txtAcquisitionCode.Invoke(MyUpdateDelegate, new object[] { });
+
+                try
+                {
+                    txtAcquisitionCode.Invoke(MyUpdateDelegate, new object[] { });
+                }
+                catch (System.ComponentModel.InvalidAsynchronousStateException)
+                {
+                    /*
+                     * This Exception occurs when the Partner Find screen
+                     * is closed while this UserControl is still fetching data.
+                     * --> don't try to do any further action!
+                     */
+                    MyUpdateDelegate = null;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
 
 //                MessageBox.Show("Invoke finished!");
             }
@@ -514,62 +645,98 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 try
                 {
-                    /*
-                     * Update Controls with the Data from the passed in DataRow APartnerDR
-                     * and with data from the DB, if necessary.
-                     */
-                    switch (FCurrentServerCallParams.Scope)
+                    if (FServerCallError == String.Empty)
                     {
-                        case TPartnerInfoAvailDataEnum.piadHeadOnly:
+                        /*
+                         * Update Controls with the Data from the passed in DataRow APartnerDR
+                         * and with data from the DB, if necessary.
+                         */
+                        switch (FCurrentServerCallParams.Scope)
+                        {
+                            case TPartnerInfoAvailDataEnum.piadHeadOnly:
+                            case TPartnerInfoAvailDataEnum.piadNone:
 
-                            if ((FCurrentServerCallParams.ServerCallOK)
-                                && (FPartnerInfoDS.PPartnerLocation.Rows.Count > 0))
-                            {
-                                //                        MessageBox.Show(FPartnerInfoDS.PLocation.Rows[0][PLocationTable.GetStreetNameDBName()].ToString());
+                                if ((FCurrentServerCallParams.ServerCallOK)
+                                    && (FPartnerInfoDS.PPartnerLocation.Rows.Count > 0))
+                                {
+//                                                            MessageBox.Show(FPartnerInfoDS.PLocation.Rows[0][PLocationTable.GetStreetNameDBName()].ToString());
 
-                                //                        if(FPartnerInfoDS.PPartnerType.Rows.Count > 0)
-                                //                        {
-                                //                            MessageBox.Show(FPartnerInfoDS.PPartnerType[0].TypeCode);
-                                //                        }
+//                                                            if(FPartnerInfoDS.PPartnerType.Rows.Count > 0)
+//                                                            {
+//                                                                MessageBox.Show(FPartnerInfoDS.PPartnerType[0].TypeCode);
+//                                                            }
 
-                                FLocationDataServerRetrieved = true;
-                                UpdateControlsLocationData();
+                                    FLocationDataServerRetrieved = true;
+                                    UpdateControlsLocationData();
 
-                                UpdateControlsRestData();
-                            }
-                            else
-                            {
-                                ClearControls(false, FCurrentServerCallParams.PartnerKey);
+                                    UpdateControlsRestData();
+
+                                    if (FCurrentServerCallParams.Scope == TPartnerInfoAvailDataEnum.piadNone)
+                                    {
+                                        FHeadDataServerRetrieved = true;
+                                        UpdateControlsHeadData();
+
+                                        ShowHideLoadingInfoFullSize(false);
+                                    }
+                                }
+                                else
+                                {
+                                    ClearControls(false, FCurrentServerCallParams.PartnerKey);
+                                    ShowHideLoadingInfo(false, false, FCurrentServerCallParams.LoadRestOfData);
+                                }
+
+                                ShowHideLoadingInfo(false, true, FCurrentServerCallParams.LoadRestOfData);
+
+                                break;
+
+                            case TPartnerInfoAvailDataEnum.piadHeadAndLocationOnly:
+
+                                if ((FCurrentServerCallParams.ServerCallOK)
+                                    && (FPartnerInfoDS.PPartnerLocation.Rows.Count > 0))
+                                {
+                                    //                        MessageBox.Show(FPartnerInfoDS.PPartnerLocation.Rows[0][PPartnerLocationTable.GetTelephoneNumberDBName()].ToString());
+                                    //
+                                    //                        if(FPartnerInfoDS.PPartnerType.Rows.Count > 0)
+                                    //                        {
+                                    //                            MessageBox.Show(FPartnerInfoDS.PPartnerType[0].TypeCode);
+                                    //                        }
+
+                                    UpdateControlsRestData();
+                                }
+                                else
+                                {
+                                    ClearControls(false, FCurrentServerCallParams.PartnerKey);
+                                    ShowHideLoadingInfo(false, false, FCurrentServerCallParams.LoadRestOfData);
+                                }
+
                                 ShowHideLoadingInfo(false, false, FCurrentServerCallParams.LoadRestOfData);
-                            }
 
-                            ShowHideLoadingInfo(false, true, FCurrentServerCallParams.LoadRestOfData);
+                                break;
+                        }
 
-                            break;
+                        /*
+                         * Show 'Person / Family' Tab for PERSONs and FAMILYs
+                         */
+                        if ((FPartnerClass == TPartnerClass.PERSON)
+                            || (FPartnerClass == TPartnerClass.FAMILY))
+                        {
+                            ShowHidePersonFamilyTab(true);
+                        }
+                        else
+                        {
+                            ShowHidePersonFamilyTab(false);
+                        }
 
-                        case TPartnerInfoAvailDataEnum.piadHeadAndLocationOnly:
-
-                            if ((FCurrentServerCallParams.ServerCallOK)
-                                && (FPartnerInfoDS.PPartnerLocation.Rows.Count > 0))
-                            {
-                                //                        MessageBox.Show(FPartnerInfoDS.PPartnerLocation.Rows[0][PPartnerLocationTable.GetTelephoneNumberDBName()].ToString());
-                                //
-                                //                        if(FPartnerInfoDS.PPartnerType.Rows.Count > 0)
-                                //                        {
-                                //                            MessageBox.Show(FPartnerInfoDS.PPartnerType[0].TypeCode);
-                                //                        }
-
-                                UpdateControlsRestData();
-                            }
-                            else
-                            {
-                                ClearControls(false, FCurrentServerCallParams.PartnerKey);
-                                ShowHideLoadingInfo(false, false, FCurrentServerCallParams.LoadRestOfData);
-                            }
-
-                            ShowHideLoadingInfo(false, false, FCurrentServerCallParams.LoadRestOfData);
-
-                            break;
+                        OnDataLoaded();
+                    }
+                    else
+                    {
+                        /*
+                         * An Exception occured while making the call to the PetraServer ->
+                         * inform user about that!
+                         */
+                        ClearControls(false);
+                        ShowHideLoadingInfo(false, false, false);
                     }
                 }
                 catch (Exception Exp)
@@ -587,8 +754,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="APartnerKey">Partner Key of Partner for which Partner Info data should be retrieved.</param>
         /// <param name="APartnerDR">DataRow containing Partner data, Location Data, Partner Location Data and 'Rest' data.</param>
+        /// <param name="ALocationPK">Location PrimaryKey of the Location for which Address data should be retrieved.
+        /// If it is null, it is constructed from data in APartnerDR!</param>
         /// <param name="AScope">Scope of data that is already available client-side.</param>
-        private void UpdateControls(Int64 APartnerKey, DataRow APartnerDR, TPartnerInfoAvailDataEnum AScope)
+        private void UpdateControls(Int64 APartnerKey, DataRow APartnerDR, TLocationPK ALocationPK, TPartnerInfoAvailDataEnum AScope)
         {
             TLocationPK LocationPK;
             bool LoadRestOfData;
@@ -597,8 +766,29 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FPartnerKey = APartnerKey;
             FPartnerDR = APartnerDR;
-            FPartnerClass = SharedTypes.PartnerClassStringToEnum(
-                FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString());
+
+            if (ALocationPK != null)
+            {
+                LocationPK = ALocationPK;
+            }
+            else
+            {
+                LocationPK = new TLocationPK(-1, -1);
+            }
+
+            if (FPartnerDR != null)
+            {
+                FPartnerClass = SharedTypes.PartnerClassStringToEnum(
+                    FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString());
+                FPartnerShortName = APartnerDR[PPartnerTable.GetPartnerShortNameDBName()].ToString();
+
+                if (LocationPK.LocationKey == -1)
+                {
+                    LocationPK = new TLocationPK(
+                        Convert.ToInt64(APartnerDR[PLocationTable.GetSiteKeyDBName()]),
+                        Convert.ToInt32(APartnerDR[PLocationTable.GetLocationKeyDBName()]));
+                }
+            }
 
             LoadRestOfData = FPartnerKey != FLastPartnerKey;
 
@@ -606,23 +796,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             lblNoPartner.Visible = false;
             pnlKeyInfo.Visible = true;
-
-            /*
-             * Show 'Person / Family' Tab for PERSONs and FAMILYs
-             */
-            if ((FPartnerClass == TPartnerClass.PERSON)
-                || (FPartnerClass == TPartnerClass.FAMILY))
-            {
-                ShowHidePersonFamilyTab(true);
-            }
-            else
-            {
-                ShowHidePersonFamilyTab(false);
-            }
-
-            LocationPK = new TLocationPK(
-                Convert.ToInt64(APartnerDR[PLocationTable.GetSiteKeyDBName()]),
-                Convert.ToInt32(APartnerDR[PLocationTable.GetLocationKeyDBName()]));
 
             /*
              * Update Controls with the Data from the passed in DataRow APartnerDR
@@ -634,6 +807,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ShowHideLoadingInfo(true, true, LoadRestOfData);
 
+                    FHeadDataServerRetrieved = false;
                     UpdateControlsHeadData();
 
                     if (LoadRestOfData)
@@ -678,6 +852,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ShowHideLoadingInfo(true, false, LoadRestOfData);
 
+                    FHeadDataServerRetrieved = false;
                     UpdateControlsHeadData();
 
                     FLocationDataServerRetrieved = false;
@@ -721,10 +896,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
                 }
 
-                case TPartnerInfoAvailDataEnum.pisFull:
+                case TPartnerInfoAvailDataEnum.piadNone:
+                {
+                    ShowHideLoadingInfoFullSize(true);
+
+                    lock (FServerCallParamsLock)
+                    {
+                        FServerCallParams = new TServerCallParams(APartnerKey,
+                            LocationPK,
+                            AScope,
+                            LoadRestOfData,
+                            TPartnerInfoScopeEnum.pisFull);
+                    }
+
+                    if (!FFetchingData)
+                    {
+                        // Request Partner Info data from the PetraServer
+                        FTimer.Change(0, System.Threading.Timeout.Infinite);
+                    }
+
+                    break;
+                }
+
+                case TPartnerInfoAvailDataEnum.piadFull:
                 {
                     ShowHideLoadingInfo(true, true, LoadRestOfData);
 
+                    FHeadDataServerRetrieved = false;
                     UpdateControlsHeadData();
 
                     FLocationDataServerRetrieved = false;
@@ -760,18 +958,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             lblNoPartner.BringToFront();
             lblNoPartner.Visible = true;
 
-            if (APartnerNotFound == 0)
+            if (FServerCallError == String.Empty)
             {
-                lblNoPartner.Text = "No Partner to display.";
+                if (APartnerNotFound == 0)
+                {
+                    lblNoPartner.Text = "No Partner to display.";
+                }
+                else
+                {
+                    lblNoPartner.Text = String.Format(
+                        Resourcestrings.StrPartnerOrLocationNotExistantTitle, APartnerNotFound) +
+                                        "." + Environment.NewLine +
+                                        Resourcestrings.StrPartnerOrLocationNotExistantText +
+                                        Environment.NewLine + Environment.NewLine +
+                                        Resourcestrings.StrPartnerOrLocationNotExistantTextReRunSearchText;
+                }
             }
             else
             {
-                lblNoPartner.Text = String.Format(
-                    Resourcestrings.StrPartnerOrLocationNotExistantTitle, APartnerNotFound) +
-                                    "." + Environment.NewLine +
-                                    Resourcestrings.StrPartnerOrLocationNotExistantText +
-                                    Environment.NewLine + Environment.NewLine +
-                                    Resourcestrings.StrPartnerOrLocationNotExistantTextReRunSearchText;
+                /*
+                 * An Exception occured while making the call to the PetraServer ->
+                 * inform user about that!
+                 */
+                lblNoPartner.Text = FServerCallError;
             }
 
             if (AClearOnlyAddressData)
@@ -866,16 +1075,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void ShowHideLoadingInfoFullSize(bool AShow)
+        {
+            if (AShow)
+            {
+                pnlKeyInfo.Visible = false;
+                lblNoPartner.Visible = true;
+                lblNoPartner.Text = "Loading...";
+                lblNoPartner.Font = lblLoadingAddress.Font;
+                lblNoPartner.BringToFront();
+
+                this.Cursor = Cursors.AppStarting;
+            }
+            else
+            {
+                lblNoPartner.SendToBack();
+                lblNoPartner.Font = new Font(this.Font, FontStyle.Italic);
+                pnlKeyInfo.Visible = true;
+
+                this.Cursor = Cursors.Default;
+            }
+        }
+
         /// <summary>
         /// Update 'Head' Controls' Texts
         /// </summary>
         private void UpdateControlsHeadData()
         {
-            txtPartnerName.Text = FPartnerDR[PPartnerTable.GetPartnerShortNameDBName()].ToString() + "   (" +
-                                  FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString() + ")";
-            txtPartnerKey.PartnerKey = Convert.ToInt64(FPartnerDR[PPartnerTable.GetPartnerKeyDBName()]);
-            txtStatusCode.Text = FPartnerDR[PPartnerTable.GetStatusCodeDBName()].ToString();
-            txtAcquisitionCode.Text = FPartnerDR[PPartnerTable.GetAcquisitionCodeDBName()].ToString();
+            PartnerInfoTDSPartnerHeadInfoRow PartnerHeadInfoDR;
+
+            if (!FHeadDataServerRetrieved)
+            {
+                txtPartnerName.Text = FPartnerDR[PPartnerTable.GetPartnerShortNameDBName()].ToString() + "   (" +
+                                      FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString() + ")";
+                txtPartnerKey.PartnerKey = Convert.ToInt64(FPartnerDR[PPartnerTable.GetPartnerKeyDBName()]);
+                txtStatusCode.Text = FPartnerDR[PPartnerTable.GetStatusCodeDBName()].ToString();
+                txtAcquisitionCode.Text = FPartnerDR[PPartnerTable.GetAcquisitionCodeDBName()].ToString();
+            }
+            else
+            {
+                PartnerHeadInfoDR = FPartnerInfoDS.PartnerHeadInfo[0];
+
+                txtPartnerName.Text = PartnerHeadInfoDR.PartnerShortName + "   (" +
+                                      PartnerHeadInfoDR.PartnerClass + ")";
+                txtPartnerKey.PartnerKey = PartnerHeadInfoDR.PartnerKey;
+                txtStatusCode.Text = PartnerHeadInfoDR.StatusCode;
+                txtAcquisitionCode.Text = PartnerHeadInfoDR.AcquisitionCode;
+            }
         }
 
         /// <summary>
@@ -1319,8 +1565,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (FPartnerClass)
             {
                 case TPartnerClass.PERSON:
+
+                    if (!OtherDataDR.IsFieldNull())
+                    {
+                        txtField.Text = OtherDataDR.Field;
+                    }
+
                     UpdateControlsPersonFamilyData(OtherDataDR);
                     UpdateAdditionalLanguages(OtherDataDR);
+
                     tbpPersonFamily.Text = "Person";
                     pnlOtherRightField.Visible = true;
                     pnlOtherRightParentUnit.Visible = false;
@@ -1328,7 +1581,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 case TPartnerClass.FAMILY:
+
+                    if (!OtherDataDR.IsFieldNull())
+                    {
+                        txtField.Text = OtherDataDR.Field;
+                    }
+
                     UpdateControlsPersonFamilyData(OtherDataDR);
+
                     tbpPersonFamily.Text = "Family";
                     pnlOtherRightField.Visible = true;
                     pnlOtherRightParentUnit.Visible = false;
@@ -1448,4 +1708,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             UpdateControlsOtherData();
         }
     }
+
+    /// <summary>
+    /// event triggered when the process of getting the data for the partner has been finished
+    /// </summary>
+    public delegate void TPartnerKeyDataEventHandler(System.Object Sender, Ict.Petra.Client.App.Gui.Types.TPartnerKeyData e);
 }

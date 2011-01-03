@@ -15392,8 +15392,8 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         {
             this.Columns.Add(new System.Data.DataColumn("p_publication_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("p_date_effective_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_publication_cost_n", typeof(Double)));
-            this.Columns.Add(new System.Data.DataColumn("p_postage_cost_n", typeof(Double)));
+            this.Columns.Add(new System.Data.DataColumn("p_publication_cost_n", typeof(Decimal)));
+            this.Columns.Add(new System.Data.DataColumn("p_postage_cost_n", typeof(Decimal)));
             this.Columns.Add(new System.Data.DataColumn("p_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
@@ -15663,7 +15663,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// This is a number of currency units
-        public Double PublicationCost
+        public Decimal PublicationCost
         {
             get
             {
@@ -15675,13 +15675,13 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPublicationCost)
-                            || (((Double)(this[this.myTable.ColumnPublicationCost])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPublicationCost])) != value)))
                 {
                     this[this.myTable.ColumnPublicationCost] = value;
                 }
@@ -15689,7 +15689,7 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
         }
 
         /// The cost of posting each item
-        public Double PostageCost
+        public Decimal PostageCost
         {
             get
             {
@@ -15701,13 +15701,13 @@ namespace Ict.Petra.Shared.MPartner.Mailroom.Data
                 }
                 else
                 {
-                    return ((Double)(ret));
+                    return ((Decimal)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnPostageCost)
-                            || (((Double)(this[this.myTable.ColumnPostageCost])) != value)))
+                            || (((Decimal)(this[this.myTable.ColumnPostageCost])) != value)))
                 {
                     this[this.myTable.ColumnPostageCost] = value;
                 }

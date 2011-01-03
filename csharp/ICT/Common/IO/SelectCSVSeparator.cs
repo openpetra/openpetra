@@ -60,6 +60,10 @@ namespace Ict.Common.IO
             {
                 return txtDateFormat.Text;
             }
+            set
+            {
+                txtDateFormat.Text = value;
+            }
         }
 
         /// <summary>

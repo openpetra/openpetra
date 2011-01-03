@@ -413,8 +413,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 dataFile.ReadLine();
             }
 
-            double sumDebits = 0.0;
-            double sumCredits = 0.0;
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
             DateTime LatestTransactionDate = DateTime.MinValue;
 
             do
@@ -473,7 +473,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Value = Value.Replace(ThousandsSeparator, "");
                             Value = Value.Replace(DecimalSeparator, ".");
 
-                            NewTransaction.TransactionAmount = Convert.ToDouble(Value, System.Globalization.CultureInfo.InvariantCulture);
+                            NewTransaction.TransactionAmount = Convert.ToDecimal(Value, System.Globalization.CultureInfo.InvariantCulture);
                             NewTransaction.CostCentreCode = ADefaultCostCentre;
                             NewTransaction.AccountCode = ColumnNode.Name;
                             NewTransaction.DebitCreditIndicator = true;
@@ -486,7 +486,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                             if (NewTransaction.TransactionAmount < 0)
                             {
-                                NewTransaction.TransactionAmount *= -1.0;
+                                NewTransaction.TransactionAmount *= -1.0M;
                                 NewTransaction.DebitCreditIndicator = !NewTransaction.DebitCreditIndicator;
                             }
 

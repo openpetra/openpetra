@@ -41,6 +41,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLBatches
     {
+        private String FImportMessage;
+        private String FImportLine;
+        private TDlgSelectCSVSeparator FdlgSeparator;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -55,31 +58,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(false);
-                dlgSeparator.CSVFileName = dialog.FileName;
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.CSVFileName = dialog.FileName;
 
-                if (dlgSeparator.ShowDialog() == DialogResult.OK)
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
                     CultureInfo culture = new CultureInfo("en-GB");
-                    culture.DateTimeFormat.ShortDatePattern = dlgSeparator.DateFormat;
+                    culture.DateTimeFormat.ShortDatePattern = FdlgSeparator.DateFormat;
 
                     StreamReader sr = new StreamReader(dialog.FileName);
+
                     ABatchRow NewBatch = null;
                     AJournalRow NewJournal = null;
-                    string Message = Catalog.GetString("Parsing first line");
+                    FImportMessage = Catalog.GetString("Parsing first line");
                     Int32 RowNumber = 0;
 
                     try
                     {
                         while (!sr.EndOfStream)
                         {
-                            string Line = sr.ReadLine();
+                            FImportLine = sr.ReadLine();
                             RowNumber++;
 
                             // skip empty lines and commented lines
-                            if ((Line.Trim().Length > 0) && !Line.StartsWith("/*") && !Line.StartsWith("#"))
+                            if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#")
+                                && !FImportLine.StartsWith(","))
                             {
-                                string RowType = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                string RowType = ImportString("RowType");
 
                                 if (RowType == "B")
                                 {
@@ -94,18 +99,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                     FPetraUtilsObject.SetChangedFlag();
 
-                                    NewBatch.BatchDescription = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Message = Catalog.GetString("Parsing the hash value of the batch");
-                                    NewBatch.BatchControlTotal = Convert.ToDouble(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
-                                    string NextString = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Message = Catalog.GetString("Parsing the date effective of the batch: " + NextString);
+                                    NewBatch.BatchDescription = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the hash value of the batch");
+                                    NewBatch.BatchControlTotal =
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                    string NextString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the date effective of the batch: " + NextString);
                                     NewBatch.DateEffective = Convert.ToDateTime(NextString, culture);
                                 }
                                 else if (RowType == "J")
                                 {
                                     if (NewBatch == null)
                                     {
-                                        Message = Catalog.GetString("Expected a Batch line, but found a Journal");
+                                        FImportMessage = Catalog.GetString("Expected a Batch line, but found a Journal");
                                         throw new Exception();
                                     }
 
@@ -114,27 +120,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewJournal.BatchNumber = NewBatch.BatchNumber;
                                     FMainDS.AJournal.Rows.Add(NewJournal);
 
-                                    NewJournal.JournalDescription = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Message = Catalog.GetString("Parsing the sub system code of the journal");
-                                    NewJournal.SubSystemCode = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    NewJournal.JournalDescription = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the sub system code of the journal");
+                                    NewJournal.SubSystemCode = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     // TODO test if SubSystemCode exists in cached table
-                                    Message = Catalog.GetString("Parsing the transaction type of the journal");
-                                    NewJournal.TransactionTypeCode = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the transaction type of the journal");
+                                    NewJournal.TransactionTypeCode = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     // TODO test if TransactionTypeCode exists in cached table
-                                    Message = Catalog.GetString("Parsing the currency of the journal");
-                                    NewJournal.TransactionCurrency = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the currency of the journal");
+                                    NewJournal.TransactionCurrency = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     // TODO test if Currency exists in cached table
-                                    Message = Catalog.GetString("Parsing the exchange rate of the journal");
-                                    NewJournal.ExchangeRateToBase = Convert.ToDouble(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator));
-                                    Message = Catalog.GetString("Parsing the date effective of the journal");
-                                    NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref Line,
-                                            dlgSeparator.SelectedSeparator), culture);
+                                    FImportMessage = Catalog.GetString("Parsing the exchange rate of the journal");
+                                    NewJournal.ExchangeRateToBase =
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                    FImportMessage = Catalog.GetString("Parsing the date effective of the journal");
+                                    NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine,
+                                            FdlgSeparator.SelectedSeparator), culture);
                                 }
                                 else if (RowType == "T")
                                 {
                                     if (NewJournal == null)
                                     {
-                                        Message = Catalog.GetString("Expected a Journal or Batch line, but found a Transaction");
+                                        FImportMessage = Catalog.GetString("Expected a Journal or Batch line, but found a Transaction");
                                         throw new Exception();
                                     }
 
@@ -144,37 +151,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewTransaction.JournalNumber = NewJournal.JournalNumber;
                                     FMainDS.ATransaction.Rows.Add(NewTransaction);
 
-                                    Message = Catalog.GetString("Parsing the cost centre of the transaction");
-                                    NewTransaction.CostCentreCode = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the cost centre of the transaction");
+                                    NewTransaction.CostCentreCode = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     // TODO check if cost centre exists, and is a posting costcentre.
                                     // TODO check if cost centre is active. ask user if he wants to use an inactive cost centre
-                                    Message = Catalog.GetString("Parsing the account code of the transaction");
-                                    NewTransaction.AccountCode = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the account code of the transaction");
+                                    NewTransaction.AccountCode = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     // TODO check if account exists, and is a posting account.
                                     // TODO check if account is active. ask user if he wants to use an inactive account
-                                    Message = Catalog.GetString("Parsing the narrative of the transaction");
-                                    NewTransaction.Narrative = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Message = Catalog.GetString("Parsing the reference of the transaction");
-                                    NewTransaction.Reference = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Message = Catalog.GetString("Parsing the transaction date");
+                                    FImportMessage = Catalog.GetString("Parsing the narrative of the transaction");
+                                    NewTransaction.Narrative = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the reference of the transaction");
+                                    NewTransaction.Reference = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    FImportMessage = Catalog.GetString("Parsing the transaction date");
                                     NewTransaction.TransactionDate =
-                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator), culture);
+                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator), culture);
 
-                                    Message = Catalog.GetString("Parsing the debit amount of the transaction");
-                                    string DebitAmountString = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Double DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0 : Convert.ToDouble(DebitAmountString);
-                                    Message = Catalog.GetString("Parsing the credit amount of the transaction");
-                                    string CreditAmountString = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                    Double CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0 : Convert.ToDouble(CreditAmountString);
+                                    FImportMessage = Catalog.GetString("Parsing the debit amount of the transaction");
+                                    string DebitAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    decimal DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(DebitAmountString);
+                                    FImportMessage = Catalog.GetString("Parsing the credit amount of the transaction");
+                                    string CreditAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                    decimal CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(CreditAmountString);
 
                                     if ((DebitAmount == 0) && (CreditAmount == 0))
                                     {
-                                        Message = Catalog.GetString("Either the debit amount or the debit amount must be greater than 0.");
+                                        FImportMessage = Catalog.GetString("Either the debit amount or the debit amount must be greater than 0.");
                                     }
 
                                     if ((DebitAmount != 0) && (CreditAmount != 0))
                                     {
-                                        Message = Catalog.GetString("You can not have a value for both debit and credit amount");
+                                        FImportMessage = Catalog.GetString("You can not have a value for both debit and credit amount");
                                     }
 
                                     if (DebitAmount != 0)
@@ -196,9 +203,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                                     for (int i = 0; i < 10; i++)
                                     {
-                                        Message = String.Format(Catalog.GetString("Parsing Analysis Type/Value Pair #{0}. "), i);
-                                        String type = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
-                                        String v = StringHelper.GetNextCSV(ref Line, dlgSeparator.SelectedSeparator);
+                                        FImportMessage = String.Format(Catalog.GetString("Parsing Analysis Type/Value Pair #{0}. "), i);
+                                        String type = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+                                        String v = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
 
                                         //these data is only be imported if all corresponding values are there in the
                                         if ((type.Length > 0) && (v.Length > 0))
@@ -238,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(
                             String.Format(Catalog.GetString("There is a problem parsing the file in row {0}. "), RowNumber) +
                             Environment.NewLine +
-                            Message + " " + e,
+                            FImportMessage + " " + e,
                             Catalog.GetString("Error"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         sr.Close();
@@ -246,6 +253,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
             }
+        }
+
+        private String ImportString(String message)
+        {
+            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
+
+            FImportMessage = Catalog.GetString("Parsing the " + message);
+            return sReturn;
         }
     }
 }

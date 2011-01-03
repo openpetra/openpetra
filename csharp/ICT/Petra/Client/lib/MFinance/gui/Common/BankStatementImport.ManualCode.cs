@@ -489,7 +489,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 CurrentlySelectedMatch.MotivationDetailCode = cmbMotivationDetail.GetSelectedString();
                 CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
                 CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
-                CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDouble(txtAmount.Text);
+                CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDecimal(txtAmount.Text);
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
@@ -565,7 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             // get a new detail number
             Int32 newDetailNumber = 0;
-            double amount = 0;
+            decimal amount = 0;
             AEpMatchRow match = null;
 
             for (int i = 0; i < FMatchView.Count; i++)

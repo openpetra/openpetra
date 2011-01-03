@@ -24,6 +24,7 @@ Portions Copyright © 2002-2008 Charlie Poole or Copyright © 2002-2004 James W. N
 
 ==================================================================================
 NUnitForms compiled from SVN, with modifications which are available in our src subdirectory
+Make sure to copy the same nunit.framework.dll from ThirdParty/NUnit to nunitforms\nunitforms\lib\nant to avoid mismatching version numbers
 
 #region Copyright (c) 2003-2007, Luke T. Maxon
 

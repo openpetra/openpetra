@@ -40,38 +40,42 @@
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>
-    <if test="${not file::exists(IctNAntTasks.file)}">
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.dll" overwrite="true"/>
-            <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/MySql.Data.dll" overwrite="true"/>
-            <if test="${property::exists('xbuild')}">
-                <foreach item="File" property="filename">
-                    <in>
-                        <items>
-                            <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
-                        </items>
-                    </in>
-                    <do>
-                        <if test='${script::ChangeProjectFileXBuild(filename)}'/>
-                    </do>
-                </foreach>
+
+    <!-- the init target should always be executed. Checks if Ict.Tools.NAntTasks.dll exists, runs compileCommon and compilePetraTools, creates default directories -->
+    <target name="init"> 
+        <if test="${not file::exists(IctNAntTasks.file)}">
+            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/SQLite/System.Data.SQLite.dll" overwrite="true"/>
+                <copy file="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/mysql.data.dll" tofile="${OpenPetraRoot.dir}/csharp/ThirdParty/MySQL/MySql.Data.dll" overwrite="true"/>
+                <if test="${property::exists('xbuild')}">
+                    <foreach item="File" property="filename">
+                        <in>
+                            <items>
+                                <include name="${OpenPetraRoot.dir}/csharp/ICT/**.csproj" />
+                            </items>
+                        </in>
+                        <do>
+                            <if test='${script::ChangeProjectFileXBuild(filename)}'/>
+                        </do>
+                    </foreach>
+                </if>
             </if>
+            <call target="compileCommon"/>
+            <call target="compilePetraTools"/>
+            <copy file="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll" tofile="${IctNAntTasks.file}"/>
         </if>
-        <call target="compileCommon"/>
-        <call target="compilePetraTools"/>
-        <copy file="${PetraToolsExe.dir}/Ict.Tools.NAntTasks.dll" tofile="${IctNAntTasks.file}"/>
-    </if>
-    <loadtasks assembly="${IctNAntTasks.file}" if="${file::exists(IctNAntTasks.file)}"/>
-    
-    <if test="${not directory::exists(Logging.dir)}">
-        <mkdir dir="${Logging.dir}" />
-    </if>
-    <if test="${not directory::exists(Delivery.dir)}">
-        <mkdir dir="${Delivery.dir}" />
-    </if>
-    <if test="${not directory::exists(Tmp.dir)}">
-        <mkdir dir="${Tmp.dir}" />
-    </if>
+        <loadtasks assembly="${IctNAntTasks.file}" if="${file::exists(IctNAntTasks.file)}"/>
+
+        <if test="${not directory::exists(Logging.dir)}">
+            <mkdir dir="${Logging.dir}" />
+        </if>
+        <if test="${not directory::exists(Delivery.dir)}">
+            <mkdir dir="${Delivery.dir}" />
+        </if>
+        <if test="${not directory::exists(Tmp.dir)}">
+            <mkdir dir="${Tmp.dir}" />
+        </if>
+    </target>
 
     <!-- could use nant -projecthelp instead -->
     <target name="help" depends="" description="Displays the available targets and parameters.">
@@ -86,18 +90,18 @@
         <echo message="fixProjectFiles: use this for broken GUIDs in sln and csproj files"/>
         <echo message="recreateDatabase: needed after changes in table structure in petra.xml"/>
         <echo message="resetDatabase: just resets the data, resets the permissions"/>
+        <echo message="patchDatabase: update the database to the latest development version"/>
         <echo message="translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery"/>
         <echo message="translationCompilePOFile: create the dlls required to be delivered with a new release"/>
         <echo message="generateORM: generates the typed tables and typed datastore from the petra.xml"/>
         <echo message="generateGlue: generates the interfaces and instantiators, which is the glue between client and server"/>
-        <echo message="generateGTK: generates the User Interface using GTK"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="generateWebforms: generates the User Interface using the Ext.js AJAX framework"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
-        <echo message="compileQx: compile the javascript webclient, using Qooxdoo"/>
+        <echo message="compileTesting: build the testing projects and copy the version.txt"/>
         <echo message="startPetraServer: run a local Petra Server"/>
         <echo message="stopPetraServer: stop the local Petra Server"/>
         <echo message="startPetraClient: run the Petra Client"/>
@@ -148,7 +152,7 @@
         <property name="solution.file" value="${OpenPetraRoot.dir}/csharp/ICT/Testing.sln"/>
         <call target="compileTemplate"/>
     </target>
-    <target name="compilePetra" description="compile the whole of Petra" depends="compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
+    <target name="compilePetra" description="compile the whole of Petra" depends="init, compileCommon, compilePetraShared, compilePetraServer, compilePetraClient"/>
     <target name="compileSingleGuiProject">
         <!-- only implemented for windows at the moment; used by generateWinform -->
         <solution configuration="${Configuration}">
@@ -245,28 +249,29 @@
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/webserver/**.error" /></fileset></delete>
         <delete failonerror="false"><fileset><include name="${OpenPetraRoot.dir}/webserver/**.yaml.xml" /></fileset></delete>
     </target>
-    
+
     <target name="cleanPetra" description="remove all compiled code of Petra">
         <!-- alternatively could use solution task: http://nant.sourceforge.net/release/latest/help/tasks/solution.html -->
         <!-- but the clean task is not implemented yet: see https://sourceforge.net/tracker/?func=detail&atid=402868&aid=1534755&group_id=31650 -->
         <delete failonerror="false"><fileset><include name="**/_bin/" /></fileset></delete>
         <delete failonerror="false"><fileset><include name="**/obj/" /></fileset></delete>
+        <delete failonerror="false" file="${OpenPetraRoot.dir}/csharp/ThirdParty/NAnt/Ict.Tools.NAntTasks.dll"/>
     </target>
     
-    <target name="generateORMTables">
+    <target name="generateORMTables" depends="init">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:defaulttables -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
 
-    <target name="generateORMAccess">
+    <target name="generateORMAccess" depends="init">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Server -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
 
-    <target name="generateORMCachedTables">
+    <target name="generateORMCachedTables" depends="init">
         <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
     </target>
     
-    <target name="generateORMDatasets">
+    <target name="generateORMDatasets" depends="init">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data -outputFilename:Common.DataSets -StartTableId:5000 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data -outputFilename:Partner.DataSets -StartTableId:5100 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data -outputFilename:Personnel.DataSets -StartTableId:5200 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
@@ -278,18 +283,14 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateORM.exe" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${OpenPetraRoot.dir}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MConference.Data -outputFilename:Conference.DataSets -StartTableId:5800 -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates"/>
     </target>
     
-    <target name="generateORM" depends="generateORMTables,generateORMAccess,generateORMDatasets,generateORMCachedTables" description="Generate the typed datastore.">
+    <target name="generateORM" depends="init,generateORMTables,generateORMAccess,generateORMDatasets,generateORMCachedTables" description="Generate the typed datastore.">
     </target>
     
-    <target name="generateGlue" description="Generate the glue between client and server, ie. interfaces and instantiators">
+    <target name="generateGlue" depends="init" description="Generate the glue between client and server, ie. interfaces and instantiators">
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
     </target>
 
-    <target name="generateGTK" description="Generate GTK User Interface">
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateGTK.exe" commandline="-ymlfile:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/MaintainUsers.yaml -petraxml:${PetraXML.file} -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/MSysMan/gtk"/>
-    </target>
-
-    <target name="generateWinforms" description="Generate Winforms User Interface">
+    <target name="generateWinforms" depends="init" description="Generate Winforms User Interface">
         <!-- go through all yaml files that have FormType different from abstract -->
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
@@ -318,7 +319,7 @@
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MSysMan/gui/setup ${generateWinformsParameters}"/>
     </target>
 
-    <target name="generateWinform" depends="" description="Generate a single Winform">
+    <target name="generateWinform" depends="init" description="Generate a single Winform">
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
         <property name="YmlFile" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/lib/${file}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${YmlFile} ${generateWinformsParameters}"/>
@@ -327,18 +328,18 @@
         <call target="startPetraClient"/>
     </target>
 
-    <target name="generateWebforms" description="Generate Web browser User Interface">
+    <target name="generateWebforms" depends="init" description="Generate Web browser User Interface">
         <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
     </target>
 
-    <target name="loc">
+    <target name="loc" depends="init">
         <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
         <echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>
     </target>
 
-    <target name="ploc">
+    <target name="ploc" depends="init">
         <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
         <echo message="physical lines of code, without comments: ${script::CountPhysicalLinesOfCode(ourCodeDir)}"/>
     </target>
@@ -424,7 +425,7 @@
         </foreach>
     </target>
 
-    <target name="fixProjectFiles">
+    <target name="fixProjectFiles" depends="init">
         <ExecDotNet program="${PetraToolsExe.dir}/FixProjectFiles.exe" commandline="-solutionpath:${OpenPetraRoot.dir}/csharp/ICT -solutions:Common,Shared,Client,Server,ServerAdmin,PetraTools,Testing,ServerPlugins,ClientPlugins"/>
     </target>
     
@@ -492,7 +493,7 @@
             </do>
         </foreach>
 
-        <nant buildfile="OpenPetra.build" target="cleanPetra compileCommon compilePetraTools compilePetra">
+        <nant buildfile="OpenPetra.build" target="cleanPetra init compilePetra">
             <properties>
                 <property name="Output.dir" value="Release"/>
                 <property name="Configuration" value="RELEASE"/>

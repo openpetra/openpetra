@@ -297,8 +297,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // TODO: JournalYear?
 
-                journal.JournalCreditTotal = 0.0;
-                journal.JournalDebitTotal = 0.0;
+                journal.JournalCreditTotal = 0.0M;
+                journal.JournalDebitTotal = 0.0M;
                 DataView TransactionsByJournal = ADataSet.ATransaction.DefaultView;
                 TransactionsByJournal.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
 
@@ -490,10 +490,10 @@ namespace Ict.Petra.Server.MFinance.GL
         private class TAmount
         {
             /// amount in the base currency of the ledger
-            public double baseAmount = 0.0;
+            public decimal baseAmount = 0.0M;
 
             /// amount in transaction currency; only for foreign currency accounts
-            public double transAmount = 0.0;
+            public decimal transAmount = 0.0M;
 
             /// generate a key for the account/costcentre combination
             public static string MakeKey(string AccountCode, string CostCentreCode)
@@ -575,13 +575,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     AAccountRow Account = (AAccountRow)accountView[0].Row;
 
                     // Set the sign of the amounts according to the debit/credit indicator
-                    double SignBaseAmount = transaction.AmountInBaseCurrency;
-                    double SignTransAmount = transaction.TransactionAmount;
+                    decimal SignBaseAmount = transaction.AmountInBaseCurrency;
+                    decimal SignTransAmount = transaction.TransactionAmount;
 
                     if (Account.DebitCreditIndicator != transaction.DebitCreditIndicator)
                     {
-                        SignBaseAmount *= -1.0;
-                        SignTransAmount *= -1.0;
+                        SignBaseAmount *= -1.0M;
+                        SignTransAmount *= -1.0M;
                     }
 
                     // TODO: do we need to check for base currency corrections?
@@ -756,8 +756,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (CostCentreKey.StartsWith(CostCentreCode + ":"))
                             {
                                 string CostCentreCodeToReportTo = CostCentreKey.Split(':')[1];
-                                double SignBaseAmount = PostingLevelElement.baseAmount;
-                                double SignTransAmount = PostingLevelElement.transAmount;
+                                decimal SignBaseAmount = PostingLevelElement.baseAmount;
+                                decimal SignTransAmount = PostingLevelElement.transAmount;
 
                                 // Set the sign of the amounts according to the debit/credit indicator
                                 if (AccountTreeElement.Invert)
