@@ -156,7 +156,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            if (AInspectDS.ACostCentre != null)
+            if (AInspectDS.ACostCentre != null && AInspectDS.AValidLedgerNumber != null)
             {
                 // check for removed cost centres, and also delete the AValidLedgerNumber row if there is one for the removed cost centre
                 foreach (ACostCentreRow cc in AInspectDS.ACostCentre.Rows)
