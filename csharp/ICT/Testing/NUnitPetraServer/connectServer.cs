@@ -52,7 +52,7 @@ namespace Ict.Testing.NUnitPetraServer
         {
             TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
 
-            Catalog.Init(System.Threading.Thread.CurrentThread.CurrentUICulture.Name);
+            Catalog.Init();
             TServerManager ServerManager = new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();

@@ -49,7 +49,7 @@ namespace Ict.Testing.NUnitPetraClient
         {
             TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
 
-            Catalog.Init(System.Threading.Thread.CurrentThread.CurrentUICulture.Name);
+            Catalog.Init();
 
             new TClientSettings();
             TClientInfo.InitVersion();

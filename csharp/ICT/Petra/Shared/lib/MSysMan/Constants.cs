@@ -119,6 +119,12 @@ namespace Ict.Petra.Shared.MSysMan
         /// <summary>todoComment</summary>
         public const String USERDEFAULT_LASTPERSONCONFERENCE = "ConferenceLastPerson";
 
+        /// <summary>the UI should be translated to this language</summary>
+        public const String USERDEFAULT_UILANGUAGE = "UILanguage";
+
+        /// <summary>the dates and numbers should be formatted with this culture</summary>
+        public const String USERDEFAULT_UICULTURE = "UICulture";
+
         /// <summary>key name for language</summary>
         public const String PARTNER_LANGUAGE = "p_language";
 

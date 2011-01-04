@@ -66,6 +66,9 @@
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MSysMan">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MSysMan.DataSets">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MSysMan.DataSets.dll</HintPath>
     </Reference>
@@ -79,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ImportExport.cs" />
+    <Compile Include="LanguageCultureSettings.cs" />
     <Compile Include="UserManagement.cs" />
     <Compile Include="WebConnectors.Assembly.cs" />
   </ItemGroup>
@@ -98,6 +102,10 @@
     <ProjectReference Include="data\Ict.Petra.Server.MSysMan.DatasetAccess.csproj">
       <Project>{45FE3810-367A-4C3F-B35C-4F4485228AE8}</Project>
       <Name>Ict.Petra.Server.MSysMan.DatasetAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="Ict.Petra.Server.MSysMan.csproj">
+      <Project>{5DF56B61-41A0-4E7E-A918-5AF595A023A2}</Project>
+      <Name>Ict.Petra.Server.MSysMan</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
