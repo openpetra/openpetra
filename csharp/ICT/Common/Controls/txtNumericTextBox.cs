@@ -953,21 +953,33 @@ namespace Ict.Common.Controls
 
                     case TNumericTextBoxMode.Currency:
 
-                        string FormatString = "0,000";
+                        string FormatString = "0";
 
                         if (FDecimalPlaces > 0)
                         {
-                            FormatString += "." + new String('#', FDecimalPlaces);
+                            FormatString += "." + new String('0', FDecimalPlaces);
                         }
 
                         if (FNumberPrecision == TNumberPrecision.Double)
                         {
                             NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
+
+                            if (NumberValueDouble >= 1000)
+                            {
+                                FormatString = "0,00" + FormatString;
+                            }
+
                             strnumformat = NumberValueDouble.ToString(FormatString, FCurrentCulture);
                         }
                         else if (FNumberPrecision == TNumberPrecision.Decimal)
                         {
                             NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
+
+                            if (NumberValueDecimal >= 1000)
+                            {
+                                FormatString = "0,00" + FormatString;
+                            }
+
                             strnumformat = NumberValueDecimal.ToString(FormatString, FCurrentCulture);
                         }
 
