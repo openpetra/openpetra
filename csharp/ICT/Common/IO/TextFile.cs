@@ -122,6 +122,11 @@ namespace Ict.Common.IO
 
             if (!AIgnoreNewLine)
             {
+                if (sr1.CurrentEncoding != sr2.CurrentEncoding)
+                {
+                    return false;
+                }
+
                 // compare the length only when you want the line endings to be the same.
                 // otherwise the length would be different anyways
                 if (sr1.BaseStream.Length != sr2.BaseStream.Length)
