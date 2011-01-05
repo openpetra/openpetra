@@ -52,7 +52,7 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// read the date format that the user has selected
+        /// read the number format that the user has selected
         /// </summary>
         public string DateFormat
         {
@@ -65,6 +65,22 @@ namespace Ict.Common.IO
                 txtDateFormat.Text = value;
             }
         }
+        
+        /// <summary>
+        /// read the date format that the user has selected
+        /// </summary>
+        public int NumberFormatIndex
+        {
+            get
+            {
+                return cmbNumberFormat.SelectedIndex;
+            }
+            set
+            {
+            	cmbNumberFormat.SelectedIndex = value;
+            }
+        }
+
 
         /// <summary>
         /// constructor

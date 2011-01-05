@@ -63,7 +63,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 
+          
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
@@ -77,7 +79,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FdlgSeparator.DateFormat = "dd/MM/yyyy";
                 }
-
+ 				if (impOptions.Length > 1)
+	            {
+	               FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+	            }
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
                     Hashtable requestParams = new Hashtable();
@@ -85,6 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat",FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
                     //requestParams.Add("NumberFormat", FdlgSeparator.N);
 
 
@@ -132,41 +138,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment
             }
-        }
-
-        private String ImportString(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn;
-        }
-
-        private Boolean ImportBoolean(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn.ToLower().Equals("yes");
-        }
-
-        private Int64 ImportInt64(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt64(sReturn);
-        }
-
-        private Int32 ImportInt32(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt32(sReturn);
-        }
-
-        private Decimal ImportDecimal(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToDecimal(sReturn);
-        }
+        }      
     }
 }

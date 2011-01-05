@@ -66,6 +66,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         bool FExtraColumns;
         TDBTransaction FTransaction;
         GLSetupTDS FSetupTDS;
+        CultureInfo FCultureInfo;
 
 
         private String FImportMessage;
@@ -100,8 +101,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 //            FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
 //            FBaseCurrency = (String)requestParams["BaseCurrency"];
 //            FDateForSummary = (DateTime)requestParams["DateForSummary"];
-//            String NumberFormat = (String)requestParams["NumberFormat"];
-//            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            String NumberFormat = (String)requestParams["NumberFormat"];
+            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
 //            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
 //            FRecipientNumber = (Int64)requestParams["RecipientNumber"];
 //            FFieldNumber = (Int64)requestParams["FieldNumber"];
@@ -352,7 +353,8 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            return Convert.ToDecimal(sReturn);
+            decimal dec=Convert.ToDecimal(sReturn,FCultureInfo);
+            return dec;
         }
     }
 }
