@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1309,15 +1309,11 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindInt32InComboBox(int SearchInt32)
         {
-            int ReturnValue;
-
-            System.Windows.Forms.ComboBox.ObjectCollection Items;
             System.Int32 ItemInt32;
             System.Int32 ColumnIndex;
             System.Int32 ColumnNum;
             System.Data.DataRowView TmpRowView;
-            ReturnValue = -1;
-            Items = this.Items;
+            int ReturnValue = -1;
 
             foreach (object Item in Items)
             {
@@ -1339,20 +1335,11 @@ namespace Ict.Common.Controls
                                 // Messagebox.Show('Result: ' + Result.ToString);
                                 break;
                             }
-
-                            // End of "if (ItemInt32 = SearchInt32) then"
                         }
-
-                        // End of "if (ItemType = typeof(System.Int32)) then"
                     }
-
-                    // End of "for ColumnIndex := 0 to (ColumnNum) do"
                 }
-
-                // End of "if (ColumnNum > 0) then"
             }
 
-            // End of "for Item in Items do"
             return ReturnValue;
         }
 
@@ -1633,10 +1620,10 @@ namespace Ict.Common.Controls
         /// </returns>
         public bool SetSelectedString(String AStr)
         {
-            System.Int32 PreviousSelectedIndex = SelectedIndex;
-            SelectedIndex = FindStringInComboBox(AStr);
+            Int32 PreviousSelectedIndex = SelectedIndex;
+            Int32 NewSelectedIndex = FindStringInComboBox(AStr);
 
-            if ((SelectedIndex == -1) && (Items.Count > 0))
+            if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {
                 if (PreviousSelectedIndex != -1)
                 {
@@ -1649,6 +1636,8 @@ namespace Ict.Common.Controls
 
                 return false;
             }
+
+            SelectedIndex = NewSelectedIndex;
 
             return true;
         }
