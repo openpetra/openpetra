@@ -78,7 +78,7 @@ class Program
         }
 
         Console.Write(Catalog.GetString("Press any key to continue . . . "));
-        Console.ReadKey(true);
+        // Console.ReadKey(true);
     }
 }
 }
