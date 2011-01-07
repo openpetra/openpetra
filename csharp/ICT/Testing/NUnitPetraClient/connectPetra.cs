@@ -25,6 +25,8 @@ using System;
 using Ict.Petra.Client.App.Core;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
+using System.Threading;
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
@@ -47,6 +49,15 @@ namespace Ict.Testing.NUnitPetraClient
 
         public static void Connect(string AConfigName)
         {
+            TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
+
+            // Set up Handlers for 'UnhandledException'
+            // Note: BOTH handlers are needed for a WinForms Application!!!
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
+            UnhandledThreadExceptionHandler = new TUnhandledThreadExceptionHandler();
+
+            Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
+
             TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
