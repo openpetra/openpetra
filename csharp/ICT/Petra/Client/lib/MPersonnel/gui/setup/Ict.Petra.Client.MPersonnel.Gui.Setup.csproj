@@ -100,9 +100,19 @@
     <Compile Include="AbilityAreaSetup.ManualCode.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="AbilityLevelSetup.cs" />
+    <Compile Include="AbilityLevelSetup.Designer.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AbilityLevelSetup.ManualCode.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AbilityLevelSetup.resx">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
