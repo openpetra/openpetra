@@ -44,9 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftBatches
     {
-        private String FImportMessage;
-        private String FImportLine;
-        private TDlgSelectCSVSeparator FdlgSeparator = null;
+        private TDlgSelectCSVSeparator FdlgSeparator;
         GiftBatchTDS FMergeDS = null;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
@@ -54,7 +52,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
-            bool ok = false;
+            //save the position of the actual row
+            int rowIndex = CurrentRowIndex();
+        	bool ok = false;
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
           
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
                 if (dateFormatString.Equals("MDY"))
@@ -128,16 +128,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (ok)
                 {
-                    FMainDS.Merge(FMergeDS);
-                    MessageBox.Show(Catalog.GetString("Your data was importeded successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    //TODO refresh the gui
+                	LoadBatches(FLedgerNumber);
+//                	((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+//                	FMainDS.Merge(FMergeDS);
+//                    MessageBox.Show(Catalog.GetString("Your data was importeded successfully!"),
+//                        Catalog.GetString("Success"),
+//                        MessageBoxButtons.OK,
+//                        MessageBoxIcon.Information);
+//                   
+//                    SelectByIndex(rowIndex);
                 }
 
-                ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment
+                //ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment
             }
-        }      
+        }
+        private int CurrentRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+        private void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+        }
+
     }
 }
