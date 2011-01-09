@@ -65,7 +65,7 @@ namespace Ict.Common.IO
                 txtDateFormat.Text = value;
             }
         }
-        
+
         /// <summary>
         /// read the date format that the user has selected
         /// </summary>
@@ -77,7 +77,7 @@ namespace Ict.Common.IO
             }
             set
             {
-            	cmbNumberFormat.SelectedIndex = value;
+                cmbNumberFormat.SelectedIndex = value;
             }
         }
 

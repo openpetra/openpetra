@@ -45,16 +45,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_GiftBatches
     {
         private TDlgSelectCSVSeparator FdlgSeparator;
-        GiftBatchTDS FMergeDS = null;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
-            //save the position of the actual row
-            int rowIndex = CurrentRowIndex();
-        	bool ok = false;
+            bool ok = false;
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -65,7 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
             String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 
-          
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
@@ -79,10 +75,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FdlgSeparator.DateFormat = "dd/MM/yyyy";
                 }
- 				if (impOptions.Length > 1)
-	            {
-	               FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
-	            }
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                }
+
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
                     Hashtable requestParams = new Hashtable();
@@ -90,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat",FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
                     //requestParams.Add("NumberFormat", FdlgSeparator.N);
 
 
@@ -99,80 +97,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
 
                     importString = File.ReadAllText(dialog.FileName);
-                    string ErrorMessages = String.Empty;
 
-                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatchData(
+                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                         requestParams,
                         importString,
-                        out AMessages,
-                        out FMergeDS);
+                        out AMessages);
 
-                    if (AMessages.Count > 0)
-                    {
-                        foreach (TVerificationResult message in AMessages)
-                        {
-                            ErrorMessages += "[" + message.ResultContext + "] " +
-                                             message.ResultTextCaption + ": " +
-                                             message.ResultText + Environment.NewLine;
-                        }
-                    }
-
-                    if (ErrorMessages.Length > 0)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"),
-
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
+                    ShowMessages(AMessages);
                 }
 
                 if (ok)
                 {
-                	LoadBatches(FLedgerNumber);
-//                	((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
-//                	FMainDS.Merge(FMergeDS);
-//                    MessageBox.Show(Catalog.GetString("Your data was importeded successfully!"),
-//                        Catalog.GetString("Success"),
-//                        MessageBoxButtons.OK,
-//                        MessageBoxIcon.Information);
-//                   
-//                    SelectByIndex(rowIndex);
+                    TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
+                    impOptions = FdlgSeparator.SelectedSeparator;
+                    impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+                    TUserDefaults.SetDefault("Imp Options", impOptions);
+                    TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+                    LoadBatches(FLedgerNumber);
                 }
-
-                //ParentForm.Dispose(); // TODO This is only for technical reasons, because there is no refresh at the moment
             }
         }
-        private int CurrentRowIndex()
+
+
+        void ShowMessages(TVerificationResultCollection AMessages)
         {
-            int rowIndex = -1;
+            string ErrorMessages = String.Empty;
 
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            if (AMessages.Count > 0)
             {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
+                foreach (TVerificationResult message in AMessages)
+                {
+                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                }
             }
 
-            return rowIndex;
-        }
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
+            if (ErrorMessages.Length > 0)
             {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-
     }
 }
