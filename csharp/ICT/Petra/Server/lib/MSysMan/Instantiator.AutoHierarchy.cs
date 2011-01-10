@@ -1475,6 +1475,28 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
+        public bool SetLanguageAndCulture(string ALanguageCode,
+                                          string ACultureCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "SetLanguageAndCulture", ";STRING;STRING;");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.SetLanguageAndCulture(ALanguageCode, ACultureCode);
+        }
+
+        /// generated method from connector
+        public bool LoadLanguageAndCultureFromUserDefaults()
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.LoadLanguageAndCultureFromUserDefaults();
+        }
+
+        /// generated method from connector
+        public bool GetLanguageAndCulture(out string ALanguageCode,
+                                          out string ACultureCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "GetLanguageAndCulture", ";STRING;STRING;");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.GetLanguageAndCulture(out ALanguageCode, out ACultureCode);
+        }
+
+        /// generated method from connector
         public bool SetUserPassword(string AUsername,
                                     string APassword)
         {

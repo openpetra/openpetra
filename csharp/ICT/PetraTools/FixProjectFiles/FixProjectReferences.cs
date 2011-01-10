@@ -73,7 +73,13 @@ public class TFixProjectReferences : TCSProjTools
         XmlDocument doc = new XmlDocument();
 
         Console.WriteLine(AFilename);
-        doc.Load(AFilename);
+        StreamReader sr = new StreamReader(AFilename);
+        string text = sr.ReadToEnd();
+        sr.Close();
+        doc.LoadXml(text);
+
+        // load from string, to avoid exception about missing BOM
+        //doc.Load(AFilename);
 
         bool firstPropertyGroup = true;
 

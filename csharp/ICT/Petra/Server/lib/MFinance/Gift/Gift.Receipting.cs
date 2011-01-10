@@ -48,6 +48,7 @@ using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
@@ -65,6 +66,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate)
         {
+            TLanguageCulture.LoadLanguageAndCulture();
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // get the local country code
@@ -209,6 +212,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string rowTexts = "";
             decimal sum = 0;
 
+            decimal prevAmount = 0.0M;
+            string prevCommentOne = String.Empty;
+            string prevAccountDesc = String.Empty;
+            string prevCostCentreDesc = String.Empty;
+            DateTime prevDateEntered = DateTime.MaxValue;
+
             foreach (DataRow rowGifts in ADonations.Rows)
             {
                 DateTime dateEntered = Convert.ToDateTime(rowGifts["DateEntered"]);
@@ -218,12 +227,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
                 sum += amount;
 
+                // can we sum up donations on the same date, or do we need to print each detail with the account description?
+                if (RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC"))
+                {
+                    rowTexts += RowTemplate.
+                                Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
+                                Replace("#AMOUNT", String.Format("{0:C}", amount)).
+                                Replace("#COMMENTONE", commentOne).
+                                Replace("#ACCOUNTDESC", accountDesc).
+                                Replace("#COSTCENTREDESC", costcentreDesc);
+                }
+                else
+                {
+                    if ((dateEntered != prevDateEntered) && (prevDateEntered != DateTime.MaxValue))
+                    {
+                        rowTexts += RowTemplate.
+                                    Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
+                                    Replace("#AMOUNT", String.Format("{0:C}", prevAmount)).
+                                    Replace("#COMMENTONE", prevCommentOne).
+                                    Replace("#ACCOUNTDESC", prevAccountDesc).
+                                    Replace("#COSTCENTREDESC", prevCostCentreDesc);
+                        prevAmount = amount;
+                    }
+                    else
+                    {
+                        prevAmount += amount;
+                    }
+
+                    prevDateEntered = dateEntered;
+                    prevCommentOne = commentOne;
+                    prevAccountDesc = accountDesc;
+                    prevCostCentreDesc = costcentreDesc;
+                }
+            }
+
+            if (prevDateEntered != DateTime.MaxValue)
+            {
                 rowTexts += RowTemplate.
-                            Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
-                            Replace("#AMOUNT", String.Format("{0:C}", amount)).
-                            Replace("#COMMENTONE", commentOne).
-                            Replace("#ACCOUNTDESC", accountDesc).
-                            Replace("#COSTCENTREDESC", costcentreDesc);
+                            Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
+                            Replace("#AMOUNT", String.Format("{0:C}", prevAmount)).
+                            Replace("#COMMENTONE", prevCommentOne).
+                            Replace("#ACCOUNTDESC", prevAccountDesc).
+                            Replace("#COSTCENTREDESC", prevCostCentreDesc);
+                prevAmount = 0.0M;
             }
 
             msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));

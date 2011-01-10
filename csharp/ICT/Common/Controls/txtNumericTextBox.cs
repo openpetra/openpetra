@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Globalization;
+using System.Threading;
 
 namespace Ict.Common.Controls
 {
@@ -74,6 +75,7 @@ namespace Ict.Common.Controls
 
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
+        private CultureInfo FCurrentCulture;
 
         private string FNumberPositiveSign = "+";
         private string FNumberNegativeSign = "-";
@@ -304,7 +306,7 @@ namespace Ict.Common.Controls
                 {
                     if (this.Text != String.Empty)
                     {
-                        return Convert.ToDecimal(RemoveNonNumeralChars());
+                        return Convert.ToDecimal(RemoveNonNumeralChars(), FCurrentCulture);
                     }
                     else
                     {
@@ -326,7 +328,7 @@ namespace Ict.Common.Controls
 
                     if (value != null)
                     {
-                        base.Text = value.ToString();
+                        base.Text = ((decimal)value).ToString(FCurrentCulture);
                     }
                     else
                     {
@@ -368,7 +370,7 @@ namespace Ict.Common.Controls
                 {
                     if (this.Text != String.Empty)
                     {
-                        return Convert.ToDouble(RemoveNonNumeralChars());
+                        return Convert.ToDouble(RemoveNonNumeralChars(), FCurrentCulture);
                     }
                     else
                     {
@@ -390,7 +392,7 @@ namespace Ict.Common.Controls
 
                     if (value != null)
                     {
-                        base.Text = value.ToString();
+                        base.Text = ((double)value).ToString(FCurrentCulture);
                     }
                     else
                     {
@@ -489,6 +491,7 @@ namespace Ict.Common.Controls
 
             FNumberDecimalSeparator = NfiCurrenThread.NumberDecimalSeparator;     // TODO: make this customisable in Client .config file
             FCurrencyDecimalSeparator = NfiCurrenThread.CurrencyDecimalSeparator; // TODO: make this customisable in Client .config file
+            FCurrentCulture = Thread.CurrentThread.CurrentCulture;
 
             // Hook up Events
             this.KeyPress += new KeyPressEventHandler(OnKeyPress);
@@ -927,21 +930,21 @@ namespace Ict.Common.Controls
 
                         if (FNumberPrecision == TNumberPrecision.Double)
                         {
-                            NumberValueDouble = Convert.ToDouble(AValue);
+                            NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
                             //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
                             //                NumberFormatInfo ni = ci.NumberFormat;
 
-                            base.Text = NumberValueDouble.ToString("N" + FDecimalPlaces);
+                            base.Text = NumberValueDouble.ToString("N" + FDecimalPlaces, FCurrentCulture);
                             //                string strnumformat = d.ToString("c", ni);
                             //                this.Text = strnumformat.Remove(0, 1);
                         }
                         else if (FNumberPrecision == TNumberPrecision.Decimal)
                         {
-                            NumberValueDecimal = Convert.ToDecimal(AValue);
+                            NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
                             //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
                             //                NumberFormatInfo ni = ci.NumberFormat;
 
-                            base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces);
+                            base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture);
                             //                string strnumformat = d.ToString("c", ni);
                             //                this.Text = strnumformat.Remove(0, 1);
                         }
@@ -949,52 +952,44 @@ namespace Ict.Common.Controls
                         break;
 
                     case TNumericTextBoxMode.Currency:
-                        CultureInfo ci = CultureInfo.CreateSpecificCulture("en-GB");
-                        NumberFormatInfo ni = ci.NumberFormat;
-                        ni.CurrencyDecimalDigits = FDecimalPlaces;
+
+                        string FormatString = "0";
+
+                        if (FDecimalPlaces > 0)
+                        {
+                            FormatString += "." + new String('0', FDecimalPlaces);
+                        }
 
                         if (FNumberPrecision == TNumberPrecision.Double)
                         {
-                            NumberValueDouble = Convert.ToDouble(AValue);
-                            strnumformat = NumberValueDouble.ToString("c", ni);
+                            NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
 
-                            // Remove currency symbol (we know it's '£' because we selected en-GB culture)
-                            if (NumberValueDouble >= 0)
+                            if (NumberValueDouble >= 1000)
                             {
-                                strnumformat = strnumformat.Remove(0, 1);
+                                FormatString = "0,00" + FormatString;
                             }
-                            else
-                            {
-                                strnumformat = strnumformat.Remove(1, 1);
-                            }
+
+                            strnumformat = NumberValueDouble.ToString(FormatString, FCurrentCulture);
                         }
                         else if (FNumberPrecision == TNumberPrecision.Decimal)
                         {
-                            NumberValueDecimal = Convert.ToDecimal(AValue);
-                            strnumformat = NumberValueDecimal.ToString("c", ni);
+                            NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
 
-                            // Remove currency symbol (we know it's '£' because we selected en-GB culture)
-                            if (NumberValueDecimal >= 0)
+                            if (NumberValueDecimal >= 1000)
                             {
-                                strnumformat = strnumformat.Remove(0, 1);
+                                FormatString = "0,00" + FormatString;
                             }
-                            else
-                            {
-                                strnumformat = strnumformat.Remove(1, 1);
-                            }
+
+                            strnumformat = NumberValueDecimal.ToString(FormatString, FCurrentCulture);
                         }
 
-                        // only add the currency symbol if it has a reasonable value
-                        //if (FCurrencySymbol != "###")
+                        if (FCurrencySymbolRightAligned)
                         {
-                            if (FCurrencySymbolRightAligned)
-                            {
-                                base.Text = strnumformat + " " + FCurrencySymbol;
-                            }
-                            else
-                            {
-                                base.Text = FCurrencySymbol + " " + strnumformat;
-                            }
+                            base.Text = strnumformat + " " + FCurrencySymbol;
+                        }
+                        else
+                        {
+                            base.Text = FCurrencySymbol + " " + strnumformat;
                         }
 
                         break;

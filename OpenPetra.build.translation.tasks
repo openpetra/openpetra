@@ -34,6 +34,17 @@
                         <variable name="MONO_PATH" path="${OpenPetraRoot.dir}/csharp/ThirdParty/GNU"/>
                     </environment>
                 </exec>
+
+                <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/${Output.dir}/" overwrite="true">
+                    <fileset basedir="${Tmp.dir}/i18n/">
+                        <include name="**.dll" />
+                    </fileset>
+                </copy>
+                <copy todir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/${Output.dir}/" overwrite="true">
+                    <fileset basedir="${Tmp.dir}/i18n/">
+                        <include name="**.dll" />
+                    </fileset>
+                </copy>
             </do>
         </foreach>
     </target>

@@ -1469,6 +1469,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                 "TMaintenanceUserDefaults.SetUserDefault: added UserDefault '" + AKey + "' with value '" + AValue + "'.");
                         }
 #endif
+                        FoundInRow = UUserDefaultsDV.Find(AKey);
                     }
 
                     if (ASendUpdateInfoToClient)

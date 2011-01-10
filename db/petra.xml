@@ -4431,7 +4431,7 @@
                 descr="this is a sequence to easily identify which transaction has been matched and how"/>
     <tablefield name="a_match_text_c"
                 type="varchar"
-                format="X(50)"
+                format="X(100)"
                 descr="this is a separated list of all the recurring details of a_ep_transaction (ie. name, bank account, sort code, IBAN, amount, description)"/>
     <tablefield name="a_detail_i"
                 type="integer"
@@ -4754,7 +4754,7 @@
                 initial="-1"/>
     <tablefield name="a_match_text_c"
                 type="varchar"
-                format="X(50)"
+                format="X(100)"
                 descr="this is a calculated text that uniquely identifies this transaction so that it can be recognised next month. TODO: should have a link table a_ep_match between a_ep_transaction and a_ep_match_detail"/>
     <tablefield name="a_account_name_c"
                 type="varchar"

@@ -64,10 +64,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
       this.rbtListUnmatched.Text = Catalog.GetString("ListUnmatched");
       this.rbtListGift.Text = Catalog.GetString("ListGift");
       this.rbtListGL.Text = Catalog.GetString("ListGL");
+      this.rbtListIgnored.Text = Catalog.GetString("ListIgnored");
       this.rgrSelectTransaction.Text = Catalog.GetString("Select Transaction");
+      this.lblCreditSum.Text = Catalog.GetString("Credit Sum:");
+      this.lblDebitSum.Text = Catalog.GetString("Debit Sum:");
       this.rbtUnmatched.Text = Catalog.GetString("Unmatched");
       this.rbtGift.Text = Catalog.GetString("Gift");
       this.rbtGL.Text = Catalog.GetString("GL");
+      this.rbtIgnored.Text = Catalog.GetString("Ignored");
       this.rgrTransactionCategory.Text = Catalog.GetString("Transaction Category");
       this.txtDonorKey.ButtonText = Catalog.GetString("Find");
       this.btnAddGiftDetail.Text = Catalog.GetString("&Add");
@@ -99,7 +103,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
       this.Text = Catalog.GetString("Import Bank Statements");
       #endregion
 
-      this.txtAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtGLNarrative.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtGLReference.Font = TAppSettingsManager.GetDefaultBoldFont();
 

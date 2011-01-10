@@ -57,11 +57,11 @@ class Program
                 File.Copy("../../Common/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
             }
 
-            Catalog.Init("de-DE");
+            Catalog.Init("de-DE", "de-DE");
             Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
             Console.WriteLine(Catalog.GetString("Hello World!"));
             Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
-            Catalog.Init("en-GB");
+            Catalog.Init("en-GB", "en-GB");
             Console.WriteLine(Catalog.GetString("Hello World!"));
             Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
         }
@@ -78,7 +78,7 @@ class Program
         }
 
         Console.Write(Catalog.GetString("Press any key to continue . . . "));
-        Console.ReadKey(true);
+        // Console.ReadKey(true);
     }
 }
 }

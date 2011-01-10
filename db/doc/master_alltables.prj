@@ -135,7 +135,6 @@
 		<tablename name="a_email_destination"/>
 		<tablename name="a_fees_payable"/>
 		<tablename name="a_fees_receivable"/>
-		<tablename name="a_fin_statement_group"/>
 		<tablename name="a_form"/>
 		<tablename name="a_form_element_type"/>
 		<tablename name="a_form_element"/>

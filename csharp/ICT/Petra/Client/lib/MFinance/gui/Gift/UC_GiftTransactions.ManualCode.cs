@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,6 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-// using TRemote.MFinance.Gift.WebConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -99,8 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
                 {
-                    cmbDetailMotivationDetailCode.SelectedItem =
-                        MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                    cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
                 }
             }
         }
@@ -301,8 +299,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftDetail.Rows.Add(newRow);
 
             // TODO: use previous gifts of donor?
-            newRow.MotivationGroupCode = "GIFT";
-            newRow.MotivationDetailCode = "SUPPORT";
+            //newRow.MotivationGroupCode = "GIFT";
+            //newRow.MotivationDetailCode = "SUPPORT";
 
             return newRow;
         }

@@ -36,6 +36,7 @@ using Ict.Common.IO;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls.Logic;
@@ -135,6 +136,8 @@ namespace Ict.Petra.Client.App.PetraClient
                     AConnectDialog.Dispose();
 
                     FLoginSuccessful = true;
+
+                    Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.InitLanguageAndCulture();
                 }
             }
             catch (Exception exp)
@@ -303,8 +306,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             FLogging = new TLogging(TClientSettings.GetPathTemp() + Path.DirectorySeparatorChar + "PetraClient.log");
 
-            // TODO load culture from config file etc
-            Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
+            Catalog.Init();
 
             // TODO another Catalog.Init("org", "./locale") for organisation specific words?
 
