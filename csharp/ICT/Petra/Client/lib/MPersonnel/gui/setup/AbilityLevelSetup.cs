@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -233,6 +233,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         }
 
         return null;
+    }
+
+    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+        txtDetailAbilityLevel.ReadOnly = AReadOnly;
     }
 
     private void ShowDetails(PtAbilityLevelRow ARow)
@@ -469,6 +474,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
+
+                        SetPrimaryKeyReadOnly(true);
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;

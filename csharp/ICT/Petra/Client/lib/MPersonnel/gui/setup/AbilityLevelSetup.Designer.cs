@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailAbilityLevelDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailAbilityLevelDescr.Name = "txtDetailAbilityLevelDescr";
-            this.txtDetailAbilityLevelDescr.Size = new System.Drawing.Size(250, 28);
+            this.txtDetailAbilityLevelDescr.Size = new System.Drawing.Size(360, 28);
             //
             // lblDetailAbilityLevelDescr
             //
