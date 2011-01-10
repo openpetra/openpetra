@@ -31,7 +31,7 @@ using GNU.Gettext;
 
 using Ict.Common;
 
-namespace Ict.Petra.Client.MPartner.Gui
+namespace Ict.Common.Controls
 {
     /// <summary>
     /// UserControl which acts as a 'Collapsible Panel'.
