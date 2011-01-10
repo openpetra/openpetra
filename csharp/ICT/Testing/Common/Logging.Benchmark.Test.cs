@@ -33,31 +33,28 @@ using log4net.Config;
 
 namespace Tests.Common
 {
-	
-	/// <summary>
-	/// This class provides a benchmark test and compares the old TLogging-System 
-	/// with the logging.apache.org - log4net - System. The test itself shall run 
-	/// inside of NUnit but it is not realy a NUNIT-Test. 
-	/// Using a stopwatch you can read the time which is used for logging from the logfiles
-	/// itself.
-	/// 
-	/// The Routine requires file 
-	///   csharp\ICT\Testing\_bin\Debug\Tests.Common.xml
-	/// in order to set the relevant logging parameters.
-	/// </summary>
-	[TestFixture]
-	public class Logging_Benchmark_Test
-	{
-		
-		String fileName = "../../Common/Tests.Common.xml";
-		
+    /// <summary>
+    /// This class provides a benchmark test and compares the old TLogging-System
+    /// with the logging.apache.org - log4net - System. The test itself shall run
+    /// inside of NUnit but it is not realy a NUNIT-Test.
+    /// Using a stopwatch you can read the time which is used for logging from the logfiles
+    /// itself.
+    ///
+    /// The Routine requires file
+    ///   csharp\ICT\Testing\_bin\Debug\Tests.Common.xml
+    /// in order to set the relevant logging parameters.
+    /// </summary>
+    [TestFixture]
+    public class Logging_Benchmark_Test
+    {
+        String fileName = "../../Common/Tests.Common.xml";
+
         Stopwatch stopwatch = new Stopwatch();
-        
-        
+
+
         // Standard-Initilisation of the log4net
         private static readonly ILog log = LogManager.GetLogger(typeof(Logging_Benchmark_Test));
-		
-        
+
 
         /// <summary>
         /// Standard-Initilisation of TLogging
@@ -65,32 +62,27 @@ namespace Tests.Common
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("TestServer.log");
+            new TLogging("test.log");
         }
 
-        
         /// <summary>
         /// Standard-Test of the TLogging-System in order to get a reference time
         /// </summary>
         [Test]
         public void Test_01_TLogging()
         {
-        	stopwatch.Reset();
-        	stopwatch.Start();
-        	
+            stopwatch.Reset();
+            stopwatch.Start();
 
-        	for (int i=0; i<10000; i++)
-        	{
-          	  TLogging.Log("Entry: " + i);
-        	}
+            for (int i = 0; i < 10000; i++)
+            {
+                TLogging.Log("Entry: " + i);
+            }
 
-        	stopwatch.Stop();
-        	TLogging.Log("Zeit: " +  stopwatch.ElapsedMilliseconds);
-        	TLogging.Log("Freq: " + Stopwatch.Frequency);
-        	
-        	
-        } 
-
+            stopwatch.Stop();
+            TLogging.Log("Zeit: " + stopwatch.ElapsedMilliseconds);
+            TLogging.Log("Freq: " + Stopwatch.Frequency);
+        }
 
         /// <summary>
         /// First Version of log4net. In this case log.Debug is used directly.
@@ -98,65 +90,66 @@ namespace Tests.Common
         [Test]
         public void Test_02_Log4Net_DirectLog()
         {
-        	XmlConfigurator.Configure(
-        		new FileInfo(fileName));
-        	
-        	stopwatch.Reset();
-        	stopwatch.Start();
-        	
-        	for (int i=0; i<10000; i++)
-        	{
-          	  log.Debug("Entry: " + i);
-        	}
+            XmlConfigurator.Configure(
+                new FileInfo(fileName));
 
-        	stopwatch.Stop();
-        	log.Info("Zeit: " +  stopwatch.ElapsedMilliseconds);
-        	log.Info("Freq: " + Stopwatch.Frequency);
+            stopwatch.Reset();
+            stopwatch.Start();
 
+            for (int i = 0; i < 10000; i++)
+            {
+                log.Debug("Entry: " + i);
+            }
+
+            stopwatch.Stop();
+            log.Info("Zeit: " + stopwatch.ElapsedMilliseconds);
+            log.Info("Freq: " + Stopwatch.Frequency);
         }
 
         /// <summary>
-        /// Optimized Version of the log4net-Test. 
-        /// if (log.IsDebugEnabled) will avoid a string construction in the 
+        /// Optimized Version of the log4net-Test.
+        /// if (log.IsDebugEnabled) will avoid a string construction in the
         /// local routine
         /// </summary>
         [Test]
         public void Test_03_Log4Net_If_CastedLog()
         {
-        	XmlConfigurator.Configure(
-        		new FileInfo(fileName));
-        	stopwatch.Reset();
-        	stopwatch.Start();
-        	log.Info("HRes: " + Stopwatch.IsHighResolution);
+            XmlConfigurator.Configure(
+                new FileInfo(fileName));
+            stopwatch.Reset();
+            stopwatch.Start();
+            log.Info("HRes: " + Stopwatch.IsHighResolution);
 
-        	for (int i=0; i<10000; i++)
-        	{
-        		if (log.IsDebugEnabled) log.Debug("Entry: " + i);
-        	}
+            for (int i = 0; i < 10000; i++)
+            {
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug("Entry: " + i);
+                }
+            }
 
-        	stopwatch.Stop();
-        	log.Info("Zeit: " +  stopwatch.ElapsedMilliseconds);
-        	log.Info("Ticks: " +  stopwatch.ElapsedTicks);
-        	log.Info("Freq: " + Stopwatch.Frequency);
-        	
-        } 
-        
+            stopwatch.Stop();
+            log.Info("Zeit: " + stopwatch.ElapsedMilliseconds);
+            log.Info("Ticks: " + stopwatch.ElapsedTicks);
+            log.Info("Freq: " + Stopwatch.Frequency);
+        }
+
         /// <summary>
         /// A Reference Test using System.Console directly.
         /// </summary>
         [Test]
         public void Test_99_WriteConsoleOnly()
         {
-        	stopwatch.Reset();
-        	stopwatch.Start();
+            stopwatch.Reset();
+            stopwatch.Start();
 
-        	for (int i=0; i<10000; i++)
-        	{
-          	  System.Console.WriteLine("Entry: " + i);
-        	}
+            for (int i = 0; i < 10000; i++)
+            {
+                System.Console.WriteLine("Entry: " + i);
+            }
 
-        	stopwatch.Stop();
-        	TLogging.Log("Zeit: " +  stopwatch.ElapsedMilliseconds);
-        }                 
-	}
+            stopwatch.Stop();
+            TLogging.Log("Zeit: " + stopwatch.ElapsedMilliseconds);
+        }
+    }
 }
