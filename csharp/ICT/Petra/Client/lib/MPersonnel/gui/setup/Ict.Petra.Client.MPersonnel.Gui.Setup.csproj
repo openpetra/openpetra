@@ -88,8 +88,10 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup></ItemGroup>
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="AbilityAreaSetup.cs" />
     <Compile Include="AbilityAreaSetup.Designer.cs">
@@ -99,8 +101,18 @@
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="PositionSetup.cs" />
+    <Compile Include="PositionSetup.Designer.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PositionSetup.ManualCode.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PositionSetup.resx">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
