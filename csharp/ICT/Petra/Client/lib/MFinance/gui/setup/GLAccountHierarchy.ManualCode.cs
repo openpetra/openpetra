@@ -128,6 +128,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
+            try
+            {
+                TreeViewAfterSelect(e);
+            }
+            catch (System.Data.ConstraintException)
+            {
+                trvAccounts.SelectLastNode();
+            }
+        }
+
+        private void TreeViewAfterSelect(TreeViewEventArgs e)
+        {
             // store current detail values
             if ((FCurrentNode != null) && (FCurrentNode != e.Node))
             {
@@ -173,6 +185,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
             ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
+            
+            chkDetailForeignCurrencyFlag.Enabled = ARow.PostingStatus;
         }
 
         private void AddNewAccount(Object sender, EventArgs e)
@@ -345,6 +359,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Here it shall be tested ...
             if (!txtDetailAccountCode.ReadOnly)
             {
+                if (!ChangeAccountCodeValue())
+                {
+                    throw new CancelSaveExeption();
+                }
+            }
+
+            if (!txtDetailAccountCode.ReadOnly)
+            {
                 ChangeAccountCodeValue();
             }
 
@@ -376,9 +398,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// But if the user invokes an other event - i.E. FileSave the FileSave-Event runs first.
         /// </summary>
 
-        public void ChangeAccountCodeValue()
+        public bool ChangeAccountCodeValue()
         {
             String strNewDetailAccountCode = txtDetailAccountCode.Text;
+            bool changeAccepted = false;
 
             if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
             {
@@ -389,15 +412,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AAccountRow account = (AAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, strOldDetailAccountCode });
 
-                account.AccountCode = strNewDetailAccountCode;
-                accountHDetail.ReportingAccountCode = strNewDetailAccountCode;
+                try
+                {
+                    account.AccountCode = strNewDetailAccountCode;
+                    accountHDetail.ReportingAccountCode = strNewDetailAccountCode;
 
-                trvAccounts.BeginUpdate();
-                trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
-                trvAccounts.EndUpdate();
+                    trvAccounts.BeginUpdate();
+                    trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
+                    trvAccounts.EndUpdate();
 
-                strOldDetailAccountCode = strNewDetailAccountCode;
+                    strOldDetailAccountCode = strNewDetailAccountCode;
+                    changeAccepted = true;
+                }
+                catch (System.Data.ConstraintException)
+                {
+                    MessageBox.Show(
+                        Catalog.GetString(
+                            "Sorry but this account already exists: ") + strNewDetailAccountCode,
+                        Catalog.GetString("You cannot use an account name twice!"));
+                }
             }
+
+            return changeAccepted;
         }
     }
 }

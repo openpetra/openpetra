@@ -286,6 +286,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(GroupBox))
                          || (ctrl.GetType() == typeof(TbtnVarioText))
                          || (ctrl.GetType() == typeof(TreeView))
+                         || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel)))
                 {
