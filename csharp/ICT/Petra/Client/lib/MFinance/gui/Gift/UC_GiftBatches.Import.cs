@@ -108,16 +108,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (ok)
                 {
-                    TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
-                    impOptions = FdlgSeparator.SelectedSeparator;
-                    impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
-                    TUserDefaults.SetDefault("Imp Options", impOptions);
-                    TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
                     LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.DisableSaveButton();
                 }
             }
         }
 
+        void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
+        {
+            TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
+            impOptions = FdlgSeparator.SelectedSeparator;
+            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+        }
 
         void ShowMessages(TVerificationResultCollection AMessages)
         {
