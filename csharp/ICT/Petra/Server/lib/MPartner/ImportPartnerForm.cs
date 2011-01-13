@@ -24,9 +24,12 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Drawing.Printing;
+using System.Net.Mail;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.App.ClientDomain;
@@ -41,6 +44,11 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Jayrock.Json;
+using Ict.Common.Printing;
+using PdfSharp;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace Ict.Petra.Server.MPartner.Import
 {
@@ -105,6 +113,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// partner key of registration office
         /// </summary>
         public Int64 registrationoffice;
+        /// <summary>
+        /// country code of registration office
+        /// </summary>
+        public string registrationcountrycode;
         /// <summary>
         /// identifies the event
         /// </summary>
@@ -233,6 +245,89 @@ namespace Ict.Petra.Server.MPartner.Import
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
         }
 
+        /// create PDF
+        private static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData)
+        {
+            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                              Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
+
+            string HTMLText = string.Empty;
+
+            if (!File.Exists(FileName))
+            {
+                HTMLText = "<html><body>" + String.Format("Cannot find file {0}", FileName) + "</body></html>";
+            }
+            else
+            {
+                StreamReader r = new StreamReader(FileName);
+                HTMLText = r.ReadToEnd();
+                r.Close();
+            }
+
+            HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText.Replace("#LASTNAME", AData.lastname);
+
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HTMLText,
+                String.Empty,
+                pdfPrinter);
+
+            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            string pdfPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                             "pdfs";
+
+            if (!Directory.Exists(pdfPath))
+            {
+                Directory.CreateDirectory(pdfPath);
+            }
+
+            string pdfFilename = pdfPath + Path.DirectorySeparatorChar + APartnerKey.ToString() + ".pdf";
+
+            pdfPrinter.SavePDF(pdfFilename);
+
+            return pdfFilename;
+        }
+
+        private static void SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
+        {
+            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                              Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
+            string HTMLText = string.Empty;
+
+            if (!File.Exists(FileName))
+            {
+                HTMLText = "<html><body>" + String.Format("Cannot find file {0}", FileName) + "</body></html>";
+            }
+            else
+            {
+                StreamReader r = new StreamReader(FileName);
+                HTMLText = r.ReadToEnd();
+                r.Close();
+            }
+
+            HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText.Replace("#LASTNAME", AData.lastname);
+
+            // load the language file for the specific country
+            Catalog.Init(ACountryCode, ACountryCode);
+
+            // send email
+            TSmtpSender emailSender = new TSmtpSender();
+
+            MailMessage msg = new MailMessage(Catalog.GetString("DONTReply@example.org"),
+                AData.email,
+                Catalog.GetString("RegistrationEmailSubject"),
+                HTMLText);
+
+            msg.Attachments.Add(new Attachment(APDFFilename, System.Net.Mime.MediaTypeNames.Application.Octet));
+            msg.Bcc.Add(Catalog.GetString("RegistrationOffice@example.org"));
+
+            emailSender.SendMessage(ref msg);
+        }
+
         /// <summary>
         /// method for importing data entered on the web form
         /// </summary>
@@ -243,6 +338,8 @@ namespace Ict.Petra.Server.MPartner.Import
         {
             if (AFormID == "RegisterPerson")
             {
+                string pdfIdentifier = string.Empty;
+
                 try
                 {
                     TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
@@ -328,7 +425,8 @@ namespace Ict.Petra.Server.MPartner.Import
                             Path.GetExtension(imageTmpPath));
                     }
 
-                    // TODO create PDF, send email
+                    pdfIdentifier = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data);
+                    SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfIdentifier);
                 }
                 catch (Exception e)
                 {
@@ -338,6 +436,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                 }
 
+                // TODO: return id of the PDF pdfIdentifier
                 return "{\"success\":true}";
             }
             else

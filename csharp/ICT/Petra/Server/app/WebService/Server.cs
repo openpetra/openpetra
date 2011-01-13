@@ -68,7 +68,7 @@ public class TOpenPetraOrg : WebService
     {
         if (TheServerManager == null)
         {
-            Catalog.Init(System.Threading.Thread.CurrentThread.CurrentUICulture.Name);
+            Catalog.Init();
 
             TheServerManager = new TServerManager();
             try
