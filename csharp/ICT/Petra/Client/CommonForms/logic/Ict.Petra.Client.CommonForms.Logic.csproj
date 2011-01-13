@@ -88,6 +88,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ict.Petra.Client.CommonForms.Logic.AssemblyInfo.cs" />
+    <Compile Include="PetraShepherdConcreteFormInterface.cs" />
+    <Compile Include="PetraShepherdConcreteForm.cs" />
+    <Compile Include="PetraShepherdNavigationHelper.cs" />
+    <Compile Include="PetraShepherdPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../app/Core/Ict.Petra.Client.App.Core.csproj">

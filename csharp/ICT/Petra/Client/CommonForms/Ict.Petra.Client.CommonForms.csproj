@@ -76,6 +76,7 @@
     <Compile Include="PetraForm.cs" />
     <Compile Include="PetraModuleForm.cs" />
     <Compile Include="FormsList.cs" />
+    <Compile Include="PetraShepherdConcreteForm.cs" />
     <Compile Include="PetraShepherdForm.cs" />
     <Compile Include="PetraShepherdForm.Designer.cs">
       <DependentUpon>PetraShepherdForm.cs</DependentUpon>

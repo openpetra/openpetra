@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Description:
-//       Namespace for the logic of WinForms (and UserControls) that provide a basic look'n'feel 
+//       Namespace for the logic of WinForms (and UserControls) that provide a basic look'n'feel
 //       and functionality. They are the Base Classes of most Forms (and UserControls) of the
 //       Petra Client.
 // @Authors:
