@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -903,12 +903,25 @@ namespace Ict.Common.Printing
                 if (FMarginType == eMarginType.ePrintableArea)
                 {
                     // margin is set by the printing program, eg. HTML Renderer
-                    FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
-                    FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
-                    FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
-                    FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
-                    FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
-                    FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                    try
+                    {
+                        FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
+                        FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
+                        FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
+                        FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
+                        FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
+                        FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                    }
+                    catch (Exception e)
+                    {
+                        // if no printer is installed, use default values
+                        FLeftMargin = 0;
+                        FTopMargin = 0;
+                        FRightMargin = -0.00333374f;
+                        FBottomMargin = 0.00166687f;
+                        FWidth = 11.69333f;
+                        FHeight = 8.268333f;
+                    }
                 }
                 else if (FMarginType == eMarginType.eDefaultMargins)
                 {
