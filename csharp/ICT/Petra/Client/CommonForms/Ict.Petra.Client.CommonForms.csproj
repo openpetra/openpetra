@@ -76,11 +76,18 @@
     <Compile Include="PetraForm.cs" />
     <Compile Include="PetraModuleForm.cs" />
     <Compile Include="FormsList.cs" />
+    <Compile Include="PetraShepherdForm.cs" />
+    <Compile Include="PetraShepherdForm.Designer.cs">
+      <DependentUpon>PetraShepherdForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PetraUserControl.cs" />
     <Compile Include="PetraUserControl.Designer.cs">
       <DependentUpon>PetraUserControl.cs</DependentUpon>
     </Compile>
     <Compile Include="WindowHandling.cs" />
+    <EmbeddedResource Include="PetraShepherdForm.resx">
+      <DependentUpon>PetraShepherdForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PetraUserControl.resx">
       <DependentUpon>PetraUserControl.cs</DependentUpon>
     </EmbeddedResource>
