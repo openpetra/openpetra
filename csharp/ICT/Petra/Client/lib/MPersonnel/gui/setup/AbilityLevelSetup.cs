@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityAreaSetup.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from AbilityLevelSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -47,17 +47,17 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
 
-  /// auto generated: Maintain Ability Areas
-  public partial class TFrmAbilityAreaSetup: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: Maintain Ability Levels
+  public partial class TFrmAbilityLevelSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private class FMainDS
     {
-        public static PtAbilityAreaTable PtAbilityArea;
+        public static PtAbilityLevelTable PtAbilityLevel;
     }
     /// constructor
-    public TFrmAbilityAreaSetup(IntPtr AParentFormHandle) : base()
+    public TFrmAbilityLevelSetup(IntPtr AParentFormHandle) : base()
     {
       Control[] FoundCheckBoxes;
 
@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
-      this.lblDetailAbilityAreaName.Text = Catalog.GetString("Ability Area:");
-      this.lblDetailAbilityAreaDescr.Text = Catalog.GetString("Description:");
+      this.lblDetailAbilityLevel.Text = Catalog.GetString("Ability Level:");
+      this.lblDetailAbilityLevelDescr.Text = Catalog.GetString("Description:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Ability Area");
+      this.tbbNew.Text = Catalog.GetString("New Ability Level");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -92,17 +92,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Ability Areas");
+      this.Text = Catalog.GetString("Maintain Ability Levels");
       #endregion
 
-      this.txtDetailAbilityAreaName.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailAbilityAreaDescr.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailAbilityLevelDescr.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            FPetraUtilsObject.SetStatusBarText(txtDetailAbilityAreaName, Catalog.GetString("Name for this area of ability, e.g. guitarist."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailAbilityAreaDescr, Catalog.GetString("Enter a description for this area of ability."));
-      FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if ability area is no longer assignable."));
-      FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which the ability area is unassignable."));
+            FPetraUtilsObject.SetStatusBarText(txtDetailAbilityLevel, Catalog.GetString("Numeric representation of level of ability."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAbilityLevelDescr, Catalog.GetString("Enter a description for this level of ability."));
+      FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if ability level is no longer assignable."));
+      FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which the ability level is unassignable."));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletableFlag, Catalog.GetString("Indicates if a record can be deleted."));
 
       /*
@@ -146,25 +145,25 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       Type DataTableType;
 
       // Load Data
-      FMainDS.PtAbilityArea = new PtAbilityAreaTable();
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("AbilityAreaList", String.Empty, null, out DataTableType);
-      FMainDS.PtAbilityArea.Merge(CacheDT);
+      FMainDS.PtAbilityLevel = new PtAbilityLevelTable();
+      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("AbilityLevelList", String.Empty, null, out DataTableType);
+      FMainDS.PtAbilityLevel.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Ability Area", FMainDS.PtAbilityArea.ColumnAbilityAreaName);
-      grdDetails.AddTextColumn("Description", FMainDS.PtAbilityArea.ColumnAbilityAreaDescr);
-      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtAbilityArea.ColumnUnassignableFlag);
-      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtAbilityArea.ColumnUnassignableDate);
-      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtAbilityArea.ColumnDeletableFlag);
+      grdDetails.AddTextColumn("", FMainDS.PtAbilityLevel.ColumnAbilityLevel);
+      grdDetails.AddTextColumn("Description", FMainDS.PtAbilityLevel.ColumnAbilityLevelDescr);
+      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtAbilityLevel.ColumnUnassignableFlag);
+      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtAbilityLevel.ColumnUnassignableDate);
+      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtAbilityLevel.ColumnDeletableFlag);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.PtAbilityArea.DefaultView;
+      DataView myDataView = FMainDS.PtAbilityLevel.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
       // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.PtAbilityArea.Rows.Count == 0)
+      if (FMainDS.PtAbilityLevel.Rows.Count == 0)
       {
         ShowDetails(null);
       }
@@ -178,19 +177,19 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
     }
 
-    /// automatically generated, create a new record of PtAbilityArea and display on the edit screen
+    /// automatically generated, create a new record of PtAbilityLevel and display on the edit screen
     /// we create the table locally, no dataset
-    public bool CreateNewPtAbilityArea()
+    public bool CreateNewPtAbilityLevel()
     {
-        PtAbilityAreaRow NewRow = FMainDS.PtAbilityArea.NewRowTyped();
+        PtAbilityLevelRow NewRow = FMainDS.PtAbilityLevel.NewRowTyped();
         NewRowManual(ref NewRow);
-        FMainDS.PtAbilityArea.Rows.Add(NewRow);
+        FMainDS.PtAbilityLevel.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PtAbilityArea.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PtAbilityLevel.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.PtAbilityArea.Rows.Count - 1);
+        SelectDetailRowByDataTableIndex(FMainDS.PtAbilityLevel.Rows.Count - 1);
 
         return true;
     }
@@ -201,9 +200,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.PtAbilityArea.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.PtAbilityLevel.PrimaryKey)
             {
-                string value1 = FMainDS.PtAbilityArea.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.PtAbilityLevel.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -224,13 +223,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     }
 
     /// return the selected row
-    private PtAbilityAreaRow GetSelectedDetailRow()
+    private PtAbilityLevelRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (PtAbilityAreaRow)SelectedGridRow[0].Row;
+            return (PtAbilityLevelRow)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -238,10 +237,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
-        txtDetailAbilityAreaName.ReadOnly = AReadOnly;
+        txtDetailAbilityLevel.ReadOnly = AReadOnly;
     }
 
-    private void ShowDetails(PtAbilityAreaRow ARow)
+    private void ShowDetails(PtAbilityLevelRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -251,9 +250,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailAbilityAreaName.Text = ARow.AbilityAreaName;
-            txtDetailAbilityAreaName.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailAbilityAreaDescr.Text = ARow.AbilityAreaDescr;
+            txtDetailAbilityLevel.NumberValueInt = ARow.AbilityLevel;
+            txtDetailAbilityLevel.ReadOnly = (ARow.RowState != DataRowState.Added);
+            txtDetailAbilityLevelDescr.Text = ARow.AbilityLevelDescr;
             chkDetailUnassignableFlag.Checked = ARow.UnassignableFlag;
             if (ARow.IsUnassignableDateNull())
             {
@@ -276,7 +275,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private PtAbilityAreaRow FPreviouslySelectedDetailRow = null;
+    private PtAbilityLevelRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -290,12 +289,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         pnlDetails.Enabled = true;
     }
 
-    private void GetDetailsFromControls(PtAbilityAreaRow ARow)
+    private void GetDetailsFromControls(PtAbilityLevelRow ARow)
     {
         if (ARow != null)
         {
-            ARow.AbilityAreaName = txtDetailAbilityAreaName.Text;
-            ARow.AbilityAreaDescr = txtDetailAbilityAreaDescr.Text;
+            ARow.AbilityLevel = Convert.ToInt32(txtDetailAbilityLevel.NumberValueInt);
+            ARow.AbilityLevelDescr = txtDetailAbilityLevelDescr.Text;
             ARow.UnassignableFlag = chkDetailUnassignableFlag.Checked;
             if (dtpDetailUnassignableDate.Date == null)
             {
@@ -364,7 +363,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataRow InspectDR in FMainDS.PtAbilityArea.Rows)
+            foreach (DataRow InspectDR in FMainDS.PtAbilityLevel.Rows)
             {
                 InspectDR.EndEdit();
             }
@@ -381,7 +380,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PtAbilityArea.GetChangesTyped();
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PtAbilityLevel.GetChangesTyped();
 
                 if (SubmitDT == null)
                 {
@@ -399,7 +398,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("AbilityAreaList", ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("AbilityLevelList", ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -459,13 +458,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.PtAbilityArea.AcceptChanges();
+                        FMainDS.PtAbilityLevel.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.PtAbilityArea.Merge(SubmitDT, false);
+                        FMainDS.PtAbilityLevel.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.PtAbilityArea.AcceptChanges();
+                        FMainDS.PtAbilityLevel.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");

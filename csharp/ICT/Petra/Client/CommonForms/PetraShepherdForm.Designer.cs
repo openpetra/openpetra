@@ -161,7 +161,6 @@ namespace Ict.Petra.Client.CommonForms
 			this.pnlNavigation.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
 			this.pnlNavigation.Size = new System.Drawing.Size(163, 273);
 			this.pnlNavigation.TabIndex = 2;
-			this.pnlNavigation.Paint += new System.Windows.Forms.PaintEventHandler(this.PnlNavigationPaint);
 			// 
 			// pnlContent
 			// 

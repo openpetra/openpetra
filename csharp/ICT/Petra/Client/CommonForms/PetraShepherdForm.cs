@@ -31,27 +31,27 @@ namespace Ict.Petra.Client.CommonForms
 		
 		void BtnFinishClick(object sender, EventArgs e)
 		{
-			FLogic.HandleActionFinish();
+//			FLogic.HandleActionFinish();
 		}
 		
 		void BtnNextClick(object sender, EventArgs e)
 		{
-			FLogic.HandleActionNext();
+//			FLogic.HandleActionNext();
 		}
 		
 		void BtnBackClick(object sender, EventArgs e)
 		{
-			FLogic.HandleActionBack();
+//			FLogic.HandleActionBack();
 		}
 		
 		void BtnCancelClick(object sender, EventArgs e)
 		{
-			FLogic.HandleActionCancel();
+//			FLogic.HandleActionCancel();
 		}
 		
 		void BtnHelpClick(object sender, EventArgs e)
 		{
-			FLogic.HandleActionHelp();
+//			FLogic.HandleActionHelp();
 		}
 		
 		void TPetraShepherdFormLoad(object sender, EventArgs e)

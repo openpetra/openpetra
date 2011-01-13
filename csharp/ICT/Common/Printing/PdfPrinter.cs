@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -423,13 +423,21 @@ namespace Ict.Common.Printing
 
                 if (FEv == null)
                 {
-                    PageSettings myPageSettings = new PageSettings();
+                    PrinterSettings myPrinterSettings = new PrinterSettings();
+                    PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
                     myPageSettings.Margins = new Margins(20, 20, 20, 39);
                     myPageSettings.PaperSize = new PaperSize("A4", 1169, 827);
-                    myPageSettings.PrinterResolution.X = 600;
-                    myPageSettings.PrinterResolution.Y = 600;
+                    try
+                    {
+                        myPageSettings.PrinterResolution.X = 600;
+                        myPageSettings.PrinterResolution.Y = 600;
+                    }
+                    catch (Exception)
+                    {
+                        // if no printer is installed we get an exception, but it should work anyway
+                    }
                     FEv = new PrintPageEventArgs(FXGraphics.Graphics,
                         new Rectangle(20, 20, 787, 1110),
                         new Rectangle(0, 0, 827, 1169),

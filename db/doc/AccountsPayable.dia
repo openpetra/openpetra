@@ -9,7 +9,7 @@
 	<dia:attribute name="obj_bb"><dia:rectangle val="21.75,85.4;40.83,110.1"/></dia:attribute>
 	<dia:attribute name="elem_corner"><dia:point val="21.80,85.45"/></dia:attribute>
 	<dia:attribute name="elem_width"><dia:real val="18.98"/></dia:attribute>
-	<dia:attribute name="elem_height"><dia:real val="17.40"/></dia:attribute>
+	<dia:attribute name="elem_height"><dia:real val="16.80"/></dia:attribute>
 	<dia:attribute name="name"><dia:string>#a_account#</dia:string></dia:attribute>
 	<dia:attribute name="stereotype"><dia:string>##</dia:string></dia:attribute>
 	<dia:attribute name="comment"><dia:string>##</dia:string></dia:attribute>
@@ -50,7 +50,6 @@
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_consolidation_account_flag_l  boolean     #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_intercompany_account_flag_l   boolean     #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_budget_type_code_c            varchar(16)  FK#</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
-		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_fin_statement_group_c         varchar(16) #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_posting_status_l              boolean     #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_system_account_flag_l         boolean     #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
 		<dia:composite type='umlattribute'><dia:attribute name='name'><dia:string>#a_budget_control_flag_l         boolean     #</dia:string> </dia:attribute><dia:attribute name='type'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='value'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='comment'><dia:string>##</dia:string> </dia:attribute><dia:attribute name='visibility'><dia:enum val='3' /> </dia:attribute><dia:attribute name='abstract'><dia:boolean val='false' /> </dia:attribute><dia:attribute name='class_scope'><dia:boolean val='false' /> </dia:attribute></dia:composite>
@@ -933,7 +932,7 @@
 	<dia:attribute name="visible_operations"><dia:boolean val="false"/></dia:attribute>
 	<dia:attribute name="visible_comments"><dia:boolean val="false"/></dia:attribute>
 	<dia:attribute name="foreground_color"><dia:color val="#000000"/></dia:attribute>
-	<dia:attribute name="background_color"><dia:color val="#add8e6"/></dia:attribute>
+	<dia:attribute name="background_color"><dia:color val="#ffffff"/></dia:attribute>
 	<dia:attribute name="normal_font"><dia:font family="monospace" style="0" name="Courier"/></dia:attribute>
 	<dia:attribute name="abstract_font"><dia:font family="monospace" style="88" name="Courier"/></dia:attribute>
 	<dia:attribute name="polymorphic_font"><dia:font family="monospace" style="8" name="Courier"/></dia:attribute>
@@ -1148,11 +1147,11 @@
 	<dia:attribute name='templates' />
 </dia:object>
 <dia:object type="UML - Association" version="0" id="a_account_a_account_fk3">
-	<dia:attribute name="obj_pos"><dia:point val="40.78,104.65" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="40.73,84.9;73.36,106.25" /> </dia:attribute>
+	<dia:attribute name="obj_pos"><dia:point val="21.80,103.85" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="0,0;0,0" /> </dia:attribute>
 <dia:attribute name="orth_points">
-<dia:point val="40.78,104.65" /> 
-<dia:point val="52.8451,104.65" /> 
-<dia:point val="52.8451,84.95" /> 
+<dia:point val="40.78,103.85" /> 
+<dia:point val="42.28,103.85" /> 
+<dia:point val="42.28,84.95" /> 
 <dia:point val="58.95,84.95" /> 
 </dia:attribute>
 <dia:attribute name="orth_orient">
@@ -1164,15 +1163,15 @@
 <dia:attribute name="direction"><dia:enum val="0" /> </dia:attribute><dia:attribute name="ends"><dia:composite><dia:attribute name="role"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="multiplicity"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="arrow"><dia:boolean val="false" /> </dia:attribute>
 <dia:attribute name="aggregate"><dia:enum val="0" /> </dia:attribute></dia:composite><dia:composite><dia:attribute name="role"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="multiplicity"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="arrow"><dia:boolean val="false" /> </dia:attribute><dia:attribute name="aggregate"><dia:enum val="0" /> </dia:attribute></dia:composite></dia:attribute>
 <dia:connections>
-<dia:connection handle="0" to="tab_a_account" connection="53" />
+<dia:connection handle="0" to="tab_a_account" connection="51" />
  <dia:connection handle="1" to="tab_a_currency" connection="3" />
  </dia:connections>
 </dia:object>
 <dia:object type="UML - Association" version="0" id="a_account_a_account_fk4">
-	<dia:attribute name="obj_pos"><dia:point val="40.78,105.45" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="40.73,61.35;43.15,107.05" /> </dia:attribute>
+	<dia:attribute name="obj_pos"><dia:point val="21.80,104.65" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="0,0;0,0" /> </dia:attribute>
 <dia:attribute name="orth_points">
-<dia:point val="40.78,105.45" /> 
-<dia:point val="41.42,105.45" /> 
+<dia:point val="40.78,104.65" /> 
+<dia:point val="41.42,104.65" /> 
 <dia:point val="41.42,61.40" /> 
 <dia:point val="43.10,61.40" /> 
 </dia:attribute>
@@ -1185,7 +1184,7 @@
 <dia:attribute name="direction"><dia:enum val="0" /> </dia:attribute><dia:attribute name="ends"><dia:composite><dia:attribute name="role"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="multiplicity"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="arrow"><dia:boolean val="false" /> </dia:attribute>
 <dia:attribute name="aggregate"><dia:enum val="0" /> </dia:attribute></dia:composite><dia:composite><dia:attribute name="role"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="multiplicity"><dia:string>##</dia:string> </dia:attribute><dia:attribute name="arrow"><dia:boolean val="false" /> </dia:attribute><dia:attribute name="aggregate"><dia:enum val="0" /> </dia:attribute></dia:composite></dia:attribute>
 <dia:connections>
-<dia:connection handle="0" to="tab_a_account" connection="55" />
+<dia:connection handle="0" to="tab_a_account" connection="53" />
  <dia:connection handle="1" to="tab_p_banking_details" connection="3" />
  </dia:connections>
 </dia:object>
