@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Collapsible.cs" />
     <Compile Include="VersatileCombobox.cs" />
     <Compile Include="NumericTextBox.cs" />
   </ItemGroup>
