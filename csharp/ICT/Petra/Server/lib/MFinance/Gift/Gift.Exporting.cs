@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             else
             {
-                FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
+                FStringWriter.Write(String.Format(FCultureInfo, "{0:###########0.00}", currencyField));
             }
 
             WriteDelimiter(bLineEnd);
