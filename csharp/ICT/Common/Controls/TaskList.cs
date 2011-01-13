@@ -25,6 +25,7 @@ namespace Ict.Common.Controls
 	/// </summary>
 	public partial class TaskList : UserControl
 	{
+		//public TVisualStyle VisualStyle;
 		public XmlNode MasterXmlNode 
 		{ 
 			set
@@ -37,8 +38,16 @@ namespace Ict.Common.Controls
 		//Private method to load taskItems of a masterXmlNode
 		private void loadTaskItems(XmlNode masterXmlNode){
 			//@TODO: Implement
-			LinkLabel lblSubTaskItem = new LinkLabel();
-//			lblSubTaskItem.Name = 
+			while (SubTaskNode != null)
+			{
+				LinkLabel lblSubTaskItem = new LinkLabel();
+				lblSubTaskItem.Name = SubTaskNode.Name;
+//				lblSubTaskItem.Font = 
+				lblSubTaskItem.Text = TLstFolderNavigation.GetLabel(SubTaskNode);
+				this.pnlModule.Controls.Add(lblSubTaskItem);
+				
+				SubTaskNode = SubTaskNode.NextSibling;
+			}
 		}
 
 		public TaskList()
@@ -48,6 +57,20 @@ namespace Ict.Common.Controls
 			//
 			InitializeComponent();
 			
+			//this.VisualStyle = new TVisualStyles(VisualStylesEnum.
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+
+		public TaskList(XmlNode masterNode)
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			this.MasterXmlNode = masterNode;
+			//this.VisualStyle = new TVisualStyles(VisualStylesEnum.
 			//
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//

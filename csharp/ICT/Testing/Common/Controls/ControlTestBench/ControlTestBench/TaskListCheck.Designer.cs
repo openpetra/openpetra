@@ -2,13 +2,13 @@
  * Created by SharpDevelop.
  * User: Taylor Students
  * Date: 13/01/2011
- * Time: 11:44
+ * Time: 14:11
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-namespace Ict.Common.Controls
+namespace ControlTestBench
 {
-	partial class TaskList
+	partial class TaskListCheck
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -16,7 +16,7 @@ namespace Ict.Common.Controls
 		private System.ComponentModel.IContainer components = null;
 		
 		/// <summary>
-		/// Disposes resources used by the control.
+		/// Disposes resources used by the form.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
@@ -36,26 +36,27 @@ namespace Ict.Common.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.pnlModule = new System.Windows.Forms.Panel();
+			this.taskList1 = new Ict.Common.Controls.TaskList();
 			this.SuspendLayout();
 			// 
-			// pnlModule
+			// taskList1
 			// 
-			this.pnlModule.AccessibleName = "pnlModule";
-			this.pnlModule.Location = new System.Drawing.Point(3, 3);
-			this.pnlModule.Name = "pnlModule";
-			this.pnlModule.Size = new System.Drawing.Size(114, 144);
-			this.pnlModule.TabIndex = 0;
+			this.taskList1.BackColor = System.Drawing.SystemColors.Desktop;
+			this.taskList1.Location = new System.Drawing.Point(83, 53);
+			this.taskList1.Name = "taskList1";
+			this.taskList1.Size = new System.Drawing.Size(150, 150);
+			this.taskList1.TabIndex = 0;
 			// 
-			// TaskList
+			// TaskListCheck
 			// 
-			this.AccessibleName = "pnlModule";
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.pnlModule);
-			this.Name = "TaskList";
+			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.Controls.Add(this.taskList1);
+			this.Name = "TaskListCheck";
+			this.Text = "TaskListCheck";
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.Panel pnlModule;
+		private Ict.Common.Controls.TaskList taskList1;
 	}
 }
