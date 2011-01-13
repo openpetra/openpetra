@@ -33,6 +33,13 @@ using Ict.Common;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
+	
+	public enum TCollapseDirection
+	{
+		cdVertical,
+		cdHorizontal
+	}
+	
     /// <summary>
     /// UserControl which acts as a 'Collapsible Panel'.
     /// </summary>
@@ -51,6 +58,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Caches the translated text for several ToolTips</summary>
         private string FToolTipText;
+        
+        /// <summary>Hard-coded value of the collapsed width</summary>
+        private const Int16 COLLAPSEDWIDTH = 29;
+
+        /// <summary>Hard-coded value of the expanded width</summary>
+        private const Int16 EXPANDEDWIDTH = 153;
 
         #endregion
 
@@ -93,6 +106,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Sets the Collapse Direction.
+        /// </summary>
+        public TCollapseDirection CollapseDirection
+        {
+            get
+            {
+                ;
+            }
+
+            set
+            {
+                ;
+            }
+        }
+        
         #endregion
 
 
@@ -139,9 +168,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void Collapse()
         {
             FIsCollapsed = true;
-
             btnToggle.ImageIndex = 1;
-            this.Height = COLLAPSEDHEIGHT;
+            
+            if(CollapseDirection == cdVertical)
+            {
+                this.Height = COLLAPSEDHEIGHT;
+            }
+            else
+            {
+                this.Width = COLLAPSEDWIDTH;
+            }
         }
 
         /// <summary>
@@ -150,9 +186,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void Expand()
         {
             FIsCollapsed = false;
-
             btnToggle.ImageIndex = 0;
-            this.Height = EXPANDEDHEIGHT;
+
+            if(CollapseDirection == cdVertical)
+            {
+                this.Height = EXPANDEDHEIGHT;
+            }
+            else
+            {
+            	this.Width = EXPANDEDWIDTH;
+            }
+            
         }
 
         #endregion
@@ -180,6 +224,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 Expanded(this, new EventArgs());
             }
+        }
+        
+        private void ChangeDirection()
+        {
+        	//The set of four Icons with arrows for collapsing/expanding need to be swapped with the other set of four icons
         }
 
         #endregion
