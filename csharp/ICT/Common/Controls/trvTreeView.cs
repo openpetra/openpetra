@@ -31,60 +31,103 @@ namespace Ict.Common.Controls
     /// This tree view provides "common features"
     ///
     /// 1. If the tree losts the focus, the left node will stay marked as "has had focus"
+    ///
+    /// If you think that you can optimize the code feel free to do it but be careful. It
+    /// shall run ether in the client an in NUnit ...
     /// </summary>
     public class TTrvTreeView : System.Windows.Forms.TreeView
     {
         // "Last used Node" or the node which was left by "lostFocus"
         // This node is not necessarily the same node if the control get back the focus
-        private TreeNode workNode;
+        private TreeNode workNode = null;
 
         // In order to restore the last settings ....
-        private TreeNode lastWorkNode;
+        private TreeNode lastWorkNode = null;
 
         // Actual used BackgroundColor which may be selected by System-Settings
-        private Color treeBackgroundColor;
+        private Color treeBackgroundColor = Color.Empty;
         // Actual used (Font) ForeColor which may be selected by System-Settings
-        private Color treeForeColor;
+        private Color treeForeColor = Color.Empty;
 
-        // The constructor only installs an Eventhandler which is used only one time.
-        // This avoids some timing conflicts.
+        private bool colorsInitialized = false;
+
+        /// <summary>
+        /// The constructor only installs two Eventhandlers.
+        /// </summary>
         public TTrvTreeView()
         {
-            GotFocus += new EventHandler(TreeViewFirstFocus);
-        }
-
-        // GetFocus-Event which is only used for the first GotFocus-Event
-        private void TreeViewFirstFocus(object sender, EventArgs e)
-        {
-            GotFocus -= new EventHandler(TreeViewFirstFocus);
-            LostFocus += new EventHandler(TreeViewLostFocus);
             GotFocus += new EventHandler(TreeViewGotFocus);
-            treeBackgroundColor = SelectedNode.BackColor;
-            treeForeColor = SelectedNode.ForeColor;
-            lastWorkNode = SelectedNode;
+            LostFocus += new EventHandler(TreeViewLostFocus);
+            System.Console.WriteLine("TTrvTreeView");
         }
 
         // Common GetFocus-Event
         private void TreeViewLostFocus(object sender, EventArgs e)
         {
-            lastWorkNode = workNode;
-            workNode = SelectedNode;
-            SelectedNode.BackColor = Color.Gray;
-            SelectedNode.ForeColor = Color.White;
+            try
+            {
+                CheckColorInitializing();
+
+                if (colorsInitialized)
+                {
+                    SelectedNode.BackColor = Color.Gray;
+                    SelectedNode.ForeColor = Color.White;
+                }
+
+                lastWorkNode = workNode;
+                workNode = SelectedNode;
+            }
+            catch (Exception)
+            {
+            }
+            System.Console.WriteLine("TTrvTreeView.LostFocus");
         }
 
         // Common LostFocus-Event
         private void TreeViewGotFocus(object sender, EventArgs e)
         {
-            workNode.BackColor = treeBackgroundColor;
-            workNode.ForeColor = treeForeColor;
+            try
+            {
+                CheckColorInitializing();
+
+                if (colorsInitialized)
+                {
+                    // restore the node colors
+                    workNode.BackColor = treeBackgroundColor;
+                    workNode.ForeColor = treeForeColor;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            System.Console.WriteLine("TTrvTreeView.GotFocus");
+        }
+
+        private void CheckColorInitializing()
+        {
+            // If the colors are not initialized - then do so ...
+            if (!colorsInitialized)
+            {
+                treeBackgroundColor = SelectedNode.BackColor;
+                treeForeColor = SelectedNode.ForeColor;
+                colorsInitialized = true;
+            }
         }
 
         // Routine to set back to the last selected node
         public void SelectLastNode()
         {
             workNode = lastWorkNode;
-            SelectedNode = lastWorkNode;
+
+            if (!(lastWorkNode == null))
+            {
+                SelectedNode = lastWorkNode;
+            }
         }
+
+//        public TreeNode SelectedNode() {
+//              return SelectedNode();
+//        }
+//
     }
 }

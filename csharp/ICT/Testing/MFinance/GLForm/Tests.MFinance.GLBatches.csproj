@@ -121,7 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="test.cs" />
+    <Compile Include="ManagingAccounts.Test.cs" />
+    <Compile Include="GLAccountHierarchy.test.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">

@@ -93,7 +93,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             trvAccounts.EndUpdate();
 
-            this.trvAccounts.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
+            this.trvAccounts.AfterSelect +=
+                new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
         }
 
         private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, AAccountHierarchyDetailRow ADetailRow)
@@ -128,64 +129,68 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
+            bool hasChanges = FPetraUtilsObject.HasChanges;
+
             try
             {
-                TreeViewAfterSelect(e);
+                // store current detail values
+                if ((FCurrentNode != null) && (FCurrentNode != e.Node))
+                {
+                    GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
+                        new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                    string oldName = currentAccount.AccountCode;
+                    GetDetailsFromControls(currentAccount);
+
+                    // this only works for new rows; old rows have the primary key fields readonly
+                    if (currentAccount.AccountCode != oldName)
+                    {
+                        // there are no references to this new row yet, apart from children nodes
+
+                        // change name in the account hierarchy
+                        ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
+
+                        // fix children nodes, account hierarchy
+                        foreach (TreeNode childnode in FCurrentNode.Nodes)
+                        {
+                            ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
+                        }
+                    }
+
+                    string nodeLabel = currentAccount.AccountCode;
+
+                    if (!currentAccount.IsAccountCodeShortDescNull())
+                    {
+                        nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
+                    }
+
+                    FCurrentNode.Text = nodeLabel;
+                }
+
+                FCurrentNode = e.Node;
+
+                // update detail panel
+                ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
+                                                                                             ((AAccountHierarchyDetailRow)FCurrentNode.Tag).
+                                                                                             ReportingAccountCode }));
             }
             catch (System.Data.ConstraintException)
             {
                 trvAccounts.SelectLastNode();
             }
-        }
 
-        private void TreeViewAfterSelect(TreeViewEventArgs e)
-        {
-            // store current detail values
-            if ((FCurrentNode != null) && (FCurrentNode != e.Node))
+            if (!hasChanges)
             {
-                GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                    new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
-                string oldName = currentAccount.AccountCode;
-                GetDetailsFromControls(currentAccount);
-
-                // this only works for new rows; old rows have the primary key fields readonly
-                if (currentAccount.AccountCode != oldName)
-                {
-                    // there are no references to this new row yet, apart from children nodes
-
-                    // change name in the account hierarchy
-                    ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
-
-                    // fix children nodes, account hierarchy
-                    foreach (TreeNode childnode in FCurrentNode.Nodes)
-                    {
-                        ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
-                    }
-                }
-
-                string nodeLabel = currentAccount.AccountCode;
-
-                if (!currentAccount.IsAccountCodeShortDescNull())
-                {
-                    nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
-                }
-
-                FCurrentNode.Text = nodeLabel;
+                FPetraUtilsObject.DisableSaveButton();
             }
 
-            FCurrentNode = e.Node;
-
-            // update detail panel
-            ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                                         ((AAccountHierarchyDetailRow)FCurrentNode.Tag).
-                                                                                         ReportingAccountCode }));
+            ;
         }
 
         private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
         {
             ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
             ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
-            
+
             chkDetailForeignCurrencyFlag.Enabled = ARow.PostingStatus;
         }
 

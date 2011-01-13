@@ -46,6 +46,9 @@
     <Reference Include="GNU.Gettext">
       <HintPath>..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
     </Reference>
+    <Reference Include="NUnit.Framework">
+      <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -109,7 +112,8 @@
     <EmbeddedResource Include="cmbVersatile.resx">
       <DependentUpon>cmbVersatile.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icons.resx"></EmbeddedResource>
+    <EmbeddedResource Include="Icons.resx">
+    </EmbeddedResource>
     <EmbeddedResource Include="lblVarioText.resx">
       <DependentUpon>lblVarioText.cs</DependentUpon>
     </EmbeddedResource>
