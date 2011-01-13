@@ -250,7 +250,7 @@ namespace Tests.MFinance.GLBatches
                 {
                     TDlgSelectCSVSeparatorTester tester2 = new TDlgSelectCSVSeparatorTester(hWnd2);
                     TextBoxTester txtDateFormat = new TextBoxTester("txtDateFormat");
-                    txtDateFormat.Properties.Text = "MM.dd.yyyy";
+                    txtDateFormat.Properties.Text = "MM/dd/yyyy";
                     RadioButtonTester rbtSemicolon = new RadioButtonTester("rbtSemicolon");
                     rbtSemicolon.Properties.Checked = true;
 
@@ -340,7 +340,7 @@ namespace Tests.MFinance.GLBatches
 
             Assert.AreEqual(true, TTextFile.SameContent(TestFile,
                     TestFile + ".new"), "the files should be the same: " + TestFile);
-            System.IO.File.Delete(TestFile + ".new");
+            //System.IO.File.Delete(TestFile + ".new");
 
             frmBatchExport.Close();
         }
