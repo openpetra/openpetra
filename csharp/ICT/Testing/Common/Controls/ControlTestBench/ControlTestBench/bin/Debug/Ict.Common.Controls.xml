@@ -3183,23 +3183,23 @@
             </summary>
             <param name="msg"></param>
         </member>
-        <member name="T:Ict.Common.Controls.TaskList">
+        <member name="T:Ict.Common.Controls.TTaskList">
             <summary>
             Description of TaskList.
             </summary>
         </member>
-        <member name="F:Ict.Common.Controls.TaskList.components">
+        <member name="F:Ict.Common.Controls.TTaskList.components">
             <summary>
             Designer variable used to keep track of non-visual components.
             </summary>
         </member>
-        <member name="M:Ict.Common.Controls.TaskList.Dispose(System.Boolean)">
+        <member name="M:Ict.Common.Controls.TTaskList.Dispose(System.Boolean)">
             <summary>
             Disposes resources used by the control.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:Ict.Common.Controls.TaskList.InitializeComponent">
+        <member name="M:Ict.Common.Controls.TTaskList.InitializeComponent">
             <summary>
             This method is required for Windows Forms designer support.
             Do not change the method contents inside the source code editor. The Forms designer might

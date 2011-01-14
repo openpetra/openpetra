@@ -95,7 +95,6 @@
     <Compile Include="TaskList.Designer.cs">
       <DependentUpon>TaskList.cs</DependentUpon>
     </Compile>
-    <Compile Include="TVisualStyles.cs" />
     <Compile Include="txtButtonLabel.cs" />
     <Compile Include="txtLabelledTextBox.cs" />
     <Compile Include="txtMaskedTextBox.cs" />

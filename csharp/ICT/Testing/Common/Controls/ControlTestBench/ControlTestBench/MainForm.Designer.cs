@@ -67,6 +67,7 @@ namespace ControlTestBench
 			this.txtYaml.Name = "txtYaml";
 			this.txtYaml.Size = new System.Drawing.Size(100, 20);
 			this.txtYaml.TabIndex = 2;
+			this.txtYaml.Text = "testYaml.yaml";
 			// 
 			// label1
 			// 
@@ -75,7 +76,6 @@ namespace ControlTestBench
 			this.label1.Size = new System.Drawing.Size(100, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "enter yaml file:";
-			
 			// 
 			// MainForm
 			// 

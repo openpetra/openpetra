@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace ControlTestBench
 {
@@ -17,13 +18,12 @@ namespace ControlTestBench
 	/// </summary>
 	public partial class TaskListCheck : Form
 	{
-		public TaskListCheck()
+		public TaskListCheck(XmlNode node)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
-			InitializeComponent();
-			
+			InitializeComponent(node);
 			//
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//

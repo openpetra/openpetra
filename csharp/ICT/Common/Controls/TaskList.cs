@@ -16,6 +16,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Xml;
+using System.Text.RegularExpressions;
 using Ict.Common;
 
 namespace Ict.Common.Controls
@@ -23,34 +24,71 @@ namespace Ict.Common.Controls
 	/// <summary>
 	/// Description of TaskList.
 	/// </summary>
-	public partial class TaskList : UserControl
+	public partial class TTaskList : UserControl
 	{
 		//public TVisualStyle VisualStyle;
-		public XmlNode MasterXmlNode 
-		{ 
+		private XmlNode internalMasterXmlNode;
+		
+		public XmlNode MasterXmlNode
+		{
+			get
+			{ 
+				return MasterXmlNode;
+			}
 			set
 			{
-				loadTaskItems(value);
-				MasterXmlNode = value;
+				
+				internalMasterXmlNode = value;
+				loadTaskItems(internalMasterXmlNode);
 			}
 		}
 		
 		//Private method to load taskItems of a masterXmlNode
-		private void loadTaskItems(XmlNode masterXmlNode){
+		private void loadTaskItems(XmlNode MasterXmlNode){
 			//@TODO: Implement
-			while (SubTaskNode != null)
-			{
-				LinkLabel lblSubTaskItem = new LinkLabel();
-				lblSubTaskItem.Name = SubTaskNode.Name;
-//				lblSubTaskItem.Font = 
-				lblSubTaskItem.Text = TLstFolderNavigation.GetLabel(SubTaskNode);
-				this.pnlModule.Controls.Add(lblSubTaskItem);
+//			XmlNode ChildNode = masterXmlNode.FirstChild.FirstChild;
+//			Regex TaskGroupRegex = new Regex("TaskGroup.*");
+			int NumTasks = 0;
+//			int NumGroups = 0;
+			int TaskHeight = 30;
+//			int TaskGroupTitleHeight = 40;
+			//Loop that iterates childNodes
+/*			while(ChildNode != null){
 				
-				SubTaskNode = SubTaskNode.NextSibling;
+				//Only runs for TaskGroup Nodes
+				if(TaskGroupRegex.IsMatch(ChildNode.Name)){
+					//Add Task Group Title to Control
+					Label TaskGroupTitle = new Label();
+					TaskGroupTitle.Text = TLstFolderNavigation.GetLabel(ChildNode);
+					TaskGroupTitle.Location = new System.Drawing.Point(10,NumTasks*TaskHeight+NumGroups*TaskGroupTitleHeight);
+					this.pnlModule.Controls.Add(TaskGroupTitle);
+*/					
+				XmlNode TaskNode = MasterXmlNode.FirstChild;//.FirstChild.FirstChild;//@TODO: Find robust way to execute this
+
+				while (TaskNode != null)
+				{
+					System.Text.RegularExpressions.Regex TaskRegex = new Regex("Task[0-9].*");
+					if(TaskRegex.IsMatch(TaskNode.Name)){
+						LinkLabel lblTaskItem = new LinkLabel();
+		//				lblTaskItem.Name = TaskNode.Name;
+		//				lblTaskItem.Font =
+						lblTaskItem.Location = new System.Drawing.Point(30,NumTasks*TaskHeight);
+						lblTaskItem.Text = TLstFolderNavigation.GetLabel(TaskNode);
+						this.Controls.Add(lblTaskItem);
+						NumTasks++;
+					}
+					TaskNode = TaskNode.NextSibling;
+				}
+				//NumGroups++;
+/*				}
+				ChildNode = ChildNode.NextSibling;
 			}
+			this.Height = NumTasks*TaskHeight + NumGroups * TaskGroupTitleHeight + 20;
+			this.pnlModule.Height = NumTasks*TaskHeight + NumGroups * TaskGroupTitleHeight + 20;
+*/	
 		}
 
-		public TaskList()
+		public TTaskList()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -63,7 +101,7 @@ namespace Ict.Common.Controls
 			//
 		}
 
-		public TaskList(XmlNode masterNode)
+		public TTaskList(XmlNode masterNode)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
