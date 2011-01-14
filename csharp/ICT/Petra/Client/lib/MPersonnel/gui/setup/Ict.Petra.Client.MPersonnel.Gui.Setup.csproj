@@ -105,6 +105,13 @@
     <Compile Include="LanguageLevelSetup.Designer.cs">
       <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="PassportTypeSetup.cs" />
+    <Compile Include="PassportTypeSetup.Designer.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportTypeSetup.ManualCode.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="PositionSetup.cs" />
     <Compile Include="PositionSetup.Designer.cs">
       <DependentUpon>PositionSetup.cs</DependentUpon>
@@ -129,11 +136,28 @@
     <Compile Include="VisionLevelSetup.ManualCode.cs">
       <DependentUpon>VisionLevelSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="VisionAreaSetup.cs" />
+    <Compile Include="VisionAreaSetup.Designer.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionAreaSetup.ManualCode.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.cs" />
+    <Compile Include="ApplicantStatusSetup.Designer.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.ManualCode.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LanguageLevelSetup.resx">
       <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PassportTypeSetup.resx">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PositionSetup.resx">
       <DependentUpon>PositionSetup.cs</DependentUpon>
@@ -143,6 +167,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VisionLevelSetup.resx">
       <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisionAreaSetup.resx">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicantStatusSetup.resx">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
