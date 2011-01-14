@@ -53,6 +53,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\ThirdParty\log4net\bin\net\2.0\debug\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\ThirdParty\NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -62,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Logging.Benchmark.Test.cs" />
     <Compile Include="test.cs" />
   </ItemGroup>
 </Project>

@@ -86,6 +86,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MaintainLanguageCulture.cs" />
+    <Compile Include="MaintainLanguageCulture.Designer.cs">
+      <DependentUpon>MaintainLanguageCulture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MaintainLanguageCulture.ManualCode.cs">
+      <DependentUpon>MaintainLanguageCulture.cs</DependentUpon>
+    </Compile>
     <Compile Include="MaintainUsers.cs" />
     <Compile Include="MaintainUsers.Designer.cs">
       <DependentUpon>MaintainUsers.cs</DependentUpon>
@@ -94,6 +101,9 @@
       <DependentUpon>MaintainUsers.cs</DependentUpon>
     </Compile>
     <Compile Include="SysManMain.cs" />
+    <EmbeddedResource Include="MaintainLanguageCulture.resx">
+      <DependentUpon>MaintainLanguageCulture.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MaintainUsers.resx">
       <DependentUpon>MaintainUsers.cs</DependentUpon>
     </EmbeddedResource>

@@ -102,5 +102,9 @@
       <Project>{0BC4E544-F1E7-48AC-869C-71312E31AC2D}</Project>
       <Name>Ict.Petra.Client.MCommon.Logic</Name>
     </ProjectReference>
+    <ProjectReference Include="logic\Ict.Petra.Client.CommonForms.Logic.csproj">
+      <Project>{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}</Project>
+      <Name>Ict.Petra.Client.CommonForms.Logic</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

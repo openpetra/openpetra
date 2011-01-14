@@ -255,6 +255,14 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
     /// <summary>auto generated</summary>
     public interface IMaintenanceWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
+        bool SetLanguageAndCulture(string ALanguageCode,
+                                   string ACultureCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
+        bool LoadLanguageAndCultureFromUserDefaults();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
+        bool GetLanguageAndCulture(out string ALanguageCode,
+                                   out string ACultureCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         bool SetUserPassword(string AUsername,
                              string APassword);

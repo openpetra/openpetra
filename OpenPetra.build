@@ -36,7 +36,7 @@
     <property name="Delivery.dir" value="${OpenPetraRoot.dir}/delivery"/>
     <property name="Tmp.dir" value="${OpenPetraRoot.dir}/tmp"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
-    <property name="DBDoc.Output.dir" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/dbdoc"/>
+    <property name="DBDoc.Output.dir" value="${Delivery.dir}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
 
     <property name="IctNAntTasks.file" value="${ThirdParty.dir}/NAnt/Ict.Tools.NAntTasks.dll"/>

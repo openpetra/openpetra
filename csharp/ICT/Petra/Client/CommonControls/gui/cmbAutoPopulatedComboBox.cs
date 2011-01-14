@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -319,9 +319,9 @@ namespace Ict.Petra.Client.CommonControls
         /// uses TCmbVersatile.SetSelectedString
         /// </summary>
         /// <param name="ASelectedString"></param>
-        public void SetSelectedString(string ASelectedString)
+        public bool SetSelectedString(string ASelectedString)
         {
-            this.cmbAutoPopulated.cmbCombobox.SetSelectedString(ASelectedString);
+            return this.cmbAutoPopulated.cmbCombobox.SetSelectedString(ASelectedString);
         }
 
         /// <summary>

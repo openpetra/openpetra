@@ -36,23 +36,35 @@ namespace Ict.Common
         static GettextResourceManager catalog = null;
 
         /// <summary>
+        /// initialise the resource manager with the default language
+        /// </summary>
+        public static void Init()
+        {
+            // TODO load culture from config file etc
+
+            Init(Thread.CurrentThread.CurrentUICulture.IetfLanguageTag, Thread.CurrentThread.CurrentCulture.IetfLanguageTag);
+        }
+
+        /// <summary>
         /// initialise the resource manager with the given language
         /// </summary>
-        public static void Init(string ACultureCode)
+        public static void Init(string ALanguageCode, string ACultureCode)
         {
             // modify current locale for the given language
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(ACultureCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
             catalog = new GettextResourceManager("OpenPetra");
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
         }
 
         /// <summary>
         /// set the new language
         /// </summary>
-        public static void SetLanguage(string ACultureCode)
+        public static void SetLanguage(string ALanguageCode)
         {
             // modify current locale for the given language
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(ACultureCode);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
         }
 
         /// <summary>

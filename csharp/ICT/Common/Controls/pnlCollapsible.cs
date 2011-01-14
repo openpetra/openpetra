@@ -31,7 +31,7 @@ using GNU.Gettext;
 
 using Ict.Common;
 
-namespace Ict.Petra.Client.MPartner.Gui
+namespace Ict.Common.Controls
 {
     /// <summary>
     /// UserControl which acts as a 'Collapsible Panel'.
@@ -108,8 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            FToolTipText = Catalog.GetString("Click here to expand / collapse the {0} panel");
-            this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
+            this.lblDetailHeading.Text = Catalog.GetString("Collapsible Panel");
             #endregion
 
             //

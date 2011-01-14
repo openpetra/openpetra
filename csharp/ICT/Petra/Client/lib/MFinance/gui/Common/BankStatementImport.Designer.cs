@@ -69,32 +69,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbSelectBankAccount = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblSelectBankAccount = new System.Windows.Forms.Label();
-            this.rgrSelectTransaction = new System.Windows.Forms.GroupBox();
+            this.pnlFilter = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.rgrSelectTransaction = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtListAll = new System.Windows.Forms.RadioButton();
             this.rbtListUnmatched = new System.Windows.Forms.RadioButton();
             this.rbtListGift = new System.Windows.Forms.RadioButton();
             this.rbtListGL = new System.Windows.Forms.RadioButton();
+            this.rbtListIgnored = new System.Windows.Forms.RadioButton();
+            this.pnlSum = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtCreditSum = new Ict.Common.Controls.TTxtNumericTextBox();
+            this.lblCreditSum = new System.Windows.Forms.Label();
+            this.txtDebitSum = new Ict.Common.Controls.TTxtNumericTextBox();
+            this.lblDebitSum = new System.Windows.Forms.Label();
             this.sptTransactionDetails = new System.Windows.Forms.SplitContainer();
             this.grdAllTransactions = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.rgrTransactionCategory = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtUnmatched = new System.Windows.Forms.RadioButton();
             this.rbtGift = new System.Windows.Forms.RadioButton();
             this.rbtGL = new System.Windows.Forms.RadioButton();
+            this.rbtIgnored = new System.Windows.Forms.RadioButton();
             this.pnlHostCategorySpecificEdit = new System.Windows.Forms.Panel();
             this.pnlGiftEdit = new System.Windows.Forms.Panel();
             this.txtDonorKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdGiftDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.btnAddGiftDetail = new System.Windows.Forms.Button();
             this.btnRemoveGiftDetail = new System.Windows.Forms.Button();
             this.pnlEditGiftDetail = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtAmount = new System.Windows.Forms.TextBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblAmount = new System.Windows.Forms.Label();
             this.cmbMotivationDetail = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblMotivationDetail = new System.Windows.Forms.Label();
@@ -103,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.cmbGiftCostCentre = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblGiftCostCentre = new System.Windows.Forms.Label();
             this.pnlGLEdit = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
             this.txtGLNarrative = new System.Windows.Forms.TextBox();
             this.lblGLNarrative = new System.Windows.Forms.Label();
             this.txtGLReference = new System.Windows.Forms.TextBox();
@@ -137,23 +147,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             this.pnlContent.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.rgrSelectTransaction.SuspendLayout();
+            this.pnlFilter.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.rgrSelectTransaction.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.pnlSum.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.sptTransactionDetails.SuspendLayout();
             this.sptTransactionDetails.Panel1.SuspendLayout();
             this.sptTransactionDetails.Panel2.SuspendLayout();
             this.pnlDetails.SuspendLayout();
             this.rgrTransactionCategory.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.pnlHostCategorySpecificEdit.SuspendLayout();
             this.pnlGiftEdit.SuspendLayout();
             this.pnlDetailGrid.SuspendLayout();
             this.pnlDetailButtons.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.pnlEditGiftDetail.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
-            this.pnlGLEdit.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
+            this.pnlEditGiftDetail.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
+            this.pnlGLEdit.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -189,18 +203,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.lblSelectBankAccount.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblSelectBankAccount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // rgrSelectTransaction
+            // pnlFilter
             //
-            this.rgrSelectTransaction.Name = "rgrSelectTransaction";
-            this.rgrSelectTransaction.Dock = System.Windows.Forms.DockStyle.Top;
-            this.rgrSelectTransaction.AutoSize = true;
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlFilter.AutoSize = true;
             //
             // tableLayoutPanel2
             //
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.AutoSize = true;
-            this.rgrSelectTransaction.Controls.Add(this.tableLayoutPanel2);
+            this.pnlFilter.Controls.Add(this.tableLayoutPanel2);
+            //
+            // rgrSelectTransaction
+            //
+            this.rgrSelectTransaction.Location = new System.Drawing.Point(2,2);
+            this.rgrSelectTransaction.Name = "rgrSelectTransaction";
+            this.rgrSelectTransaction.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.rgrSelectTransaction.Controls.Add(this.tableLayoutPanel3);
             //
             // rbtListAll
             //
@@ -234,18 +261,100 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.rbtListGL.AutoSize = true;
             this.rbtListGL.CheckedChanged += new System.EventHandler(this.TransactionFilterChanged);
             this.rbtListGL.Text = "ListGL";
-            this.tableLayoutPanel2.ColumnCount = 4;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            //
+            // rbtListIgnored
+            //
+            this.rbtListIgnored.Location = new System.Drawing.Point(2,2);
+            this.rbtListIgnored.Name = "rbtListIgnored";
+            this.rbtListIgnored.AutoSize = true;
+            this.rbtListIgnored.CheckedChanged += new System.EventHandler(this.TransactionFilterChanged);
+            this.rbtListIgnored.Text = "ListIgnored";
+            this.tableLayoutPanel3.ColumnCount = 5;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rbtListAll, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtListUnmatched, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtListGift, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtListGL, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtListIgnored, 4, 0);
+            this.rgrSelectTransaction.Text = "Select Transaction";
+            //
+            // pnlSum
+            //
+            this.pnlSum.Location = new System.Drawing.Point(2,2);
+            this.pnlSum.Name = "pnlSum";
+            this.pnlSum.AutoSize = true;
+            //
+            // tableLayoutPanel4
+            //
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.AutoSize = true;
+            this.pnlSum.Controls.Add(this.tableLayoutPanel4);
+            //
+            // txtCreditSum
+            //
+            this.txtCreditSum.Location = new System.Drawing.Point(2,2);
+            this.txtCreditSum.Name = "txtCreditSum";
+            this.txtCreditSum.Size = new System.Drawing.Size(150, 28);
+            this.txtCreditSum.ReadOnly = true;
+            this.txtCreditSum.TabStop = false;
+            this.txtCreditSum.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCreditSum.DecimalPlaces = 2;
+            this.txtCreditSum.NullValueAllowed = true;
+            //
+            // lblCreditSum
+            //
+            this.lblCreditSum.Location = new System.Drawing.Point(2,2);
+            this.lblCreditSum.Name = "lblCreditSum";
+            this.lblCreditSum.AutoSize = true;
+            this.lblCreditSum.Text = "Credit Sum:";
+            this.lblCreditSum.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblCreditSum.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblCreditSum.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtDebitSum
+            //
+            this.txtDebitSum.Location = new System.Drawing.Point(2,2);
+            this.txtDebitSum.Name = "txtDebitSum";
+            this.txtDebitSum.Size = new System.Drawing.Size(150, 28);
+            this.txtDebitSum.ReadOnly = true;
+            this.txtDebitSum.TabStop = false;
+            this.txtDebitSum.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebitSum.DecimalPlaces = 2;
+            this.txtDebitSum.NullValueAllowed = true;
+            //
+            // lblDebitSum
+            //
+            this.lblDebitSum.Location = new System.Drawing.Point(2,2);
+            this.lblDebitSum.Name = "lblDebitSum";
+            this.lblDebitSum.AutoSize = true;
+            this.lblDebitSum.Text = "Debit Sum:";
+            this.lblDebitSum.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDebitSum.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDebitSum.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Controls.Add(this.lblCreditSum, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.lblDebitSum, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.txtCreditSum, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.txtDebitSum, 1, 1);
+            this.tableLayoutPanel2.ColumnCount = 2;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.rbtListAll, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtListUnmatched, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtListGift, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.rbtListGL, 3, 0);
-            this.rgrSelectTransaction.Text = "Select Transaction";
+            this.tableLayoutPanel2.Controls.Add(this.rgrSelectTransaction, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.pnlSum, 1, 0);
             //
             // sptTransactionDetails
             //
@@ -277,12 +386,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.rgrTransactionCategory.Dock = System.Windows.Forms.DockStyle.Left;
             this.rgrTransactionCategory.AutoSize = true;
             //
-            // tableLayoutPanel3
+            // tableLayoutPanel5
             //
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.AutoSize = true;
-            this.rgrTransactionCategory.Controls.Add(this.tableLayoutPanel3);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.AutoSize = true;
+            this.rgrTransactionCategory.Controls.Add(this.tableLayoutPanel5);
             //
             // rbtUnmatched
             //
@@ -308,15 +417,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.rbtGL.AutoSize = true;
             this.rbtGL.CheckedChanged += new System.EventHandler(this.NewTransactionCategory);
             this.rbtGL.Text = "GL";
-            this.tableLayoutPanel3.ColumnCount = 1;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Controls.Add(this.rbtUnmatched, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.rbtGift, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.rbtGL, 0, 2);
+            //
+            // rbtIgnored
+            //
+            this.rbtIgnored.Location = new System.Drawing.Point(2,2);
+            this.rbtIgnored.Name = "rbtIgnored";
+            this.rbtIgnored.AutoSize = true;
+            this.rbtIgnored.CheckedChanged += new System.EventHandler(this.NewTransactionCategory);
+            this.rbtIgnored.Text = "Ignored";
+            this.tableLayoutPanel5.ColumnCount = 1;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel5.RowCount = 4;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel5.Controls.Add(this.rbtUnmatched, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.rbtGift, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.rbtGL, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.rbtIgnored, 0, 3);
             this.rgrTransactionCategory.Text = "Transaction Category";
             //
             // pnlHostCategorySpecificEdit
@@ -373,12 +492,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.pnlDetailButtons.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlDetailButtons.AutoSize = true;
             //
-            // tableLayoutPanel4
+            // tableLayoutPanel6
             //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel4);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.AutoSize = true;
+            this.pnlDetailButtons.Controls.Add(this.tableLayoutPanel6);
             //
             // btnAddGiftDetail
             //
@@ -395,13 +514,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.btnRemoveGiftDetail.AutoSize = true;
             this.btnRemoveGiftDetail.Click += new System.EventHandler(this.RemoveGiftDetail);
             this.btnRemoveGiftDetail.Text = "&Delete";
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.btnAddGiftDetail, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.btnRemoveGiftDetail, 0, 1);
+            this.tableLayoutPanel6.ColumnCount = 1;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.RowCount = 2;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.Controls.Add(this.btnAddGiftDetail, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.btnRemoveGiftDetail, 0, 1);
             //
             // pnlEditGiftDetail
             //
@@ -409,18 +528,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.pnlEditGiftDetail.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlEditGiftDetail.AutoSize = true;
             //
-            // tableLayoutPanel5
+            // tableLayoutPanel7
             //
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.AutoSize = true;
-            this.pnlEditGiftDetail.Controls.Add(this.tableLayoutPanel5);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.AutoSize = true;
+            this.pnlEditGiftDetail.Controls.Add(this.tableLayoutPanel7);
             //
             // txtAmount
             //
             this.txtAmount.Location = new System.Drawing.Point(2,2);
             this.txtAmount.Name = "txtAmount";
             this.txtAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtAmount.DecimalPlaces = 2;
+            this.txtAmount.NullValueAllowed = true;
             //
             // lblAmount
             //
@@ -484,22 +606,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.lblGiftCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblGiftCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblGiftCostCentre.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.RowCount = 4;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Controls.Add(this.lblAmount, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.lblMotivationDetail, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.lblGiftAccount, 0, 2);
-            this.tableLayoutPanel5.Controls.Add(this.lblGiftCostCentre, 0, 3);
-            this.tableLayoutPanel5.Controls.Add(this.txtAmount, 1, 0);
-            this.tableLayoutPanel5.Controls.Add(this.cmbMotivationDetail, 1, 1);
-            this.tableLayoutPanel5.Controls.Add(this.cmbGiftAccount, 1, 2);
-            this.tableLayoutPanel5.Controls.Add(this.cmbGiftCostCentre, 1, 3);
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.RowCount = 4;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.Controls.Add(this.lblAmount, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.lblMotivationDetail, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.lblGiftAccount, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.lblGiftCostCentre, 0, 3);
+            this.tableLayoutPanel7.Controls.Add(this.txtAmount, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.cmbMotivationDetail, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.cmbGiftAccount, 1, 2);
+            this.tableLayoutPanel7.Controls.Add(this.cmbGiftCostCentre, 1, 3);
             //
             // pnlGLEdit
             //
@@ -508,12 +630,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.pnlGLEdit.Visible = false;
             this.pnlGLEdit.AutoSize = true;
             //
-            // tableLayoutPanel6
+            // tableLayoutPanel8
             //
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.AutoSize = true;
-            this.pnlGLEdit.Controls.Add(this.tableLayoutPanel6);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.AutoSize = true;
+            this.pnlGLEdit.Controls.Add(this.tableLayoutPanel8);
             //
             // txtGLNarrative
             //
@@ -580,22 +702,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.lblGLCostCentre.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblGLCostCentre.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblGLCostCentre.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.RowCount = 4;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Controls.Add(this.lblGLNarrative, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.lblGLReference, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.lblGLAccount, 0, 2);
-            this.tableLayoutPanel6.Controls.Add(this.lblGLCostCentre, 0, 3);
-            this.tableLayoutPanel6.Controls.Add(this.txtGLNarrative, 1, 0);
-            this.tableLayoutPanel6.Controls.Add(this.txtGLReference, 1, 1);
-            this.tableLayoutPanel6.Controls.Add(this.cmbGLAccount, 1, 2);
-            this.tableLayoutPanel6.Controls.Add(this.cmbGLCostCentre, 1, 3);
+            this.tableLayoutPanel8.ColumnCount = 2;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.RowCount = 4;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel8.Controls.Add(this.lblGLNarrative, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.lblGLReference, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.lblGLAccount, 0, 2);
+            this.tableLayoutPanel8.Controls.Add(this.lblGLCostCentre, 0, 3);
+            this.tableLayoutPanel8.Controls.Add(this.txtGLNarrative, 1, 0);
+            this.tableLayoutPanel8.Controls.Add(this.txtGLReference, 1, 1);
+            this.tableLayoutPanel8.Controls.Add(this.cmbGLAccount, 1, 2);
+            this.tableLayoutPanel8.Controls.Add(this.cmbGLCostCentre, 1, 3);
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -604,8 +726,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblSelectBankAccount, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.rgrSelectTransaction, 2);
-            this.tableLayoutPanel1.Controls.Add(this.rgrSelectTransaction, 0, 1);
+            this.tableLayoutPanel1.SetColumnSpan(this.pnlFilter, 2);
+            this.tableLayoutPanel1.Controls.Add(this.pnlFilter, 0, 1);
             this.tableLayoutPanel1.SetColumnSpan(this.sptTransactionDetails, 2);
             this.tableLayoutPanel1.Controls.Add(this.sptTransactionDetails, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.cmbSelectBankAccount, 1, 0);
@@ -799,23 +921,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel8.ResumeLayout(false);
             this.pnlGLEdit.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
             this.pnlEditGiftDetail.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel6.ResumeLayout(false);
             this.pnlDetailButtons.ResumeLayout(false);
             this.pnlDetailGrid.ResumeLayout(false);
             this.pnlGiftEdit.ResumeLayout(false);
             this.pnlHostCategorySpecificEdit.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
             this.rgrTransactionCategory.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.sptTransactionDetails.Panel2.ResumeLayout(false);
             this.sptTransactionDetails.Panel1.ResumeLayout(false);
             this.sptTransactionDetails.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.pnlSum.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             this.rgrSelectTransaction.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.pnlFilter.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 
@@ -827,32 +953,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbSelectBankAccount;
         private System.Windows.Forms.Label lblSelectBankAccount;
-        private System.Windows.Forms.GroupBox rgrSelectTransaction;
+        private System.Windows.Forms.Panel pnlFilter;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.GroupBox rgrSelectTransaction;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.RadioButton rbtListAll;
         private System.Windows.Forms.RadioButton rbtListUnmatched;
         private System.Windows.Forms.RadioButton rbtListGift;
         private System.Windows.Forms.RadioButton rbtListGL;
+        private System.Windows.Forms.RadioButton rbtListIgnored;
+        private System.Windows.Forms.Panel pnlSum;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCreditSum;
+        private System.Windows.Forms.Label lblCreditSum;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebitSum;
+        private System.Windows.Forms.Label lblDebitSum;
         private System.Windows.Forms.SplitContainer sptTransactionDetails;
         private Ict.Common.Controls.TSgrdDataGridPaged grdAllTransactions;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.GroupBox rgrTransactionCategory;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.RadioButton rbtUnmatched;
         private System.Windows.Forms.RadioButton rbtGift;
         private System.Windows.Forms.RadioButton rbtGL;
+        private System.Windows.Forms.RadioButton rbtIgnored;
         private System.Windows.Forms.Panel pnlHostCategorySpecificEdit;
         private System.Windows.Forms.Panel pnlGiftEdit;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDonorKey;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdGiftDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Button btnAddGiftDetail;
         private System.Windows.Forms.Button btnRemoveGiftDetail;
         private System.Windows.Forms.Panel pnlEditGiftDetail;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.TextBox txtAmount;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private Ict.Common.Controls.TTxtNumericTextBox txtAmount;
         private System.Windows.Forms.Label lblAmount;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMotivationDetail;
         private System.Windows.Forms.Label lblMotivationDetail;
@@ -861,7 +997,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbGiftCostCentre;
         private System.Windows.Forms.Label lblGiftCostCentre;
         private System.Windows.Forms.Panel pnlGLEdit;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.TextBox txtGLNarrative;
         private System.Windows.Forms.Label lblGLNarrative;
         private System.Windows.Forms.TextBox txtGLReference;

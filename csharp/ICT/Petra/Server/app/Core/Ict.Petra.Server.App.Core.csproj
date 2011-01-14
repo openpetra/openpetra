@@ -91,6 +91,7 @@
     <Compile Include="ErrorLog.cs" />
     <Compile Include="ExceptionHandling.cs" />
     <Compile Include="GroupManager.cs" />
+    <Compile Include="LanguageCulture.cs" />
     <Compile Include="LoginLog.cs" />
     <Compile Include="ModuleAccessManager.cs" />
     <Compile Include="SystemDefaultsCache.cs" />

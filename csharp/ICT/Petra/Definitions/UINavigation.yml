@@ -184,6 +184,7 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}   
+                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}   
                     Application-related:
                     
             Reports:
@@ -257,8 +258,11 @@ OpenPetra:
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
-                Safety:
-                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                Main:
+                    Safety:
+                        SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                    Language:
+                        SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
             Users:
                 Functions:
