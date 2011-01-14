@@ -49,11 +49,29 @@ namespace ControlTestBench
 		//opts.GetValue(yamlFile)
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
+            
+            String VisualStyle = cmbVisualStyle.Text.ToString();
+            TVisualStylesEnum EnumStyle;
+            switch (VisualStyle) {
+            	case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            	                      break;
+            	case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+            	                      break;
+            	case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+            	                      break;
+            	case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+            	                      break;
+            	case "HorizontalCollapse":
+            	                     default:
+            	                      EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+            	                      break;
+            	                      
+            }
+
 			
-			
-			using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild) ) newForm.ShowDialog();
+            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
 			//newForm.Controls.Add(
 		}
-		
+	
 	}
 }

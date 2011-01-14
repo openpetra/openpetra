@@ -36,9 +36,10 @@ namespace ControlTestBench
 		/// Do not change the method contents inside the source code editor. The Forms designer might
 		/// not be able to load this method if it was changed manually.
 		/// </summary>
-		private void InitializeComponent(XmlNode node)
+		private void InitializeComponent(XmlNode node, Ict.Common.Controls.TVisualStylesEnum Style)
 		{
-			this.taskList1 = new Ict.Common.Controls.TTaskList(node);
+			this.taskList1 = new Ict.Common.Controls.TTaskList(node,Style);
+			//this.taskList1.VisualStyle = new Ict.Common.Controls.TVisualStyles(Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel);
 			this.container = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 

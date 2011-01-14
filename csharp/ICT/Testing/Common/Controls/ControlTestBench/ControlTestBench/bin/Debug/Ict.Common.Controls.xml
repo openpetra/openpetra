@@ -4881,5 +4881,10 @@
             constructor
             </summary>
         </member>
+        <member name="T:Ict.Common.Controls.TVisualStyles">
+            <summary>
+            Description of Class1.
+            </summary>
+        </member>
     </members>
 </doc>

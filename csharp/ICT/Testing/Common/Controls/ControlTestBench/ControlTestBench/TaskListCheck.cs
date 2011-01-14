@@ -18,15 +18,16 @@ namespace ControlTestBench
 	/// </summary>
 	public partial class TaskListCheck : Form
 	{
-		public TaskListCheck(XmlNode node)
+		public TaskListCheck(XmlNode Node, Ict.Common.Controls.TVisualStylesEnum Style)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
-			InitializeComponent(node);
+			InitializeComponent(Node, Style);
 			//
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
+		
 	}
 }

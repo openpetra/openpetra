@@ -26,8 +26,11 @@ namespace Ict.Common.Controls
 	/// </summary>
 	public partial class TTaskList : UserControl
 	{
+		private int TaskHeight = 30;
+		private int TaskIndentation = 30;
+		
 		//public TVisualStyle VisualStyle;
-		private XmlNode internalMasterXmlNode;
+		private XmlNode InternalMasterXmlNode;
 		
 		public XmlNode MasterXmlNode
 		{
@@ -37,20 +40,45 @@ namespace Ict.Common.Controls
 			}
 			set
 			{
-				
-				internalMasterXmlNode = value;
-				loadTaskItems(internalMasterXmlNode);
+				InternalMasterXmlNode = value;
+				LoadTaskItems(InternalMasterXmlNode);
 			}
 		}
 		
+		private TVisualStyles InternalVisualStyle;
+		
+		public TVisualStyles VisualStyle
+		{
+			get
+			{
+				return InternalVisualStyle;
+			}
+			set
+			{
+				InternalVisualStyle = value;
+				ChangeVisualStyle(InternalVisualStyle);
+			}
+		}
+		
+		//Private method to change visual style
+		private void ChangeVisualStyle(TVisualStyles VisualStyle){
+			this.Font = VisualStyle.TitleText;
+			this.ForeColor = VisualStyle.TextColour;
+			
+			
+			
+			this.Refresh();
+		
+		}
+		
 		//Private method to load taskItems of a masterXmlNode
-		private void loadTaskItems(XmlNode MasterXmlNode){
+		private void LoadTaskItems(XmlNode MasterXmlNode){
 			//@TODO: Implement
 //			XmlNode ChildNode = masterXmlNode.FirstChild.FirstChild;
 //			Regex TaskGroupRegex = new Regex("TaskGroup.*");
 			int NumTasks = 0;
 //			int NumGroups = 0;
-			int TaskHeight = 30;
+
 //			int TaskGroupTitleHeight = 40;
 			//Loop that iterates childNodes
 /*			while(ChildNode != null){
@@ -70,9 +98,10 @@ namespace Ict.Common.Controls
 					System.Text.RegularExpressions.Regex TaskRegex = new Regex("Task[0-9].*");
 					if(TaskRegex.IsMatch(TaskNode.Name)){
 						LinkLabel lblTaskItem = new LinkLabel();
+						lblTaskItem.LinkColor = VisualStyle.TextColour;
 		//				lblTaskItem.Name = TaskNode.Name;
 		//				lblTaskItem.Font =
-						lblTaskItem.Location = new System.Drawing.Point(30,NumTasks*TaskHeight);
+						lblTaskItem.Location = new System.Drawing.Point(TaskIndentation,NumTasks*TaskHeight);
 						lblTaskItem.Text = TLstFolderNavigation.GetLabel(TaskNode);
 						this.Controls.Add(lblTaskItem);
 						NumTasks++;
@@ -100,15 +129,29 @@ namespace Ict.Common.Controls
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
-
-		public TTaskList(XmlNode masterNode)
+		
+        //Constructor for creating object with MasterNode
+		public TTaskList(XmlNode MasterNode)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			this.MasterXmlNode = masterNode;
-			//this.VisualStyle = new TVisualStyles(VisualStylesEnum.
+			this.MasterXmlNode = MasterNode;
+			
+		}
+		
+		//Constructor for creating an object with a MasterNode and setting the Visual Style
+		public TTaskList(XmlNode MasterNode, TVisualStylesEnum  Style) //should this be 
+			//TVisualStylesEnum or just TVisual Styles?
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			this.VisualStyle = new Ict.Common.Controls.TVisualStyles(Style);
+			this.MasterXmlNode = MasterNode;
+
 			//
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
