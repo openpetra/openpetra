@@ -161,7 +161,10 @@ namespace Tests.MFinance.Client.Gift
 
             ToolStripButtonTester btnImport = new ToolStripButtonTester("tbbImportBatches");
             btnImport.Click();
-
+            TabControlTester tabGiftBatch = new TabControlTester("tabGiftBatch");
+            tabGiftBatch.SelectTab(1);
+            TextBoxTester txtDetailGiftTransactionAmount = new TextBoxTester("txtDetailGiftTransactionAmount");
+            Assert.AreEqual(Convert.ToDecimal(txtDetailGiftTransactionAmount.Properties.Text),10000000000M);
 
             frmBatch.Close();
         }

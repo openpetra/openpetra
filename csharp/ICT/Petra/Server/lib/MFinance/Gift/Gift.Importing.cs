@@ -205,7 +205,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             giftDetails.GiftAmount = ImportDecimal("Gift amount");
-                            //giftDetails.GiftTransactionAmount= ???
+                            giftDetails.GiftTransactionAmount = giftDetails.GiftAmount;
+                            // TODO: currency translation
 
                             if (FExtraColumns)
                             {
