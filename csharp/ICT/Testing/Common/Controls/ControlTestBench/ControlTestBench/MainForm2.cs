@@ -42,7 +42,6 @@ namespace TestCollapsible
 		public void TestTaskList()
 		{
 		    this.tPnlCollapsible1.HostedControlKind = THostedControlKind.hckTaskList;
-		    this.tPnlCollapsible1.TaskListNode = ...;
 		}
 		
 		void Button1Click(object sender, EventArgs e)
