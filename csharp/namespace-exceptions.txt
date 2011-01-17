@@ -3,6 +3,7 @@
 # Ict.Common mappings
 Ict.Common.DB.DBCaching=Ict.Common.DB
 Ict.Common.Utilities=Ict.Common
+Ict.Common.Printing.TPrinterHtml=Ict.Common.Printing
 
 # Ict.Tools (Petratools)
 Ict.Tools.CodeGeneration.CachedTables=Ict.Tools.GenerateORM

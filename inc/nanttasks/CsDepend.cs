@@ -242,6 +242,7 @@ namespace Ict.Tools.NAntTasks
                         // Build path to file. The dots are the directory seperators
                         filename = NamespaceToPath(filename);
                         filename = Path.Combine(filename, key + "-generated.build");
+                        filename = Path.Combine(basedir, filename);
                         Log(Level.Debug, "Write filename: " + filename);
                         // Write nant build file
                         StreamWriter sw = new StreamWriter(filename);

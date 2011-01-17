@@ -34,8 +34,10 @@
 
 <target name="depend" depends="custdepend">
   <if test="${true==bool::parse(RunCsDepend)}">
+    <echo>project::get-base-directory()=${project::get-base-directory()}</echo>
+    <echo>directory::get-current-directory()=${directory::get-current-directory()}</echo>
     <mkdir dir="${namespace-temp-dir}" />
-     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
     <CsDepend ns-default="${Namespace}" ns-exceptions="${csdependNamespaceExceptions}" 
       basedir="${project::get-base-directory()}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}">
