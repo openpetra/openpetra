@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.sptAccountSplitter = new System.Windows.Forms.SplitContainer();
-            this.trvAccounts = new System.Windows.Forms.TreeView();
+            this.trvAccounts = new Ict.Common.Controls.TTrvTreeView();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailAccountCode = new System.Windows.Forms.TextBox();
@@ -88,6 +88,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailBankAccountFlag = new System.Windows.Forms.Label();
             this.chkDetailAccountActiveFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailAccountActiveFlag = new System.Windows.Forms.Label();
+            this.chkDetailForeignCurrencyFlag = new System.Windows.Forms.CheckBox();
+            this.cmbDetailForeignCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.ucoAccountAnalysisAttributes = new Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
@@ -318,6 +320,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailAccountActiveFlag.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailAccountActiveFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // chkDetailForeignCurrencyFlag
+            //
+            this.chkDetailForeignCurrencyFlag.Location = new System.Drawing.Point(2,2);
+            this.chkDetailForeignCurrencyFlag.Name = "chkDetailForeignCurrencyFlag";
+            this.chkDetailForeignCurrencyFlag.AutoSize = true;
+            this.chkDetailForeignCurrencyFlag.Text = "Foreign Currency";
+            this.chkDetailForeignCurrencyFlag.CheckAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.chkDetailForeignCurrencyFlag.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            //
+            // cmbDetailForeignCurrencyCode
+            //
+            this.cmbDetailForeignCurrencyCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailForeignCurrencyCode.Name = "cmbDetailForeignCurrencyCode";
+            this.cmbDetailForeignCurrencyCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailForeignCurrencyCode.ListTable = TCmbAutoPopulated.TListTableEnum.CurrencyCodeList;
+            this.chkDetailForeignCurrencyFlag.CheckedChanged += new System.EventHandler(this.chkDetailForeignCurrencyFlagCheckedChanged);
+            //
             // ucoAccountAnalysisAttributes
             //
             this.ucoAccountAnalysisAttributes.Name = "ucoAccountAnalysisAttributes";
@@ -325,7 +344,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowCount = 11;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -345,8 +365,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.Controls.Add(this.lblDetailValidCcCombo, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailBankAccountFlag, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.lblDetailAccountActiveFlag, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.chkDetailForeignCurrencyFlag, 0, 9);
             this.tableLayoutPanel1.SetColumnSpan(this.ucoAccountAnalysisAttributes, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ucoAccountAnalysisAttributes, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.ucoAccountAnalysisAttributes, 0, 10);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailAccountCode, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailAccountType, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtDetailEngAccountCodeLongDesc, 1, 2);
@@ -356,6 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1.Controls.Add(this.cmbDetailValidCcCombo, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.chkDetailBankAccountFlag, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.chkDetailAccountActiveFlag, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.cmbDetailForeignCurrencyCode, 1, 9);
             //
             // tbbSave
             //
@@ -641,7 +663,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.SplitContainer sptAccountSplitter;
-        private System.Windows.Forms.TreeView trvAccounts;
+        private Ict.Common.Controls.TTrvTreeView trvAccounts;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtDetailAccountCode;
@@ -662,6 +684,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblDetailBankAccountFlag;
         private System.Windows.Forms.CheckBox chkDetailAccountActiveFlag;
         private System.Windows.Forms.Label lblDetailAccountActiveFlag;
+        private System.Windows.Forms.CheckBox chkDetailForeignCurrencyFlag;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailForeignCurrencyCode;
         private Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes ucoAccountAnalysisAttributes;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
