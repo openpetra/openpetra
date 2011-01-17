@@ -250,8 +250,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	XmlNode temporaryXmlNode = XmlPages.FirstChild; 
             for(int i = 0; i < XmlPages.ChildNodes.Count; i++)
         	{
-            	//new TPetraShepherdPage() = temporaryPetraShepherdPage TPetraShepherdPage(temporaryXmlNode); 
-            	//FPagesList.Add(temporaryPetraShepherdPage.getName(),temporaryPetraShepherdPage.getValue()); 
+            	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode); 
+            	FPagesList.Add(temporaryPetraShepherdPage.Title,temporaryPetraShepherdPage); 
         		temporaryXmlNode = XmlPages.NextSibling; 
             }
             TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
