@@ -150,6 +150,20 @@
     <Compile Include="ApplicantStatusSetup.ManualCode.cs">
       <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Country_EventLevelSetup.cs" />
+    <Compile Include="Country_EventLevelSetup.Designer.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Country_EventLevelSetup.ManualCode.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.cs" />
+    <Compile Include="QualificationLevelSetup.Designer.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.ManualCode.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
@@ -173,6 +187,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ApplicantStatusSetup.resx">
       <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Country_EventLevelSetup.resx">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QualificationLevelSetup.resx">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
