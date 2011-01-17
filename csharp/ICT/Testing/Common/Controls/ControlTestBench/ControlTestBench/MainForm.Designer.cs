@@ -40,6 +40,8 @@ namespace ControlTestBench
 			this.button2 = new System.Windows.Forms.Button();
 			this.txtYaml = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.cmbVisualStyle = new System.Windows.Forms.ComboBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -68,20 +70,45 @@ namespace ControlTestBench
 			this.txtYaml.Name = "txtYaml";
 			this.txtYaml.Size = new System.Drawing.Size(100, 20);
 			this.txtYaml.TabIndex = 2;
+			this.txtYaml.Text = "testYaml.yaml";
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(28, 29);
+			this.label1.Location = new System.Drawing.Point(13, 29);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(100, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "enter yaml file:";
+			// 
+			// cmbVisualStyle
+			// 
+			this.cmbVisualStyle.FormattingEnabled = true;
+			this.cmbVisualStyle.Items.AddRange(new object[] {
+									"AccordionPanel",
+									"TaskPanel",
+									"Dashboard",
+									"Shepherd",
+									"HorizontalCollapse"});
+			this.cmbVisualStyle.Location = new System.Drawing.Point(134, 56);
+			this.cmbVisualStyle.Name = "cmbVisualStyle";
+			this.cmbVisualStyle.Size = new System.Drawing.Size(121, 21);
+			this.cmbVisualStyle.TabIndex = 4;
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(13, 56);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(100, 23);
+			this.label2.TabIndex = 5;
+			this.label2.Text = "Visual Style";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.cmbVisualStyle);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.txtYaml);
 			this.Controls.Add(this.button2);
@@ -91,6 +118,8 @@ namespace ControlTestBench
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.ComboBox cmbVisualStyle;
+		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox txtYaml;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button button2;

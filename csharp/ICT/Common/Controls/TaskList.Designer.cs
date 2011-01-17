@@ -8,12 +8,13 @@
  */
 namespace Ict.Common.Controls
 {
-	partial class TaskList
+	partial class TTaskList
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
+
 		
 		/// <summary>
 		/// Disposes resources used by the control.
@@ -36,26 +37,23 @@ namespace Ict.Common.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.pnlModule = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 
-			// pnlModule
+			// container
 			// 
-			this.pnlModule.AccessibleName = "pnlModule";
-			this.pnlModule.Location = new System.Drawing.Point(3, 3);
-			this.pnlModule.Name = "pnlModule";
-			this.pnlModule.Size = new System.Drawing.Size(114, 144);
-			this.pnlModule.TabIndex = 0;
+
 			// 
-			// TaskList
+			// TTaskList
 			// 
 			this.AccessibleName = "pnlModule";
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.pnlModule);
-			this.Name = "TaskList";
+			this.AutoScroll = true;
+			this.AutoSize = true;
+			this.Name = "TTaskList";
+//			this.Size = new System.Drawing.Size(203, 118);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 		}
-		private System.Windows.Forms.Panel pnlModule;
 	}
 }

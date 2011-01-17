@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Common.Controls;
 
 namespace TestCollapsible
 {
@@ -32,15 +33,21 @@ namespace TestCollapsible
 		
 		public void TestContent()
 		{
-		    this.tPnlCollapsible1.UserControlClass = "Button";
-		    this.tPnlCollapsible1.UserControlNamespace = "System.Windows.Forms";
+		    this.tPnlCollapsible1.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
+		    this.tPnlCollapsible1.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
 
 		    this.tPnlCollapsible1.RealiseUserControlNow();
 		}
 		
+		public void TestTaskList()
+		{
+		    this.tPnlCollapsible1.HostedControlKind = THostedControlKind.hckTaskList;
+		    this.tPnlCollapsible1.TaskListNode = ...;
+		}
+		
 		void Button1Click(object sender, EventArgs e)
 		{
-		    TestContent();
+		    TestTaskList();
 		}
 	}
 }

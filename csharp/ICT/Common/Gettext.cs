@@ -72,7 +72,8 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
-            return catalog.GetString(AEnglishMessage);
+//            return catalog.GetString(AEnglishMessage); @TODO Fix this (Catalog is coming up null)
+            return AEnglishMessage;
         }
 
         /// <summary>

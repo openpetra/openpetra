@@ -46,14 +46,16 @@ namespace TestCollapsible
 			// 
 			// tPnlCollapsible1
 			// 
-			this.tPnlCollapsible1.AutoSize = true;
+			this.tPnlCollapsible1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.tPnlCollapsible1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.tPnlCollapsible1.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
 			this.tPnlCollapsible1.IsCollapsed = false;
 			this.tPnlCollapsible1.Location = new System.Drawing.Point(19, 74);
 			this.tPnlCollapsible1.Margin = new System.Windows.Forms.Padding(0);
 			this.tPnlCollapsible1.Name = "tPnlCollapsible1";
-			this.tPnlCollapsible1.Size = new System.Drawing.Size(380, 164);
+			this.tPnlCollapsible1.Size = new System.Drawing.Size(391, 140);
 			this.tPnlCollapsible1.TabIndex = 0;
 			this.tPnlCollapsible1.UserControlClass = "";
 			this.tPnlCollapsible1.UserControlNamespace = "";
@@ -86,7 +88,7 @@ namespace TestCollapsible
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(621, 477);
+			this.ClientSize = new System.Drawing.Size(632, 453);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.tPnlCollapsible2);
 			this.Controls.Add(this.tPnlCollapsible1);

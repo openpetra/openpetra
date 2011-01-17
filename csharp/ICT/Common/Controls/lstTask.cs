@@ -204,7 +204,7 @@ namespace Ict.Common.Controls
                 {
                     return "cannot find class " + strNamespace + "." + className + " for " + node.Name;
                 }
-
+MessageBox.Show(strNamespace + "." + className);
                 // TODO: check if user has permissions for this screen?
                 // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?

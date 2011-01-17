@@ -15,12 +15,12 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
-//using Ict.Petra.Client.App.PetraClient;
-//using Ict.Petra.Shared;
-//using Ict.Petra.Client.CommonForms;
-//using Ict.Petra.Client.App.Core;
-//using Ict.Petra.Client.App.Core.RemoteObjects;
-
+/*using Ict.Petra.Client.App.PetraClient;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+*/
 
 namespace ControlTestBench
 {
@@ -43,18 +43,35 @@ namespace ControlTestBench
 		
 		void Button1Click(object sender, EventArgs e)
 		{
-//			String yamlFile = txtYaml.
+			String yamlFile = txtYaml.Text.ToString();
 			
-//			TAppSettingsManager opts = new TAppSettingsManager();
-//            TYml2Xml parser = new TYml2Xml(opts.GetValue(yamlFile));
-//            XmlDocument UINavigation = parser.ParseYML2XML();
-//UINavigation.FirstChild
+		//	TAppSettingsManager opts = new TAppSettingsManager();
+		//opts.GetValue(yamlFile)
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();
+            
+            String VisualStyle = cmbVisualStyle.Text.ToString();
+            TVisualStylesEnum EnumStyle;
+            switch (VisualStyle) {
+            	case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            	                      break;
+            	case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+            	                      break;
+            	case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+            	                      break;
+            	case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+            	                      break;
+            	case "HorizontalCollapse":
+            	                     default:
+            	                      EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+            	                      break;
+            	                      
+            }
+
 			
-//			using ( TaskListCheck newForm = new TaskListCheck() ) newForm.ShowDialog();
+            //using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
 			//newForm.Controls.Add(
 		}
-		
-		
 		void Button2Click(object sender, EventArgs e)
 		{
 		    new TestCollapsible.MainForm2().Show();

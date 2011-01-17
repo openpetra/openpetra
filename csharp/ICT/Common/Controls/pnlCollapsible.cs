@@ -29,7 +29,9 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using GNU.Gettext;
+using System.Xml;
 using Ict.Common;
+using Ict.Common.Controls;
 
 namespace Ict.Common.Controls
 {
@@ -99,6 +101,12 @@ namespace Ict.Common.Controls
 
         /// <summary></summary>
         private UserControl FUserControl = null;
+        
+        /// <summary></summary>
+        private XmlNode FTaskListNode;
+        
+        /// <summary></summary>
+        private TTaskList FTaskListInstance = null;
         
         #endregion
 
@@ -191,7 +199,7 @@ namespace Ict.Common.Controls
             {
                 if(FHostedControlKind == THostedControlKind.hckTaskList)
                 {
-                    throw new ENonTaskListFunctionalityUsedException();
+                    throw new EIncompatibleHostedControlKindException();
                 }
                 FUserControlNamespace = value;
             }
@@ -209,7 +217,7 @@ namespace Ict.Common.Controls
             {
                 if(FHostedControlKind == THostedControlKind.hckTaskList)
                 {
-                    throw new ENonTaskListFunctionalityUsedException();
+                    throw new EIncompatibleHostedControlKindException();
                 }
                 FUserControlClass = value;
             }
@@ -221,6 +229,42 @@ namespace Ict.Common.Controls
             get
             {
                 return FUserControl;
+            }
+        }
+        
+        /// <summary></summary>
+        public XmlNode TaskListNode
+        {
+            get
+            {
+                return FTaskListNode;
+            }
+            set
+            {
+                if(FHostedControlKind == THostedControlKind.hckUserControl)
+                {
+                    throw new EIncompatibleHostedControlKindException();
+                }
+
+                FTaskListNode = value;
+            }
+        }
+        
+        /// <summary></summary>
+        public TTaskList TaskListInstance
+        {
+            get
+            {
+                return FTaskListInstance;
+            }
+            set
+            {
+                if(FHostedControlKind == THostedControlKind.hckUserControl)
+                {
+                    throw new EIncompatibleHostedControlKindException();
+                }
+
+                FTaskListInstance = value;
             }
         }
 
@@ -315,7 +359,15 @@ namespace Ict.Common.Controls
             {
                 this.Width = EXPANDEDWIDTH;
             }
-            
+
+            switch (FHostedControlKind) {
+                case THostedControlKind.hckUserControl:
+                    InstantiateUserControl();
+                    break;
+                case THostedControlKind.hckTaskList:
+                    InstantiateTaskList();
+                    break;
+            }
         }
         
         /// <summary>
@@ -379,14 +431,39 @@ namespace Ict.Common.Controls
         private UserControl RealiseUserControl()
         {
 
-            Assembly asm = Assembly.LoadFrom("System.Windows.Forms.dll");
+            Assembly asm = Assembly.LoadFrom(FUserControlNamespace + ".dll");
             System.Type classType = asm.GetType(FUserControlNamespace + "." + FUserControlClass);
-            FUserControl = (UserControl) Activator.CreateInstance(classType); //FUserControlNamespace+"."+FUserControlClass);
-            //FUserControl = (UserControl) System.Reflection.Assembly.GetExecutingAssembly().CreateInstance("System.Windows.Forms.Button");
+            
+            if (classType == null)
+            {
+                MessageBox.Show("TPnlCollapsible.RealiseUserControl: Cannot find class " + FUserControlNamespace + "." + FUserControlClass);
+            }
+          
+            FUserControl = (UserControl) Activator.CreateInstance(classType);
+            
+            pnlContent.Controls.Add(FUserControl);
+            FUserControl.Dock = DockStyle.Fill;
+            
             return FUserControl;
         }
 
+        /// <summary></summary>
+        private void InstantiateUserControl()
+        {
+            RealiseUserControl();
+        }
 
+        /// <summary></summary>
+        private void InstantiateTaskList()
+        {
+            if(FTaskListNode == null)
+            {
+                throw new ENoTaskListNodeSpecifiedException();
+            }
+            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode);
+        }
+
+                    
         #endregion
 
         #region Event Handlers
@@ -459,9 +536,18 @@ namespace Ict.Common.Controls
     
     /// <summary>
     /// This Exception is thrown whenever the hosted content is a TaskList, but
-    /// a non-TaskList function is used.
+    /// a non-TaskList function is used. Or when the hosted content is a custom
+    /// UserControl and a non-UserControl funciton is used.
     /// </summary>
-    public class ENonTaskListFunctionalityUsedException : ApplicationException
+    public class EIncompatibleHostedControlKindException : ApplicationException
+    {
+        
+    }
+
+    /// <summary>
+    /// Thrown when instantiating a tasklist, but tasklistnode property not set.
+    /// </summary>
+    public class ENoTaskListNodeSpecifiedException : ApplicationException
     {
         
     }

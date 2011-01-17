@@ -91,11 +91,16 @@
     <Compile Include="sgrdDataGrid.cs" />
     <Compile Include="sgrdDataGridPaged.cs" />
     <Compile Include="tabVersatile.cs" />
+    <Compile Include="TaskList.cs" />
+    <Compile Include="TaskList.Designer.cs">
+      <DependentUpon>TaskList.cs</DependentUpon>
+    </Compile>
     <Compile Include="txtButtonLabel.cs" />
     <Compile Include="txtLabelledTextBox.cs" />
     <Compile Include="txtMaskedTextBox.cs" />
     <Compile Include="txtNumericTextBox.cs" />
     <Compile Include="txtPartnerKeyTextBox.cs" />
+    <Compile Include="VisualStyles.cs" />
     <EmbeddedResource Include="btnCreated.resx">
       <DependentUpon>btnCreated.cs</DependentUpon>
     </EmbeddedResource>

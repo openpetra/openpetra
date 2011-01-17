@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.ComponentModel.ComponentResourceManager resources =
                 new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerFind_PartnerInfo));
             this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo();
-            this.pnlContent.SuspendLayout();
+//            this.pnlContent.SuspendLayout();
             this.SuspendLayout();
             //
             // ucoPartnerInfo
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoPartnerInfo.TabIndex = 2;
             this.ucoPartnerInfo.VerificationResultCollection = null;
 
-            this.pnlContent.Controls.Add(ucoPartnerInfo);
+//            this.pnlContent.Controls.Add(ucoPartnerInfo);
             //
             // TUC_PartnerFind_PartnerInfo
             //
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "TUC_PartnerFind_PartnerInfo";
             this.Size = new System.Drawing.Size(424, 150);
-            this.pnlContent.ResumeLayout(false);
+//            this.pnlContent.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
