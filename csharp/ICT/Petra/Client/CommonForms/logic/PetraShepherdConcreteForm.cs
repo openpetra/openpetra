@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using System.Collections;
+using System.Xml; 
 
 using Ict.Common;
 
@@ -46,13 +47,16 @@ namespace Ict.Petra.Client.CommonForms.Logic
         public TPetraShepherdPagesList ShepherdPages 
         {
         	/// <summary>
-        	/// Read in XML Nodes from YAML file and call TShepherdPage constructor
-        	/// with the particular XML node needed for that page.
+        	/// Read in XML nodes from YAML file and call TShepherdPage constructor
+        	/// with the particular XML node needed for that page. 
         	/// </summary>
-            get
-            {
-                return FShepherdPages;
-            }
+        	get
+        	{
+        		TLogging.Log("TPetraShepherdPagesList called get method in the attribute.");
+        		return FShepherdPages; 
+        	}
+
+        	
         }
 
         ///<summary>Currently displayed Shepherd Page</summary>
@@ -102,6 +106,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
             // ....
+            //CurrentPage = TShepherdPagesList.(APage);  
 
             FForm.ShowCurrentPage();
         }

@@ -22,10 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Xml;
-
+using System.Xml; 
 
 using Ict.Common;
+using Ict.Common.IO; 
 
 namespace Ict.Petra.Client.CommonForms.Logic
 {
@@ -126,7 +126,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
     
-        /// <summary>Return Shepherd Page Namespace</summary>
+
+                /// <summary>Return Shepherd Page Namespace</summary>
         public string UserControlNamespace
         {
         	get
@@ -243,8 +244,16 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("Entering TPetraShepherdPagesList Constructor. AYamlFile = " + AYamlFile + "...");
             
-            // Add to FPagesList
-            
+            TYml2Xml parser = new TYml2Xml(AYamlFile);
+            XmlDocument XmlPages = parser.ParseYML2XML();
+            TLogging.Log("TPetraShepherdPagesList has " + XmlPages.ChildNodes.Count + "Nodes.");    
+        	XmlNode temporaryXmlNode = XmlPages.FirstChild; 
+            for(int i = 0; i < XmlPages.ChildNodes.Count; i++)
+        	{
+            	//new TPetraShepherdPage() = temporaryPetraShepherdPage TPetraShepherdPage(temporaryXmlNode); 
+            	//FPagesList.Add(temporaryPetraShepherdPage.getName(),temporaryPetraShepherdPage.getValue()); 
+        		temporaryXmlNode = XmlPages.NextSibling; 
+            }
             TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
         }
     }
