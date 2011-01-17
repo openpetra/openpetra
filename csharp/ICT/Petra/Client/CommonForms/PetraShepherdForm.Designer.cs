@@ -53,9 +53,6 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         private void InitializeComponent()
         {
-        	this.pnlTop = new System.Windows.Forms.Panel();
-        	this.lblHeading2 = new System.Windows.Forms.Label();
-        	this.lblHeading1 = new System.Windows.Forms.Label();
         	this.pnlButtons = new System.Windows.Forms.Panel();
         	this.btnHelp = new System.Windows.Forms.Button();
         	this.btnCancel = new System.Windows.Forms.Button();
@@ -64,42 +61,12 @@ namespace Ict.Petra.Client.CommonForms
         	this.btnFinish = new System.Windows.Forms.Button();
         	this.pnlNavigation = new System.Windows.Forms.Panel();
         	this.pnlContent = new System.Windows.Forms.Panel();
-        	this.pnlTop.SuspendLayout();
+        	this.lblHeading2 = new System.Windows.Forms.Label();
+        	this.lblHeading1 = new System.Windows.Forms.Label();
+        	this.pnlTop = new System.Windows.Forms.Panel();
         	this.pnlButtons.SuspendLayout();
+        	this.pnlTop.SuspendLayout();
         	this.SuspendLayout();
-        	// 
-        	// pnlTop
-        	// 
-        	this.pnlTop.Controls.Add(this.lblHeading2);
-        	this.pnlTop.Controls.Add(this.lblHeading1);
-        	this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-        	this.pnlTop.Location = new System.Drawing.Point(0, 0);
-        	this.pnlTop.Name = "pnlTop";
-        	this.pnlTop.Padding = new System.Windows.Forms.Padding(5, 8, 5, 0);
-        	this.pnlTop.Size = new System.Drawing.Size(584, 42);
-        	this.pnlTop.TabIndex = 0;
-        	// 
-        	// lblHeading2
-        	// 
-        	this.lblHeading2.Dock = System.Windows.Forms.DockStyle.Top;
-        	this.lblHeading2.Location = new System.Drawing.Point(5, 24);
-        	this.lblHeading2.Name = "lblHeading2";
-        	this.lblHeading2.Size = new System.Drawing.Size(574, 16);
-        	this.lblHeading2.TabIndex = 1;
-        	this.lblHeading2.Text = "lblHeading2----------------------------------------------------------------------" +
-        	"--------------------------------------------------------------------------------" +
-        	"-----------------------";
-        	// 
-        	// lblHeading1
-        	// 
-        	this.lblHeading1.Dock = System.Windows.Forms.DockStyle.Top;
-        	this.lblHeading1.Location = new System.Drawing.Point(5, 8);
-        	this.lblHeading1.Name = "lblHeading1";
-        	this.lblHeading1.Size = new System.Drawing.Size(574, 16);
-        	this.lblHeading1.TabIndex = 0;
-        	this.lblHeading1.Text = "lblHeading1----------------------------------------------------------------------" +
-        	"--------------------------------------------------------------------------------" +
-        	"-----------------------";
         	// 
         	// pnlButtons
         	// 
@@ -173,37 +140,70 @@ namespace Ict.Petra.Client.CommonForms
         	// 
         	this.pnlNavigation.BackColor = System.Drawing.Color.Yellow;
         	this.pnlNavigation.Dock = System.Windows.Forms.DockStyle.Left;
-        	this.pnlNavigation.Location = new System.Drawing.Point(0, 42);
+        	this.pnlNavigation.Location = new System.Drawing.Point(0, 0);
         	this.pnlNavigation.Name = "pnlNavigation";
         	this.pnlNavigation.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-        	this.pnlNavigation.Size = new System.Drawing.Size(163, 273);
+        	this.pnlNavigation.Size = new System.Drawing.Size(163, 315);
         	this.pnlNavigation.TabIndex = 2;
         	// 
         	// pnlContent
         	// 
         	this.pnlContent.BackColor = System.Drawing.Color.Purple;
         	this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-        	this.pnlContent.Location = new System.Drawing.Point(163, 42);
+        	this.pnlContent.Location = new System.Drawing.Point(163, 0);
         	this.pnlContent.Name = "pnlContent";
         	this.pnlContent.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-        	this.pnlContent.Size = new System.Drawing.Size(421, 273);
+        	this.pnlContent.Size = new System.Drawing.Size(421, 315);
         	this.pnlContent.TabIndex = 3;
+        	// 
+        	// lblHeading2
+        	// 
+        	this.lblHeading2.Dock = System.Windows.Forms.DockStyle.Top;
+        	this.lblHeading2.Location = new System.Drawing.Point(5, 24);
+        	this.lblHeading2.Name = "lblHeading2";
+        	this.lblHeading2.Size = new System.Drawing.Size(411, 16);
+        	this.lblHeading2.TabIndex = 1;
+        	this.lblHeading2.Text = "lblHeading2----------------------------------------------------------------------" +
+        	"--------------------------------------------------------------------------------" +
+        	"-----------------------";
+        	// 
+        	// lblHeading1
+        	// 
+        	this.lblHeading1.Dock = System.Windows.Forms.DockStyle.Top;
+        	this.lblHeading1.Location = new System.Drawing.Point(5, 8);
+        	this.lblHeading1.Name = "lblHeading1";
+        	this.lblHeading1.Size = new System.Drawing.Size(411, 16);
+        	this.lblHeading1.TabIndex = 0;
+        	this.lblHeading1.Text = "lblHeading1----------------------------------------------------------------------" +
+        	"--------------------------------------------------------------------------------" +
+        	"-----------------------";
+        	// 
+        	// pnlTop
+        	// 
+        	this.pnlTop.Controls.Add(this.lblHeading2);
+        	this.pnlTop.Controls.Add(this.lblHeading1);
+        	this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+        	this.pnlTop.Location = new System.Drawing.Point(163, 0);
+        	this.pnlTop.Name = "pnlTop";
+        	this.pnlTop.Padding = new System.Windows.Forms.Padding(5, 8, 5, 0);
+        	this.pnlTop.Size = new System.Drawing.Size(421, 42);
+        	this.pnlTop.TabIndex = 4;
         	// 
         	// TPetraShepherdForm
         	// 
         	this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         	this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         	this.ClientSize = new System.Drawing.Size(584, 362);
+        	this.Controls.Add(this.pnlTop);
         	this.Controls.Add(this.pnlContent);
         	this.Controls.Add(this.pnlNavigation);
         	this.Controls.Add(this.pnlButtons);
-        	this.Controls.Add(this.pnlTop);
         	this.MinimumSize = new System.Drawing.Size(600, 400);
         	this.Name = "TPetraShepherdForm";
         	this.Text = "TPetraShepherdForm";
         	this.Load += new System.EventHandler(this.Form_Load);
-        	this.pnlTop.ResumeLayout(false);
         	this.pnlButtons.ResumeLayout(false);
+        	this.pnlTop.ResumeLayout(false);
         	this.ResumeLayout(false);
         }
 
