@@ -237,18 +237,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
-                    // get the name of the directory, without the path
-                    string directoryName = Path.GetDirectoryName(ResultDataset.AEpStatement[0].Filename).Replace("\\", "/");
-
-                    if (directoryName.IndexOf("/") != -1)
-                    {
-                        directoryName = directoryName.Substring(directoryName.LastIndexOf("/") + 1);
-                    }
+                    string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
                     // find a match with the same match text, or create a new one
-                    if (row.IsMatchTextNull() || (row.MatchText.Length == 0))
+                    if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
-                        row.MatchText = CalculateMatchText(directoryName, row);
+                        row.MatchText = CalculateMatchText(BankAccountCode, row);
                     }
 
                     AEpMatchTable tempTable = new AEpMatchTable();
@@ -400,6 +394,31 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return -1;
+            }
+
+            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            {
+                AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
+
+                DataView v = AMainDS.AEpMatch.DefaultView;
+                v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
+                              AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
+
+                if (v.Count > 0)
+                {
+                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+
+                    if (match.IsDonorKeyNull() || (match.DonorKey == 0))
+                    {
+                        string msg =
+                            String.Format(Catalog.GetString("Cannot create a gift for transaction {0} since there is no valid donor."),
+                                transactionRow.Description);
+                        AVerificationResult = new TVerificationResultCollection();
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return -1;
+                    }
+                }
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();

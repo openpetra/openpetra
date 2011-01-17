@@ -28,6 +28,7 @@ using System.Threading;
 using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 
@@ -83,10 +84,7 @@ public class TServer
             // end;
             // $ENDIF
 
-            // TODO load culture from config file etc
-            Catalog.Init(Thread.CurrentThread.CurrentUICulture.Name);
-
-            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+            TLanguageCulture.Init();
 
             TheServerManager = new TServerManager();
 

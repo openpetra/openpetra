@@ -611,6 +611,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
             FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
             FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
+            FieldList.Add(ALedgerTable.GetBaseCurrencyDBName());
+            FieldList.Add(ALedgerTable.GetIntlCurrencyDBName());
             return ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, FieldList, AReadTransaction);
 #endregion ManualCode
         }

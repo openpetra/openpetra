@@ -28,6 +28,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance;
@@ -52,6 +53,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 FLedgerNumber = value;
 
                 TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+                txtCreditSum.CurrencySymbol = Ledger.BaseCurrency;
+                txtDebitSum.CurrencySymbol = Ledger.BaseCurrency;
+                txtAmount.CurrencySymbol = Ledger.BaseCurrency;
 
                 // we can only load the statements when the ledger number is known
                 PopulateStatementCombobox();
@@ -162,6 +169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
             cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
             cmbSelectStatement.DataSource = stmts.DefaultView;
+            cmbSelectStatement.DropDownWidth = 300;
             cmbSelectStatement.EndUpdate();
 
             cmbSelectStatement.SelectedIndex = -1;
@@ -272,6 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
             rbtUnmatchedWasChecked = rbtUnmatched.Checked;
+            rbtIgnoredWasChecked = rbtIgnored.Checked;
 
             pnlGiftEdit.Visible = rbtGift.Checked;
             pnlGLEdit.Visible = rbtGL.Checked;
@@ -293,6 +302,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 foreach (DataRowView rv in FMatchView)
                 {
+                    ((AEpMatchRow)rv.Row).Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+
+                    if (CurrentlySelectedTransaction.EpMatchKey != ((AEpMatchRow)rv.Row).EpMatchKey)
+                    {
+                        ((AEpMatchRow)rv.Row).Delete();
+                    }
+                }
+            }
+
+            if (rbtIgnored.Checked && (FMatchView != null))
+            {
+                foreach (DataRowView rv in FMatchView)
+                {
                     ((AEpMatchRow)rv.Row).Action = MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING;
 
                     if (CurrentlySelectedTransaction.EpMatchKey != ((AEpMatchRow)rv.Row).EpMatchKey)
@@ -309,6 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
         private bool rbtUnmatchedWasChecked = false;
+        private bool rbtIgnoredWasChecked = false;
 
         private void DeleteStatement(System.Object Sender, EventArgs e)
         {
@@ -331,6 +354,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 CurrentStatement.LedgerNumber = FLedgerNumber;
                 CurrentStatement.BankAccountCode = cmbSelectBankAccount.GetSelectedString();
+            }
+
+            if (CurrentlySelectedTransaction == null)
+            {
+                return;
+            }
+
+            if (rbtUnmatched.Checked)
+            {
+                if (FMatchView != null)
+                {
+                    for (int i = 0; i < FMatchView.Count; i++)
+                    {
+                        AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
+                        match.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                    }
+                }
+
+                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+            }
+
+            if (rbtIgnored.Checked)
+            {
+                if (FMatchView != null)
+                {
+                    for (int i = 0; i < FMatchView.Count; i++)
+                    {
+                        AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
+                        match.Action = MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING;
+                    }
+                }
+
+                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING;
             }
 
             if (CurrentlySelectedMatch == null)
@@ -360,17 +416,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL;
 
                 GetGLValuesFromScreen();
-            }
-
-            if (rbtUnmatched.Checked)
-            {
-                for (int i = 0; i < FMatchView.Count; i++)
-                {
-                    AEpMatchRow match = (AEpMatchRow)FMatchView[i].Row;
-                    match.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-                }
-
-                CurrentlySelectedTransaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
             }
         }
 
@@ -414,6 +459,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 rbtGL.Checked = true;
                 DisplayGLDetails();
             }
+            else if (match.Action == MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING)
+            {
+                rbtIgnored.Checked = true;
+            }
             else
             {
                 rbtUnmatched.Checked = true;
@@ -422,6 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
             rbtUnmatchedWasChecked = rbtUnmatched.Checked;
+            rbtIgnoredWasChecked = rbtIgnored.Checked;
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
@@ -449,7 +499,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (CurrentlySelectedMatch != null)
             {
-                txtAmount.Text = CurrentlySelectedMatch.GiftTransactionAmount.ToString();
+                txtAmount.NumberValueDecimal = CurrentlySelectedMatch.GiftTransactionAmount;
 
                 if (CurrentlySelectedMatch.IsMotivationDetailCodeNull())
                 {
@@ -489,7 +539,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 CurrentlySelectedMatch.MotivationDetailCode = cmbMotivationDetail.GetSelectedString();
                 CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
                 CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
-                CurrentlySelectedMatch.GiftTransactionAmount = Convert.ToDecimal(txtAmount.Text);
+                CurrentlySelectedMatch.GiftTransactionAmount = txtAmount.NumberValueDecimal.Value;
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
@@ -746,6 +796,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
             }
+            else if (rbtListIgnored.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_NO_MATCHING);
+            }
             else if (rbtListGL.Checked)
             {
                 FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
@@ -754,6 +812,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL);
             }
+
+            // update sumcredit and sumdebit
+            decimal sumCredit = 0.0M;
+            decimal sumDebit = 0.0M;
+
+            foreach (DataRowView rv in FTransactionView)
+            {
+                AEpTransactionRow Row = (AEpTransactionRow)rv.Row;
+
+                if (Row.TransactionAmount < 0)
+                {
+                    sumDebit += Row.TransactionAmount * -1.0M;
+                }
+                else
+                {
+                    sumCredit += Row.TransactionAmount;
+                }
+            }
+
+            txtCreditSum.NumberValueDecimal = sumCredit;
+            txtDebitSum.NumberValueDecimal = sumDebit;
 
             if (FTransactionView.Count > 0)
             {

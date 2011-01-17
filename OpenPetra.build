@@ -80,5 +80,6 @@
 
 <!-- Include default implementation -->
 <include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
+
 </project>
 

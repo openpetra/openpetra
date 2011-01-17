@@ -364,7 +364,8 @@ namespace Ict.Tools.CodeGeneration
 
                 if (SearchManualCode == sourceLines.Length)
                 {
-                    File.WriteAllLines(ADestinationFilename, ANewLines);
+                    File.WriteAllLines(ADestinationFilename + ".new", ANewLines);
+                    TTextFile.UpdateFile(ADestinationFilename, true);
                     return true;
                 }
 

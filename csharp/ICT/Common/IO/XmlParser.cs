@@ -277,6 +277,7 @@ namespace Ict.Common.IO
             StringWriter sw = new StringWriter();
             XmlWriterSettings settings = new XmlWriterSettings();
 
+            settings.OmitXmlDeclaration = true;
             settings.Indent = true;
             XmlWriter xw = XmlWriter.Create(sw, settings);
             ADoc.WriteTo(xw);
