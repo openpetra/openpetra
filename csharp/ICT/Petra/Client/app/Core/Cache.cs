@@ -368,10 +368,10 @@ namespace Ict.Petra.Client.App.Core
                     String FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
                     return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
-                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module"));
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:\n") + ex);
                 }
             }
         }
