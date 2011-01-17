@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CommonNUnitFunctions.cs" />
     <Compile Include="cmbAutoPopulatedTester.cs" />
     <Compile Include="dlgSelectCSVSeparatorTester.cs" />
     <Compile Include="NumericUpDownTester.cs" />

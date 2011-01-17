@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-# SharpDevelop 3.2.0.5777
+# SharpDevelop 3.2.1.6466
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.App.Core", "Petra\Client\app\Core\Ict.Petra.Client.App.Core.csproj", "{69E21FFC-F815-451A-96BB-66499CDDEB6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.App.Core.RemoteObjects", "Petra\Client\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj", "{A3E8D62A-D07D-44D9-A286-68220B3AA94F}"
@@ -77,6 +77,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.AP", "Petra\Client\lib\MFinance\gui\AP\Ict.Petra.Client.MFinance.Gui.AP.csproj", "{CF799F57-0C78-4FAB-B9FE-985D6EB184D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.MFinance.Gui.Common", "Petra\Client\lib\MFinance\gui\Common\Ict.Petra.Client.MFinance.Gui.Common.csproj", "{99EB38F7-5CF9-48DE-B944-D2A9B60DACF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Client.CommonForms.Logic", "Petra\Client\CommonForms\logic\Ict.Petra.Client.CommonForms.Logic.csproj", "{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -236,5 +238,9 @@ Global
 		{8392E7BD-7533-4C34-BFFC-30C310DEE447}.Debug|x86.ActiveCfg = Debug|x86
 		{8392E7BD-7533-4C34-BFFC-30C310DEE447}.Release|x86.Build.0 = Release|x86
 		{8392E7BD-7533-4C34-BFFC-30C310DEE447}.Release|x86.ActiveCfg = Release|x86
+		{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}.Debug|x86.Build.0 = Debug|x86
+		{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}.Debug|x86.ActiveCfg = Debug|x86
+		{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}.Release|x86.Build.0 = Release|x86
+		{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

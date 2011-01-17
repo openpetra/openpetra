@@ -53,8 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     private TFrmPetraEditUtils FPetraUtilsObject;
     private Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS FMainDS;
 
-    private class CancelSaveExeption: System.Exception {};
-
     /// constructor
     public TFrmGLAccountHierarchy(IntPtr AParentFormHandle) : base()
     {
@@ -365,7 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
       try {
          SaveChanges();
-      } catch (CancelSaveExeption) {}
+      } catch (CancelSaveException) {}
     }
 
     /// <summary>

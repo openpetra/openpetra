@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -47,6 +48,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // txtDetailAccountCode and the new actual value.
         // This string is used to store the old value.
         private string strOldDetailAccountCode;
+        
+        // Pointer to the acual selected TreeViewNode
+        TreeNode FCurrentNode = null;
+        
+        // TreeView Select will be split into a part Before Select and a part 
+        // after select. Those parameters are for common use
+        GLSetupTDSAAccountRow currentAccount;
+        string oldAccountCodeName;
+        
 
         /// <summary>
         /// Setup the account hierarchy of this ledger
@@ -93,8 +103,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             trvAccounts.EndUpdate();
 
-            this.trvAccounts.AfterSelect +=
-                new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
+            this.trvAccounts.AfterSelect += 
+            	new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
+            this.trvAccounts.BeforeSelect += 
+            	new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeViewBeforeSelect);
         }
 
         private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, AAccountHierarchyDetailRow ADetailRow)
@@ -125,69 +137,74 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        TreeNode FCurrentNode = null;
-
-        private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
+        private void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs treeViewCancelEventArgs)
         {
-            bool hasChanges = FPetraUtilsObject.HasChanges;
-
+        	// System.Console.WriteLine("TreeViewBeforeSelect:" + treeViewCancelEventArgs.Node.Text);
             try
             {
-                // store current detail values
-                if ((FCurrentNode != null) && (FCurrentNode != e.Node))
-                {
-                    GLSetupTDSAAccountRow currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                        new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
-                    string oldName = currentAccount.AccountCode;
-                    GetDetailsFromControls(currentAccount);
-
-                    // this only works for new rows; old rows have the primary key fields readonly
-                    if (currentAccount.AccountCode != oldName)
-                    {
-                        // there are no references to this new row yet, apart from children nodes
-
-                        // change name in the account hierarchy
-                        ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
-
-                        // fix children nodes, account hierarchy
-                        foreach (TreeNode childnode in FCurrentNode.Nodes)
-                        {
-                            ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
-                        }
-                    }
-
-                    string nodeLabel = currentAccount.AccountCode;
-
-                    if (!currentAccount.IsAccountCodeShortDescNull())
-                    {
-                        nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
-                    }
-
-                    FCurrentNode.Text = nodeLabel;
-                }
-
-                FCurrentNode = e.Node;
-
-                // update detail panel
-                ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                                             ((AAccountHierarchyDetailRow)FCurrentNode.Tag).
-                                                                                             ReportingAccountCode }));
+            	// store current detail values
+            	if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
+            	{
+            		currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
+            			new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+            		oldAccountCodeName = currentAccount.AccountCode;
+            		GetDetailsFromControls(currentAccount);
+            	}
             }
             catch (System.Data.ConstraintException)
             {
-                trvAccounts.SelectLastNode();
+            	treeViewCancelEventArgs.Cancel=true;
+            	// System.Console.WriteLine("TreeViewSelect is Canceled");
             }
-
-            if (!hasChanges)
+            
+        }
+        
+        private void TreeViewAfterSelect(object sender, TreeViewEventArgs treeViewEventArgs)
+        {
+        	// System.Console.WriteLine("TreeViewAfterSelect: " + treeViewEventArgs.Node.Text);
+        	bool hasChanges = FPetraUtilsObject.HasChanges;
+            // store current detail values
+            if ((FCurrentNode != null) && (FCurrentNode != treeViewEventArgs.Node))
             {
-                FPetraUtilsObject.DisableSaveButton();
+
+                // this only works for new rows; old rows have the primary key fields readonly
+                if (currentAccount.AccountCode != oldAccountCodeName)
+                {
+                    // there are no references to this new row yet, apart from children nodes
+
+                    // change name in the account hierarchy
+                    ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
+
+                    // fix children nodes, account hierarchy
+                    foreach (TreeNode childnode in FCurrentNode.Nodes)
+                    {
+                        ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
+                    }
+                }
+
+                string nodeLabel = currentAccount.AccountCode;
+
+                if (!currentAccount.IsAccountCodeShortDescNull())
+                {
+                    nodeLabel += " (" + currentAccount.AccountCodeShortDesc + ")";
+                }
+
+                FCurrentNode.Text = nodeLabel;
             }
 
-            ;
+            FCurrentNode = treeViewEventArgs.Node;
+
+            // update detail panel
+            ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] { 
+                                                                          	FLedgerNumber,
+                                                                          	((AAccountHierarchyDetailRow)FCurrentNode.Tag).
+                                                                          		ReportingAccountCode }));
+            if (!hasChanges) {FPetraUtilsObject.DisableSaveButton();};
         }
 
         private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
         {
+        	strOldDetailAccountCode = txtDetailAccountCode.Text;
             ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
             ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
@@ -264,6 +281,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
+            
+            FPetraUtilsObject.SetChangedFlag();
         }
 
         private void ExportHierarchy(object sender, EventArgs e)
@@ -364,14 +383,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Here it shall be tested ...
             if (!txtDetailAccountCode.ReadOnly)
             {
-                if (!ChangeAccountCodeValue())
-                {
-                    throw new CancelSaveExeption();
-                }
-            }
-
-            if (!txtDetailAccountCode.ReadOnly)
-            {
                 ChangeAccountCodeValue();
             }
 
@@ -392,7 +403,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">Actually it is only the Leave-Event</param>
         public void ChangeAccountCodeValue(object sender, EventArgs e)
         {
-            ChangeAccountCodeValue();
+        	try {
+        		ChangeAccountCodeValue();
+        	} catch (CancelSaveException) {};
         }
 
         /// <summary>
@@ -435,6 +448,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Catalog.GetString(
                             "Sorry but this account already exists: ") + strNewDetailAccountCode,
                         Catalog.GetString("You cannot use an account name twice!"));
+                	throw new CancelSaveException();
                 }
             }
 

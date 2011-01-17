@@ -39,94 +39,235 @@ using NUnit.Framework.Constraints;
 
 namespace Tests.MFinance.GLBatches
 {
-    [TestFixture]
-    public class GLAccountHierarchy_test : NUnitFormTest
-    {
-        // Each account is defined by its LedgerNumber ...
-        // Actually the value is read by the TAppSettingsManager
-        private Int32 fLedgerNumber;
+	[TestFixture]
+	public class GLAccountHierarchy_test : CommonNUnitFunctions
+	{
+		// Each account is defined by its LedgerNumber ...
+		// Actually the value is read by the TAppSettingsManager
+		private Int32 fLedgerNumber;
 
+		/// <summary>
+		/// Tests if the LostFocus of the TreeView will show the Node which hast 
+		/// Focus last time - cfg. Mantis 217
+		/// </summary>
+		[Test]
+		public void T01_TreeViewFocusColor()
+		{
+			System.Console.WriteLine("-------T01_TreeViewFocusColor------------");
+			TFrmGLAccountHierarchyTester hierarchyTester
+				= new TFrmGLAccountHierarchyTester();
+			hierarchyTester.mainForm.Show();
+			hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+			
+			// Focus on the TreeView ..
+			hierarchyTester.trvAccounts.Properties.Focus();
 
-        [Test]
-        public void T01_TreeViewFocusColor()
-        {
-            System.Console.WriteLine("-------T01_TreeViewFocusColor------------");
-            TFrmGLAccountHierarchyTester hierarchyTester
-                = new TFrmGLAccountHierarchyTester();
-            hierarchyTester.mainForm.Show();
-            hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+			// Get a Node to operate ...
+			int[] nodeList = {0,2};
+			hierarchyTester.trvAccounts.SelectNode(nodeList);
+			TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
+			
+			// Colors form the node ...
+			Color colorBackNode1 = node.BackColor;
+			Color colorFontNode1 = node.ForeColor;
+			
+			// Focus to somewhere else
+			hierarchyTester.txtDetailAccountCode.Properties.Focus();
+	
+			// Colors from the node 
+			Color colorBackNode2 = node.BackColor;
+			Color colorFontNode2 = node.ForeColor;
+			
+			// Focus back to the treeview
+			hierarchyTester.trvAccounts.Properties.Focus();
+			
+			// Colors from the node
+			Color colorBackNode3 = node.BackColor;
+			Color colorFontNode3 = node.ForeColor;
+			
+			// Different checks 
+			// 1. Colors 1&3 must be equal ...
 
+			Assert.AreEqual(colorBackNode1,colorBackNode3, "Back-Color 1&3");
+			Assert.AreEqual(colorFontNode1,colorFontNode3, "Font-Color 1&3");
 
-            // Get a Node to operate ...
-            int[] nodeList1 =
-            {
-                0
-            };
-            int[] nodeList2 =
-            {
-                0, 2
-            };
-            int[] nodeList3 =
-            {
-                0, 4
-            };
-            hierarchyTester.trvAccounts.SelectNode(nodeList1);
-            hierarchyTester.trvAccounts.Properties.Focus();
-            TreeNode node1 = hierarchyTester.trvAccounts.Properties.SelectedNode;
+			// 1. Colors 1&2 must be different ...
+			Assert.AreNotEqual(colorBackNode1,colorBackNode2, "Back-Color 1&2");
+			Assert.AreNotEqual(colorFontNode1,colorFontNode2, "Font-Color 1&2");
+		
+		}
+		
+		/// <summary>
+		/// This routine sets and unsets an account to and from a foreign currency ...
+		/// </summary>
+		[Test]
+		public void T02_SetAccountToForeigenCurrency()
+		{
+			System.Console.WriteLine("-------T02_SetAccountToForeigenCurrency------------");
+			TFrmGLAccountHierarchyTester hierarchyTester
+				= new TFrmGLAccountHierarchyTester();
+			hierarchyTester.mainForm.Show();
+			hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+			
+			// Select a node ...
+			int[] nodeList1 = {0,0,0,0,0};
+			int[] nodeList2 = {0,2};
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
 
-            Color colorBackNode1 = node1.BackColor;
-            Color colorFontNode1 = node1.ForeColor;
+			Boolean blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
+			Assert.AreEqual(blnSaveBtn,false, "Save button shall be not enabled!");			
+			
+			String str1;
+			String str2;
+			Boolean blnCheckBoxSet;
+			Boolean blnCheckBoxSet2;
+			for (int i=0; i<=1; i++) {
+				blnCheckBoxSet =
+					(hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState
+					 == CheckState.Checked);
+				if (blnCheckBoxSet)
+				{
+					// Actually it is not possiblie to write SetSelectedString("ALL") ín order to 
+					// reset a combobox. This is to be fixed with id 216
+					hierarchyTester.cmbDetailForeignCurrencyCode.Properties.SetSelectedString("ALL");
+					hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState =
+						CheckState.Unchecked;
+				} else {
+					hierarchyTester.cmbDetailForeignCurrencyCode.Properties.SetSelectedString("CNY");
+					hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState =
+						CheckState.Checked;
+					
+				} 
+				blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
+				Assert.AreEqual(blnSaveBtn,true, "Save button must be enabled now!");
+				hierarchyTester.tbbSave.Click();
+				blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
+				Assert.AreEqual(blnSaveBtn,false, "Save button must be disabled again!");
 
-            System.Console.WriteLine("Color1 : " + colorBackNode1.ToString());
-            System.Console.WriteLine("Color1 : " + colorFontNode1.ToString());
+				// Select an other node and switch back ...
+				str1 = hierarchyTester.txtDetailAccountCode.Text;
+				hierarchyTester.trvAccounts.SelectNode(nodeList2);
+				str2 = hierarchyTester.txtDetailAccountCode.Text;
+				Assert.AreNotEqual(str1,str2, "Value must change because node has changed");
+				hierarchyTester.trvAccounts.SelectNode(nodeList1);
+				str2 = hierarchyTester.txtDetailAccountCode.Text;
+				Assert.AreEqual(str1,str2, "Value must be equal because node has changed back");
 
+				// Get back the stored data ...
+				blnCheckBoxSet2 =
+					(hierarchyTester.chkDetailForeignCurrencyFlag.Properties.CheckState
+					 == CheckState.Checked);
+				str1 = hierarchyTester.cmbDetailForeignCurrencyCode.Properties.GetSelectedString();
 
-            node1.Expand();
+				if (blnCheckBoxSet)
+				{
+					Assert.AreEqual("ALL", str1 , "We shall find the stored data ...");
+					Assert.AreEqual(blnCheckBoxSet2,false, "Checkbox shall be unchecked now");
+				} else {
+					Assert.AreEqual("CNY", str1 , "We shall find the stored data ...");
+					Assert.AreEqual(blnCheckBoxSet2,true, "Checkbox shall be checked now");
+				} 
+			}
+		}
+		
+		[Test]
+		public void T03_CreateANewAccount()
+		{
+			System.Console.WriteLine("-------T03_CreateANewAccount------------");
+			TFrmGLAccountHierarchyTester hierarchyTester
+				= new TFrmGLAccountHierarchyTester();
+			hierarchyTester.mainForm.Show();
+			hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+			
+			int[] nodeList1 = {0,1,1};
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			
+			// Create a first Account ...
+			hierarchyTester.tbbAddNewAccount.Click();
+			String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+			// Enable tbbSave
+			hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "x"; 
+			hierarchyTester.tbbSave.Click();
 
-            System.Threading.Thread.Sleep(10000);
+			// Create a second Account ...
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			hierarchyTester.tbbAddNewAccount.Click();
+			String strName2 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+			hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "y"; 
+			hierarchyTester.tbbSave.Click();
+			
+			Assert.AreNotEqual(strName1,strName2, "Two Accounts must not have the same name");
+			
+			// Create a third Account ...
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			hierarchyTester.tbbAddNewAccount.Click();
+			String strName3 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+			hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "z"; 
+			// use an invalid name 
+			hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
+			
+		    WaitForMessageBox(MessageBoxTester.Command.Yes);
+			hierarchyTester.tbbSave.Click();
+			
+			// Create a fourth Account ...
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			hierarchyTester.tbbAddNewAccount.Click();
+			String strName4 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+			hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "zz"; 
+			// use an invalid name 
+			hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
+			
+		}
+		
+		[Test]
+		public void T04_CreateNewAccountAndChangeTreeViewSelection()
+		{
+			
+			System.Console.WriteLine("-------T04_CreateNewAccountAndChangeTreeViewSelection------------");
+			TFrmGLAccountHierarchyTester hierarchyTester
+				= new TFrmGLAccountHierarchyTester();
+			hierarchyTester.mainForm.Show();
+			hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+			
+			int[] nodeList1 = {0,2,1};
+			hierarchyTester.trvAccounts.SelectNode(nodeList1);
+			
+			// Create a first Account ...
+			hierarchyTester.tbbAddNewAccount.Click();
+			String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+			// Invalid Name resp. the name "BAL SHT" exists in the test db ...
+			hierarchyTester.txtDetailAccountCode.Properties.Text = "BAL SHT"; 
+			
+			// Select an other node ...
+			int[] nodeList2 = {0,1};
+		    // WaitForMessageBox(MessageBoxTester.Command.Yes);
+			hierarchyTester.trvAccounts.SelectNode(nodeList2);
+			hierarchyTester.txtDetailAccountCodeLongDesc.Properties.Text = "12";
+			
+			// Open Point
+			// Normally an error Message shall appear here but this does not happen ...
+			// 
+			
+			
+//		    Assert.That(lastMessageTitle , 
+//		                Is.StringContaining("You cannot use an account name twice!"),
+//		               "Error Message shall appear");
+//		    Assert.That(hierarchyTester.trvAccounts.Properties.SelectedNode.Text,
+//		                Is.StringContaining("BAL SHT"),
+//		                "New Selection shall have been canceled");
+//		    
+ 		    WaitForMessageBox(MessageBoxTester.Command.No);
+		    hierarchyTester.mniClose.Click();
 
-            //hierarchyTester.trvAccounts.SelectNode(nodeList2);
-            hierarchyTester.trvAccounts.Properties.Focus();
+			
+		}
 
-            hierarchyTester.txtDetailAccountCode.Properties.Focus();
-
-            TreeNode node2 = hierarchyTester.trvAccounts.Properties.SelectedNode;
-            Color colorBackNode2 = node2.BackColor;
-            Color colorFontNode2 = node2.ForeColor;
-
-            System.Console.WriteLine("Color1 : " + colorBackNode1.ToString());
-            System.Console.WriteLine("Color1 : " + colorFontNode1.ToString());
-
-            System.Console.WriteLine("Color2 : " + colorBackNode2.ToString());
-            System.Console.WriteLine("Color2 : " + colorFontNode2.ToString());
-            System.Threading.Thread.Sleep(10000);
-
-
-            //hierarchyTester.trvAccounts.SelectNode(nodeList3);
-            hierarchyTester.trvAccounts.Properties.Focus();
-
-            TreeNode node3 = hierarchyTester.trvAccounts.Properties.SelectedNode;
-            Color colorBackNode3 = node3.BackColor;
-            Color colorFontNode3 = node3.ForeColor;
-
-            System.Console.WriteLine("Color1 : " + colorBackNode1.ToString());
-            System.Console.WriteLine("Color1 : " + colorFontNode1.ToString());
-
-            System.Console.WriteLine("Color2 : " + colorBackNode2.ToString());
-            System.Console.WriteLine("Color2 : " + colorFontNode2.ToString());
-
-            System.Console.WriteLine("Color3 : " + colorBackNode3.ToString());
-            System.Console.WriteLine("Color3 : " + colorFontNode3.ToString());
-
-            System.Console.WriteLine("Text1 : " + node1.Text);
-            System.Console.WriteLine("Text2 : " + node2.Text);
-            System.Console.WriteLine("Text3 : " + node3.Text);
-        }
-
-        [TestFixtureSetUp]
-        public void Init()
-        {
-            new TLogging("PetraClient.log");
+			
+		[TestFixtureSetUp]
+		public void Init()
+		{
+			new TLogging("PetraClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
             fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
         }

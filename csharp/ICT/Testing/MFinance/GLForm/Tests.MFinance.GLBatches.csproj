@@ -121,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ManagingAccounts.Test.cs" />
     <Compile Include="GLAccountHierarchy.test.cs" />
   </ItemGroup>
   <ItemGroup>

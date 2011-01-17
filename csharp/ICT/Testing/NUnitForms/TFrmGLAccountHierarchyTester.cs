@@ -38,18 +38,19 @@ using NUnit.Framework.Constraints;
 
 namespace Ict.Testing.NUnitForms
 {
-    /// <summary>
-    /// mainForm is one of the Base-Dialogs in the MFinance-Package.
-    /// This file generates a common useable Test-Interface for this dialog.
-    /// Please enshure to call "mainForm.LedgerNumber(ledgerNumber) defining a
-    /// specific ledger to be edited directly <b>after</b> mainForm.Show().
-    ///
-    /// Hint - acutally not all controls are connected.
-    /// </summary>
-    public sealed class TFrmGLAccountHierarchyTester
-    {
-        public TFrmGLAccountHierarchy mainForm;
-
+	/// <summary>
+	/// mainForm is one of the Base-Dialogs in the MFinance-Package.
+	/// This file generates a common useable Test-Interface for this dialog. 
+	/// Please enshure to call "mainForm.LedgerNumber(ledgerNumber) defining a 
+	/// specific ledger to be edited directly <b>after</b> mainForm.Show().
+	/// 
+	/// Hint - acutally not all controls are connected.
+	/// </summary>
+	public sealed class TFrmGLAccountHierarchyTester
+	{
+		
+		public TFrmGLAccountHierarchy mainForm;
+		
         public TTrvTreeViewTester trvAccounts;
         public TextBoxTester txtDetailAccountCode;
         public TCmbAutoCompleteTester cmbDetailAccountType;
@@ -67,9 +68,11 @@ namespace Ict.Testing.NUnitForms
         public ToolStripButtonTester tbbExportHierarchy;
         public ToolStripButtonTester tbbImportHierarchy;
         public System.Windows.Forms.MenuStrip mnuMain;
-
+        public CheckBoxTester chkDetailForeignCurrencyFlag;
+        public TCmbAutoPopulatedTester cmbDetailForeignCurrencyCode;
+        
         public ToolStripMenuItemTester mniClose;
-
+        
 //        public ToolStripMenuItemTester mniFile;
 //        public System.Windows.Forms.ToolStripMenuItem mniFileSave;
 //        public System.Windows.Forms.ToolStripSeparator mniSeparator0;
@@ -96,33 +99,38 @@ namespace Ict.Testing.NUnitForms
 //        public System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
 
 
-        // Contructor which initializes the acces to all the controls on the
-        // Dialog
-        public TFrmGLAccountHierarchyTester()
-        {
-            mainForm = new TFrmGLAccountHierarchy(IntPtr.Zero);
 
-            trvAccounts = new TTrvTreeViewTester("trvAccounts", mainForm);
-            txtDetailAccountCode = new TextBoxTester("txtDetailAccountCode", mainForm);
-            cmbDetailAccountType = new TCmbAutoCompleteTester("cmbDetailAccountType", mainForm);
-            txtDetailEngAccountCodeLongDesc = new TextBoxTester("txtDetailEngAccountCodeLongDesc", mainForm);
-            txtDetailEngAccountCodeShortDesc = new TextBoxTester("txtDetailEngAccountCodeShortDesc", mainForm);
+        // Contructor which initializes the acces to all the controls on the 
+        // Dialog 
+		public TFrmGLAccountHierarchyTester()
+		{
+			mainForm = new TFrmGLAccountHierarchy(IntPtr.Zero);
+		
+			trvAccounts = new TTrvTreeViewTester("trvAccounts",mainForm);
+			txtDetailAccountCode = new TextBoxTester("txtDetailAccountCode",mainForm);
+			cmbDetailAccountType = new TCmbAutoCompleteTester("cmbDetailAccountType",mainForm);
+			txtDetailEngAccountCodeLongDesc = new TextBoxTester("txtDetailEngAccountCodeLongDesc",mainForm);
+			txtDetailEngAccountCodeShortDesc = new TextBoxTester("txtDetailEngAccountCodeShortDesc",mainForm);
+			
+			txtDetailAccountCodeLongDesc = new TextBoxTester("txtDetailAccountCodeLongDesc",mainForm);
+			txtDetailAccountCodeShortDesc = new TextBoxTester("txtDetailAccountCodeShortDesc",mainForm);
 
-            txtDetailAccountCodeLongDesc = new TextBoxTester("txtDetailAccountCodeLongDesc", mainForm);
-            txtDetailAccountCodeShortDesc = new TextBoxTester("txtDetailAccountCodeShortDesc", mainForm);
-
-            cmbDetailValidCcCombo = new TCmbAutoCompleteTester("cmbDetailValidCcCombo", mainForm);
-            chkDetailBankAccountFlag = new CheckBoxTester("chkDetailBankAccountFlag", mainForm);
-            chkDetailAccountActiveFlag = new CheckBoxTester("chkDetailAccountActiveFlag", mainForm);
-
-            tbbSave = new ToolStripButtonTester("tbbSave", mainForm);
-            tbbAddNewAccount = new ToolStripButtonTester("tbbAddNewAccount", mainForm);
-            tbbDeleteUnusedAccount = new ToolStripButtonTester("tbbDeleteUnusedAccount", mainForm);
-            tbbExportHierarchy = new ToolStripButtonTester("tbbExportHierarchy", mainForm);
-            tbbImportHierarchy = new ToolStripButtonTester("tbbImportHierarchy", mainForm);
-
-
-            mniClose = new ToolStripMenuItemTester("mniClose", mainForm);
-        }
-    }
+			cmbDetailValidCcCombo = new TCmbAutoCompleteTester("cmbDetailValidCcCombo",mainForm);
+			chkDetailBankAccountFlag = new CheckBoxTester("chkDetailBankAccountFlag",mainForm);
+			chkDetailAccountActiveFlag = new CheckBoxTester("chkDetailAccountActiveFlag",mainForm);
+			
+			tbbSave = new ToolStripButtonTester("tbbSave",mainForm);
+			tbbAddNewAccount = new ToolStripButtonTester("tbbAddNewAccount",mainForm);
+			tbbDeleteUnusedAccount = new ToolStripButtonTester("tbbDeleteUnusedAccount",mainForm);
+			tbbExportHierarchy = new ToolStripButtonTester("tbbExportHierarchy",mainForm);
+			tbbImportHierarchy = new ToolStripButtonTester("tbbImportHierarchy",mainForm);
+			
+			chkDetailForeignCurrencyFlag = new CheckBoxTester("chkDetailForeignCurrencyFlag", mainForm);
+			cmbDetailForeignCurrencyCode = new TCmbAutoPopulatedTester("cmbDetailForeignCurrencyCode", mainForm);
+		
+			
+			mniClose = new ToolStripMenuItemTester("mniClose",mainForm);
+			
+		}
+	}
 }
