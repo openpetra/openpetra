@@ -58,8 +58,9 @@ namespace ControlTestBench
 			this.button2.Name = "button2";
 			this.button2.Size = new System.Drawing.Size(182, 23);
 			this.button2.TabIndex = 1;
-			this.button2.Text = "button2";
+			this.button2.Text = "TPnlCollapsible Test";
 			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.Button2Click);
 			// 
 			// txtYaml
 			// 
@@ -75,7 +76,6 @@ namespace ControlTestBench
 			this.label1.Size = new System.Drawing.Size(100, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "enter yaml file:";
-			
 			// 
 			// MainForm
 			// 

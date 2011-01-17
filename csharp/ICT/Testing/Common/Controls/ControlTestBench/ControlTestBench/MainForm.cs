@@ -54,5 +54,10 @@ namespace ControlTestBench
 			//newForm.Controls.Add(
 		}
 		
+		
+		void Button2Click(object sender, EventArgs e)
+		{
+		    new TestCollapsible.MainForm2().Show();
+		}
 	}
 }

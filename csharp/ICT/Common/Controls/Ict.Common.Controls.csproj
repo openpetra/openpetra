@@ -91,11 +91,6 @@
     <Compile Include="sgrdDataGrid.cs" />
     <Compile Include="sgrdDataGridPaged.cs" />
     <Compile Include="tabVersatile.cs" />
-    <Compile Include="TaskList.cs" />
-    <Compile Include="TaskList.Designer.cs">
-      <DependentUpon>TaskList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TVisualStyles.cs" />
     <Compile Include="txtButtonLabel.cs" />
     <Compile Include="txtLabelledTextBox.cs" />
     <Compile Include="txtMaskedTextBox.cs" />
@@ -129,9 +124,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="tabVersatile.resx">
       <DependentUpon>tabVersatile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TaskList.resx">
-      <DependentUpon>TaskList.Designer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="txtButtonLabel.resx">
       <DependentUpon>txtButtonLabel.cs</DependentUpon>
