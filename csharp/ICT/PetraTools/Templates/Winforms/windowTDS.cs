@@ -35,8 +35,6 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
 
-    private class CancelSaveExeption: System.Exception {};
-
 {#IFDEF UICONNECTORTYPE}
 
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
@@ -191,7 +189,7 @@ namespace {#NAMESPACE}
     {
       try {
          SaveChanges();
-      } catch (CancelSaveExeption) {}
+      } catch (CancelSaveException) {}
     }
 
     /// <summary>

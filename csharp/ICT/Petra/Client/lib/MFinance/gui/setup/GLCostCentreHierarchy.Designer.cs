@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.sptSplitter = new System.Windows.Forms.SplitContainer();
-            this.trvCostCentres = new System.Windows.Forms.TreeView();
+            this.trvCostCentres = new Ict.Common.Controls.TTrvTreeView();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailCostCentreCode = new System.Windows.Forms.TextBox();
@@ -461,7 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private System.Windows.Forms.Panel pnlContent;
         private System.Windows.Forms.SplitContainer sptSplitter;
-        private System.Windows.Forms.TreeView trvCostCentres;
+        private Ict.Common.Controls.TTrvTreeView trvCostCentres;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtDetailCostCentreCode;

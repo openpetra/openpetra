@@ -46,7 +46,6 @@ namespace Ict.Petra.Client.CommonForms
     /// This Exception shall be used to cancel a file save. In this case no warning and
     /// additional error Message is shown ...
     /// </summary>
-
     public class CancelSaveException : System.Exception
     {
     };
