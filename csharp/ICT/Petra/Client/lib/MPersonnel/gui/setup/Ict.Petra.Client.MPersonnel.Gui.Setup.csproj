@@ -100,7 +100,21 @@
     <Compile Include="AbilityAreaSetup.ManualCode.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationTypeSetup.cs" />
+    <Compile Include="ApplicationTypeSetup.Designer.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicationTypeSetup.ManualCode.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="LeavingCodeSetup.cs" />
+    <Compile Include="LeavingCodeSetup.Designer.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LeavingCodeSetup.ManualCode.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguageLevelSetup.cs" />
     <Compile Include="LanguageLevelSetup.Designer.cs">
       <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
@@ -167,6 +181,12 @@
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ApplicationTypeSetup.resx">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LeavingCodeSetup.resx">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>    
     <EmbeddedResource Include="LanguageLevelSetup.resx">
       <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
     </EmbeddedResource>
