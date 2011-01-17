@@ -43,22 +43,7 @@
   <include name="mysql.data.dll"/>
   <include name="ICSharpCode.SharpZipLib.dll"/>
   <include name="Jayrock.Json.dll"/>
-</patternset>
-
-<patternset id="Ict.Common">
-  <include name="Ict.Common.dll"/>
-</patternset>
-
-<patternset id="Ict.Petra.Shared">
-  <include name="Ict.Petra.Shared.dll"/>
-</patternset>
-
-<patternset id="Ict.Petra.Server">
-  <include name="Ict.Petra.Server.exe"/>
-</patternset>
-
-<patternset id="Ict.Petra.Client">
-  <include name="Ict.Petra.Client.exe"/>
+  <include name="CMicroParser.dll" /> <!-- YAML Parser -->
 </patternset>
 
 

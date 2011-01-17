@@ -6,12 +6,17 @@
 
 <include buildfile="OpenPetra.references.xml"/>
 
+<property name="RunCsDepend" value="true" overwrite="false"/>
 <property name="OutputType" value="library" overwrite="false"/>
 <property name="csc-ouput-ext" value="dll" if="${OutputType=='library'}" />
 <property name="csc-ouput-ext" value="exe" unless="${OutputType=='library'}" />
 <property name="AssemblyName" value="${Namespace}.${csc-ouput-ext}" />
 <property name="namespace-temp-dir" value="${path::combine(dir.bin,Namespace)}" />
 <property name="AssemblyNameInfo.cs" value="${path::combine(namespace-temp-dir,'AssemblyInfo.cs')}" />
+<property name="referencesFile" value="${path::combine(namespace-temp-dir,Namespace+'.generated.refs')}" />
+<property name="compilefiles" value="*.cs"  overwrite="false"/>
+<property name="excludecsfiles" value=".doc"  overwrite="false"/>
+
 
 <target name="clean" >
   <delete>
@@ -23,8 +28,25 @@
   </delete>
 </target>
 
-<target name="setassemblyfileset-internal">
- <assemblyfileset id="assemblyfileset-references">
+<if test="${not target::exists('custdepend')}">
+  <include buildfile="OpenPetra.target-custdepend.xml"/>
+</if>
+
+<target name="depend" depends="custdepend">
+  <if test="${true==bool::parse(RunCsDepend)}">
+    <mkdir dir="${namespace-temp-dir}" />
+     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+    <CsDepend ns-default="${Namespace}" ns-exceptions="${csdependNamespaceExceptions}" 
+      basedir="${project::get-base-directory()}"
+      referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}">
+      <sources>
+        <include name="**/*.cs" />
+        <exclude name="${excludecsfiles}" />
+      </sources>    
+    </CsDepend>
+    <include buildfile="${referencesFile}" />
+  </if>
+  <assemblyfileset id="assemblyfileset-references">
     <!-- duplicated below. References are set after the include -->
     <lib>
       <include name="${dir.bin}"/>
@@ -34,41 +56,49 @@
   </assemblyfileset>
 </target>
 
-<target name="compile" depends="setassemblyfileset-internal">
+<target name="compile" depends="depend">
   <!-- Create assembly info -->
   <mkdir dir="${namespace-temp-dir}" />
-  <asminfo output="${AssemblyNameInfo.cs}" language="CSharp">
-    <imports>
-      <import namespace="System.Reflection" />
-      <import namespace="System.Runtime.CompilerServices" />
-      <import namespace="System.Runtime.InteropServices" />
-    </imports>
-    <attributes>
-      <attribute type="AssemblyTitle" value='"${Namespace}"' asis="true" />
-      <attribute type="AssemblyDescription" value='""' asis="true" />
-      <attribute type="AssemblyConfiguration" value='""' asis="true" />
-      <attribute type="AssemblyCompany" value='"ICT"' asis="true" />
-      <attribute type="AssemblyProduct" value='"OpenPetra"' asis="true" />
-      <attribute type="AssemblyCopyright" value='"(c) OM International 2004-2010"' asis="true" />
-      <attribute type="AssemblyTrademark" value='""' asis="true" />
-      <attribute type="AssemblyCulture" value='""' asis="true" />       
-      <attribute type="ComVisible" value="false" asis="true" /> 
-      <attribute type="AssemblyVersion" value='"0.0.9.0"' asis="true" /> 
-    </attributes>
-  </asminfo>
-  <csc filealign="4096" output="${dir.bin}/${AssemblyName}" 
-       doc="${dir.bin}/${Namespace}.xml"
-       target="${OutputType}" debug="${compile.debug}" 
-       noconfig="true">
-    <references refid="assemblyfileset-references" /> 
-    <sources>
-      <include name="**/*.cs" />
-      <include name="${AssemblyNameInfo.cs}" />
-    </sources>
-    <resources>
-      <include name="**/*.resx" />
-    </resources>
-  </csc>
+
+  <if test="${bool::parse(RunCsDepend)!=true}">
+    <asminfo output="${AssemblyNameInfo.cs}" language="CSharp">
+      <imports>
+        <import namespace="System.Reflection" />
+        <import namespace="System.Runtime.CompilerServices" />
+        <import namespace="System.Runtime.InteropServices" />
+      </imports>
+      <attributes>
+        <attribute type="AssemblyTitle" value='"${Namespace}"' asis="true" />
+        <attribute type="AssemblyDescription" value='""' asis="true" />
+        <attribute type="AssemblyConfiguration" value='""' asis="true" />
+        <attribute type="AssemblyCompany" value='"ICT"' asis="true" />
+        <attribute type="AssemblyProduct" value='"OpenPetra"' asis="true" />
+        <attribute type="AssemblyCopyright" value='"(c) OM International 2004-2011"' asis="true" />
+        <attribute type="AssemblyTrademark" value='""' asis="true" />
+        <attribute type="AssemblyCulture" value='""' asis="true" />       
+        <attribute type="ComVisible" value="false" asis="true" /> 
+        <attribute type="AssemblyVersion" value='"0.0.9.0"' asis="true" /> 
+      </attributes>
+    </asminfo>
+    <csc filealign="4096" output="${dir.bin}/${AssemblyName}" 
+         doc="${dir.bin}/${Namespace}.xml"
+         target="${OutputType}" debug="${compile.debug}" 
+         noconfig="true">
+      <references refid="assemblyfileset-references" /> 
+      <sources>
+        <include name="${compilefiles}" />
+        <include name="${AssemblyNameInfo.cs}" />
+      </sources>
+      <resources>
+        <include name="*.resx" />
+      </resources>
+    </csc>
+  </if>
+  <if test="${bool::parse(RunCsDepend)==true}">
+    <property name="target" value="compile" />
+    <call target="nant-subcall" cascade="false" />
+  </if>
+  
 </target>
 
 <target name="generateCsproject" depends="generate-csproject-sharpdevelop">
@@ -80,7 +110,7 @@
 </target>
 
 
-<target name="generate-csproject-internal" depends="setassemblyfileset-internal">
+<target name="generate-csproject-internal" depends="depend">
   <!-- Add cs and resx files -->
   <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
 
@@ -150,7 +180,7 @@
   <foreach item="File" property="filename">
     <in>
       <items>
-        <include name="**/*.cs" />
+        <include name="${compilefiles}" />
         <include name="${AssemblyNameInfo.cs}" />
       </items>
     </in>

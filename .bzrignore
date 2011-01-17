@@ -44,3 +44,8 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /delivery
 *.patch
 /log
+./delivery
+./delivery/**
+./projectfiles/**
+csharp/ICT/Petra/Server/lib/data/*.cs
+csharp/ICT/Petra/Shared/lib/data/*.cs

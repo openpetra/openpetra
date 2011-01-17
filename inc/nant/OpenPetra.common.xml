@@ -110,7 +110,15 @@
 <!-- compiler flags -->
 <property name="compile.debug" value="true" 
           overwrite="false" />
+<property name="csdependNamespaceExceptions" value="${path::combine(dir.csharp,'namespace-exceptions.txt')}" 
+          overwrite="false" />
 
+<!-- path to custom NAnt tasks -->
+<property name="Ict.Tools.NAntTasks.DLL" value="${path::combine(dir.bin,'Ict.Tools.NAntTasks.dll')}" 
+          overwrite="false" />
 
+<!-- generateORM props -->
+<property name="tool-generateORM" value="${dir.bin}/Ict.Tools.GenerateORM.exe"/>
+<property name="PetraXML.file" value="${dir.root}/db/petra.xml"/>
 
 </project>

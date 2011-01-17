@@ -3,13 +3,18 @@
 
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
-<target name="csharp" depends="" >
+<target name="nanttasks" depends="" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="inc/nanttasks/nanttasks.build" />
+</target>
+
+<target name="csharp" depends="nanttasks" >
   <nant inheritall="false" target="${target}" 
         buildfile="csharp/csharp.build" />
 </target>
 
 <target name="internal-subdirs" 
-        depends="csharp" />
+        depends="csharp,nanttasks" />
 
 
 <target name="generateSolutionNoCompile" depends="generate-solution-csharp-internal" >

@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance;
+using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.App.Core;

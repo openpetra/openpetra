@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core;
 

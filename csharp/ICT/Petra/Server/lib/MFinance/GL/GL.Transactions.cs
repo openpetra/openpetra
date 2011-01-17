@@ -35,7 +35,6 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
