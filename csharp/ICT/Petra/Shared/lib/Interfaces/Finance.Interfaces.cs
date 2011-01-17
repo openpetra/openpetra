@@ -492,10 +492,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     out String exportString,
                                     out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        bool ImportGiftBatchData(Hashtable requestParams,
-                                 String importString,
-                                 out TVerificationResultCollection AMessages,
-                                 out GiftBatchTDS FMainDS);
+        bool ImportGiftBatches(Hashtable requestParams,
+                               String importString,
+                               out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
         GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
@@ -604,6 +603,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         bool ExportAllGLBatchData(ref ArrayList batches,
                                   Hashtable requestParams,
                                   out String exportString);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        bool ImportGLBatches(Hashtable requestParams,
+                             String importString,
+                             out TVerificationResultCollection AMessages);
     }
 
 }

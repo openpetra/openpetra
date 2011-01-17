@@ -94,6 +94,16 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// make sure generated files are not rewritten if only the copyright has changed in the file header
+        /// </summary>
+        /// <param name="ALine"></param>
+        /// <returns></returns>
+        private static string ReplaceCopyRightYear(string ALine)
+        {
+            return ALine.Replace("2010", "2011");
+        }
+
+        /// <summary>
         /// check if the two text files have the same content
         /// </summary>
         /// <param name="filename1"></param>
@@ -136,8 +146,8 @@ namespace Ict.Common.IO
                     return false;
                 }
 
-                line = sr1.ReadToEnd();
-                line2 = sr2.ReadToEnd();
+                line = ReplaceCopyRightYear(sr1.ReadToEnd());
+                line2 = ReplaceCopyRightYear(sr2.ReadToEnd());
                 sr1.Close();
                 sr2.Close();
                 return line == line2;
@@ -148,8 +158,8 @@ namespace Ict.Common.IO
 
             while (true)
             {
-                line = sr1.ReadLine();
-                line2 = sr2.ReadLine();
+                line = ReplaceCopyRightYear(sr1.ReadLine());
+                line2 = ReplaceCopyRightYear(sr2.ReadLine());
 
                 if (line.CompareTo(line2) != 0)
                 {

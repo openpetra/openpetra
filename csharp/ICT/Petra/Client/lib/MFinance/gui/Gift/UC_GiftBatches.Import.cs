@@ -44,10 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftBatches
     {
-        private String FImportMessage;
-        private String FImportLine;
-        private TDlgSelectCSVSeparator FdlgSeparator = null;
-        GiftBatchTDS FMergeDS = null;
+        private TDlgSelectCSVSeparator FdlgSeparator;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -63,10 +60,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
                 if (dateFormatString.Equals("MDY"))
@@ -78,6 +76,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FdlgSeparator.DateFormat = "dd/MM/yyyy";
                 }
 
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                }
+
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
                     Hashtable requestParams = new Hashtable();
@@ -85,6 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
                     //requestParams.Add("NumberFormat", FdlgSeparator.N);
 
 
@@ -93,74 +97,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
 
                     importString = File.ReadAllText(dialog.FileName);
-                    string ErrorMessages = String.Empty;
 
-                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatchData(
+                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                         requestParams,
                         importString,
-                        out AMessages,
-                        out FMergeDS);
+                        out AMessages);
 
-                    if (AMessages.Count > 0)
-                    {
-                        foreach (TVerificationResult message in AMessages)
-                        {
-                            ErrorMessages += "[" + message.ResultContext + "] " +
-                                             message.ResultTextCaption + ": " +
-                                             message.ResultText + Environment.NewLine;
-                        }
-                    }
-
-                    if (ErrorMessages.Length > 0)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"),
-
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
+                    ShowMessages(AMessages);
                 }
 
                 if (ok)
                 {
-                    FMainDS.Merge(FMergeDS);
-                    //TODO refresh the gui
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
+                    LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.DisableSaveButton();
                 }
             }
         }
 
-        private String ImportString(String message)
+        void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
         {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn;
+            TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
+            impOptions = FdlgSeparator.SelectedSeparator;
+            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
         }
 
-        private Boolean ImportBoolean(String message)
+        void ShowMessages(TVerificationResultCollection AMessages)
         {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn.ToLower().Equals("yes");
-        }
+            string ErrorMessages = String.Empty;
 
-        private Int64 ImportInt64(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt64(sReturn);
-        }
+            if (AMessages.Count > 0)
+            {
+                foreach (TVerificationResult message in AMessages)
+                {
+                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                }
+            }
 
-        private Int32 ImportInt32(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt32(sReturn);
-        }
-
-        private Decimal ImportDecimal(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToDecimal(sReturn);
+            if (ErrorMessages.Length > 0)
+            {
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

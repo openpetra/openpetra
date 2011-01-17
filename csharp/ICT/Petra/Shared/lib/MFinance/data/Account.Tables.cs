@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2127,7 +2127,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
             TableInfo.Add(TableId, new TTypedTableInfo(TableId, "AEpMatch", "a_ep_match",
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "EpMatchKey", "a_ep_match_key_i", "a_ep_match_key_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(1, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(1, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 200, false),
                     new TTypedColumnInfo(2, "Detail", "a_detail_i", "a_detail_i", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(3, "Action", "a_action_c", "a_action_c", OdbcType.VarChar, 40, true),
                     new TTypedColumnInfo(4, "RecentMatch", "a_recent_match_d", "Date", OdbcType.Date, -1, true),
@@ -2448,7 +2448,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// get character length for column
         public static short GetMatchTextLength()
         {
-            return 100;
+            return 200;
         }
 
         /// get the name of the field in the database for this column
@@ -4603,7 +4603,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
                     new TTypedColumnInfo(1, "Order", "a_order_i", "order", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(2, "DetailKey", "a_detail_key_i", "a_detail_key_i", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(3, "NumberOnPaperStatement", "a_number_on_paper_statement_i", "a_number_on_paper_statement_i", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(4, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 100, false),
+                    new TTypedColumnInfo(4, "MatchText", "a_match_text_c", "a_match_text_c", OdbcType.VarChar, 200, false),
                     new TTypedColumnInfo(5, "AccountName", "a_account_name_c", "Account Name", OdbcType.VarChar, 160, false),
                     new TTypedColumnInfo(6, "Title", "a_title_c", "Title", OdbcType.VarChar, 64, false),
                     new TTypedColumnInfo(7, "FirstName", "a_first_name_c", "First Name", OdbcType.VarChar, 64, false),
@@ -4870,7 +4870,7 @@ namespace Ict.Petra.Shared.MFinance.Account.Data
         /// get character length for column
         public static short GetMatchTextLength()
         {
-            return 100;
+            return 200;
         }
 
         /// get the name of the field in the database for this column
