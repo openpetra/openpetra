@@ -28,16 +28,15 @@ using NUnit.Extensions.Forms;
 
 namespace Ict.Testing.NUnitForms
 {
-	/// <summary>
-	/// Description of TTrvTreeViewTester.
-	/// </summary>
-	public class TTrvTreeViewTester : TreeViewTester // <TTrvTreeView, TTrvTreeViewTester>
-	{
-		
+    /// <summary>
+    /// Description of TTrvTreeViewTester.
+    /// </summary>
+    public class TTrvTreeViewTester : TreeViewTester     // <TTrvTreeView, TTrvTreeViewTester>
+    {
         /// constructor
-		public TTrvTreeViewTester()
-		{
-		}
+        public TTrvTreeViewTester()
+        {
+        }
 
         /// constructor
         public TTrvTreeViewTester(string name, Form form) : base(name, form)
@@ -69,7 +68,5 @@ namespace Ict.Testing.NUnitForms
                 return (TTrvTreeView) base.TheObject;
             }
         }
-        
- 
-	}
+    }
 }

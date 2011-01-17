@@ -31,7 +31,7 @@ namespace Ict.Common.Controls
     /// This tree view provides "common features"
     ///
     /// 1. If the tree losts the focus, the left node will stay marked as "has had focus"
-    /// 
+    ///
     /// If you think that you can optimize the code feel free to do it but be careful. It
     /// shall run ether in the client an in NUnit ...
     /// </summary>
@@ -49,8 +49,8 @@ namespace Ict.Common.Controls
         private Color treeBackgroundColor = Color.Empty;
         // Actual used (Font) ForeColor ...
         private Color treeForeColor = Color.Empty;
-        
-        
+
+
         private bool colorsInitialized = false;
 
         /// <summary>
@@ -60,48 +60,61 @@ namespace Ict.Common.Controls
         {
             GotFocus += new EventHandler(TreeViewGotFocus);
             LostFocus += new EventHandler(TreeViewLostFocus);
-            
+
             // System.Console.WriteLine("TTrvTreeView");
         }
 
         // Common GetFocus-Event
         private void TreeViewLostFocus(object sender, EventArgs e)
         {
-        	try {
-        		CheckColorInitializing();
-        		if (colorsInitialized) {
-        			SelectedNode.BackColor = Color.Gray;
-        			SelectedNode.ForeColor = Color.White;
-        		}
-        		lastWorkNode = workNode;
-        		workNode = SelectedNode;
-        	}  catch (Exception) {}
+            try
+            {
+                CheckColorInitializing();
+
+                if (colorsInitialized)
+                {
+                    SelectedNode.BackColor = Color.Gray;
+                    SelectedNode.ForeColor = Color.White;
+                }
+
+                lastWorkNode = workNode;
+                workNode = SelectedNode;
+            }
+            catch (Exception)
+            {
+            }
             // System.Console.WriteLine("TTrvTreeView.LostFocus");
         }
 
         // Common LostFocus-Event
         private void TreeViewGotFocus(object sender, EventArgs e)
         {
-        	try {
-        		CheckColorInitializing();
-        		if (colorsInitialized) {
-        			// restore the node colors
-        			workNode.BackColor = treeBackgroundColor;
-        			workNode.ForeColor = treeForeColor;
-        		}
-        	} catch (Exception) {}
+            try
+            {
+                CheckColorInitializing();
+
+                if (colorsInitialized)
+                {
+                    // restore the node colors
+                    workNode.BackColor = treeBackgroundColor;
+                    workNode.ForeColor = treeForeColor;
+                }
+            }
+            catch (Exception)
+            {
+            }
             // System.Console.WriteLine("TTrvTreeView.GotFocus");
         }
-        
+
         private void CheckColorInitializing()
         {
-        	// If the colors are not initialized - then do so ...
-        	if (!colorsInitialized) {
-        		treeBackgroundColor = SelectedNode.BackColor;
-        		treeForeColor = SelectedNode.ForeColor;
-        		colorsInitialized = true;
-        	}
+            // If the colors are not initialized - then do so ...
+            if (!colorsInitialized)
+            {
+                treeBackgroundColor = SelectedNode.BackColor;
+                treeForeColor = SelectedNode.ForeColor;
+                colorsInitialized = true;
+            }
         }
-        
     }
 }

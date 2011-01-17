@@ -38,55 +38,55 @@ using NUnit.Framework.Constraints;
 
 namespace Ict.Testing.NUnitForms
 {
-	/// <summary>
-	/// Description of TFrmGLCreateLedgerTester.
-	/// </summary>
-	public sealed class TFrmGLCreateLedgerTester
-	{
-		public TCmbAutoPopulatedTester cmbCountryCode;
-		public TCmbAutoPopulatedTester cmbBaseCurrency;
-		public TCmbAutoPopulatedTester cmbIntlCurrency;
-		public TextBoxTester txtLedgerName;
-		
-		public TextBoxTester dtpCalendarStartDate;
-		public NumericUpDownTester nudLedgerNumber;
-		public NumericUpDownTester nudNumberOfPeriods;
-		public NumericUpDownTester nudCurrentPeriod;
-		public NumericUpDownTester nudNumberOfFwdPostingPeriods;
-		
-		public ToolStripButtonTester tbbCreate;
-		
-		TFrmGLCreateLedger tFrmGLCreateLedger;
-		
-		private static TFrmGLCreateLedgerTester instance = new TFrmGLCreateLedgerTester();
+    /// <summary>
+    /// Description of TFrmGLCreateLedgerTester.
+    /// </summary>
+    public sealed class TFrmGLCreateLedgerTester
+    {
+        public TCmbAutoPopulatedTester cmbCountryCode;
+        public TCmbAutoPopulatedTester cmbBaseCurrency;
+        public TCmbAutoPopulatedTester cmbIntlCurrency;
+        public TextBoxTester txtLedgerName;
 
-		
-		public static TFrmGLCreateLedgerTester Instance {
-			
-			get {
-				return instance;
-			}
-		}
-		
-		private TFrmGLCreateLedgerTester()
-		{
-			 tFrmGLCreateLedger = new TFrmGLCreateLedger(IntPtr.Zero);
-			
-			nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber",tFrmGLCreateLedger);
+        public TextBoxTester dtpCalendarStartDate;
+        public NumericUpDownTester nudLedgerNumber;
+        public NumericUpDownTester nudNumberOfPeriods;
+        public NumericUpDownTester nudCurrentPeriod;
+        public NumericUpDownTester nudNumberOfFwdPostingPeriods;
 
-			txtLedgerName = new TextBoxTester("txtLedgerName",tFrmGLCreateLedger);
-			
-			cmbCountryCode = new TCmbAutoPopulatedTester("cmbCountryCode",tFrmGLCreateLedger);
-			cmbBaseCurrency = new TCmbAutoPopulatedTester("cmbBaseCurrency",tFrmGLCreateLedger);
-			cmbIntlCurrency = new TCmbAutoPopulatedTester("cmbIntlCurrency",tFrmGLCreateLedger);
-			
-			TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate",tFrmGLCreateLedger);
-			
-			nudNumberOfPeriods = new NumericUpDownTester("nudNumberOfPeriods",tFrmGLCreateLedger);
-			nudCurrentPeriod = new NumericUpDownTester("nudCurrentPeriod",tFrmGLCreateLedger);
-			nudNumberOfFwdPostingPeriods = new NumericUpDownTester("nudNumberOfFwdPostingPeriods",tFrmGLCreateLedger);
-			
-			tbbCreate = new ToolStripButtonTester("tbbCreate",tFrmGLCreateLedger);
-		}
-	}
+        public ToolStripButtonTester tbbCreate;
+
+        TFrmGLCreateLedger tFrmGLCreateLedger;
+
+        private static TFrmGLCreateLedgerTester instance = new TFrmGLCreateLedgerTester();
+
+
+        public static TFrmGLCreateLedgerTester Instance {
+            get
+            {
+                return instance;
+            }
+        }
+
+        private TFrmGLCreateLedgerTester()
+        {
+            tFrmGLCreateLedger = new TFrmGLCreateLedger(IntPtr.Zero);
+
+            nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber", tFrmGLCreateLedger);
+
+            txtLedgerName = new TextBoxTester("txtLedgerName", tFrmGLCreateLedger);
+
+            cmbCountryCode = new TCmbAutoPopulatedTester("cmbCountryCode", tFrmGLCreateLedger);
+            cmbBaseCurrency = new TCmbAutoPopulatedTester("cmbBaseCurrency", tFrmGLCreateLedger);
+            cmbIntlCurrency = new TCmbAutoPopulatedTester("cmbIntlCurrency", tFrmGLCreateLedger);
+
+            TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate", tFrmGLCreateLedger);
+
+            nudNumberOfPeriods = new NumericUpDownTester("nudNumberOfPeriods", tFrmGLCreateLedger);
+            nudCurrentPeriod = new NumericUpDownTester("nudCurrentPeriod", tFrmGLCreateLedger);
+            nudNumberOfFwdPostingPeriods = new NumericUpDownTester("nudNumberOfFwdPostingPeriods", tFrmGLCreateLedger);
+
+            tbbCreate = new ToolStripButtonTester("tbbCreate", tFrmGLCreateLedger);
+        }
+    }
 }

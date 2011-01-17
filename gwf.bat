@@ -1,0 +1,1 @@
+nant generateWinform -D:file=MFinance\gui\setup\GLAccountHierarchy.yaml
