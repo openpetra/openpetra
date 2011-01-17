@@ -74,5 +74,17 @@ namespace Ict.Petra.Client.CommonForms
         protected virtual void Form_Load(object sender, EventArgs e)
         {
         }
+        
+        void Button1Click(object sender, EventArgs e)
+        {
+        	if(pnlNavigation.Visible = true)
+        	{
+        		pnlNavigation.Visible = false;
+        	}
+        	else
+        	{
+        		pnlNavigation.Visible = true;
+        	}
+        }
     }
 }

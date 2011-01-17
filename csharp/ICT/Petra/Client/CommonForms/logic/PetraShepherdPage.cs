@@ -216,17 +216,39 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
         public TPetraShepherdPage(XmlNode ShepherdPageNode)
         {
+        	//Comment
             FID=ShepherdPageNode["ID"].Value;
+            TLogging.Log("~~ID Assigned~~ " + FID);
+            
             FTitle=ShepherdPageNode["Title"].Value;
+            TLogging.Log("~~Title Assigned~~ " + FTitle);
+            
             FNote=ShepherdPageNode["Note"].Value;
+            TLogging.Log("~~Note Assigned~~ " + FNote);
+            
             FVisible=System.Convert.ToBoolean(ShepherdPageNode["Visible"].Value);
+            TLogging.Log("~~Visible Assigned~~ " + System.Convert.ToString(FVisible));
+            
             FEnabled=System.Convert.ToBoolean(ShepherdPageNode["Enabled"].Value);
+            TLogging.Log("~~Enabled Assigned~~ " + System.Convert.ToString(FEnabled));
+            
             FUserControlNamespace=ShepherdPageNode["UserControlNamespace"].Value;
+            TLogging.Log("~~UserControlNamespace Assigned~~ " + FUserControlNamespace);
+            
             FUserControlClassName=ShepherdPageNode["UserControlClassName"].Value;
+            TLogging.Log("~~UserControlClassName Assigned~~ " + FUserControlClassName);
+            
             FHelpContext=ShepherdPageNode["HelpContext"].Value;
+            TLogging.Log("~~HelpContext Assigned~~ " + FHelpContext);
+            
             FUserControlType=ShepherdPageNode["UserControlType"].Value;
-            IsLastPage=System.Convert.ToBoolean(ShepherdPageNode["IsLastPage"].Value);
-            IsFirstPage=System.Convert.ToBoolean(ShepherdPageNode["IsFirstPage"].Value);
+            TLogging.Log("~~UserControlType Assigned~~ ");
+            
+            FIsLastPage=System.Convert.ToBoolean(ShepherdPageNode["IsLastPage"].Value);
+            TLogging.Log("~~IsLastPage Assigned~~ " + System.Convert.ToString(FIsLastPage));
+            
+            FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode["IsFirstPage"].Value);
+            TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
         }
     }
     

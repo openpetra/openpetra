@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.CommonForms
         private void InitializeComponent()
         {
         	this.pnlButtons = new System.Windows.Forms.Panel();
+        	this.button1 = new System.Windows.Forms.Button();
         	this.btnHelp = new System.Windows.Forms.Button();
         	this.btnCancel = new System.Windows.Forms.Button();
         	this.btnBack = new System.Windows.Forms.Button();
@@ -70,6 +71,7 @@ namespace Ict.Petra.Client.CommonForms
         	// 
         	// pnlButtons
         	// 
+        	this.pnlButtons.Controls.Add(this.button1);
         	this.pnlButtons.Controls.Add(this.btnHelp);
         	this.pnlButtons.Controls.Add(this.btnCancel);
         	this.pnlButtons.Controls.Add(this.btnBack);
@@ -80,6 +82,16 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlButtons.Name = "pnlButtons";
         	this.pnlButtons.Size = new System.Drawing.Size(584, 47);
         	this.pnlButtons.TabIndex = 1;
+        	// 
+        	// button1
+        	// 
+        	this.button1.Location = new System.Drawing.Point(137, 12);
+        	this.button1.Name = "button1";
+        	this.button1.Size = new System.Drawing.Size(75, 23);
+        	this.button1.TabIndex = 5;
+        	this.button1.Text = "button1";
+        	this.button1.UseVisualStyleBackColor = true;
+        	this.button1.Click += new System.EventHandler(this.Button1Click);
         	// 
         	// btnHelp
         	// 
@@ -206,6 +218,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlTop.ResumeLayout(false);
         	this.ResumeLayout(false);
         }
+        private System.Windows.Forms.Button button1;
 
         private System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;
