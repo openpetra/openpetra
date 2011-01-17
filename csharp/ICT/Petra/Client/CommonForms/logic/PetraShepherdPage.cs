@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Xml;
+
 
 using Ict.Common;
 
@@ -55,6 +57,40 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
         bool FIsFirstPage = false;
         
+        /// <summary>Return/Set Shepherd Page ID</summary>
+        public string ID
+        {
+        	get
+        	{
+        		return FID;
+        	}
+        	set
+        	{
+        		FID = value;
+        	}
+        }
+        
+        /// <summary>Return Shepherd Page Title</summary>
+        public string Title
+        {
+        	get
+        	{
+        		return FTitle;
+        	}
+        }
+        
+        /// <summary>Return/Set Shepherd Page Note</summary>
+        public string Note
+        {
+        	get
+        	{
+        		return FNote;
+        	}
+        	set
+        	{
+        		FNote = value;
+        	}
+        }
     
         ///<summary>Is the Shepherd Page visible?</summary>
         public bool Visible 
@@ -90,6 +126,50 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
     
+        /// <summary>Return Shepherd Page Namespace</summary>
+        public string UserControlNamespace
+        {
+        	get
+        	{
+        		return FUserControlNamespace;
+        	}
+        }
+        
+        /// <summary>Return Shepherd Page Class Name</summary>
+        public string UserControlClassName
+        {
+        	get
+        	{
+        		return FUserControlClassName;
+        	}
+        }
+        
+        /// <summary>Return/Set Shepherd Help Context Name</summary>
+        public string HelpContext
+        {
+        	get
+        	{
+        		return FHelpContext;
+        	}
+        	set
+        	{
+        		FHelpContext = value;
+        	}
+        }
+        
+        /// <summary>Return/Set Shepherd Control Type</summary>
+        public string UserControlClassType
+        {
+        	get
+        	{
+        		return FUserControlType;
+        	}
+        	set
+        	{
+        		FUserControlType = value;
+        	}
+        }
+        
         ///<summary>Is the Shepherd Page the first reachable page in the Shepherd?</summary>
         public bool IsFirstPage 
         {
@@ -110,6 +190,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FIsLastPage;
             }
+            set
+            {
+            	FIsLastPage = value;
+            }
         }
     
         ///<summary>Raised if value of Visible or Enabled Property changes</summary>
@@ -123,6 +207,25 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 VisibleOrEnabledChangedEvent(this, new System.EventArgs());
             }
+        }
+        
+        public TPetraShepherdPage()
+        {
+        }
+        
+        public TPetraShepherdPage(XmlNode ShepherdPageNode)
+        {
+            FID=ShepherdPageNode["ID"].Value;
+            FTitle=ShepherdPageNode["Title"].Value;
+            FNote=ShepherdPageNode["Note"].Value;
+            FVisible=System.Convert.ToBoolean(ShepherdPageNode["Visible"].Value);
+            FEnabled=System.Convert.ToBoolean(ShepherdPageNode["Enabled"].Value);
+            FUserControlNamespace=ShepherdPageNode["UserControlNamespace"].Value;
+            FUserControlClassName=ShepherdPageNode["UserControlClassName"].Value;
+            FHelpContext=ShepherdPageNode["HelpContext"].Value;
+            FUserControlType=ShepherdPageNode["UserControlType"].Value;
+            IsLastPage=System.Convert.ToBoolean(ShepherdPageNode["IsLastPage"].Value);
+            IsFirstPage=System.Convert.ToBoolean(ShepherdPageNode["IsFirstPage"].Value);
         }
     }
     

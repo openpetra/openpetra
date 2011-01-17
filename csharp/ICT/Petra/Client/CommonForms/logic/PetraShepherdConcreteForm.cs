@@ -45,6 +45,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>List of Shepherd Pages</summary>
         public TPetraShepherdPagesList ShepherdPages 
         {
+        	/// <summary>
+        	/// Read in XML Nodes from YAML file and call TShepherdPage constructor
+        	/// with the particular XML node needed for that page.
+        	/// </summary>
             get
             {
                 return FShepherdPages;
