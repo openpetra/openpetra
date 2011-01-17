@@ -24,6 +24,8 @@ using System;
 using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms.Logic;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.CommonForms
 {
     ///<summary>Imlements TPetraShepherdForm (and therefore becomes a WinForm)
@@ -32,16 +34,22 @@ namespace Ict.Petra.Client.CommonForms
     public class TPetraShepherdConcreteForm : TPetraShepherdForm, IPetraShepherdConcreteFormInterface
     {
         ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall</summary>
-        private string FYamlFile;
+        protected string FYamlFile = String.Empty;
+        
         ///<summary>Instance of base Shepherd Logic.</summary>
-        private TPetraShepherdFormLogic FLogic;
+        protected TPetraShepherdFormLogic FLogic;
         ///<summary>Instance of helper Class for navigation purposes</summary>
         private TShepherdNavigationHelper FShepherdNavigationHelper;
 
+        
         ///<summary>Constructor</summary>
         public TPetraShepherdConcreteForm()
         {
+            TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
+            
             // In implementing class: FYamlFile = "...";
+            
+            TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
 
         protected override void BtnFinishClick(object sender, EventArgs e)
@@ -72,21 +80,26 @@ namespace Ict.Petra.Client.CommonForms
         ///<summary>Gets called when the Form is Show'n but before it's painted</summary>
         protected override void Form_Load(object sender, EventArgs e)
         { 
+            TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
+            
             FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
 
-            FLogic = new TPetraShepherdFormLogic(FYamlFile, this);
-
             ShowCurrentPage(); 
+
+            TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");                      
         }
 
         ///<summary>Update navigation buttons and navigation panel</summary>
         public void UpdateNavigation()
         {
+            TLogging.Log("UpdateNavigation");
         }
 
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
         public void ShowCurrentPage()
         {
+            TLogging.Log("ShowCurrentPage");
+            
             // ...
             UpdateNavigation();
         }
@@ -94,7 +107,7 @@ namespace Ict.Petra.Client.CommonForms
         ///<summary>Closes the Shepherd without any further ado and without saving</summary>
         public void CancelShepherd()
         {
-            // Close the whole thing without any further ado!!!
+            TLogging.Log("CancelShepherd");
         }
     }
 }

@@ -24,11 +24,15 @@ using System;
 using System.Windows.Forms;
 using System.Collections;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     ///<summary>Logic class for the internal behaviour of a Shepherd</summary>
     public class TPetraShepherdFormLogic : object
     {
+        private const string FINISHPAGE_NAME = "|||FINISH PAGE|||";
+        
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's</summary>
         private TPetraShepherdPagesList FShepherdPages;
         /// <summary>Holds the instance of the Shepherd Form management class</summary>
@@ -39,33 +43,34 @@ namespace Ict.Petra.Client.CommonForms.Logic
         private SortedList FPagesDataHeap;
 
         ///<summary>List of Shepherd Pages</summary>
-        public TPetraShepherdPagesList ShepherdPages {
+        public TPetraShepherdPagesList ShepherdPages 
+        {
             get
             {
                 return FShepherdPages;
             }
-            set
-            {
-            }
         }
 
         ///<summary>Currently displayed Shepherd Page</summary>
-        public TPetraShepherdPage CurrentPage {
+        public TPetraShepherdPage CurrentPage 
+        {
             get
             {
                 return FCurrentPage;
             }
             set
             {
+                FCurrentPage = value;
             }
         }
-
         
         ///<summary>Constructor</summary>
         public TPetraShepherdFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm)
         {
+            TLogging.Log("Entering TPetraShepherdFormLogic Constructor. AYamlFile = " + AYamlFile + "; APetraShepherdForm = " + APetraShepherdForm.ToString() +"...");                        
+            
             FForm = APetraShepherdForm;
-
+            
             // Take AYamlFile and parse it into an XmlNode structure
 
 
@@ -76,30 +81,39 @@ namespace Ict.Petra.Client.CommonForms.Logic
             // FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
             // for the Finish Page (that is not specified in the YAML file!)
             // Note: That Finish Page (and only this) will have IsLastPage = true!!!
+            
+            TLogging.Log("TPetraShepherdFormLogic Constructor ran.");            
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>
         protected UserControl InstantiatePageUC(string AID)
         {
+            TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page UserControl '" + AID + "'");
+            
             return null;
         }
 
         ///<summary>Switches the current page</summary>
-        private void SwitchToPage(string APage)
+        protected void SwitchToPage(string APage)
         {
+            TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
             // ....
 
             FForm.ShowCurrentPage();
         }
 
         ///<summary>Switches the Finish page</summary>
-        private void SwitchToFinishPage()
+        protected void SwitchToFinishPage()
         {
+            TLogging.Log("SwitchToFinishPage (in TPetraShepherdFormLogic)");
+            
+            SwitchToPage(FINISHPAGE_NAME);
         }
 
         ///<summary>Switches to the 'next' page (whatever page this is)</summary>
         public virtual void HandleActionNext()
         {
+            TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
             // ....
 
             SwitchToPage(String.Empty);
@@ -108,6 +122,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
         public virtual void HandleActionBack()
         {
+            TLogging.Log("HandleActionBack (in TPetraShepherdFormLogic)");   
             // ....
 
             SwitchToPage(String.Empty);
@@ -116,6 +131,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Causes to close the Shepherd without saving if the user chooses to do that</summary>
         public void HandleActionCancel()
         {
+            TLogging.Log("HandleActionCancel");
             // Show Message Box with Yes, No, Cancel options
 
             // If YES ->
@@ -125,11 +141,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Shows the context-sensitive help file content for the current page, if available, otherwise for the Shepherd as a whole</summary>
         public void HandleActionHelp()
         {
+            TLogging.Log("HandleActionHelp");
         }
 
         ///<summary>Switches to the auto-generated 'Finish' page.</summary>
         public void HandleActionFinish()
         {
+            TLogging.Log("HandleActionFinish");
             // .....
 
             SwitchToFinishPage();
@@ -138,6 +156,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Determines the 'First' page (whatever page this is).</summary>
         private void VisibleOrEnabledChangedEventHandler()
         {
+            TLogging.Log("VisibleOrEnabledChangedEventHandler");
+            
             // re-enumerate FShepherdPages!
 
             FForm.UpdateNavigation();
@@ -147,12 +167,15 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>Looks up a key in the PagesDataHeap and returns its value, or null if it doesn't exist</summary>
         public string PagesDataHeapPeek(string AKey)
         {
+            TLogging.Log("VisibleOrEnabledChangedEventHandler");
+            
             return String.Empty;
         }
 
         /// <summary>Sets a key-value pair in the PagesDataHeap</summary>
         public void PagesDataHeapPoke(string AKey, string AValue)
         {
+            TLogging.Log("PagesDataHeapPoke");
         }
     }
 }

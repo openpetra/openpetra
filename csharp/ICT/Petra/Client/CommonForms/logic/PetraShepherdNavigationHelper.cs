@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System.Windows.Forms;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     public class TShepherdNavigationHelper
@@ -32,18 +34,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return 0;
             }
-            set
-            {
-            }
         }
     
         public TShepherdNavigationHelper(TPetraShepherdPagesList AShepherdPages, Panel APanelCollapsible)
         {
+            TLogging.Log("Entering TShepherdNavigationHelper Constructor...");
+            
+            TLogging.Log("TShepherdNavigationHelper Constructor ran.");
         }
         
         /// <summary>Redraw Navigation Panel only</summary>
         public void Refresh()
         {
+            TLogging.Log("Refresh");
         }    
     }
 }

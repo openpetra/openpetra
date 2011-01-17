@@ -31,6 +31,8 @@ OpenPetra:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
                         #disabled until household/person thing implemented: AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
+                        AddNewFamilyShepherd: {ActionOpenScreen=TShepherdFamilyForm}
+                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}                        
                     MaintainPartner:
                         #ChangeAddress:
                         #MergePartners:

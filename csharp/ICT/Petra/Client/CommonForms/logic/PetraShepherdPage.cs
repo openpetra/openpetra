@@ -23,6 +23,8 @@
 using System.Windows.Forms;
 using System.Collections.Generic;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     ///<summary>Instance of a Shepherd Page (holds data from YAML file)</summary>
@@ -136,7 +138,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <param name="AYamlFile"></param>
         public TPetraShepherdPagesList(string AYamlFile)
         {
+            TLogging.Log("Entering TPetraShepherdPagesList Constructor. AYamlFile = " + AYamlFile + "...");
+            
             // Add to FPagesList
+            
+            TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
         }
     }
     

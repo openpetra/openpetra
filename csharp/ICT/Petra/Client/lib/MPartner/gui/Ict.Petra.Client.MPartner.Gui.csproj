@@ -159,6 +159,14 @@
     <Compile Include="PartnerNewDialog.Designer.cs">
       <DependentUpon>PartnerNewDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Shepherd_Church.cs" />
+    <Compile Include="Shepherd_Church.Designer.cs">
+      <DependentUpon>Shepherd_Church.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shepherd_Family.cs" />
+    <Compile Include="Shepherd_Family.Designer.cs">
+      <DependentUpon>Shepherd_Family.cs</DependentUpon>
+    </Compile>
     <Compile Include="Threading.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="UC_PartnerDetails_Bank.cs" />
@@ -363,6 +371,10 @@
     <ProjectReference Include="..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
       <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
       <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\CommonForms\logic\Ict.Petra.Client.CommonForms.Logic.csproj">
+      <Project>{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}</Project>
+      <Name>Ict.Petra.Client.CommonForms.Logic</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MCommon\gui\Ict.Petra.Client.MCommon.Gui.csproj">
       <Project>{F1D473DD-F831-4662-A3F9-EE5016D4C625}</Project>

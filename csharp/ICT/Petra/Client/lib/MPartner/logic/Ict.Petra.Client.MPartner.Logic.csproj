@@ -104,6 +104,8 @@
     <Compile Include="PartnerNewDialog.cs" />
     <Compile Include="PartnerTypeFamilyMembersPropagationSelection.cs" />
     <Compile Include="Resourcestrings.cs" />
+    <Compile Include="Shepherd_Church.cs" />
+    <Compile Include="Shepherd_Family.cs" />
     <Compile Include="UC_FamilyMembers.cs" />
     <Compile Include="UC_PartnerDetailsBank.cs" />
     <Compile Include="UC_PartnerFoundation.cs" />
@@ -127,6 +129,10 @@
     <ProjectReference Include="..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
       <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
       <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\CommonForms\logic\Ict.Petra.Client.CommonForms.Logic.csproj">
+      <Project>{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}</Project>
+      <Name>Ict.Petra.Client.CommonForms.Logic</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MCommon\logic\Ict.Petra.Client.MCommon.Logic.csproj">
       <Project>{0BC4E544-F1E7-48AC-869C-71312E31AC2D}</Project>
