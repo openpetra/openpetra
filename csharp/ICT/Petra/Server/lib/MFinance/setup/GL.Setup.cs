@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -200,6 +200,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // if the flag has been changed by the client, it will not be null
                     if (!acc.IsBankAccountFlagNull())
                     {
+                        if (AInspectDS.AAccountProperty == null)
+                        {
+                            // because AccountProperty has not been changed on the client, GetChangesTyped will have removed the table
+                            // so we need to reload the table from the database
+                            AInspectDS.Merge(new AAccountPropertyTable());
+                            AAccountPropertyAccess.LoadViaALedger(AInspectDS, ALedgerNumber, null);
+                        }
+
                         AInspectDS.AAccountProperty.DefaultView.RowFilter =
                             String.Format("{0}='{1}' and {2}='{3}'",
                                 AAccountPropertyTable.GetAccountCodeDBName(),

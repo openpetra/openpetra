@@ -164,7 +164,7 @@ namespace Tests.MFinance.Client.Gift
             TabControlTester tabGiftBatch = new TabControlTester("tabGiftBatch");
             tabGiftBatch.SelectTab(1);
             TextBoxTester txtDetailGiftTransactionAmount = new TextBoxTester("txtDetailGiftTransactionAmount");
-            Assert.AreEqual(Convert.ToDecimal(txtDetailGiftTransactionAmount.Properties.Text),10000000000M);
+            Assert.AreEqual(Convert.ToDecimal(txtDetailGiftTransactionAmount.Properties.Text), 10000000000M);
 
             frmBatch.Close();
         }

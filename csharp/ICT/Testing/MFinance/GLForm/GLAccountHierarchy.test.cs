@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -271,6 +271,59 @@ namespace Tests.MFinance.GLBatches
 
             WaitForMessageBox(MessageBoxTester.Command.No);
             hierarchyTester.mniClose.Click();
+        }
+
+        [Test]
+        public void T05_CreateBankAccount()
+        {
+            System.Console.WriteLine("-------T05_CreateBankAccount------------");
+            TFrmGLAccountHierarchyTester hierarchyTester
+                = new TFrmGLAccountHierarchyTester();
+            hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+            hierarchyTester.mainForm.Show();
+
+            int[] nodeList1 =
+            {
+                0, 1, 1
+            };
+            hierarchyTester.trvAccounts.SelectNode(nodeList1);
+
+            // Create a new bank Account ...
+            hierarchyTester.tbbAddNewAccount.Click();
+            string newAccountName = hierarchyTester.txtDetailAccountCode.Properties.Text;
+
+            hierarchyTester.chkDetailBankAccountFlag.Properties.Checked = true;
+            Assert.IsTrue(hierarchyTester.tbbSave.Properties.Enabled, "Save button should be enabled");
+            hierarchyTester.tbbSave.Click();
+            hierarchyTester.mainForm.Close();
+
+            // reopen the screen, check if the account is a bank account, and remove the bank account flag
+            hierarchyTester = new TFrmGLAccountHierarchyTester();
+            hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+            hierarchyTester.mainForm.Show();
+
+            TreeNode[] nodes = hierarchyTester.trvAccounts.Properties.Nodes.Find(newAccountName, true);
+            hierarchyTester.trvAccounts.Properties.SelectedNode = nodes[0];
+
+            Assert.AreEqual(newAccountName, hierarchyTester.txtDetailAccountCode.Properties.Text, "we want to look at the newly created account");
+            Assert.AreEqual(true, hierarchyTester.chkDetailBankAccountFlag.Checked, "this should have been stored as a bank account");
+            hierarchyTester.chkDetailBankAccountFlag.Properties.Checked = false;
+            hierarchyTester.tbbSave.Click();
+            hierarchyTester.mainForm.Close();
+
+            // reopen the screen, check if the account is not a bank account anymore
+            hierarchyTester = new TFrmGLAccountHierarchyTester();
+            hierarchyTester.mainForm.Show();
+            hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;
+
+            nodes = hierarchyTester.trvAccounts.Properties.Nodes.Find(newAccountName, true);
+            hierarchyTester.trvAccounts.Properties.SelectedNode = nodes[0];
+
+            Assert.AreEqual(newAccountName,
+                hierarchyTester.txtDetailAccountCode.Properties.Text,
+                "we want to look at the newly created account, the second time");
+            Assert.AreEqual(false, hierarchyTester.chkDetailBankAccountFlag.Checked, "this should have been stored not as a bank account");
+            hierarchyTester.mainForm.Close();
         }
 
         [TestFixtureSetUp]

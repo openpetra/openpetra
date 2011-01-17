@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -124,6 +124,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TreeNode newNode = AParentNodes.Add(nodeLabel);
 
             newNode.Tag = ADetailRow;
+            newNode.Name = nodeLabel;
 
             FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
             FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
@@ -189,6 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 FCurrentNode.Text = nodeLabel;
+                FCurrentNode.Name = nodeLabel;
             }
 
             FCurrentNode = treeViewEventArgs.Node;
@@ -448,6 +450,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     trvAccounts.BeginUpdate();
                     trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
+                    trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
                     trvAccounts.EndUpdate();
 
                     strOldDetailAccountCode = strNewDetailAccountCode;
