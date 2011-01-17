@@ -258,27 +258,17 @@ namespace Tests.MFinance.GLBatches
             // Invalid Name resp. the name "BAL SHT" exists in the test db ...
             hierarchyTester.txtDetailAccountCode.Properties.Text = "BAL SHT";
 
-            // Select an other node ...
-            int[] nodeList2 =
-            {
-                0, 1
-            };
-            // WaitForMessageBox(MessageBoxTester.Command.Yes);
-            hierarchyTester.trvAccounts.SelectNode(nodeList2);
-            hierarchyTester.txtDetailAccountCodeLongDesc.Properties.Text = "12";
+            // simulate a leave of the message box. It seems selecting another node in the tree would not trigger the leave event in the test
+            WaitForMessageBox(MessageBoxTester.Command.OK);
+            hierarchyTester.txtDetailAccountCode.FireEvent("Leave");
 
-            // Open Point
-            // Normally an error Message shall appear here but this does not happen ...
-            //
+            Assert.That(lastMessageTitle,
+                Is.StringContaining("You cannot use an account name twice!"),
+                "Error Message shall appear");
+            Assert.That(hierarchyTester.trvAccounts.Properties.SelectedNode.Text,
+                Is.StringContaining("NewAccount"),
+                "New Selection shall have been canceled");
 
-
-//		    Assert.That(lastMessageTitle ,
-//		                Is.StringContaining("You cannot use an account name twice!"),
-//		               "Error Message shall appear");
-//		    Assert.That(hierarchyTester.trvAccounts.Properties.SelectedNode.Text,
-//		                Is.StringContaining("BAL SHT"),
-//		                "New Selection shall have been canceled");
-//
             WaitForMessageBox(MessageBoxTester.Command.No);
             hierarchyTester.mniClose.Click();
         }
