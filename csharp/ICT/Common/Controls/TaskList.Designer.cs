@@ -37,10 +37,25 @@ namespace Ict.Common.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.tPnlGradient1 = new Ict.Common.Controls.TPnlGradient();
+			this.tPnlGradient1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// container
+			// tPnlGradient1
 			// 
+			this.tPnlGradient1.AutoSize = true;
+			this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.tPnlGradient1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+			this.tPnlGradient1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tPnlGradient1.DontDrawBottomLine = false;
+			this.tPnlGradient1.GradientColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(181)))), ((int)(((byte)(203)))), ((int)(((byte)(231)))));
+			this.tPnlGradient1.GradientColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(251)))), ((int)(((byte)(255)))));
+			this.tPnlGradient1.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+			this.tPnlGradient1.Location = new System.Drawing.Point(0, 0);
+			this.tPnlGradient1.Margin = new System.Windows.Forms.Padding(0);
+			this.tPnlGradient1.Name = "tPnlGradient1";
+			this.tPnlGradient1.Size = new System.Drawing.Size(81, 32);
+			this.tPnlGradient1.TabIndex = 0;
 
 			// 
 			// TTaskList
@@ -50,10 +65,18 @@ namespace Ict.Common.Controls
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScroll = true;
 			this.AutoSize = true;
+			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.tPnlGradient1);
+			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "TTaskList";
-//			this.Size = new System.Drawing.Size(203, 118);
+			this.Size = new System.Drawing.Size(81, 32);
+			this.tPnlGradient1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		
+
+		
+		private Ict.Common.Controls.TPnlGradient tPnlGradient1;
 	}
 }

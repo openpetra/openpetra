@@ -2227,22 +2227,6 @@
             this panel has a gradient background
             </summary>
         </member>
-        <member name="F:Ict.Common.Controls.TPnlGradient.GradientColorTop">
-            see variable name
-        </member>
-        <member name="F:Ict.Common.Controls.TPnlGradient.GradientColorBottom">
-            see variable name
-        </member>
-        <member name="F:Ict.Common.Controls.TPnlGradient.Border">
-            <summary>
-            color for the border; if transparent, no border is drawn
-            </summary>
-        </member>
-        <member name="F:Ict.Common.Controls.TPnlGradient.DontDrawBottomLine">
-            <summary>
-            sometimes, when stacking several panels on top of each other, you don't want bottom and top line to result in 2 lines
-            </summary>
-        </member>
         <member name="M:Ict.Common.Controls.TPnlGradient.#ctor">
             <summary>
             constructor
@@ -2251,6 +2235,27 @@
         <member name="M:Ict.Common.Controls.TPnlGradient.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
             overwrite OnPaint for the gradient background color
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TPnlGradient.GradientColorTop">
+            see variable name
+        </member>
+        <member name="P:Ict.Common.Controls.TPnlGradient.GradientColorBottom">
+            see variable name
+        </member>
+        <member name="P:Ict.Common.Controls.TPnlGradient.Border">
+            <summary>
+            color for the border; if transparent, no border is drawn
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TPnlGradient.DontDrawBottomLine">
+            <summary>
+            sometimes, when stacking several panels on top of each other, you don't want bottom and top line to result in 2 lines
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TPnlGradient.GradientMode">
+            <summary>
+            direction of gradient
             </summary>
         </member>
         <member name="T:Ict.Common.Controls.TRbtNavigationButton">
@@ -3188,6 +3193,55 @@
             Description of TaskList.
             </summary>
         </member>
+        <member name="M:Ict.Common.Controls.TTaskList.#ctor(System.Xml.XmlNode,Ict.Common.Controls.TVisualStylesEnum)">
+            <summary>
+            Constructor for creating an object with a MasterNode and setting the Visual Style
+            </summary>
+            <param name="MasterNode"></param>
+            <param name="Style"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.IsHidden(System.Xml.XmlNode)">
+            <summary>
+            Returns whether given Xml Node has the attribute hidden set to true
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.IsDisabled(System.Xml.XmlNode)">
+            <summary>
+            Returns boolean whether given XmlNode has the attribute Enabled set to false
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.HideTaskItem(System.Xml.XmlNode)">
+            <summary>
+            Method to hide a task item, given an XmlNode Object
+            Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.ShowTaskItem(System.Xml.XmlNode)">
+            <summary>
+            Method to hide a task item, given an XmlNode Object
+            Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.DisableTaskItem(System.Xml.XmlNode)">
+            <summary>
+            Method to hide a task item, given an XmlNode Object
+            Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.EnableTaskItem(System.Xml.XmlNode)">
+            <summary>
+            Method to hide a task item, given an XmlNode Object
+            Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+            </summary>
+            <param name="node"></param>
+        </member>
         <member name="F:Ict.Common.Controls.TTaskList.components">
             <summary>
             Designer variable used to keep track of non-visual components.
@@ -3204,6 +3258,21 @@
             This method is required for Windows Forms designer support.
             Do not change the method contents inside the source code editor. The Forms designer might
             not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TTaskList.MasterXmlNode">
+            <summary>
+            Root Node for the Task List
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TTaskList.AutomaticNumbering">
+            <summary>
+            Flag whether or not to use Automatic Numbering
+            </summary>
+        </member>
+        <member name="P:Ict.Common.Controls.TTaskList.VisualStyle">
+            <summary>
+            The Visual Style to apply to the Task List
             </summary>
         </member>
         <member name="T:Ict.Common.Controls.TTxtButtonLabel">

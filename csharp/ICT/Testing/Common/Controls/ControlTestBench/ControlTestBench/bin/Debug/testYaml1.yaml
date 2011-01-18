@@ -6,6 +6,7 @@ TaskGroup:
         Label: "Stab Self Repeatedly with Rusty Spoon"
     Task3:
         Label: "Run Through Mud with Thorns and Garden Snakes"
+        Enabled: False
         Task3a:
             Label: "Take Off Shoes"
         Task3b:
