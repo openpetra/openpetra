@@ -78,10 +78,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
+
+        private void EnDisableBatchControls(bool newValue)
+        {
+        	btnCancel.Enabled = newValue;
+        	btnPostBatch.Enabled = newValue;
+        	txtDetailBatchControlTotal.Enabled = newValue;
+        	dtpDetailDateEffective.Enabled = newValue;
+        	txtDetailBatchDescription.Enabled = newValue;
+        	
+        	if (!newValue) {
+        		// ToDo: Include journal tab and controls in GLBatch
+        	}
+        }
+                
         private void ShowDetailsManual(ABatchRow ARow)
         {
-            UpdateChangeableStatus();
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            // UpdateChangeableStatus();
+        	EnDisableBatchControls(true);
+        	btnPostBatch.Enabled = !ARow.BatchStatus.Equals("Cancelled");
+        	btnCancel.Enabled = !ARow.BatchStatus.Equals("Posted");
+            FPetraUtilsObject.DetailProtectedMode = 
+            	(ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
             ((TFrmGLBatch)ParentForm).LoadJournals(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
@@ -186,6 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     SelectByIndex(rowIndex);
                 }
+                System.Diagnostics.Debug.WriteLine("CancelRow");
 
                 UpdateChangeableStatus();
             }
@@ -243,15 +262,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
+        
+        
+        /// <summary>
+        ///  The changes of the radio button are handled.
+        /// </summary>
+        /// <param name="sender">It should be a radio button</param>
+        /// <param name="e"></param>
+        private void ChangeBatchFilter(System.Object sender,  System.EventArgs e)
         {
-            int rowIndex = CurrentRowIndex();
-
-            SetBatchFilter();
-            // TODO Select the actual row again in updated
-            SelectByIndex(rowIndex);
-            UpdateChangeableStatus();
+        	// Each radio button click invokes this routine twice, on run is done for the 
+        	// unchecked button an one is done for the checked one. 
+        	RadioButton radioButton = sender as RadioButton;
+        	if (radioButton != null) {
+        		if (radioButton.Checked) {
+        			int rowIndex = CurrentRowIndex();
+        			
+        			SetBatchFilter();
+        			// TODO Select the actual row again in updated
+        			SelectByIndex(rowIndex);
+        			System.Diagnostics.Debug.WriteLine("ChangeBatchFilter");
+        			UpdateChangeableStatus();
+        		}
+        	}
+        	
         }
 
         private int CurrentRowIndex()
@@ -267,24 +301,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return rowIndex;
         }
+        
+
 
         private void SelectByIndex(int rowIndex)
         {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
+        	txtDetailBatchControlTotal.Text = "";
+        	txtDetailBatchDescription.Text = "";
+        	dtpDetailDateEffective.Clear();
+        	EnDisableBatchControls(false);
+        	
+        	
+//            if (rowIndex >= grdDetails.Rows.Count)
+//            {
+//                rowIndex = grdDetails.Rows.Count - 1;
+//            }
+//            
+//            
+//
+//            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+//            {
+//                grdDetails.Selection.SelectRow(rowIndex, true);
+//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//                ShowDetails(FPreviouslySelectedDetailRow);
+//            }
         }
 
         private void SetBatchFilter()
@@ -568,8 +608,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ABatchRow RefBatch = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
             RefBatch.BatchCreditTotal = sumCredits;
             RefBatch.BatchDebitTotal = sumDebits;
+            // todo RefBatch.BatchControlTotal = sumCredits  - sumDebits;
+            // csv !
 
-            // TODO: RefBatch.BatchRunningTotal
         }
 
         /// <summary>
@@ -580,9 +621,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Boolean changeable = (FPreviouslySelectedDetailRow != null)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            this.btnCancel.Enabled = changeable;
-            this.btnPostBatch.Enabled = changeable;
-            pnlDetails.Enabled = changeable;
+//            if (changeable) {
+//            	btnCancel.Enabled = changeable;
+//            	btnPostBatch.Enabled = changeable;
+//            	pnlDetails.Enabled = changeable;
+//            }
+              
         }
 
         private void ImportBatches(object sender, EventArgs e)

@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtCurrentPeriod.Text = batch.BatchPeriod.ToString();
             txtDebit.Text = batch.BatchDebitTotal.ToString();
             txtCredit.Text = batch.BatchCreditTotal.ToString();
-            txtControl.Text = batch.BatchControlTotal.ToString();
+            txtControl.Text = batch.BatchRunningTotal.ToString();
         }
 
         private void ShowDetailsManual(AJournalRow ARow)
@@ -225,6 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
                 UpdateChangeableStatus();
+                
             }
         }
     }

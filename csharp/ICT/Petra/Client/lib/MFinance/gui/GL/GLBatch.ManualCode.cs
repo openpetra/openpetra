@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgAttributes.Enabled = false;
         }
 
-        /// this window contains 3 tabs
+        /// this window contains 4 tabs
         public enum eGLTabs
         {
             /// list of batches
@@ -116,7 +116,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Journals,
 
             /// list of transactions
-            Transactions
+            Transactions,
+
+            /// list of attributes
+            Attributes 
         };
 
         /// <summary>
@@ -141,6 +144,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
+                }
+            }
+            else if (ATab == eGLTabs.Attributes)
+            {
+                if (this.tpgAttributes.Enabled)
+                {
+                    this.tabGLBatch.SelectedTab = this.tpgAttributes;
                 }
             }
         }

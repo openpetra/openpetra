@@ -274,15 +274,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
                 AJournalRow r = (AJournalRow)v.Row;
-                sumDebits += r.JournalDebitTotal;
-                sumCredits += r.JournalCreditTotal;
+                sumDebits += r.JournalDebitTotal * r.ExchangeRateToBase;
+                sumCredits += r.JournalCreditTotal * r.ExchangeRateToBase;
             }
 
             ABatchRow batch = GetBatchRow();
             batch.BatchCreditTotal = sumCredits;
             batch.BatchDebitTotal = sumDebits;
+            batch.BatchRunningTotal = sumCredits - sumDebits;
+            
             ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(batch);
-            // TODO: Batch.BatchRunningTotal
         }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
@@ -298,8 +299,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
                          dtpDetailTransactionDate.Date.Value) * txtCreditAmount.NumberValueDecimal.Value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+            	System.Console.WriteLine(ex.Message);
             }
         }
 
