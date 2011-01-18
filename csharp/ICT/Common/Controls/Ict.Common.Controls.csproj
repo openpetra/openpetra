@@ -91,6 +91,7 @@
     <Compile Include="sgrdDataGrid.cs" />
     <Compile Include="sgrdDataGridPaged.cs" />
     <Compile Include="tabVersatile.cs" />
+    <Compile Include="trvTreeView.cs" />
     <Compile Include="txtButtonLabel.cs" />
     <Compile Include="txtLabelledTextBox.cs" />
     <Compile Include="txtMaskedTextBox.cs" />

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -297,9 +298,15 @@ namespace Ict.Common.Printing
             float AXPos,
             float AYPos)
         {
+            if (!File.Exists(APath))
+            {
+                TLogging.Log("cannot draw bitmap because file does not exist " + APath);
+                return;
+            }
+
             Bitmap img = new System.Drawing.Bitmap(APath);
 
-            if (PrintingMode == ePrintingMode.eDoPrint)
+            if ((img != null) && (PrintingMode == ePrintingMode.eDoPrint))
             {
                 FXGraphics.DrawImage(img, AXPos, AYPos);
             }
@@ -428,7 +435,7 @@ namespace Ict.Common.Printing
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
                     myPageSettings.Margins = new Margins(20, 20, 20, 39);
-                    myPageSettings.PaperSize = new PaperSize("A4", 1169, 827);
+                    myPageSettings.PaperSize = new PaperSize("A4", 900, 827);
                     try
                     {
                         myPageSettings.PrinterResolution.X = 600;

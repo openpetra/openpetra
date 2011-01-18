@@ -22,6 +22,7 @@ obj
 *.FileListAbsolute.txt
 *.pdb
 *.pidb
+*.orig
 webserver/qooxdoo-sdk
 webserver/OpenPetraOrg/cache
 webserver/bin

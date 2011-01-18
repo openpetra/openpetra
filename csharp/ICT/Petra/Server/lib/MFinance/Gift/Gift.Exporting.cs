@@ -415,8 +415,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (!confidentialMessageGiven)
             {
                 FMessages.Add(new TVerificationResult(
-                        Catalog.GetString("Gift Details"), Catalog.GetString("Please mote that some gifts in this report are restricted.\n" +
-                            "To include full details of these gifts, the report\n" +
+                        Catalog.GetString("Gift Details"), Catalog.GetString("Please note that some gifts in this report are restricted.\n" +
+                            "To include full details of these gifts, the export\n" +
                             "must be run by someone with a higher level of access."),
                         TResultSeverity.Resv_Noncritical));
                 confidentialMessageGiven = true;
@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             else
             {
-                FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
+                FStringWriter.Write(String.Format(FCultureInfo, "{0:###########0.00}", currencyField));
             }
 
             WriteDelimiter(bLineEnd);

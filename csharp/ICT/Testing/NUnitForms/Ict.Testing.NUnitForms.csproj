@@ -73,6 +73,18 @@
     <Reference Include="Ict.Petra.Client.CommonControls.Gui">
       <HintPath>../../Petra/Client/_bin/Debug/Ict.Petra.Client.CommonControls.Gui.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Client.CommonForms">
+      <HintPath>..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.CommonForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui">
+      <HintPath>..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui.GL">
+      <HintPath>..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.GL.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui.Setup">
+      <HintPath>..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Client.MReporting.Logic">
       <HintPath>../../Petra/Client/_bin/Debug/Ict.Petra.Client.MReporting.Logic.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -111,9 +123,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CommonNUnitFunctions.cs" />
     <Compile Include="cmbAutoPopulatedTester.cs" />
     <Compile Include="dlgSelectCSVSeparatorTester.cs" />
+    <Compile Include="NumericUpDownTester.cs" />
     <Compile Include="SgrdDataGridPagedTester.cs" />
+    <Compile Include="TCmbAutoCompleteTester.cs" />
+    <Compile Include="TFrmGLAccountHierarchyTester.cs" />
+    <Compile Include="TFrmGLCreateLedgerTester.cs" />
+    <Compile Include="TTrvTreeViewTester.cs" />
     <Compile Include="txtNumericTextBoxTester.cs" />
   </ItemGroup>
   <ItemGroup>

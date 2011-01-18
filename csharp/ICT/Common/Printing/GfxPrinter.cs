@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -126,21 +127,26 @@ namespace Ict.Common.Printing
         {
             base.Init(AOrientation, APrinterLayout, AMarginType);
 
-            if (AOrientation == eOrientation.ePortrait)
+            try
             {
-                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
+                if (AOrientation == eOrientation.ePortrait)
+                {
+                    FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                    FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                    FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                    FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
+                }
+                else if (AOrientation == eOrientation.eLandscape)
+                {
+                    FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                    FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
+                    FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                    FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                }
             }
-            else if (AOrientation == eOrientation.eLandscape)
+            catch (Exception)
             {
-                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
-                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
             }
-
             // Associate the eventhandling method with the
             // document's PrintPage event.
             FDocument.PrintPage += new PrintPageEventHandler(this.PrintPage);
@@ -640,6 +646,12 @@ namespace Ict.Common.Printing
             float AXPos,
             float AYPos)
         {
+            if (!File.Exists(APath))
+            {
+                TLogging.Log("cannot draw bitmap because file does not exist " + APath);
+                return;
+            }
+
             Bitmap img = new System.Drawing.Bitmap(APath);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
@@ -912,7 +924,7 @@ namespace Ict.Common.Printing
                         FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
                         FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // if no printer is installed, use default values
                         FLeftMargin = 0;
