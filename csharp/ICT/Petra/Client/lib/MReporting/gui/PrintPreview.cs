@@ -32,6 +32,7 @@ using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.IO; // implicit reference
 using Ict.Common.Printing;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;

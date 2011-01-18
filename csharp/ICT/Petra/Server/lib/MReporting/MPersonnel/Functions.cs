@@ -31,6 +31,8 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting.MPartner;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
+using Ict.Common.DB; // Implicit reference
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.Odbc;

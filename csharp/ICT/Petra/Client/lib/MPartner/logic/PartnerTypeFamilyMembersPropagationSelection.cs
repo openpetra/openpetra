@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.Controls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;

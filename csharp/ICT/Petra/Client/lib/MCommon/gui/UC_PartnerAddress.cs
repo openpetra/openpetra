@@ -44,7 +44,7 @@ using Ict.Common.Controls;
 using System.Globalization;
 using GNU.Gettext;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// UserControl that holds the same fields as the address/location part in the

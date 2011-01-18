@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference

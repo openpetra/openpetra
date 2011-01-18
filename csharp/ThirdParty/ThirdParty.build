@@ -3,9 +3,7 @@
 
 <include buildfile="../../inc/nant/OpenPetra.references.xml"/> 
 
-<target name="clean" />
-
-<target name="cleanAll" >
+<target name="clean" >
   <delete>
     <fileset basedir="${dir.bin}">
       <patternset refid="3rdPartyPattern" />

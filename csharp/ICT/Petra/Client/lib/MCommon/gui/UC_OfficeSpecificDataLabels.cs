@@ -36,6 +36,7 @@ using DevAge.ComponentModel.Converter;
 using DevAge.ComponentModel.Validator;
 using DevAge.Drawing;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon;
@@ -46,7 +47,7 @@ using Ict.Petra.Client.MCommon;
 using System.Globalization;
 using GNU.Gettext;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// Contains User Control Office Specific Data Labels

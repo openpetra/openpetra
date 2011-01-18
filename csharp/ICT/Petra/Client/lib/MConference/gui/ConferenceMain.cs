@@ -39,6 +39,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
+using Ict.Petra.Client.MReporting.Gui; // Implicit reference
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MConference.Gui

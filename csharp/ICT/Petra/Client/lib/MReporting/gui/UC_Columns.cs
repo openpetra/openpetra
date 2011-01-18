@@ -31,6 +31,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;

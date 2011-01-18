@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Diagnostics;

@@ -29,6 +29,7 @@ using System.Data;
 using System.Collections;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO; // Implicit reference
 using Ict.Petra.Server.MReporting.MFinance;
 using Ict.Petra.Server.MReporting.MFinDev;
 using Ict.Petra.Server.MReporting.MPartner;

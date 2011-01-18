@@ -23,6 +23,7 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;

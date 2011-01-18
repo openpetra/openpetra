@@ -6,11 +6,5 @@
 
 <include buildfile="../../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
-<patternset id="references">
-  <!-- <patternset refid="Ict.Petra.Server" /> -->
-  <patternset refid="Ict.Petra.Shared" />
-  <patternset refid="Ict.Common" />
-  <patternset refid="3rdPartyPattern" />
-</patternset>
  
 </project>

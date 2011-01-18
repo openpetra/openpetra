@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;

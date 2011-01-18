@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
     private event TTabPageEventHandler FTabPageEvent;
-    private Ict.Petra.Client.MCommon.TUCPartnerAddresses FUcoAddresses;
+    private Ict.Petra.Client.MCommon.Gui.TUCPartnerAddresses FUcoAddresses;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family FUcoPartnerDetailsFamily;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person FUcoPartnerDetailsPerson;
     private Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Bank FUcoPartnerDetailsBank;
@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.AppStarting;
         }
 
-        FUcoAddresses = (Ict.Petra.Client.MCommon.TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
+        FUcoAddresses = (Ict.Petra.Client.MCommon.Gui.TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
         FUcoAddresses.MainDS = FMainDS;
         FUcoAddresses.PetraUtilsObject = FPetraUtilsObject;
         FUcoAddresses.InitUserControl();
@@ -633,7 +633,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 tpgAddresses.Controls.Add(pnlHostForUCAddresses);
 
                 // Create the UserControl
-                Ict.Petra.Client.MCommon.TUCPartnerAddresses ucoAddresses = new Ict.Petra.Client.MCommon.TUCPartnerAddresses();
+                Ict.Petra.Client.MCommon.Gui.TUCPartnerAddresses ucoAddresses = new Ict.Petra.Client.MCommon.Gui.TUCPartnerAddresses();
                 FTabSetup.Add(TDynamicLoadableUserControls.dlucAddresses, ucoAddresses);
                 ucoAddresses.Location = new Point(0, 2);
                 ucoAddresses.Dock = DockStyle.Fill;

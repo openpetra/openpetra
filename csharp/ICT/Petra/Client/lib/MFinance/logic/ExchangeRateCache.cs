@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Logic

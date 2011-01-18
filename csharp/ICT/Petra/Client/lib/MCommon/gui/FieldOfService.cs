@@ -32,10 +32,11 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// Field Of Service Screen

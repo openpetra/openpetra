@@ -28,7 +28,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     partial class TUCPartnerAddresses
     {
@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MCommon
             this.btnEditRecord = new System.Windows.Forms.Button();
             this.btnNewRecord = new System.Windows.Forms.Button();
             this.splListSectionDetailsSection = new System.Windows.Forms.Splitter();
-            this.ucoDetails = new Ict.Petra.Client.MCommon.TUC_PartnerAddress();
+            this.ucoDetails = new Ict.Petra.Client.MCommon.Gui.TUC_PartnerAddress();
             this.pnlBalloonTipAnchor = new System.Windows.Forms.Panel();
             this.pnlRecordList.SuspendLayout();
             this.SuspendLayout();

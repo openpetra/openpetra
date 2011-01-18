@@ -28,7 +28,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     partial class TUCOfficeSpecificDataLabels
     {

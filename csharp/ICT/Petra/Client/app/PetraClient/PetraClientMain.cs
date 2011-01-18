@@ -34,6 +34,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;

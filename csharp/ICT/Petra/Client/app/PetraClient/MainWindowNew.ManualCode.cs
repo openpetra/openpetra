@@ -27,6 +27,7 @@ using System.Xml;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;

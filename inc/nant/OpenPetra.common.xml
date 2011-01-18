@@ -67,6 +67,8 @@
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
+<property name="dir.namespace.map" value="${path::combine(dir.delivery, 'nsMap')}"
+          overwrite="false" />
  <!-- projectfiles -->
 <property name="dir.projectfiles" value="${path::combine(dir.root, 'projectfiles')}"
           overwrite="false" />
@@ -110,8 +112,7 @@
 <!-- compiler flags -->
 <property name="compile.debug" value="true" 
           overwrite="false" />
-<property name="csdependNamespaceExceptions" value="${path::combine(dir.csharp,'namespace-exceptions.txt')}" 
-          overwrite="false" />
+
 
 <!-- path to custom NAnt tasks -->
 <property name="Ict.Tools.NAntTasks.DLL" value="${path::combine(dir.bin,'Ict.Tools.NAntTasks.dll')}" 

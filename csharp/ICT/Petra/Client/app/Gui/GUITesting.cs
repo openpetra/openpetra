@@ -27,7 +27,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using Ict.Common;
 
-namespace Ict.Common
+namespace Ict.Petra.Client.App.Gui
 {
 #if TESTMODE
     /// <summary>

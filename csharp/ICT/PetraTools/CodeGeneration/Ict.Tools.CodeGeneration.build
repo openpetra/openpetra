@@ -2,7 +2,9 @@
 <project name="OpenPetra-csharp-Ict.Tools.CodeGeneration-build-generated">
 <property name="Namespace" value="Ict.Tools.CodeGeneration" />
 
-<property name="RunCsDepend" value="false" />
+<property name="RunCsDepend" value="true" />
+
+<property name="csdependfiles" value="*.cs" />
 <property name="compilefiles" value="*.cs" />
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 

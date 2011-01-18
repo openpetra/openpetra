@@ -6,6 +6,14 @@
 
 <property name="RunCsDepend" value="true" overwrite="true"/>
 
+<target name="custclean">
+  <delete>
+    <fileset basedir="${dir.root}/csharp/ICT/Petra/Shared/lib/data">
+      <include name="*.cs" /> 
+    </fileset>
+  </delete>
+</target>
+
 <target name="custdepend">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <ExecDotNet program="${tool-generateORM}" 

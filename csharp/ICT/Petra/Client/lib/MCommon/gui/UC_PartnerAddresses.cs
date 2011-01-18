@@ -46,7 +46,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// UserControl for editing Partner Addresses (List/Detail view).

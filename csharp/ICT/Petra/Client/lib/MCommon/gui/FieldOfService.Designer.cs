@@ -8,7 +8,7 @@ using System.ComponentModel;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     partial class TFieldOfServiceWinForm
     {

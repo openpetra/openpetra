@@ -41,6 +41,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup

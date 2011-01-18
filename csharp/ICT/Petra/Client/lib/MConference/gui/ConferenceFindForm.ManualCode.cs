@@ -33,6 +33,7 @@ using GNU.Gettext;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.Interfaces; // implicit reference
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 //using Ict.Petra.Shared.MReporting;

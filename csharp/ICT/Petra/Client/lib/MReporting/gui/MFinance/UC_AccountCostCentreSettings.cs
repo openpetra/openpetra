@@ -36,6 +36,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;

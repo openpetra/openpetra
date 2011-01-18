@@ -2,17 +2,11 @@
 <project name="Ict.Petra.Server-Build">
 
 <property name="Namespace" value="Ict.Petra.ServerAdmin" />
-<property name="ProjectGuid" value="{EED131C6-3FF9-4BEC-9BFE-27570FAC47CB}" />
 
 <property name="OutputType" value="exe" />
 
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
-<patternset id="references">
-  <patternset refid="Ict.Petra.Shared" />
-  <patternset refid="Ict.Common" />
-  <patternset refid="3rdPartyPattern" />
-</patternset>
  
 </project>

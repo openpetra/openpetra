@@ -2,15 +2,8 @@
 <project name="Plugin.BankImportFromMT940-Build">
 
 <property name="Namespace" value="Plugin.BankImportFromMT940" />
-<property name="ProjectGuid" value="{142E84D8-D346-4E96-AAA3-2E1FE3EE5496}" />
 
 <include buildfile="../../../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
-<patternset id="references">
-  <patternset refid="Ict.Petra.Client" /> 
-  <patternset refid="Ict.Petra.Shared" />
-  <patternset refid="Ict.Common" />
-  <patternset refid="3rdPartyPattern" />
-</patternset>
  
 </project>

@@ -33,7 +33,7 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 
-namespace Ict.Petra.Client.MCommon
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// todoComment
