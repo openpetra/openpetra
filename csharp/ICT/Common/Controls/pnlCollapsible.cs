@@ -275,7 +275,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public TPnlCollapsible()
+        public TPnlCollapsible(THostedControlKind AHCK)
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
@@ -288,6 +288,7 @@ namespace Ict.Common.Controls
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
             #endregion
 
+            FHostedControlKind = AHCK;
             FUserControlClass = "";
             FUserControlNamespace = "";
             FCollapseDirection = DEFAULT_DIRECTION;
@@ -298,7 +299,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Custom Constructor
         /// </summary>
-        public TPnlCollapsible(string ATitleText, TCollapseDirection ADirection)
+        public TPnlCollapsible(THostedControlKind AHCK, string ATitleText, TCollapseDirection ADirection)
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
@@ -311,6 +312,7 @@ namespace Ict.Common.Controls
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
             #endregion
 
+            FHostedControlKind = AHCK;
             FUserControlClass = "";
             FUserControlNamespace = "";
             FCollapseDirection = ADirection;
@@ -461,6 +463,9 @@ namespace Ict.Common.Controls
                 throw new ENoTaskListNodeSpecifiedException();
             }
             FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode);
+            this.pnlContent.Controls.Add(FTaskListInstance);
+            //FTaskListInstance.Anchor = (System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+            FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
         }
 
                     

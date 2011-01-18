@@ -74,7 +74,11 @@ namespace ControlTestBench
 		}
 		void Button2Click(object sender, EventArgs e)
 		{
-		    new TestCollapsible.MainForm2().Show();
+		    String yamlFile = txtYaml.Text.ToString();
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();
+            
+		    new TestCollapsible.MainForm2(UINavigation).Show();
 		}
 	}
 }

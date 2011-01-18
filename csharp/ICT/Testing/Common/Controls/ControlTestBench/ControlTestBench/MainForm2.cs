@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common.Controls;
+using System.Xml;
 
 namespace TestCollapsible
 {
@@ -19,16 +20,12 @@ namespace TestCollapsible
 	/// </summary>
 	public partial class MainForm2 : Form
 	{
-		public MainForm2()
+	    private XmlDocument Fxmldoc = null;
+
+		public MainForm2(XmlDocument xmldoc)
 		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
+		    this.Fxmldoc = xmldoc;
 			InitializeComponent();
-			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
 		}
 		
 		public void TestContent()
@@ -41,7 +38,7 @@ namespace TestCollapsible
 		
 		public void TestTaskList()
 		{
-		    this.tPnlCollapsible1.HostedControlKind = THostedControlKind.hckTaskList;
+		    this.tPnlCollapsible1.TaskListNode = Fxmldoc;
 		}
 		
 		void Button1Click(object sender, EventArgs e)
