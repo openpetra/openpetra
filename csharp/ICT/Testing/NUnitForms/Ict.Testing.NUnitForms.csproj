@@ -132,7 +132,7 @@
     <Compile Include="TFrmGLAccountHierarchyTester.cs" />
     <Compile Include="TFrmGLCreateLedgerTester.cs" />
     <Compile Include="TTrvTreeViewTester.cs" />
-    <Compile Include="TxtNumericTextBoxTester.cs" />
+    <Compile Include="txtNumericTextBoxTester.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">
