@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         private SortedList FPagesDataHeap;
 
         ///<summary>List of Shepherd Pages</summary>
-        public TPetraShepherdPagesList ShepherdPages 
+        public TPetraShepherdPagesList ShepherdPages
         {
         	/// <summary>
         	/// Read in XML nodes from YAML file and call TShepherdPage constructor
@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         		TLogging.Log("TPetraShepherdPagesList called get method in the attribute.");
         		return FShepherdPages; 
         	}
+
 
         	
         }
@@ -106,7 +107,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
             // ....
-            //CurrentPage = TShepherdPagesList.(APage);  
+ 
+            //if(FShepherdPages.Pages.ContainsKey(APage))
+            //{
+            	TLogging.Log("DID IT ENTER HERE!?"); 
+            	CurrentPage = FShepherdPages.Pages[APage];
+            	TLogging.Log("ERROR 1: The ID of the current Page is as follows: " + CurrentPage.ID); 
+            //}
+           	//else
+           	//{
+           	//	TLogging.Log("ELSE STATEMENT!");            
+           	//}
+            
+            
 
             FForm.ShowCurrentPage();
         }
@@ -124,8 +137,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
             // ....
-
-            SwitchToPage(String.Empty);
+            SwitchToPage("2"); 
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>

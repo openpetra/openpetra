@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             InitializeComponent();
             
             
-            
             //
             // TODO: Add constructor code after the InitializeComponent() call.
             //
@@ -98,6 +97,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }            
             
             TLogging.Log("TShepherdChurchForm Form_Load ran.");
+                        try
+            {
+            	TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID); 
+            	testStatusMessage.Text = FLogic.CurrentPage.ID;
+            }
+            catch(Exception exception) 
+            {
+            	TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception."); 
+            }
+
         }
     }
 }

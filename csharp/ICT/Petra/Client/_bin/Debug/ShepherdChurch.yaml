@@ -5,8 +5,8 @@ ShepherdPages:
         Note: This is a test, this is only a test.
         Visible: True
         Enabled: True
-        UserControlNamespace: Ict.Petra.whatever
-        UserControlClassName: Yourmomsclass
+        UserControlNamespace: Ict.Petra.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family
+        UserControlClassName: TUC_PartnerDetails_Family
         HelpContext: HELPME!!!
         UserControlType: Theafotianfwtoiaen
         IsLastPage: False

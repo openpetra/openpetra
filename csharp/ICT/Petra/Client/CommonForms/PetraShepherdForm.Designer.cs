@@ -61,10 +61,12 @@ namespace Ict.Petra.Client.CommonForms
         	this.btnFinish = new System.Windows.Forms.Button();
         	this.pnlNavigation = new System.Windows.Forms.Panel();
         	this.pnlContent = new System.Windows.Forms.Panel();
+        	this.testStatusMessage = new System.Windows.Forms.TextBox();
         	this.lblHeading2 = new System.Windows.Forms.Label();
         	this.lblHeading1 = new System.Windows.Forms.Label();
         	this.pnlTop = new System.Windows.Forms.Panel();
         	this.pnlButtons.SuspendLayout();
+        	this.pnlContent.SuspendLayout();
         	this.pnlTop.SuspendLayout();
         	this.SuspendLayout();
         	// 
@@ -76,7 +78,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlButtons.Controls.Add(this.btnNext);
         	this.pnlButtons.Controls.Add(this.btnFinish);
         	this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-        	this.pnlButtons.Location = new System.Drawing.Point(0, 315);
+        	this.pnlButtons.Location = new System.Drawing.Point(0, 317);
         	this.pnlButtons.Name = "pnlButtons";
         	this.pnlButtons.Size = new System.Drawing.Size(584, 47);
         	this.pnlButtons.TabIndex = 1;
@@ -143,18 +145,27 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlNavigation.Location = new System.Drawing.Point(0, 0);
         	this.pnlNavigation.Name = "pnlNavigation";
         	this.pnlNavigation.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-        	this.pnlNavigation.Size = new System.Drawing.Size(163, 315);
+        	this.pnlNavigation.Size = new System.Drawing.Size(163, 317);
         	this.pnlNavigation.TabIndex = 2;
         	// 
         	// pnlContent
         	// 
         	this.pnlContent.BackColor = System.Drawing.Color.Purple;
+        	this.pnlContent.Controls.Add(this.testStatusMessage);
         	this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
         	this.pnlContent.Location = new System.Drawing.Point(163, 0);
         	this.pnlContent.Name = "pnlContent";
         	this.pnlContent.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-        	this.pnlContent.Size = new System.Drawing.Size(421, 315);
+        	this.pnlContent.Size = new System.Drawing.Size(421, 317);
         	this.pnlContent.TabIndex = 3;
+        	// 
+        	// testStatusMessage
+        	// 
+        	this.testStatusMessage.Location = new System.Drawing.Point(35, 112);
+        	this.testStatusMessage.Name = "testStatusMessage";
+        	this.testStatusMessage.Size = new System.Drawing.Size(184, 20);
+        	this.testStatusMessage.TabIndex = 0;
+        	this.testStatusMessage.TextChanged += new System.EventHandler(this.TextBox1TextChanged);
         	// 
         	// lblHeading2
         	// 
@@ -193,7 +204,7 @@ namespace Ict.Petra.Client.CommonForms
         	// 
         	this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         	this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        	this.ClientSize = new System.Drawing.Size(584, 362);
+        	this.ClientSize = new System.Drawing.Size(584, 364);
         	this.Controls.Add(this.pnlTop);
         	this.Controls.Add(this.pnlContent);
         	this.Controls.Add(this.pnlNavigation);
@@ -203,9 +214,12 @@ namespace Ict.Petra.Client.CommonForms
         	this.Text = "TPetraShepherdForm";
         	this.Load += new System.EventHandler(this.Form_Load);
         	this.pnlButtons.ResumeLayout(false);
+        	this.pnlContent.ResumeLayout(false);
+        	this.pnlContent.PerformLayout();
         	this.pnlTop.ResumeLayout(false);
         	this.ResumeLayout(false);
         }
+        protected System.Windows.Forms.TextBox testStatusMessage;
 
         private System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;

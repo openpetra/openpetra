@@ -74,5 +74,10 @@ namespace Ict.Petra.Client.CommonForms
         protected virtual void Form_Load(object sender, EventArgs e)
         {
         }
+        
+        void TextBox1TextChanged(object sender, EventArgs e)
+        {
+        	
+        }
     }
 }
