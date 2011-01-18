@@ -216,39 +216,39 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
         public TPetraShepherdPage(XmlNode ShepherdPageNode)
         {
-        	TLogging.Log("Constructor REACHED" + FID);
+        	TLogging.Log("Constructor REACHED");
         	//Comment
-            FID=ShepherdPageNode["ID"].Value;
+            FID=ShepherdPageNode.Attributes["ID"].Value;
             TLogging.Log("~~ID Assigned~~ " + FID);
             
-            FTitle=ShepherdPageNode["Title"].Value;
+            FTitle=ShepherdPageNode.Attributes["Title"].Value;
             TLogging.Log("~~Title Assigned~~ " + FTitle);
             
-            FNote=ShepherdPageNode["Note"].Value;
+            FNote=ShepherdPageNode.Attributes["Note"].Value;
             TLogging.Log("~~Note Assigned~~ " + FNote);
             
-            FVisible=System.Convert.ToBoolean(ShepherdPageNode["Visible"].Value);
+            FVisible=System.Convert.ToBoolean(ShepherdPageNode.Attributes["Visible"].Value);
             TLogging.Log("~~Visible Assigned~~ " + System.Convert.ToString(FVisible));
             
-            FEnabled=System.Convert.ToBoolean(ShepherdPageNode["Enabled"].Value);
+            FEnabled=System.Convert.ToBoolean(ShepherdPageNode.Attributes["Enabled"].Value);
             TLogging.Log("~~Enabled Assigned~~ " + System.Convert.ToString(FEnabled));
             
-            FUserControlNamespace=ShepherdPageNode["UserControlNamespace"].Value;
+            FUserControlNamespace=ShepherdPageNode.Attributes["UserControlNamespace"].Value;
             TLogging.Log("~~UserControlNamespace Assigned~~ " + FUserControlNamespace);
             
-            FUserControlClassName=ShepherdPageNode["UserControlClassName"].Value;
+            FUserControlClassName=ShepherdPageNode.Attributes["UserControlClassName"].Value;
             TLogging.Log("~~UserControlClassName Assigned~~ " + FUserControlClassName);
             
-            FHelpContext=ShepherdPageNode["HelpContext"].Value;
+            FHelpContext=ShepherdPageNode.Attributes["HelpContext"].Value;
             TLogging.Log("~~HelpContext Assigned~~ " + FHelpContext);
             
-            FUserControlType=ShepherdPageNode["UserControlType"].Value;
+            FUserControlType=ShepherdPageNode.Attributes["UserControlType"].Value;
             TLogging.Log("~~UserControlType Assigned~~ ");
             
-            FIsLastPage=System.Convert.ToBoolean(ShepherdPageNode["IsLastPage"].Value);
+            FIsLastPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsLastPage"].Value);
             TLogging.Log("~~IsLastPage Assigned~~ " + System.Convert.ToString(FIsLastPage));
             
-            FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode["IsFirstPage"].Value);
+            FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsFirstPage"].Value);
             TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
         }
     }
@@ -269,18 +269,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
-            TLogging.Log("TPetraShepherdPagesList has " + XmlPages.ChildNodes.Count + " Nodes.");    
-        	XmlNode temporaryXmlNode = XmlPages.FirstChild;
-        	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Title);
+            TLogging.Log("TPetraShepherdPagesList has " + XmlPages.ChildNodes.Count + " Nodes.");
+        	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.LastChild;
+        	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Name);
+        	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Attributes["ID"].Value);
             for(int i = 0; i < XmlPages.ChildNodes.Count; i++)
         	{
-            	TLogging.Log("TPetraShepherdPagesList forloop iterated: " + i + " times.");
+            	TLogging.Log("TPetraShepherdPagesList forloop iterated: " + i + " times and itereates on: "  + temporaryXmlNode.Attributes["ID"].Value);
             	TLogging.Log("Before petra shepherd page Constructor");
             	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode);
             	TLogging.Log("Before adding page to PagesList");
             	FPagesList.Add(temporaryPetraShepherdPage.Title,temporaryPetraShepherdPage);
         		TLogging.Log("Before next sibling statement *****");
-            	temporaryXmlNode = XmlPages.NextSibling;
+            	temporaryXmlNode = XmlPages.PreviousSibling;
             	TLogging.Log("After next sibling statement *****");
             }
             TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
