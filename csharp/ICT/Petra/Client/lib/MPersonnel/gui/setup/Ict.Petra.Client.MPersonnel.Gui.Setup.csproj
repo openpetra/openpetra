@@ -192,6 +192,13 @@
     <Compile Include="DriverStatusSetup.ManualCode.cs">
       <DependentUpon>DriverStatusSetup.cs</DependentUpon>
     </Compile>
+	<Compile Include="ProfessionalAreaSetup.cs" />
+    <Compile Include="ProfessionalAreaSetup.Designer.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProfessionalAreaSetup.ManualCode.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
@@ -233,6 +240,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DriverStatusSetup.resx">
       <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfessionalAreaSetup.resx">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
