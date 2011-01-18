@@ -4,8 +4,6 @@
 
 <property name="RunCsDepend" value="true" />
 
-<property name="csdependfiles" value="*.cs" />
-<property name="compilefiles" value="*.cs" />
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
 

@@ -3,12 +3,19 @@
 
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
+<target name="custclean">
+  <delete file="${path::combine(dir.projectfiles,
+                                path::combine(devenv-name, 'OpenPetra.sln'))}" />
+</target>
+
 <target name="nanttasks" depends="" >
+  <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
 </target>
 
 <target name="csharp" depends="nanttasks" >
+  <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="csharp/csharp.build" />
 </target>
@@ -17,7 +24,7 @@
         depends="csharp,nanttasks" />
 
 
-<target name="generateSolutionNoCompile" depends="generate-solution-csharp-internal" >
+<target name="generateSolutionNoCompile" >
   <call target="generateCsproject" />
   <call target="generate-solution-all-internal" />
 </target>
@@ -27,11 +34,10 @@
 </target>
 
 <!-- Generate solution targets -->
-<target name="generate-solution-all-internal" depends="generate-solution-csharp-internal" />
-
-<target name="generate-solution-csharp-internal" >
-  <property name="devenv-name" value="sharpdevelop" />
-  <call target="generate-solution-internal" />
+<target name="generate-solution-all-internal" >
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <call target="generate-solution-internal" />
+  </foreach>
 </target>
 
 

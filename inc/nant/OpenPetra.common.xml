@@ -70,8 +70,10 @@
 <property name="dir.namespace.map" value="${path::combine(dir.delivery, 'nsMap')}"
           overwrite="false" />
  <!-- projectfiles -->
-<property name="dir.projectfiles" value="${path::combine(dir.root, 'projectfiles')}"
+<property name="dir.projectfiles" value="${path::combine(dir.delivery, 'projects')}"
           overwrite="false" />
+<property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+          
  <!-- db -->
 <property name="dir.db" value="${path::combine(dir.root, 'db')}"
           overwrite="false" />
@@ -119,7 +121,8 @@
           overwrite="false" />
 
 <!-- generateORM props -->
-<property name="tool-generateORM" value="${dir.bin}/Ict.Tools.GenerateORM.exe"/>
-<property name="PetraXML.file" value="${dir.root}/db/petra.xml"/>
+<property name="tool-generateORM" value="${dir.bin}/Ict.Tools.GenerateORM.exe" overwrite="false" />
+<property name="PetraXML.file" value="${dir.root}/db/petra.xml" overwrite="false" />
+
 
 </project>

@@ -14,6 +14,7 @@
 <property name="namespace-temp-dir" value="${path::combine(dir.bin,Namespace)}" />
 <property name="AssemblyNameInfo.cs" value="${path::combine(namespace-temp-dir,'AssemblyInfo.cs')}" />
 <property name="referencesFile" value="${path::combine(namespace-temp-dir,Namespace+'.generated.refs')}" />
+<property name="resourcefiles" value="*.resx"  overwrite="false"/>
 <property name="compilefiles" value="*.cs"  overwrite="false"/>
 <property name="csdependfiles" value="**/*.cs"  overwrite="false"/>
 <property name="excludecsfiles" value=".doc"  overwrite="false"/>
@@ -24,15 +25,12 @@
 </if>
 
 <target name="clean" depends="custclean">
-  <echo>Clean called ${OP::get-current-buildfile()}</echo>
   <if test="${not property::exists('called-nant-subcall')}">
     <if test="${file::exists(referencesFile)}">
       <include buildfile="${referencesFile}" />
       <property name="target" value="clean" />
       <property name="called-nant-subcall" value="true" />
-      <echo>Call nant-subcall with target clean ${OP::get-current-buildfile()}</echo>
       <call target="nant-subcall" cascade="false" />
-      <echo>Back from call nant-subcall with target clean ${OP::get-current-buildfile()}</echo>
     </if>
     <delete>
       <fileset>
@@ -83,9 +81,8 @@
 
 <target name="compile" depends="depend">
   <!-- Create assembly info -->
-  <mkdir dir="${namespace-temp-dir}" />
-
   <if test="${bool::parse(RunCsDepend)!=true}">
+    <mkdir dir="${namespace-temp-dir}" />
     <asminfo output="${AssemblyNameInfo.cs}" language="CSharp">
       <imports>
         <import namespace="System.Reflection" />
@@ -115,7 +112,7 @@
         <include name="${AssemblyNameInfo.cs}" />
       </sources>
       <resources>
-        <include name="*.resx" />
+        <include name="${resourcefiles}" />
       </resources>
     </csc>
   </if>
@@ -126,16 +123,21 @@
   
 </target>
 
-<target name="generateCsproject" depends="generate-csproject-sharpdevelop">
+<target name="generateCsproject" depends="depend">
+  <echo level="Debug">Calling antfile=${OP::get-current-buildfile()}</echo>
+  <if test="${bool::parse(RunCsDepend)!=true}">
+    <property name="ProjectGuid" value="{${OP::GUIDGen()}}" overwrite="false" />
+    <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+      <call target="generateCsproject-internal" />
+    </foreach>
+  </if>
+  <if test="${bool::parse(RunCsDepend)==true}">
+    <property name="target" value="generateCsproject" />
+    <call target="nant-subcall" cascade="false" />
+  </if>
 </target>
 
-<target name="generate-csproject-sharpdevelop">
-  <property name="devenv-name" value="sharpdevelop" />
-  <call target="generate-csproject-internal" />
-</target>
-
-
-<target name="generate-csproject-internal" depends="depend">
+<target name="generateCsproject-internal" >
   <!-- Add cs and resx files -->
   <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
 
@@ -147,6 +149,7 @@
     </in>
     <do>  
       <!-- Extract reference name from the reference path-->
+      <echo level="Debug">reference-path=${reference-path}</echo>
       <property name="reference-name" 
                 value="${path::get-file-name-without-extension(reference-path)}" />
       <property name="reference-project-file"
@@ -182,7 +185,7 @@
   <foreach item="File" property="filename">
     <in>
       <items>
-        <include name="**/*.resx" />
+        <include name="${resourcefiles}" />
       </items>
     </in>
     <do>
@@ -228,8 +231,6 @@
       <expandproperties />
     </filterchain>
   </copy>
-
-
 </target>
 
 </project>

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using Ict.Tools.CodeGeneration;
 
 namespace Ict.Tools.CodeGeneration
 {

@@ -42,7 +42,8 @@ namespace Ict.Tools.NAntTasks {
 <target name=""{0}"" depends=""{1}"" description=""calls target from property target for {0}"">
   <!-- Default target is compile -->
   <property name=""target"" value=""compile"" overwrite=""false ""/>
-  <!-- if target is clean and the buildfile is not there, then we ignore it -->
+  <!-- If target is clean and the buildfile is not there, then we ignore it.
+       Otherwise we are glad about the error message: Something wired happend. -->
   <nant inheritall=""false"" target=""${{target}}"" buildfile=""{2}"" if=""${{target!='clean' or file::exists('{2}')}}""/>
 </target>
 ";

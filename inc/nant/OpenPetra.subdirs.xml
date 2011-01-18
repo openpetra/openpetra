@@ -3,7 +3,11 @@
 
 <include buildfile="OpenPetra.default.targets.xml"/>
 
-<target name="clean" >
+<if test="${not target::exists('custclean')}">
+  <include buildfile="OpenPetra.target-custclean.xml"/>
+</if>
+
+<target name="clean" depends="custclean">
   <property name="target" value="clean" />
   <call target="internal-subdirs" />
 </target>
