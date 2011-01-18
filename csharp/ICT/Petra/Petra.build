@@ -13,6 +13,11 @@
         buildfile="Server/Ict.Petra.Server.build" />
 </target>
 
+<target name="petraserverconsole" depends="server" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="PetraServerConsole/PetraServerConsole.build" />
+</target>
+
 <target name="server-plugins" depends="shared,server" >
   <nant inheritall="false" target="${target}"
         buildfile="ServerPlugins/ServerPlugins.build" />
@@ -21,6 +26,11 @@
 <target name="server-admin" depends="shared" >
   <nant inheritall="false" target="${target}"
         buildfile="ServerAdmin/Ict.Petra.ServerAdmin.build" />
+</target>
+
+<target name="PetraClient" depends="client" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="PetraClient/PetraClient.build" />
 </target>
 
 <target name="client" depends="shared" >
@@ -36,7 +46,7 @@
 <target name="internal-subdirs" 
         depends="shared,
                  server,server-plugins,server-admin,
-                 client,client-plugins" />
+                 client,client-plugins,PetraClient" />
 
 <!-- Include default implementation -->
 <include buildfile="../../../inc/nant/OpenPetra.subdirs.xml"/> 

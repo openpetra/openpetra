@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-csharp-PetraClient-build">
+<property name="Namespace" value="PetraClient" />
+
+<property name="OutputType" value="winexe" overwrite="false"/>
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>
