@@ -270,19 +270,21 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
             TLogging.Log("TPetraShepherdPagesList has " + XmlPages.ChildNodes.Count + " Nodes.");
-        	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.LastChild;
+        	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.FirstChild;
         	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Name);
         	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Attributes["ID"].Value);
-            for(int i = 0; i < XmlPages.ChildNodes.Count; i++)
+        	int counter = 0; 
+        	while(temporaryXmlNode != null) 
         	{
-            	TLogging.Log("TPetraShepherdPagesList forloop iterated: " + i + " times and itereates on: "  + temporaryXmlNode.Attributes["ID"].Value);
+            	TLogging.Log("TPetraShepherdPagesList forloop iterated: " + counter + " times and itereates on: ");
             	TLogging.Log("Before petra shepherd page Constructor");
             	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode);
             	TLogging.Log("Before adding page to PagesList");
             	FPagesList.Add(temporaryPetraShepherdPage.Title,temporaryPetraShepherdPage);
         		TLogging.Log("Before next sibling statement *****");
-            	temporaryXmlNode = XmlPages.PreviousSibling;
+            	temporaryXmlNode = XmlPages.NextSibling;
             	TLogging.Log("After next sibling statement *****");
+            	counter++; 
             }
             TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
         }
