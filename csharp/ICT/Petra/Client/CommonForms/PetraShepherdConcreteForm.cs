@@ -100,6 +100,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("ShowCurrentPage");
             
+            //pnlContent.Controls.Add(FLogic.ShepherdPages.Pages.);
             // ...
             UpdateNavigation();
         }

@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Xml; 
+using System.Xml;
+using System.Reflection;
+using System;
 
 using Ict.Common;
 using Ict.Common.IO; 
@@ -251,6 +253,24 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsFirstPage"].Value);
             TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
         }
+        
+        private UserControl RealiseUserControl()
+		{
+			Assembly asm = Assembly.LoadFrom(FUserControlNamespace + ".dll");
+		    System.Type classType = asm.GetType(FUserControlNamespace + "." + FUserControlClassName);
+
+		    if (classType == null)
+		    {
+		        MessageBox.Show("TPnlCollapsible.RealiseUserControl: Cannot find class " + FUserControlNamespace + "." + FUserControlClassName);
+		    }
+		  
+		    FUserControl = (UserControl) Activator.CreateInstance(classType);
+		    
+		    //pnlContent.Controls.Add(FUserControl);
+		    
+		    return FUserControl;
+		 }
+        
     }
     
     

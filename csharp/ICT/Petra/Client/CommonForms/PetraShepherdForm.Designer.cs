@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.CommonForms
         }
         protected System.Windows.Forms.TextBox testStatusMessage;
 
-        private System.Windows.Forms.Panel pnlContent;
+        protected System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Button btnNext;
