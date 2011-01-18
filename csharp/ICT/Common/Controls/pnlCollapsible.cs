@@ -498,20 +498,21 @@ namespace Ict.Common.Controls
         private TVisualStyles ChangeVisualStyle(TVisualStyles AVisualStyle)
         {
             if(FCollapseDirection != TCollapseDirection.cdHorizontal
-               && (AVisualStyle == TVisualStylesEnum.vsHorizontalCollapse
-                   || AVisualStyle == TVisualStylesEnum.vsShepherd ))
+               && (AVisualStyle.Equals(TVisualStylesEnum.vsHorizontalCollapse)
+                   || AVisualStyle.Equals(TVisualStylesEnum.vsShepherd) ))
             {
                 throw new EVisualStyleAndDirectionMismatchException();
             }
             else if(FCollapseDirection != TCollapseDirection.cdVertical
-                    && (AVisualStyle == TVisualStylesEnum.vsAccordionPanel
-                        || AVisualStyle == TVisualStylesEnum.vsDashboard
-                        || AVisualStyle == TVisualStylesEnum.vsTaskPanel))
+                    && (AVisualStyle.Equals(TVisualStylesEnum.vsAccordionPanel)
+                        || AVisualStyle.Equals(TVisualStylesEnum.vsDashboard)
+                        || AVisualStyle.Equals(TVisualStylesEnum.vsTaskPanel) ))
             {
                 throw new EVisualStyleAndDirectionMismatchException();                
             }
             
             FVisualStyle = AVisualStyle;
+            return AVisualStyle;
         }
                     
         #endregion
@@ -602,7 +603,7 @@ namespace Ict.Common.Controls
         
     }
     
-    public class EVisualStyleAndDirectionMismatchException()
+    public class EVisualStyleAndDirectionMismatchException : ApplicationException
     {
         
     }

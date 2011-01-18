@@ -6,6 +6,16 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+ 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Xml;
+using System.Windows.Forms;
+using GNU.Gettext;
+using Ict.Common;
+using Ict.Common.IO;
+using Ict.Common.Controls;
 namespace ControlTestBench
 {
 	partial class MainForm
@@ -42,6 +52,7 @@ namespace ControlTestBench
 			this.label1 = new System.Windows.Forms.Label();
 			this.cmbVisualStyle = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -102,11 +113,23 @@ namespace ControlTestBench
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Visual Style";
 			// 
+			// linkLabel1
+			// 
+			this.linkLabel1.Location = new System.Drawing.Point(117, 206);
+			this.linkLabel1.Name = "linkLabel1";
+			this.linkLabel1.Size = new System.Drawing.Size(100, 23);
+			this.linkLabel1.TabIndex = 6;
+			this.linkLabel1.TabStop = true;
+			this.linkLabel1.Text = "linkLabel1";
+			this.linkLabel1.MouseHover += new System.EventHandler(this.LinkLabelMouseHover);
+			this.linkLabel1.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.cmbVisualStyle);
 			this.Controls.Add(this.label1);
@@ -118,11 +141,28 @@ namespace ControlTestBench
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.ComboBox cmbVisualStyle;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox txtYaml;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button1;
+		
+		void Button2Click(object sender, System.EventArgs e)
+		{
+			
+		}
+		
+		void LinkLabelMouseHover(object sender, System.EventArgs e)
+		{
+			LinkLabel lbl = (LinkLabel)sender;
+			lbl.BackColor = Color.Red;
+		}
+		void LinkLabelMouseLeave(object sender, System.EventArgs e)
+		{
+			LinkLabel lbl = (LinkLabel)sender;
+			lbl.BackColor = Color.Transparent;
+		}
 	}
 }

@@ -72,6 +72,7 @@ namespace ControlTestBench
             //using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
 			//newForm.Controls.Add(
 		}
+
 		void Button2Click(object sender, EventArgs e)
 		{
 		    String yamlFile = txtYaml.Text.ToString();
@@ -94,7 +95,7 @@ namespace ControlTestBench
             	                      EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
             	                      break;
             }
-
+	
             new TestCollapsible.MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
 		}
 	}
