@@ -78,9 +78,12 @@ namespace Ict.Common.Controls
         
         #pragma warning disable 0169
         /// <summary>Caches the translated text for several ToolTips</summary>
-        private string FToolTipText;
+        private string FToolTipText = "";
         #pragma warning restore 0169
 
+        /// <summary></summary>
+        private string FTitleText;
+        
         /// <summary> collapse direction </summary>
         private TCollapseDirection FCollapseDirection;
 
@@ -107,6 +110,9 @@ namespace Ict.Common.Controls
         
         /// <summary></summary>
         private TTaskList FTaskListInstance = null;
+        
+        /// <summary></summary>
+        private TVisualStyles FVisualStyle;
         
         #endregion
 
@@ -136,6 +142,8 @@ namespace Ict.Common.Controls
             {
                 string NewToolTipText;
 
+                //FToolTipText = value;
+                
                 // Set Title Text
                 lblDetailHeading.Text = value;
                 NewToolTipText = String.Format(FToolTipText, value);
@@ -170,6 +178,10 @@ namespace Ict.Common.Controls
             {
                 return FCollapseDirection;
             }
+            set
+            {
+                FCollapseDirection = value;
+            }
         }
         
         /// <summary>
@@ -197,10 +209,6 @@ namespace Ict.Common.Controls
             }
             set
             {
-                if(FHostedControlKind == THostedControlKind.hckTaskList)
-                {
-                    throw new EIncompatibleHostedControlKindException();
-                }
                 FUserControlNamespace = value;
             }
         }
@@ -215,10 +223,6 @@ namespace Ict.Common.Controls
             }
             set
             {
-                if(FHostedControlKind == THostedControlKind.hckTaskList)
-                {
-                    throw new EIncompatibleHostedControlKindException();
-                }
                 FUserControlClass = value;
             }
         }
@@ -241,11 +245,6 @@ namespace Ict.Common.Controls
             }
             set
             {
-                if(FHostedControlKind == THostedControlKind.hckUserControl)
-                {
-                    throw new EIncompatibleHostedControlKindException();
-                }
-
                 FTaskListNode = value;
             }
         }
@@ -259,23 +258,34 @@ namespace Ict.Common.Controls
             }
             set
             {
-                if(FHostedControlKind == THostedControlKind.hckUserControl)
-                {
-                    throw new EIncompatibleHostedControlKindException();
-                }
-
                 FTaskListInstance = value;
+            }
+        }
+        
+        /// <summary></summary>
+        public TVisualStyles VisualStyle
+        {
+            get
+            {
+                return FVisualStyle;
+            }
+            set
+            {
+                ChangeVisualStyle(value);
             }
         }
 
         #endregion
 
         #region Constructors
+
+        //public TPnlCollapsible(THostedControlKind AHCK)
+
         
         /// <summary>
         /// Default Constructor
-        /// </summary>
-        public TPnlCollapsible(THostedControlKind AHCK)
+        ///</summary>
+        public TPnlCollapsible()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
@@ -288,7 +298,8 @@ namespace Ict.Common.Controls
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
             #endregion
 
-            FHostedControlKind = AHCK;
+            Collapse();
+            FHostedControlKind = THostedControlKind.hckTaskList;
             FUserControlClass = "";
             FUserControlNamespace = "";
             FCollapseDirection = DEFAULT_DIRECTION;
@@ -312,6 +323,7 @@ namespace Ict.Common.Controls
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
             #endregion
 
+            Collapse();
             FHostedControlKind = AHCK;
             FUserControlClass = "";
             FUserControlNamespace = "";
@@ -369,6 +381,21 @@ namespace Ict.Common.Controls
                 case THostedControlKind.hckTaskList:
                     InstantiateTaskList();
                     break;
+            }
+        }
+        
+        /// <summary>
+        /// Toggles between expanding and collapsing.
+        /// </summary>
+        public void Toggle()
+        {
+            if(IsCollapsed)
+            {
+                Expand();
+            }
+            else
+            {
+                Collapse();
             }
         }
         
@@ -462,12 +489,30 @@ namespace Ict.Common.Controls
             {
                 throw new ENoTaskListNodeSpecifiedException();
             }
-            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode);
+            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode,Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel);
             this.pnlContent.Controls.Add(FTaskListInstance);
             //FTaskListInstance.Anchor = (System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
         }
 
+        private TVisualStyles ChangeVisualStyle(TVisualStyles AVisualStyle)
+        {
+            if(FCollapseDirection != TCollapseDirection.cdHorizontal
+               && (AVisualStyle == TVisualStylesEnum.vsHorizontalCollapse
+                   || AVisualStyle == TVisualStylesEnum.vsShepherd ))
+            {
+                throw new EVisualStyleAndDirectionMismatchException();
+            }
+            else if(FCollapseDirection != TCollapseDirection.cdVertical
+                    && (AVisualStyle == TVisualStylesEnum.vsAccordionPanel
+                        || AVisualStyle == TVisualStylesEnum.vsDashboard
+                        || AVisualStyle == TVisualStylesEnum.vsTaskPanel))
+            {
+                throw new EVisualStyleAndDirectionMismatchException();                
+            }
+            
+            FVisualStyle = AVisualStyle;
+        }
                     
         #endregion
 
@@ -553,6 +598,11 @@ namespace Ict.Common.Controls
     /// Thrown when instantiating a tasklist, but tasklistnode property not set.
     /// </summary>
     public class ENoTaskListNodeSpecifiedException : ApplicationException
+    {
+        
+    }
+    
+    public class EVisualStyleAndDirectionMismatchException()
     {
         
     }
