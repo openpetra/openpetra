@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
                                        InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                                        InternalContentGradientStart = Color.FromArgb(212,228,254);
                                        InternalContentGradientEnd = Color.FromArgb(205,218,254);
-                                       InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+                                       InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                                        //Layout Variables
                                        InternalTaskIndentation = 50;
@@ -216,12 +216,12 @@ namespace Ict.Common.Controls
                                        
                                        //Background variables
                                        InternalContentBackgroundColour =Color.FromArgb(255,255,255);
-                                       InternalContentHoverTextColour = Color.FromArgb(210,210,210);
-                                       InternalContentActivatedTextColour = Color.FromArgb(0,40,80);
+                                       InternalContentHoverBackgroundColour = Color.FromArgb(210,210,210);
+                                       InternalContentActivatedBackgroundColour = Color.FromArgb(0,80,160);
                                        
 
                                        //Layout Variables
-                                       InternalTaskIndentation = 0;
+                                       InternalTaskIndentation = 15;
                                        InternalAutomaticNumbering = true;
                                        
                                        //bool variables

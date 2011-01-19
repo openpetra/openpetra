@@ -97,14 +97,14 @@ namespace ControlTestBench
 		
 		void DisableItemButtonClick(object sender, EventArgs e)
 		{
-			XmlNode temp = this.taskList1.GetTaskByNumber("4",false);
+			XmlNode temp = this.taskList1.GetTaskByNumber("4",true);
 			if(temp != null){
-				this.taskList1.DisableTaskItem(temp);
-			}
-			
-			temp = this.taskList1.GetTaskByNumber("4",true);
-			if(temp != null){
-				this.taskList1.DisableTaskItem(temp);
+				if(this.taskList1.IsDisabled(temp)){
+					this.taskList1.DisableTaskItem(temp);
+				}
+				else{
+					this.taskList1.EnableTaskItem(temp);
+				}
 			}
 
 		}
