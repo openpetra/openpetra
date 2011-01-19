@@ -2105,102 +2105,102 @@
             set the statusbar so that error messages can be displayed
             </summary>
         </member>
-        <member name="T:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible">
+        <member name="T:Ict.Common.Controls.TPnlCollapsible">
             <summary>
             UserControl which acts as a 'Collapsible Panel'.
             </summary>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.COLLAPSEDHEIGHT">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.COLLAPSEDHEIGHT">
             <summary>Hard-coded value of the collapsed height</summary>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.EXPANDEDHEIGHT">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.EXPANDEDHEIGHT">
             <summary>Hard-coded value of the expanded height</summary>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.FIsCollapsed">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.FIsCollapsed">
             <summary>Keeps track of the collapsed/expanded state</summary>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.FToolTipText">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.FToolTipText">
             <summary>Caches the translated text for several ToolTips</summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.#ctor">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.#ctor">
             <summary>
             Constructor
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Collapse">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.Collapse">
             <summary>
             Causes the panel to collapse. Only the Title Panel will be visible after that.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Expand">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.Expand">
             <summary>
             Causes the panel to expand. The Title Panel and the Content Panel will be visible after that.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.OnCollapsed">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.OnCollapsed">
             <summary>
             Raises the 'Collapsed' Event if something subscribed to it.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.OnExpanded">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.OnExpanded">
             <summary>
             Raises the 'Expanded' Event if something subscribed to it.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.BtnToggleClick(System.Object,System.EventArgs)">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.BtnToggleClick(System.Object,System.EventArgs)">
             <summary>
             Event is raised if the Toggle Button is clicked.
             </summary>
             <param name="sender">The Toggle Button.</param>
             <param name="e">Not evaluated.</param>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.BtnToggleMouseEnter(System.Object,System.EventArgs)">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.BtnToggleMouseEnter(System.Object,System.EventArgs)">
             <summary>
             Event is raised when the mouse enters the Toggle Button.
             </summary>
             <param name="sender">The Toggle Button.</param>
             <param name="e">Not evaluated.</param>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.BtnToggleMouseLeave(System.Object,System.EventArgs)">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.BtnToggleMouseLeave(System.Object,System.EventArgs)">
             <summary>
             Event is raised if the mouse leaves the Toggle Button.
             </summary>
             <param name="sender">The Toggle Button.</param>
             <param name="e">Not evaluated.</param>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.components">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.components">
             <summary>
             Designer variable used to keep track of non-visual components.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Dispose(System.Boolean)">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.Dispose(System.Boolean)">
             <summary>
             Disposes resources used by the control.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.InitializeComponent">
+        <member name="M:Ict.Common.Controls.TPnlCollapsible.InitializeComponent">
             <summary>
             This method is required for Windows Forms designer support.
             Do not change the method contents inside the source code editor. The Forms designer might
             not be able to load this method if it was changed manually.
             </summary>
         </member>
-        <member name="F:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.pnlContent">
+        <member name="F:Ict.Common.Controls.TPnlCollapsible.pnlContent">
             <summary>The Content Panel. This needs to become private again after this Control can dynamically instantiate UserControls!</summary>
         </member>
-        <member name="E:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Collapsed">
+        <member name="E:Ict.Common.Controls.TPnlCollapsible.Collapsed">
             <summary>Event is fired after the panel has collapsed.</summary>
         </member>
-        <member name="E:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Expanded">
+        <member name="E:Ict.Common.Controls.TPnlCollapsible.Expanded">
             <summary>Event is fired after the panel has expanded.</summary>
         </member>
-        <member name="P:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.Text">
+        <member name="P:Ict.Common.Controls.TPnlCollapsible.Text">
             <summary>
             Sets the Title Text.
             </summary>
         </member>
-        <member name="P:Ict.Petra.Client.MPartner.Gui.TPnlCollapsible.IsCollapsed">
+        <member name="P:Ict.Common.Controls.TPnlCollapsible.IsCollapsed">
             <summary>True if the panel is collapsed, otherwise false.</summary>
         </member>
         <member name="T:Ict.Common.Controls.TDashboard">
@@ -3188,31 +3188,105 @@
             </summary>
             <param name="msg"></param>
         </member>
+        <member name="T:Ict.Common.Controls.TTrvTreeView">
+             <summary>
+             This tree view provides "common features"
+            
+             1. If the tree losts the focus, the left node will stay marked as "has had focus"
+            
+             If you think that you can optimize the code feel free to do it but be careful. It
+             shall run ether in the client an in NUnit ...
+             </summary>
+        </member>
+        <member name="M:Ict.Common.Controls.TTrvTreeView.#ctor">
+            <summary>
+            The constructor only installs two Eventhandlers.
+            </summary>
+        </member>
         <member name="T:Ict.Common.Controls.TTaskList">
             <summary>
-            Description of TaskList.
+            GUI element that shows a stylized list of items built from an XmlNode
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.TaskHeight">
+            <summary>
+            Height of a TaskList Item
+            Used for spacing purposes
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.TaskIndentation">
+            <summary>
+            Amount to indent each level of the TaskList
+            This is changed by setting a visual style
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.NumTasks">
+            <summary>
+            Counter to keep track of the number of tasks and subtasks for spacing purposes
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.TrueRegex">
+            <summary>
+            Regex that is used to check if strings are set to true (regardless of case)
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.TaskRegex">
+            <summary>
+            Regex that checks if XmlNodes are actual tasks
+            Must be the word "Task" followed immediately by at least 1 number. Anything after is arbitrary
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TTaskList.InternalMasterXmlNode">
+            <summary>
+            Private variable that holds the MasterXmlNode for the TTaskList
+            </summary>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.ChangeVisualStyle">
+            <summary>
+            Method that is called from the setter for the VisualStyle property
+            </summary>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.LoadTaskItems">
+            <summary>
+            Default method to load task items
+            Loads Task Items from the already specified MasterXmlNode for the task list
+            </summary>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.LoadTaskItems(System.Xml.XmlNode,System.Int32,System.String)">
+            <summary>
+            Private method to load taskItems of a masterXmlNode
+            This method is also used to reload task items when style has been changed or a node has been disabled, etc
+            </summary>
+            <param name="Node"></param>
+            <param name="NumberingLevel"></param>
+            <param name="ParentNumberText"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.#ctor">
+            <summary>
+            Default constructor necessary for TTaskList to work with the GUI designer
+            Once the control is on a form, the designer should convert this constructor to the parameterized constructor
             </summary>
         </member>
         <member name="M:Ict.Common.Controls.TTaskList.#ctor(System.Xml.XmlNode,Ict.Common.Controls.TVisualStylesEnum)">
             <summary>
             Constructor for creating an object with a MasterNode and setting the Visual Style
             </summary>
-            <param name="MasterNode"></param>
-            <param name="Style"></param>
+            <param name="MasterNode">Base Node for the TaskList</param>
+            <param name="Style">A TVisualStylesEnum value that specifies the visual style which should be used</param>
         </member>
         <member name="M:Ict.Common.Controls.TTaskList.IsHidden(System.Xml.XmlNode)">
             <summary>
             Returns whether given Xml Node has the attribute hidden set to true
             </summary>
             <param name="node"></param>
-            <returns></returns>
+            <returns>Boolean whether given Xml Node has the attribute hidden set to true</returns>
         </member>
         <member name="M:Ict.Common.Controls.TTaskList.IsDisabled(System.Xml.XmlNode)">
             <summary>
             Returns boolean whether given XmlNode has the attribute Enabled set to false
             </summary>
             <param name="node"></param>
-            <returns></returns>
+            <returns>Boolean whether given Xml Node has the attribute enabled set to false</returns>
         </member>
         <member name="M:Ict.Common.Controls.TTaskList.HideTaskItem(System.Xml.XmlNode)">
             <summary>
@@ -3241,6 +3315,79 @@
             Doesn't handle possible case of the node not being a descendent of the masterNode for this list
             </summary>
             <param name="node"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.GetTaskByNumber(System.String)">
+            <summary>
+            Method to retrieve a TaskNode based on a position in the MasterXmlNode for this TTaskList
+            This position includes any hidden task items
+            </summary>
+            <param name="TaskNumber">A String that specifies the position of the desired element
+            	"3.1" means the first child of the third element</param>
+            <returns>XmlNode at specified position or null if there is no element at that position</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.GetTaskByNumber(System.String,System.Boolean)">
+            <summary>
+            Method to retrieve a TaskNode based on a position in the MasterXmlNode for this TTaskList
+            </summary>
+            <param name="TaskNumber">A String that specifies the position of the desired element
+            	"3.1" means the first child of the third element
+            </param>
+            <param name="IncludeHiddenElements">Flag whether to include task items which are specified hidden</param>
+            <returns>XmlNode at specified position or null if there is no element at that position</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.GetTaskByNumber(System.String,System.Boolean,System.Xml.XmlNode)">
+            <summary>
+            Method to retrieve a TaskNode based on a position in the list
+            </summary>
+            <param name="TaskNumber">A String that specifies the position of the desired element
+            	"3.1" means the first child of the third element
+            </param>
+            <param name="IncludeHiddenElements">Flag whether to include task items which are specified hidden</param>
+            <param name="Node">The root from which to start the search</param>
+            <returns>XmlNode at the specified position or null if there is no element at that position</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.GetTaskByName(System.String)">
+            <summary>
+            Method to retrieve an XmlNode which is a child of this TTaskList's MasterXmlNode
+            </summary>
+            <param name="TaskName">The Name of the desired XmlNode</param>
+            <returns>XmlNode Reference</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.GetTaskByName(System.String,System.Xml.XmlNode)">
+            <summary>
+            Method to retrieve an XmlNode which is a child of the specified XmlNode
+            </summary>
+            <param name="TaskName">The Name of the desired XmlNode</param>
+            <param name="Node">The reference to the XmlNode whose descendents should be searched</param>
+            <returns>XmlNode Reference</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.ClearAllAttributeOfType(System.String,System.Xml.XmlNode)">
+            <summary>
+            Clears all attributes of a certain type for all descendents of the specified node
+            </summary>
+            <param name="AttributeType">The name of the attribute type</param>
+            <param name="Node">The root node for the tree which will be cleared</param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.LinkLabelMouseEnter(System.Object,System.EventArgs)">
+            <summary>
+            Event Listener for changing a TaskList item when the mouse hovers
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.LinkLabelMouseLeave(System.Object,System.EventArgs)">
+            <summary>
+            Event Listener for reverting TaskList item style when the mouse leaves
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Ict.Common.Controls.TTaskList.LinkLabelClicked(System.Object,System.EventArgs)">
+            <summary>
+            Event listener to change TaskList item style when the item is clicked
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="F:Ict.Common.Controls.TTaskList.components">
             <summary>

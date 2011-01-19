@@ -67,6 +67,22 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// read the number format that the user has selected
+        /// </summary>
+        public int NumberFormatIndex
+        {
+            get
+            {
+                return cmbNumberFormat.SelectedIndex;
+            }
+            set
+            {
+                cmbNumberFormat.SelectedIndex = value;
+            }
+        }
+
+
+        /// <summary>
         /// constructor
         /// TODO: also select date format?
         /// TODO: select if first row contains captions? or use a parameter to avoid or request captions?

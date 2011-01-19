@@ -63,6 +63,8 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
 
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
             AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
 
             FHtmlDoc = ParseHtml(AHtmlDocument);
@@ -527,6 +529,35 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
                     FPrinter.CurrentAlignment = origAlignment;
+                }
+                else if ((curNode.Name.Length > 1) && (curNode.Name[0] == 'h') && char.IsDigit(curNode.Name[1]))
+                {
+                    // heading
+                    eFont previousFont = FPrinter.CurrentFont;
+                    FPrinter.CurrentFont = eFont.eHeadingFont;
+                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+
+                    if (curNode.Name[1] == '1')
+                    {
+                        FPrinter.CurrentRelativeFontSize += 2;
+                    }
+                    else
+                    {
+                        FPrinter.CurrentRelativeFontSize += 1;
+                    }
+
+                    XmlNode child = curNode.FirstChild;
+                    RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    FPrinter.CurrentFont = previousFont;
+                    FPrinter.CurrentRelativeFontSize = previousFontSize;
+                    curNode = curNode.NextSibling;
+                    FPrinter.LineFeed();
                 }
                 else if (curNode.Name == "#comment")
                 {

@@ -139,7 +139,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            return ResultDocument.Replace("<pagebreak>", "</body><body>");
+            return ResultDocument;
         }
 
         private static string GetStringOrEmpty(object obj)

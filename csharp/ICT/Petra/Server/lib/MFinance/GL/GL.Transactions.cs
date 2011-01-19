@@ -629,5 +629,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return exporting.ExportAllGLBatchData(ref batches, requestParams, out exportString);
         }
+
+        /// <summary>
+        /// Import GL batch data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediately
+        /// </summary>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="importString">Big parts of the import file as a simple String</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGLBatches(
+            Hashtable requestParams,
+            String importString,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TGLImporting importing = new TGLImporting();
+
+            return importing.ImportGLBatches(requestParams, importString, out AMessages);
+        }
     }
 }

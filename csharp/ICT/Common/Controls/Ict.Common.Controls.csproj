@@ -91,6 +91,7 @@
     <Compile Include="sgrdDataGrid.cs" />
     <Compile Include="sgrdDataGridPaged.cs" />
     <Compile Include="tabVersatile.cs" />
+    <Compile Include="trvTreeView.cs" />
     <Compile Include="TaskList.cs" />
     <Compile Include="TaskList.Designer.cs">
       <DependentUpon>TaskList.cs</DependentUpon>
