@@ -66,7 +66,7 @@ namespace Ict.Common.Controls
 
         /// <summary>Hard-coded value of the expanded height</summary>
         private const Int16 EXPANDEDHEIGHT = 153;
-        
+
         /// <summary>Hard-coded value of the collapsed width</summary>
         private const Int16 COLLAPSEDWIDTH = 29;
 
@@ -75,10 +75,10 @@ namespace Ict.Common.Controls
         
         /// <summary>Keeps track of the collapsed/expanded state</summary>
         private bool FIsCollapsed = false;
-        
+
         #pragma warning disable 0169
         /// <summary>Caches the translated text for several ToolTips</summary>
-        private string FToolTipText = "";
+        private string FToolTipText;
         #pragma warning restore 0169
 
         /// <summary></summary>
@@ -116,6 +116,7 @@ namespace Ict.Common.Controls
         
         #endregion
 
+
         #region Events
 
         /// <summary>Event is fired after the panel has collapsed.</summary>
@@ -142,8 +143,6 @@ namespace Ict.Common.Controls
             {
                 string NewToolTipText;
 
-                //FToolTipText = value;
-                
                 // Set Title Text
                 lblDetailHeading.Text = value;
                 NewToolTipText = String.Format(FToolTipText, value);
@@ -281,12 +280,9 @@ namespace Ict.Common.Controls
 
         #region Constructors
 
-        //public TPnlCollapsible(THostedControlKind AHCK)
-
-        
         /// <summary>
         /// Default Constructor
-        ///</summary>
+        /// </summary>
         public TPnlCollapsible()
         {
             //
@@ -296,8 +292,7 @@ namespace Ict.Common.Controls
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            //FToolTipText = Catalog.GetString("Click here to expand / collapse the {0} panel");
-            this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
+            this.lblDetailHeading.Text = Catalog.GetString("Collapsible Panel");
             #endregion
 
             Collapse();
@@ -344,6 +339,7 @@ namespace Ict.Common.Controls
         public void Collapse()
         {
             FIsCollapsed = true;
+
             btnToggle.ImageIndex = 1;
             
             if(FCollapseDirection == TCollapseDirection.cdVertical)
@@ -408,7 +404,7 @@ namespace Ict.Common.Controls
         {
             return RealiseUserControl();
         }
-               
+
         #endregion
 
         #region Helper Methods

@@ -1120,6 +1120,11 @@
             read the date format that the user has selected
             </summary>
         </member>
+        <member name="P:Ict.Common.IO.TDlgSelectCSVSeparator.NumberFormatIndex">
+            <summary>
+            read the number format that the user has selected
+            </summary>
+        </member>
         <member name="P:Ict.Common.IO.TDlgSelectCSVSeparator.CSVFileName">
             <summary>
             set the filename for CSV
@@ -1198,6 +1203,13 @@
             </summary>
             <param name="filename1"></param>
             <param name="filename2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Common.IO.TTextFile.ReplaceCopyRightYear(System.String)">
+            <summary>
+            make sure generated files are not rewritten if only the copyright has changed in the file header
+            </summary>
+            <param name="ALine"></param>
             <returns></returns>
         </member>
         <member name="M:Ict.Common.IO.TTextFile.SameContent(System.String,System.String,System.Boolean)">
