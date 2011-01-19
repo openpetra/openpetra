@@ -412,7 +412,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TreeViewGenerator : TControlGenerator
     {
         public TreeViewGenerator()
-            : base("trv", typeof(TreeView))
+            : base("trv", typeof(Ict.Common.Controls.TTrvTreeView))
         {
         }
     }

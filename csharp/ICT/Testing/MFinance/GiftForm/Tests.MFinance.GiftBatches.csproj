@@ -1,11 +1,11 @@
 ﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{F66C325F-C85B-4897-B949-2E2710AE755C}</ProjectGuid>
+    <ProjectGuid>{1DA473A2-2B45-44B9-908F-35AA56D32583}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Tests.MFinance.GLBatches</RootNamespace>
-    <AssemblyName>Tests.MFinance.GLBatches</AssemblyName>
+    <RootNamespace>Tests.MFinance.GiftBatches</RootNamespace>
+    <AssemblyName>Tests.MFinance.GiftBatches</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <BaseIntermediateOutputPath>..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
@@ -38,7 +38,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)/Microsoft.CSharp.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="Ict.Common">
       <HintPath>../../../Common/_bin/Debug/Ict.Common.dll</HintPath>
@@ -77,11 +77,8 @@
     <Reference Include="Ict.Petra.Client.CommonForms">
       <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.CommonForms.dll</HintPath>
     </Reference>
-    <Reference Include="Ict.Petra.Client.MFinance.Gui.GL">
-      <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.GL.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Petra.Client.MFinance.Gui.Setup">
-      <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.dll</HintPath>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui.Gift">
+      <HintPath>..\..\..\Petra\Client\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Gift.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Client.MReporting.Logic">
       <HintPath>../../../Petra/Client/_bin/Debug/Ict.Petra.Client.MReporting.Logic.dll</HintPath>
@@ -121,11 +118,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="GLAccountHierarchy.test.cs" />
     <Compile Include="test.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">
+    <ProjectReference Include="..\..\NUnitPetraClient/Ict.Testing.NUnitClient.csproj">
       <Project>{212F7EE5-B247-4924-93D9-93646CB6C804}</Project>
       <Name>Ict.Testing.NUnitClient</Name>
     </ProjectReference>
