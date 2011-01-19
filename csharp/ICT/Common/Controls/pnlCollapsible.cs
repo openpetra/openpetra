@@ -112,10 +112,9 @@ namespace Ict.Common.Controls
         private TTaskList FTaskListInstance = null;
         
         /// <summary></summary>
-        private TVisualStylesEnum FVisualStyle;
+        private TVisualStylesEnum FVisualStyleEnum;
         
         #endregion
-
 
         #region Events
 
@@ -268,7 +267,7 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return FVisualStyle;
+                return FVisualStyleEnum;
             }
             set
             {
@@ -483,11 +482,12 @@ namespace Ict.Common.Controls
         /// <summary></summary>
         private void InstantiateTaskList()
         {
+            //needs to set correct visual style.
             if(FTaskListNode == null)
             {
                 throw new ENoTaskListNodeSpecifiedException();
             }
-            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode,Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel);
+            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode,FVisualStyleEnum);
             this.pnlContent.Controls.Add(FTaskListInstance);
             //FTaskListInstance.Anchor = (System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -509,21 +509,26 @@ namespace Ict.Common.Controls
                 throw new EVisualStyleAndDirectionMismatchException();                
             }
             
-            FVisualStyle = AVisualStyle;
-            switch(AVisualStyle)
+            FVisualStyleEnum = AVisualStyle;
+            if(this.TaskListInstance != null)
             {
-                case TVisualStylesEnum.vsHorizontalCollapse:
-                case TVisualStylesEnum.vsAccordionPanel:
-                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsAccordionPanel);
-                    break;
-                case TVisualStylesEnum.vsTaskPanel:
-                case TVisualStylesEnum.vsDashboard:
-                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsTaskPanel);
-                    break;
-                case TVisualStylesEnum.vsShepherd:
-                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsShepherd);
-                    break;
+                switch(AVisualStyle)
+                {
+                    case TVisualStylesEnum.vsHorizontalCollapse:
+                    case TVisualStylesEnum.vsAccordionPanel:
+                        this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsAccordionPanel);
+                        break;
+                    case TVisualStylesEnum.vsTaskPanel:
+                    case TVisualStylesEnum.vsDashboard:
+                        this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsTaskPanel);
+                        break;
+                    case TVisualStylesEnum.vsShepherd:
+                        this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsShepherd);
+                        break;
+                }
             }
+            
+            //TODO: actually change the collapsible panel's visual properties.
             return AVisualStyle;
         }
                     
