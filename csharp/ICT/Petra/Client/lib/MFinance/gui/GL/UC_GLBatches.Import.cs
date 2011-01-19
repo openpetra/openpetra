@@ -23,17 +23,14 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
-using System.IO;
-using System.Xml;
 using System.Globalization;
-using GNU.Gettext;
+using System.IO;
+using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.IO;
-using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -44,27 +41,58 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private String FImportMessage;
         private String FImportLine;
         private TDlgSelectCSVSeparator FdlgSeparator;
+        private CultureInfo FCultureInfoNumber;
+        private CultureInfo FCultureInfoDate;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
         private void ImportBatches()
         {
+            FCultureInfoDate = new CultureInfo("en-GB");
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             GLSetupTDS FCacheDS = ((TFrmGLBatch)ParentForm).GetAttributesControl().CacheDS;
             OpenFileDialog dialog = new OpenFileDialog();
 
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
+                if (dateFormatString.Equals("MDY"))
+                {
+                    FdlgSeparator.DateFormat = "MM/dd/yyyy";
+                }
+                else
+                {
+                    if (dateFormatString.Equals("DMY"))
+                    {
+                        FdlgSeparator.DateFormat = "dd/MM/yyyy";
+                    }
+                    else
+                    {
+                        FdlgSeparator.DateFormat = dateFormatString;
+                    }
+                }
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    CultureInfo culture = new CultureInfo("en-GB");
-                    culture.DateTimeFormat.ShortDatePattern = FdlgSeparator.DateFormat;
+                    FCultureInfoDate.DateTimeFormat.ShortDatePattern = FdlgSeparator.DateFormat;
+                    FCultureInfoNumber = new CultureInfo(FdlgSeparator.NumberFormatIndex == 0 ? "en-US" : "de-DE");
 
                     StreamReader sr = new StreamReader(dialog.FileName);
 
@@ -102,10 +130,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewBatch.BatchDescription = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     FImportMessage = Catalog.GetString("Parsing the hash value of the batch");
                                     NewBatch.BatchControlTotal =
-                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine,
+                                                FdlgSeparator.SelectedSeparator), FCultureInfoNumber);
                                     string NextString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     FImportMessage = Catalog.GetString("Parsing the date effective of the batch: " + NextString);
-                                    NewBatch.DateEffective = Convert.ToDateTime(NextString, culture);
+                                    NewBatch.DateEffective = Convert.ToDateTime(NextString, FCultureInfoDate);
                                 }
                                 else if (RowType == "J")
                                 {
@@ -132,10 +161,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     // TODO test if Currency exists in cached table
                                     FImportMessage = Catalog.GetString("Parsing the exchange rate of the journal");
                                     NewJournal.ExchangeRateToBase =
-                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator));
+                                        Convert.ToDecimal(StringHelper.GetNextCSV(ref FImportLine,
+                                                FdlgSeparator.SelectedSeparator), FCultureInfoNumber);
                                     FImportMessage = Catalog.GetString("Parsing the date effective of the journal");
                                     NewJournal.DateEffective = Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine,
-                                            FdlgSeparator.SelectedSeparator), culture);
+                                            FdlgSeparator.SelectedSeparator), FCultureInfoDate);
                                 }
                                 else if (RowType == "T")
                                 {
@@ -165,14 +195,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     NewTransaction.Reference = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
                                     FImportMessage = Catalog.GetString("Parsing the transaction date");
                                     NewTransaction.TransactionDate =
-                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator), culture);
+                                        Convert.ToDateTime(StringHelper.GetNextCSV(ref FImportLine,
+                                                FdlgSeparator.SelectedSeparator), FCultureInfoDate);
 
                                     FImportMessage = Catalog.GetString("Parsing the debit amount of the transaction");
                                     string DebitAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-                                    decimal DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(DebitAmountString);
+                                    decimal DebitAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(DebitAmountString,
+                                        FCultureInfoNumber);
                                     FImportMessage = Catalog.GetString("Parsing the credit amount of the transaction");
                                     string CreditAmountString = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-                                    decimal CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(CreditAmountString);
+                                    decimal CreditAmount = DebitAmountString.Trim().Length == 0 ? 0.0M : Convert.ToDecimal(CreditAmountString,
+                                        FCultureInfoNumber);
 
                                     if ((DebitAmount == 0) && (CreditAmount == 0))
                                     {
@@ -238,7 +271,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             }
                         }
 
-                        sr.Close();
+                        MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                            Catalog.GetString("Success"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        SaveUserDefaults(dialog, impOptions);
                     }
                     catch (Exception e)
                     {
@@ -248,8 +286,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             FImportMessage + " " + e,
                             Catalog.GetString("Error"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        sr.Close();
+
                         return;
+                    }
+                    finally
+                    {
+                        sr.Close();
                     }
                 }
             }
@@ -261,6 +303,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FImportMessage = Catalog.GetString("Parsing the " + message);
             return sReturn;
+        }
+
+        private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
+        {
+            TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
+            impOptions = FdlgSeparator.SelectedSeparator;
+            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+            TUserDefaults.SaveChangedUserDefaults();
         }
     }
 }

@@ -23,22 +23,14 @@
 //
 using System;
 using System.Collections;
-using System.Data;
-using System.Windows.Forms;
 using System.IO;
-using System.Xml;
-using System.Globalization;
-using GNU.Gettext;
+using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Core;
-
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -73,13 +65,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    FdlgSeparator.DateFormat = "dd/MM/yyyy";
+                    if (dateFormatString.Equals("DMY"))
+                    {
+                        FdlgSeparator.DateFormat = "dd/MM/yyyy";
+                    }
+                    else
+                    {
+                        FdlgSeparator.DateFormat = dateFormatString;
+                    }
                 }
 
                 if (impOptions.Length > 1)
                 {
                     FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
                 }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
@@ -89,7 +90,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
-                    //requestParams.Add("NumberFormat", FdlgSeparator.N);
 
 
                     String importString;
@@ -120,16 +120,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
+        private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
         {
             TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             impOptions = FdlgSeparator.SelectedSeparator;
             impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+            TUserDefaults.SaveChangedUserDefaults();
         }
 
-        void ShowMessages(TVerificationResultCollection AMessages)
+        private void ShowMessages(TVerificationResultCollection AMessages)
         {
             string ErrorMessages = String.Empty;
 

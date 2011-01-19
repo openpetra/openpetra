@@ -67,7 +67,8 @@ namespace Ict.Petra.Server.MFinance.Gift
         TDBTransaction FTransaction;
         GLSetupTDS FSetupTDS;
         GiftBatchTDS FMainDS;
-        CultureInfo FCultureInfo;
+        CultureInfo FCultureInfoNumberFormat;
+        CultureInfo FCultureInfoDate;
 
 
         private String FImportMessage;
@@ -99,14 +100,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
             String NumberFormat = (String)requestParams["NumberFormat"];
-            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FNewLine = (String)requestParams["newLine"];
 
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            CultureInfo culture = new CultureInfo("en-GB");
-            culture.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = new CultureInfo("en-GB");
+            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
             StringReader sr = new StringReader(importString);
             AGiftBatchRow giftBatch = null;
@@ -138,8 +139,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.BatchDescription = ImportString("batch description");
                             giftBatch.BankAccountCode = ImportString("bank account  code");
                             giftBatch.HashTotal = ImportDecimal("hash total");
-                            string NextString = ImportString("effective of the batch");
-                            giftBatch.GlEffectiveDate = Convert.ToDateTime(NextString, culture);
+                            giftBatch.GlEffectiveDate = ImportDate("effective Date");
                             giftBatch.CurrencyCode = ImportString("currency code");
                             giftBatch.ExchangeRateToBase = ImportDecimal("exchange rate to base");
                             giftBatch.BankCostCentre = ImportString("bank cost centre");
@@ -250,18 +250,14 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
 
-                //Finally save all pending changes (lastxxxnumber)
+                //Finally save pending changes (the last number is updated !)
                 if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                 {
                     if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out AMessages))
                     {
-                        if (AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
-                        {
-                            if (AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
-                            {
-                                ok = true;
-                            }
-                        }
+                        FMainDS.AGiftBatch.AcceptChanges();
+                        FMainDS.ALedger.AcceptChanges();
+                        ok = true;
                     }
                 }
             }
@@ -341,8 +337,16 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            decimal dec = Convert.ToDecimal(sReturn, FCultureInfo);
+            decimal dec = Convert.ToDecimal(sReturn, FCultureInfoNumberFormat);
             return dec;
+        }
+
+        private DateTime ImportDate(String message)
+        {
+            FImportMessage = Catalog.GetString("Parsing the " + message);
+            String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+            DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            return dtReturn;
         }
     }
 }

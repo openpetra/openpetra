@@ -49,20 +49,30 @@ namespace Ict.Common.IO
             {
                 return FSeparator;
             }
+            set
+            {
+                FSeparator = value;
+                UpdateRadioButtons();
+            }
         }
 
         /// <summary>
-        /// read the date format that the user has selected
+        /// read/set the date format that the user has selected
         /// </summary>
         public string DateFormat
         {
             get
             {
-                return txtDateFormat.Text;
+                return cmbDateFormat.SelectedItem.ToString();
             }
             set
             {
-                txtDateFormat.Text = value;
+                if (!cmbDateFormat.Items.Contains(value))
+                {
+                    cmbDateFormat.Items.Add(value);
+                }
+
+                cmbDateFormat.SelectedItem = value;
             }
         }
 
@@ -110,9 +120,19 @@ namespace Ict.Common.IO
 
             FSeparator = TAppSettingsManager.GetValueStatic("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+            System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;
 
-            txtDateFormat.Text = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            if (!cmbDateFormat.Items.Contains(regionalDateString))
+            {
+                cmbDateFormat.Items.Insert(0, regionalDateString);
+            }
 
+            UpdateRadioButtons();
+        }
+
+        private void UpdateRadioButtons()
+        {
             if (FSeparator == ";")
             {
                 rbtSemicolon.Checked = true;

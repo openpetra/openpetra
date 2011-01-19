@@ -59,7 +59,8 @@ namespace Ict.Petra.Server.MFinance.GL
         TDBTransaction FTransaction;
         GLSetupTDS FSetupTDS;
         GLBatchTDS FMainDS;
-        CultureInfo FCultureInfo;
+        CultureInfo FCultureInfoNumberFormat;
+        CultureInfo FCultureInfoDate;
 
 
         private String FImportMessage;
@@ -95,7 +96,7 @@ namespace Ict.Petra.Server.MFinance.GL
 //            FBaseCurrency = (String)requestParams["BaseCurrency"];
 //            FDateForSummary = (DateTime)requestParams["DateForSummary"];
             String NumberFormat = (String)requestParams["NumberFormat"];
-            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
 //            FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
 //            FRecipientNumber = (Int64)requestParams["RecipientNumber"];
 //            FFieldNumber = (Int64)requestParams["FieldNumber"];
@@ -105,8 +106,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            CultureInfo culture = new CultureInfo("en-GB");
-            culture.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = new CultureInfo("en-GB");
+            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
             StringReader sr = new StringReader(importString);
             //ABatchRow glBatch = null;
@@ -346,8 +347,16 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             FImportMessage = Catalog.GetString("Parsing the " + message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            decimal dec = Convert.ToDecimal(sReturn, FCultureInfo);
+            decimal dec = Convert.ToDecimal(sReturn, FCultureInfoNumberFormat);
             return dec;
+        }
+
+        private DateTime ImportDate(String message)
+        {
+            FImportMessage = Catalog.GetString("Parsing the " + message);
+            String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
+            DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            return dtReturn;
         }
     }
 }
