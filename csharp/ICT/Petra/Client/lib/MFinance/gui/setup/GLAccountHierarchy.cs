@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailValidCcCombo.Text = Catalog.GetString("Valid Cost Centres:");
       this.lblDetailBankAccountFlag.Text = Catalog.GetString("Bank Account:");
       this.lblDetailAccountActiveFlag.Text = Catalog.GetString("Active:");
+      this.chkDetailForeignCurrencyFlag.Text = Catalog.GetString("Foreign Currency");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbAddNewAccount.Text = Catalog.GetString("Add Account");
@@ -118,13 +119,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailAccountCodeShortDesc, Catalog.GetString("Enter a short description of the account."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailValidCcCombo, Catalog.GetString("Select cost centre type that may be combined with this account."));
       FPetraUtilsObject.SetStatusBarText(chkDetailAccountActiveFlag, Catalog.GetString("Is this account available for posting transactions?"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailForeignCurrencyCode, Catalog.GetString("Enter a currency code"));
+      cmbDetailForeignCurrencyCode.InitialiseUserControl();
       ucoAccountAnalysisAttributes.PetraUtilsObject = FPetraUtilsObject;
       ucoAccountAnalysisAttributes.MainDS = FMainDS;
       ucoAccountAnalysisAttributes.InitUserControl();
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
+      chkDetailForeignCurrencyFlagCheckedChanged(null, null);
 
+    }
+
+    void chkDetailForeignCurrencyFlagCheckedChanged(object sender, System.EventArgs e)
+    {
+      cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -226,6 +235,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             chkDetailAccountActiveFlag.Checked = ARow.AccountActiveFlag;
         }
+        if (ARow.IsForeignCurrencyFlagNull())
+        {
+            chkDetailForeignCurrencyFlag.Checked = false;
+        }
+        else
+        {
+            chkDetailForeignCurrencyFlag.Checked = ARow.ForeignCurrencyFlag;
+        }
+        if (ARow.IsForeignCurrencyCodeNull())
+        {
+            cmbDetailForeignCurrencyCode.SelectedIndex = -1;
+        }
+        else
+        {
+            cmbDetailForeignCurrencyCode.SetSelectedString(ARow.ForeignCurrencyCode);
+        }
         ShowDetailsManual(ARow);
     }
 
@@ -289,6 +314,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             ARow.BankAccountFlag = chkDetailBankAccountFlag.Checked;
             ARow.AccountActiveFlag = chkDetailAccountActiveFlag.Checked;
+            ARow.ForeignCurrencyFlag = chkDetailForeignCurrencyFlag.Checked;
+            if (cmbDetailForeignCurrencyCode.SelectedIndex == -1)
+            {
+                ARow.SetForeignCurrencyCodeNull();
+            }
+            else
+            {
+                ARow.ForeignCurrencyCode = cmbDetailForeignCurrencyCode.GetSelectedString();
+            }
         }
     }
 
@@ -327,7 +361,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
-        SaveChanges();
+      try {
+         SaveChanges();
+      } catch (CancelSaveException) {}
     }
 
     /// <summary>

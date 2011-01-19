@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -101,6 +101,7 @@
     <Compile Include="txtNumericTextBox.cs" />
     <Compile Include="txtPartnerKeyTextBox.cs" />
     <Compile Include="VisualStyles.cs" />
+    <Compile Include="trvTreeView.cs" />
     <EmbeddedResource Include="btnCreated.resx">
       <DependentUpon>btnCreated.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,8 +114,7 @@
     <EmbeddedResource Include="cmbVersatile.resx">
       <DependentUpon>cmbVersatile.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icons.resx">
-    </EmbeddedResource>
+    <EmbeddedResource Include="Icons.resx"></EmbeddedResource>
     <EmbeddedResource Include="lblVarioText.resx">
       <DependentUpon>lblVarioText.cs</DependentUpon>
     </EmbeddedResource>
@@ -151,3 +151,4 @@
     </ProjectReference>
   </ItemGroup>
 </Project>
+

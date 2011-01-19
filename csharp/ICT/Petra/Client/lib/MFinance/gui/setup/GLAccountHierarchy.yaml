@@ -36,6 +36,7 @@ RootNode:
                 Row5: [cmbDetailValidCcCombo]
                 Row6: [chkDetailBankAccountFlag]
                 Row7: [chkDetailAccountActiveFlag]
+                Row7a: [chkDetailForeignCurrencyFlag]
                 Row8: [ucoAccountAnalysisAttributes]
         txtDetailAccountCode: {OnLeave=ChangeAccountCodeValue}
         cmbDetailAccountType:
@@ -53,6 +54,10 @@ RootNode:
         chkDetailBankAccountFlag: {Label=Bank Account}
         # TODO: system account, standard account
         chkDetailAccountActiveFlag: {Label=Active}
+        chkDetailForeignCurrencyFlag:
+            CheckBoxAttachedLabel: right
+            Controls: [cmbDetailForeignCurrencyCode]
+        cmbDetailForeignCurrencyCode: {Label=Foreign Currency, List=CurrencyCodeList}		
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
             Dock: Fill
