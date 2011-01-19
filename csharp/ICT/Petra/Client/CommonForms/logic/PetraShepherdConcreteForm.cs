@@ -106,21 +106,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
         protected void SwitchToPage(string APage)
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
-            // ....
- 
-            //if(FShepherdPages.Pages.ContainsKey(APage))
-            //{
-            	TLogging.Log("DID IT ENTER HERE!?"); 
-            	CurrentPage = FShepherdPages.Pages[APage];
-            	TLogging.Log("ERROR 1: The ID of the current Page is as follows: " + CurrentPage.ID); 
-            //}
-           	//else
-           	//{
-           	//	TLogging.Log("ELSE STATEMENT!");            
-           	//}
-            
-            
-
+            // ....  
+            CurrentPage = FShepherdPages.Pages[APage];
+            TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID); 
+          
             FForm.ShowCurrentPage();
         }
 

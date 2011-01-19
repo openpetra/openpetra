@@ -46,38 +46,76 @@ namespace Ict.Petra.Client.CommonForms
             InitializeComponent();
         }
 
+        #region ButtonEvents 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void BtnFinishClick(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void BtnNextClick(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void BtnBackClick(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void BtnCancelClick(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void BtnHelpClick(object sender, EventArgs e)
         {
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected virtual void Form_Load(object sender, EventArgs e)
         {
         }
         
+        /// <summary>
+        /// TODO: This is a temporary Action: we are using this to test the page switching functionality
+        /// of the shepherd. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void TextBox1TextChanged(object sender, EventArgs e)
         {
         	
         }
+        #endregion 
     }
 }

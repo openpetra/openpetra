@@ -51,33 +51,62 @@ namespace Ict.Petra.Client.CommonForms
             
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
-
+		
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void BtnFinishClick(object sender, EventArgs e)
         {
 			FLogic.HandleActionFinish();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void BtnNextClick(object sender, EventArgs e)
         {
 			FLogic.HandleActionNext();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void BtnBackClick(object sender, EventArgs e)
         {
  		    FLogic.HandleActionBack();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void BtnCancelClick(object sender, EventArgs e)
         {
 			FLogic.HandleActionCancel();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void BtnHelpClick(object sender, EventArgs e)
         {
 			FLogic.HandleActionHelp();
         }
         
-        ///<summary>Gets called when the Form is Show'n but before it's painted</summary>
+        /// <summary>
+        /// Gets called when the Form is shown but before it's painted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected override void Form_Load(object sender, EventArgs e)
         { 
             TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
@@ -100,8 +129,10 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("ShowCurrentPage");
             
-            //pnlContent.Controls.Add(FLogic.ShepherdPages.Pages.);
-            // ...
+//			  TODO: THIS IS THE NEXT STEP IN DEVELOPMENT 
+//            pnlContent.Controls.Clear();
+//            pnlContent.Controls.Add(FLogic.CurrentPage.UserControlInstance);
+
             UpdateNavigation();
         }
 

@@ -34,31 +34,45 @@ namespace Ict.Petra.Client.CommonForms.Logic
     ///<summary>Instance of a Shepherd Page (holds data from YAML file)</summary>
     public class TPetraShepherdPage
     {
+    	#region VariableInstantiation
+    	/// <summary> Unique ID for each individual page.</summary>
         string FID;
         
+        /// <summary>Displayed Title for each page.</summary>
         string FTitle;
         
+        ///<summary>Displayed note for each page.</summary>
         string FNote;
         
+        ///<summary>Determines if the page is to be visible in the navigation bar.</summary>
         bool FVisible = true;
         
+        ///<summary>Determines if the page is enabled (or selectable) in the navigation bar.</summary>
         bool FEnabled = true;
         
+        ///<summary>Sets the user control to be displayed on the page.</summary>
         UserControl FUserControl = null;
         
+        ///<summary>Namespace in which the user control can be found.</summary>
         string FUserControlNamespace;
         
+        ///<summary>Class name for the user control.</summary>
         string FUserControlClassName;
         
+        ///<summary>Information to be displayed in the help dialouge.</summary>
         string FHelpContext;
         
+        ///<summary>TODO?</summary>
         string FUserControlType;
         
         ///<summary>Is the Shepherd Page the Finish page in the Shepherd?</summary>
         protected bool FIsLastPage = false;
         
+        ///<summary>Is the Shepherd Page the First page in the Shepherd?</summary>
         bool FIsFirstPage = false;
+        #endregion 
         
+        #region Attribute Definitions 
         /// <summary>Return/Set Shepherd Page ID</summary>
         public string ID
         {
@@ -199,6 +213,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
     
+        ///<summary>Retuns an instance of the UserControl.</summary>
+        public UserControl UserControlInstance
+        {
+        	get
+        	{
+	        	if (FUserControl == null)  
+	        	{
+	        		return RealiseUserControl();
+	        	}
+	        	else
+	        	{
+	        		return FUserControl;
+	        	}
+        	}
+        }
+        #endregion
+        
         ///<summary>Raised if value of Visible or Enabled Property changes</summary>
         public event System.EventHandler VisibleOrEnabledChangedEvent;
     
@@ -212,10 +243,17 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
         
+        ///<summary>TODO?</summary>
         public TPetraShepherdPage()
         {
         }
         
+        /// <summary>
+        /// Conrstructor for individual Shepherd pages. Each time a page is constructed, it 
+        /// recieves information from the ShepherdPageNode and stores it in each of the 
+        /// variables. 
+        /// </summary>
+        /// <param name="ShepherdPageNode"></param>
         public TPetraShepherdPage(XmlNode ShepherdPageNode)
         {
         	TLogging.Log("Constructor REACHED");
@@ -252,10 +290,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsFirstPage"].Value);
             TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
+            
+//            RealiseUserControl(); 
+//            TLogging.Log("PetraShepherdPage: Control has passed the statement RealiseUserControl()"); 
         }
         
+        /// <summary>
+        /// TODO: This could be better explained.. 
+        /// Functoin that instantiates each of the User Controls and reflects them. 
+        /// </summary>
+        /// <returns></returns>
         private UserControl RealiseUserControl()
 		{
+        	
 			Assembly asm = Assembly.LoadFrom(FUserControlNamespace + ".dll");
 		    System.Type classType = asm.GetType(FUserControlNamespace + "." + FUserControlClassName);
 
@@ -266,7 +313,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		  
 		    FUserControl = (UserControl) Activator.CreateInstance(classType);
 		    
-		    //pnlContent.Controls.Add(FUserControl);
+//		    FUserControl.Controls.Add(FUserControl);
+		    
+		    TLogging.Log("PetraShepherdPage: The user controls have been realised."); 
 		    
 		    return FUserControl;
 		 }
@@ -277,7 +326,12 @@ namespace Ict.Petra.Client.CommonForms.Logic
     ///<summary>List of 0..n Shepherd Pages (holds data from YAML file)</summary>
     public class TPetraShepherdPagesList
     {
+    	///<summary>Dictionary containing a list of TPetraShepherdPage using the page's Unique ID as an identifier</summary>
         Dictionary<string, TPetraShepherdPage> FPagesList = new Dictionary<string, TPetraShepherdPage>();
+        
+        /// <summary>
+        /// Attribute of TPetraShepherdPage that allows for read only access to Dictionary of Pages.
+        /// </summary>
         public Dictionary<string, TPetraShepherdPage> Pages
         {
         	get
@@ -287,7 +341,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
         
         /// <summary>
-        /// Constructor
+        /// Constructor for TPetraShepherdPagesList. This function reads in a yaml file from the appropriate 
+        /// namespace, parses it into xmlNodes, and adds them to the list of pages so that they can be read 
+        /// by the individual ShepherdPage constructor, which it calls. 
         /// </summary>
         /// <param name="AYamlFile"></param>
         public TPetraShepherdPagesList(string AYamlFile)
@@ -296,24 +352,26 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
-            TLogging.Log("TPetraShepherdPagesList has " + XmlPages.ChildNodes.Count + " Nodes.");
-        	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.FirstChild;
-        	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Name);
-        	TLogging.Log("Temp XmlNode Title = " + temporaryXmlNode.Attributes["ID"].Value);
+            //Parses the XMLPaegs YAML file into an XML document to be turned into XMLNodes
+            
+            TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.ChildNodes.Count);
+            
+        	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.FirstChild; 
+        	//...Required LastChild.LastChild.FirstChild because of the structure of the XML File after parsing.
+        	
         	int counter = 0; 
         	while(temporaryXmlNode != null) 
         	{
-            	TLogging.Log("TPetraShepherdPagesList forloop iterated: " + counter + " times and itereates on: ");
-            	TLogging.Log("Before petra shepherd page Constructor");
             	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode);
-            	TLogging.Log("Before adding page to PagesList AND THE TITLE OF THE PAGE IS: " + temporaryPetraShepherdPage.Title);
+            	//Conrstuctor call for each page built off an XML node. 
+            	
+            	TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
+            	
             	FPagesList.Add(temporaryPetraShepherdPage.ID,temporaryPetraShepherdPage);
-        		TLogging.Log("Before next sibling statement *****");
             	temporaryXmlNode = XmlPages.NextSibling;
-            	TLogging.Log("After next sibling statement *****");
             	counter++; 
             }
-            TLogging.Log("TPetraShepherdPagesList Constructor ran.");    
+            TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");    
         }
     }
     
@@ -321,7 +379,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
     public class TPetraShepherdFinishPage : TPetraShepherdPage
     {
         /// <summary>
-        /// Constructor
+        /// Constructor for TPetraShepherdFinish page creation. 
         /// </summary>
         public TPetraShepherdFinishPage()
         {

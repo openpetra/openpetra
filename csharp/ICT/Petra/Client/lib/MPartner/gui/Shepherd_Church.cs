@@ -70,7 +70,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             InitializeComponent();
             
-            
             //
             // TODO: Add constructor code after the InitializeComponent() call.
             //
