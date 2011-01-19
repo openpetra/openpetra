@@ -29,7 +29,7 @@ using Ict.Petra.Client.CommonForms.Logic;
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
-    /// Description of PetraShepherdForm.
+    /// The base GUI for all Petra Shepherd Forms: elements will be present in every Shepherd Page
     /// </summary>
     public partial class TPetraShepherdForm : Form
     {
@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.CommonForms
 
         #region ButtonEvents 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle action for Finish button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle action for Next button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle action for Back button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle action for Cancel button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle action for Help button click
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Virtual function: implementor should handle the loading of the current form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

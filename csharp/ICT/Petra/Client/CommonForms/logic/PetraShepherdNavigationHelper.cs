@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("TShepherdNavigationHelper Constructor ran.");
         }
         
-        /// <summary>Redraw Navigation Panel only</summary>
+        /// <summary>Redraws the Navigation Panel only</summary>
         public void Refresh()
         {
             TLogging.Log("Refresh");

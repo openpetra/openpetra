@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       pauln, AustinS
 //
 // Copyright 2004-2011 by OM International
 //
@@ -243,7 +243,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
         
-        ///<summary>TODO?</summary>
+        ///<summary>Default Constructor for TPetraShepherdPage</summary>
         public TPetraShepherdPage()
         {
         }
@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         public TPetraShepherdPage(XmlNode ShepherdPageNode)
         {
         	TLogging.Log("Constructor REACHED");
-        	//Comment
+        	
             FID=ShepherdPageNode.Attributes["ID"].Value;
             TLogging.Log("~~ID Assigned~~ " + FID);
             
@@ -295,11 +295,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
 //            TLogging.Log("PetraShepherdPage: Control has passed the statement RealiseUserControl()"); 
         }
         
-        /// <summary>
-        /// TODO: This could be better explained.. 
-        /// Functoin that instantiates each of the User Controls and reflects them. 
+        /// <summary> 
+        /// TODO: Function that instantiates and returns the UserControl needed for each Shepherd Page
+        /// That user control will then be displayed in the content of each page
         /// </summary>
-        /// <returns></returns>
+        /// <returns>UserControl</returns>
         private UserControl RealiseUserControl()
 		{
         	
@@ -352,7 +352,6 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
-            //Parses the XMLPaegs YAML file into an XML document to be turned into XMLNodes
             
             TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.ChildNodes.Count);
             

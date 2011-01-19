@@ -53,7 +53,8 @@ namespace Ict.Petra.Client.CommonForms
         }
 		
         /// <summary>
-        /// 
+        /// Overwrites virtual function in PetraShepherdForm.cs,
+        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -63,7 +64,8 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Overwrites virtual function in PetraShepherdForm.cs,
+        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -73,7 +75,8 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Overwrites virtual function in PetraShepherdForm.cs,
+        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -83,7 +86,8 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Overwrites virtual function in PetraShepherdForm.cs,
+        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -93,7 +97,8 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// 
+        /// Overwrites virtual function in PetraShepherdForm.cs,
+        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
