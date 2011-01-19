@@ -4,8 +4,10 @@
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <target name="custclean">
-  <delete file="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.sln'))}" />
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <delete file="${path::combine(dir.projectfiles,
+                                  path::combine(devenv-name, 'OpenPetra.sln'))}" />
+  </foreach>                                
 </target>
 
 <target name="nanttasks" depends="" >
@@ -25,7 +27,7 @@
 
 
 <target name="generateSolutionNoCompile" >
-  <call target="generateCsproject" />
+  <call target="generateCsprojectNoCompile" />
   <call target="generate-solution-all-internal" />
 </target>
 

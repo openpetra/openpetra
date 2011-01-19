@@ -69,8 +69,14 @@
     </CsDepend>
     <include buildfile="${referencesFile}" />
   </if>
+  <call target="setreferences" />
+</target>
+
+<target name="setreferences" depends="">
+  <if test="${true==bool::parse(RunCsDepend)}">
+    <include buildfile="${referencesFile}" />
+  </if>
   <assemblyfileset id="assemblyfileset-references">
-    <!-- duplicated below. References are set after the include -->
     <lib>
       <include name="${dir.bin}"/>
     </lib>
@@ -123,7 +129,7 @@
   
 </target>
 
-<target name="generateCsproject" depends="depend">
+<target name="generateCsproject" depends="compile">
   <echo level="Debug">Calling antfile=${OP::get-current-buildfile()}</echo>
   <if test="${bool::parse(RunCsDepend)!=true}">
     <property name="ProjectGuid" value="{${OP::GUIDGen()}}" overwrite="false" />
@@ -133,6 +139,20 @@
   </if>
   <if test="${bool::parse(RunCsDepend)==true}">
     <property name="target" value="generateCsproject" />
+    <call target="nant-subcall" cascade="false" />
+  </if>
+</target>
+
+<target name="generateCsprojectNoCompile" depends="setreferences">
+  <echo level="Debug">Calling antfile=${OP::get-current-buildfile()}</echo>
+  <if test="${bool::parse(RunCsDepend)!=true}">
+    <property name="ProjectGuid" value="{${OP::GUIDGen()}}" overwrite="false" />
+    <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+      <call target="generateCsproject-internal" />
+    </foreach>
+  </if>
+  <if test="${bool::parse(RunCsDepend)==true}">
+    <property name="target" value="generateCsprojectNoCompile" />
     <call target="nant-subcall" cascade="false" />
   </if>
 </target>

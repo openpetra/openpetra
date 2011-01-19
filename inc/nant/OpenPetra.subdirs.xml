@@ -22,6 +22,12 @@
   <call target="internal-subdirs" />
 </target>
 
+<target name="generateCsprojectNoCompile" >
+  <property name="target" value="generateCsprojectNoCompile" />
+  <call target="internal-subdirs" />
+</target>
+
+
 <!-- Hack for allowing to override the target -->
 <if test="${not target::exists('internal-subdirs')}">
   <include buildfile="OpenPetra.subdirs.internal.xml"/>

@@ -23,5 +23,7 @@
 
 <target name="generateCsproject" />
 
+<target name="generateCsprojectNoCompile" />
+
 
 </project>
