@@ -81,19 +81,24 @@ namespace ControlTestBench
             
             String VisualStyle = cmbVisualStyle.Text.ToString();
             TVisualStylesEnum EnumStyle;
-            switch (VisualStyle) {
-            	case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
-            	                      break;
-            	case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
-            	                      break;
-            	case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
-            	                      break;
-            	case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
-            	                      break;
+            switch (VisualStyle)
+            {
+            	case "AccordionPanel":
+                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            	    break;
+            	case "TaskPanel":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+            	    break;
+            	case "Dashboard":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+            	    break;
+            	case "Shepherd":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+            	    break;
             	case "HorizontalCollapse":
-            	                     default:
-            	                      EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
-            	                      break;
+                default:
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+            	    break;
             }
 	
             new TestCollapsible.MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();

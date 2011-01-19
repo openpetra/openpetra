@@ -62,7 +62,7 @@ namespace Ict.Common.Controls
         #region Private constants and fields
 
         /// <summary>Hard-coded value of the collapsed height</summary>
-        private const Int16 COLLAPSEDHEIGHT = 29;
+        private const Int16 COLLAPSEDHEIGHT = 24;
 
         /// <summary>Hard-coded value of the expanded height</summary>
         private const Int16 EXPANDEDHEIGHT = 153;
@@ -112,7 +112,7 @@ namespace Ict.Common.Controls
         private TTaskList FTaskListInstance = null;
         
         /// <summary></summary>
-        private TVisualStyles FVisualStyle;
+        private TVisualStylesEnum FVisualStyle;
         
         #endregion
 
@@ -262,8 +262,10 @@ namespace Ict.Common.Controls
             }
         }
         
-        /// <summary></summary>
-        public TVisualStyles VisualStyle
+        /// <summary>
+        /// This is not yet implemented.
+        /// </summary>
+        public TVisualStylesEnum VisualStyle
         {
             get
             {
@@ -495,11 +497,11 @@ namespace Ict.Common.Controls
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
         }
 
-        private TVisualStyles ChangeVisualStyle(TVisualStyles AVisualStyle)
+        private TVisualStylesEnum ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
         {
             if(FCollapseDirection != TCollapseDirection.cdHorizontal
-               && (AVisualStyle.Equals(TVisualStylesEnum.vsHorizontalCollapse)
-                   || AVisualStyle.Equals(TVisualStylesEnum.vsShepherd) ))
+               && (AVisualStyle == TVisualStylesEnum.vsHorizontalCollapse
+                   || AVisualStyle == TVisualStylesEnum.vsShepherd ))
             {
                 throw new EVisualStyleAndDirectionMismatchException();
             }
@@ -512,6 +514,20 @@ namespace Ict.Common.Controls
             }
             
             FVisualStyle = AVisualStyle;
+            switch(AVisualStyle)
+            {
+                case TVisualStylesEnum.vsHorizontalCollapse:
+                case TVisualStylesEnum.vsAccordionPanel:
+                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsAccordionPanel);
+                    break;
+                case TVisualStylesEnum.vsTaskPanel:
+                case TVisualStylesEnum.vsDashboard:
+                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsTaskPanel);
+                    break;
+                case TVisualStylesEnum.vsShepherd:
+                    this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsShepherd);
+                    break;
+            }
             return AVisualStyle;
         }
                     

@@ -1,24 +1,19 @@
 TaskGroup:
-    Label: "Die Sub1"
+    Label: "Dear Santa"
     Task1:
         Enabled: False
-        Label: "Jump Off A Cliff"
+        Label: "A new car"
     Task2: 
-        Label: "Stab Self Repeatedly with Rusty Spoon"
+        Label: "A cool hat"
         Enabled: False
     Task3:
-        Label: "Run Through Mud with Thorns and Garden Snakes"
+        Label: "A new House"
         Task3a:
-            Label: "Take Off Shoes"
+            Label: "With a swimming pool"
         Task3b:
-            Label: "Step Into Mud"
+            Label: "and a big kitchen"
         Task3c:
-            Label: "Attempt To Run (And Scream)"
+            Label: "And don't forget a big back yard"
     Task4:
-        Label: "Use Sword"
+        Label: "A bigger dog"
         Hidden: True
-    Task5:
-        Enabled: True
-        Label: "Task5"
-    Task6:
-        Label: "Task6"

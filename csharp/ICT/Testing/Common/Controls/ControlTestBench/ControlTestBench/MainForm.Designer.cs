@@ -148,11 +148,7 @@ namespace ControlTestBench
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button1;
-		
-		void Button2Click(object sender, System.EventArgs e)
-		{
-			
-		}
+
 		
 		void LinkLabelMouseHover(object sender, System.EventArgs e)
 		{

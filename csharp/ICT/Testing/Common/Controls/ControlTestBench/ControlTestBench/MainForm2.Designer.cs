@@ -82,6 +82,7 @@ namespace TestCollapsible
 			this.tPnlCollapsible1.TaskListNode = null;
 			this.tPnlCollapsible1.UserControlClass = "";
 			this.tPnlCollapsible1.UserControlNamespace = "";
+			//this.tPnlCollapsible1.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
 			// 
 			// tPnlCollapsible2
 			// 
@@ -100,6 +101,7 @@ namespace TestCollapsible
 			this.tPnlCollapsible2.TaskListNode = null;
 			this.tPnlCollapsible2.UserControlClass = "TUC_PartnerInfo";
 			this.tPnlCollapsible2.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
+			//this.tPnlCollapsible2.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
 			// 
 			// tPnlCollapsible3
 			// 
@@ -118,6 +120,7 @@ namespace TestCollapsible
 			this.tPnlCollapsible3.TaskListNode = null;
 			this.tPnlCollapsible3.UserControlClass = "";
 			this.tPnlCollapsible3.UserControlNamespace = "";
+			//this.tPnlCollapsible3.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
 			// 
 			// button2
 			// 
@@ -157,7 +160,7 @@ namespace TestCollapsible
 			// 
 			this.textBox3.Location = new System.Drawing.Point(405, 325);
 			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(84, 20);
+			this.textBox3.Size = new System.Drawing.Size(95, 20);
 			this.textBox3.TabIndex = 8;
 			// 
 			// textBox4
@@ -178,7 +181,7 @@ namespace TestCollapsible
 			// 
 			// textBox6
 			// 
-			this.textBox6.Location = new System.Drawing.Point(495, 325);
+			this.textBox6.Location = new System.Drawing.Point(506, 325);
 			this.textBox6.Name = "textBox6";
 			this.textBox6.Size = new System.Drawing.Size(100, 20);
 			this.textBox6.TabIndex = 11;

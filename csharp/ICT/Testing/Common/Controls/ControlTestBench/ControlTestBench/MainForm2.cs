@@ -27,35 +27,28 @@ namespace TestCollapsible
 		{
 		    this.FVisualStyle = AVisualStyle;
 		    this.FXmlNode = xmlNode;
+
 		    InitializeComponent();
+		    
 		    this.tPnlCollapsible1.HostedControlKind = THostedControlKind.hckTaskList;
 		    this.tPnlCollapsible1.TaskListNode = FXmlNode;
 		    this.tPnlCollapsible1.Text = "Number 1";
+//            this.tPnlCollapsible1.VisualStyle = AVisualStyle;
+		    
 		    this.tPnlCollapsible2.HostedControlKind = THostedControlKind.hckUserControl;
 		    this.tPnlCollapsible2.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
 		    this.tPnlCollapsible2.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
 		    this.tPnlCollapsible2.Text = "Number 2";
-            this.tPnlCollapsible3.HostedControlKind = THostedControlKind.hckTaskList;
+            
+		    this.tPnlCollapsible3.HostedControlKind = THostedControlKind.hckTaskList;
             this.tPnlCollapsible3.TaskListNode = FXmlNode;
 		    this.tPnlCollapsible3.Text = "Number 3";
+//            this.tPnlCollapsible3.VisualStyle = AVisualStyle;
 		    
-//		    this.tPnlCollapsible1.Collapse();
-//		    this.tPnlCollapsible1.Expand();
-//		    this.tPnlCollapsible2.Collapse();
-//		    this.tPnlCollapsible3.Collapse();
-		}
-		
-		public void TestContent()
-		{
-		    this.tPnlCollapsible1.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
-		    this.tPnlCollapsible1.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
-
-		    this.tPnlCollapsible1.RealiseUserControlNow();
-		}
-		
-		public void TestTaskList()
-		{
-		    //this.tPnlCollapsible1.TaskListNode = FXmlNode;
+		    this.tPnlCollapsible1.Collapse();
+		    this.tPnlCollapsible1.Expand();
+		    this.tPnlCollapsible2.Collapse();
+		    this.tPnlCollapsible3.Collapse();
 		}
 		
 		void Button1Click(object sender, EventArgs e)
