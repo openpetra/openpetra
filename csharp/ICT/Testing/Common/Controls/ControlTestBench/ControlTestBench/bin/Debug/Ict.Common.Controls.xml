@@ -5097,10 +5097,116 @@
             constructor
             </summary>
         </member>
+        <member name="T:Ict.Common.Controls.TVisualStylesEnum">
+            <summary>
+            All possible values that can be used to create a TVisualStyles Object
+            </summary>
+        </member>
         <member name="T:Ict.Common.Controls.TVisualStyles">
             <summary>
-            Description of Class1.
+            Object that defines values for different visual styles in OpenPetra
             </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TVisualStyles.UsePanelGradient">
+            <summary>
+            Boolean flag to specify whether the style uses a gradient background in the panel (title element)
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TVisualStyles.UseContentBackgroundColours">
+            <summary>
+            Boolean flag to specify whether certain controls use the background colors
+            </summary>
+        </member>
+        <member name="F:Ict.Common.Controls.TVisualStyles.UseContentGradient">
+            <summary>
+            Boolean flag to specify whether the style uses a gradient background in the content section
+            </summary>
+        </member>
+        <member name="M:Ict.Common.Controls.TVisualStyles.#ctor(Ict.Common.Controls.TVisualStylesEnum)">
+            <summary>
+            Constructor to create a Visual Styles Object
+            </summary>
+            <param name="style">A TVisualStylesEnum Object</param>
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.TitleText">
+            <summary>The TitleText property gets the value of InternalTitleText</summary>
+            <value>The TitleText Property represents the Font type of the Title Text of the user control.</value>
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentText">
+            <summary>The ContentText property gets the value of InternalContentText</summary>
+            <value>The ContentText property represents the Font specifications of the ContentText of the user control</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.TitleTextColour">
+            <summary>The TitleTextxColour gets the value of the InternalTitleTextColour </summary>
+            <value> The TItleTextColour property represents the Colour specification of the TitleText of the user control</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentTextColour">
+            <summary>The HoverTitleTextColour property gets the value of the InternalHoverTitleTextColour</summary>
+            <value> The HoverTitleTextColour property represents the Colour specification of the title text when the mouse hovers over the title </value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.HoverTitleTextColour">
+            <summary>The HoverTitleTextColour property gets the value of the InternalHoverTitleTextColour</summary>
+            <value> The HoverTitleTextColour property represents the Colour specification of the title text when the mouse hovers over the title </value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.TitleHeight">
+            <summary>The TitleHeight property gets the value of the InternalTitleHeight</summary>
+            <value> The TitleHeight property represents the height of the TitleText</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentActivatedTextColour">
+            <summary>The ContentActivatedTextColour property gets the value of the InternalContentActivatedTextColour</summary>
+            <value> The ContentActivatedTextColour property represents the colour of activated content text</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentHoverTextColour">
+            <summary>The ContentHoverTextColour property gets the value of the InternalContentHoverTextColour</summary>
+            <value> The ContentHOverTextColour property represents the colour of the content text when the mouse hovers over it</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentBackgroundColour">
+            <summary>The ContentBackgroundColour property gets the value of the InternalContentBackgroundColour </summary>
+            <value> The ContentBackgroundColour property represents the content's background color.</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.TitleBackgroundColour">
+            <summary>The TitleBackgroundColour property gets the value of the IntenralTitleBackgroundColour</summary>
+            <value> The TItleBackgroundColour property represents the title's background colour</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentHoverBackgroundColour">
+            <summary>The ContentHoverBackgroundColour property gets the value of the InternalContentHoverBackgroundColour</summary>
+            <value> The ContentHOoverBackgroundColour property represent the content's background colour when the mouse hovers over it</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentActivatedBackgroundColour">
+            <summary>The ContentActivatedBackgroundColour property gets the value of the InternalContentAcivatedBackgroundColour </summary>
+            <value> The ContentActivatedBackgroundCOlour property representf the content background colour when the content is activated </value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.PanelGradientStart">
+            <summary>The PanelGradientStart property gets the value of the InternalPanelGradientStart</summary>
+            <value> The PanelGradientStart property represents the beginning colour of the panel gradient</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.PanelGradientEnd">
+            <summary>The PanelGradientEnd property gets the value of the InternalPanelGradientEnd</summary>
+            <value> The PanelGradientEnd property represents the end colour of the title panel gradient.</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.PanelGradientMode">
+            <summary>The PanelGradientMode property gets the value of the InternalPanelGradientMode</summary>
+            <value> The PanelGradientMode property represents the direction of the gradient in the title panel gradient</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentGradientStart">
+            <summary>The ContentGradientStart property gets the value of the InternalContentGradientstart</summary>
+            <value> The ContentGradeientStart property represents the beginning colour of the content panel gradient</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentGradientEnd">
+            <summary>The ContentGradientEnd property gets the value of the InternalContentGradientEnd</summary>
+            <value> THe ContentGradientEnd property represents the end colour of the content panel gradient</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.ContentGradientMode">
+            <summary>The ContentGradientMode property gets the value of the InternalContentGradientMode</summary>
+            <value> The ContentGradientMode property represents the direction of the gradient in the content panel gradient</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.TaskIndentation">
+            <summary> The TaskIndentation property gets the value of the InternalTaskIndentation</summary>
+            <value> The TaskIndentation property represents the number of spaces the tasks are indented in the content panel</value>               
+        </member>
+        <member name="P:Ict.Common.Controls.TVisualStyles.AutomaticNumbering">
+            <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
+            <value> The AutomaticNumbering property determines if automatic numbering is on</value>               
         </member>
     </members>
 </doc>

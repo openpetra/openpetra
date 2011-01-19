@@ -1,12 +1,27 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Taylor Students
- * Date: 13/01/2011
- * Time: 10:51
- *
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- * //Comments: Activated underline is currently not enabled. 
- */
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//		 chadds
+//		 ashleyc
+//
+// Copyright 2004-2010 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -14,6 +29,9 @@ using System.Drawing.Drawing2D;
 namespace Ict.Common.Controls
 {
 
+	   /// <summary>
+	   /// All possible values that can be used to create a TVisualStyles Object
+	   /// </summary>
        public enum TVisualStylesEnum
        {
                vsAccordionPanel,
@@ -23,14 +41,14 @@ namespace Ict.Common.Controls
                vsHorizontalCollapse
        }
        /// <summary>
-       /// Description of Class1.
+       /// Object that defines values for different visual styles in OpenPetra
        /// </summary>
        public class TVisualStyles
        {
                //Text Variables
                private Font InternalTitleText;
                 /// <summary>The TitleText property gets the value of InternalTitleText</summary>
-               /// </value>The TitleText Property represents the Font type of the Title Text of the user control.</value>
+               /// <value>The TitleText Property represents the Font type of the Title Text of the user control.</value>
                public Font TitleText {get{return InternalTitleText;}}
                
                private Font InternalContentText;
@@ -133,18 +151,28 @@ namespace Ict.Common.Controls
                
                //bool variables for determining style in TaskList
                /// <summary>
-               /// The following booleans determine which styles use what type of variables.
+               /// Boolean flag to specify whether the style uses a gradient background in the panel (title element)
                /// </summary>
                public bool UsePanelGradient;
+               /// <summary>
+               /// Boolean flag to specify whether certain controls use the background colors
+               /// </summary>
                public bool UseContentBackgroundColours;
+               /// <summary>
+               /// Boolean flag to specify whether the style uses a gradient background in the content section
+               /// </summary>
                public bool UseContentGradient;
                
                
 
                //Constructor
+               
+               /// <summary>
+               /// Constructor to create a Visual Styles Object
+               /// </summary>
+               /// <param name="style">A TVisualStylesEnum Object</param>
                public TVisualStyles(TVisualStylesEnum style)
                {
-               	///<summary> A switch that assigns the above variables with the specifications based on the style type</summary>
                        switch(style){
                			      
                                case TVisualStylesEnum.vsAccordionPanel:
