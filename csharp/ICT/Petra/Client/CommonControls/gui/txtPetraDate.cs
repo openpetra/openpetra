@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.CommonControls
     {
         private DateTime? FDate;
         private Boolean FSuppressTextChangeEvent;
-        private Boolean FAllowEmpty;
+        private Boolean FAllowEmpty;             // default is true
         private Boolean FAllowFutureDate;
         private Boolean FAllowPastDate;
         private Boolean FLeavingOnFailedValidationOK;

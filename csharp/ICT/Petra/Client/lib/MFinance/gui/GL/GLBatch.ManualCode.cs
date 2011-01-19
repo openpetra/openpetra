@@ -106,6 +106,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgAttributes.Enabled = false;
         }
 
+        /// <summary>
+        /// disable the journal tab if we have no active batch
+        /// </summary>
+        public void DisableJournals()
+        {
+            this.tpgJournals.Enabled = false;
+        }
+
         /// this window contains 4 tabs
         public enum eGLTabs
         {

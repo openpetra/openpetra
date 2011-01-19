@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailBatchDescription = new System.Windows.Forms.TextBox();
             this.lblDetailBatchDescription = new System.Windows.Forms.Label();
-            this.txtDetailBatchControlTotal = new System.Windows.Forms.TextBox();
+            this.txtDetailBatchControlTotal = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDetailBatchControlTotal = new System.Windows.Forms.Label();
             this.dtpDetailDateEffective = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailDateEffective = new System.Windows.Forms.Label();
@@ -335,6 +335,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDetailBatchControlTotal.Location = new System.Drawing.Point(2,2);
             this.txtDetailBatchControlTotal.Name = "txtDetailBatchControlTotal";
             this.txtDetailBatchControlTotal.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailBatchControlTotal.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDetailBatchControlTotal.DecimalPlaces = 2;
+            this.txtDetailBatchControlTotal.NullValueAllowed = true;
             //
             // lblDetailBatchControlTotal
             //
@@ -351,6 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
             this.dtpDetailDateEffective.Size = new System.Drawing.Size(94, 28);
+            this.dtpDetailDateEffective.DateChanged += new TPetraDateChangedEventHandler(this.DateEffectiveIsChanged);
             //
             // lblDetailDateEffective
             //
@@ -529,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TextBox txtDetailBatchDescription;
         private System.Windows.Forms.Label lblDetailBatchDescription;
-        private System.Windows.Forms.TextBox txtDetailBatchControlTotal;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDetailBatchControlTotal;
         private System.Windows.Forms.Label lblDetailBatchControlTotal;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailDateEffective;
         private System.Windows.Forms.Label lblDetailDateEffective;

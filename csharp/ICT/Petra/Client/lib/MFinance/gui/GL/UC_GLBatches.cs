@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,7 +88,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailBatchDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailBatchControlTotal.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -235,11 +234,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             if (ARow.IsBatchControlTotalNull())
             {
-                txtDetailBatchControlTotal.Text = String.Empty;
+                txtDetailBatchControlTotal.NumberValueDecimal = null;
             }
             else
             {
-                txtDetailBatchControlTotal.Text = ARow.BatchControlTotal.ToString();
+                txtDetailBatchControlTotal.NumberValueDecimal = Convert.ToDecimal(ARow.BatchControlTotal);
             }
             dtpDetailDateEffective.Date = ARow.DateEffective;
             ShowDetailsManual(ARow);
@@ -280,13 +279,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ARow.BatchDescription = txtDetailBatchDescription.Text;
             }
-            if (txtDetailBatchControlTotal.Text.Length == 0)
+            if (txtDetailBatchControlTotal.NumberValueDecimal == null)
             {
                 ARow.SetBatchControlTotalNull();
             }
             else
             {
-                ARow.BatchControlTotal = Convert.ToDecimal(txtDetailBatchControlTotal.Text);
+                ARow.BatchControlTotal = Convert.ToDecimal(txtDetailBatchControlTotal.NumberValueDecimal);
             }
             ARow.DateEffective = dtpDetailDateEffective.Date.Value;
             ARow.EndEdit();
