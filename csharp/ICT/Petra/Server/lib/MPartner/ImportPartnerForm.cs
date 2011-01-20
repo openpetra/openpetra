@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MPartner.Import
         }
 
         /// create PDF
-        private static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData)
+        private static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
         {
             string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
@@ -264,8 +264,16 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
-            HTMLText.Replace("#FIRSTNAME", AData.firstname);
-            HTMLText.Replace("#LASTNAME", AData.lastname);
+            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
+            HTMLText = HTMLText.Replace("#ADDRESS", AData.street);
+            HTMLText = HTMLText.Replace("#POSTCODE", AData.postcode);
+            HTMLText = HTMLText.Replace("#CITY", AData.city);
+            HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
+            HTMLText = HTMLText.Replace("#PARTNERKEY", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
+            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
+                Path.DirectorySeparatorChar + "photos" +
+                Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
 
             PrintDocument doc = new PrintDocument();
 
@@ -288,10 +296,25 @@ namespace Ict.Petra.Server.MPartner.Import
 
             pdfPrinter.SavePDF(pdfFilename);
 
+            string downloadPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                                  "downloads";
+
+            if (!Directory.Exists(downloadPath))
+            {
+                Directory.CreateDirectory(downloadPath);
+            }
+
+            // Create a link file for this PDF
+            ADownloadIdentifier = TPatchTools.GetMd5Sum(pdfFilename);
+            StreamWriter sw = new StreamWriter(downloadPath + Path.DirectorySeparatorChar + ADownloadIdentifier + ".txt");
+            sw.WriteLine("pdfs");
+            sw.WriteLine(Path.GetFileName(pdfFilename));
+            sw.Close();
+
             return pdfFilename;
         }
 
-        private static void SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
+        private static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
         {
             string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
@@ -308,8 +331,8 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
-            HTMLText.Replace("#FIRSTNAME", AData.firstname);
-            HTMLText.Replace("#LASTNAME", AData.lastname);
+            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
 
             // load the language file for the specific country
             Catalog.Init(ACountryCode, ACountryCode);
@@ -325,7 +348,13 @@ namespace Ict.Petra.Server.MPartner.Import
             msg.Attachments.Add(new Attachment(APDFFilename, System.Net.Mime.MediaTypeNames.Application.Octet));
             msg.Bcc.Add(Catalog.GetString("RegistrationOffice@example.org"));
 
-            emailSender.SendMessage(ref msg);
+            if (!emailSender.SendMessage(ref msg))
+            {
+                TLogging.Log("There has been a problem sending the email");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -336,22 +365,53 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
         {
+            if (AFormID == "TestPrintingEmail")
+            {
+                // This is a test for printing to PDF and sending an email, no partner is created in the database.
+                // make sure you have a photo with name data\photos\815.jpg for the photo to appear in the pdf
+                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                    AJSONFormData);
+
+                string pdfIdentifier;
+                string pdfFilename = GeneratePDF(0815, data.registrationcountrycode, data, out pdfIdentifier);
+                try
+                {
+                    if (SendEmail(0815, data.registrationcountrycode, data, pdfFilename))
+                    {
+                        // return id of the PDF pdfIdentifier
+                        string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
+                        return result;
+                    }
+                    else
+                    {
+                        string message = String.Format(Catalog.GetString("We were not able to send the email to {0}"), data.email);
+                        TLogging.Log("returning: " + "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}");
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
+                }
+            }
+
             if (AFormID == "RegisterPerson")
             {
-                string pdfIdentifier = string.Empty;
+                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                    AJSONFormData);
+
+                Int64 NewPersonPartnerKey = -1;
 
                 try
                 {
-                    TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
-                        AJSONFormData);
-
                     PartnerEditTDS MainDS = new PartnerEditTDS();
 
                     // TODO: check that email is unique. do not allow email to be associated with 2 records. this would cause trouble with authentication
                     // TODO: create a user for this partner
 
                     Int64 NewFamilyPartnerKey = CreateFamily(ref MainDS, data);
-                    Int64 NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
+                    NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
                     CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
                     TVerificationResultCollection VerificationResult;
@@ -424,9 +484,6 @@ namespace Ict.Petra.Server.MPartner.Import
                             NewPersonPartnerKey +
                             Path.GetExtension(imageTmpPath));
                     }
-
-                    pdfIdentifier = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data);
-                    SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfIdentifier);
                 }
                 catch (Exception e)
                 {
@@ -436,8 +493,27 @@ namespace Ict.Petra.Server.MPartner.Import
                     return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                 }
 
-                // TODO: return id of the PDF pdfIdentifier
-                return "{\"success\":true}";
+                string pdfIdentifier;
+                string pdfFilename = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
+                try
+                {
+                    if (SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfFilename))
+                    {
+                        // return id of the PDF pdfIdentifier
+                        string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
+                        return result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
+                }
+
+                string message2 = String.Format(Catalog.GetString("We were not able to send the email to {0}"), data.email);
+                string result2 = "{\"failure\":true, \"data\":{\"result\":\"" + message2 + "\"}}";
+                TLogging.Log(result2);
+                return result2;
             }
             else
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -165,20 +165,38 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
+            if (ctrlSnippet.FTemplateCode.Contains("{#REDIRECTONSUCCESS}"))
+            {
+                ProcessTemplate redirectSnippet = writer.FTemplate.GetSnippet("REDIRECTONSUCCESS");
+
+                ctrlSnippet.SetCodelet("REDIRECTONSUCCESS", redirectSnippet.FTemplateCode);
+            }
+
             if (ctrl.HasAttribute("AjaxRequestUrl"))
             {
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORTITLE", ctrl, ctrl.GetAttribute("ValidationErrorTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORMESSAGE", ctrl, ctrl.GetAttribute("ValidationErrorMessage"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATATITLE", ctrl, ctrl.GetAttribute("SendingMessageTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATAMESSAGE", ctrl, ctrl.GetAttribute("SendingMessage"));
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSTITLE", ctrl, ctrl.GetAttribute("SuccessMessageTitle"));
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSMESSAGE", ctrl, ctrl.GetAttribute("SuccessMessage"));
+
+                if (ctrl.HasAttribute("SuccessMessage"))
+                {
+                    ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSTITLE", ctrl, ctrl.GetAttribute("SuccessMessageTitle"));
+                    ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSMESSAGE", ctrl, ctrl.GetAttribute("SuccessMessage"));
+                }
+
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILURETITLE", ctrl, ctrl.GetAttribute("FailureMessageTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILUREMESSAGE", ctrl, ctrl.GetAttribute("FailureMessage"));
             }
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONSUCCESS", ctrl, ctrl.GetAttribute("RedirectURLOnSuccess"));
+
+            if (ctrl.GetAttribute("DownloadOnSuccess").StartsWith("jsonData"))
+            {
+                ctrlSnippet.SetCodelet("REDIRECTDOWNLOAD", ctrl.GetAttribute("DownloadOnSuccess"));
+            }
+
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONCANCEL", ctrl, ctrl.GetAttribute("RedirectURLOnCancel"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONTITLE", ctrl, ctrl.GetAttribute("CancelQuestionTitle"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONMESSAGE", ctrl, ctrl.GetAttribute("CancelQuestionMessage"));

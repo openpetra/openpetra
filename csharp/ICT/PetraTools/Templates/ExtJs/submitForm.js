@@ -68,13 +68,21 @@ var {#FORMNAME} = null;
                     }
                     else
                     {
+{#IFDEF REQUESTSUCCESSMESSAGE}
                         Ext.Msg.show({
                             title: {#FORMNAME}.{#REQUESTSUCCESSTITLE},
                             msg: {#FORMNAME}.{#REQUESTSUCCESSMESSAGE},
                             modal: true,
                             icon: Ext.Msg.INFO,
-                            buttons: Ext.Msg.OK
+                            buttons: Ext.Msg.OK,
+                            fn: function(btn, text){
+                                {#REDIRECTONSUCCESS}
+                            }
                         });
+{#ENDIF REQUESTSUCCESSMESSAGE}
+{#IFNDEF REQUESTSUCCESSMESSAGE}
+                        {#REDIRECTONSUCCESS}
+{#ENDIFN REQUESTSUCCESSMESSAGE}
                     }
                 },
                 failure: function () {
@@ -91,3 +99,13 @@ var {#FORMNAME} = null;
     }    
 {#ENDIF REQUESTURL}
 }
+
+{##REDIRECTONSUCCESS}
+{#IFNDEF REDIRECTDOWNLOAD}
+{#IFDEF REDIRECTURLONSUCCESS}
+                      location.href={#FORMNAME}.{#REDIRECTURLONSUCCESS};
+{#ENDIF REDIRECTURLONSUCCESS}
+{#ENDIFN REDIRECTDOWNLOAD}
+{#IFDEF REDIRECTDOWNLOAD}
+                      location.href={#FORMNAME}.{#REDIRECTURLONSUCCESS} + '?download=' + {#REDIRECTDOWNLOAD};
+{#ENDIF REDIRECTDOWNLOAD}

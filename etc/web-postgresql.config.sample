@@ -23,6 +23,11 @@
 	<add key="Server.PostgreSQLDatabaseName" value = "openpetra"/>
 	<add key="Server.PostgreSQLUserName" value = "petraserver"/>
 
+    <add key="SmtpHost" value="localhost"/>
+    <add key="SmtpUser" value="TOBESETBYINSTALLER3"/>
+    <add key="SmtpPassword" value="TOBESETBYINSTALLER4"/>
+    <add key="SmtpEnableSsl" value="true"/>
+
 	<add key="Reporting.PathStandardReports" value="../XmlReports" />
 	<add key="Reporting.PathCustomReports" value="../XmlReports/custom" />
     <add key="Formletters.Path" value="../demodata/formletters"/>
