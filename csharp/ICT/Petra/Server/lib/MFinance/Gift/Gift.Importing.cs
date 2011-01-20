@@ -55,11 +55,6 @@ namespace Ict.Petra.Server.MFinance.Gift
     /// </summary>
     public class TGiftImporting
     {
-        private const String quote = "\"";
-        private const String summarizedData = "Summarised Gift Data";
-        private const String sGift = "Gift";
-        private const String sConfidential = "Confidential";
-        StringWriter FStringWriter;
         String FDelimiter;
         Int32 FLedgerNumber;
         String FDateFormatString;
@@ -92,24 +87,22 @@ namespace Ict.Petra.Server.MFinance.Gift
             )
         {
             AMessages = new TVerificationResultCollection();
-            FStringWriter = new StringWriter();
-            StringBuilder line = new StringBuilder();
             FMainDS = new GiftBatchTDS();
             FSetupTDS = new GLSetupTDS();
+            StringReader sr = new StringReader(importString);
+
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
             String NumberFormat = (String)requestParams["NumberFormat"];
+            FNewLine = (String)requestParams["NewLine"];
+
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FNewLine = (String)requestParams["newLine"];
-
-
-            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            StringReader sr = new StringReader(importString);
+            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
             FImportMessage = Catalog.GetString("Parsing first line");

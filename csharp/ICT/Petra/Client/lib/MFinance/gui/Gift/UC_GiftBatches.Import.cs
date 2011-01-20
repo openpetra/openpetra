@@ -44,6 +44,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
             bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -59,21 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
-                if (dateFormatString.Equals("MDY"))
-                {
-                    FdlgSeparator.DateFormat = "MM/dd/yyyy";
-                }
-                else
-                {
-                    if (dateFormatString.Equals("DMY"))
-                    {
-                        FdlgSeparator.DateFormat = "dd/MM/yyyy";
-                    }
-                    else
-                    {
-                        FdlgSeparator.DateFormat = dateFormatString;
-                    }
-                }
+                FdlgSeparator.DateFormat = dateFormatString;
 
                 if (impOptions.Length > 1)
                 {
@@ -90,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
-
+                    requestParams.Add("NewLine", Environment.NewLine);
 
                     String importString;
                     TVerificationResultCollection AMessages;

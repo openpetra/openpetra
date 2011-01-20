@@ -67,6 +67,19 @@ namespace Ict.Common.IO
             }
             set
             {
+                //Conversion of some old Petra Values
+                if (value.Equals("MDY"))
+                {
+                    value = "MM/dd/yyyy";
+                }
+                else
+                {
+                    if (value.Equals("DMY"))
+                    {
+                        value = "dd/MM/yyyy";
+                    }
+                }
+
                 if (!cmbDateFormat.Items.Contains(value))
                 {
                     cmbDateFormat.Items.Add(value);

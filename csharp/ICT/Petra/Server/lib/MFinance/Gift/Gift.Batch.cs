@@ -47,8 +47,9 @@ namespace Ict.Petra.Server.MFinance.Gift
     public class TGiftBatchFunctions
     {
         /// <summary>
-        /// create a new batch with a consecutive batch number in the ledger,
-        /// and immediately store the batch and the new number in the database
+        /// create a new batch with a consecutive batch number in the ledger
+        /// for call inside a server function
+        /// for performance reasons submitting (save the data in the database) is done later (not here)
         /// </summary>
         /// <param name="MainDS"></param>
         /// <param name="Transaction"></param>
