@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewBatch.BatchDescription = ImportString("batch description");
                             NewBatch.BatchControlTotal = ImportDecimal("batch hash value");
                             NewBatch.DateEffective = ImportDate("batch  effective date");
-                            FImportMessage = "writing gl batch";
+                            FImportMessage = "Saving GL batch:";
 
                             if (!ABatchAccess.SubmitChanges(FMainDS.ABatch, FTransaction, out AMessages))
                             {
@@ -171,6 +171,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.TransactionCurrency = ImportString("journal - transaction currency");
                             NewJournal.ExchangeRateToBase = ImportDecimal("journal - exchange rate");
                             NewJournal.DateEffective = ImportDate("journal - effective date");
+
+                            FImportMessage = "Saving the journal:";
 
                             if (!AJournalAccess.SubmitChanges(FMainDS.AJournal, FTransaction, out AMessages))
                             {
@@ -271,6 +273,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
+                            FImportMessage = "Saving the transaction:";
+
                             // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
                             if (!ATransactionAccess.SubmitChanges(FMainDS.ATransaction, FTransaction, out AMessages))
                             {
@@ -278,6 +282,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
 
                             FMainDS.ATransaction.AcceptChanges();
+                            FImportMessage = "Saving the attributes:";
 
                             if (!ATransAnalAttribAccess.SubmitChanges(FMainDS.ATransAnalAttrib, FTransaction, out AMessages))
                             {
@@ -293,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
 
-                FImportMessage = Catalog.GetString("Saving all data into the database");
+                FImportMessage = Catalog.GetString("Saving counter fields:");
 
                 //Finally save all pending changes (last xxx number is updated)
                 if (ABatchAccess.SubmitChanges(FMainDS.ABatch, FTransaction, out AMessages))
@@ -311,12 +316,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             catch (Exception ex)
             {
-                // TODO Replace error Messages from contraints with speaking messages
+                String speakingExceptionText = SpeakingExceptionMessage(ex);
                 AMessages.Add(new TVerificationResult("Import",
 
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}. "), RowNumber) +
                         FNewLine +
-                        FImportMessage + " " + ex,
+                        Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return false;
@@ -345,6 +350,34 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             return true;
+        }
+
+        private String SpeakingExceptionMessage(Exception ex)
+        {
+            //note that this is only done for "user errors" not for program errors!
+            String theExMessage = ex.Message;
+
+            if (theExMessage.Contains("a_journal_fk3"))
+            {
+                return Catalog.GetString("Invalid sub system code or transaction type code");
+            }
+
+            if (theExMessage.Contains("a_journal_fk4"))
+            {
+                return Catalog.GetString("Invalid transaction currency");
+            }
+
+            if (theExMessage.Contains("a_transaction_fk3"))
+            {
+                return Catalog.GetString("Invalid cost centre");
+            }
+
+            if (theExMessage.Contains("a_transaction_fk2"))
+            {
+                return Catalog.GetString("Invalid account code");
+            }
+
+            return ex.ToString();
         }
 
         private String ImportString(String message)
