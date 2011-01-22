@@ -42,9 +42,11 @@ csharp/ICT/experimenting/treasurerEmails/obj
 *Setup-*.exe
 /tmp
 /delivery
+/data
 *.patch
 /log
 /webserver/OpenPetraOrg.ext/images
+/webserver/OpenPetraOrg.ext/images/default
 /webserver/OpenPetraOrg.ext/js/ext-all-debug.js
 /webserver/OpenPetraOrg.ext/js/ext-all.js
 /webserver/OpenPetraOrg.ext/js/ext-base.js
