@@ -66,6 +66,10 @@
       <Project>{6A8AF588-522A-469E-BEC4-C154CBC8866A}</Project>
       <Name>Ict.Petra.Shared.MPartner.DataTables</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\MPersonnel\data\Ict.Petra.Shared.MPersonnel.DataTables.csproj">
+      <Project>{5B6D2B12-84D0-4B62-AF1F-B8365FBF68D1}</Project>
+      <Name>Ict.Petra.Shared.MPersonnel.DataTables</Name>
+    </ProjectReference>
     <ProjectReference Include="Ict.Petra.Shared.MConference.DataTables.csproj">
       <Project>{6877C414-A72F-4E48-A5ED-E100787641D3}</Project>
       <Name>Ict.Petra.Shared.MConference.DataTables</Name>

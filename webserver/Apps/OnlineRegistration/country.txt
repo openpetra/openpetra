@@ -1,0 +1,225 @@
+AD               ANDORRA
+AE               ## UNITED ARAB EMIRATES ##
+AF               ## AFGHANISTAN ##
+AG               ANTIGUA AND BARBUDA
+AI               ANGUILLA
+AL               ALBANIA
+AM               ARMENIA
+AN               NETHERLANDS ANTILLES
+AO               ## ANGOLA ##
+AQ               ANTARCTICA
+AR               ARGENTINA
+AS               AMERICAN SAMOA
+AT               AUSTRIA
+AU               AUSTRALIA
+AW               ARUBA
+AZ               ## AZERBAIJAN ##
+BA               BOSNIA
+BB               BARBADOS
+BD               ## BANGLADESH ##
+BE               BELGIUM
+BF               BURKINA FASO
+BG               ## BULGARIA ##
+BH               ## BAHRAIN ##
+BI               BURUNDI
+BJ               BENIN
+BM               BERMUDA
+BN               BRUNEI DARUSSALAM
+BO               BOLIVIA
+BR               BRAZIL
+BS               BAHAMAS
+BT               ## BHUTAN ##
+BW               BOTSWANA
+BY               BELARUS
+BZ               BELIZE
+CA               CANADA
+CD               CONGO, THE DEMOCRATIC REPUBLIC OF THE
+CF               CENTRAL AFRICAN REPUBLIC
+CG               CONGO
+CH               SWITZERLAND
+CI               COTE D'IVOIRE
+CK               COOK ISLANDS
+CL               CHILE
+CM               CAMEROON
+CN               ## CHINA ##
+CO               COLOMBIA
+CR               COSTA RICA
+CU               ## CUBA ##
+CV               CAPE VERDE
+CY               CYPRUS
+CZ               CZECH REPUBLIC
+DE               GERMANY
+DJ               DJIBOUTI
+DK               DENMARK
+DM               DOMINICA
+DO               DOMINICAN REPUBLIC
+DU               ## DUBAI ##
+DZ               ## ALGERIA ##
+EC               ECUADOR
+EE               ESTONIA
+EG               ## EGYPT ##
+ER               ERITREA
+ES               SPAIN
+ET               ETHIOPIA
+FI               FINLAND
+FJ               FIJI
+FK               FALKLAND ISLANDS (MALVINAS)
+FM               MICRONESIA (FEDERATE STATES OF)
+FO               FAROE ISLANDS
+FR               FRANCE
+GA               GABON
+GB               UNITED KINGDOM
+GD               GRENADA
+GE               GEORGIA
+GF               FRENCH GUIANA
+GH               GHANA
+GI               GIBRALTAR
+GL               GREENLAND
+GM               GAMBIA
+GN               GUINEA
+GP               GUADELOUPE
+GQ               EQUATORIAL GUINEA
+GR               GREECE
+GT               GUATEMALA
+GW               GUINEA-BISSAU
+GY               GUYANA
+GZ               GUERNSEY (GB)
+HK               HONG KONG
+HN               HONDURAS
+HR               CROATIA (local name: Hrvatska)
+HT               HAITI
+HU               HUNGARY
+ID               INDONESIA
+IE               IRELAND
+IL               ## ISRAEL ##
+IN               INDIA
+IQ               ## IRAQ ##
+IR               ## IRAN (ISLAMIC REPUBLIC OF) ##
+IS               ICELAND
+IT               ITALY
+JM               JAMAICA
+JO               ## JORDAN ##
+JP               JAPAN
+JY               JERSEY (GB)
+KE               KENYA
+KG               ## KYRGYZSTAN ##
+KH               ## CAMBODIA ##
+KI               KIRIBATI
+KM               COMOROS
+KN               SAINT KITTS AND NEVIS
+KP               ## KOREA, NORTH (PEOPLE'S REPUBLIC) ##
+KR               KOREA, SOUTH (REPUBLIC OF)
+KW               ## KUWAIT ##
+KY               CAYMAN ISLANDS
+KZ               ## KAZAKHSTAN ##
+LA               ## LAO PEOPLE'S DEMOCRATIC REPUBLIC ##
+LB               ## LEBANON ##
+LC               SAINT LUCIA
+LI               LIECHTENSTEIN
+LK               ## SRI LANKA ##
+LR               LIBERIA
+LS               LESOTHO
+LT               LITHUANIA
+LU               LUXEMBOURG
+LV               LATVIA
+LY               ## LIBYAN ARAB JAMAHIRIYA ##
+MA               ## MOROCCO ##
+MC               MONACO
+MD               MOLDOVA (REPUBLIC OF)
+ME               MONTENEGRO (REPUBLIC OF)
+MG               MADAGASCAR
+MH               MARSHALL ISLANDS
+MK               MACEDONIA, FORMER YUGOSLAVIA
+ML               MALI
+MM               ## MYANMAR (BURMA) ##
+MN               MONGOLIA
+MO               MACAU
+MP               NORTHERN MARIANA ISLANDS
+MQ               MARTINIQUE
+MR               MAURITANIA
+MS               MONTSERRAT
+MT               MALTA
+MU               MAURITIUS
+MV               MALDIVES
+MW               MALAWI
+MX               MEXICO
+MY               MALAYSIA
+MZ               MOZAMBIQUE
+NA               NAMIBIA
+NC               NEW CALEDONIA
+NE               NIGER
+NF               NORFOLK ISLAND
+NG               NIGERIA
+NI               NICARAGUA
+NL               NETHERLANDS
+NO               NORWAY
+NP               ## NEPAL ##
+NR               NAURU
+NU               NIUE
+NZ               NEW ZEALAND
+OM               ## OMAN ##
+PA               PANAMA
+PE               PERU
+PF               FRENCH POLYNESIA
+PG               PAPUA NEW GUINEA
+PH               PHILIPPINES
+PK               ## PAKISTAN ##
+PL               POLAND
+PR               PUERTO RICO
+PT               PORTUGAL
+PW               PALAU
+PY               PARAGUAY
+QA               ## QATAR ##
+RE               REUNION
+RO               ROMANIA
+RS               SERBIA (REPUBLIC OF)
+RU               RUSSIAN FEDERATION
+RW               RWANDA
+SA               ## SAUDI ARABIA ##
+SB               SOLOMON ISLANDS
+SC               SEYCHELLES
+SD               ## SUDAN ##
+SE               SWEDEN
+SG               SINGAPORE
+SI               SLOVENIA
+SK               SLOVAKIA (SLOVAK REPUBLIC)
+SL               SIERRA LEONE
+SM               SAN MARINO
+SN               SENEGAL
+SO               SOMALIA
+SR               SURINAM(E)
+ST               SAO TOME AND PRINCIPE
+SV               EL SALVADOR
+SY               ## SYRIAN ARAB REPUBLIC ##
+SZ               SWAZILAND
+TC               TURKS AND CAICOS ISLANDS
+TD               CHAD
+TG               TOGO
+TH               ## THAILAND ##
+TJ               ## TAJIKSTAN ##
+TM               ## TURKMENISTAN ##
+TN               ## TUNISIA ##
+TO               TONGA
+TR               ## TURKEY ##
+TT               TRINIDAD AND TOBAGO
+TV               TUVALU
+TW               TAIWAN
+TZ               TANZANIA (UNITED REPUBLIC OF)
+UA               UKRAINE
+UG               UGANDA
+US               UNITED STATES OF AMERICA
+UY               URUGUAY
+UZ               ## UZBEKISTAN ##
+VA               VATICAN CITY STATE (HOLY SEE)
+VC               SAINT VINCENT AND THE GRENADINES
+VE               VENEZUELA
+VG               VIRGIN ISLANDS (BRITISH)
+VI               VIRGIN ISLANDS (US)
+VN               ## VIETNAM ##
+VU               VANUATU
+WS               SAMOA
+YE               ## YEMEN ##
+YT               MAYOTTE
+ZA               SOUTH AFRICA
+ZM               ZAMBIA
+ZW               ZIMBABWE

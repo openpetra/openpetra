@@ -138,24 +138,16 @@ namespace Ict.Tools.CodeGeneration
                     return false;
                 }
 
-                string extension = writer.CodeFileExtension;
-
                 string templateDir = opts.GetValue("TemplateDir", true);
                 string template = TYml2Xml.GetAttribute(rootNode, "Template");
 
                 if (template.Length > 0)
                 {
-                    template = templateDir + Path.DirectorySeparatorChar + template + extension;
+                    template = templateDir + Path.DirectorySeparatorChar + template + writer.CodeFileExtension;
                 }
 
-                string destinationFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                         System.IO.Path.DirectorySeparatorChar +
-                                         System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                         extension;
-                string manualCodeFile = System.IO.Path.GetDirectoryName(FYamlFilename) +
-                                        System.IO.Path.DirectorySeparatorChar +
-                                        System.IO.Path.GetFileNameWithoutExtension(FYamlFilename) +
-                                        ".ManualCode" + extension;
+                string destinationFile = writer.CalculateDestinationFilename(FYamlFilename);
+                string manualCodeFile = writer.CalculateManualCodeFilename(FYamlFilename);
 
                 // need to know the path to the manual code file in order to call manual functions which would not be called if they do not exist
                 codeStorage.ManualCodeFilename = manualCodeFile;

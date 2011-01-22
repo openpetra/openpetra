@@ -2368,8 +2368,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public DataColumn ColumnGenAppDate;
         /// Describes what the application is for, eg. conference, year program.
         public DataColumn ColumnAppTypeName;
-        /// Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-        /// yearly conference.
+        /// TODO: this field is a combination of registration office and application number. might not be needed???
         public DataColumn ColumnOldLink;
         /// This is the possible field or team of service.
         public DataColumn ColumnGenAppPossSrvUnitKey;
@@ -3117,8 +3116,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             }
         }
 
-        /// Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-        /// yearly conference.
+        /// TODO: this field is a combination of registration office and application number. might not be needed???
         public String OldLink
         {
             get
@@ -3881,7 +3879,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnGenAppDate);
             this.SetNull(this.myTable.ColumnAppTypeName);
             this.SetNull(this.myTable.ColumnOldLink);
-            this[this.myTable.ColumnGenAppPossSrvUnitKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnGenAppPossSrvUnitKey);
             this[this.myTable.ColumnGenAppDeleteFlag.Ordinal] = false;
             this.SetNull(this.myTable.ColumnGenApplicantType);
             this.SetNull(this.myTable.ColumnGenApplicationStatus);
@@ -3903,7 +3901,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnGenYearProgram);
             this.SetNull(this.myTable.ColumnComment);
             this.SetNull(this.myTable.ColumnGenAppCurrencyCode);
-            this[this.myTable.ColumnPlacementPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPlacementPartnerKey);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -4359,7 +4357,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(0, "Key", "pm_key_n", "pm_key_n", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(1, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(2, "ApplicationKey", "pm_application_key_i", "Application Key", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(3, "RegistrationOffice", "pm_registration_office_n", "Registration Office", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(3, "RegistrationOffice", "pm_registration_office_n", "Registration Office", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(4, "StatusCode", "pm_status_code_c", "Application Status", OdbcType.VarChar, 32, false),
                     new TTypedColumnInfo(5, "StatusDateEffective", "pm_status_date_effective_d", "Date", OdbcType.Date, -1, false),
                     new TTypedColumnInfo(6, "Comment", "pm_comment_c", "Comment", OdbcType.VarChar, 500, false),
@@ -4987,7 +4985,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnKey);
             this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
             this[this.myTable.ColumnApplicationKey.Ordinal] = 0;
-            this[this.myTable.ColumnRegistrationOffice.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnRegistrationOffice);
             this.SetNull(this.myTable.ColumnStatusCode);
             this.SetNull(this.myTable.ColumnStatusDateEffective);
             this.SetNull(this.myTable.ColumnComment);
@@ -10597,7 +10595,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(58, "StFgCode", "pm_st_fg_code_c", "Fellowship Group Code", OdbcType.VarChar, 32, false),
                     new TTypedColumnInfo(59, "StCmpgnSpecialCost", "pm_st_cmpgn_special_cost_i", "Xyz_tbd Special Costs", OdbcType.Int, -1, false),
                     new TTypedColumnInfo(60, "StCngrssSpecialCost", "pm_st_cngrss_special_cost_i", "Congress Special Costs", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(61, "StFieldCharged", "pm_st_field_charged_n", "Field Charged", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(61, "StFieldCharged", "pm_st_field_charged_n", "Field Charged", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(62, "StCongressLanguage", "pm_st_congress_language_c", "Congress Language", OdbcType.VarChar, 20, false),
                     new TTypedColumnInfo(63, "StCountryPref", "pm_st_country_pref_c", "Country", OdbcType.VarChar, 2, false),
                     new TTypedColumnInfo(64, "StActivityPref", "pm_st_activity_pref_c", "activity", OdbcType.VarChar, 2, false),
@@ -10644,8 +10642,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public DataColumn ColumnStAppDate;
         ///
         public DataColumn ColumnStApplicationType;
-        /// Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-        /// yearly conference.
+        /// TODO: this field is a combination of registration office and application number. might not be needed???
         public DataColumn ColumnStBasicXyzTbdIdentifier;
         /// This field will not appear on the screen but will be updated when someone chooses to delete a record. Rather that an actual deletion, the record will be 'marked' for deletion after an agreed upon interval.
         public DataColumn ColumnStBasicDeleteFlag;
@@ -11986,8 +11983,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             }
         }
 
-        /// Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-        /// yearly conference.
+        /// TODO: this field is a combination of registration office and application number. might not be needed???
         public String StBasicXyzTbdIdentifier
         {
             get
@@ -13727,10 +13723,10 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnOption1Code);
             this.SetNull(this.myTable.ColumnOption2Code);
             this[this.myTable.ColumnStXyzTbdOnlyFlag.Ordinal] = false;
-            this[this.myTable.ColumnStConfirmedOption.Ordinal] = 0;
-            this[this.myTable.ColumnStOption1.Ordinal] = 0;
-            this[this.myTable.ColumnStOption2.Ordinal] = 0;
-            this[this.myTable.ColumnStCurrentField.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnStConfirmedOption);
+            this.SetNull(this.myTable.ColumnStOption1);
+            this.SetNull(this.myTable.ColumnStOption2);
+            this.SetNull(this.myTable.ColumnStCurrentField);
             this[this.myTable.ColumnArrivalDetailsStatus.Ordinal] = "no";
             this.SetNull(this.myTable.ColumnArrivalPointCode);
             this.SetNull(this.myTable.ColumnTravelTypeToCongCode);
@@ -13762,13 +13758,13 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnStCongressCode);
             this.SetNull(this.myTable.ColumnStSpecialApplicant);
             this.SetNull(this.myTable.ColumnXyzTbdRole);
-            this[this.myTable.ColumnStPartyContact.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnStPartyContact);
             this.SetNull(this.myTable.ColumnStPartyTogether);
             this[this.myTable.ColumnStFgLeader.Ordinal] = false;
             this.SetNull(this.myTable.ColumnStFgCode);
             this[this.myTable.ColumnStCmpgnSpecialCost.Ordinal] = 0;
             this[this.myTable.ColumnStCngrssSpecialCost.Ordinal] = 0;
-            this[this.myTable.ColumnStFieldCharged.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnStFieldCharged);
             this.SetNull(this.myTable.ColumnStCongressLanguage);
             this.SetNull(this.myTable.ColumnStCountryPref);
             this.SetNull(this.myTable.ColumnStActivityPref);
@@ -18052,7 +18048,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this[this.myTable.ColumnFormEdited.Ordinal] = false;
             this.SetNull(this.myTable.ColumnFormSentDate);
             this.SetNull(this.myTable.ColumnFormReceivedDate);
-            this[this.myTable.ColumnReferencePartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnReferencePartnerKey);
             this.SetNull(this.myTable.ColumnComment);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
@@ -43608,7 +43604,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                 new TTypedColumnInfo[] {
                     new TTypedColumnInfo(0, "PartnerKey", "p_partner_key_n", "Partner Key", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(1, "ApplicationKey", "pm_application_key_i", "Application Key", OdbcType.Int, -1, false),
-                    new TTypedColumnInfo(2, "RegistrationOffice", "pm_registration_office_n", "Registration Office", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(2, "RegistrationOffice", "pm_registration_office_n", "Registration Office", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(3, "DataLabelKey", "p_data_label_key_i", "p_data_label_key_i", OdbcType.Int, -1, true),
                     new TTypedColumnInfo(4, "ValueChar", "p_value_char_c", "Value", OdbcType.VarChar, 8192, false),
                     new TTypedColumnInfo(5, "ValueNum", "p_value_num_n", "Value", OdbcType.Decimal, 24, false),
@@ -44494,7 +44490,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         {
             this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
             this[this.myTable.ColumnApplicationKey.Ordinal] = 0;
-            this[this.myTable.ColumnRegistrationOffice.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnRegistrationOffice);
             this.SetNull(this.myTable.ColumnDataLabelKey);
             this.SetNull(this.myTable.ColumnValueChar);
             this[this.myTable.ColumnValueNum.Ordinal] = 0;
@@ -49260,9 +49256,9 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(4, "StartOfCommitment", "pm_start_of_commitment_d", "Committment Start Date", OdbcType.Date, -1, true),
                     new TTypedColumnInfo(5, "StartDateApprox", "pm_start_date_approx_l", "Approximate?", OdbcType.Bit, -1, false),
                     new TTypedColumnInfo(6, "EndOfCommitment", "pm_end_of_commitment_d", "Committment End Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(7, "OfficeRecruitedBy", "pm_office_recruited_by_n", "Recruiting Office", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(8, "HomeOffice", "pm_home_office_n", "Home Office", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(9, "ReceivingField", "pm_receiving_field_n", "Receiving Field", OdbcType.Decimal, 10, false),
+                    new TTypedColumnInfo(7, "OfficeRecruitedBy", "pm_office_recruited_by_n", "Recruiting Office", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(8, "HomeOffice", "pm_home_office_n", "Home Office", OdbcType.Decimal, 10, true),
+                    new TTypedColumnInfo(9, "ReceivingField", "pm_receiving_field_n", "Receiving Field", OdbcType.Decimal, 10, true),
                     new TTypedColumnInfo(10, "ReceivingFieldOffice", "pm_receiving_field_office_n", "Receiving Field Office", OdbcType.Decimal, 10, false),
                     new TTypedColumnInfo(11, "StaffDataComments", "pm_staff_data_comments_c", "Comments", OdbcType.VarChar, 640, false),
                     new TTypedColumnInfo(12, "JobTitle", "pm_job_title_c", "Job Title", OdbcType.VarChar, 400, false),
@@ -50191,10 +50187,10 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnStartOfCommitment);
             this[this.myTable.ColumnStartDateApprox.Ordinal] = false;
             this.SetNull(this.myTable.ColumnEndOfCommitment);
-            this[this.myTable.ColumnOfficeRecruitedBy.Ordinal] = 0;
-            this[this.myTable.ColumnHomeOffice.Ordinal] = 0;
-            this[this.myTable.ColumnReceivingField.Ordinal] = 0;
-            this[this.myTable.ColumnReceivingFieldOffice.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnOfficeRecruitedBy);
+            this.SetNull(this.myTable.ColumnHomeOffice);
+            this.SetNull(this.myTable.ColumnReceivingField);
+            this.SetNull(this.myTable.ColumnReceivingFieldOffice);
             this.SetNull(this.myTable.ColumnStaffDataComments);
             this.SetNull(this.myTable.ColumnJobTitle);
             this.SetNull(this.myTable.ColumnOfficePhoneExt);

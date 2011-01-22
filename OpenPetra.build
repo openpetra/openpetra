@@ -35,6 +35,7 @@
     <property name="Logging.dir" value="${OpenPetraRoot.dir}/log"/>
     <property name="Delivery.dir" value="${OpenPetraRoot.dir}/delivery"/>
     <property name="Tmp.dir" value="${OpenPetraRoot.dir}/tmp"/>
+    <property name="Data.dir" value="${OpenPetraRoot.dir}/data"/>
     <property name="PetraXML.file" value="${OpenPetraRoot.dir}/db/petra.xml"/>
     <property name="DBDoc.Output.dir" value="${Delivery.dir}/dbdoc"/>
     <property name="SQLitedb.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.db"/>
@@ -75,6 +76,9 @@
         <if test="${not directory::exists(Tmp.dir)}">
             <mkdir dir="${Tmp.dir}" />
         </if>
+        <if test="${not directory::exists(Data.dir)}">
+           <mkdir dir="${Data.dir}" />
+        </if>
     </target>
 
     <!-- could use nant -projecthelp instead -->
@@ -98,6 +102,7 @@
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
         <echo message="generateWebforms: generates the User Interface using the Ext.js AJAX framework"/>
+        <echo message="generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm"/>
         <echo message="cleanPetra: prepare for a clean build"/>
         <echo message="deleteBakFiles: delete all backup files"/>
         <echo message="compilePetra: build all Petra C# code"/>
@@ -329,11 +334,17 @@
     </target>
 
     <target name="generateWebforms" depends="init" description="Generate Web browser User Interface">
-        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
-        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver/OpenPetraOrg.ext/js/"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/partnerforms ${generateParameters}"/>
+        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file}"/>
+        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateParameters}"/>
     </target>
 
+    <target name="generateWebform" depends="init" description="Generate a single Web browser User Interface">
+        <property name="generateParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file}"/>
+        <property name="ClientPath" value="${OpenPetraRoot.dir}/webserver"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateParameters}"/>
+    </target>
+    
     <target name="loc" depends="init">
         <property name="ourCodeDir" value="${OpenPetraRoot.dir}/csharp/ICT/"/>
         <echo message="logical lines of code: ${script::CountLinesOfCode(ourCodeDir)}"/>

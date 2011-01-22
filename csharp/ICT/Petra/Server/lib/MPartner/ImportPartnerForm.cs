@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Data;
+using System.Drawing.Printing;
+using System.Net.Mail;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.App.ClientDomain;
@@ -35,7 +39,16 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared.MConference;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Server.MConference.Data.Access;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Jayrock.Json;
+using Ict.Common.Printing;
+using PdfSharp;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace Ict.Petra.Server.MPartner.Import
 {
@@ -88,6 +101,34 @@ namespace Ict.Petra.Server.MPartner.Import
         /// email address
         /// </summary>
         public string email;
+        /// <summary>
+        /// gender
+        /// </summary>
+        public string gender;
+        /// <summary>
+        /// Date of Birth of the person
+        /// </summary>
+        public DateTime? dateofbirth;
+        /// <summary>
+        /// partner key of registration office
+        /// </summary>
+        public Int64 registrationoffice;
+        /// <summary>
+        /// country code of registration office
+        /// </summary>
+        public string registrationcountrycode;
+        /// <summary>
+        /// identifies the event
+        /// </summary>
+        public string eventidentifier;
+        /// <summary>
+        /// each applicant is given a role at the event (participant, volunteer, etc)
+        /// </summary>
+        public string role;
+        /// <summary>
+        /// the temp filename of the photo of the participant, which has been uploaded by upload.aspx
+        /// </summary>
+        public string imageid;
     }
 
     /// <summary>
@@ -130,6 +171,50 @@ namespace Ict.Petra.Server.MPartner.Import
             return newPartnerKey;
         }
 
+        private static Int64 CreatePerson(ref PartnerEditTDS AMainDS, Int64 AFamilyKey, TApplicationFormData APartnerData)
+        {
+            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
+
+            Int64 SiteKey = DomainManager.GSiteKey;
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(SiteKey);
+                TNewPartnerKey.SubmitNewPartnerKey(SiteKey, newPartnerKey, ref newPartnerKey);
+                newPartner.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            // TODO: new status UNAPPROVED?
+            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            AMainDS.PPartner.Rows.Add(newPartner);
+
+            PPersonRow newPerson = AMainDS.PPerson.NewRowTyped();
+            newPerson.PartnerKey = newPartner.PartnerKey;
+            newPerson.FamilyKey = AFamilyKey;
+            newPerson.FirstName = APartnerData.firstname;
+            newPerson.FamilyName = APartnerData.lastname;
+            newPerson.Gender = APartnerData.gender;
+
+            if (APartnerData.dateofbirth.HasValue)
+            {
+                newPerson.DateOfBirth = APartnerData.dateofbirth;
+            }
+
+            newPerson.Title = APartnerData.title;
+
+            AMainDS.PPerson.Rows.Add(newPerson);
+
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+            newPartner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
+
+            newPartner.PartnerShortName =
+                Calculations.DeterminePartnerShortName(newPerson.FamilyName, newPerson.Title, newPerson.FirstName);
+            return newPartnerKey;
+        }
+
         private static void CreateAddress(ref PartnerEditTDS AMainDS, TApplicationFormData APartnerData, Int64 ANewPartnerKey)
         {
             // the webform prevents adding empty addresses
@@ -160,6 +245,118 @@ namespace Ict.Petra.Server.MPartner.Import
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
         }
 
+        /// create PDF
+        private static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
+        {
+            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                              Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
+
+            string HTMLText = string.Empty;
+
+            if (!File.Exists(FileName))
+            {
+                HTMLText = "<html><body>" + String.Format("Cannot find file {0}", FileName) + "</body></html>";
+            }
+            else
+            {
+                StreamReader r = new StreamReader(FileName);
+                HTMLText = r.ReadToEnd();
+                r.Close();
+            }
+
+            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
+            HTMLText = HTMLText.Replace("#ADDRESS", AData.street);
+            HTMLText = HTMLText.Replace("#POSTCODE", AData.postcode);
+            HTMLText = HTMLText.Replace("#CITY", AData.city);
+            HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
+            HTMLText = HTMLText.Replace("#PARTNERKEY", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
+            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
+                Path.DirectorySeparatorChar + "photos" +
+                Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
+
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HTMLText,
+                String.Empty,
+                pdfPrinter);
+
+            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            string pdfPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                             "pdfs";
+
+            if (!Directory.Exists(pdfPath))
+            {
+                Directory.CreateDirectory(pdfPath);
+            }
+
+            string pdfFilename = pdfPath + Path.DirectorySeparatorChar + APartnerKey.ToString() + ".pdf";
+
+            pdfPrinter.SavePDF(pdfFilename);
+
+            string downloadPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                                  "downloads";
+
+            if (!Directory.Exists(downloadPath))
+            {
+                Directory.CreateDirectory(downloadPath);
+            }
+
+            // Create a link file for this PDF
+            ADownloadIdentifier = TPatchTools.GetMd5Sum(pdfFilename);
+            StreamWriter sw = new StreamWriter(downloadPath + Path.DirectorySeparatorChar + ADownloadIdentifier + ".txt");
+            sw.WriteLine("pdfs");
+            sw.WriteLine(Path.GetFileName(pdfFilename));
+            sw.Close();
+
+            return pdfFilename;
+        }
+
+        private static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
+        {
+            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                              Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
+            string HTMLText = string.Empty;
+
+            if (!File.Exists(FileName))
+            {
+                HTMLText = "<html><body>" + String.Format("Cannot find file {0}", FileName) + "</body></html>";
+            }
+            else
+            {
+                StreamReader r = new StreamReader(FileName);
+                HTMLText = r.ReadToEnd();
+                r.Close();
+            }
+
+            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
+            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
+
+            // load the language file for the specific country
+            Catalog.Init(ACountryCode, ACountryCode);
+
+            // send email
+            TSmtpSender emailSender = new TSmtpSender();
+
+            MailMessage msg = new MailMessage(Catalog.GetString("DONTReply@example.org"),
+                AData.email,
+                Catalog.GetString("RegistrationEmailSubject"),
+                HTMLText);
+
+            msg.Attachments.Add(new Attachment(APDFFilename, System.Net.Mime.MediaTypeNames.Application.Octet));
+            msg.Bcc.Add(Catalog.GetString("RegistrationOffice@example.org"));
+
+            if (!emailSender.SendMessage(ref msg))
+            {
+                TLogging.Log("There has been a problem sending the email");
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// method for importing data entered on the web form
         /// </summary>
@@ -168,20 +365,54 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
         {
-            if (AFormID == "EFSAnmeldung")
+            if (AFormID == "TestPrintingEmail")
             {
+                // This is a test for printing to PDF and sending an email, no partner is created in the database.
+                // make sure you have a photo with name data\photos\815.jpg for the photo to appear in the pdf
+                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                    AJSONFormData);
+
+                string pdfIdentifier;
+                string pdfFilename = GeneratePDF(0815, data.registrationcountrycode, data, out pdfIdentifier);
                 try
                 {
-                    TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
-                        AJSONFormData);
+                    if (SendEmail(0815, data.registrationcountrycode, data, pdfFilename))
+                    {
+                        // return id of the PDF pdfIdentifier
+                        string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
+                        return result;
+                    }
+                    else
+                    {
+                        string message = String.Format(Catalog.GetString("We were not able to send the email to {0}"), data.email);
+                        TLogging.Log("returning: " + "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}");
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
+                }
+            }
 
+            if (AFormID == "RegisterPerson")
+            {
+                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                    AJSONFormData);
+
+                Int64 NewPersonPartnerKey = -1;
+
+                try
+                {
                     PartnerEditTDS MainDS = new PartnerEditTDS();
 
                     // TODO: check that email is unique. do not allow email to be associated with 2 records. this would cause trouble with authentication
                     // TODO: create a user for this partner
 
-                    Int64 NewPartnerKey = CreateFamily(ref MainDS, data);
-                    CreateAddress(ref MainDS, data, NewPartnerKey);
+                    Int64 NewFamilyPartnerKey = CreateFamily(ref MainDS, data);
+                    NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
+                    CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
                     TVerificationResultCollection VerificationResult;
                     PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
@@ -193,7 +424,85 @@ namespace Ict.Petra.Server.MPartner.Import
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                     }
 
-                    // TODO create PDF, send email
+                    // add a record for the application
+                    ConferenceApplicationTDS ConfDS = new ConferenceApplicationTDS();
+                    PmGeneralApplicationRow GeneralApplicationRow = ConfDS.PmGeneralApplication.NewRowTyped();
+                    GeneralApplicationRow.PartnerKey = NewPersonPartnerKey;
+                    GeneralApplicationRow.ApplicationKey = -1;
+                    GeneralApplicationRow.RegistrationOffice = data.registrationoffice;
+                    GeneralApplicationRow.GenAppDate = DateTime.Today;
+                    GeneralApplicationRow.AppTypeName = MConferenceConstants.APPTYPE_CONFERENCE;
+
+                    // TODO pm_st_basic_camp_identifier_c is quite strange. will there be an overflow soon?
+                    // see ticket https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=161
+                    GeneralApplicationRow.OldLink = "";
+                    GeneralApplicationRow.GenApplicantType = "";
+                    GeneralApplicationRow.GenApplicationStatus = MConferenceConstants.APPSTATUS_ONHOLD;
+                    ConfDS.PmGeneralApplication.Rows.Add(GeneralApplicationRow);
+
+                    PmShortTermApplicationRow ShortTermApplicationRow = ConfDS.PmShortTermApplication.NewRowTyped();
+                    ShortTermApplicationRow.PartnerKey = NewPersonPartnerKey;
+                    ShortTermApplicationRow.ApplicationKey = -1;
+                    ShortTermApplicationRow.RegistrationOffice = data.registrationoffice;
+                    ShortTermApplicationRow.StAppDate = DateTime.Today;
+                    ShortTermApplicationRow.StApplicationType = MConferenceConstants.APPTYPE_CONFERENCE;
+                    ShortTermApplicationRow.StBasicXyzTbdIdentifier = GeneralApplicationRow.OldLink;
+                    ShortTermApplicationRow.StCongressCode = data.role;
+                    ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
+                    ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
+                    ConfDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
+
+                    // TODO ApplicationForms
+
+                    ConferenceApplicationTDSAccess.SubmitChanges(ConfDS, out VerificationResult);
+
+                    if (VerificationResult.HasCriticalError())
+                    {
+                        TLogging.Log(VerificationResult.BuildVerificationResultString());
+                        string message = "There is some critical error when saving to the database";
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    }
+
+                    // process Photo
+                    string imageTmpPath = TAppSettingsManager.GetValueStatic("Server.PathTemp") +
+                                          Path.DirectorySeparatorChar +
+                                          Path.GetFileName(data.imageid);
+
+                    if (File.Exists(imageTmpPath))
+                    {
+                        string photosPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                                            "photos";
+
+                        if (!Directory.Exists(photosPath))
+                        {
+                            Directory.CreateDirectory(photosPath);
+                        }
+
+                        File.Move(imageTmpPath,
+                            photosPath +
+                            Path.DirectorySeparatorChar +
+                            NewPersonPartnerKey +
+                            Path.GetExtension(imageTmpPath));
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.Message);
+                    TLogging.Log(e.StackTrace);
+                    string message = "There is some critical error when saving to the database";
+                    return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                }
+
+                string pdfIdentifier;
+                string pdfFilename = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
+                try
+                {
+                    if (SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfFilename))
+                    {
+                        // return id of the PDF pdfIdentifier
+                        string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
+                        return result;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -201,11 +510,15 @@ namespace Ict.Petra.Server.MPartner.Import
                     TLogging.Log(e.StackTrace);
                 }
 
-                return "{\"success\":true}";
+                string message2 = String.Format(Catalog.GetString("We were not able to send the email to {0}"), data.email);
+                string result2 = "{\"failure\":true, \"data\":{\"result\":\"" + message2 + "\"}}";
+                TLogging.Log(result2);
+                return result2;
             }
             else
             {
                 string message = "The server does not know about a form called " + AFormID;
+                TLogging.Log(message);
                 return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
         }

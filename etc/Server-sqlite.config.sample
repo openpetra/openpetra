@@ -37,6 +37,7 @@
     <add key="Reporting.PathStandardReports" value="../../../../../../XmlReports" />
     <add key="Reporting.PathCustomReports" value="../../../../../../XmlReports/custom" />
     <add key="SqlFiles.Path" value="../../sql" />
+    <add key="Formletters.Path" value="../../../../../../demodata/formletters"/>
 
     <add key="Server.ClientIdleStatusAfterXMinutes" value="5" />                <!-- Default Value: "5" -->
     <add key="Server.ClientKeepAliveCheckIntervalInSeconds" value="20" />            <!-- Default Value: "60" -->

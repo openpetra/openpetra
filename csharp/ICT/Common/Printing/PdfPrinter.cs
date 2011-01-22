@@ -222,7 +222,7 @@ namespace Ict.Common.Printing
                     ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 }
 
-                TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
+                //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
                 FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
             }
 
@@ -317,13 +317,23 @@ namespace Ict.Common.Printing
             CurrentXPos += img.Size.Width / img.HorizontalResolution;
         }
 
+        float Pixel2Twips(float APixelNumber)
+        {
+            return APixelNumber / 100.0f;
+        }
+
         /// <summary>
         /// draw a bitmap at the given position;
         /// the current position is moved
+        ///
+        /// Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+        /// Same applies to Height
         /// </summary>
         public override void DrawBitmap(string APath,
             float AXPos,
             float AYPos,
+            float AWidth,
+            float AHeight,
             float AWidthPercentage,
             float AHeightPercentage)
         {
@@ -333,8 +343,27 @@ namespace Ict.Common.Printing
             }
 
             Bitmap img = new System.Drawing.Bitmap(APath);
-            float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
-            float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
+            float Height = img.Size.Height;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Height = Height / img.VerticalResolution * AHeightPercentage;
+            }
+            else
+            {
+                Height = Pixel2Twips(AHeight);
+            }
+
+            float Width = img.Size.Width;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Width = Width / img.HorizontalResolution * AWidthPercentage;
+            }
+            else
+            {
+                Width = Pixel2Twips(AWidth);
+            }
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {

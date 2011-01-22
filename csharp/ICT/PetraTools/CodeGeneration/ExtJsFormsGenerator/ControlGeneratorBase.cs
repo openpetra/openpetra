@@ -140,6 +140,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate snippetControl = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
 
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
+            snippetControl.SetCodelet("ITEMID", ACtrl.controlName);
             snippetControl.SetCodelet("XTYPE", FControlType);
 
             if (ACtrl.HasAttribute("xtype"))
@@ -173,6 +174,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             if (ACtrl.HasAttribute("vtype"))
             {
                 snippetControl.SetCodelet("VTYPE", ACtrl.GetAttribute("vtype"));
+            }
+
+            if (ACtrl.HasAttribute("MinDateMonth"))
+            {
+                snippetControl.SetCodelet("DATERANGE", "true");
+                snippetControl.SetCodelet("MINYEAR", ACtrl.GetAttribute("MinDateYear"));
+                snippetControl.SetCodelet("MINMONTH", ACtrl.GetAttribute("MinDateMonth"));
+                snippetControl.SetCodelet("MINDAY", ACtrl.GetAttribute("MinDateDay"));
+                snippetControl.SetCodelet("MAXYEAR", ACtrl.GetAttribute("MaxDateYear"));
+                snippetControl.SetCodelet("MAXMONTH", ACtrl.GetAttribute("MaxDateMonth"));
+                snippetControl.SetCodelet("MAXDAY", ACtrl.GetAttribute("MaxDateDay"));
+                snippetControl.SetCodelet("DEFAULTYEAR", ACtrl.GetAttribute("MinDateYear"));
+                snippetControl.SetCodelet("DEFAULTMONTH", ACtrl.GetAttribute("MinDateMonth"));
+                snippetControl.SetCodelet("DEFAULTDAY", ACtrl.GetAttribute("MinDateDay"));
             }
 
             if (ACtrl.HasAttribute("otherPasswordField"))

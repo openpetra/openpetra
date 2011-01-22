@@ -76,18 +76,15 @@ namespace Ict.Tools.CodeGeneration
                 Int32 bracketClosePos = FTemplateCode.IndexOf("}", pos);
                 string filename = FTemplateCode.Substring(pos + "{#INCLUDE ".Length, bracketClosePos - pos - "{#INCLUDE ".Length).Trim();
 
-                r = File.OpenText(Path.GetDirectoryName(AFullPath) + Path.DirectorySeparatorChar + filename);
-                string includeCode = string.Empty;
+                // do this recursively, to get snippets and code in the right place, even from the include files
+                ProcessTemplate includedTemplate = new ProcessTemplate(Path.GetDirectoryName(AFullPath) + Path.DirectorySeparatorChar + filename);
 
-                while (!r.EndOfStream)
+                FTemplateCode = FTemplateCode.Replace(line, includedTemplate.FTemplateCode);
+
+                foreach (string key in includedTemplate.FSnippets.Keys)
                 {
-                    string lineTrimmed = r.ReadLine().TrimEnd(new char[] { '\r', '\t', ' ', '\n' }).Replace("\t", "    ");
-                    includeCode += lineTrimmed + Environment.NewLine;
+                    FSnippets.Add(key, includedTemplate.FSnippets[key]);
                 }
-
-                r.Close();
-
-                FTemplateCode = FTemplateCode.Replace(line, includeCode);
             }
 
             // split off snippets (identified by "{##")

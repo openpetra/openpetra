@@ -427,7 +427,9 @@ namespace Ict.Petra.Server.App.Core.Security
         {
             try
             {
-                LoadUser(UserInfo.GUserInfo.UserID, out UserInfo.GUserInfo);
+                TPetraPrincipal UserDetails;
+                LoadUser(UserInfo.GUserInfo.UserID, out UserDetails);
+                UserInfo.GUserInfo = UserDetails;
             }
             catch (EDBConnectionNotAvailableException Exp)
             {
