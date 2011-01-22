@@ -188,4 +188,4 @@ RootNode:
             FailureMessage:"Something did not work on the server."
             CancelQuestionTitle:"Cancelling the application"
             CancelQuestionMessage:"Do you really want to cancel the application?"
-            RedirectURLOnCancel: ../../../index.html
+            RedirectURLOnCancel: ../../index.html

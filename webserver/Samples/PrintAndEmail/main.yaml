@@ -45,4 +45,4 @@ RootNode:
             DownloadOnSuccess: jsonData.data.pdfPath
             CancelQuestionTitle:"Cancelling the application"
             CancelQuestionMessage:"Do you really want to cancel the application?"
-            RedirectURLOnCancel: ../../../index.html
+            RedirectURLOnCancel: ../../index.html

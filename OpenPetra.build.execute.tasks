@@ -154,11 +154,11 @@
     </target>
 
     <target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
-        <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${WebServerInstall.dir}/OpenPetraOrg.ext/js/ext-base.js"/>
-        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${WebServerInstall.dir}/OpenPetraOrg.ext/js/ext-all.js"/>
-        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${WebServerInstall.dir}/OpenPetraOrg.ext/js/ext-all-debug.js"/>
-        <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${WebServerInstall.dir}/OpenPetraOrg.ext/css/ext-all.css"/>
-        <unzip zipfile="${OpenPetraRoot.dir}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${WebServerInstall.dir}/OpenPetraOrg.ext/images"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${WebServerInstall.dir}/js/ext-base.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${WebServerInstall.dir}/js/ext-all.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${WebServerInstall.dir}/js/ext-all-debug.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${WebServerInstall.dir}/css/ext-all.css"/>
+        <unzip zipfile="${OpenPetraRoot.dir}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${WebServerInstall.dir}/images"/>
 
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
