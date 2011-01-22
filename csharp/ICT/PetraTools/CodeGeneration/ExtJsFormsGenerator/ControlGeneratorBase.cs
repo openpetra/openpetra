@@ -140,6 +140,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate snippetControl = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
 
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
+            snippetControl.SetCodelet("ITEMID", ACtrl.controlName);
             snippetControl.SetCodelet("XTYPE", FControlType);
 
             if (ACtrl.HasAttribute("xtype"))

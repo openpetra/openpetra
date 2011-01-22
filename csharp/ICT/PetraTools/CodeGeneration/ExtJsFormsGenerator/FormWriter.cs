@@ -57,6 +57,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new CheckboxGenerator());
             AddControlGenerator(new DateTimePickerGenerator());
             AddControlGenerator(new RadioGroupSimpleGenerator());
+            AddControlGenerator(new RadioGroupComplexGenerator());
             AddControlGenerator(new RadioButtonGenerator());
             AddControlGenerator(new GroupBoxGenerator());
             AddControlGenerator(new LabelGenerator());
@@ -377,7 +378,17 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
-            FTemplate.SetCodelet("LABELWIDTH", "140");
+            FTemplate.SetCodelet("FORMHEIGHT", FCodeStorage.FHeight.ToString());
+
+            if (FCodeStorage.HasAttribute("LabelWidth"))
+            {
+                FTemplate.SetCodelet("LABELWIDTH", FCodeStorage.GetAttribute("LabelWidth"));
+            }
+            else
+            {
+                FTemplate.SetCodelet("LABELWIDTH", "140");
+            }
+
             FTemplate.SetCodelet("FORMNAME", FFormName);
             FTemplate.SetCodelet("FORMTYPE", "T" + FFormName);
 

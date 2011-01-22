@@ -17,6 +17,7 @@ var {#FORMNAME} = null;
             title: ' ',
             bodyStyle: 'padding:5px',
             width: {#FORMWIDTH},
+            height: {#FORMHEIGHT},
             labelWidth: {#LABELWIDTH},
                     
             headerConfig : {
@@ -46,6 +47,7 @@ new Ext.ux.Wiz.Card({
     title : this.{#LABEL},
     monitorValid : true,
     {#CUSTOMFUNCTIONS}
+    labelWidth: {#LABELWIDTH},
     defaults     : {
         labelStyle : 'font-size:11px'
     },

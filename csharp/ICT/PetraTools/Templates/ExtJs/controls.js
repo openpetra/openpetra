@@ -87,6 +87,7 @@
     {#CUSTOMATTRIBUTES}
     emptyText: this.{#HELP},
     name: '{#ITEMNAME}',
+    id: '{#ITEMID}',
     anchor: '{#ANCHOR}'
 }
 
@@ -95,6 +96,21 @@
     xtype: '{#XTYPE}',
     hideLabel: true,
     value: this.{#LABEL}
+}
+
+{##INLINEDEFINITION}
+{
+    xtype: '{#XTYPE}',
+    hideLabel: true,
+    value: this.{#LABEL}
+},
+{
+    xtype: '{#XTYPE}',
+    hideLabel: true,
+    html: '<iframe src="' + this.{#ITEMNAME}URL + '" width="100%" height="{#HEIGHT}"><p>' + this.{#ITEMNAME}BROWSERMISSINGIFRAMESUPPORT + '<a href="' + this.{#ITEMNAME}URL + '">' + this.{#ITEMNAME}LABEL + '</a></p></iframe><br/><a href="' + this.{#ITEMNAME}URL + '" target="newbigger">Open this document in a bigger window</a>',
+    name: '{#ITEMNAME}',
+    id: '{#ITEMNAME}',   
+    anchor: '{#ANCHOR}'
 }
 
 {##HIDDENFIELDDEFINITION}
@@ -121,6 +137,7 @@
                 width: 300,
                 html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div>',
                 name: '{#ITEMNAME}',
+                id: '{#ITEMNAME}',
                 anchor: '97.5%'
     }]
 }
@@ -145,6 +162,7 @@
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
     name: '{#ITEMNAME}',
+    id: '{#ITEMID}',
     anchor: '{#ANCHOR}'
 }
 
@@ -159,6 +177,10 @@ new Ext.form.ComboBox({
     valueField:'value',
     displayField:'display',
     typeAhead: true,
+    forceSelection: true,
+{#IFDEF VALUE}    
+    value: '{#VALUE}',
+{#ENDIF VALUE}
     mode: 'local',
     triggerAction: 'all',
     emptyText: this.{#HELP},
@@ -169,7 +191,7 @@ new Ext.form.ComboBox({
     allowBlank: false,
 {#ENDIFN ALLOWBLANK}
     selectOnFocus:true,
-    width:190
+    width: {#WIDTH}
 })
 
 {##GRIDDEFINITION}

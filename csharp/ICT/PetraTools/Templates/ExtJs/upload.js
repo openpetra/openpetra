@@ -87,8 +87,8 @@ isValid: function() {
     if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
     {
         Ext.Msg.show({
-            title: 'Please upload photo',
-            msg: 'Please upload photo',
+            title: MainForm.{#MISSINGUPLOADTITLE},
+            msg: MainForm.{#MISSINGUPLOADMESSAGE},
             modal: true,
             icon: Ext.Msg.ERROR,
             buttons: Ext.Msg.OK

@@ -109,7 +109,14 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            writer.FTemplate.InsertSnippet("CUSTOMFUNCTIONS", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOAD"));
+            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOAD");
+
+            ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADTITLE", ctrl,
+                ctrl.GetAttribute("MissingUploadTitle"));
+            ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADMESSAGE", ctrl,
+                ctrl.GetAttribute("MissingUploadMessage"));
+
+            writer.FTemplate.InsertSnippet("CUSTOMFUNCTIONS", uploadCheckAssistantSnippet);
 
             ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
 
@@ -227,6 +234,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public ComboboxGenerator()
             : base("cmb", "checkbox")
         {
+            FDefaultWidth = 190;
             FControlDefinitionSnippetName = "COMBOBOXDEFINITION";
         }
 
@@ -244,6 +252,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 if (optionalValues[counter].StartsWith("="))
                 {
                     optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
+                    ctrlSnippet.SetCodelet("VALUE", optionalValues[counter]);
                 }
 
                 if (counter > 0)
@@ -261,6 +270,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             valuesArray += "]";
 
             ctrlSnippet.SetCodelet("OPTIONALVALUESARRAY", valuesArray);
+
+            if (ctrl.HasAttribute("width"))
+            {
+                ctrlSnippet.SetCodelet("WIDTH", ctrl.GetAttribute("width"));
+            }
 
             return ctrlSnippet;
         }
@@ -333,6 +347,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public InlineGenerator()
             : base("inl", "displayfield")
         {
+            FControlDefinitionSnippetName = "INLINEDEFINITION";
         }
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
@@ -348,11 +363,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ACtrl,
                 "Your browser is not able to display embedded documents. Please click on the following link to read the text: ");
 
-            ctrlSnippet.SetCodelet("HTML",
-                String.Format("<iframe src=\"' + {0} + '\" width=\"100%\" height=\"250\"><p>{1}<a href=\"' + {0} + '\">' + {2} + '</a></p></iframe>",
-                    "this." + ACtrl.controlName + "URL",
-                    "' + this." + ACtrl.controlName + "BROWSERMISSINGIFRAMESUPPORT + '",
-                    "this." + ACtrl.controlName + "LABEL"));
+            ctrlSnippet.SetCodelet("HEIGHT", "250");
+
+            if (ACtrl.HasAttribute("Height"))
+            {
+                ctrlSnippet.SetCodelet("HEIGHT", ACtrl.GetAttribute("Height"));
+            }
 
             return ctrlSnippet;
         }
@@ -497,6 +513,55 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 }
 
                 Controls.Add(radioButtonName);
+            }
+
+            return Controls;
+        }
+    }
+
+    // this is for radiogroup with all sorts of sub controls
+    public class RadioGroupComplexGenerator : GroupBoxBaseGenerator
+    {
+        public RadioGroupComplexGenerator()
+            : base("rgr")
+        {
+            FControlDefinitionSnippetName = "RADIOGROUPDEFINITION";
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                return TXMLParser.GetChild(curNode, "Controls") != null;
+            }
+
+            return false;
+        }
+
+        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        {
+            StringCollection Controls =
+                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+            string DefaultValue = Controls[0];
+
+            if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
+            {
+                DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
+            }
+
+            foreach (string controlName in Controls)
+            {
+                TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
+
+                if (radioButton == null)
+                {
+                    throw new Exception("cannot find control " + controlName + " used in RadioGroup " + curNode.Name);
+                }
+
+                if (StringHelper.IsSame(DefaultValue, controlName))
+                {
+                    radioButton.SetAttribute("RadioChecked", "true");
+                }
             }
 
             return Controls;

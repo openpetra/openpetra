@@ -46,7 +46,26 @@ Ext.onReady(function() {
         }
 
         return true;
-    };    
+    };
+
+    /// it seems we need this for checkboxes in the assistant
+    Ext.form.Checkbox.prototype.isValid = function()
+    {
+        if (this.vtype == "forcetick")
+        {
+            if (!this.checked) 
+            {
+                Ext.form.Field.prototype.markInvalid.call(this, {#FORMNAME}.strErrorCheckboxRequired); 
+                return false;
+            }
+            else 
+            {
+                Ext.form.Field.prototype.clearInvalid.call(this);
+            }
+        }
+
+        return true;
+    };
 });
 {#ENDIF FORCECHECKBOX}
 

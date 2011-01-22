@@ -3,77 +3,68 @@ RootNode:
     FormTitle: Application form
     FormType: SubmitForm
     Template: assistantForm
-    WindowWidth: 550
+    WindowWidth: 750
+    WindowHeight: 800
     FormFrame: true
+    LabelWidth: 200
     FormHeader: false
     Controls:
         pnlContent:
-            Controls: [aspWelcome, aspPage1, aspPagePhoto, aspPage2]
+            Controls: [aspWelcome, aspPhoto, aspMotivation, aspAgreements]
             Buttons: [btnConfirm]
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
             Label: Welcome
             Controls: [lblWelcome, lblWelcome2, hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole]
-        lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
+        lblWelcome: {Label="Welcome to the test for multi pages assistant."}
         lblWelcome2: {Label="Please click on &quot;next&quot; to start your application!"}
         hidRegistrationOffice: {value=43000000}
         hidEventIdentifier: {value=SC001CNGRSS08}
         hidRegistrationCountryCode: {value=en-US}
         hidRole: {value=TS-SERVE}
-        aspPage1:
-            Label: "Address Details"
-            Controls:
-                Row0: [txtFirstName]
-                Row0b: [txtLastName]
-                Row1: [txtStreet]
-                Row2: [txtPostcode, txtCity]
-                Row4: [txtPhone]
-                Row5: [txtMobile]
-                Row6: [txtEmail]
-        aspPagePhoto:
-            Label: "Photo"
+        aspPhoto:
+            Controls: 
+                Row1: [grpPhoto]
+        grpPhoto:
             Controls:
                 Row0: [lblPhoto]
-                Row1: [uplPhoto]
+                Row1: [lblPhoto2]
+                Row2: [lblPhoto3]
+                Row3: [uplPhoto]
         lblPhoto:
             Label: "Please upload a photo of your face. It will be printed on your badge."
-        aspPage2:
-            Label: "Other Details"
-            Controls: [grpOtherDetails]
-        grpOtherDetails:
-            Label: Personal Details
-            Controls:
-                Row7: [dtpDateOfBirth]
-                Row8: [cmbGender]
-                Row10: [txtExistingPartnerKey]
-                Row11: [txtGroupWish]
-        txtMobile:
-            allowBlank: true
-        txtExistingPartnerKey:
-            allowBlank: true
-        txtGroupWish:
-            allowBlank: true
-        txtEmail: {vtype=email}
-        dtpDateOfBirth:
-            MinDateYear: 1995
-            MinDateMonth: 1
-            MinDateDay: 1
-            MaxDateYear: 2000
-            MaxDateMonth: 1
-            MaxDateDay: 31
-        cmbGender:
-            OptionalValues: [Male, Female]
+        lblPhoto2: {Label="The photo should display nicely (not stretched) in the preview, and your face must be clearly recognisable."}
+        lblPhoto3: {Label="The file must be in JPG format, and should not be bigger than 500kB."}
+        uplPhoto:
+            MissingUploadTitle: "Please upload photo"
+            MissingUploadMessage: "Please upload photo, by clicking on the little icon right beside the empty photo frame!"
+        aspMotivation:
+            Controls: [grpMotivation]
+        grpMotivation:
+            Controls: [txtWhat]
+        txtWhat:
+            Label: Why do you want to participate at the conference? What do you hope to benefit
+            Multiline: true
+        aspAgreements:
+            Controls: [inlCLS, chkCLS]
+        inlCLS:
+            Label: "Some Agreement"
+            Height: 150
+            url: doc/inline.html
+        chkCLS:
+            Label: I have read the contract and I agree to it
+            vtype: forcetick
         btnConfirm:
             Label: Submit registration
             AjaxRequestUrl: DataImportFromForm
             AjaxRequestParameters:
-                    AFormID: RegisterPerson
+                    AFormID: DoNothing
             SendingMessageTitle: "Please wait"
             SendingMessage: "Data are being sent to the server"
-            RedirectURLOnSuccess: success.aspx
-            DownloadOnSuccess: jsonData.data.pdfPath
-            FailureMessageTitle:"Failure"
-            FailureMessage:"Something did not work on the server."
+            SuccessMessageTitle:"Success"
+            SuccessMessage: "Your application has been successful."
+            FailureMessageTitle:"DEMO"
+            FailureMessage:"DEMO: This form is not intended to work on the server!"
             CancelQuestionTitle:"Cancelling the application"
             CancelQuestionMessage:"Do you really want to cancel the application?"
             RedirectURLOnCancel: ../../../index.html
