@@ -402,6 +402,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     AJSONFormData);
 
                 Int64 NewPersonPartnerKey = -1;
+                string imageTmpPath = String.Empty;
 
                 try
                 {
@@ -464,9 +465,9 @@ namespace Ict.Petra.Server.MPartner.Import
                     }
 
                     // process Photo
-                    string imageTmpPath = TAppSettingsManager.GetValueStatic("Server.PathTemp") +
-                                          Path.DirectorySeparatorChar +
-                                          Path.GetFileName(data.imageid);
+                    imageTmpPath = TAppSettingsManager.GetValueStatic("Server.PathTemp") +
+                                   Path.DirectorySeparatorChar +
+                                   Path.GetFileName(data.imageid);
 
                     if (File.Exists(imageTmpPath))
                     {
@@ -478,7 +479,7 @@ namespace Ict.Petra.Server.MPartner.Import
                             Directory.CreateDirectory(photosPath);
                         }
 
-                        File.Move(imageTmpPath,
+                        File.Copy(imageTmpPath,
                             photosPath +
                             Path.DirectorySeparatorChar +
                             NewPersonPartnerKey +
@@ -499,6 +500,12 @@ namespace Ict.Petra.Server.MPartner.Import
                 {
                     if (SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfFilename))
                     {
+                        if (File.Exists(imageTmpPath))
+                        {
+                            // only delete the temp image after successful application. otherwise we have a problem with resending the application, because the tmp image is gone
+                            File.Delete(imageTmpPath);
+                        }
+
                         // return id of the PDF pdfIdentifier
                         string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
                         return result;

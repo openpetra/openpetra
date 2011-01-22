@@ -36,7 +36,7 @@ RootNode:
                 Row1: [txtStreet]
                 Row2: [txtPostcode]
                 Row2b: [txtCity]
-                Row3: [txtCountry]
+                Row3: [cmbCountry]
                 Row4: [txtPhone]
                 Row5: [txtMobile]
                 Row6: [txtEmail]
@@ -79,6 +79,8 @@ RootNode:
         txtPhone:
             Label: Landline phone
             allowBlank: true
+        cmbCountry:
+            OptionalValues: [DE,GB,IE,NL,AT,CH,FR,ES,FI]
         lblExistingPartnerKey:
             Label: You can find your partner key on the badge of your last conference. It is 8 or 10 digits.
         txtExistingPartnerKey:
