@@ -331,10 +331,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
-            // TODO: adjust date format to localisation? see http://dev.sencha.com/deploy/dev/docs/?class=Date
-            string customAttributes = "format: 'd.m.Y'," +
-                                      Environment.NewLine +
-                                      "boxMaxWidth: 175,";
+            string customAttributes = "boxMaxWidth: 175,";
 
             ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", customAttributes);
 

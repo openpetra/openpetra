@@ -45,6 +45,9 @@ RootNode:
             MaxDateYear: 2000
             MaxDateMonth: 1
             MaxDateDay: 31
+            ShowToday: false
+            DateFormat: m/d/Y
+            Help: mm/dd/yyyy
         dtpDateOfBirthTODO3Comboboxes:
             UseComboBox: true
             MinDateYear: 1995

@@ -111,6 +111,9 @@ RootNode:
             MaxDateYear: 2000
             MaxDateMonth: 1
             MaxDateDay: 31
+            ShowToday: false
+            DateFormat: d/m/Y
+            Help: dd/mm/yyyy
         uplPhoto:
             MissingUploadTitle: "Please upload photo"
             MissingUploadMessage: "Please upload photo, by clicking on the little icon right beside the empty photo frame!"

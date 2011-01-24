@@ -185,9 +185,23 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 snippetControl.SetCodelet("MAXYEAR", ACtrl.GetAttribute("MaxDateYear"));
                 snippetControl.SetCodelet("MAXMONTH", ACtrl.GetAttribute("MaxDateMonth"));
                 snippetControl.SetCodelet("MAXDAY", ACtrl.GetAttribute("MaxDateDay"));
-                snippetControl.SetCodelet("DEFAULTYEAR", ACtrl.GetAttribute("MinDateYear"));
-                snippetControl.SetCodelet("DEFAULTMONTH", ACtrl.GetAttribute("MinDateMonth"));
-                snippetControl.SetCodelet("DEFAULTDAY", ACtrl.GetAttribute("MinDateDay"));
+
+                if (ACtrl.HasAttribute("DateFormat"))
+                {
+                    snippetControl.SetCodelet("DATEFORMAT", ACtrl.GetAttribute("DateFormat"));
+                }
+
+                if (ACtrl.HasAttribute("ShowToday"))
+                {
+                    snippetControl.SetCodelet("SHOWTODAY", ACtrl.GetAttribute("ShowToday"));
+                }
+
+                if (ACtrl.HasAttribute("DefaultYear"))
+                {
+                    snippetControl.SetCodelet("DEFAULTYEAR", ACtrl.GetAttribute("DefaultYear"));
+                    snippetControl.SetCodelet("DEFAULTMONTH", ACtrl.GetAttribute("DefaultMonth"));
+                    snippetControl.SetCodelet("DEFAULTDAY", ACtrl.GetAttribute("DefaultDay"));
+                }
             }
 
             if (ACtrl.HasAttribute("otherPasswordField"))

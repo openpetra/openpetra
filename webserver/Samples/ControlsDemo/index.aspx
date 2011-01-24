@@ -75,7 +75,7 @@ This demo shows several controls and their behaviour:
 <li>Radio Buttons</li>
 <li>TODO: Radio Buttons with dependant controls (see missing country text box below)</li>
 <li>Comboboxes, with default value</li>
-<li>Date Time Picker, limited to a date range</li>
+<li>Date Time Picker, limited to a date range. Format and Help are set specifically in this test, otherwise the format would depend on the localisation that has been chosen</li>
 <li>TODO: 3 comboboxes for selecting the date of birth</li>
 <li>Show a document in an iframe, in the correct language</li>
 <li>Force a ticked checkbox for the rules, but don't force people to be vegetarian.</li>
