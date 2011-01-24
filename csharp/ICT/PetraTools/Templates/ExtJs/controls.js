@@ -50,15 +50,16 @@
 {#ENDIF VTYPE}    
 {#IFDEF INPUTTYPE}
     inputType: '{#INPUTTYPE}',
-{#ENDIF INPUTTYPE}    
-    fieldLabel: this.{#LABEL},
+{#ENDIF INPUTTYPE}
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
 {#IFDEF ALLOWBLANK}
+    fieldLabel: this.{#LABEL},
     allowBlank: {#ALLOWBLANK},
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
+    fieldLabel: this.{#LABEL}+' *',
     allowBlank: false,
 {#ENDIFN ALLOWBLANK}
 {#IFDEF OTHERPASSWORDFIELD}
@@ -140,7 +141,7 @@
     border:false,
     items: [{
                 xtype: 'displayfield',
-                fieldLabel: this.{#LABEL},
+                fieldLabel: this.{#LABEL}+' *',
                 allowBlank: false,
                 width: 300,
                 html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div>',
@@ -176,7 +177,6 @@
 
 {##COMBOBOXDEFINITION}
 new Ext.form.ComboBox({
-    fieldLabel: this.{#LABEL},
     hiddenName:'{#ITEMNAME}',
     store: new Ext.data.ArrayStore({
         fields: ['value', 'display'],
@@ -193,9 +193,11 @@ new Ext.form.ComboBox({
     triggerAction: 'all',
     emptyText: this.{#HELP},
 {#IFDEF ALLOWBLANK}
+    fieldLabel: this.{#LABEL},
     allowBlank: {#ALLOWBLANK},
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
+    fieldLabel: this.{#LABEL}+' *',
     allowBlank: false,
 {#ENDIFN ALLOWBLANK}
     selectOnFocus:true,
