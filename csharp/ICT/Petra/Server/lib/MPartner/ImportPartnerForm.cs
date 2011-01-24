@@ -26,6 +26,7 @@ using System.IO;
 using System.Data;
 using System.Drawing.Printing;
 using System.Net.Mail;
+using System.Collections;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -44,6 +45,7 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Jayrock.Json;
+using Jayrock.Json.Conversion;
 using Ict.Common.Printing;
 using PdfSharp;
 using PdfSharp.Drawing;
@@ -129,6 +131,8 @@ namespace Ict.Petra.Server.MPartner.Import
         /// the temp filename of the photo of the participant, which has been uploaded by upload.aspx
         /// </summary>
         public string imageid;
+        /// the raw data in json format
+        public string RawData;
     }
 
     /// <summary>
@@ -264,16 +268,13 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
-            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
-            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
-            HTMLText = HTMLText.Replace("#ADDRESS", AData.street);
-            HTMLText = HTMLText.Replace("#POSTCODE", AData.postcode);
-            HTMLText = HTMLText.Replace("#CITY", AData.city);
             HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
-            HTMLText = HTMLText.Replace("#PARTNERKEY", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
+            HTMLText = HTMLText.Replace("#REGISTRATIONID", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
             HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
                 Path.DirectorySeparatorChar + "photos" +
                 Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
+            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
+            HTMLText = HTMLText.Replace("#HTMLRAWDATA", DataToHTMLTable(AData.RawData));
 
             PrintDocument doc = new PrintDocument();
 
@@ -314,11 +315,47 @@ namespace Ict.Petra.Server.MPartner.Import
             return pdfFilename;
         }
 
+        /// <summary>
+        /// print all data from the submitted form into an HTML table;
+        /// unfortunately the variables are in no specific order
+        /// </summary>
+        /// <param name="AJsonData"></param>
+        /// <returns></returns>
+        private static string DataToHTMLTable(string AJsonData)
+        {
+            string Result = "<table cellspacing=\"2\">";
+            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
+
+            foreach (DictionaryEntry entry in list)
+            {
+                Result += String.Format("<tr><td>{0}</td><td>{1}</td></tr>", entry.Key, entry.Value);
+            }
+
+            Result += "</table>";
+
+            return Result;
+        }
+
+        private static string ReplaceKeywordsWithData(string AJsonData, string ATemplate)
+        {
+            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
+
+            foreach (DictionaryEntry entry in list)
+            {
+                ATemplate = ATemplate.Replace("#" + entry.Key.ToString().ToUpper(), entry.Value.ToString());
+            }
+
+            return ATemplate;
+        }
+
         private static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
         {
             string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
             string HTMLText = string.Empty;
+            string SenderAddress = string.Empty;
+            string BCCAddress = string.Empty;
+            string EmailSubject = string.Empty;
 
             if (!File.Exists(FileName))
             {
@@ -327,12 +364,34 @@ namespace Ict.Petra.Server.MPartner.Import
             else
             {
                 StreamReader r = new StreamReader(FileName);
+                SenderAddress = r.ReadLine();
+                BCCAddress = r.ReadLine();
+                EmailSubject = r.ReadLine();
                 HTMLText = r.ReadToEnd();
                 r.Close();
             }
 
-            HTMLText = HTMLText.Replace("#FIRSTNAME", AData.firstname);
-            HTMLText = HTMLText.Replace("#LASTNAME", AData.lastname);
+            if (!SenderAddress.StartsWith("From: "))
+            {
+                throw new Exception("missing From: line in the Email template");
+            }
+
+            if (!BCCAddress.StartsWith("BCC: "))
+            {
+                throw new Exception("missing BCC: line in the Email template");
+            }
+
+            if (!EmailSubject.StartsWith("Subject: "))
+            {
+                throw new Exception("missing Subject: line in the Email template");
+            }
+
+            SenderAddress = SenderAddress.Substring("From: ".Length);
+            BCCAddress = BCCAddress.Substring("BCC: ".Length);
+            EmailSubject = EmailSubject.Substring("Subject: ".Length);
+
+            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
+            HTMLText = HTMLText.Replace("#HTMLRAWDATA", DataToHTMLTable(AData.RawData));
 
             // load the language file for the specific country
             Catalog.Init(ACountryCode, ACountryCode);
@@ -340,13 +399,13 @@ namespace Ict.Petra.Server.MPartner.Import
             // send email
             TSmtpSender emailSender = new TSmtpSender();
 
-            MailMessage msg = new MailMessage(Catalog.GetString("DONTReply@example.org"),
+            MailMessage msg = new MailMessage(SenderAddress,
                 AData.email,
-                Catalog.GetString("RegistrationEmailSubject"),
+                EmailSubject,
                 HTMLText);
 
             msg.Attachments.Add(new Attachment(APDFFilename, System.Net.Mime.MediaTypeNames.Application.Octet));
-            msg.Bcc.Add(Catalog.GetString("RegistrationOffice@example.org"));
+            msg.Bcc.Add(BCCAddress);
 
             if (!emailSender.SendMessage(ref msg))
             {
@@ -369,8 +428,9 @@ namespace Ict.Petra.Server.MPartner.Import
             {
                 // This is a test for printing to PDF and sending an email, no partner is created in the database.
                 // make sure you have a photo with name data\photos\815.jpg for the photo to appear in the pdf
-                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
                     AJSONFormData);
+                data.RawData = AJSONFormData;
 
                 string pdfIdentifier;
                 string pdfFilename = GeneratePDF(0815, data.registrationcountrycode, data, out pdfIdentifier);
@@ -400,6 +460,7 @@ namespace Ict.Petra.Server.MPartner.Import
             {
                 TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
                     AJSONFormData);
+                data.RawData = AJSONFormData;
 
                 Int64 NewPersonPartnerKey = -1;
                 string imageTmpPath = String.Empty;

@@ -10,7 +10,7 @@ RootNode:
     FormHeader: false
     Controls:
         pnlContent:
-            Controls: [aspWelcome, aspPersonalDetails, aspConferenceDetails, aspMotivation, aspReference, aspAgreements]
+            Controls: [aspWelcome, aspPersonalDetails, aspConferenceDetails, aspMotivation, aspReference, aspAgreements, aspLastPage]
             Buttons: [btnConfirm]
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
@@ -180,6 +180,15 @@ RootNode:
         chkLegalImprint:
             Label: I have read the legal imprint and I agree to it
             vtype: forcetick
+        aspLastPage:
+            Label: Nearly done
+            Controls: [lblLastPage1, lblLastPage2, lblLastPage3]
+        lblLastPage1:
+            Label: You have entered all the data necessary for the application!
+        lblLastPage2:
+            Label: "Feel free to click on the >Previous< button to check all your entered data again, just to make sure you are happy with everything and the data is correct!"
+        lblLastPage3:
+            Label: "Once you click the >Finish< button, we will send an email to your Email Address that you have specified on the first page of this assistant, and you can download a PDF file which you and your parents need to sign and send with the post."
         btnConfirm:
             Label: Submit registration
             AjaxRequestUrl: DataImportFromForm
