@@ -29,7 +29,7 @@
   <include name="System.Web.Mobile.dll" />
   <include name="System.Web.RegularExpressions.dll" />
   <include name="System.Web.Services.dll" />
-  <include name="System.Windows.Forms.Dll" />
+  <include name="System.Windows.Forms.dll" />
   <include name="System.Xml.dll" />
 </patternset>
 
