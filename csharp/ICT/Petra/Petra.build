@@ -45,7 +45,7 @@
 
 <target name="internal-subdirs" 
         depends="shared,
-                 server,server-plugins,server-admin,
+                 server,server-plugins,server-admin,petraserverconsole
                  client,client-plugins,PetraClient" />
 
 <!-- Include default implementation -->
