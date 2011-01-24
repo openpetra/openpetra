@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2282,15 +2282,17 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnPlacementPartnerKeyId = 28;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateCreatedId = 29;
+        public static short ColumnRawApplicationDataId = 29;
         /// used for generic TTypedDataTable functions
-        public static short ColumnCreatedById = 30;
+        public static short ColumnDateCreatedId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateModifiedId = 31;
+        public static short ColumnCreatedById = 31;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModifiedById = 32;
+        public static short ColumnDateModifiedId = 32;
         /// used for generic TTypedDataTable functions
-        public static short ColumnModificationIdId = 33;
+        public static short ColumnModifiedById = 33;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnModificationIdId = 34;
 
         private static bool FInitInfoValues = InitInfoValues();
         private static bool InitInfoValues()
@@ -2326,11 +2328,12 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
                     new TTypedColumnInfo(26, "Comment", "pm_comment_c", "Application Comment", OdbcType.VarChar, 2000, false),
                     new TTypedColumnInfo(27, "GenAppCurrencyCode", "pm_gen_app_currency_code_c", "Currency Code for Application Amounts", OdbcType.VarChar, 16, false),
                     new TTypedColumnInfo(28, "PlacementPartnerKey", "pm_placement_partner_key_n", "Placement Person", OdbcType.Decimal, 10, false),
-                    new TTypedColumnInfo(29, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(30, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(31, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
-                    new TTypedColumnInfo(32, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
-                    new TTypedColumnInfo(33, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
+                    new TTypedColumnInfo(29, "RawApplicationData", "pm_raw_application_data_c", "pm_raw_application_data_c", OdbcType.VarChar, 30000, false),
+                    new TTypedColumnInfo(30, "DateCreated", "s_date_created_d", "Created Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(31, "CreatedBy", "s_created_by_c", "Created By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(32, "DateModified", "s_date_modified_d", "Modified Date", OdbcType.Date, -1, false),
+                    new TTypedColumnInfo(33, "ModifiedBy", "s_modified_by_c", "Modified By", OdbcType.VarChar, 20, false),
+                    new TTypedColumnInfo(34, "ModificationId", "s_modification_id_c", "", OdbcType.VarChar, 150, false)
                 },
                 new int[] {
                     0, 1, 2
@@ -2416,6 +2419,8 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public DataColumn ColumnGenAppCurrencyCode;
         /// This is the placement person handling this application.
         public DataColumn ColumnPlacementPartnerKey;
+        /// stores the plain data received from the browser in JSON format
+        public DataColumn ColumnRawApplicationData;
         /// The date the record was created.
         public DataColumn ColumnDateCreated;
         /// User ID of who created this record.
@@ -2459,6 +2464,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.Columns.Add(new System.Data.DataColumn("pm_comment_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_gen_app_currency_code_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("pm_placement_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("pm_raw_application_data_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
             this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
@@ -2498,6 +2504,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.ColumnComment = this.Columns["pm_comment_c"];
             this.ColumnGenAppCurrencyCode = this.Columns["pm_gen_app_currency_code_c"];
             this.ColumnPlacementPartnerKey = this.Columns["pm_placement_partner_key_n"];
+            this.ColumnRawApplicationData = this.Columns["pm_raw_application_data_c"];
             this.ColumnDateCreated = this.Columns["s_date_created_d"];
             this.ColumnCreatedBy = this.Columns["s_created_by_c"];
             this.ColumnDateModified = this.Columns["s_date_modified_d"];
@@ -2909,6 +2916,18 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public static short GetPlacementPartnerKeyLength()
         {
             return 10;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRawApplicationDataDBName()
+        {
+            return "pm_raw_application_data_c";
+        }
+
+        /// get character length for column
+        public static short GetRawApplicationDataLength()
+        {
+            return 30000;
         }
 
         /// get the name of the field in the database for this column
@@ -3740,6 +3759,32 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             }
         }
 
+        /// stores the plain data received from the browser in JSON format
+        public String RawApplicationData
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRawApplicationData.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRawApplicationData)
+                            || (((String)(this[this.myTable.ColumnRawApplicationData])) != value)))
+                {
+                    this[this.myTable.ColumnRawApplicationData] = value;
+                }
+            }
+        }
+
         /// The date the record was created.
         public System.DateTime? DateCreated
         {
@@ -3902,6 +3947,7 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
             this.SetNull(this.myTable.ColumnComment);
             this.SetNull(this.myTable.ColumnGenAppCurrencyCode);
             this.SetNull(this.myTable.ColumnPlacementPartnerKey);
+            this.SetNull(this.myTable.ColumnRawApplicationData);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
             this.SetNull(this.myTable.ColumnCreatedBy);
             this.SetNull(this.myTable.ColumnDateModified);
@@ -4255,6 +4301,18 @@ namespace Ict.Petra.Shared.MPersonnel.Personnel.Data
         public void SetPlacementPartnerKeyNull()
         {
             this.SetNull(this.myTable.ColumnPlacementPartnerKey);
+        }
+
+        /// test for NULL value
+        public bool IsRawApplicationDataNull()
+        {
+            return this.IsNull(this.myTable.ColumnRawApplicationData);
+        }
+
+        /// assign NULL value
+        public void SetRawApplicationDataNull()
+        {
+            this.SetNull(this.myTable.ColumnRawApplicationData);
         }
 
         /// test for NULL value

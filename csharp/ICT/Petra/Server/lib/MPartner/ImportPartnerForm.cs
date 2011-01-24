@@ -428,6 +428,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     // add a record for the application
                     ConferenceApplicationTDS ConfDS = new ConferenceApplicationTDS();
                     PmGeneralApplicationRow GeneralApplicationRow = ConfDS.PmGeneralApplication.NewRowTyped();
+                    GeneralApplicationRow.RawApplicationData = AJSONFormData;
                     GeneralApplicationRow.PartnerKey = NewPersonPartnerKey;
                     GeneralApplicationRow.ApplicationKey = -1;
                     GeneralApplicationRow.RegistrationOffice = data.registrationoffice;

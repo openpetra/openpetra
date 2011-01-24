@@ -15890,6 +15890,10 @@
                 label="Placement Person"
                 columnlabel="Placement Person"
                 help="This is the placement person handling this application"/>
+    <tablefield name="pm_raw_application_data_c"
+                type="varchar"
+                descr="stores the plain data received from the browser in JSON format"
+                format="x(15000)"/>
     <!-- Constraints on table pm_general_application -->
     <primarykey name="pm_general_application_pk"
                 descr=""
