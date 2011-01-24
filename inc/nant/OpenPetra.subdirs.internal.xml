@@ -9,7 +9,7 @@
         </items>
       </in>
       <do>
-        <nant inheritall="false" target="${target}" buildfile="${filename}" />
+        <nant inheritall="false" target="${target}" buildfile="${filename}" verbose="${verbose}"/>
       </do>
    </foreach>
 </target>

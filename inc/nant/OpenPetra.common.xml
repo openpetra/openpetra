@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+xml version="1.0"?>
 <project name="OpenPetra-tasks">
 
 <!-- Get OpenPetra root directory 
@@ -124,5 +124,7 @@
 <property name="tool-generateORM" value="${dir.bin}/Ict.Tools.GenerateORM.exe" overwrite="false" />
 <property name="PetraXML.file" value="${dir.root}/db/petra.xml" overwrite="false" />
 
+<!-- loglevel -->
+<property name="verbose" value="false"  overwrite="false" />
 
 </project>
