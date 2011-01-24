@@ -89,9 +89,5 @@ include buildfile="inc/nant/OpenPetra.common.xml"/>
 <!-- Include default implementation -->
 <include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
 
-
-<!-- targets for compatibility -->
-<target name="compilePetraTools" />
-
 </project>
 

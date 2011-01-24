@@ -108,7 +108,8 @@
         <attribute type="AssemblyVersion" value='"0.0.9.0"' asis="true" /> 
       </attributes>
     </asminfo>
-    <csc filealign="4096" output="${dir.bin}/${AssemblyName}" 
+    <!-- filealign="4096"  for csc not supported on mono -->
+    <csc output="${dir.bin}/${AssemblyName}" 
          doc="${dir.bin}/${Namespace}.xml"
          target="${OutputType}" debug="${compile.debug}" 
          noconfig="true">
