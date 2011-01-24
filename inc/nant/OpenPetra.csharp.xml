@@ -104,7 +104,7 @@
         <attribute type="AssemblyTrademark" value='""' asis="true" />
         <attribute type="AssemblyCulture" value='""' asis="true" />       
         <attribute type="ComVisible" value="false" asis="true" /> 
-        <attribute type="AssemblyVersion" value='"0.0.9.0"' asis="true" /> 
+        <attribute type="AssemblyVersion" value='"${ReleaseID}"' asis="true" /> 
       </attributes>
     </asminfo>
     <!-- filealign="4096"  for csc not supported on mono -->

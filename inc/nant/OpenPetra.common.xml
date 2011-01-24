@@ -23,17 +23,20 @@
       string returnvalue = (string) field.GetValue(null);
       return returnvalue;
     }
-    ]]>
-  </code>
-</script>
+    
+    [Function("GUIDGen")]
+    public static string GUIDGen(  ) {
+        return Guid.NewGuid().ToString("D").ToUpper();
+    }
 
-<script language="C#" prefix="OP" >
-    <code>
-      <![CDATA[
-        [Function("GUIDGen")]
-        public static string GUIDGen(  ) {
-            return Guid.NewGuid().ToString("D").ToUpper();
-        }
+    [Function("GetReleaseIDFromVersionTxt")]
+    public static string GetReleaseIDFromVersionTxt(string APath)
+    {
+        StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "patches" + Path.DirectorySeparatorChar + "version.txt");
+        string version = sr.ReadLine().Replace("-", ".");
+        sr.Close();
+        return version;
+    }
        ]]>
     </code>
 </script>
@@ -50,6 +53,9 @@
 
 <!-- Import user specific properties, if available -->
 
+
+<!-- Version number -->
+<property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />
 
 <!-- more directories -->
  <!-- incdir -->
