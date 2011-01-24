@@ -5,6 +5,6 @@
 
 <property name="RunCsDepend" value="true" />
 
-<include buildfile="..\..\..\..\\inc\nant\OpenPetra.csharp.xml"/> 
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
 </project>

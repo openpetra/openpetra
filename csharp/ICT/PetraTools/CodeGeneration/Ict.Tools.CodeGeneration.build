@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-Ict.Tools.CodeGeneration-build-generated">
+<project name="OpenPetra-csharp-Ict.Tools.CodeGeneration-build">
 <property name="Namespace" value="Ict.Tools.CodeGeneration" />
 
 <property name="RunCsDepend" value="true" />
