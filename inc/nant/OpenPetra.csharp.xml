@@ -67,7 +67,6 @@
         <exclude name="${excludecsfiles}" />
       </sources>    
     </CsDepend>
-    <include buildfile="${referencesFile}" />
   </if>
   <call target="setreferences" />
 </target>
