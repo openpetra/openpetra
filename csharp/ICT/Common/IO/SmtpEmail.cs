@@ -116,6 +116,7 @@ namespace Ict.Common.IO
                 // and http://www.mono-project.com/FAQ:_Security#Does_SSL_works_for_SMTP.2C_like_GMail_.3F
                 // on Mono command prompt:
                 //    mozroots --import --ask-remove --machine
+                //    mozroots --import --ask-remove
                 //    certmgr -ssl smtps://tim00.hostsharing.net:443
 
                 TLogging.Log("There has been a problem sending the email");

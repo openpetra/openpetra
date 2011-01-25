@@ -27,6 +27,8 @@ using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -80,10 +82,10 @@ namespace Ict.Common.Printing
             FXBlackPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), Cm(0.05f));
 
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
-            FXSmallPrintFont = new XFont("Arial", Point(6 + XFONTSIZE));
-            FXDefaultFont = new XFont("Arial", Point(8 + XFONTSIZE));
-            FXDefaultBoldFont = new XFont("Arial", Point(8 + XFONTSIZE), XFontStyle.Bold);
-            FXHeadingFont = new XFont("Arial", Point(10 + XFONTSIZE), XFontStyle.Bold);
+            FXSmallPrintFont = new XFont("Arial", 0.12); // Point(6 + XFONTSIZE)
+            FXDefaultFont = new XFont("Arial", 0.14); // Point(8 + XFONTSIZE)
+            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold); // Point(8 + XFONTSIZE)
+            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold); // Point(10 + XFONTSIZE)
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
             FXRight.Alignment = XStringAlignment.Far;
@@ -376,15 +378,14 @@ namespace Ict.Common.Printing
             CurrentXPos += Width;
         }
 
-        /// <summary>
-        /// Line Feed; increases the current y position by the height of the given font
-        /// </summary>
-        /// <returns>the new current line
-        /// </returns>
-        public override float LineFeed(eFont AFont)
+        private float GetFontHeight(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics);
-            return CurrentYPos;
+            return GetFontHeight(GetXFont(AFont));
+        }
+
+        private float GetFontHeight(XFont AFont)
+        {
+            return (float)Math.Round(AFont.Size, 2);     //  .GetHeight(FXGraphics)
         }
 
         /// <summary>
@@ -393,7 +394,7 @@ namespace Ict.Common.Printing
         /// <returns>the new current line</returns>
         public override float LineFeed()
         {
-            CurrentYPos = CurrentYPos + (float)FXBiggestLastUsedFont.GetHeight(FXGraphics);
+            CurrentYPos += GetFontHeight(FXBiggestLastUsedFont);
 
             // reset the biggest last used font
             FXBiggestLastUsedFont = FXDefaultFont;
@@ -408,7 +409,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics) / 2;
+            CurrentYPos = CurrentYPos + GetFontHeight(AFont) / 2;
             return CurrentYPos;
         }
 
@@ -419,7 +420,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos - Point((float)GetXFont(AFont).GetHeight(FXGraphics));
+            CurrentYPos = CurrentYPos - GetFontHeight(AFont);
             return CurrentYPos;
         }
 
@@ -435,6 +436,7 @@ namespace Ict.Common.Printing
             {
                 FEv = AEv;
                 FEv.Graphics.PageUnit = GraphicsUnit.Inch;
+                FEv.Graphics.TranslateTransform(0, 0);
                 FXGraphics = XGraphics.FromGraphics(AEv.Graphics, PageSizeConverter.ToSize(PageSize.A4));
                 InitFontsAndPens();
             }
@@ -448,8 +450,19 @@ namespace Ict.Common.Printing
         /// <param name="AFilename"></param>
         public void SavePDF(string AFilename)
         {
-            // should we catch an exception if document cannot be written?
-            PdfDocument pdfDocument = new PdfDocument(AFilename);
+            if (Directory.Exists("/usr/share/fonts/"))
+            {
+                PdfSharp.Internal.NativeMethods.FontDirectory = "/usr/share/fonts/";
+            }
+
+            if (RegionInfo.CurrentRegion == null)
+            {
+                // https://bugzilla.novell.com/show_bug.cgi?id=588708
+                // RegionInfo.CurrentRegion is null
+                throw new Exception("Mono bug: CurrentRegion is still null, invariant culture. Please set LANG environment variable");
+            }
+
+            PdfDocument pdfDocument = new PdfDocument();
 
             do
             {
@@ -480,12 +493,15 @@ namespace Ict.Common.Printing
                         myPageSettings);
                     FEv.HasMorePages = true;
                     FEv.Graphics.PageUnit = GraphicsUnit.Inch;
+                    FEv.Graphics.TranslateTransform(0, 0);
                     InitFontsAndPens();
                 }
 
                 PrintPage(null, FEv);
             } while (HasMorePages());
 
+            // should we catch an exception if document cannot be written?
+            pdfDocument.Save(AFilename);
             pdfDocument.Close();
         }
     }

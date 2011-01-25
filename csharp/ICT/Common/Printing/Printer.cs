@@ -369,14 +369,6 @@ namespace Ict.Common.Printing
             }
         }
 
-
-        /// <summary>
-        /// Line Feed; increases the current y position by the height of the given font
-        /// </summary>
-        /// <returns>the new current line
-        /// </returns>
-        public abstract float LineFeed(eFont AFont);
-
         /// <summary>
         /// Line Feed; increases the current y position by the height of the biggest last used font
         /// </summary>

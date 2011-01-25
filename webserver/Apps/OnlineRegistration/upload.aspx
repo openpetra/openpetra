@@ -86,13 +86,18 @@ try
             Response.ContentType = "image/jpeg";
             Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
             Response.TransmitFile( Filename );
-            // Response.End(); avoid System.Threading.ThreadAbortException 
+            // comment Response.End() to avoid System.Threading.ThreadAbortException
+            // see http://www.west-wind.com/Weblog/posts/368975.aspx
+            Response.End();
         }
     }
+}
+catch (System.Threading.ThreadAbortException)
+{
 }
 catch (Exception e)
 {
     TLogging.Log(e.ToString() + ": " + e.Message);
     TLogging.Log(e.StackTrace);
-}    
+}
 %>

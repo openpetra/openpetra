@@ -720,17 +720,6 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// Line Feed; increases the current y position by the height of the given font
-        /// </summary>
-        /// <returns>the new current line
-        /// </returns>
-        public override float LineFeed(eFont AFont)
-        {
-            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
-            return CurrentYPos;
-        }
-
-        /// <summary>
         /// Line Feed; increases the current y position by the height of the biggest last used font
         /// </summary>
         /// <returns>the new current line</returns>
@@ -940,16 +929,16 @@ namespace Ict.Common.Printing
                 {
                     // if no printer is installed, use default values
                     FLeftMargin = 0;
-                    FTopMargin = 0;
+                    FTopMargin = 0.1f;
                     FRightMargin = -0.00333374f;
                     FBottomMargin = 0.00166687f;
                     FWidth = 8.268333f;
                     FHeight = 11.69333f;
 
-                    // margin is set by the printing program, eg. HTML Renderer
-                    if (FEv.PageSettings.PrintableArea.Width != 0)
+                    try
                     {
-                        try
+                        // margin is set by the printing program, eg. HTML Renderer
+                        if (FEv.PageSettings.PrintableArea.Width != 0)
                         {
                             FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
                             FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
@@ -958,10 +947,10 @@ namespace Ict.Common.Printing
                             FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
                             FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
                         }
-                        catch (Exception)
-                        {
-                            TLogging.Log("no printer");
-                        }
+                    }
+                    catch (Exception)
+                    {
+                        TLogging.Log("no printer");
                     }
                 }
                 else if (FMarginType == eMarginType.eDefaultMargins)

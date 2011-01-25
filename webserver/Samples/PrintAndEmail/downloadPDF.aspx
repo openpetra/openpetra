@@ -28,8 +28,12 @@ try
         TLogging.Log(pdfFileName);
         Response.TransmitFile( pdfFileName );
         // comment Response.End() to avoid System.Threading.ThreadAbortException
-        // Response.End();
+        // see http://www.west-wind.com/Weblog/posts/368975.aspx
+        Response.End();
     }
+}
+catch (System.Threading.ThreadAbortException)
+{
 }
 catch (Exception e)
 {
