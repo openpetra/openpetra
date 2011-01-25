@@ -137,7 +137,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.ExchangeRateToBase = ImportDecimal("exchange rate to base");
                             giftBatch.BankCostCentre = ImportString("bank cost centre");
                             giftBatch.GiftType = ImportString("gift type");
-                            FImportMessage = "writing gift batch";
+                            FImportMessage = "Saving gift batch";
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                             {
@@ -194,7 +194,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (FExtraColumns)
                             {
-                                giftDetails.RecipientLedgerNumber = ImportInt32("recipient Ledger number");
+                                giftDetails.RecipientLedgerNumber = ImportInt32("recipient ledger number");
                             }
 
                             giftDetails.GiftAmount = ImportDecimal("Gift amount");
@@ -221,7 +221,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftCommentThree = ImportString("gift comment three");
                             giftDetails.CommentThreeType = ImportString("comment three type");
                             giftDetails.TaxDeductable = ImportBoolean("tax deductable");
-                            FImportMessage = "writing gift";
+                            FImportMessage = "Saving gift";
 
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
                             {
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             FMainDS.AGift.AcceptChanges();
-                            FImportMessage = "writing giftdetails";
+                            FImportMessage = "Saving giftdetails";
 
                             if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
                             {
@@ -256,12 +256,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             catch (Exception ex)
             {
-                // TODO Replace error Messages from contraints with speaking messages
+                String speakingExceptionText = SpeakingExceptionMessage(ex);
                 AMessages.Add(new TVerificationResult("Import",
 
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}. "), RowNumber) +
                         FNewLine +
-                        FImportMessage + " " + ex,
+                        Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return false;
@@ -290,6 +290,69 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             return true;
+        }
+
+        private String SpeakingExceptionMessage(Exception ex)
+        {
+            //note that this is only done for "user errors" not for program errors!
+            String theExMessage = ex.Message;
+
+            if (theExMessage.Contains("a_gift_batch_fk2"))
+            {
+                return Catalog.GetString("Invalid account code");
+            }
+
+            if (theExMessage.Contains("a_gift_batch_fk3"))
+            {
+                return Catalog.GetString("Invalid cost centre");
+            }
+
+            if (theExMessage.Contains("a_gift_batch_fk4"))
+            {
+                return Catalog.GetString("Invalid currency code");
+            }
+
+            if (theExMessage.Contains("a_gift_fk2"))
+            {
+                return Catalog.GetString("Invalid method of giving");
+            }
+
+            if (theExMessage.Contains("a_gift_fk3"))
+            {
+                return Catalog.GetString("Invalid method of payment");
+            }
+
+            if (theExMessage.Contains("a_gift_fk4"))
+            {
+                return Catalog.GetString("Invalid donor partner key");
+            }
+
+            if (theExMessage.Contains("a_gift_detail_fk2"))
+            {
+                return Catalog.GetString("Invalid motivation detail");
+            }
+
+            if (theExMessage.Contains("a_gift_detail_fk3"))
+            {
+                return Catalog.GetString("Invalid recipient partner key");
+            }
+
+            if (theExMessage.Contains("a_gift_detail_fk4"))
+            {
+                return Catalog.GetString("Invalid mailing code");
+            }
+
+            if (theExMessage.Contains("a_gift_detail_fk5"))
+            {
+                return Catalog.GetString("Invalid recipient ledger number");
+            }
+
+            if (theExMessage.Contains("a_gift_detail_fk6"))
+            {
+                return Catalog.GetString("Invalid cost centre");
+            }
+
+            return ex.ToString();
         }
 
         private String ImportString(String message)

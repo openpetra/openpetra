@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -114,6 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
+                    FLoadedData = TFinanceBatchFilterEnum.fbfNone;
                     LoadBatches(FLedgerNumber);
                     FPetraUtilsObject.DisableSaveButton();
                 }
