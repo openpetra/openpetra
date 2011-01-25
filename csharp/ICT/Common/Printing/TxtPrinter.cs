@@ -90,6 +90,17 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed()
         {
+            CurrentYPos++;
+            return CurrentYPos;
+        }
+
+        /// <summary>
+        /// Line Feed; increases the current y position by one
+        /// </summary>
+        /// <returns>the new current line
+        /// </returns>
+        public override float LineFeed(eFont AFont)
+        {
             CurrentYPos = CurrentYPos + 1;
 
             // check if line is only a marking line; in that case, jump over it

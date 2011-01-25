@@ -720,6 +720,17 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// Line Feed; increases the current y position by the height of the given font
+        /// </summary>
+        /// <returns>the new current line
+        /// </returns>
+        public override float LineFeed(eFont AFont)
+        {
+            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
+            return CurrentYPos;
+        }
+
+        /// <summary>
         /// Line Feed; increases the current y position by the height of the biggest last used font
         /// </summary>
         /// <returns>the new current line</returns>
