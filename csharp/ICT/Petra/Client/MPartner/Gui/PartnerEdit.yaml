@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../CommonForms/PetraEditForm.yaml
     FormTitle: Partner Edit
     Namespace: Ict.Petra.Client.MPartner.Gui
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]

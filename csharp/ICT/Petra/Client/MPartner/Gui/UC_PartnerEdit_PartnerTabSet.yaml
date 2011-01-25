@@ -20,7 +20,7 @@ RootNode:
         tpgAddresses: {LoadPageDynamically=true}
             Label: Addresses ({0})
             Image: Addresses.ico
-            DynamicControlType: Ict.Petra.Client.MCommon.TUCPartnerAddresses
+            DynamicControlType: Ict.Petra.Client.MCommon.Gui.TUCPartnerAddresses
             SeparateDynamicControlSetupMethod: true
             
         tpgPartnerDetails: {LoadPageDynamically=true}

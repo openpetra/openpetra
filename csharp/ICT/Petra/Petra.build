@@ -33,7 +33,7 @@
         buildfile="PetraClient/PetraClient.build" />
 </target>
 
-<target name="client" depends="shared" >
+<target name="client" depends="shared,server" >
   <nant inheritall="false" target="${target}" 
         buildfile="Client/Ict.Petra.Client.build" />
 </target>

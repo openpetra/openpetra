@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraModuleForm.yaml
+    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
     UtilObjectClass: TFrmPetraModuleUtils
     FormType: navigation
     Template: windowFind

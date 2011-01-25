@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../CommonForms/PetraForm.yaml
     FormTitle: Contacts with Partners
     Comment: this screen shows who has been contacted by us via letter, phone, personal meeting, email, etc
     Namespace: Ict.Petra.Client.MPartner.Gui
@@ -7,7 +7,7 @@ RootNode:
     Template: windowFind
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     MasterTable: PPartnerContact
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces]
     Actions:
         actSearch: {ActionClick=Search}
         actDeleteContacts: {ActionClick=DeleteContacts}

@@ -1,0 +1,122 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Accounts Payable
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP
+    FormType: browse
+    Template: windowFind
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        cndSelectedSupplier: {InitialValue=false}
+        actSearch:
+            Label: &Search
+            ActionClick: SearchForSupplier
+        actSupplierTransactions:
+            Label: Open Transactions
+            ActionClick: SupplierTransactions
+            Tooltip: Open the transactions of the supplier
+            ShortCut: Ctrl+O
+            Enabled: cndSelectedSupplier
+        actNewSupplier:
+            Label: &New Supplier
+            ActionClick: NewSupplier
+            Tooltip: Create a new supplier
+            ShortCut: Ctrl+N
+        actEditSupplier:
+            Label: &Edit Supplier
+            ActionClick: EditSupplier
+            Tooltip: Change the details and settings of an existing supplier
+            ShortCut: Ctrl+E
+            Enabled: cndSelectedSupplier
+        actCreateInvoice:
+            Label: Create &Invoice
+            ShortCut: Ctrl+I
+            ActionClick: CreateInvoice
+            Enabled: cndSelectedSupplier
+        actCreateCreditNote:
+            Label: Create C&redit Note
+            ShortCut: Ctrl+R
+            ActionClick: CreateCreditNote
+            Enabled: cndSelectedSupplier
+        actFindInvoice:
+            Label: &Find Invoice...
+            ShortCut: Ctrl+F
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [cmbSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+        cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
+        pnlSearchFilter:
+            Dock: Top
+            Controls: [chkDueToday, chkOverdue, chkDueFuture]
+            ControlsOrientation: horizontal
+        chkDueToday: {Label=Due &Today}
+            CheckBoxAttachedLabel: right
+        chkOverdue: {Label=&Overdue, CheckBoxAttachedLabel=right}        
+        chkDueFuture:
+            Label: Due &Within Future
+            CheckBoxAttachedLabel: right
+            Controls: [nudNumberTimeUnits, cmbTimeUnit]
+            ControlsOrientation: horizontal
+        nudNumberTimeUnits: {NoLabel=true}
+        cmbTimeUnit:
+            NoLabel: true
+            OptionalValues: [=Days, Weeks, Months]
+        pnlSearchButtons:
+            Controls: [btnSearch, btnReset]
+            ControlsOrientation: horizontal
+        btnSearch: {Action=actSearch, AcceptButton=true}
+        btnReset: {Label=&Reset Criteria}
+        tabSearchResult:
+            Controls: [tpgSuppliers, tpgOutstandingInvoices]
+            Dock: Fill
+        tpgSuppliers:
+            # todo: different toolbar
+            Controls: [pnlSupplierOptions, grdSupplierResult]
+        tpgOutstandingInvoices:
+            # todo: different toolbar
+            Controls: [pnlTaggingOptions, grdInvoiceResult]
+        pnlSupplierOptions:
+            Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
+            ControlsOrientation: horizontal
+        grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
+        grdInvoiceResult: {Dock=Fill}
+        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right}
+        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right}
+        cmbSupplierCurrency: {Label=C&urrency}
+        pnlTaggingOptions:
+            Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]
+            ControlsOrientation: horizontal
+        btnTagAllApprovable: {Label=Tag all Appro&vable}
+        btnTagAllPostable: {Label=Tag a&ll Postable}
+        btnTagAllPayable: {Label=Tag all Paya&ble}
+        btnUntagAll: {Label=&Untag all}
+        txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
+    Menu:
+        mniFile:
+            mniReports: {Label=&Reports}
+            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
+            mniSeparator: {Label=-}
+            mniImport: {Label=&Import}
+            mniExport: {Label=&Export}
+            mniSeparator: {Label=-}
+            mniDefaults: {Label=AP &Defaults}
+            mniSeparator: {Label=-}
+        mniSupplier:
+            mniNewSupplier: {Action=actNewSupplier}
+            mniTransactions: {Action=actSupplierTransactions}
+            mniEditSupplier: {Action=actEditSupplier}
+            mniSeparator: {Label=-}
+            mniCreateInvoice: {Action=actCreateInvoice}
+            mniCreateCreditNote: {Action=actCreateCreditNote}
+        mniFind:
+            mniFindInvoice: {Action=actFindInvoice}
+    # todo: multiple toolbars, depending on selected tpg?
+    Toolbar:
+        tbbTransactions: {Action=actSupplierTransactions}
+        tbbEditSupplier: {Action=actEditSupplier}
+        tbbSeparator: {Label=-}
+        tbbNewSupplier: {Action=actNewSupplier}
+        tbbSeparator: {Label=-}
+        tbbCreateInvoice: {Action=actCreateInvoice}
+        tbbCreateCreditNote: {Action=actCreateCreditNote}

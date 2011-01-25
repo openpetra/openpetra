@@ -1,10 +1,11 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraModuleForm.yaml
+    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
     UtilObjectClass: TFrmPetraModuleUtils
     FormType: navigation
     FormTitle: Partner Module OpenPetra.org 
     Namespace: Ict.Petra.Client.MPartner.Gui
     HasManualCodeInOtherFile: true
+    UsingNamespaces: [Ict.Petra.Client.MReporting.Gui]
     Actions:
         actFindPartner: {ShortCut=CTRL-F, ActionClick=FindPartner}
         actNewPartner: {ShortCut=CTRL-N, ActionClick=NewPartner}

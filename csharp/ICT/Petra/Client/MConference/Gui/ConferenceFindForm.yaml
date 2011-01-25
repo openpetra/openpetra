@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Conference Find
+    Namespace: Ict.Petra.Client.MConference.Gui
+    DatasetType: Ict.Petra.Shared.MConference.Data.SelectConferenceTDS
+    FormType: browse
+    Template: windowFind
+    MasterTable: PcConference
+    DetailTable: PPartner
+    UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data]
+    TemplateParameters:
+        INITMANUALCODE: InitGridManually();
+    WindowWidth: 522
+    WindowHeight: 404
+    Actions:
+        actSearch: {ActionClick=Search}
+        actAccept: {ActionClick=Accept}
+        actCancel: {ActionClick=Cancel}
+    Controls: 
+        pnlContent:
+            Dock: Fill
+            Controls: [grpFindConference, pnlButtons]
+        grpFindConference:
+            Controls:[txtConference, txtPrefix, btnSearch, grdConferences]
+        txtConference:
+            Label: Conference
+        txtPrefix:
+            Label: Prefix
+        btnSearch:
+            Label: Search
+            Action: actSearch
+        grdConferences:
+            Dock: Fill
+            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.XyzTbdPrefix, PcConference.Start, PcConference.End]
+            CustomColumns:
+                PartnerShortName: {Label=Conference Name}
+                ConferenceKey: {Label=Conference Key}
+                XyzTbdPrefix: {Label=Campaign Code Prefix}
+            ActionDoubleClick: actAccept
+            Width: 500
+            Height: 200
+        pnlButtons:
+            Controls:
+                Row1: [btnAccept, btnCancel]
+        btnAccept:
+            Label: Accept
+            Action: actAccept
+        btnCancel:
+            Label: Cancel
+            Action: actCancel

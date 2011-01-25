@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-tobe-migrated">
+<!-- All targets in this file should go away when the new buildfiles are ready -->
+
+<include buildfile="OpenPetra.common.xml"/>
+
+<target name="generateORM" depends="" description="Generates the cached tables">
+  <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
+</target> 
+
+
+<target name="generateGlue" depends="init" description="Generate the glue between client and server, ie. interfaces and instantiators">
+    <ExecDotNet program="${PetraToolsExe.dir}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${OpenPetraRoot.dir}/csharp/ICT/Petra -TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/"/>
+</target>
+
+</project>
