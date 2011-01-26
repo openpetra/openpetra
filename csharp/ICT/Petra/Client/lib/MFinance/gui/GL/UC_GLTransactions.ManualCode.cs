@@ -40,6 +40,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
 
+        /// <summary>
+        /// Exchange rate for the forreign currency will be stored here after it is read from the
+        /// Journal tab. The "do not use" value is zero.
+        /// </summary>
+        private decimal exchangeRateForeign = 0m;
+        
+        /// <summary>
+        /// Dito the exchnage rate for the international currency ...
+        /// </summary>
+        private decimal exchangeRateInternational = 0m;
 
         /// <summary>
         /// load the transactions into the grid
@@ -221,7 +231,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARow.TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
             }
 
-            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
+            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || 
+                (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 UpdateTotals(ARow);
             }
@@ -237,14 +248,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow != null)
             {
-                ARow.AmountInBaseCurrency = TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-                    FMainDS.ALedger[0].BaseCurrency,
-                    ARow.TransactionDate) *
-                                            ARow.TransactionAmount;
-                ARow.AmountInIntlCurrency = TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    ARow.TransactionDate) *
-                                            ARow.TransactionAmount;
+            	ARow.AmountInBaseCurrency = exchangeRateForeign * ARow.TransactionAmount;
+            	ARow.AmountInIntlCurrency = exchangeRateInternational * ARow.TransactionAmount; 
             }
 
             // transactions are filtered for this journal; add up the total amounts
@@ -274,8 +279,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
                 AJournalRow r = (AJournalRow)v.Row;
-                sumDebits += r.JournalDebitTotal * r.ExchangeRateToBase;
-                sumCredits += r.JournalCreditTotal * r.ExchangeRateToBase;
+                sumDebits += r.JournalDebitTotal;
+                sumCredits += r.JournalCreditTotal;
             }
 
             ABatchRow batch = GetBatchRow();
@@ -284,25 +289,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             batch.BatchRunningTotal = sumCredits - sumDebits;
             
             ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(batch);
+            // TODO: Batch.BatchRunningTotal
         }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
         {
-            try
-            {
-                AJournalRow journal = GetJournalRow();
-
-                txtDebitAmountBase.NumberValueDecimal =
-                    (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * txtDebitAmount.NumberValueDecimal.Value);
-                txtCreditAmountBase.NumberValueDecimal =
-                    (TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency, FMainDS.ALedger[0].BaseCurrency,
-                         dtpDetailTransactionDate.Date.Value) * txtCreditAmount.NumberValueDecimal.Value);
-            }
-            catch (Exception ex)
-            {
-            	System.Console.WriteLine(ex.Message);
-            }
+        	try {
+        		 AJournalRow journal = GetJournalRow();
+        		exchangeRateForeign = journal.ExchangeRateToBase; 
+//        		exchangeRateForeign = ((TUC_GLJournals)
+//        		                ((TFrmGLBatch)this.ParentForm).GetJournalsControl()).
+//        			GetActualExchangeRateForeign();
+        	} catch (Exception) {
+        		exchangeRateForeign = 0.0M;
+        	} 
+        	try {
+        		exchangeRateInternational = ((TUC_GLJournals)
+        		                ((TFrmGLBatch)this.ParentForm).GetJournalsControl()).
+        			GetActualExchangeRateInternational();
+        	} catch (Exception) {
+        		exchangeRateInternational = 0.0M;
+        	} 
         }
 
         /// <summary>

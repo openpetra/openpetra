@@ -228,5 +228,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 
             }
         }
+        
+        public decimal GetActualExchangeRateForeign()
+        {
+        	return Convert.ToDecimal(txtDetailExchangeRateToBase.Text); 
+        }
+
+        public decimal GetActualExchangeRateInternational()
+        {
+        	// TODO add Databaserequest ...
+        	return 0; 
+        }
     }
 }

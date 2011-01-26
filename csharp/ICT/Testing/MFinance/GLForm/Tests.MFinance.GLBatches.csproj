@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GLAccountHierarchy.test.cs" />
+    <Compile Include="GLBatch.test.cs" />
     <Compile Include="test.cs" />
   </ItemGroup>
   <ItemGroup>

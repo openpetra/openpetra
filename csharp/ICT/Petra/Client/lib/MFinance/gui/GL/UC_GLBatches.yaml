@@ -54,7 +54,7 @@ RootNode:
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency, Format=Currency}
         lblValidDateRange:
-        dtpDetailDateEffective: {Label=Effective Date, OnChange=DateEffectiveIsChanged}
+        dtpDetailDateEffective: {Label=Effective Date}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}
     Menu:

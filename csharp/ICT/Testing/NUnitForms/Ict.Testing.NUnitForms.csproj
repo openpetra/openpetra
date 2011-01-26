@@ -130,8 +130,19 @@
     <Compile Include="SgrdDataGridPagedTester.cs" />
     <Compile Include="TCmbAutoCompleteTester.cs" />
     <Compile Include="TFrmGLAccountHierarchyTester.cs" />
+    <Compile Include="TFrmGLBatchTester.cs" />
     <Compile Include="TFrmGLCreateLedgerTester.cs" />
+    <Compile Include="TTabVersatileTester.cs" />
     <Compile Include="TTrvTreeViewTester.cs" />
+    <Compile Include="TtpgBatches.Tester.cs">
+      <DependentUpon>TFrmGLBatchTester.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TtpgJournalsTester.Tester.cs">
+      <DependentUpon>TFrmGLBatchTester.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TtpgTransactionsTester.Tester.cs">
+      <DependentUpon>TFrmGLBatchTester.cs</DependentUpon>
+    </Compile>
     <Compile Include="txtNumericTextBoxTester.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -60,6 +60,9 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowPastDate;
         private Boolean FLeavingOnFailedValidationOK;
         private String FDateDescription;
+        
+        private DateTime minimalDateValue;
+        private DateTime maximalDateValue;
 
         /// <summary>
         /// This property determines the Text that the Control should display.
@@ -246,6 +249,9 @@ namespace Ict.Petra.Client.CommonControls
             FAllowFutureDate = true;
             FAllowPastDate = true;
             FAllowEmpty = true;
+            
+            minimalDateValue = DateTime.MinValue;
+            maximalDateValue = DateTime.MaxValue;
 
             // this.Text := DateTimeToLongDateString2(FDate);
             this.Date = FDate;
@@ -265,6 +271,26 @@ namespace Ict.Petra.Client.CommonControls
             AllowPastDate = true;
             AllowEmpty = true;
             LeavingOnFailedValidationOK = true;
+        }
+        
+        /// <summary>
+        /// Default of maximalDateValue is the system Constant DateTime.MaxValue
+        /// Here you can override ...
+        /// </summary>
+        /// <param name="maximalValue">The new maximal value ...</param>
+        public void SetMaximalDate(DateTime maximalValue)
+        {
+        	maximalDateValue = maximalValue;
+        }
+
+        /// <summary>
+        /// Default of minimalDateValue is the system Constant DateTime.MinValue
+        /// Here you can override ...
+        /// </summary>
+        /// <param name="maximalValue">The new minimal value ...</param>
+        public void SetMinimalDate(DateTime minimalValue)
+        {
+        	minimalDateValue = minimalValue;
         }
 
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
@@ -444,7 +470,7 @@ namespace Ict.Petra.Client.CommonControls
                         return false;
                     }
                 }
-
+                
                 // Store the Date for later use
                 if (Text2Date != DateTime.MinValue)
                 {
@@ -460,7 +486,15 @@ namespace Ict.Petra.Client.CommonControls
 
                 if (FDate != null)
                 {
-                    this.Text = DataBinding.DateTimeToLongDateString2(FDate.Value);
+                	if (DateTime.Compare(minimalDateValue,FDate.Value) > 0) {
+                		TMessages.DateValueMessageMinUnderrun(minimalDateValue);
+                	}
+                	
+                	if (DateTime.Compare(FDate.Value,maximalDateValue) > 0) {
+                		TMessages.DateValueMessageMaxOverrun(maximalDateValue);
+                	}
+                	
+                	this.Text = DataBinding.DateTimeToLongDateString2(FDate.Value);
                 }
                 else
                 {
@@ -469,6 +503,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 FSuppressTextChangeEvent = false;
                 ReturnValue = true;
+            
             }
             else
             {

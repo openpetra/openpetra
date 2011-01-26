@@ -55,7 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void InitializeComponent()
         {
             this.dtpDateEffective = new System.Windows.Forms.DateTimePicker();
-            this.dtpDateEffective.CustomFormat = "dd-mmm-yyyy";
             this.lblDateEffective = new System.Windows.Forms.Label();
             this.lblValidDateRange = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();

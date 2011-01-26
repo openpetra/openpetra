@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       wolfgangu
 //
 // Copyright 2004-2010 by OM International
 //
@@ -20,50 +20,50 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+
+using Ict.Petra.Client.CommonControls;
+using Ict.Common.Controls;
 using System.Windows.Forms;
 using NUnit.Extensions.Forms;
-using Ict.Common.Controls;
-using Ict.Testing.NUnitForms;
 
 namespace Ict.Testing.NUnitForms
 {
-    /// <summary>
-    /// test for SourceGrid
-    /// </summary>
-    public class TSgrdDataGridPagedTester: ControlTester
-    {
-        private TSgrdDataGridPaged TheObject;
-
+	public class TTabVersatileTester : TabControlTester
+	{
         /// constructor
-        public TSgrdDataGridPagedTester(string name, Form form)
+        public TTabVersatileTester()
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, form);
-            TheObject = finder.Find();
         }
 
         /// constructor
-        public TSgrdDataGridPagedTester(string name, string formName)
+        public TTabVersatileTester(string name, Form form) : base(name, form)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, new FormFinder().Find(formName));
-            TheObject = finder.Find();
         }
 
         /// constructor
-        public TSgrdDataGridPagedTester(string name)
+        public TTabVersatileTester(string name, string formName) : base(name, formName)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name);
-            TheObject = finder.Find();
+        }
+
+        /// constructor
+        public TTabVersatileTester(string name) : base(name)
+        {
+        }
+
+        /// constructor
+        public TTabVersatileTester(TabControlTester tester, int index) : base(tester, index)
+        {
         }
 
         /// <summary>
-        /// access the properties of the source grid
+        /// access the properties of the auto populated combobox
         /// </summary>
-        public TSgrdDataGridPaged Properties
+        public new TTabVersatile Properties
         {
             get
             {
-                return TheObject;
+                return (TTabVersatile) base.TheObject;
             }
         }
-    }
+	}
 }

@@ -46,7 +46,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
         
         private DateTime DefaultDate;
-        private DateTime LastEffectiveDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
 
@@ -74,6 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                        StringHelper.DateToLocalizedString(StartDateCurrentPeriod,false,false),
                        StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod,false,false));
+            dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
+            dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
         }
 
         /// <summary>
@@ -133,24 +134,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSelectedBatchNumber = ARow.BatchNumber;
 
         }
-        
-
-        private bool boolDateEffectiveIsChangedIsRunning = false;
-        private void DateEffectiveIsChanged(Object sender, EventArgs e) {
-          if (!boolDateEffectiveIsChangedIsRunning) {
-//            boolDateEffectiveIsChangedIsRunning = true;
-//            try {
-//            	if (DateTime.Compare(StartDateCurrentPeriod,dtpDetailDateEffective.Date.Value) < 0) {
-//            		dtpDetailDateEffective.Date = LastEffectiveDate;
-//            	}
-//            	if (DateTime.Compare(dtpDetailDateEffective.Date.Value,EndDateLastForwardingPeriod) > 0) {
-//            		dtpDetailDateEffective.Date = LastEffectiveDate;
-//            	}
-//            	LastEffectiveDate = dtpDetailDateEffective.Date.Value;
-//            } catch (Exception) {};
-//            boolDateEffectiveIsChangedIsRunning = false;
-          }
-        }
 
         /// <summary>
         /// This routine is called by a double click on a batch row, which means: Open the 
@@ -170,16 +153,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            CreateNewABatch();
+            // CreateNewABatch();
+            
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
+            
+            ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count-1]).DateEffective = DefaultDate;
+            
+            FPetraUtilsObject.SetChangedFlag();
+            
+            // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            //bdv
+            
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            
+            
+            grdDetails.Refresh();
+            
+            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+
             
             dtpDetailDateEffective.Date = DefaultDate;
-            LastEffectiveDate = DefaultDate;
 
             // TODO: on change of FMainDS.ABatch[GetSelectedDetailDataTableIndex()].DateEffective
             // also change FMainDS.ABatch[GetSelectedDetailDataTableIndex()].BatchPeriod
             // and control this.dtpDateCantBeBeyond
         }
-
+        
         /// <summary>
         /// Cancel a batch (there is no deletion of batches)
         /// </summary>
@@ -407,12 +406,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (rbtAll.Checked)
             {
                 FMainDS.ABatch.DefaultView.RowFilter = "";
+                btnNew.Enabled = true; 
             }
             else if (rbtEditing.Checked)
             {
                 FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
+                btnNew.Enabled = true; 
             }
             else if (rbtPosting.Checked)
             {
@@ -422,6 +423,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ABatchTable.GetBatchCreditTotalDBName(),
                     ABatchTable.GetBatchDebitTotalDBName(),
                     ABatchTable.GetBatchControlTotalDBName());
+            	btnNew.Enabled = false;
             }
         }
 

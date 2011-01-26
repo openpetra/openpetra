@@ -354,7 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.dtpDetailDateEffective.Location = new System.Drawing.Point(2,2);
             this.dtpDetailDateEffective.Name = "dtpDetailDateEffective";
             this.dtpDetailDateEffective.Size = new System.Drawing.Size(94, 28);
-            this.dtpDetailDateEffective.DateChanged += new TPetraDateChangedEventHandler(this.DateEffectiveIsChanged);
             //
             // lblDetailDateEffective
             //
