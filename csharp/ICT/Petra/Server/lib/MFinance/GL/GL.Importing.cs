@@ -320,7 +320,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
 
-                        String.Format(Catalog.GetString("There is a problem parsing the file in row {0}."), RowNumber) +
+                        String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
