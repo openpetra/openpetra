@@ -128,6 +128,7 @@ namespace Ict.Common.IO
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.btnOK.Text = Catalog.GetString("OK");
             this.lblDateFormat.Text = Catalog.GetString("Date format:");
+            this.lblNumberFormat.Text = Catalog.GetString("Number format:");
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 

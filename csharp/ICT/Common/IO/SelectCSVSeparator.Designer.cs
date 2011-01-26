@@ -63,7 +63,7 @@ namespace Ict.Common.IO
             this.btnOK = new System.Windows.Forms.Button();
             this.grdPreview = new System.Windows.Forms.DataGrid();
             this.lblDateFormat = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblNumberFormat = new System.Windows.Forms.Label();
             this.cmbNumberFormat = new System.Windows.Forms.ComboBox();
             this.cmbDateFormat = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.grdPreview)).BeginInit();
@@ -160,13 +160,13 @@ namespace Ict.Common.IO
             this.lblDateFormat.TabIndex = 10;
             this.lblDateFormat.Text = "Date format:";
             //
-            // label1
+            // lblNumberFormat
             //
-            this.label1.Location = new System.Drawing.Point(12, 108);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 23);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Number format:";
+            this.lblNumberFormat.Location = new System.Drawing.Point(12, 108);
+            this.lblNumberFormat.Name = "lblNumberFormat";
+            this.lblNumberFormat.Size = new System.Drawing.Size(100, 23);
+            this.lblNumberFormat.TabIndex = 12;
+            this.lblNumberFormat.Text = "Number format:";
             //
             // cmbNumberFormat
             //
@@ -202,7 +202,7 @@ namespace Ict.Common.IO
             this.ClientSize = new System.Drawing.Size(533, 288);
             this.Controls.Add(this.cmbDateFormat);
             this.Controls.Add(this.cmbNumberFormat);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblNumberFormat);
             this.Controls.Add(this.lblDateFormat);
             this.Controls.Add(this.grdPreview);
             this.Controls.Add(this.btnOK);
@@ -219,10 +219,11 @@ namespace Ict.Common.IO
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.Label lblNumberFormat;
+
         private System.Windows.Forms.ComboBox cmbDateFormat;
 
         private System.Windows.Forms.ComboBox cmbNumberFormat;
-        private System.Windows.Forms.Label label1;
 
         private System.Windows.Forms.Label lblDateFormat;
 
