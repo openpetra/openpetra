@@ -571,18 +571,19 @@ throw new NotImplementedException();
         	return (List<string>)_nsmap[ns];
         }
         private static Hashtable _CSFilesPerDir = new Hashtable();
+
         /// <summary>
         /// Returns CSParser instances for the cs files in the given directory.
         /// If you get the list more then one time, then you will get a cached copy
         /// </summary>
         /// <param name="dir">string with the directory to parse</param>
         /// <returns>List of CSParser instances</returns>
-        public static List <CSParser> GetCSFilesForDirectory(string dir)
+        public static List <CSParser> GetCSFilesForDirectory(string dir, SearchOption option)
         {
         	string dirfull = Path.GetFullPath(dir);
         	if (! _CSFilesPerDir.Contains(dirfull)) {
             	List <CSParser> CSFiles = new List <CSParser>();
-		        foreach (string filename in Directory.GetFiles(dir, "*.cs")) {
+		        foreach (string filename in Directory.GetFiles(dir, "*.cs", option)) {
             		CSFiles.Add(new CSParser(filename));
 		        }
         		_CSFilesPerDir.Add(dirfull, CSFiles);
@@ -605,7 +606,7 @@ throw new NotImplementedException();
         	List <CSParser> CSFiles = new List <CSParser>();
         	foreach (string dir in dirList) {
 	          Console.WriteLine("Namespace '"+ AServerNamespace + "' found in '" + dir + "'\n");
-	          foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir)) {
+	          foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly)) {
 	          	// Copy the list, because namespace could be in more then one directory
 	          	CSFiles.Add(tempCSFile);
 	          }

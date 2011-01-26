@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="OpenPetra">
 
-include buildfile="inc/nant/OpenPetra.common.xml"/>
+<include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <target name="custclean">
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
@@ -88,6 +88,9 @@ include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <!-- Include default implementation -->
 <include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
+
+<!-- Compat targets -->
+<include buildfile="inc/nant/OpenPetra.tobe.migrated.xml"/>
 
 </project>
 
