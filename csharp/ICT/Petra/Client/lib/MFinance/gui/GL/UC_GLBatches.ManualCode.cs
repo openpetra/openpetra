@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
-        
+
         private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
@@ -66,13 +66,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ShowData();
 
             //TODO: not necessary for posted batches
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, 
-                                                         out StartDateCurrentPeriod, 
-                                                         out EndDateLastForwardingPeriod, 
-                                                         out DefaultDate);
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod,
+                out DefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                       StringHelper.DateToLocalizedString(StartDateCurrentPeriod,false,false),
-                       StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod,false,false));
+                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
+                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
             dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
             dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
         }
@@ -85,58 +85,63 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
-
         private void UpdateChangeableStatus(bool batchRowIsSelected)
         {
-        	btnCancel.Enabled = batchRowIsSelected;
-        	btnPostBatch.Enabled = batchRowIsSelected;
-        	
-        	txtDetailBatchControlTotal.Enabled = batchRowIsSelected;
-        	dtpDetailDateEffective.Enabled = batchRowIsSelected;
-        	txtDetailBatchDescription.Enabled = batchRowIsSelected;
-        	
+            btnCancel.Enabled = batchRowIsSelected;
+            btnPostBatch.Enabled = batchRowIsSelected;
+
+            txtDetailBatchControlTotal.Enabled = batchRowIsSelected;
+            dtpDetailDateEffective.Enabled = batchRowIsSelected;
+            txtDetailBatchDescription.Enabled = batchRowIsSelected;
+
             mniExportBatches.Enabled = batchRowIsSelected;
             tbbExportBatches.Enabled = batchRowIsSelected;
-           
-            
-            if (batchRowIsSelected) {
-            	Boolean postable = 
-            		FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
-            	mniPost.Enabled = postable;            	
-            	tbbPostBatch.Enabled = postable;
-            } else {
-            	mniPost.Enabled = false;            	
-            	tbbPostBatch.Enabled = false;            	
+
+            if (batchRowIsSelected)
+            {
+                Boolean postable =
+                    FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+                mniPost.Enabled = postable;
+                tbbPostBatch.Enabled = postable;
             }
-        	
-        	if (!batchRowIsSelected) {
-        		// in the very first run ParentForm is null. Therefore 
-        		// the exception handler has been included.
-        		try {
-        			((TFrmGLBatch)this.ParentForm).DisableJournals();
-        		}  catch (Exception) {};
-        	}
+            else
+            {
+                mniPost.Enabled = false;
+                tbbPostBatch.Enabled = false;
+            }
+
+            if (!batchRowIsSelected)
+            {
+                // in the very first run ParentForm is null. Therefore
+                // the exception handler has been included.
+                try
+                {
+                    ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                }
+                catch (Exception)
+                {
+                }
+                ;
+            }
         }
-                
+
         private void ShowDetailsManual(ABatchRow ARow)
         {
-        
             UpdateChangeableStatus(true);
-        	
-            FPetraUtilsObject.DetailProtectedMode = 
-            	(ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED) ||
-            	 ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
-            
+
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED)
+                 || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
+
             ((TFrmGLBatch)ParentForm).LoadJournals(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
-            
-            FSelectedBatchNumber = ARow.BatchNumber;
 
+            FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         /// <summary>
-        /// This routine is called by a double click on a batch row, which means: Open the 
+        /// This routine is called by a double click on a batch row, which means: Open the
         /// Jounal Tab of this batch.
         /// </summary>
         /// <param name="sender"></param>
@@ -144,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ShowJournalTab(Object sender, EventArgs e)
         {
             ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Journals);
-        } 
+        }
 
         /// <summary>
         /// add a new batch
@@ -154,31 +159,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void NewRow(System.Object sender, EventArgs e)
         {
             // CreateNewABatch();
-            
+
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
-            
-            ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count-1]).DateEffective = DefaultDate;
-            
+
+            ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
+
             FPetraUtilsObject.SetChangedFlag();
-            
+
             // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
             //bdv
-            
+
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-            
-            
+
+
             grdDetails.Refresh();
-            
+
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
 
-            
+
             dtpDetailDateEffective.Date = DefaultDate;
 
             // TODO: on change of FMainDS.ABatch[GetSelectedDetailDataTableIndex()].DateEffective
             // also change FMainDS.ABatch[GetSelectedDetailDataTableIndex()].BatchPeriod
             // and control this.dtpDateCantBeBeyond
         }
-        
+
         /// <summary>
         /// Cancel a batch (there is no deletion of batches)
         /// </summary>
@@ -311,29 +316,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-        
-        
+
         /// <summary>
         ///  The changes of the radio button are handled.
         /// </summary>
         /// <param name="sender">It should be a radio button</param>
         /// <param name="e"></param>
-        private void ChangeBatchFilter(System.Object sender,  System.EventArgs e)
+        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
         {
-        	// Each radio button click invokes this routine twice, on run is done for the 
-        	// unchecked button an one is done for the checked one. 
-        	RadioButton radioButton = sender as RadioButton;
-        	if (radioButton != null) {
-        		if (radioButton.Checked) {
-        			int rowIndex = CurrentRowIndex();
-        			
-        			SetBatchFilter();
-        			// TODO Select the actual row again in updated
-        			SelectByIndex(rowIndex);
-        			// UpdateChangeableStatus();
-        		}
-        	}
-        	
+            // Each radio button click invokes this routine twice, on run is done for the
+            // unchecked button an one is done for the checked one.
+            RadioButton radioButton = sender as RadioButton;
+
+            if (radioButton != null)
+            {
+                if (radioButton.Checked)
+                {
+                    int rowIndex = CurrentRowIndex();
+
+                    SetBatchFilter();
+                    // TODO Select the actual row again in updated
+                    SelectByIndex(rowIndex);
+                    // UpdateChangeableStatus();
+                }
+            }
         }
 
         private int CurrentRowIndex()
@@ -349,28 +355,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return rowIndex;
         }
-        
 
         /// <summary>
-        /// This routine is invoked if no Batch-Row has been selected. The idea was to 
+        /// This routine is invoked if no Batch-Row has been selected. The idea was to
         /// select the "old row again" defined by row index but in this case
-        /// the list of batches ist filtered. So the row must not exist any more. 
+        /// the list of batches ist filtered. So the row must not exist any more.
         /// </summary>
         /// <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
         private void SelectByIndex(int rowIndex)
         {
-        	// In the very first call FPetraUtilsObject does not exists
-        	// Thererfore try-catch ..
-        	try {
-        		FPetraUtilsObject.DisableDataChangedEvent();
-        		txtDetailBatchControlTotal.Text = "";
-        		txtDetailBatchDescription.Text = "";
-        		dtpDetailDateEffective.Text = "";
-        		UpdateChangeableStatus(false);
-        		FPetraUtilsObject.EnableDataChangedEvent();
-        	} catch (Exception) {};
+            // In the very first call FPetraUtilsObject does not exists
+            // Thererfore try-catch ..
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchControlTotal.Text = "";
+                txtDetailBatchDescription.Text = "";
+                dtpDetailDateEffective.Text = "";
+                UpdateChangeableStatus(false);
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
+            catch (Exception)
+            {
+            }
+            ;
         }
-        
+
         /// <summary>
         /// Program reaction of a change of the value of 3 nested radio buttons, which means
         /// differnt filters to view the list o batches
@@ -406,14 +416,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (rbtAll.Checked)
             {
                 FMainDS.ABatch.DefaultView.RowFilter = "";
-                btnNew.Enabled = true; 
+                btnNew.Enabled = true;
             }
             else if (rbtEditing.Checked)
             {
                 FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
-                btnNew.Enabled = true; 
+                btnNew.Enabled = true;
             }
             else if (rbtPosting.Checked)
             {
@@ -423,7 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ABatchTable.GetBatchCreditTotalDBName(),
                     ABatchTable.GetBatchDebitTotalDBName(),
                     ABatchTable.GetBatchControlTotalDBName());
-            	btnNew.Enabled = false;
+                btnNew.Enabled = false;
             }
         }
 
@@ -662,7 +672,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RefBatch.BatchDebitTotal = sumDebits;
             // todo RefBatch.BatchControlTotal = sumCredits  - sumDebits;
             // csv !
-
         }
 
         private void ImportBatches(object sender, EventArgs e)

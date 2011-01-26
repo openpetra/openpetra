@@ -358,7 +358,7 @@ namespace Ict.Petra.Client.App.Gui
         {
             MsgGeneralError(AVerificationResult, null);
         }
-        
+
         /// <summary>
         /// This routine has been written for thte TxtPetraDate-Class but it can be used anywhere
         /// else to point out that a date has overruned a date limit.
@@ -366,23 +366,25 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="maxDate">The maximal date limit</param>
         public static void DateValueMessageMaxOverrun(DateTime maxDate)
         {
-        	String strMsg = Catalog.GetString("This date has overruned the limit: {0}");
-        	MessageBox.Show(String.Format(
-        		strMsg,StringHelper.DateToLocalizedString(maxDate)),
-        		Catalog.GetString("Date overrun ..."),MessageBoxButtons.OK);
+            String strMsg = Catalog.GetString("This date has overruned the limit: {0}");
+
+            MessageBox.Show(String.Format(
+                    strMsg, StringHelper.DateToLocalizedString(maxDate)),
+                Catalog.GetString("Date overrun ..."), MessageBoxButtons.OK);
         }
-        
+
         /// <summary>
         /// This routine has been written for thte TxtPetraDate-Class but it can be used anywhere
         /// else to point out that a date has underruned a date limit.
         /// </summary>
         /// <param name="minDate">The minimal date limit</param>
-        public static void DateValueMessageMinUnderrun(DateTime minDate) 
+        public static void DateValueMessageMinUnderrun(DateTime minDate)
         {
-        	String strMsg = Catalog.GetString("This date has underruned the limit: {0}");
-        	MessageBox.Show(String.Format(
-        		strMsg,StringHelper.DateToLocalizedString(minDate)), 
-        		Catalog.GetString("Date underrun ..."),MessageBoxButtons.OK);
+            String strMsg = Catalog.GetString("This date has underruned the limit: {0}");
+
+            MessageBox.Show(String.Format(
+                    strMsg, StringHelper.DateToLocalizedString(minDate)),
+                Catalog.GetString("Date underrun ..."), MessageBoxButtons.OK);
         }
 
         #endregion

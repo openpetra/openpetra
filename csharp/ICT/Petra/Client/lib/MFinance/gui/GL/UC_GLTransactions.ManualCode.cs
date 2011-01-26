@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Journal tab. The "do not use" value is zero.
         /// </summary>
         private decimal exchangeRateForeign = 0m;
-        
+
         /// <summary>
         /// Dito the exchnage rate for the international currency ...
         /// </summary>
@@ -231,8 +231,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARow.TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
             }
 
-            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount)) || 
-                (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
+            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
+                || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 UpdateTotals(ARow);
             }
@@ -248,8 +248,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow != null)
             {
-            	ARow.AmountInBaseCurrency = exchangeRateForeign * ARow.TransactionAmount;
-            	ARow.AmountInIntlCurrency = exchangeRateInternational * ARow.TransactionAmount; 
+                ARow.AmountInBaseCurrency = exchangeRateForeign * ARow.TransactionAmount;
+                ARow.AmountInIntlCurrency = exchangeRateInternational * ARow.TransactionAmount;
             }
 
             // transactions are filtered for this journal; add up the total amounts
@@ -287,29 +287,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             batch.BatchCreditTotal = sumCredits;
             batch.BatchDebitTotal = sumDebits;
             batch.BatchRunningTotal = sumCredits - sumDebits;
-            
+
             ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(batch);
             // TODO: Batch.BatchRunningTotal
         }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
         {
-        	try {
-        		 AJournalRow journal = GetJournalRow();
-        		exchangeRateForeign = journal.ExchangeRateToBase; 
-//        		exchangeRateForeign = ((TUC_GLJournals)
-//        		                ((TFrmGLBatch)this.ParentForm).GetJournalsControl()).
-//        			GetActualExchangeRateForeign();
-        	} catch (Exception) {
-        		exchangeRateForeign = 0.0M;
-        	} 
-        	try {
-        		exchangeRateInternational = ((TUC_GLJournals)
-        		                ((TFrmGLBatch)this.ParentForm).GetJournalsControl()).
-        			GetActualExchangeRateInternational();
-        	} catch (Exception) {
-        		exchangeRateInternational = 0.0M;
-        	} 
+            try
+            {
+                AJournalRow journal = GetJournalRow();
+                exchangeRateForeign = journal.ExchangeRateToBase;
+//                      exchangeRateForeign = ((TUC_GLJournals)
+//                                      ((TFrmGLBatch)this.ParentForm).GetJournalsControl()).
+//                              GetActualExchangeRateForeign();
+            }
+            catch (Exception)
+            {
+                exchangeRateForeign = 0.0M;
+            }
+            try
+            {
+                exchangeRateInternational = ((TUC_GLJournals)
+                                             ((TFrmGLBatch) this.ParentForm).GetJournalsControl()).
+                                            GetActualExchangeRateInternational();
+            }
+            catch (Exception)
+            {
+                exchangeRateInternational = 0.0M;
+            }
         }
 
         /// <summary>

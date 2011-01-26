@@ -225,19 +225,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
                 UpdateChangeableStatus();
-                
             }
         }
-        
+
         public decimal GetActualExchangeRateForeign()
         {
-        	return Convert.ToDecimal(txtDetailExchangeRateToBase.Text); 
+            return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
         }
 
         public decimal GetActualExchangeRateInternational()
         {
-        	// TODO add Databaserequest ...
-        	return 0; 
+            // TODO add Databaserequest ...
+            return 0;
         }
     }
 }

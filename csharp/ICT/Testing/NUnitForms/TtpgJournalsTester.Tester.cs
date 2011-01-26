@@ -24,55 +24,54 @@
 using System;
 using NUnit.Framework;
 using NUnit.Extensions.Forms;
-using Ict.Petra.Client.MFinance.Gui.GL; 
+using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Ict.Testing.NUnitForms
 {
-	public class TtpgJournalsTester
-	{
-		private TFrmGLBatch tFrmGLBatch;
+    public class TtpgJournalsTester
+    {
+        private TFrmGLBatch tFrmGLBatch;
 
-		public TextBoxTester txtCurrentPeriod;
-		public TextBoxTester txtLedgerNumber;
-		public TextBoxTester txtBatchNumber;
-		public TextBoxTester txtDebit;
-		public TextBoxTester txtCredit;
-		public TextBoxTester txtControl;
-		
-		public ButtonTester btnAdd;
-		public ButtonTester btnCancel;
-		
-		public TextBoxTester txtDetailJournalDescription;
-		public TCmbAutoCompleteTester cmbDetailSubSystemCode;
-		public TCmbAutoPopulatedTester cmbDetailTransactionTypeCode;
-		public TCmbAutoPopulatedTester cmbDetailTransactionCurrency;
-		public TextBoxTester dtpDetailDateEffective;
-		public TextBoxTester txtDetailExchangeRateToBase;
-		
-		// public TSgrdDataGridPagedTester grdDetails2;
+        public TextBoxTester txtCurrentPeriod;
+        public TextBoxTester txtLedgerNumber;
+        public TextBoxTester txtBatchNumber;
+        public TextBoxTester txtDebit;
+        public TextBoxTester txtCredit;
+        public TextBoxTester txtControl;
 
-		public TtpgJournalsTester(TFrmGLBatch tFrmGLBatch)
-		{
-			this.tFrmGLBatch = tFrmGLBatch;
-			txtCurrentPeriod = new TextBoxTester("txtCurrentPeriod",tFrmGLBatch);
-			txtLedgerNumber = new TextBoxTester("txtLedgerNumber",tFrmGLBatch);
-			txtBatchNumber = new TextBoxTester("txtBatchNumber",tFrmGLBatch);
-			txtDebit = new TextBoxTester("txtDebit",tFrmGLBatch);
-			txtCredit = new TextBoxTester("txtCredit",tFrmGLBatch);
-			txtControl = new TextBoxTester("txtControl",tFrmGLBatch);
-		
-			btnAdd = new ButtonTester("tpgJournals.btnAdd",tFrmGLBatch);
-			btnCancel = new ButtonTester("tpgJournals.btnCancel",tFrmGLBatch);
-			
-			txtDetailJournalDescription = new TextBoxTester("txtDetailJournalDescription",tFrmGLBatch);
-			
-			cmbDetailSubSystemCode = new TCmbAutoCompleteTester("cmbDetailSubSystemCode",tFrmGLBatch);
-			cmbDetailTransactionTypeCode = new TCmbAutoPopulatedTester("cmbDetailTransactionTypeCode",tFrmGLBatch);
-			cmbDetailTransactionCurrency = new TCmbAutoPopulatedTester("cmbDetailTransactionCurrency",tFrmGLBatch);
-			
-			dtpDetailDateEffective = new TextBoxTester("dtpDetailDateEffective",tFrmGLBatch);
-			txtDetailExchangeRateToBase = new TextBoxTester("txtDetailExchangeRateToBase",tFrmGLBatch);
-			
-		}
-	}
+        public ButtonTester btnAdd;
+        public ButtonTester btnCancel;
+
+        public TextBoxTester txtDetailJournalDescription;
+        public TCmbAutoCompleteTester cmbDetailSubSystemCode;
+        public TCmbAutoPopulatedTester cmbDetailTransactionTypeCode;
+        public TCmbAutoPopulatedTester cmbDetailTransactionCurrency;
+        public TextBoxTester dtpDetailDateEffective;
+        public TextBoxTester txtDetailExchangeRateToBase;
+
+        // public TSgrdDataGridPagedTester grdDetails2;
+
+        public TtpgJournalsTester(TFrmGLBatch tFrmGLBatch)
+        {
+            this.tFrmGLBatch = tFrmGLBatch;
+            txtCurrentPeriod = new TextBoxTester("txtCurrentPeriod", tFrmGLBatch);
+            txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
+            txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
+            txtDebit = new TextBoxTester("txtDebit", tFrmGLBatch);
+            txtCredit = new TextBoxTester("txtCredit", tFrmGLBatch);
+            txtControl = new TextBoxTester("txtControl", tFrmGLBatch);
+
+            btnAdd = new ButtonTester("tpgJournals.btnAdd", tFrmGLBatch);
+            btnCancel = new ButtonTester("tpgJournals.btnCancel", tFrmGLBatch);
+
+            txtDetailJournalDescription = new TextBoxTester("txtDetailJournalDescription", tFrmGLBatch);
+
+            cmbDetailSubSystemCode = new TCmbAutoCompleteTester("cmbDetailSubSystemCode", tFrmGLBatch);
+            cmbDetailTransactionTypeCode = new TCmbAutoPopulatedTester("cmbDetailTransactionTypeCode", tFrmGLBatch);
+            cmbDetailTransactionCurrency = new TCmbAutoPopulatedTester("cmbDetailTransactionCurrency", tFrmGLBatch);
+
+            dtpDetailDateEffective = new TextBoxTester("dtpDetailDateEffective", tFrmGLBatch);
+            txtDetailExchangeRateToBase = new TextBoxTester("txtDetailExchangeRateToBase", tFrmGLBatch);
+        }
+    }
 }

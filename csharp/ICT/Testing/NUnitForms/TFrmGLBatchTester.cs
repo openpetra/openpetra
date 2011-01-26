@@ -36,46 +36,43 @@ using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-namespace Ict.Testing.NUnitForms 
+namespace Ict.Testing.NUnitForms
 {
-	public sealed class TFrmGLBatchTester : FormTester
-	{
-		
-		public TFrmGLBatch tFrmGLBatch;
+    public sealed class TFrmGLBatchTester : FormTester
+    {
+        public TFrmGLBatch tFrmGLBatch;
 
-		public ToolStripButtonTester tbbPostBatch;
-		public ToolStripButtonTester tbbImportFromSpreadSheet;
-		public ToolStripButtonTester tbbImportBatches;
-		public ToolStripButtonTester tbbExportBatches;
+        public ToolStripButtonTester tbbPostBatch;
+        public ToolStripButtonTester tbbImportFromSpreadSheet;
+        public ToolStripButtonTester tbbImportBatches;
+        public ToolStripButtonTester tbbExportBatches;
 
-		// public TTabVersatileTester tabGLBatch;
-		public ToolStripButtonTester tbbSave;
-		
-		public TTabVersatileTester tabGLBatch;
-		
-		public TtpgBatchesTester ttpgBatches;
-		public TtpgJournalsTester ttpgJournals;
-		public TtpgTransactionsTester ttpgTransactions;
-		
-					
-		public TFrmGLBatchTester() {
-			
-			tFrmGLBatch = new TFrmGLBatch(IntPtr.Zero);
-			
-			tbbPostBatch = new ToolStripButtonTester("tbbPostBatch",tFrmGLBatch);
-			tbbImportFromSpreadSheet = new ToolStripButtonTester("tbbImportFromSpreadSheet",tFrmGLBatch);
-			tbbImportBatches = new ToolStripButtonTester("tbbImportBatches",tFrmGLBatch);
-			tbbExportBatches = new ToolStripButtonTester("tbbExportBatches",tFrmGLBatch);
-			
-			tbbSave = new ToolStripButtonTester("tbbSave",tFrmGLBatch);
-			
-			tabGLBatch = new TTabVersatileTester("tabGLBatch",tFrmGLBatch);
+        // public TTabVersatileTester tabGLBatch;
+        public ToolStripButtonTester tbbSave;
 
-			ttpgBatches = new TtpgBatchesTester(tFrmGLBatch);
-			ttpgJournals = new TtpgJournalsTester(tFrmGLBatch);
-			ttpgTransactions = new TtpgTransactionsTester(tFrmGLBatch);
-			
-		}
-		
-	}
+        public TTabVersatileTester tabGLBatch;
+
+        public TtpgBatchesTester ttpgBatches;
+        public TtpgJournalsTester ttpgJournals;
+        public TtpgTransactionsTester ttpgTransactions;
+
+
+        public TFrmGLBatchTester()
+        {
+            tFrmGLBatch = new TFrmGLBatch(IntPtr.Zero);
+
+            tbbPostBatch = new ToolStripButtonTester("tbbPostBatch", tFrmGLBatch);
+            tbbImportFromSpreadSheet = new ToolStripButtonTester("tbbImportFromSpreadSheet", tFrmGLBatch);
+            tbbImportBatches = new ToolStripButtonTester("tbbImportBatches", tFrmGLBatch);
+            tbbExportBatches = new ToolStripButtonTester("tbbExportBatches", tFrmGLBatch);
+
+            tbbSave = new ToolStripButtonTester("tbbSave", tFrmGLBatch);
+
+            tabGLBatch = new TTabVersatileTester("tabGLBatch", tFrmGLBatch);
+
+            ttpgBatches = new TtpgBatchesTester(tFrmGLBatch);
+            ttpgJournals = new TtpgJournalsTester(tFrmGLBatch);
+            ttpgTransactions = new TtpgTransactionsTester(tFrmGLBatch);
+        }
+    }
 }

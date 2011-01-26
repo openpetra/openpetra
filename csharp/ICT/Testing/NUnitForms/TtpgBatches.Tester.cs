@@ -24,60 +24,59 @@
 using System;
 using NUnit.Framework;
 using NUnit.Extensions.Forms;
-using Ict.Petra.Client.MFinance.Gui.GL; 
+using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Ict.Testing.NUnitForms
 {
-	public class TtpgBatchesTester
-	{
-		// private TUC_GLJournals ucoJournals;
-		private TFrmGLBatch tFrmGLBatch;
-		public TextBoxTester txtLedgerNumber;
-		
-		public RadioButtonTester rbtPosting;
-		public RadioButtonTester rbtEditing;
-		public RadioButtonTester rbtAll;
-		
-		public ButtonTester btnNew;
-		public ButtonTester btnCancel;
-		public ButtonTester btnPostBatch;
-		
-		public TextBoxTester txtDetailBatchDescription;
-		public TextBoxTester txtDetailBatchControlTotal;
-		public TextBoxTester dtpDetailDateEffective;
-		
-		public LabelTester lblValidDateRange;
-		
-		public TSgrdDataGridPagedTester grdDetails;
-		
-		public TtpgBatchesTester(TFrmGLBatch tFrmGLBatch) {
-			this.tFrmGLBatch = tFrmGLBatch;
-			
-					
-			txtLedgerNumber = new TextBoxTester("tpgBatches.txtLedgerNumber", tFrmGLBatch);
-			
-			rbtPosting = new RadioButtonTester("rbtPosting", tFrmGLBatch);
-			rbtEditing = new RadioButtonTester("rbtEditing", tFrmGLBatch);
-			rbtAll = new RadioButtonTester("rbtAll", tFrmGLBatch);
-			
-			btnNew = new ButtonTester("tpgBatches.btnNew",tFrmGLBatch);
-			btnCancel = new ButtonTester("tpgBatches.btnCancel",tFrmGLBatch);
-			btnPostBatch = new ButtonTester("btnPostBatch",tFrmGLBatch);
-			
-			txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription",tFrmGLBatch);
-			txtDetailBatchControlTotal = new TextBoxTester("txtDetailBatchControlTotal",tFrmGLBatch);
-			dtpDetailDateEffective = new TextBoxTester("tpgBatches.dtpDetailDateEffective",tFrmGLBatch);
-			
-			lblValidDateRange = new LabelTester("lblValidDateRange",tFrmGLBatch);
-			
-			grdDetails = new TSgrdDataGridPagedTester("tpgBatches.grdDetails",tFrmGLBatch);
-			
-		}
-		
-		public string message()
-		{
-			return "123";
-		}
-		
-	}
+    public class TtpgBatchesTester
+    {
+        // private TUC_GLJournals ucoJournals;
+        private TFrmGLBatch tFrmGLBatch;
+        public TextBoxTester txtLedgerNumber;
+
+        public RadioButtonTester rbtPosting;
+        public RadioButtonTester rbtEditing;
+        public RadioButtonTester rbtAll;
+
+        public ButtonTester btnNew;
+        public ButtonTester btnCancel;
+        public ButtonTester btnPostBatch;
+
+        public TextBoxTester txtDetailBatchDescription;
+        public TextBoxTester txtDetailBatchControlTotal;
+        public TextBoxTester dtpDetailDateEffective;
+
+        public LabelTester lblValidDateRange;
+
+        public TSgrdDataGridPagedTester grdDetails;
+
+        public TtpgBatchesTester(TFrmGLBatch tFrmGLBatch)
+        {
+            this.tFrmGLBatch = tFrmGLBatch;
+
+
+            txtLedgerNumber = new TextBoxTester("tpgBatches.txtLedgerNumber", tFrmGLBatch);
+
+            rbtPosting = new RadioButtonTester("rbtPosting", tFrmGLBatch);
+            rbtEditing = new RadioButtonTester("rbtEditing", tFrmGLBatch);
+            rbtAll = new RadioButtonTester("rbtAll", tFrmGLBatch);
+
+            btnNew = new ButtonTester("tpgBatches.btnNew", tFrmGLBatch);
+            btnCancel = new ButtonTester("tpgBatches.btnCancel", tFrmGLBatch);
+            btnPostBatch = new ButtonTester("btnPostBatch", tFrmGLBatch);
+
+            txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription", tFrmGLBatch);
+            txtDetailBatchControlTotal = new TextBoxTester("txtDetailBatchControlTotal", tFrmGLBatch);
+            dtpDetailDateEffective = new TextBoxTester("tpgBatches.dtpDetailDateEffective", tFrmGLBatch);
+
+            lblValidDateRange = new LabelTester("lblValidDateRange", tFrmGLBatch);
+
+            grdDetails = new TSgrdDataGridPagedTester("tpgBatches.grdDetails", tFrmGLBatch);
+        }
+
+        public string message()
+        {
+            return "123";
+        }
+    }
 }

@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Transactions,
 
             /// list of attributes
-            Attributes 
+            Attributes
         };
 
         /// <summary>

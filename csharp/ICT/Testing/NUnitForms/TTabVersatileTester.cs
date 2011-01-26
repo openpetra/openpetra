@@ -28,8 +28,8 @@ using NUnit.Extensions.Forms;
 
 namespace Ict.Testing.NUnitForms
 {
-	public class TTabVersatileTester : TabControlTester
-	{
+    public class TTabVersatileTester : TabControlTester
+    {
         /// constructor
         public TTabVersatileTester()
         {
@@ -65,5 +65,5 @@ namespace Ict.Testing.NUnitForms
                 return (TTabVersatile) base.TheObject;
             }
         }
-	}
+    }
 }

@@ -24,67 +24,67 @@
 using System;
 using NUnit.Framework;
 using NUnit.Extensions.Forms;
-using Ict.Petra.Client.MFinance.Gui.GL; 
+using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Ict.Testing.NUnitForms
 {
-	public class TtpgTransactionsTester
-	{ 
-		private TFrmGLBatch tFrmGLBatch;
-		
-		public TextBoxTester txtLedgerNumber;
-		public TextBoxTester txtBatchNumber;
-		public TextBoxTester txtJournalNumber;
-		
-		public ButtonTester btnNew2;
-		public ButtonTester btnRemove;
-		
-		public TCmbAutoPopulatedTester cmbDetailCostCentreCode;
-		public TCmbAutoPopulatedTester cmbDetailAccountCode;
-		
-		public TextBoxTester txtDetailNarrative;
-		public TextBoxTester txtDetailReference;
-		public TextBoxTester dtpDetailTransactionDate;
-		public TCmbAutoCompleteTester cmbDetailKeyMinistryKey;
-		
-		public TextBoxTester txtDebitAmount;
-		public TextBoxTester txtDebitAmountBase;
-		public TextBoxTester txtCreditAmount;
-		public TextBoxTester txtCreditAmountBase;
-		public TextBoxTester txtDebitTotalAmount;
-		public TextBoxTester txtDebitTotalAmountBase;
-		public TextBoxTester txtCreditTotalAmount;
-		public TextBoxTester txtCreditTotalAmountBase;
-		
-		// public TSgrdDataGridPagedTester grdDetails3;
+    public class TtpgTransactionsTester
+    {
+        private TFrmGLBatch tFrmGLBatch;
 
-		public TtpgTransactionsTester(TFrmGLBatch tFrmGLBatch) {
-			
-		    this.tFrmGLBatch = tFrmGLBatch;
-			
-			txtLedgerNumber = new TextBoxTester("txtLedgerNumber",tFrmGLBatch);
-			txtBatchNumber = new TextBoxTester("txtBatchNumber",tFrmGLBatch);
-			txtJournalNumber = new TextBoxTester("txtJournalNumber",tFrmGLBatch);
-			
-			btnNew2 = new ButtonTester("tpgTransactions.btnNew",tFrmGLBatch);
-			btnRemove = new ButtonTester("tpgTransactions.btnRemove",tFrmGLBatch);
-			
-			txtDetailNarrative = new TextBoxTester("txtDetailNarrative", tFrmGLBatch);
-			txtDetailReference = new TextBoxTester("txtDetailReference", tFrmGLBatch);
-			dtpDetailTransactionDate = new TextBoxTester("dtpDetailTransactionDate", tFrmGLBatch);
-			cmbDetailKeyMinistryKey = new TCmbAutoCompleteTester("cmbDetailKeyMinistryKey",tFrmGLBatch);
-			
-			txtDebitAmount = new TextBoxTester("txtDebitAmount", tFrmGLBatch);
+        public TextBoxTester txtLedgerNumber;
+        public TextBoxTester txtBatchNumber;
+        public TextBoxTester txtJournalNumber;
 
-			txtDebitAmountBase = new TextBoxTester("txtDebitAmountBase", tFrmGLBatch);
-			txtCreditAmount = new TextBoxTester("txtCreditAmount", tFrmGLBatch);
-			txtCreditAmountBase = new TextBoxTester("txtCreditAmountBase", tFrmGLBatch);
-			txtDebitTotalAmount = new TextBoxTester("txtDebitTotalAmount", tFrmGLBatch);
-			txtDebitTotalAmountBase = new TextBoxTester("txtDebitTotalAmountBase", tFrmGLBatch);
-			txtCreditTotalAmount = new TextBoxTester("txtCreditTotalAmount", tFrmGLBatch);
-			txtCreditTotalAmountBase = new TextBoxTester("txtCreditTotalAmountBase", tFrmGLBatch);
+        public ButtonTester btnNew2;
+        public ButtonTester btnRemove;
 
-			// grdDetails3 = new TSgrdDataGridPagedTester("grdDetails3",tFrmGLBatch);
-		}
-	}
+        public TCmbAutoPopulatedTester cmbDetailCostCentreCode;
+        public TCmbAutoPopulatedTester cmbDetailAccountCode;
+
+        public TextBoxTester txtDetailNarrative;
+        public TextBoxTester txtDetailReference;
+        public TextBoxTester dtpDetailTransactionDate;
+        public TCmbAutoCompleteTester cmbDetailKeyMinistryKey;
+
+        public TextBoxTester txtDebitAmount;
+        public TextBoxTester txtDebitAmountBase;
+        public TextBoxTester txtCreditAmount;
+        public TextBoxTester txtCreditAmountBase;
+        public TextBoxTester txtDebitTotalAmount;
+        public TextBoxTester txtDebitTotalAmountBase;
+        public TextBoxTester txtCreditTotalAmount;
+        public TextBoxTester txtCreditTotalAmountBase;
+
+        // public TSgrdDataGridPagedTester grdDetails3;
+
+        public TtpgTransactionsTester(TFrmGLBatch tFrmGLBatch)
+        {
+            this.tFrmGLBatch = tFrmGLBatch;
+
+            txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
+            txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
+            txtJournalNumber = new TextBoxTester("txtJournalNumber", tFrmGLBatch);
+
+            btnNew2 = new ButtonTester("tpgTransactions.btnNew", tFrmGLBatch);
+            btnRemove = new ButtonTester("tpgTransactions.btnRemove", tFrmGLBatch);
+
+            txtDetailNarrative = new TextBoxTester("txtDetailNarrative", tFrmGLBatch);
+            txtDetailReference = new TextBoxTester("txtDetailReference", tFrmGLBatch);
+            dtpDetailTransactionDate = new TextBoxTester("dtpDetailTransactionDate", tFrmGLBatch);
+            cmbDetailKeyMinistryKey = new TCmbAutoCompleteTester("cmbDetailKeyMinistryKey", tFrmGLBatch);
+
+            txtDebitAmount = new TextBoxTester("txtDebitAmount", tFrmGLBatch);
+
+            txtDebitAmountBase = new TextBoxTester("txtDebitAmountBase", tFrmGLBatch);
+            txtCreditAmount = new TextBoxTester("txtCreditAmount", tFrmGLBatch);
+            txtCreditAmountBase = new TextBoxTester("txtCreditAmountBase", tFrmGLBatch);
+            txtDebitTotalAmount = new TextBoxTester("txtDebitTotalAmount", tFrmGLBatch);
+            txtDebitTotalAmountBase = new TextBoxTester("txtDebitTotalAmountBase", tFrmGLBatch);
+            txtCreditTotalAmount = new TextBoxTester("txtCreditTotalAmount", tFrmGLBatch);
+            txtCreditTotalAmountBase = new TextBoxTester("txtCreditTotalAmountBase", tFrmGLBatch);
+
+            // grdDetails3 = new TSgrdDataGridPagedTester("grdDetails3",tFrmGLBatch);
+        }
+    }
 }

@@ -71,20 +71,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblDateEffective.Text = ALabel;
             this.Text = ACaption;
             lblValidDateRange.Text = String.Format(Catalog.GetString(
-                    "Valid dates from {0} to {1}"), 
-                    StringHelper.DateToLocalizedString(FStartDateCurrentPeriod), 
-                    StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod));
+                    "Valid dates from {0} to {1}"),
+                StringHelper.DateToLocalizedString(FStartDateCurrentPeriod),
+                StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod));
 
             dtpDateEffective.Value = DefaultDate;
         }
 
         private void BtnOKClick(object sender, EventArgs e)
         {
-            if ((dtpDateEffective.Value < FStartDateCurrentPeriod) || 
-        	    (dtpDateEffective.Value > FEndDateLastForwardingPeriod))
+            if ((dtpDateEffective.Value < FStartDateCurrentPeriod)
+                || (dtpDateEffective.Value > FEndDateLastForwardingPeriod))
             {
                 MessageBox.Show(Catalog.GetString(
-        			"Please select a date which is in the valid posting range of your ledger!"),
+                        "Please select a date which is in the valid posting range of your ledger!"),
                     Catalog.GetString("Invalid date"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else

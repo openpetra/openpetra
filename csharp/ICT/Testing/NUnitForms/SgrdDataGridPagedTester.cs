@@ -30,7 +30,7 @@ namespace Ict.Testing.NUnitForms
     /// <summary>
     /// test for SourceGrid
     /// </summary>
-    public class TSgrdDataGridPagedTester: ControlTester
+    public class TSgrdDataGridPagedTester : ControlTester
     {
         private TSgrdDataGridPaged TheObject;
 
