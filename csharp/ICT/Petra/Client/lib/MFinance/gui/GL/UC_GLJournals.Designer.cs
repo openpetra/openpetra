@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -74,11 +74,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblLedgerNumber = new System.Windows.Forms.Label();
             this.txtBatchNumber = new System.Windows.Forms.TextBox();
             this.lblBatchNumber = new System.Windows.Forms.Label();
-            this.txtDebit = new System.Windows.Forms.TextBox();
+            this.txtDebit = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDebit = new System.Windows.Forms.Label();
-            this.txtCredit = new System.Windows.Forms.TextBox();
+            this.txtCredit = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblCredit = new System.Windows.Forms.Label();
-            this.txtControl = new System.Windows.Forms.TextBox();
+            this.txtControl = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblControl = new System.Windows.Forms.Label();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
@@ -195,6 +195,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDebit.Size = new System.Drawing.Size(150, 28);
             this.txtDebit.ReadOnly = true;
             this.txtDebit.TabStop = false;
+            this.txtDebit.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtDebit.DecimalPlaces = 2;
+            this.txtDebit.NullValueAllowed = true;
             //
             // lblDebit
             //
@@ -213,6 +216,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtCredit.Size = new System.Drawing.Size(150, 28);
             this.txtCredit.ReadOnly = true;
             this.txtCredit.TabStop = false;
+            this.txtCredit.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtCredit.DecimalPlaces = 2;
+            this.txtCredit.NullValueAllowed = true;
             //
             // lblCredit
             //
@@ -231,6 +237,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtControl.Size = new System.Drawing.Size(150, 28);
             this.txtControl.ReadOnly = true;
             this.txtControl.TabStop = false;
+            this.txtControl.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtControl.DecimalPlaces = 2;
+            this.txtControl.NullValueAllowed = true;
             //
             // lblControl
             //
@@ -486,11 +495,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblLedgerNumber;
         private System.Windows.Forms.TextBox txtBatchNumber;
         private System.Windows.Forms.Label lblBatchNumber;
-        private System.Windows.Forms.TextBox txtDebit;
+        private Ict.Common.Controls.TTxtNumericTextBox txtDebit;
         private System.Windows.Forms.Label lblDebit;
-        private System.Windows.Forms.TextBox txtCredit;
+        private Ict.Common.Controls.TTxtNumericTextBox txtCredit;
         private System.Windows.Forms.Label lblCredit;
-        private System.Windows.Forms.TextBox txtControl;
+        private Ict.Common.Controls.TTxtNumericTextBox txtControl;
         private System.Windows.Forms.Label lblControl;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;

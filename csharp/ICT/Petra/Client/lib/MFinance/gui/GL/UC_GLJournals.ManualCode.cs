@@ -100,6 +100,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtControl.Text = batch.BatchRunningTotal.ToString();
         }
 
+        /// <summary>
+        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
+        /// In this case some "default"-Settings are to be done.
+        /// </summary>
+        public void FMainDS_ALedgerIsValidNow()
+        {
+            txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+        }
+
         private void ShowDetailsManual(AJournalRow ARow)
         {
             UpdateChangeableStatus();
@@ -231,12 +242,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public decimal GetActualExchangeRateForeign()
         {
             return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
-        }
-
-        public decimal GetActualExchangeRateInternational()
-        {
-            // TODO add Databaserequest ...
-            return 0;
         }
     }
 }

@@ -52,6 +52,12 @@ namespace Tests.MFinance.GLBatches
             Assert.AreEqual(shallBeStatus, isStatus, "Control.enabled(" + message + ")");
         }
 
+        private void CheckCurrencySetting(String propertyText)
+        {
+            Assert.That(propertyText, new NotConstraint(new SubstringConstraint("#")),
+                "Problems with CurrencySymbol settings");
+        }
+
         [Test]
         public void Test_01_AddBatch()
         {
@@ -93,8 +99,9 @@ namespace Tests.MFinance.GLBatches
                 tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text =
                     "NUnit-Forms gnerated batch";
 
-                tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.Properties.Text =
-                    "200";
+                tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.Properties.NumberValueDecimal = 555;
+
+                CheckCurrencySetting(tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.Properties.Text);
 
                 String strValidRange = tFrmGLBatchTester.ttpgBatches.lblValidDateRange.Properties.Text;
                 DateConverter dateConverter = new DateConverter();
@@ -123,10 +130,55 @@ namespace Tests.MFinance.GLBatches
                 Assert.AreEqual(1, tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Rows.Count,
                     "TODO: Insert Code for this case!");
             }
+
+            tFrmGLBatchTester.tFrmGLBatch.Close();
         }
 
         [Test]
-        public void TestMethod2()
+        public void Test_02_AddJournals()
+        {
+            TFrmGLBatchTester tFrmGLBatchTester = new TFrmGLBatchTester();
+
+            tFrmGLBatchTester.tFrmGLBatch.Show();
+            tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
+            tFrmGLBatchTester.ttpgJournals.SelectThisTab();
+
+            CheckCurrencySetting(tFrmGLBatchTester.ttpgJournals.txtDebit.Properties.Text);
+            CheckCurrencySetting(tFrmGLBatchTester.ttpgJournals.txtCredit.Properties.Text);
+            CheckCurrencySetting(tFrmGLBatchTester.ttpgJournals.txtControl.Properties.Text);
+
+            CheckControlStatusEnabled("btnCancel", false,
+                tFrmGLBatchTester.ttpgJournals.btnCancel.Properties.Enabled);
+            CheckControlStatusEnabled("btnNew", true,
+                tFrmGLBatchTester.ttpgJournals.btnAdd.Properties.Enabled);
+
+            tFrmGLBatchTester.ttpgJournals.btnAdd.Click();
+            tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text =
+                "Auto generated Journal 1";
+
+            tFrmGLBatchTester.ttpgJournals.btnAdd.Click();
+            tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text =
+                "Auto generated Journal 2";
+            tFrmGLBatchTester.ttpgJournals.cmbDetailTransactionCurrency.Properties.SetSelectedString("GTQ");
+            tFrmGLBatchTester.ttpgJournals.txtDetailExchangeRateToBase.Properties.Text = "2.5";
+            tFrmGLBatchTester.tbbSave.Click();
+        }
+
+        [Test]
+        public void Test_03_CheckJournals()
+        {
+            TFrmGLBatchTester tFrmGLBatchTester = new TFrmGLBatchTester();
+
+            tFrmGLBatchTester.tFrmGLBatch.Show();
+            tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
+
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.i
+
+            tFrmGLBatchTester.ttpgJournals.SelectThisTab();
+        }
+
+        [Test]
+        public void Test_102_AddJournals()
         {
             Assert.AreEqual(true, true, "...");
         }

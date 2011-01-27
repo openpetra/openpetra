@@ -43,16 +43,19 @@ namespace Ict.Testing.NUnitForms
         public ButtonTester btnPostBatch;
 
         public TextBoxTester txtDetailBatchDescription;
-        public TextBoxTester txtDetailBatchControlTotal;
+        public TTxtNumericTextBoxTester txtDetailBatchControlTotal;
         public TextBoxTester dtpDetailDateEffective;
 
         public LabelTester lblValidDateRange;
 
         public TSgrdDataGridPagedTester grdDetails;
 
-        public TtpgBatchesTester(TFrmGLBatch tFrmGLBatch)
+        private TFrmGLBatchTester tFrmGLBatchTester;
+
+        public TtpgBatchesTester(TFrmGLBatchTester tFrmGLBatchTester, TFrmGLBatch tFrmGLBatch)
         {
             this.tFrmGLBatch = tFrmGLBatch;
+            this.tFrmGLBatchTester = tFrmGLBatchTester;
 
 
             txtLedgerNumber = new TextBoxTester("tpgBatches.txtLedgerNumber", tFrmGLBatch);
@@ -66,7 +69,7 @@ namespace Ict.Testing.NUnitForms
             btnPostBatch = new ButtonTester("btnPostBatch", tFrmGLBatch);
 
             txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription", tFrmGLBatch);
-            txtDetailBatchControlTotal = new TextBoxTester("txtDetailBatchControlTotal", tFrmGLBatch);
+            txtDetailBatchControlTotal = new TTxtNumericTextBoxTester("txtDetailBatchControlTotal", tFrmGLBatch);
             dtpDetailDateEffective = new TextBoxTester("tpgBatches.dtpDetailDateEffective", tFrmGLBatch);
 
             lblValidDateRange = new LabelTester("lblValidDateRange", tFrmGLBatch);
@@ -74,9 +77,9 @@ namespace Ict.Testing.NUnitForms
             grdDetails = new TSgrdDataGridPagedTester("tpgBatches.grdDetails", tFrmGLBatch);
         }
 
-        public string message()
+        public void SelectThisTab()
         {
-            return "123";
+            tFrmGLBatchTester.tabGLBatch.SelectTab(0);
         }
     }
 }

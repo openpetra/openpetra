@@ -57,10 +57,12 @@ namespace Ict.Testing.NUnitForms
         public TextBoxTester txtCreditTotalAmountBase;
 
         // public TSgrdDataGridPagedTester grdDetails3;
+        private TFrmGLBatchTester tFrmGLBatchTester;
 
-        public TtpgTransactionsTester(TFrmGLBatch tFrmGLBatch)
+        public TtpgTransactionsTester(TFrmGLBatchTester tFrmGLBatchTester, TFrmGLBatch tFrmGLBatch)
         {
             this.tFrmGLBatch = tFrmGLBatch;
+            this.tFrmGLBatchTester = tFrmGLBatchTester;
 
             txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
             txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
@@ -85,6 +87,11 @@ namespace Ict.Testing.NUnitForms
             txtCreditTotalAmountBase = new TextBoxTester("txtCreditTotalAmountBase", tFrmGLBatch);
 
             // grdDetails3 = new TSgrdDataGridPagedTester("grdDetails3",tFrmGLBatch);
+        }
+
+        public void SelectThisTab()
+        {
+            tFrmGLBatchTester.tabGLBatch.SelectTab(2);
         }
     }
 }

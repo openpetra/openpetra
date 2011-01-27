@@ -125,6 +125,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
+        /// In this case some "default"-Settings are to be done.
+        /// </summary>
+        public void FMainDS_ALedgerIsValidNow()
+        {
+            txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+        }
+
         private void ShowDetailsManual(ABatchRow ARow)
         {
             UpdateChangeableStatus(true);

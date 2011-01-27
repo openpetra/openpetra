@@ -50,10 +50,13 @@ namespace Ict.Testing.NUnitForms
         public TextBoxTester txtDetailExchangeRateToBase;
 
         // public TSgrdDataGridPagedTester grdDetails2;
+        private TFrmGLBatchTester tFrmGLBatchTester;
 
-        public TtpgJournalsTester(TFrmGLBatch tFrmGLBatch)
+        public TtpgJournalsTester(TFrmGLBatchTester tFrmGLBatchTester, TFrmGLBatch tFrmGLBatch)
         {
             this.tFrmGLBatch = tFrmGLBatch;
+            this.tFrmGLBatchTester = tFrmGLBatchTester;
+
             txtCurrentPeriod = new TextBoxTester("txtCurrentPeriod", tFrmGLBatch);
             txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
             txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
@@ -72,6 +75,11 @@ namespace Ict.Testing.NUnitForms
 
             dtpDetailDateEffective = new TextBoxTester("dtpDetailDateEffective", tFrmGLBatch);
             txtDetailExchangeRateToBase = new TextBoxTester("txtDetailExchangeRateToBase", tFrmGLBatch);
+        }
+
+        public void SelectThisTab()
+        {
+            tFrmGLBatchTester.tabGLBatch.SelectTab(1);
         }
     }
 }

@@ -25,9 +25,9 @@ RootNode:
         txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Currency}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Currency}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Currency}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

@@ -70,9 +70,9 @@ namespace Ict.Testing.NUnitForms
 
             tabGLBatch = new TTabVersatileTester("tabGLBatch", tFrmGLBatch);
 
-            ttpgBatches = new TtpgBatchesTester(tFrmGLBatch);
-            ttpgJournals = new TtpgJournalsTester(tFrmGLBatch);
-            ttpgTransactions = new TtpgTransactionsTester(tFrmGLBatch);
+            ttpgBatches = new TtpgBatchesTester(this, tFrmGLBatch);
+            ttpgJournals = new TtpgJournalsTester(this, tFrmGLBatch);
+            ttpgTransactions = new TtpgTransactionsTester(this, tFrmGLBatch);
         }
     }
 }

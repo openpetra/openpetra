@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,9 +82,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.txtCurrentPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDebit.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCredit.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtControl.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailJournalDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }

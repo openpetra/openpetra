@@ -48,8 +48,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         /// <summary>
         /// Dito the exchnage rate for the international currency ...
+        /// Actualy the value is irrelevant becaus the international currency is only
+        /// to be used to translate a national currencey report into an international
+        /// readable and comparable form. So the reports are created in local currency
+        /// values and the are "transcalculated" to international currency.
         /// </summary>
-        private decimal exchangeRateInternational = 0m;
+        private decimal exchangeRateInternational = 1m;
 
         /// <summary>
         /// load the transactions into the grid
@@ -306,16 +310,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 exchangeRateForeign = 0.0M;
             }
-            try
-            {
-                exchangeRateInternational = ((TUC_GLJournals)
-                                             ((TFrmGLBatch) this.ParentForm).GetJournalsControl()).
-                                            GetActualExchangeRateInternational();
-            }
-            catch (Exception)
-            {
-                exchangeRateInternational = 0.0M;
-            }
         }
 
         /// <summary>
@@ -374,6 +368,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
             ProcessAnalysisAttibutes();
+        }
+
+        /// <summary>
+        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
+        /// In this case some "default"-Settings are to be done.
+        /// </summary>
+        public void FMainDS_ALedgerIsValidNow()
+        {
         }
 
         private void ProcessAnalysisAttibutes()

@@ -42,6 +42,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
                 ucoBatches.LoadBatches(FLedgerNumber);
+
+                ucoBatches.FMainDS_ALedgerIsValidNow();
+                ucoTransactions.FMainDS_ALedgerIsValidNow();
+                ucoJournals.FMainDS_ALedgerIsValidNow();
             }
         }
 
