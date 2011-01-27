@@ -8,7 +8,7 @@
 <%@ Import Namespace="System.Web" %>
 
 <%
-new TAppSettingsManager("web.config");
+new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
 new TLogging(TAppSettingsManager.GetValueStatic("Server.LogFile"));
 try
 {

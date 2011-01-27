@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Web.Services;
 using System.Data;
 using System.Collections;
@@ -59,7 +60,7 @@ public class TOpenPetraOrg : WebService
     static TServerManager TheServerManager = null;
 
     // make sure the correct config file is used
-    static TAppSettingsManager opts = new TAppSettingsManager("web.config");
+    static TAppSettingsManager opts = new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
 
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>

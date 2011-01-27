@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../css/ext-ux-wiz.css" />
     
     <script type="text/javascript" src="../../js/ext-base.js"></script>
-    <script type="text/javascript" src="../../js/ext-all-debug.js"></script>
+    <script type="text/javascript" src="../../js/ext-all.js"></script>
 
     <!-- Ext.ux.Wiz files -->
     <script type="text/javascript" src="../../js/Ext.ux.Wiz/CardLayout.js"></script>
