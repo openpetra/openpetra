@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,22 +70,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.btnDeleteDetail.Text = Catalog.GetString("&Delete Detail");
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
-      this.lblDateEntered.Text = Catalog.GetString("Date Entered:");
+      this.lblDetailMethodOfGivingCode.Text = Catalog.GetString("Method of Giving:");
+      this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of payment:");
+      this.lblDetailReference.Text = Catalog.GetString("1-Reference:");
+      this.lblDetailReceiptLetterCode.Text = Catalog.GetString("Letter Code:");
+      this.lblNumberOfTheDetail.Text = Catalog.GetString("2-Detail:");
+      this.lblTotalNumberOfDetails.Text = Catalog.GetString("Total Number Of Details:");
+      this.lblDateEntered.Text = Catalog.GetString("Gift Date:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
+      this.lblDetailConfidentialGiftFlag.Text = Catalog.GetString("Confidential?:");
       this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailRecipientKey.Text = Catalog.GetString("Recipient:");
+      this.lblField.Text = Catalog.GetString("Field:");
+      this.lblDetailChargeFlag.Text = Catalog.GetString("Admin Grants?:");
+      this.lblMinistry.Text = Catalog.GetString("Key Ministry:");
       this.lblDetailMotivationGroupCode.Text = Catalog.GetString("Motivation Group:");
       this.lblDetailMotivationDetailCode.Text = Catalog.GetString("Motivation Detail:");
+      this.lblDetailTaxDeductable.Text = Catalog.GetString("Tax deductable?:");
       this.lblDetailCostCentreCode.Text = Catalog.GetString("Cost Centre:");
       this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
+      this.lblDetailMailingCode.Text = Catalog.GetString("Mailing:");
+      this.lblDetailGiftCommentOne.Text = Catalog.GetString("Comment 1:");
+      this.lblDetailCommentOneType.Text = Catalog.GetString("for:");
+      this.lblDetailGiftCommentTwo.Text = Catalog.GetString("Comment 2:");
+      this.lblDetailCommentTwoType.Text = Catalog.GetString("for:");
+      this.lblDetailGiftCommentThree.Text = Catalog.GetString("Comment 3:");
+      this.lblDetailCommentThreeType.Text = Catalog.GetString("for:");
       #endregion
 
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailGiftTransactionAmount.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtTotalNumberOfDetails.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtCurrencyCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtField.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailGiftCommentOne.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailGiftCommentTwo.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailGiftCommentThree.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
     /// helper object for the whole screen
@@ -110,10 +133,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public void InitUserControl()
     {
       FPetraUtilsObject.SetStatusBarText(txtDetailGiftTransactionAmount, Catalog.GetString("Enter Your Currency Amount"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailConfidentialGiftFlag, Catalog.GetString("Make a selection"));
       FPetraUtilsObject.SetStatusBarText(txtDetailRecipientKey, Catalog.GetString("Enter the partner key"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailChargeFlag, Catalog.GetString("To determine whether an admin fee on the transaction should be overwritten if it normally has a charge associated with it. Used for both local and ilt transaction."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailMotivationGroupCode, Catalog.GetString("Enter a motivation group code"));
       FPetraUtilsObject.SetStatusBarText(cmbDetailMotivationDetailCode, Catalog.GetString("Enter a motivation detail code"));
+      FPetraUtilsObject.SetStatusBarText(chkDetailTaxDeductable, Catalog.GetString("Is this gift tax deductable?"));
       FPetraUtilsObject.SetStatusBarText(txtDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailMailingCode, Catalog.GetString("The mailing code if the gift was given in response to a mailing"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailGiftCommentOne, Catalog.GetString("Enter a comment"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCommentOneType, Catalog.GetString("Make a selection"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailGiftCommentTwo, Catalog.GetString("Enter a comment"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCommentTwoType, Catalog.GetString("Make a selection"));
+      FPetraUtilsObject.SetStatusBarText(txtDetailGiftCommentThree, Catalog.GetString("Enter a comment"));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailCommentThreeType, Catalog.GetString("Make a selection"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Gift Transaction Number", FMainDS.AGiftDetail.ColumnGiftTransactionNumber);
       grdDetails.AddTextColumn("Gift Number", FMainDS.AGiftDetail.ColumnDetailNumber);
@@ -229,10 +262,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailGiftTransactionAmount.Text = ARow.GiftTransactionAmount.ToString();
+            txtDetailGiftTransactionAmount.NumberValueDecimal = Convert.ToDecimal(ARow.GiftTransactionAmount);
+            chkDetailConfidentialGiftFlag.Checked = ARow.ConfidentialGiftFlag;
             txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
+            if (ARow.IsChargeFlagNull())
+            {
+                chkDetailChargeFlag.Checked = false;
+            }
+            else
+            {
+                chkDetailChargeFlag.Checked = ARow.ChargeFlag;
+            }
             cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
             cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
+            if (ARow.IsTaxDeductableNull())
+            {
+                chkDetailTaxDeductable.Checked = false;
+            }
+            else
+            {
+                chkDetailTaxDeductable.Checked = ARow.TaxDeductable;
+            }
             if (ARow.IsCostCentreCodeNull())
             {
                 txtDetailCostCentreCode.Text = String.Empty;
@@ -248,6 +298,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 txtDetailAccountCode.Text = ARow.AccountCode;
+            }
+            if (ARow.IsMailingCodeNull())
+            {
+                cmbDetailMailingCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMailingCode.SetSelectedString(ARow.MailingCode);
+            }
+            if (ARow.IsGiftCommentOneNull())
+            {
+                txtDetailGiftCommentOne.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailGiftCommentOne.Text = ARow.GiftCommentOne;
+            }
+            if (ARow.IsCommentOneTypeNull())
+            {
+                cmbDetailCommentOneType.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailCommentOneType.SetSelectedString(ARow.CommentOneType);
+            }
+            if (ARow.IsGiftCommentTwoNull())
+            {
+                txtDetailGiftCommentTwo.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailGiftCommentTwo.Text = ARow.GiftCommentTwo;
+            }
+            if (ARow.IsCommentTwoTypeNull())
+            {
+                cmbDetailCommentTwoType.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailCommentTwoType.SetSelectedString(ARow.CommentTwoType);
+            }
+            if (ARow.IsGiftCommentThreeNull())
+            {
+                txtDetailGiftCommentThree.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailGiftCommentThree.Text = ARow.GiftCommentThree;
+            }
+            if (ARow.IsCommentThreeTypeNull())
+            {
+                cmbDetailCommentThreeType.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailCommentThreeType.SetSelectedString(ARow.CommentThreeType);
             }
             ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
@@ -279,10 +385,69 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         if (ARow != null)
         {
             ARow.BeginEdit();
-            ARow.GiftTransactionAmount = Convert.ToDecimal(txtDetailGiftTransactionAmount.Text);
+            ARow.GiftTransactionAmount = Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+            ARow.ConfidentialGiftFlag = chkDetailConfidentialGiftFlag.Checked;
             ARow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            ARow.ChargeFlag = chkDetailChargeFlag.Checked;
             ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
             ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
+            ARow.TaxDeductable = chkDetailTaxDeductable.Checked;
+            if (cmbDetailMailingCode.SelectedIndex == -1)
+            {
+                ARow.SetMailingCodeNull();
+            }
+            else
+            {
+                ARow.MailingCode = cmbDetailMailingCode.GetSelectedString();
+            }
+            if (txtDetailGiftCommentOne.Text.Length == 0)
+            {
+                ARow.SetGiftCommentOneNull();
+            }
+            else
+            {
+                ARow.GiftCommentOne = txtDetailGiftCommentOne.Text;
+            }
+            if (cmbDetailCommentOneType.SelectedIndex == -1)
+            {
+                ARow.SetCommentOneTypeNull();
+            }
+            else
+            {
+                ARow.CommentOneType = cmbDetailCommentOneType.GetSelectedString();
+            }
+            if (txtDetailGiftCommentTwo.Text.Length == 0)
+            {
+                ARow.SetGiftCommentTwoNull();
+            }
+            else
+            {
+                ARow.GiftCommentTwo = txtDetailGiftCommentTwo.Text;
+            }
+            if (cmbDetailCommentTwoType.SelectedIndex == -1)
+            {
+                ARow.SetCommentTwoTypeNull();
+            }
+            else
+            {
+                ARow.CommentTwoType = cmbDetailCommentTwoType.GetSelectedString();
+            }
+            if (txtDetailGiftCommentThree.Text.Length == 0)
+            {
+                ARow.SetGiftCommentThreeNull();
+            }
+            else
+            {
+                ARow.GiftCommentThree = txtDetailGiftCommentThree.Text;
+            }
+            if (cmbDetailCommentThreeType.SelectedIndex == -1)
+            {
+                ARow.SetCommentThreeTypeNull();
+            }
+            else
+            {
+                ARow.CommentThreeType = cmbDetailCommentThreeType.GetSelectedString();
+            }
             GetDetailDataFromControlsManual(ARow);
             ARow.EndEdit();
         }
