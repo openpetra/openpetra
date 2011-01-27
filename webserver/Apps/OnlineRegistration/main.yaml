@@ -182,7 +182,7 @@ RootNode:
             vtype: forcetick
         aspLastPage:
             Label: Nearly done
-            Controls: [lblLastPage1, lblLastPage2, lblLastPage3]
+            Controls: [lblLastPage1, lblLastPage2, lblLastPage3, hidLastPageDummy]
         lblLastPage1:
             Label: You have entered all the data necessary for the application!
         lblLastPage2:
