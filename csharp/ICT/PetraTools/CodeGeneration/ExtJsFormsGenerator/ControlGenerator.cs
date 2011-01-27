@@ -357,8 +357,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 TYml2Xml.GetAttribute(ACtrl.xmlNode, "url"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
                 "BROWSERMISSINGIFRAMESUPPORT",
-                ACtrl,
+                null,
                 "Your browser is not able to display embedded documents. Please click on the following link to read the text: ");
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "IFRAMEINBIGGERWINDOW",
+                null,
+                "Open this document in a bigger window");
 
             ctrlSnippet.SetCodelet("HEIGHT", "250");
 

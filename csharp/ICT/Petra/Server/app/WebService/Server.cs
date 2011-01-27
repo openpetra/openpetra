@@ -106,7 +106,7 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = TClientManager.PerformLoginChecks(username, password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
+            TPetraPrincipal userData = TClientManager.PerformLoginChecks(username.ToUpper(), password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
             return true;
         }

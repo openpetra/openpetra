@@ -116,7 +116,7 @@
 {
     xtype: '{#XTYPE}',
     hideLabel: true,
-    html: '<iframe src="' + this.{#ITEMNAME}URL + '" width="100%" height="{#HEIGHT}"><p>' + this.{#ITEMNAME}BROWSERMISSINGIFRAMESUPPORT + '<a href="' + this.{#ITEMNAME}URL + '">' + this.{#ITEMNAME}LABEL + '</a></p></iframe><br/><a href="' + this.{#ITEMNAME}URL + '" target="newbigger">Open this document in a bigger window</a>',
+    html: '<iframe src="' + this.{#ITEMNAME}URL + '" width="100%" height="{#HEIGHT}"><p>' + this.BROWSERMISSINGIFRAMESUPPORT + '<a href="' + this.{#ITEMNAME}URL + '">' + this.{#ITEMNAME}LABEL + '</a></p></iframe><br/><a href="' + this.{#ITEMNAME}URL + '" target="newbigger">' + this.IFRAMEINBIGGERWINDOW + '</a>',
     name: '{#ITEMNAME}',
     id: '{#ITEMNAME}',   
     anchor: '{#ANCHOR}'
