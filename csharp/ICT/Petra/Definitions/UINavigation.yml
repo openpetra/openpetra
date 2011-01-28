@@ -184,11 +184,10 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
+                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}                           
                         DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}   
                         DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypesCategorySetup}
-                        ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
                         LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
-                        ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
                         LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 
                         Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
@@ -198,6 +197,8 @@ OpenPetra:
                         VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
                         VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
                     Application-related:
+                        ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
+                        ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
 
                     
