@@ -1921,6 +1921,16 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 			return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
             #endregion ManualCode
         }
+        
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode            
+        }
     }
 }
 

@@ -28,12 +28,24 @@
                 <include name="*.js" />
             </fileset>
         </copy>        
+
+        <!-- create project files -->
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
+            <arg value="/C" />
+            <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
+        </exec>
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
+            <arg value="/C" />
+            <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
+        </exec>
         
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;rem ${ThirdParty.dir}/sql2dia/sql2dia.exe -d ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql > ${OpenPetraRoot.dir}/db/doc/master_alltables.prj&quot;"/>
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -g -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql > ${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj&quot;"/>
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql -p ${OpenPetraRoot.dir}/db/doc/master_alltables.prj&quot;"/>
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" commandline="/C &quot;${ThirdParty.dir}/sql2dia/sql2dia.exe -f ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql -o ${OpenPetraRoot.dir}/db/doc/ -p ${OpenPetraRoot.dir}/db/doc/themed.prj&quot;"/>
-        
+        <!-- create or update diagrams -->
+        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}">
+            <arg value="/C" />
+            <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;&quot;"/>
+        </exec>
+
+        <!-- create png files from diagrams -->
         <foreach item="File" property="filename">
             <in>
                 <items>

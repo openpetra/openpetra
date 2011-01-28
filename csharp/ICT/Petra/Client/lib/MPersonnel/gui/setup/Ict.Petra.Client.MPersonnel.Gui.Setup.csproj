@@ -91,8 +91,6 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AbilityAreaSetup.cs" />
     <Compile Include="AbilityAreaSetup.Designer.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
@@ -100,6 +98,13 @@
     <Compile Include="AbilityAreaSetup.ManualCode.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="AbilityLevelSetup.cs" />
+    <Compile Include="AbilityLevelSetup.Designer.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AbilityLevelSetup.ManualCode.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+    </Compile>    
     <Compile Include="ApplicationTypeSetup.cs" />
     <Compile Include="ApplicationTypeSetup.Designer.cs">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
@@ -201,6 +206,9 @@
     </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AbilityLevelSetup.resx">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ApplicationTypeSetup.resx">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>

@@ -52,12 +52,12 @@
     <target name="translationTemplate">
         <!-- first collect all Catalog.GetString from all source files in solution, but ignore those in region CATALOGI18N;
              also resolve calls to Table.GetFieldnameHelp etc; result is in tmp directory, solutionName.CollectedGettext.cs -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-gettext:&quot;${Poedit.gettext}&quot; -solution:${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln -petraxml:${PetraXML.file} -UINavigation.File:${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml -tmpPath:${Tmp.dir} -poFile:${TargetLanguage.PofileWithPath}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-gettext:&quot;${Poedit.gettext}&quot; -solution:&quot;${OpenPetraRoot.dir}/csharp/ICT/${solutionName}.sln&quot; -petraxml:&quot;${PetraXML.file}&quot; -UINavigation.File:&quot;${OpenPetraRoot.dir}/csharp/ICT/Petra/Definitions/UINavigation.yml&quot; -tmpPath:&quot;${Tmp.dir}&quot; -poFile:&quot;${TargetLanguage.PofileWithPath}&quot;"/>
 
         <!-- use solutionName.CollectedGettext.cs as input for po file -->
         <property name="collectedGettext.file" value="${Tmp.dir}/${solutionName}.CollectedGettext.cs"/>
         <if test="${file::exists(collectedGettext.file)}">
-            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 ${collectedGettext.file} -o ${TargetLanguage.Pofile}"/>
+            <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="-j --add-comments=/// --no-location --from-code=UTF-8 &quot;${collectedGettext.file}&quot; -o &quot;${TargetLanguage.Pofile}&quot;"/>
         </if>
     </target>
 
@@ -69,7 +69,7 @@
         </if>
 
         <!-- create initial version of .po file -->
-        <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 ${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs -o ${TargetLanguage.Pofile}"/>
+        <exec program="${Poedit.gettext}" workingdir="${OpenPetraRoot.dir}/i18n/" commandline="--force-po --no-location --from-code=UTF-8 &quot;${OpenPetraRoot.dir}/csharp/ICT/Common/StringHelper.cs&quot; -o &quot;${TargetLanguage.Pofile}&quot;"/>
         <property name="toReplace" value="Content-Type: text/plain; charset=CHARSET/n"/>
         <property name="newValue" value="Content-Type: text/plain; charset=UTF-8/n"/>
         <echo message='${script::ReplaceInFile(TargetLanguage.PofileWithPath, toReplace, newValue)}'/>
@@ -90,8 +90,10 @@
         <call target="translationTemplate"/>
 
         <!-- remove all strings that should not be translated: demo labels, etc -->
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate -dntFile:${DoNotTranslatePofileWithPath}  -poFile:${TargetLanguage.PofileWithPath}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate -dntFile:&quot;${DoNotTranslatePofileWithPath}&quot;  -poFile:&quot;${TargetLanguage.PofileWithPath}&quot;"/>
 
         <call target="translationCompilePOFile"/>
+
+        <call target="uncrustify"/>
     </target>
 </project>
