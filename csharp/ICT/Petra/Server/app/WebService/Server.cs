@@ -106,7 +106,8 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = TClientManager.PerformLoginChecks(username.ToUpper(), password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
+            TPetraPrincipal userData = TClientManager.PerformLoginChecks(
+                username.ToUpper(), password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
             return true;
         }
@@ -271,20 +272,20 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
-    private string parseJSonValues(IDictionary ARoot)
+    private string parseJSonValues(JsonObject ARoot)
     {
         string result = "";
 
-        foreach (string key in ARoot.Keys)
+        foreach (string key in ARoot.Names)
         {
             if (key.ToString().StartsWith("ext-comp"))
             {
                 if (result.Length > 0)
                 {
-                    result = "," + result;
+                    result += ",";
                 }
 
-                result = parseJSonValues((IDictionary)ARoot[key]) + result;
+                result += parseJSonValues((JsonObject)ARoot[key]);
             }
             else
             {
@@ -303,7 +304,7 @@ public class TOpenPetraOrg : WebService
     /// remove ext-comp controls, for multi-page forms
     private string RemoveContainerControls(string AJSONFormData)
     {
-        IDictionary root = (IDictionary)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+        JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
 
         string result = "{" + parseJSonValues(root) + "}";
 

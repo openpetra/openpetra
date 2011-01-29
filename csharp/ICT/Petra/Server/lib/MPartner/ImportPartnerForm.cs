@@ -327,9 +327,9 @@ namespace Ict.Petra.Server.MPartner.Import
             string Result = "<table cellspacing=\"2\">";
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
-            foreach (DictionaryEntry entry in list)
+            foreach (string key in list.Names)
             {
-                Result += String.Format("<tr><td>{0}</td><td>{1}</td></tr>", entry.Key, entry.Value);
+                Result += String.Format("<tr><td>{0}</td><td>{1}</td></tr>", key, list[key]);
             }
 
             Result += "</table>";
