@@ -849,6 +849,20 @@ namespace Ict.Common.IO
 
                 if (nextSibling != null)
                 {
+                    // check for duplicates
+                    if (nextSibling.Name == "Element")
+                    {
+                        foreach (XmlNode comp in list)
+                        {
+                            if (TYml2Xml.GetElementName(comp) == TYml2Xml.GetElementName(nextSibling))
+                            {
+                                // ignoring base, because the list has been overwritten by the derived list
+                                Console.WriteLine(TYml2Xml.GetElementName(comp));
+                                return GetChildren(node, false);
+                            }
+                        }
+                    }
+
                     list.Add(nextSibling);
                 }
             }

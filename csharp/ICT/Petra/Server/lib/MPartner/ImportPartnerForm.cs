@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <summary>
         /// Date of Birth of the person
         /// </summary>
-        public DateTime? dateofbirth;
+        public DateTime dateofbirth;
         /// <summary>
         /// partner key of registration office
         /// </summary>
@@ -127,6 +127,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// each applicant is given a role at the event (participant, volunteer, etc)
         /// </summary>
         public string role;
+        /// <summary>
+        /// relationship to the person which should be called if there are problems
+        /// </summary>
+        public string emergencyrelationship;
         /// <summary>
         /// the temp filename of the photo of the participant, which has been uploaded by upload.aspx
         /// </summary>
@@ -201,11 +205,7 @@ namespace Ict.Petra.Server.MPartner.Import
             newPerson.FirstName = APartnerData.firstname;
             newPerson.FamilyName = APartnerData.lastname;
             newPerson.Gender = APartnerData.gender;
-
-            if (APartnerData.dateofbirth.HasValue)
-            {
-                newPerson.DateOfBirth = APartnerData.dateofbirth;
-            }
+            newPerson.DateOfBirth = APartnerData.dateofbirth;
 
             newPerson.Title = APartnerData.title;
 
@@ -269,6 +269,7 @@ namespace Ict.Petra.Server.MPartner.Import
             }
 
             HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
+            HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValueStatic("Formletters.Path"));
             HTMLText = HTMLText.Replace("#REGISTRATIONID", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
             HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
                 Path.DirectorySeparatorChar + "photos" +
@@ -373,17 +374,17 @@ namespace Ict.Petra.Server.MPartner.Import
 
             if (!SenderAddress.StartsWith("From: "))
             {
-                throw new Exception("missing From: line in the Email template");
+                throw new Exception("missing From: line in the Email template " + FileName);
             }
 
             if (!BCCAddress.StartsWith("BCC: "))
             {
-                throw new Exception("missing BCC: line in the Email template");
+                throw new Exception("missing BCC: line in the Email template " + FileName);
             }
 
             if (!EmailSubject.StartsWith("Subject: "))
             {
-                throw new Exception("missing Subject: line in the Email template");
+                throw new Exception("missing Subject: line in the Email template " + FileName);
             }
 
             SenderAddress = SenderAddress.Substring("From: ".Length);

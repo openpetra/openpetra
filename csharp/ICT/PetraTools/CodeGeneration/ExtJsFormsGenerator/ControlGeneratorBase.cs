@@ -161,9 +161,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "LABEL", ACtrl, ACtrl.Label);
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "HELP", ACtrl, ACtrl.GetAttribute("Help"));
 
-            if (ACtrl.HasAttribute("allowBlank"))
+            if (ACtrl.HasAttribute("allowBlank") && (ACtrl.GetAttribute("allowBlank") == "true"))
             {
-                snippetControl.SetCodelet("ALLOWBLANK", ACtrl.GetAttribute("allowBlank"));
+                snippetControl.SetCodelet("ALLOWBLANK", "true");
             }
 
             if (ACtrl.HasAttribute("inputType"))

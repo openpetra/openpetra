@@ -194,7 +194,7 @@ new Ext.form.ComboBox({
     emptyText: this.{#HELP},
 {#IFDEF ALLOWBLANK}
     fieldLabel: this.{#LABEL},
-    allowBlank: {#ALLOWBLANK},
+    allowBlank: true,
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
     fieldLabel: this.{#LABEL}+' *',
