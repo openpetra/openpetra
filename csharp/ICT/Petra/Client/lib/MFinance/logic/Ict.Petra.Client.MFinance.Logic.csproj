@@ -65,6 +65,15 @@
     <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataSets">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPartner.DataTables">
+      <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MReporting">
       <HintPath>..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MReporting.dll</HintPath>
     </Reference>

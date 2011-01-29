@@ -52,8 +52,8 @@ RootNode:
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
-                Row3: [cmbNumberOfTheDetail,txtTotalNumberOfDetails,dtpDateEntered]
-                Row4: [pnlAmount, Empty1, chkDetailConfidentialGiftFlag]
+                Row3: [dtpDateEntered]
+                Row4: [txtDetailGiftTransactionAmount, Empty1, chkDetailConfidentialGiftFlag]
                 Row5: [txtDetailRecipientKey]
                 Row6: [txtField,chkDetailChargeFlag]
                 Row7: [cmbMinistry]
@@ -66,11 +66,9 @@ RootNode:
         dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true}
         txtDetailReference: {Label=1-Reference}
-        cmbNumberOfTheDetail:
-            Label: 2-Detail
-            OptionalValues: [1]
-        txtTotalNumberOfDetails: {ReadOnly=true, Unbound=true}
-        cmbDetailReceiptLetterCode: {Label=Letter Code, List=UserDefinedList} 
+        cmbDetailReceiptLetterCode:
+            Label: Letter Code
+            OptionalValues: [NO*RECET]
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=3, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of payment, List=UserDefinedList}
@@ -81,13 +79,12 @@ RootNode:
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, ColSpan=3}
-        txtDetailGiftTransactionAmount: {Label=Amount,Width=100,Format=Decimal}
-        txtCurrencyCode: {NoLabel=true, ReadOnly=true, Unbound=true,Width=40}
+        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,ColSpan=2}
-        txtDetailGiftCommentTwo: {Label=Comment 2,ColSpan=2}
-        txtDetailGiftCommentThree: {Label=Comment 3,ColSpan=2}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=250}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=250}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
@@ -98,10 +95,7 @@ RootNode:
         cmbDetailCommentThreeType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]   
-        pnlAmount:
-            Dock: Fill
-            Controls: 
-                Row0: [txtDetailGiftTransactionAmount, txtCurrencyCode]
-        Empty1:        
+        Empty1:
+   
                    
         

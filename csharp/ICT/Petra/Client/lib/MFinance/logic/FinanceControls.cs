@@ -22,20 +22,21 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.Collections.Specialized;
-using GNU.Gettext;
+using System.Data;
+
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Controls;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Client.CommonControls;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MFinance.Logic
 {
@@ -370,6 +371,85 @@ namespace Ict.Petra.Client.MFinance.Logic
             newFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
 
             AControl.Filter = newFilter;
+        }
+
+        /// <summary>
+        /// fill combobox values with method of giving list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMethodOfGivingCodeList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfGivingList);
+
+            AControl.InitialiseUserControl(Table,
+                AMethodOfGivingTable.GetMethodOfGivingCodeDBName(),
+                AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = AMethodOfGivingTable.GetActiveDBName() + " = true";
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
+        /// fill combobox values with method of payment list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMethodOfPaymentCodeList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList);
+
+            AControl.InitialiseUserControl(Table,
+                AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = AMethodOfPaymentTable.GetActiveDBName() + " = true";
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
+        /// fill combobox values with the mailing codes
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialisePMailingList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList);
+
+            AControl.InitialiseUserControl(Table,
+                PMailingTable.GetMailingCodeDBName(),
+                PMailingTable.GetMailingDescriptionDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = PMailingTable.GetViewableDBName() + " = true";
+                //TODO Add viewable until and date comparison
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
         }
 
         /// <summary>

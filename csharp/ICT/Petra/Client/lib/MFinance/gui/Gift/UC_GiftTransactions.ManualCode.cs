@@ -23,15 +23,10 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.Data;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -76,6 +71,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
+            TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, ActiveOnly);
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+            TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
+
 
 //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
 //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -347,7 +346,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (GetBatchRow() != null)
             {
-                txtCurrencyCode.Text = GetBatchRow().CurrencyCode;
+                txtDetailGiftTransactionAmount.CurrencySymbol = GetBatchRow().CurrencyCode;
             }
         }
 

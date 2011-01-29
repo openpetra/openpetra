@@ -74,8 +74,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of payment:");
       this.lblDetailReference.Text = Catalog.GetString("1-Reference:");
       this.lblDetailReceiptLetterCode.Text = Catalog.GetString("Letter Code:");
-      this.lblNumberOfTheDetail.Text = Catalog.GetString("2-Detail:");
-      this.lblTotalNumberOfDetails.Text = Catalog.GetString("Total Number Of Details:");
       this.lblDateEntered.Text = Catalog.GetString("Gift Date:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
       this.lblDetailConfidentialGiftFlag.Text = Catalog.GetString("Confidential?:");
@@ -101,8 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtTotalNumberOfDetails.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtCurrencyCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtField.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();

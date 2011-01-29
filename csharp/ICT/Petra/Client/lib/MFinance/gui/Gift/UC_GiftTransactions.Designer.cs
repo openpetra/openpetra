@@ -89,19 +89,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMethodOfPaymentCode = new System.Windows.Forms.Label();
             this.txtDetailReference = new System.Windows.Forms.TextBox();
             this.lblDetailReference = new System.Windows.Forms.Label();
-            this.cmbDetailReceiptLetterCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.cmbDetailReceiptLetterCode = new Ict.Common.Controls.TCmbAutoComplete();
             this.lblDetailReceiptLetterCode = new System.Windows.Forms.Label();
-            this.cmbNumberOfTheDetail = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblNumberOfTheDetail = new System.Windows.Forms.Label();
-            this.txtTotalNumberOfDetails = new System.Windows.Forms.TextBox();
-            this.lblTotalNumberOfDetails = new System.Windows.Forms.Label();
             this.dtpDateEntered = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEntered = new System.Windows.Forms.Label();
-            this.pnlAmount = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailGiftTransactionAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDetailGiftTransactionAmount = new System.Windows.Forms.Label();
-            this.txtCurrencyCode = new System.Windows.Forms.TextBox();
             this.chkDetailConfidentialGiftFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailConfidentialGiftFlag = new System.Windows.Forms.Label();
             this.txtDetailRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
@@ -145,8 +138,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel2.SuspendLayout();
             this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.pnlAmount.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
 
             //
             // pnlContent
@@ -372,8 +363,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbDetailReceiptLetterCode.Location = new System.Drawing.Point(2,2);
             this.cmbDetailReceiptLetterCode.Name = "cmbDetailReceiptLetterCode";
-            this.cmbDetailReceiptLetterCode.Size = new System.Drawing.Size(300, 28);
-            this.cmbDetailReceiptLetterCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            this.cmbDetailReceiptLetterCode.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailReceiptLetterCode.Items.AddRange(new object[] {"NO*RECET"});
             //
             // lblDetailReceiptLetterCode
             //
@@ -384,41 +375,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailReceiptLetterCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailReceiptLetterCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailReceiptLetterCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // cmbNumberOfTheDetail
-            //
-            this.cmbNumberOfTheDetail.Location = new System.Drawing.Point(2,2);
-            this.cmbNumberOfTheDetail.Name = "cmbNumberOfTheDetail";
-            this.cmbNumberOfTheDetail.Size = new System.Drawing.Size(150, 28);
-            this.cmbNumberOfTheDetail.Items.AddRange(new object[] {"1"});
-            //
-            // lblNumberOfTheDetail
-            //
-            this.lblNumberOfTheDetail.Location = new System.Drawing.Point(2,2);
-            this.lblNumberOfTheDetail.Name = "lblNumberOfTheDetail";
-            this.lblNumberOfTheDetail.AutoSize = true;
-            this.lblNumberOfTheDetail.Text = "2-Detail:";
-            this.lblNumberOfTheDetail.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblNumberOfTheDetail.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblNumberOfTheDetail.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtTotalNumberOfDetails
-            //
-            this.txtTotalNumberOfDetails.Location = new System.Drawing.Point(2,2);
-            this.txtTotalNumberOfDetails.Name = "txtTotalNumberOfDetails";
-            this.txtTotalNumberOfDetails.Size = new System.Drawing.Size(150, 28);
-            this.txtTotalNumberOfDetails.ReadOnly = true;
-            this.txtTotalNumberOfDetails.TabStop = false;
-            //
-            // lblTotalNumberOfDetails
-            //
-            this.lblTotalNumberOfDetails.Location = new System.Drawing.Point(2,2);
-            this.lblTotalNumberOfDetails.Name = "lblTotalNumberOfDetails";
-            this.lblTotalNumberOfDetails.AutoSize = true;
-            this.lblTotalNumberOfDetails.Text = "Total Number Of Details:";
-            this.lblTotalNumberOfDetails.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblTotalNumberOfDetails.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblTotalNumberOfDetails.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // dtpDateEntered
             //
@@ -436,25 +392,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEntered.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDateEntered.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // pnlAmount
-            //
-            this.pnlAmount.Name = "pnlAmount";
-            this.pnlAmount.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlAmount.AutoSize = true;
-            //
-            // tableLayoutPanel4
-            //
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.AutoSize = true;
-            this.pnlAmount.Controls.Add(this.tableLayoutPanel4);
-            //
             // txtDetailGiftTransactionAmount
             //
             this.txtDetailGiftTransactionAmount.Location = new System.Drawing.Point(2,2);
             this.txtDetailGiftTransactionAmount.Name = "txtDetailGiftTransactionAmount";
-            this.txtDetailGiftTransactionAmount.Size = new System.Drawing.Size(100, 28);
-            this.txtDetailGiftTransactionAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+            this.txtDetailGiftTransactionAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailGiftTransactionAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
             this.txtDetailGiftTransactionAmount.DecimalPlaces = 2;
             this.txtDetailGiftTransactionAmount.NullValueAllowed = true;
             //
@@ -467,23 +410,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailGiftTransactionAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailGiftTransactionAmount.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailGiftTransactionAmount.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtCurrencyCode
-            //
-            this.txtCurrencyCode.Location = new System.Drawing.Point(2,2);
-            this.txtCurrencyCode.Name = "txtCurrencyCode";
-            this.txtCurrencyCode.Size = new System.Drawing.Size(40, 28);
-            this.txtCurrencyCode.ReadOnly = true;
-            this.txtCurrencyCode.TabStop = false;
-            this.tableLayoutPanel4.ColumnCount = 3;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Controls.Add(this.lblDetailGiftTransactionAmount, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtDetailGiftTransactionAmount, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.txtCurrencyCode, 2, 0);
             //
             // chkDetailConfidentialGiftFlag
             //
@@ -694,7 +620,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtDetailGiftCommentOne.Location = new System.Drawing.Point(2,2);
             this.txtDetailGiftCommentOne.Name = "txtDetailGiftCommentOne";
-            this.txtDetailGiftCommentOne.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailGiftCommentOne.Size = new System.Drawing.Size(250, 28);
             //
             // lblDetailGiftCommentOne
             //
@@ -727,7 +653,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtDetailGiftCommentTwo.Location = new System.Drawing.Point(2,2);
             this.txtDetailGiftCommentTwo.Name = "txtDetailGiftCommentTwo";
-            this.txtDetailGiftCommentTwo.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailGiftCommentTwo.Size = new System.Drawing.Size(250, 28);
             //
             // lblDetailGiftCommentTwo
             //
@@ -760,7 +686,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtDetailGiftCommentThree.Location = new System.Drawing.Point(2,2);
             this.txtDetailGiftCommentThree.Name = "txtDetailGiftCommentThree";
-            this.txtDetailGiftCommentThree.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailGiftCommentThree.Size = new System.Drawing.Size(250, 28);
             //
             // lblDetailGiftCommentThree
             //
@@ -812,9 +738,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.lblDetailDonorKey, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailMethodOfGivingCode, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailReference, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.lblNumberOfTheDetail, 0, 3);
-            this.tableLayoutPanel3.SetColumnSpan(this.pnlAmount, 2);
-            this.tableLayoutPanel3.Controls.Add(this.pnlAmount, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.lblDateEntered, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblDetailGiftTransactionAmount, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailRecipientKey, 0, 5);
             this.tableLayoutPanel3.Controls.Add(this.lblField, 0, 6);
             this.tableLayoutPanel3.Controls.Add(this.lblMinistry, 0, 7);
@@ -827,7 +752,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.txtDetailDonorKey, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMethodOfGivingCode, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailReference, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.cmbNumberOfTheDetail, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.dtpDateEntered, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftTransactionAmount, 1, 4);
             this.tableLayoutPanel3.SetColumnSpan(this.txtDetailRecipientKey, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 5);
             this.tableLayoutPanel3.Controls.Add(this.txtField, 1, 6);
@@ -835,15 +761,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.cmbMinistry, 1, 7);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 8);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailCostCentreCode, 1, 9);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailGiftCommentOne, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftCommentOne, 1, 10);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailGiftCommentTwo, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftCommentTwo, 1, 11);
-            this.tableLayoutPanel3.SetColumnSpan(this.txtDetailGiftCommentThree, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftCommentThree, 1, 12);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailMethodOfPaymentCode, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailReceiptLetterCode, 2, 2);
-            this.tableLayoutPanel3.Controls.Add(this.lblTotalNumberOfDetails, 2, 3);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailChargeFlag, 2, 6);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailMotivationDetailCode, 2, 8);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailAccountCode, 2, 9);
@@ -852,18 +774,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.lblDetailCommentThreeType, 2, 12);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMethodOfPaymentCode, 3, 1);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailReceiptLetterCode, 3, 2);
-            this.tableLayoutPanel3.Controls.Add(this.txtTotalNumberOfDetails, 3, 3);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailChargeFlag, 3, 6);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationDetailCode, 3, 8);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailAccountCode, 3, 9);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailCommentOneType, 3, 10);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailCommentTwoType, 3, 11);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailCommentThreeType, 3, 12);
-            this.tableLayoutPanel3.Controls.Add(this.lblDateEntered, 4, 3);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailConfidentialGiftFlag, 4, 4);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailTaxDeductable, 4, 8);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailMailingCode, 4, 9);
-            this.tableLayoutPanel3.Controls.Add(this.dtpDateEntered, 5, 3);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailConfidentialGiftFlag, 5, 4);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailTaxDeductable, 5, 8);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMailingCode, 5, 9);
@@ -881,8 +800,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Name = "TUC_GiftTransactions";
             this.Text = "";
 
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.pnlAmount.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -920,19 +837,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailMethodOfPaymentCode;
         private System.Windows.Forms.TextBox txtDetailReference;
         private System.Windows.Forms.Label lblDetailReference;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailReceiptLetterCode;
+        private Ict.Common.Controls.TCmbAutoComplete cmbDetailReceiptLetterCode;
         private System.Windows.Forms.Label lblDetailReceiptLetterCode;
-        private Ict.Common.Controls.TCmbAutoComplete cmbNumberOfTheDetail;
-        private System.Windows.Forms.Label lblNumberOfTheDetail;
-        private System.Windows.Forms.TextBox txtTotalNumberOfDetails;
-        private System.Windows.Forms.Label lblTotalNumberOfDetails;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEntered;
         private System.Windows.Forms.Label lblDateEntered;
-        private System.Windows.Forms.Panel pnlAmount;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private Ict.Common.Controls.TTxtNumericTextBox txtDetailGiftTransactionAmount;
         private System.Windows.Forms.Label lblDetailGiftTransactionAmount;
-        private System.Windows.Forms.TextBox txtCurrencyCode;
         private System.Windows.Forms.CheckBox chkDetailConfidentialGiftFlag;
         private System.Windows.Forms.Label lblDetailConfidentialGiftFlag;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailRecipientKey;

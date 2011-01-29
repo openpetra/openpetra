@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,6 +63,11 @@ namespace Ict.Petra.Shared.MFinance
         /// Special payment programs the donor may give money through. (ie, Gift Aid in the UK)
         /// </summary>
         MethodOfGivingList,
+
+        /// <summary>
+        /// Media"" types of money received.  Eg: Cash, Check Credit Card.
+        /// </summary>
+        MethodOfPaymentList,
 
         /// <summary>
         /// list of motivations (for gifts)
