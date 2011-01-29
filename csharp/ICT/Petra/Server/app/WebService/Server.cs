@@ -294,6 +294,12 @@ public class TOpenPetraOrg : WebService
                     result += ",";
                 }
 
+                if (key.EndsWith("CountryCode"))
+                {
+                    // we need this so that we can parse the dates correctly from json
+                    Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
+                }
+
                 result += "\"" + key + "\":\"" + ARoot[key] + "\"";
             }
         }
@@ -342,8 +348,12 @@ public class TOpenPetraOrg : WebService
         // remove ext-comp controls, for multi-page forms
         AJSONFormData = RemoveContainerControls(AJSONFormData);
 
-        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"").Replace("\"hid",
-            "\"");
+        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                        Replace("\"chk", "\"").
+                        Replace("\"rbt", "\"").
+                        Replace("\"cmb", "\"").
+                        Replace("\"hid", "\"").
+                        Replace("\"dtp", "\"");
 
         try
         {
