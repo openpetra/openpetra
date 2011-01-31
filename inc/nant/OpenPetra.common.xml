@@ -153,6 +153,7 @@
   <setenv name="TMPDIR" value="${tempdir}"/>
   <setenv name="TMP" value="${tempdir}"/>
   <setenv name="TEMP" value="${tempdir}"/>
+  <echo>Add environment variable TMPDIR, TMP, TEMP to value ${environment::get-variable('TMPDIR')}</echo>
 </if>
 
 </project>
