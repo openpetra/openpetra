@@ -35,7 +35,6 @@ not supported
   uncrustify: beautify the code according to coding style guide
   loc, ploc: count the lines of code, to be used for COCOMO etc
   checkcode: todo
-  fixProjectFiles: use this for broken GUIDs in sln and csproj files
   translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
   translationCompilePOFile: create the dlls required to be delivered with a new release
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
