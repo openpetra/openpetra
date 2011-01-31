@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using Ict.Tools.CodeGeneration;
@@ -59,6 +60,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             : base("txt", "textarea")
         {
             FDefaultWidth = -1;
+            FControlDefinitionSnippetName = "TEXTAREADEFINITION";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -243,16 +245,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
             string valuesArray = "[";
-            StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
+
+            List <XmlNode>optionalValues =
+                TYml2Xml.GetChildren(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"), true);
 
             // DefaultValue with = sign before control name
             for (int counter = 0; counter < optionalValues.Count; counter++)
             {
-                if (optionalValues[counter].StartsWith("="))
+                string loopValue = TYml2Xml.GetElementName(optionalValues[counter]);
+
+                if (loopValue.StartsWith("="))
                 {
-                    optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
-                    ctrlSnippet.SetCodelet("VALUE", optionalValues[counter]);
+                    loopValue = loopValue.Substring(1).Trim();
+                    ctrlSnippet.SetCodelet("VALUE", loopValue);
                 }
 
                 if (counter > 0)
@@ -260,11 +265,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     valuesArray += ", ";
                 }
 
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, optionalValues[counter]);
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, loopValue);
 
                 string strName = "this." + ctrl.controlName + "OPTION" + counter.ToString();
 
-                valuesArray += "['" + optionalValues[counter] + "', " + strName + "]";
+                valuesArray += "['" + loopValue + "', " + strName + "]";
             }
 
             valuesArray += "]";

@@ -122,6 +122,39 @@
     anchor: '{#ANCHOR}'
 }
 
+{##TEXTAREADEFINITION}
+{
+    xtype: 'displayfield',
+    hideLabel: true,
+{#IFDEF ALLOWBLANK}
+    value: this.{#LABEL},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    value: this.{#LABEL}+' *',
+{#ENDIFN ALLOWBLANK}
+},
+{
+    xtype: 'textarea',
+{#IFDEF ALLOWBLANK}
+    allowBlank: {#ALLOWBLANK},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    allowBlank: false,
+{#ENDIFN ALLOWBLANK}
+{#IFDEF COLUMNWIDTH}
+    columnWidth: {#COLUMNWIDTH},
+{#ENDIF COLUMNWIDTH}
+{#IFDEF WIDTH}
+    width: {#WIDTH},
+{#ENDIF WIDTH}
+    hideLabel: true,
+    {#CUSTOMATTRIBUTES}
+    emptyText: this.{#HELP},
+    name: '{#ITEMNAME}',
+    id: '{#ITEMNAME}',   
+    anchor: '{#ANCHOR}'
+}
+
 {##HIDDENFIELDDEFINITION}
 {
     xtype: 'hidden',
