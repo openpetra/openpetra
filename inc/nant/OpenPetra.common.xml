@@ -60,7 +60,10 @@
 <property name="dir.root" value="${directory::get-parent-directory(dir.incdir)}"
           overwrite="false" />
 
+
 <!-- Import user specific properties, if available -->
+<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="false" />
+<include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
 
 
 <!-- Version number -->
