@@ -145,4 +145,14 @@
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />
 
+
+<!-- tempdir handling for build server -->
+<if test="${property::exists('tempdir')}" >
+  <mkdir dir="${tempdir}" failonerror="false"/>
+  <!-- All known variants for the temp directory -->
+  <setenv name="TMPDIR" value="${tempdir}"/>
+  <setenv name="TMP" value="${tempdir}"/>
+  <setenv name="TEMP" value="${tempdir}"/>
+</if>
+
 </project>
