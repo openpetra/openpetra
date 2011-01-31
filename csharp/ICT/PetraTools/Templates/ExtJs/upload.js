@@ -73,34 +73,30 @@ else if ({#FORMNAME}.getForm().findField('hidImageID').getValue().length == 0)
   });
 }
 
-{##ASSISTANTPAGEWITHUPLOAD}
-onShow: function() {
-    Ext.ux.Wiz.Card.superclass.onShow.call(this);
-    var myDivDestination = Ext.get('photoPreview');
-    var myDivToMove = Ext.get('uploadDiv');
-    myDivToMove.setStyle('z-index', '20000');
-    myDivToMove.setStyle('visibility', 'visible');
-    myDivToMove.moveTo(myDivDestination.getX() + myDivDestination.getWidth() + 10, myDivDestination.getY());
-},
-isValid: function() {
-    // use the little trick of setting the z-index so that the message box does not get displayed when the form is shown the first time
-    if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
-    {
-        Ext.Msg.show({
-            title: MainForm.{#MISSINGUPLOADTITLE},
-            msg: MainForm.{#MISSINGUPLOADMESSAGE},
-            modal: true,
-            icon: Ext.Msg.ERROR,
-            buttons: Ext.Msg.OK
-        });
-        return false;
-    }
-    Ext.get('hidImageID').setStyle('z-index', '20000');
+{##ASSISTANTPAGEWITHUPLOADSHOW}
+var myDivDestination = Ext.get('photoPreview');
+var myDivToMove = Ext.get('uploadDiv');
+myDivToMove.setStyle('z-index', '20000');
+myDivToMove.setStyle('visibility', 'visible');
+myDivToMove.moveTo(myDivDestination.getX() + myDivDestination.getWidth() + 10, myDivDestination.getY());
 
-    return (Ext.get('hidImageID').getValue().length != 0);
-},
-onHide: function() {
-    Ext.ux.Wiz.Card.superclass.onHide.call(this);
-    var myDivToMove = Ext.get('uploadDiv');
-    myDivToMove.setStyle('visibility', 'hidden');
-},
+{##ASSISTANTPAGEWITHUPLOADVALID}
+// use the little trick of setting the z-index so that the message box does not get displayed when the form is shown the first time
+if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
+{
+    Ext.Msg.show({
+        title: MainForm.{#MISSINGUPLOADTITLE},
+        msg: MainForm.{#MISSINGUPLOADMESSAGE},
+        modal: true,
+        icon: Ext.Msg.ERROR,
+        buttons: Ext.Msg.OK
+    });
+    return false;
+}
+Ext.get('hidImageID').setStyle('z-index', '20000');
+
+return (Ext.get('hidImageID').getValue().length != 0);
+
+{##ASSISTANTPAGEWITHUPLOADHIDE}
+var myDivToMove = Ext.get('uploadDiv');
+myDivToMove.setStyle('visibility', 'hidden');
