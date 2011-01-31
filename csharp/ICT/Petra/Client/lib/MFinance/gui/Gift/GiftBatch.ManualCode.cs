@@ -124,7 +124,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber);
-
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
             }

@@ -53,15 +53,16 @@ RootNode:
                 Row1: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered]
-                Row4: [txtDetailGiftTransactionAmount, Empty1, chkDetailConfidentialGiftFlag]
+                Row4: [txtDetailGiftTransactionAmount, chkDetailConfidentialGiftFlag]
                 Row5: [txtDetailRecipientKey]
                 Row6: [txtField,chkDetailChargeFlag]
                 Row7: [cmbMinistry]
-                Row8: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode, chkDetailTaxDeductable]         
-                Row9: [txtDetailCostCentreCode, txtDetailAccountCode, cmbDetailMailingCode]
-                Row10: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
-                Row11: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
-                Row12: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
+                Row8: [cmbDetailMailingCode, chkDetailTaxDeductable]
+                Row9: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row10: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row11: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
+                Row12: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
+                Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true}
@@ -95,7 +96,7 @@ RootNode:
         cmbDetailCommentThreeType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]   
-        Empty1:
+
    
                    
         

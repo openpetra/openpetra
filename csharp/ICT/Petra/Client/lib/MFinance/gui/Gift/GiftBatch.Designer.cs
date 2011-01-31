@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -319,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(660, 700);
+            this.ClientSize = new System.Drawing.Size(1000, 700);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

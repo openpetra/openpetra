@@ -5,7 +5,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 660
+    WindowWidth: 1000
     WindowHeight: 700
 
     Events:
