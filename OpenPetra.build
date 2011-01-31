@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <project name="OpenPetra">
 
+<echo>operating system=${operating-system::to-string(environment::get-operating-system())}</echo>
+<echo>platform=${platform::get-name()}</echo>
+
+
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <target name="custclean">

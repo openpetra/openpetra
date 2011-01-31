@@ -17,4 +17,34 @@
 </target>
 
 
+<!-- Add the database as is add properties for compat -->
+<property name="DBMS.Type" value="sqlite" overwrite="false" />
+<property name="DBMS.DBName" value="openpetra" overwrite="false" />
+<property name="DBMS.Password" value="petra" overwrite="false" /> 
+<property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
+<!-- 
+<if test="" >
+  <property name="Dia.exe" value="dia.exe" overwrite="true"/> 
+  <property name="PostgreSQL.exe" value="${sys.env.ProgramFiles}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
+  <property name="MySQL.exe" value="${sys.env.ProgramFiles}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
+</if>
+-->
+  <property name="PostgreSQL.exe" value="psql" overwrite="true"/>
+  <property name="MySQL.exe" value="mysql" overwrite="true"/>
+    
+    <property name="PostgreSQL.exe" value="/Library/PostgreSQL/8.3/bin/psql" overwrite="true"/> 
+        
+<!-- Add the database as is add properties for compat, which will be removed -->
+<property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
+<property name="PetraRelease" value="0300" overwrite="false" />
+<property name="SQLitedb.file" value="${dir.bin}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
+<property name="PetraToolsExe.dir" value="${dir.bin}" overwrite="true" />
+<property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
+<property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />
+
+
+<target name="init" />
+  
+<include buildfile="../../OpenPetra.build.database.tasks" />
+
 </project>
