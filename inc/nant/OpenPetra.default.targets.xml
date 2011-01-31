@@ -3,6 +3,23 @@
 
 <include buildfile="OpenPetra.common.xml"/>
 
+<target name="deleteBakFiles" description="delete all backup files">
+    <delete failonerror="false">
+      <fileset defaultexcludes="false" basedir="${dir.bin}/csharp/ICT">
+        <include name="**/*.bak" />
+        <include name="**/*.error" />
+        <include name="**/*.yaml.xml" />
+      </fileset>
+    </delete>
+    <delete>
+      <fileset defaultexcludes="false" basedir="${dir.bin}/webserver">
+        <include name="**/*.bak" />
+        <include name="**/*.error" />
+        <include name="**/*.yaml.xml" />
+      </fileset>
+    </delete>
+</target>
+
 <target name="startPetraServer" depends="" description="Starts a local Petra Server">
   <!-- Create config files, if missing -->
   <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"

@@ -4,6 +4,9 @@
 
 <include buildfile="OpenPetra.common.xml"/>
 
+<target name="cleanPetra" depends="clean" />
+<target name="compilePetra" depends="compile" />
+
 <target name="generateORM" depends="" description="Generates the cached tables">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
@@ -22,18 +25,29 @@
 <property name="DBMS.DBName" value="openpetra" overwrite="false" />
 <property name="DBMS.Password" value="petra" overwrite="false" /> 
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
-<!-- 
-<if test="" >
+<property name="SelectedDemo" value="demodataGermany" overwrite="false"/>
+
+<!-- set platform specific variables -->
+<if test="${'win32'==platform::get-name()}" >
+  <echo>Running on MS Windows</echo>
   <property name="Dia.exe" value="dia.exe" overwrite="true"/> 
-  <property name="PostgreSQL.exe" value="${sys.env.ProgramFiles}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
-  <property name="MySQL.exe" value="${sys.env.ProgramFiles}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
+  <property name="PostgreSQL.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
+  <property name="pgdump.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/pg_dump.exe"/>
+  <property name="MySQL.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
+  <property name="MySQLDump.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysqldump.exe"/> 
 </if>
--->
-  <property name="PostgreSQL.exe" value="psql" overwrite="true"/>
-  <property name="MySQL.exe" value="mysql" overwrite="true"/>
-    
+<if test="${'win32'!=platform::get-name()}">
+  <if test="${'unix'==platform::get-name()}">
+    <echo>Running on Unix</echo>
+    <property name="PostgreSQL.exe" value="psql" overwrite="true"/>
+    <property name="MySQL.exe" value="mysql" overwrite="true"/>
+  </if>
+  <if test="${'unix'!=platform::get-name()}">
+    <echo>Unknown platform!</echo>
+    <fail>Platform={$platform::get-name()} not supported! Expand the properties here!!</fail>
     <property name="PostgreSQL.exe" value="/Library/PostgreSQL/8.3/bin/psql" overwrite="true"/> 
-        
+  </if>
+</if>        
 <!-- Add the database as is add properties for compat, which will be removed -->
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
@@ -43,7 +57,9 @@
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />
 
 
-<target name="init" />
+<target name="init">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
+</target>
   
 <include buildfile="../../OpenPetra.build.database.tasks" />
 

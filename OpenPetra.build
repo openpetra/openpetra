@@ -7,35 +7,81 @@
 
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
-<target name="custclean">
+<!-- nant -projecthelp does not show imported targets-->
+<target name="help" depends="" description="Displays the available targets and parameters.">
+    <echo>
+list of available commands:
+  clean: cleans everything
+  compile: compiles OpenPetra
+  generateSolution: compiles OpenPetra and generates the project and solution files
+  generateSolutionNoCompile: generates the project and solution files. compile should already be executed
+  startPetraServer: run a local Petra Server
+  stopPetraServer: stop the local Petra Server
+  startPetraClient: run the Petra Client
+  deleteBakFiles: delete all backup files
+
+compat:
+  createSQLStatements: generates the sql create table statements etc from the petra.xml
+  dbdoc: generates database design documentation using sql2diagram
+  recreateDatabase: needed after changes in table structure in petra.xml
+  resetDatabase: just resets the data, resets the permissions
+  patchDatabase: update the database to the latest development version
+  generateORM: generates the cachedtables from the petra.xml
+  generateGlue: generates the interfaces and instantiators, which is the glue between client and server
+  cleanPetra: prepare for a clean build
+  compilePetra: build all Petra C# code
+
+not supported
+  uncrustify: beautify the code according to coding style guide
+  loc, ploc: count the lines of code, to be used for COCOMO etc
+  checkcode: todo
+  fixProjectFiles: use this for broken GUIDs in sln and csproj files
+  translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
+  translationCompilePOFile: create the dlls required to be delivered with a new release
+  generateWebforms: generates the User Interface using the Ext.js AJAX framework
+  generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
+  compileTesting: build the testing projects and copy the version.txt
+  startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
+  buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0
+  setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
+  createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
+  packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
+</echo>
+</target>
+    
+<target name="custclean" description="Cleans the solution and project files">
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <delete file="${path::combine(dir.projectfiles,
-                                  path::combine(devenv-name, 'OpenPetra.sln'))}" />
+    <delete>
+      <fileset basedir="${path::combine(dir.projectfiles,devenv-name)}">
+        <include name="'OpenPetra.sln'" />
+        <include name="*.csproj" />
+      </fileset>
+    </delete>
   </foreach>                                
 </target>
 
-<target name="nanttasks" depends="" >
+<target name="nanttasks" depends="" description="goes into the directory inc/nantasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
 </target>
 
-<target name="csharp" depends="nanttasks" >
+<target name="csharp" depends="nanttasks" description="goes into the diretory csharp">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="csharp/csharp.build" />
 </target>
 
-<target name="internal-subdirs" 
+<target name="internal-subdirs" description="Goes into all necessary subdirectories" 
         depends="csharp,nanttasks" />
 
 
-<target name="generateSolutionNoCompile" >
+<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
   <call target="generateCsprojectNoCompile" />
   <call target="generate-solution-all-internal" />
 </target>
 
-<target name="generateSolution" depends="compile" >
+<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
   <call target="generateSolutionNoCompile" />
 </target>
 
