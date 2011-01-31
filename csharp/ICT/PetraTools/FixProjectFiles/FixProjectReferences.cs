@@ -358,6 +358,34 @@ public class TFixProjectReferences : TCSProjTools
                             }
                         }
                     }
+                    else if (child2.Name == "Compile")
+                    {
+                        // check if the file actually exists, with the same case sensitive name
+                        string sourceFile =
+                            Path.GetFullPath(Path.GetDirectoryName(AFilename) + Path.DirectorySeparatorChar + child2.Attributes["Include"].Value);
+
+                        DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(sourceFile));
+                        FileInfo[] files = di.GetFiles();
+
+                        bool found = false;
+
+                        foreach (FileInfo f in files)
+                        {
+                            if (f.Name == Path.GetFileName(sourceFile))
+                            {
+                                found = true;
+                            }
+                            else if (f.Name.ToLower() == Path.GetFileName(sourceFile).ToLower())
+                            {
+                                throw new Exception("problem with case sensitivity of source file " + child2.Attributes["Include"].Value);
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            throw new Exception("cannot find file " + child2.Attributes["Include"].Value + " looking in " + sourceFile);
+                        }
+                    }
                 }
             }
         }

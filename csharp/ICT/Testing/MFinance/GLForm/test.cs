@@ -250,7 +250,7 @@ namespace Tests.MFinance.GLBatches
                 {
                     TDlgSelectCSVSeparatorTester tester2 = new TDlgSelectCSVSeparatorTester(hWnd2);
                     TextBoxTester txtDateFormat = new TextBoxTester("txtDateFormat");
-                    txtDateFormat.Properties.Text = "MM.dd.yyyy";
+                    txtDateFormat.Properties.Text = "MM/dd/yyyy";
                     RadioButtonTester rbtSemicolon = new RadioButtonTester("rbtSemicolon");
                     rbtSemicolon.Properties.Checked = true;
 

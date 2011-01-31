@@ -2219,13 +2219,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public bool ImportGiftBatchData(Hashtable requestParams,
-                                        String importString,
-                                        out TVerificationResultCollection AMessages,
-                                        out GiftBatchTDS FMainDS)
+        public bool ImportGiftBatches(Hashtable requestParams,
+                                      String importString,
+                                      out TVerificationResultCollection AMessages)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatchData", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;GIFTBATCHTDS;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatches", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatches(requestParams, importString, out AMessages);
         }
 
         /// generated method from connector
@@ -2658,6 +2657,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "ExportAllGLBatchData", ";ARRAYLIST;HASHTABLE;STRING;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.ExportAllGLBatchData(ref batches, requestParams, out exportString);
+        }
+
+        /// generated method from connector
+        public bool ImportGLBatches(Hashtable requestParams,
+                                    String importString,
+                                    out TVerificationResultCollection AMessages)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "ImportGLBatches", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.ImportGLBatches(requestParams, importString, out AMessages);
         }
     }
 }

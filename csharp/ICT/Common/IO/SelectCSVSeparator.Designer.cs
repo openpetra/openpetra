@@ -64,6 +64,8 @@ namespace Ict.Common.IO
             this.grdPreview = new System.Windows.Forms.DataGrid();
             this.lblDateFormat = new System.Windows.Forms.Label();
             this.txtDateFormat = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmbNumberFormat = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.grdPreview)).BeginInit();
             this.SuspendLayout();
             //
@@ -145,9 +147,9 @@ namespace Ict.Common.IO
             this.grdPreview.DataMember = "";
             this.grdPreview.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.grdPreview.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-            this.grdPreview.Location = new System.Drawing.Point(0, 119);
+            this.grdPreview.Location = new System.Drawing.Point(0, 134);
             this.grdPreview.Name = "grdPreview";
-            this.grdPreview.Size = new System.Drawing.Size(533, 169);
+            this.grdPreview.Size = new System.Drawing.Size(533, 154);
             this.grdPreview.TabIndex = 9;
             //
             // lblDateFormat
@@ -165,11 +167,33 @@ namespace Ict.Common.IO
             this.txtDateFormat.Size = new System.Drawing.Size(100, 20);
             this.txtDateFormat.TabIndex = 11;
             //
+            // label1
+            //
+            this.label1.Location = new System.Drawing.Point(12, 108);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 23);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Number format:";
+            //
+            // cmbNumberFormat
+            //
+            this.cmbNumberFormat.FormattingEnabled = true;
+            this.cmbNumberFormat.Items.AddRange(new object[] {
+                    "Decimal Point (12.34)",
+                    "Decimal Comma (12,34)"
+                });
+            this.cmbNumberFormat.Location = new System.Drawing.Point(117, 108);
+            this.cmbNumberFormat.Name = "cmbNumberFormat";
+            this.cmbNumberFormat.Size = new System.Drawing.Size(160, 21);
+            this.cmbNumberFormat.TabIndex = 13;
+            //
             // TDlgSelectCSVSeparator
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 288);
+            this.Controls.Add(this.cmbNumberFormat);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.txtDateFormat);
             this.Controls.Add(this.lblDateFormat);
             this.Controls.Add(this.grdPreview);
@@ -186,6 +210,9 @@ namespace Ict.Common.IO
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ComboBox cmbNumberFormat;
+        private System.Windows.Forms.Label label1;
 
         private System.Windows.Forms.TextBox txtDateFormat;
         private System.Windows.Forms.Label lblDateFormat;
