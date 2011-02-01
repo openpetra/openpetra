@@ -176,32 +176,35 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 snippetControl.SetCodelet("VTYPE", ACtrl.GetAttribute("vtype"));
             }
 
-            if (ACtrl.HasAttribute("MinDateMonth"))
+            if (ACtrl.HasAttribute("DateFormat"))
             {
-                snippetControl.SetCodelet("DATERANGE", "true");
+                snippetControl.SetCodelet("DATEFORMAT", ACtrl.GetAttribute("DateFormat"));
+            }
+
+            if (ACtrl.HasAttribute("ShowToday"))
+            {
+                snippetControl.SetCodelet("SHOWTODAY", ACtrl.GetAttribute("ShowToday"));
+            }
+
+            if (ACtrl.HasAttribute("MinDateYear"))
+            {
                 snippetControl.SetCodelet("MINYEAR", ACtrl.GetAttribute("MinDateYear"));
                 snippetControl.SetCodelet("MINMONTH", ACtrl.GetAttribute("MinDateMonth"));
                 snippetControl.SetCodelet("MINDAY", ACtrl.GetAttribute("MinDateDay"));
+            }
+
+            if (ACtrl.HasAttribute("MaxDateYear"))
+            {
                 snippetControl.SetCodelet("MAXYEAR", ACtrl.GetAttribute("MaxDateYear"));
                 snippetControl.SetCodelet("MAXMONTH", ACtrl.GetAttribute("MaxDateMonth"));
                 snippetControl.SetCodelet("MAXDAY", ACtrl.GetAttribute("MaxDateDay"));
+            }
 
-                if (ACtrl.HasAttribute("DateFormat"))
-                {
-                    snippetControl.SetCodelet("DATEFORMAT", ACtrl.GetAttribute("DateFormat"));
-                }
-
-                if (ACtrl.HasAttribute("ShowToday"))
-                {
-                    snippetControl.SetCodelet("SHOWTODAY", ACtrl.GetAttribute("ShowToday"));
-                }
-
-                if (ACtrl.HasAttribute("DefaultYear"))
-                {
-                    snippetControl.SetCodelet("DEFAULTYEAR", ACtrl.GetAttribute("DefaultYear"));
-                    snippetControl.SetCodelet("DEFAULTMONTH", ACtrl.GetAttribute("DefaultMonth"));
-                    snippetControl.SetCodelet("DEFAULTDAY", ACtrl.GetAttribute("DefaultDay"));
-                }
+            if (ACtrl.HasAttribute("DefaultYear"))
+            {
+                snippetControl.SetCodelet("DEFAULTYEAR", ACtrl.GetAttribute("DefaultYear"));
+                snippetControl.SetCodelet("DEFAULTMONTH", ACtrl.GetAttribute("DefaultMonth"));
+                snippetControl.SetCodelet("DEFAULTDAY", ACtrl.GetAttribute("DefaultDay"));
             }
 
             if (ACtrl.HasAttribute("otherPasswordField"))
