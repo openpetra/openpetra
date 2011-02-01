@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbUserGroup.Columns.Clear();
-            clbUserGroup.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            clbUserGroup.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbUserGroup.AddTextColumn(Catalog.GetString("Module"), NewTable.Columns[ValueMember], 100);
             clbUserGroup.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 220);
             clbUserGroup.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
