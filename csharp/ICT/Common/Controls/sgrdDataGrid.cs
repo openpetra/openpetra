@@ -677,7 +677,6 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound
@@ -690,7 +689,18 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
+        /// <returns>void</returns>
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, bool AReadOnly)
+        {
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, AReadOnly);
+        }
+
+        /// <summary>
+        /// Easy method to add a new CheckBox column.
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
@@ -699,19 +709,32 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, true);
         }
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
+        /// <returns>void</returns>
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, bool AReadOnly)
+        {
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, AReadOnly);
+        }
+
+        /// <summary>
+        /// Easy method to add a new CheckBox column.
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AEditor"></param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
         /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor)
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
         {
             SourceGrid.Cells.ICellVirtual ADataCell;
             SourceGrid.DataGridColumn AGridColumn;
@@ -729,6 +752,12 @@ namespace Ict.Common.Controls
             }
 
             AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
+
+            if (AReadOnly)
+            {
+                ADataCell.Editor.EnableEdit = false;
+            }
+
             this.Columns.Insert(this.Columns.Count, AGridColumn);
         }
 
@@ -768,7 +797,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// add a date column, that is readonly, and only shows the date
+        /// add a date column, that is read-only, and only shows the date
         /// </summary>
         /// <param name="AColumnTitle"></param>
         /// <param name="ADataColumn"></param>
