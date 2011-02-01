@@ -157,17 +157,33 @@
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />
 
+<!-- Copyright, po and Assembly information -->
+<property name="info.copyright.holder" value="OM International" overwrite="false" />
+<property name="info.productname" value="OpenPetra" overwrite="false" />
+<property name="info.assembly.copyright" value="(c) ${info.copyright.holder} 2004-2011" overwrite="false" />
+<property name="info.assembly.company" value="${info.copyright.holder}" overwrite="false" />
+<property name="info.contact.email" value="info@OpenPetra.org" overwrite="false" />
+<property name="info.pot.msgidbugs" value="${info.contact.email}" overwrite="false" />
+
+
 <!-- external utilities dependend on platform -->
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
   <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify-0.56-win32/uncrustify.exe" 
             overwrite="false"/>
+  <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
+  <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>
+  <property name="external.Poedit.msgcat" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgcat.exe" overwrite="false"/> 
+            
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
     <property name="external.Uncrustify" value="uncrustify" 
               overwrite="false"/>
+    <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
+    <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
+    <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
@@ -177,13 +193,11 @@
 
 
 <!-- tempdir handling for build server -->
-<if test="${property::exists('tempdir')}" >
-  <mkdir dir="${tempdir}" failonerror="false"/>
-  <!-- All known variants for the temp directory -->
-  <setenv name="TMPDIR" value="${tempdir}"/>
-  <setenv name="TMP" value="${tempdir}"/>
-  <setenv name="TEMP" value="${tempdir}"/>
-  <echo>Add environment variable TMPDIR, TMP, TEMP to value ${environment::get-variable('TMPDIR')}</echo>
-</if>
+<property name="tempdir" value="${path::combine(dir.root,'tmp')}" overwrite="false" />
+<mkdir dir="${tempdir}" failonerror="false"/>
+<!-- All known variants for the temp directory -->
+<setenv name="TMPDIR" value="${tempdir}"/>
+<setenv name="TMP" value="${tempdir}"/>
+<setenv name="TEMP" value="${tempdir}"/>
 
 </project>

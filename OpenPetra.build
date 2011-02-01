@@ -30,13 +30,16 @@ compat:
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
+  translationCompilePOFile: create the dlls required to be delivered with a new release
+
+list of commands, which works in the specific csharp directories:
+  indent: beautify the code according to coding style guide
+  uncrustify: calls indent
+
 
 not supported
-  uncrustify: beautify the code according to coding style guide
   loc, ploc: count the lines of code, to be used for COCOMO etc
-  checkcode: todo
   translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
-  translationCompilePOFile: create the dlls required to be delivered with a new release
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   compileTesting: build the testing projects and copy the version.txt
@@ -47,16 +50,24 @@ not supported
   packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
 </echo>
 </target>
-    
+
+<target name="translationCompilePOFile" description="create the dlls with the i18n messages" >
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="${target}" 
+        buildfile="i18n/i18n.build" />
+</target>
+
 <target name="custclean" description="Cleans the solution and project files">
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
       <fileset basedir="${path::combine(dir.projectfiles,devenv-name)}">
-        <include name="'OpenPetra.sln'" />
+        <include name="OpenPetra.sln" />
         <include name="*.csproj" />
       </fileset>
     </delete>
-  </foreach>                                
+  </foreach>
+  <property name="target" value="clean" />
+  <call target="translationCompilePOFile" />                           
 </target>
 
 <target name="nanttasks" depends="" description="goes into the directory inc/nantasks">
