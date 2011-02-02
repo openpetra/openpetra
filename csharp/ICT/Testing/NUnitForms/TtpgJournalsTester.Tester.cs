@@ -58,14 +58,14 @@ namespace Ict.Testing.NUnitForms
             this.tFrmGLBatchTester = tFrmGLBatchTester;
 
             txtCurrentPeriod = new TextBoxTester("txtCurrentPeriod", tFrmGLBatch);
-            txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
+            txtLedgerNumber = new TextBoxTester("ucoJournals.pnlContent.pnlInfo.tableLayoutPanel1.txtLedgerNumber", tFrmGLBatch);
             txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
             txtDebit = new TextBoxTester("txtDebit", tFrmGLBatch);
             txtCredit = new TextBoxTester("txtCredit", tFrmGLBatch);
             txtControl = new TextBoxTester("txtControl", tFrmGLBatch);
 
-            btnAdd = new ButtonTester("tpgJournals.btnAdd", tFrmGLBatch);
-            btnCancel = new ButtonTester("tpgJournals.btnCancel", tFrmGLBatch);
+            btnAdd = new ButtonTester("ucoJournals.pnlContent.pnlDetailGrid.pnlDetailButtons.tableLayoutPanel2.btnAdd", tFrmGLBatch);
+            btnCancel = new ButtonTester("ucoBatches.pnlContent.pnlDetailGrid.pnlDetailButtons.tableLayoutPanel4.btnCancel", tFrmGLBatch);
 
             txtDetailJournalDescription = new TextBoxTester("txtDetailJournalDescription", tFrmGLBatch);
 

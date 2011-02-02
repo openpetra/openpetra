@@ -64,7 +64,7 @@ namespace Ict.Testing.NUnitForms
             this.tFrmGLBatch = tFrmGLBatch;
             this.tFrmGLBatchTester = tFrmGLBatchTester;
 
-            txtLedgerNumber = new TextBoxTester("txtLedgerNumber", tFrmGLBatch);
+            txtLedgerNumber = new TextBoxTester("ucoTransactions.pnlContent.pnlInfo.tableLayoutPanel1.txtLedgerNumber", tFrmGLBatch);
             txtBatchNumber = new TextBoxTester("txtBatchNumber", tFrmGLBatch);
             txtJournalNumber = new TextBoxTester("txtJournalNumber", tFrmGLBatch);
 

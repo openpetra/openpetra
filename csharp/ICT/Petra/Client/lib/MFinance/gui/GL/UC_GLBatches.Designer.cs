@@ -254,6 +254,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.grdDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdDetails.DoubleClick += new System.EventHandler(this.ShowJournalTab);
             this.grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
+            // this.grdDetails.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(this.FocusedRowChanged);
+           
+           
             //
             // pnlDetailButtons
             //

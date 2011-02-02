@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       wolfgangu
 //
 // Copyright 2004-2010 by OM International
 //
@@ -24,46 +24,33 @@ using System.Windows.Forms;
 using NUnit.Extensions.Forms;
 using Ict.Common.Controls;
 using Ict.Testing.NUnitForms;
+using SourceGrid;  
 
 namespace Ict.Testing.NUnitForms
 {
-    /// <summary>
-    /// test for SourceGrid
-    /// </summary>
-    public class TSgrdDataGridPagedTester: ControlTester
+	/// <summary>
+	/// Description of SourceGridSelectionTester.
+	/// </summary>
+    public class SourceGridSelectionTester : ControlTester
     {
-        private TSgrdDataGridPaged TheObject;
+        private SourceGrid.Selection.RowSelection TheObject;
 
         /// constructor
-        public TSgrdDataGridPagedTester(string name, Form form)
+        public SourceGridSelectionTester(string name)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, form);
+            Finder <SourceGrid.Selection.RowSelection>finder = 
+            	new Finder <SourceGrid.Selection.RowSelection>(name);
             TheObject = finder.Find();
         }
 
         /// constructor
-        public TSgrdDataGridPagedTester(string name, string formName)
+        public SourceGridSelectionTester()
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, new FormFinder().Find(formName));
+            Finder <SourceGrid.Selection.RowSelection>finder = 
+            	new Finder <SourceGrid.Selection.RowSelection>();
             TheObject = finder.Find();
         }
 
-        /// constructor
-        public TSgrdDataGridPagedTester(string name)
-        {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name);
-            TheObject = finder.Find();
-        }
-
-        /// <summary>
-        /// access the properties of the source grid
-        /// </summary>
-        public TSgrdDataGridPaged Properties
-        {
-            get
-            {
-                return TheObject;
-            }
-        }
+        
     }
 }

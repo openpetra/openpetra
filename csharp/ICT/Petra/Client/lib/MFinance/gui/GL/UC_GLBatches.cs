@@ -249,6 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
     private ABatchRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    // private void FocusedRowChanged(System.Object sender, EventArgs e)
     {
         // get the details from the previously selected row
         if (FPreviouslySelectedDetailRow != null)

@@ -58,23 +58,26 @@ namespace Ict.Testing.NUnitForms
             this.tFrmGLBatchTester = tFrmGLBatchTester;
 
 
-            txtLedgerNumber = new TextBoxTester("tpgBatches.txtLedgerNumber", tFrmGLBatch);
+            txtLedgerNumber = new TextBoxTester("ucoBatches.pnlContent.pnlInfo.tableLayoutPanel1.pnlLedgerInfo.tableLayoutPanel2.txtLedgerNumber", tFrmGLBatch);
 
             rbtPosting = new RadioButtonTester("rbtPosting", tFrmGLBatch);
             rbtEditing = new RadioButtonTester("rbtEditing", tFrmGLBatch);
             rbtAll = new RadioButtonTester("rbtAll", tFrmGLBatch);
 
-            btnNew = new ButtonTester("tpgBatches.btnNew", tFrmGLBatch);
-            btnCancel = new ButtonTester("tpgBatches.btnCancel", tFrmGLBatch);
+            btnNew = new ButtonTester("ucoBatches.pnlContent.pnlDetailGrid.pnlDetailButtons.tableLayoutPanel4.btnNew", tFrmGLBatch);
+            btnCancel = new ButtonTester("ucoJournals.pnlContent.pnlDetailGrid.pnlDetailButtons.tableLayoutPanel2.btnCancel", tFrmGLBatch);
             btnPostBatch = new ButtonTester("btnPostBatch", tFrmGLBatch);
 
             txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription", tFrmGLBatch);
             txtDetailBatchControlTotal = new TTxtNumericTextBoxTester("txtDetailBatchControlTotal", tFrmGLBatch);
-            dtpDetailDateEffective = new TextBoxTester("tpgBatches.dtpDetailDateEffective", tFrmGLBatch);
+            dtpDetailDateEffective = new TextBoxTester("ucoBatches.pnlContent.pnlDetails.tableLayoutPanel5.dtpDetailDateEffective", tFrmGLBatch);
 
             lblValidDateRange = new LabelTester("lblValidDateRange", tFrmGLBatch);
-
-            grdDetails = new TSgrdDataGridPagedTester("tpgBatches.grdDetails", tFrmGLBatch);
+            System.Console.WriteLine("123");
+            grdDetails = new TSgrdDataGridPagedTester("ucoBatches.pnlContent.pnlDetailGrid.grdDetails", tFrmGLBatch);
+            System.Console.WriteLine("123#");
+//            grdDetails.AddASourceGridSelectionTester(
+//            	new SourceGridSelectionTester("tpgBatches.grdDetails.Selection"));
         }
 
         public void SelectThisTab()

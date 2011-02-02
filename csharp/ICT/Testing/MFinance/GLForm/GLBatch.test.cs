@@ -36,6 +36,7 @@ using Ict.Testing.NUnitPetraClient;
 using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using SourceGrid; 
 
 namespace Tests.MFinance.GLBatches
 {
@@ -63,6 +64,7 @@ namespace Tests.MFinance.GLBatches
         {
             TFrmGLBatchTester tFrmGLBatchTester = new TFrmGLBatchTester();
 
+            Assert.AreEqual(43,fLedgerNumber,"...");
             tFrmGLBatchTester.tFrmGLBatch.Show();
             tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
 
@@ -122,6 +124,8 @@ namespace Tests.MFinance.GLBatches
                 tFrmGLBatchTester.ttpgBatches.dtpDetailDateEffective.Properties.Text =
                     dateConverter.GetDateString(dteToUse);
                 tFrmGLBatchTester.ttpgBatches.dtpDetailDateEffective.FireEvent("Validating");
+                
+                // tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.FireEvent 
 
                 tFrmGLBatchTester.tbbSave.Click();
             }
@@ -147,9 +151,9 @@ namespace Tests.MFinance.GLBatches
             CheckCurrencySetting(tFrmGLBatchTester.ttpgJournals.txtCredit.Properties.Text);
             CheckCurrencySetting(tFrmGLBatchTester.ttpgJournals.txtControl.Properties.Text);
 
-            CheckControlStatusEnabled("btnCancel", false,
-                tFrmGLBatchTester.ttpgJournals.btnCancel.Properties.Enabled);
-            CheckControlStatusEnabled("btnNew", true,
+//            CheckControlStatusEnabled("btnCancel", false,
+//                tFrmGLBatchTester.ttpgJournals.btnCancel.Properties.Enabled);
+            CheckControlStatusEnabled("btnAdd", true,
                 tFrmGLBatchTester.ttpgJournals.btnAdd.Properties.Enabled);
 
             tFrmGLBatchTester.ttpgJournals.btnAdd.Click();
@@ -171,15 +175,43 @@ namespace Tests.MFinance.GLBatches
 
             tFrmGLBatchTester.tFrmGLBatch.Show();
             tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
+            
+            tFrmGLBatchTester.ttpgBatches.SelectThisTab();
+             
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(2,true);
+            
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Name);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.FireEvent("SelectionChanged");
+            
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.GetSelectionRegion());
 
-            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.i
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(0,true);
+            //tFrmGLBatchTester.ttpgBatches.grdDetails.SelectRow(0);
 
-            tFrmGLBatchTester.ttpgJournals.SelectThisTab();
+           
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.ToString());
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(1,true);
+
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(2,true);
+            
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
+            
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.ToString());
+            
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.GetSelectionRegion());
         }
 
         [Test]
         public void Test_102_AddJournals()
         {
+        	Button btn = new Button();
+        	
+            
+        	
             Assert.AreEqual(true, true, "...");
         }
 

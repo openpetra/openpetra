@@ -46,6 +46,7 @@ using System.Globalization;
 
 namespace Ict.Common.Controls
 {
+	
     #region TSgrdDataGrid
 
     /// <summary>
