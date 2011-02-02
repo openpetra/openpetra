@@ -29,13 +29,10 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -484,6 +481,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TGiftImporting importing = new TGiftImporting();
 
             return importing.ImportGiftBatches(requestParams, importString, out AMessages);
+        }
+
+        [RequireModulePermission("FINANCE-1")]
+        /// <summary>
+        /// Load Partner Data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediatelya
+        /// </summary>
+        /// <param name="PartnerKey">Partner Key </param>
+        /// <returns>GLSetupDS with Partnertable for the partner Key</returns>
+        public static GLSetupTDS LoadPartnerData(long DonorKey)
+        {
+            GLSetupTDS PartnerDS = new GLSetupTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            PPartnerAccess.LoadByPrimaryKey(PartnerDS, DonorKey, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return PartnerDS;
         }
     }
 }

@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -495,6 +495,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         bool ImportGiftBatches(Hashtable requestParams,
                                String importString,
                                out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        GLSetupTDS LoadPartnerData(long DonorKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
         GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>

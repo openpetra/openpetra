@@ -287,6 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailDonorKey.Location = new System.Drawing.Point(2,2);
             this.txtDetailDonorKey.Name = "txtDetailDonorKey";
             this.txtDetailDonorKey.Size = new System.Drawing.Size(370, 28);
+            this.txtDetailDonorKey.ValueChanged += new TDelegatePartnerChanged(this.DonorKeyChanged);
             this.txtDetailDonorKey.ASpecialSetting = true;
             this.txtDetailDonorKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.txtDetailDonorKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
@@ -354,7 +355,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailReference.Location = new System.Drawing.Point(2,2);
             this.lblDetailReference.Name = "lblDetailReference";
             this.lblDetailReference.AutoSize = true;
-            this.lblDetailReference.Text = "1-Reference:";
+            this.lblDetailReference.Text = "Reference:";
             this.lblDetailReference.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailReference.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailReference.TextAlign = System.Drawing.ContentAlignment.TopRight;

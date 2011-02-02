@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDetailMethodOfGivingCode.Text = Catalog.GetString("Method of Giving:");
       this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of payment:");
-      this.lblDetailReference.Text = Catalog.GetString("1-Reference:");
+      this.lblDetailReference.Text = Catalog.GetString("Reference:");
       this.lblDetailReceiptLetterCode.Text = Catalog.GetString("Letter Code:");
       this.lblDateEntered.Text = Catalog.GetString("Gift Date:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");

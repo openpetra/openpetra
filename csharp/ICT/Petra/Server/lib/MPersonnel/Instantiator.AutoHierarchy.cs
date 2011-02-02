@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1921,7 +1921,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 			return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
             #endregion ManualCode
         }
-        
+
         /// generated method from interface
         public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,

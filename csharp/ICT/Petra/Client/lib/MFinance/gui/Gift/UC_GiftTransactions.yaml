@@ -65,8 +65,8 @@ RootNode:
                 Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true}
-        txtDetailReference: {Label=1-Reference}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true, OnChange=DonorKeyChanged}
+        txtDetailReference: {Label=Reference}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
