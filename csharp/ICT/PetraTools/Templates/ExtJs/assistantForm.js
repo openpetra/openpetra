@@ -46,6 +46,23 @@ var {#FORMNAME} = null;
 new Ext.ux.Wiz.Card({
     title : this.{#LABEL},
     monitorValid : true,
+{#IFDEF ONSHOW}
+    onShow: function() {
+        Ext.ux.Wiz.Card.superclass.onShow.call(this);
+        {#ONSHOW}
+    },
+{#ENDIF ONSHOW}
+{#IFDEF ISVALID}
+    isValid: function() {
+        {#ISVALID}
+    },
+{#ENDIF ISVALID}
+{#IFDEF ONHIDE}
+    onHide: function() {
+        Ext.ux.Wiz.Card.superclass.onHide.call(this);
+        {#ONHIDE}
+    },
+{#ENDIF ONHIDE}
     {#CUSTOMFUNCTIONS}
     labelWidth: {#LABELWIDTH},
     defaults     : {

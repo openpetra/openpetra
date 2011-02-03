@@ -496,4 +496,47 @@
         <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>
     </target>
 
+    <target name="packWebApp" depends="deleteBakFiles">
+        <copy file="${OpenPetraRoot.dir}/webserver/web.config" tofile="${OpenPetraRoot.dir}/tmp/web-sample.config" overwrite="true"/>
+        <zip zipfile="${Delivery.dir}/WebRelease.zip">
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/bin/" prefix="webserver/bin">
+                <include name="*.dll" />
+                <include name="version.txt" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/js" prefix="webserver/js">
+                <include name="**.js" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/images" prefix="webserver/images">
+                <include name="**.*" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/img" prefix="webserver/img">
+                <include name="**.*" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/js" prefix="webserver/js">
+                <include name="**.js" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/css" prefix="webserver/css">
+                <include name="**.css" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/Apps" prefix="webserver/Apps">
+                <include name="**.js" />
+                <include name="**.html" />
+                <include name="**.aspx" />
+            </fileset>
+
+            <fileset basedir="${OpenPetraRoot.dir}/webserver" prefix="webserver">
+                <include name="*.*" />
+                <exclude name="web.config" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="webserver">
+                <include name="web-sample.config" />
+            </fileset>
+
+            <fileset basedir="${OpenPetraRoot.dir}/demodata/formletters" prefix="formletters">
+                <include name="*.*" />
+            </fileset>
+        </zip>
+        <delete file="${OpenPetraRoot.dir}/tmp/web-sample.config"/>
+    </target>
+
 </project>

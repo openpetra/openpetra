@@ -521,10 +521,7 @@ namespace Ict.Common.Printing
                         PrintString(toPrint, AFont, AXPos, AWidth, AAlign);
                     }
 
-                    if (AAlign == eAlignment.eRight)
-                    {
-                        CurrentXPos += GetWidthString(toPrint, AFont);
-                    }
+                    CurrentXPos += GetWidthString(toPrint, AFont);
 
                     if (ATxt.Length > 0)
                     {

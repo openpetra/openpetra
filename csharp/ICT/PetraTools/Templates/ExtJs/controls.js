@@ -77,10 +77,12 @@
 {#IFDEF WIDTH}
     width: {#WIDTH},
 {#ENDIF WIDTH}
-{#IFDEF DATERANGE}
+{#IFDEF MINYEAR}
     minValue: new Date({#MINYEAR},{#MINMONTH}-1,{#MINDAY}),
+{#ENDIF MINYEAR}
+{#IFDEF MAXYEAR}
     maxValue: new Date({#MAXYEAR},{#MAXMONTH}-1,{#MAXDAY}),
-{#ENDIF DATERANGE}
+{#ENDIF MAXYEAR}
 {#IFDEF DATEFORMAT}
     format: '{#DATEFORMAT}',
 {#ENDIF DATEFORMAT}
@@ -116,7 +118,40 @@
 {
     xtype: '{#XTYPE}',
     hideLabel: true,
-    html: '<iframe src="' + this.{#ITEMNAME}URL + '" width="100%" height="{#HEIGHT}"><p>' + this.{#ITEMNAME}BROWSERMISSINGIFRAMESUPPORT + '<a href="' + this.{#ITEMNAME}URL + '">' + this.{#ITEMNAME}LABEL + '</a></p></iframe><br/><a href="' + this.{#ITEMNAME}URL + '" target="newbigger">Open this document in a bigger window</a>',
+    html: '<iframe src="' + this.{#ITEMNAME}URL + '" width="100%" height="{#HEIGHT}"><p>' + this.BROWSERMISSINGIFRAMESUPPORT + '<a href="' + this.{#ITEMNAME}URL + '">' + this.{#ITEMNAME}LABEL + '</a></p></iframe><br/><a href="' + this.{#ITEMNAME}URL + '" target="newbigger">' + this.IFRAMEINBIGGERWINDOW + '</a>',
+    name: '{#ITEMNAME}',
+    id: '{#ITEMNAME}',   
+    anchor: '{#ANCHOR}'
+}
+
+{##TEXTAREADEFINITION}
+{
+    xtype: 'displayfield',
+    hideLabel: true,
+{#IFDEF ALLOWBLANK}
+    value: this.{#LABEL},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    value: this.{#LABEL}+' *',
+{#ENDIFN ALLOWBLANK}
+},
+{
+    xtype: 'textarea',
+{#IFDEF ALLOWBLANK}
+    allowBlank: {#ALLOWBLANK},
+{#ENDIF ALLOWBLANK}
+{#IFNDEF ALLOWBLANK}
+    allowBlank: false,
+{#ENDIFN ALLOWBLANK}
+{#IFDEF COLUMNWIDTH}
+    columnWidth: {#COLUMNWIDTH},
+{#ENDIF COLUMNWIDTH}
+{#IFDEF WIDTH}
+    width: {#WIDTH},
+{#ENDIF WIDTH}
+    hideLabel: true,
+    {#CUSTOMATTRIBUTES}
+    emptyText: this.{#HELP},
     name: '{#ITEMNAME}',
     id: '{#ITEMNAME}',   
     anchor: '{#ANCHOR}'
@@ -194,7 +229,7 @@ new Ext.form.ComboBox({
     emptyText: this.{#HELP},
 {#IFDEF ALLOWBLANK}
     fieldLabel: this.{#LABEL},
-    allowBlank: {#ALLOWBLANK},
+    allowBlank: true,
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
     fieldLabel: this.{#LABEL}+' *',

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Web.Services;
 using System.Data;
 using System.Collections;
@@ -59,7 +60,7 @@ public class TOpenPetraOrg : WebService
     static TServerManager TheServerManager = null;
 
     // make sure the correct config file is used
-    static TAppSettingsManager opts = new TAppSettingsManager("web.config");
+    static TAppSettingsManager opts = new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
 
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>
@@ -105,7 +106,8 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = TClientManager.PerformLoginChecks(username, password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
+            TPetraPrincipal userData = TClientManager.PerformLoginChecks(
+                username.ToUpper(), password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
             return true;
         }
@@ -270,26 +272,32 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
-    private string parseJSonValues(IDictionary ARoot)
+    private string parseJSonValues(JsonObject ARoot)
     {
         string result = "";
 
-        foreach (string key in ARoot.Keys)
+        foreach (string key in ARoot.Names)
         {
             if (key.ToString().StartsWith("ext-comp"))
             {
                 if (result.Length > 0)
                 {
-                    result = "," + result;
+                    result += ",";
                 }
 
-                result = parseJSonValues((IDictionary)ARoot[key]) + result;
+                result += parseJSonValues((JsonObject)ARoot[key]);
             }
             else
             {
                 if (result.Length > 0)
                 {
                     result += ",";
+                }
+
+                if (key.EndsWith("CountryCode"))
+                {
+                    // we need this so that we can parse the dates correctly from json
+                    Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
                 }
 
                 result += "\"" + key + "\":\"" + ARoot[key] + "\"";
@@ -302,7 +310,7 @@ public class TOpenPetraOrg : WebService
     /// remove ext-comp controls, for multi-page forms
     private string RemoveContainerControls(string AJSONFormData)
     {
-        IDictionary root = (IDictionary)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+        JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
 
         string result = "{" + parseJSonValues(root) + "}";
 
@@ -340,8 +348,12 @@ public class TOpenPetraOrg : WebService
         // remove ext-comp controls, for multi-page forms
         AJSONFormData = RemoveContainerControls(AJSONFormData);
 
-        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"").Replace("\"hid",
-            "\"");
+        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                        Replace("\"chk", "\"").
+                        Replace("\"rbt", "\"").
+                        Replace("\"cmb", "\"").
+                        Replace("\"hid", "\"").
+                        Replace("\"dtp", "\"");
 
         try
         {

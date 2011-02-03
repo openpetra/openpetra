@@ -277,10 +277,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
             else
             {
-                StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Controls");
-
-                foreach (string child in children)
+                foreach (XmlNode childNode in childNodes)
                 {
+                    string child = TYml2Xml.GetElementName(childNode);
                     TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
                     IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
 

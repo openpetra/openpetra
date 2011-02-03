@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using Ict.Tools.CodeGeneration;
@@ -59,6 +60,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             : base("txt", "textarea")
         {
             FDefaultWidth = -1;
+            FControlDefinitionSnippetName = "TEXTAREADEFINITION";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -109,14 +111,16 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOAD");
+            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADVALID");
 
             ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADTITLE", ctrl,
                 ctrl.GetAttribute("MissingUploadTitle"));
             ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADMESSAGE", ctrl,
                 ctrl.GetAttribute("MissingUploadMessage"));
 
-            writer.FTemplate.InsertSnippet("CUSTOMFUNCTIONS", uploadCheckAssistantSnippet);
+            writer.FTemplate.InsertSnippet("ISVALID", uploadCheckAssistantSnippet);
+            writer.FTemplate.InsertSnippet("ONSHOW", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADSHOW"));
+            writer.FTemplate.InsertSnippet("ONHIDE", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADHIDE"));
 
             ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
 
@@ -243,16 +247,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
             string valuesArray = "[";
-            StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
+
+            List <XmlNode>optionalValues =
+                TYml2Xml.GetChildren(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"), true);
 
             // DefaultValue with = sign before control name
             for (int counter = 0; counter < optionalValues.Count; counter++)
             {
-                if (optionalValues[counter].StartsWith("="))
+                string loopValue = TYml2Xml.GetElementName(optionalValues[counter]);
+
+                if (loopValue.StartsWith("="))
                 {
-                    optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
-                    ctrlSnippet.SetCodelet("VALUE", optionalValues[counter]);
+                    loopValue = loopValue.Substring(1).Trim();
+                    ctrlSnippet.SetCodelet("VALUE", loopValue);
                 }
 
                 if (counter > 0)
@@ -260,11 +267,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     valuesArray += ", ";
                 }
 
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, optionalValues[counter]);
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, loopValue);
 
                 string strName = "this." + ctrl.controlName + "OPTION" + counter.ToString();
 
-                valuesArray += "['" + optionalValues[counter] + "', " + strName + "]";
+                valuesArray += "['" + loopValue + "', " + strName + "]";
             }
 
             valuesArray += "]";
@@ -357,8 +364,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 TYml2Xml.GetAttribute(ACtrl.xmlNode, "url"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
                 "BROWSERMISSINGIFRAMESUPPORT",
-                ACtrl,
+                null,
                 "Your browser is not able to display embedded documents. Please click on the following link to read the text: ");
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "IFRAMEINBIGGERWINDOW",
+                null,
+                "Open this document in a bigger window");
 
             ctrlSnippet.SetCodelet("HEIGHT", "250");
 
@@ -440,6 +451,29 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             else
             {
                 ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", String.Empty);
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONSHOW"))
+            {
+                ctrlSnippet.SetCodelet("ONSHOW", writer.FTemplate.FCodelets["ONSHOW"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONSHOW");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ISVALID"))
+            {
+                ctrlSnippet.SetCodelet("ISVALID", writer.FTemplate.FCodelets["ISVALID"].ToString());
+                writer.FTemplate.FCodelets.Remove("ISVALID");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONHIDE"))
+            {
+                ctrlSnippet.SetCodelet("ONHIDE", writer.FTemplate.FCodelets["ONHIDE"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONHIDE");
+            }
+
+            if (ACtrl.HasAttribute("Height"))
+            {
+                ctrlSnippet.AddToCodelet("ONSHOW", String.Format("MainForm.setHeight({0});", ACtrl.GetAttribute("Height")));
             }
 
             PageCounter++;
