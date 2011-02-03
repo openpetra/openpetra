@@ -116,6 +116,7 @@
   <!-- Create assembly info -->
   <if test="${bool::parse(RunCsDepend)!=true}">
     <mkdir dir="${namespace-temp-dir}" />
+    <mkdir dir="${dir.bin}" />
     <asminfo output="${AssemblyNameInfo.cs}" language="CSharp">
       <imports>
         <import namespace="System.Reflection" />
