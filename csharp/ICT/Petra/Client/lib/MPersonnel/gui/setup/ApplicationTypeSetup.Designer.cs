@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityAreaSetup.yaml
+// auto generated with nant generateWinforms from ApplicationTypeSetup.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -32,7 +32,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    partial class TFrmAbilityAreaSetup
+    partial class TFrmApplicationTypeSetup
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAbilityAreaSetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmApplicationTypeSetup));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
@@ -73,10 +73,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailAbilityAreaName = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaName = new System.Windows.Forms.Label();
-            this.txtDetailAbilityAreaDescr = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaDescr = new System.Windows.Forms.Label();
+            this.txtDetailAppTypeName = new System.Windows.Forms.TextBox();
+            this.lblDetailAppTypeName = new System.Windows.Forms.Label();
+            this.txtDetailAppTypeDescr = new System.Windows.Forms.TextBox();
+            this.lblDetailAppTypeDescr = new System.Windows.Forms.Label();
+            this.lblAppFormType = new System.Windows.Forms.Label();
+            this.rgrDetailAppFormType = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtSHORTFORM = new System.Windows.Forms.RadioButton();
+            this.rbtLONGFORM = new System.Windows.Forms.RadioButton();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
             this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
@@ -113,6 +118,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.rgrDetailAppFormType.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -179,38 +186,83 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtDetailAbilityAreaName
+            // txtDetailAppTypeName
             //
-            this.txtDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaName.Name = "txtDetailAbilityAreaName";
-            this.txtDetailAbilityAreaName.Size = new System.Drawing.Size(150, 28);
-            this.txtDetailAbilityAreaName.CharacterCasing = CharacterCasing.Upper;
+            this.txtDetailAppTypeName.Location = new System.Drawing.Point(2,2);
+            this.txtDetailAppTypeName.Name = "txtDetailAppTypeName";
+            this.txtDetailAppTypeName.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailAppTypeName.CharacterCasing = CharacterCasing.Upper;
             //
-            // lblDetailAbilityAreaName
+            // lblDetailAppTypeName
             //
-            this.lblDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaName.Name = "lblDetailAbilityAreaName";
-            this.lblDetailAbilityAreaName.AutoSize = true;
-            this.lblDetailAbilityAreaName.Text = "Ability Area:";
-            this.lblDetailAbilityAreaName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailAppTypeName.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAppTypeName.Name = "lblDetailAppTypeName";
+            this.lblDetailAppTypeName.AutoSize = true;
+            this.lblDetailAppTypeName.Text = "Application Type:";
+            this.lblDetailAppTypeName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAppTypeName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAppTypeName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDetailAbilityAreaDescr
+            // txtDetailAppTypeDescr
             //
-            this.txtDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaDescr.Name = "txtDetailAbilityAreaDescr";
-            this.txtDetailAbilityAreaDescr.Size = new System.Drawing.Size(290, 28);
+            this.txtDetailAppTypeDescr.Location = new System.Drawing.Point(2,2);
+            this.txtDetailAppTypeDescr.Name = "txtDetailAppTypeDescr";
+            this.txtDetailAppTypeDescr.Size = new System.Drawing.Size(110, 28);
             //
-            // lblDetailAbilityAreaDescr
+            // lblDetailAppTypeDescr
             //
-            this.lblDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaDescr.Name = "lblDetailAbilityAreaDescr";
-            this.lblDetailAbilityAreaDescr.AutoSize = true;
-            this.lblDetailAbilityAreaDescr.Text = "Description:";
-            this.lblDetailAbilityAreaDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaDescr.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailAppTypeDescr.Location = new System.Drawing.Point(2,2);
+            this.lblDetailAppTypeDescr.Name = "lblDetailAppTypeDescr";
+            this.lblDetailAppTypeDescr.AutoSize = true;
+            this.lblDetailAppTypeDescr.Text = "Description:";
+            this.lblDetailAppTypeDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailAppTypeDescr.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailAppTypeDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // lblAppFormType
+            //
+            this.lblAppFormType.Location = new System.Drawing.Point(2,2);
+            this.lblAppFormType.Name = "lblAppFormType";
+            this.lblAppFormType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAppFormType.AutoSize = true;
+            this.lblAppFormType.Text = "Form Type:";
+            this.lblAppFormType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // rgrDetailAppFormType
+            //
+            this.rgrDetailAppFormType.Location = new System.Drawing.Point(2,2);
+            this.rgrDetailAppFormType.Name = "rgrDetailAppFormType";
+            this.rgrDetailAppFormType.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.rgrDetailAppFormType.Controls.Add(this.tableLayoutPanel3);
+            //
+            // rbtSHORTFORM
+            //
+            this.rbtSHORTFORM.Location = new System.Drawing.Point(2,2);
+            this.rbtSHORTFORM.Name = "rbtSHORTFORM";
+            this.rbtSHORTFORM.AutoSize = true;
+            this.rbtSHORTFORM.Text = "SHORT FORM";
+            this.rbtSHORTFORM.Checked = true;
+            //
+            // rbtLONGFORM
+            //
+            this.rbtLONGFORM.Location = new System.Drawing.Point(2,2);
+            this.rbtLONGFORM.Name = "rbtLONGFORM";
+            this.rbtLONGFORM.AutoSize = true;
+            this.rbtLONGFORM.Text = "LONG FORM";
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rbtSHORTFORM, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtLONGFORM, 1, 0);
+            this.rgrDetailAppFormType.Text = "Form Type";
             //
             // chkDetailUnassignableFlag
             //
@@ -270,20 +322,24 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaDescr, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaDescr, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailAppTypeName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblAppFormType, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailAppTypeName, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailAppTypeDescr, 2, 0);
+            this.tableLayoutPanel2.SetColumnSpan(this.rgrDetailAppFormType, 2);
+            this.tableLayoutPanel2.Controls.Add(this.rgrDetailAppFormType, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 2);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailAppTypeDescr, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 2);
             //
             // tbbSave
             //
@@ -299,7 +355,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Ability Area";
+            this.tbbNew.Text = "New Application Type";
             //
             // tbrMain
             //
@@ -459,12 +515,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAbilityAreaSetup
+            // TFrmApplicationTypeSetup
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 600);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -473,8 +529,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAbilityAreaSetup";
-            this.Text = "Maintain Ability Areas";
+            this.Name = "TFrmApplicationTypeSetup";
+            this.Text = "Maintain Application Types";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -485,6 +541,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.rgrDetailAppFormType.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -504,10 +562,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaName;
-        private System.Windows.Forms.Label lblDetailAbilityAreaName;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaDescr;
-        private System.Windows.Forms.Label lblDetailAbilityAreaDescr;
+        private System.Windows.Forms.TextBox txtDetailAppTypeName;
+        private System.Windows.Forms.Label lblDetailAppTypeName;
+        private System.Windows.Forms.TextBox txtDetailAppTypeDescr;
+        private System.Windows.Forms.Label lblDetailAppTypeDescr;
+        private System.Windows.Forms.Label lblAppFormType;
+        private System.Windows.Forms.Panel rgrDetailAppFormType;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.RadioButton rbtSHORTFORM;
+        private System.Windows.Forms.RadioButton rbtLONGFORM;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
         private System.Windows.Forms.Label lblDetailUnassignableFlag;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;

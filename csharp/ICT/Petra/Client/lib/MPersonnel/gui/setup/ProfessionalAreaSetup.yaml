@@ -1,9 +1,9 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Ability Areas
+    FormTitle: Maintain Professional Areas
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtAbilityArea
-    CacheableTable: AbilityAreaList
+    DetailTable: PtQualificationArea 
+    CacheableTable: QualificationAreaList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
@@ -24,22 +24,23 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAbilityAreaName, DetailAbilityAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailQualificationAreaName, DetailQualificationAreaDescr, DetailQualificationFlag, DetailQualificationDate, DetailDeletableFlag]
             CustomColumns:
+                DetailQualificationAreaName: {Label=Professional Area}
                 DetailCode: {Label=Relationship Category Code}
-                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                DetailQualificationDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
-                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row0: [txtDetailQualificationAreaName, txtDetailQualificationAreaDescr]
+                Row1: [chkDetailQualificationFlag, dtpDetailQualificationDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
-        txtDetailAbilityAreaDescr: {Label=Description, Width=290}
-        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        txtDetailQualificationAreaName: {Label=Professional Area, CharacterCasing=Upper}
+        txtDetailQualificationAreaDescr: {Label=Description, Width=265}
+        chkDetailQualificationFlag: {Label=Unassignable, OnChange=EnableDisableQualificationDate}
+        dtpDetailQualificationDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Ability Area
+            Label: New Professional Area

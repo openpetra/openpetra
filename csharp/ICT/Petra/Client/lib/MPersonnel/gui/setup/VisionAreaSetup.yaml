@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Ability Areas
+    FormTitle: Maintain Vision Areas
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtAbilityArea
-    CacheableTable: AbilityAreaList
+    DetailTable: PtVisionArea
+    CacheableTable: VisionAreaList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 600
+    WindowHeight: 500
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,7 +24,7 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAbilityAreaName, DetailAbilityAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailVisionAreaName, DetailVisionAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailCode: {Label=Relationship Category Code}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
@@ -32,14 +32,14 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
+                Row0: [txtDetailVisionAreaName, txtDetailVisionAreaDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
-        txtDetailAbilityAreaDescr: {Label=Description, Width=290}
+        txtDetailVisionAreaName: {Label=Vision Area, CharacterCasing=Upper}
+        txtDetailVisionAreaDescr: {Label=Description, Width=292}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Ability Area
+            Label: New Vision Area

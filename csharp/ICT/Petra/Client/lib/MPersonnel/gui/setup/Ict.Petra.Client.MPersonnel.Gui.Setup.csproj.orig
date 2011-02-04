@@ -91,6 +91,8 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AbilityAreaSetup.cs" />
     <Compile Include="AbilityAreaSetup.Designer.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
@@ -98,19 +100,23 @@
     <Compile Include="AbilityAreaSetup.ManualCode.cs">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="AbilityLevelSetup.cs" />
-    <Compile Include="AbilityLevelSetup.Designer.cs">
-      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="AbilityLevelSetup.ManualCode.cs">
-      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
-    </Compile>    
+<<<<<<< TREE
     <Compile Include="ApplicationTypeSetup.cs" />
     <Compile Include="ApplicationTypeSetup.Designer.cs">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+=======
+    <Compile Include="AbilityLevelSetup.cs" />
+    <Compile Include="AbilityLevelSetup.Designer.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
     </Compile>
+<<<<<<< TREE
     <Compile Include="ApplicationTypeSetup.ManualCode.cs">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+=======
+    <Compile Include="AbilityLevelSetup.ManualCode.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
     </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
     <Compile Include="LeavingCodeSetup.cs" />
@@ -183,12 +189,12 @@
     <Compile Include="QualificationLevelSetup.ManualCode.cs">
       <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="DocumentTypeCategorySetup.cs" />
-    <Compile Include="DocumentTypeCategorySetup.Designer.cs">
-      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    <Compile Include="DocumentTypesCategorySetup.cs" />
+    <Compile Include="DocumentTypesCategorySetup.Designer.cs">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="DocumentTypeCategorySetup.ManualCode.cs">
-      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    <Compile Include="DocumentTypesCategorySetup.ManualCode.cs">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
     </Compile>
     <Compile Include="DriverStatusSetup.cs" />
     <Compile Include="DriverStatusSetup.Designer.cs">
@@ -207,9 +213,7 @@
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AbilityLevelSetup.resx">
-      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
-    </EmbeddedResource>
+<<<<<<< TREE
     <EmbeddedResource Include="ApplicationTypeSetup.resx">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
     </EmbeddedResource>
@@ -243,14 +247,18 @@
     <EmbeddedResource Include="QualificationLevelSetup.resx">
       <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DocumentTypeCategorySetup.resx">
-      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    <EmbeddedResource Include="DocumentTypesCategorySetup.resx">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DriverStatusSetup.resx">
       <DependentUpon>DriverStatusSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProfessionalAreaSetup.resx">
       <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+=======
+    <EmbeddedResource Include="AbilityLevelSetup.resx">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

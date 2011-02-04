@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityLevelSetup.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from DriverStatusSetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -47,17 +47,17 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
 
-  /// auto generated: Maintain Ability Levels
-  public partial class TFrmAbilityLevelSetup: System.Windows.Forms.Form, IFrmPetraEdit
+  /// auto generated: Maintain Driver Statuses
+  public partial class TFrmDriverStatusSetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
     private class FMainDS
     {
-        public static PtAbilityLevelTable PtAbilityLevel;
+        public static PtDriverStatusTable PtDriverStatus;
     }
     /// constructor
-    public TFrmAbilityLevelSetup(IntPtr AParentFormHandle) : base()
+    public TFrmDriverStatusSetup(IntPtr AParentFormHandle) : base()
     {
       Control[] FoundCheckBoxes;
 
@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
-      this.lblDetailAbilityLevel.Text = Catalog.GetString("Ability Level:");
-      this.lblDetailAbilityLevelDescr.Text = Catalog.GetString("Description:");
+      this.lblDetailCode.Text = Catalog.GetString("Driver Status Code:");
+      this.lblDetailDescription.Text = Catalog.GetString("Description:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Ability Level");
+      this.tbbNew.Text = Catalog.GetString("New Driver Status");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -92,16 +92,17 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Ability Levels");
+      this.Text = Catalog.GetString("Maintain Driver Statuses");
       #endregion
 
-      this.txtDetailAbilityLevelDescr.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtDetailDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            FPetraUtilsObject.SetStatusBarText(txtDetailAbilityLevel, Catalog.GetString("Numeric representation of level of ability."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailAbilityLevelDescr, Catalog.GetString("Enter a description for this level of ability."));
-      FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if ability level is no longer assignable."));
-      FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which the ability level is unassignable."));
+            FPetraUtilsObject.SetStatusBarText(txtDetailCode, Catalog.GetString("This code indicates the driver status of a person."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailDescription, Catalog.GetString("This describes the driver status."));
+      FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Indicates if this code can still be assigned?"));
+      FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which this code was made unassignable."));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletableFlag, Catalog.GetString("Indicates if a record can be deleted."));
 
       /*
@@ -145,25 +146,25 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       Type DataTableType;
 
       // Load Data
-      FMainDS.PtAbilityLevel = new PtAbilityLevelTable();
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("AbilityLevelList", String.Empty, null, out DataTableType);
-      FMainDS.PtAbilityLevel.Merge(CacheDT);
+      FMainDS.PtDriverStatus = new PtDriverStatusTable();
+      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DriverStatusList", String.Empty, null, out DataTableType);
+      FMainDS.PtDriverStatus.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Ability Level", FMainDS.PtAbilityLevel.ColumnAbilityLevel);
-      grdDetails.AddTextColumn("Description", FMainDS.PtAbilityLevel.ColumnAbilityLevelDescr);
-      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtAbilityLevel.ColumnUnassignableFlag);
-      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtAbilityLevel.ColumnUnassignableDate);
-      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtAbilityLevel.ColumnDeletableFlag);
+      grdDetails.AddTextColumn("Driver Status", FMainDS.PtDriverStatus.ColumnCode);
+      grdDetails.AddTextColumn("Description", FMainDS.PtDriverStatus.ColumnDescription);
+      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtDriverStatus.ColumnUnassignableFlag);
+      grdDetails.AddDateColumn("Assignable Date", FMainDS.PtDriverStatus.ColumnUnassignableDate);
+      grdDetails.AddCheckBoxColumn("Deletable?", FMainDS.PtDriverStatus.ColumnDeletableFlag);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
-      DataView myDataView = FMainDS.PtAbilityLevel.DefaultView;
+      DataView myDataView = FMainDS.PtDriverStatus.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
       // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.PtAbilityLevel.Rows.Count == 0)
+      if (FMainDS.PtDriverStatus.Rows.Count == 0)
       {
         ShowDetails(null);
       }
@@ -177,19 +178,19 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
     }
 
-    /// automatically generated, create a new record of PtAbilityLevel and display on the edit screen
+    /// automatically generated, create a new record of PtDriverStatus and display on the edit screen
     /// we create the table locally, no dataset
-    public bool CreateNewPtAbilityLevel()
+    public bool CreateNewPtDriverStatus()
     {
-        PtAbilityLevelRow NewRow = FMainDS.PtAbilityLevel.NewRowTyped();
+        PtDriverStatusRow NewRow = FMainDS.PtDriverStatus.NewRowTyped();
         NewRowManual(ref NewRow);
-        FMainDS.PtAbilityLevel.Rows.Add(NewRow);
+        FMainDS.PtDriverStatus.Rows.Add(NewRow);
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PtAbilityLevel.DefaultView);
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PtDriverStatus.DefaultView);
         grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.PtAbilityLevel.Rows.Count - 1);
+        SelectDetailRowByDataTableIndex(FMainDS.PtDriverStatus.Rows.Count - 1);
 
         return true;
     }
@@ -200,9 +201,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.PtAbilityLevel.PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.PtDriverStatus.PrimaryKey)
             {
-                string value1 = FMainDS.PtAbilityLevel.Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.PtDriverStatus.Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {
@@ -223,13 +224,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     }
 
     /// return the selected row
-    private PtAbilityLevelRow GetSelectedDetailRow()
+    private PtDriverStatusRow GetSelectedDetailRow()
     {
         DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
 
         if (SelectedGridRow.Length >= 1)
         {
-            return (PtAbilityLevelRow)SelectedGridRow[0].Row;
+            return (PtDriverStatusRow)SelectedGridRow[0].Row;
         }
 
         return null;
@@ -237,10 +238,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
-        txtDetailAbilityLevel.ReadOnly = AReadOnly;
+        txtDetailCode.ReadOnly = AReadOnly;
     }
 
-    private void ShowDetails(PtAbilityLevelRow ARow)
+    private void ShowDetails(PtDriverStatusRow ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
         if (ARow == null)
@@ -250,10 +251,24 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            txtDetailAbilityLevel.NumberValueInt = ARow.AbilityLevel;
-            txtDetailAbilityLevel.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailAbilityLevelDescr.Text = ARow.AbilityLevelDescr;
-            chkDetailUnassignableFlag.Checked = ARow.UnassignableFlag;
+            txtDetailCode.Text = ARow.Code;
+            txtDetailCode.ReadOnly = (ARow.RowState != DataRowState.Added);
+            if (ARow.IsDescriptionNull())
+            {
+                txtDetailDescription.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailDescription.Text = ARow.Description;
+            }
+            if (ARow.IsUnassignableFlagNull())
+            {
+                chkDetailUnassignableFlag.Checked = false;
+            }
+            else
+            {
+                chkDetailUnassignableFlag.Checked = ARow.UnassignableFlag;
+            }
             if (ARow.IsUnassignableDateNull())
             {
                 dtpDetailUnassignableDate.Date = null;
@@ -275,7 +290,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private PtAbilityLevelRow FPreviouslySelectedDetailRow = null;
+    private PtDriverStatusRow FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
         // get the details from the previously selected row
@@ -289,12 +304,19 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         pnlDetails.Enabled = true;
     }
 
-    private void GetDetailsFromControls(PtAbilityLevelRow ARow)
+    private void GetDetailsFromControls(PtDriverStatusRow ARow)
     {
         if (ARow != null)
         {
-            ARow.AbilityLevel = Convert.ToInt32(txtDetailAbilityLevel.NumberValueInt);
-            ARow.AbilityLevelDescr = txtDetailAbilityLevelDescr.Text;
+            ARow.Code = txtDetailCode.Text;
+            if (txtDetailDescription.Text.Length == 0)
+            {
+                ARow.SetDescriptionNull();
+            }
+            else
+            {
+                ARow.Description = txtDetailDescription.Text;
+            }
             ARow.UnassignableFlag = chkDetailUnassignableFlag.Checked;
             if (dtpDetailUnassignableDate.Date == null)
             {
@@ -305,7 +327,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 ARow.UnassignableDate = dtpDetailUnassignableDate.Date.Value;
             }
             ARow.DeletableFlag = chkDetailDeletableFlag.Checked;
-            GetDetailDataFromControlsManual(ARow);
         }
     }
 
@@ -363,7 +384,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
         {
-            foreach (DataRow InspectDR in FMainDS.PtAbilityLevel.Rows)
+            foreach (DataRow InspectDR in FMainDS.PtDriverStatus.Rows)
             {
                 InspectDR.EndEdit();
             }
@@ -380,7 +401,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 TSubmitChangesResult SubmissionResult;
                 TVerificationResultCollection VerificationResult;
 
-                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PtAbilityLevel.GetChangesTyped();
+                Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PtDriverStatus.GetChangesTyped();
 
                 if (SubmitDT == null)
                 {
@@ -398,7 +419,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("AbilityLevelList", ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("DriverStatusList", ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -458,13 +479,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     case TSubmitChangesResult.scrOK:
 
                         // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.PtAbilityLevel.AcceptChanges();
+                        FMainDS.PtDriverStatus.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.PtAbilityLevel.Merge(SubmitDT, false);
+                        FMainDS.PtDriverStatus.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
-                        FMainDS.PtAbilityLevel.AcceptChanges();
+                        FMainDS.PtDriverStatus.AcceptChanges();
 
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");

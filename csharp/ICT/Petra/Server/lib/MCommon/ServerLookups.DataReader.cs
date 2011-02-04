@@ -35,6 +35,9 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+
 
 namespace Ict.Petra.Server.MCommon.DataReader
 {
@@ -88,10 +91,14 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                 {
                     tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
-                }
+                }                
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
                     tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PtApplicationTypeTable.GetTableDBName())
+                {
+                    tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {
@@ -183,6 +190,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
                         if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PtApplicationTypeTable.GetTableDBName())
+                    {
+                        if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

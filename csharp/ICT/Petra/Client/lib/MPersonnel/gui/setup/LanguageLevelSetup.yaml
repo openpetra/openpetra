@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Ability Areas
+    FormTitle: Maintain Language Levels
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtAbilityArea
-    CacheableTable: AbilityAreaList
+    DetailTable: PtLanguageLevel
+    CacheableTable: LanguageLevelList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 600
+    WindowHeight: 467
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,22 +24,26 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAbilityAreaName, DetailAbilityAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailLanguageComment, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Relationship Category Code}
+                DetailLanguageLevel: {Label=Language Level, Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                DetailLanguageComment: {Label=Language Comment}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
-                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
-                Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
-        txtDetailAbilityAreaDescr: {Label=Description, Width=290}
+                Row0: [txtDetailLanguageLevel, txtDetailLanguageLevelDescr]
+                Row1: [txtDetailLanguageComment]
+                Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row3: [chkDetailDeletableFlag]                
+        txtDetailLanguageLevel: {Format=Integer, Width=30}
+        txtDetailLanguageLevelDescr: {Label=Description, Width=370}
+        txtDetailLanguageComment: {Label=Language Comment, Width=530, ColSpan=3}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
+        
     Toolbar:
         tbbNew:
-            Label: New Ability Area
+            Label: New Language Level

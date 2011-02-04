@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityAreaSetup.yaml
+// auto generated with nant generateWinforms from LeavingCodeSetup.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -32,7 +32,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    partial class TFrmAbilityAreaSetup
+    partial class TFrmLeavingCodeSetup
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAbilityAreaSetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmLeavingCodeSetup));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
@@ -73,10 +73,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailAbilityAreaName = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaName = new System.Windows.Forms.Label();
-            this.txtDetailAbilityAreaDescr = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaDescr = new System.Windows.Forms.Label();
+            this.txtDetailLeavingCodeInd = new System.Windows.Forms.TextBox();
+            this.lblDetailLeavingCodeInd = new System.Windows.Forms.Label();
+            this.txtDetailLeavingCodeDescr = new System.Windows.Forms.TextBox();
+            this.lblDetailLeavingCodeDescr = new System.Windows.Forms.Label();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
             this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
@@ -179,38 +179,38 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtDetailAbilityAreaName
+            // txtDetailLeavingCodeInd
             //
-            this.txtDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaName.Name = "txtDetailAbilityAreaName";
-            this.txtDetailAbilityAreaName.Size = new System.Drawing.Size(150, 28);
-            this.txtDetailAbilityAreaName.CharacterCasing = CharacterCasing.Upper;
+            this.txtDetailLeavingCodeInd.Location = new System.Drawing.Point(2,2);
+            this.txtDetailLeavingCodeInd.Name = "txtDetailLeavingCodeInd";
+            this.txtDetailLeavingCodeInd.Size = new System.Drawing.Size(150, 28);
             //
-            // lblDetailAbilityAreaName
+            // lblDetailLeavingCodeInd
             //
-            this.lblDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaName.Name = "lblDetailAbilityAreaName";
-            this.lblDetailAbilityAreaName.AutoSize = true;
-            this.lblDetailAbilityAreaName.Text = "Ability Area:";
-            this.lblDetailAbilityAreaName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailLeavingCodeInd.Location = new System.Drawing.Point(2,2);
+            this.lblDetailLeavingCodeInd.Name = "lblDetailLeavingCodeInd";
+            this.lblDetailLeavingCodeInd.AutoSize = true;
+            this.lblDetailLeavingCodeInd.Text = "Leaving Code:";
+            this.lblDetailLeavingCodeInd.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailLeavingCodeInd.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailLeavingCodeInd.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDetailAbilityAreaDescr
+            // txtDetailLeavingCodeDescr
             //
-            this.txtDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaDescr.Name = "txtDetailAbilityAreaDescr";
-            this.txtDetailAbilityAreaDescr.Size = new System.Drawing.Size(290, 28);
+            this.txtDetailLeavingCodeDescr.Location = new System.Drawing.Point(2,2);
+            this.txtDetailLeavingCodeDescr.Name = "txtDetailLeavingCodeDescr";
+            this.txtDetailLeavingCodeDescr.Size = new System.Drawing.Size(288, 28);
+            this.txtDetailLeavingCodeDescr.CharacterCasing = CharacterCasing.Upper;
             //
-            // lblDetailAbilityAreaDescr
+            // lblDetailLeavingCodeDescr
             //
-            this.lblDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaDescr.Name = "lblDetailAbilityAreaDescr";
-            this.lblDetailAbilityAreaDescr.AutoSize = true;
-            this.lblDetailAbilityAreaDescr.Text = "Description:";
-            this.lblDetailAbilityAreaDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaDescr.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailLeavingCodeDescr.Location = new System.Drawing.Point(2,2);
+            this.lblDetailLeavingCodeDescr.Name = "lblDetailLeavingCodeDescr";
+            this.lblDetailLeavingCodeDescr.AutoSize = true;
+            this.lblDetailLeavingCodeDescr.Text = "Description:";
+            this.lblDetailLeavingCodeDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailLeavingCodeDescr.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailLeavingCodeDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailUnassignableFlag
             //
@@ -235,7 +235,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.dtpDetailUnassignableDate.Location = new System.Drawing.Point(2,2);
             this.dtpDetailUnassignableDate.Name = "dtpDetailUnassignableDate";
-            this.dtpDetailUnassignableDate.Enabled = false;
             this.dtpDetailUnassignableDate.Size = new System.Drawing.Size(94, 28);
             //
             // lblDetailUnassignableDate
@@ -274,15 +273,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailLeavingCodeInd, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaName, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailLeavingCodeInd, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaDescr, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailLeavingCodeDescr, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaDescr, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailLeavingCodeDescr, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
             //
             // tbbSave
@@ -299,7 +298,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Ability Area";
+            this.tbbNew.Text = "New Leaving Code";
             //
             // tbrMain
             //
@@ -459,12 +458,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAbilityAreaSetup
+            // TFrmLeavingCodeSetup
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 600);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -473,8 +472,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAbilityAreaSetup";
-            this.Text = "Maintain Ability Areas";
+            this.Name = "TFrmLeavingCodeSetup";
+            this.Text = "Maintain Leaving Codes";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -504,10 +503,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaName;
-        private System.Windows.Forms.Label lblDetailAbilityAreaName;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaDescr;
-        private System.Windows.Forms.Label lblDetailAbilityAreaDescr;
+        private System.Windows.Forms.TextBox txtDetailLeavingCodeInd;
+        private System.Windows.Forms.Label lblDetailLeavingCodeInd;
+        private System.Windows.Forms.TextBox txtDetailLeavingCodeDescr;
+        private System.Windows.Forms.Label lblDetailLeavingCodeDescr;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
         private System.Windows.Forms.Label lblDetailUnassignableFlag;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;

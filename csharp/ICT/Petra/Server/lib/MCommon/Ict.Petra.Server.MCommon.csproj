@@ -77,6 +77,9 @@
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPartner.DataTables.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
+      <HintPath>..\..\..\..\..\..\..\dev_0000135_readonly_checkboxes_in_grids\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -100,6 +103,10 @@
     <ProjectReference Include="..\MFinance\data\Ict.Petra.Server.MFinance.DataAccess.csproj">
       <Project>{FD074084-1FB7-4C92-BD2A-09E7369EC81D}</Project>
       <Name>Ict.Petra.Server.MFinance.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MPersonnel\data\Ict.Petra.Server.MPersonnel.DataAccess.csproj">
+      <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>
+      <Name>Ict.Petra.Server.MPersonnel.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="data\Ict.Petra.Server.MCommon.DataAccess.csproj">
       <Project>{41425C75-D148-4BEC-9B8F-DBD277E4762F}</Project>

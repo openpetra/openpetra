@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityAreaSetup.yaml
+// auto generated with nant generateWinforms from ProfessionalAreaSetup.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -32,7 +32,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    partial class TFrmAbilityAreaSetup
+    partial class TFrmProfessionalAreaSetup
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAbilityAreaSetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmProfessionalAreaSetup));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
@@ -73,14 +73,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailAbilityAreaName = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaName = new System.Windows.Forms.Label();
-            this.txtDetailAbilityAreaDescr = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaDescr = new System.Windows.Forms.Label();
-            this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
-            this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
-            this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
-            this.lblDetailUnassignableDate = new System.Windows.Forms.Label();
+            this.txtDetailQualificationAreaName = new System.Windows.Forms.TextBox();
+            this.lblDetailQualificationAreaName = new System.Windows.Forms.Label();
+            this.txtDetailQualificationAreaDescr = new System.Windows.Forms.TextBox();
+            this.lblDetailQualificationAreaDescr = new System.Windows.Forms.Label();
+            this.chkDetailQualificationFlag = new System.Windows.Forms.CheckBox();
+            this.lblDetailQualificationFlag = new System.Windows.Forms.Label();
+            this.dtpDetailQualificationDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
+            this.lblDetailQualificationDate = new System.Windows.Forms.Label();
             this.chkDetailDeletableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailDeletableFlag = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -179,74 +179,74 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtDetailAbilityAreaName
+            // txtDetailQualificationAreaName
             //
-            this.txtDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaName.Name = "txtDetailAbilityAreaName";
-            this.txtDetailAbilityAreaName.Size = new System.Drawing.Size(150, 28);
-            this.txtDetailAbilityAreaName.CharacterCasing = CharacterCasing.Upper;
+            this.txtDetailQualificationAreaName.Location = new System.Drawing.Point(2,2);
+            this.txtDetailQualificationAreaName.Name = "txtDetailQualificationAreaName";
+            this.txtDetailQualificationAreaName.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailQualificationAreaName.CharacterCasing = CharacterCasing.Upper;
             //
-            // lblDetailAbilityAreaName
+            // lblDetailQualificationAreaName
             //
-            this.lblDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaName.Name = "lblDetailAbilityAreaName";
-            this.lblDetailAbilityAreaName.AutoSize = true;
-            this.lblDetailAbilityAreaName.Text = "Ability Area:";
-            this.lblDetailAbilityAreaName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailQualificationAreaName.Location = new System.Drawing.Point(2,2);
+            this.lblDetailQualificationAreaName.Name = "lblDetailQualificationAreaName";
+            this.lblDetailQualificationAreaName.AutoSize = true;
+            this.lblDetailQualificationAreaName.Text = "Professional Area:";
+            this.lblDetailQualificationAreaName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailQualificationAreaName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailQualificationAreaName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDetailAbilityAreaDescr
+            // txtDetailQualificationAreaDescr
             //
-            this.txtDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaDescr.Name = "txtDetailAbilityAreaDescr";
-            this.txtDetailAbilityAreaDescr.Size = new System.Drawing.Size(290, 28);
+            this.txtDetailQualificationAreaDescr.Location = new System.Drawing.Point(2,2);
+            this.txtDetailQualificationAreaDescr.Name = "txtDetailQualificationAreaDescr";
+            this.txtDetailQualificationAreaDescr.Size = new System.Drawing.Size(265, 28);
             //
-            // lblDetailAbilityAreaDescr
+            // lblDetailQualificationAreaDescr
             //
-            this.lblDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaDescr.Name = "lblDetailAbilityAreaDescr";
-            this.lblDetailAbilityAreaDescr.AutoSize = true;
-            this.lblDetailAbilityAreaDescr.Text = "Description:";
-            this.lblDetailAbilityAreaDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaDescr.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailQualificationAreaDescr.Location = new System.Drawing.Point(2,2);
+            this.lblDetailQualificationAreaDescr.Name = "lblDetailQualificationAreaDescr";
+            this.lblDetailQualificationAreaDescr.AutoSize = true;
+            this.lblDetailQualificationAreaDescr.Text = "Description:";
+            this.lblDetailQualificationAreaDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailQualificationAreaDescr.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailQualificationAreaDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // chkDetailUnassignableFlag
+            // chkDetailQualificationFlag
             //
-            this.chkDetailUnassignableFlag.Location = new System.Drawing.Point(2,2);
-            this.chkDetailUnassignableFlag.Name = "chkDetailUnassignableFlag";
-            this.chkDetailUnassignableFlag.Size = new System.Drawing.Size(30, 28);
-            this.chkDetailUnassignableFlag.CheckedChanged += new System.EventHandler(this.EnableDisableUnassignableDate);
-            this.chkDetailUnassignableFlag.Text = "";
-            this.chkDetailUnassignableFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.chkDetailQualificationFlag.Location = new System.Drawing.Point(2,2);
+            this.chkDetailQualificationFlag.Name = "chkDetailQualificationFlag";
+            this.chkDetailQualificationFlag.Size = new System.Drawing.Size(30, 28);
+            this.chkDetailQualificationFlag.CheckedChanged += new System.EventHandler(this.EnableDisableQualificationDate);
+            this.chkDetailQualificationFlag.Text = "";
+            this.chkDetailQualificationFlag.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             //
-            // lblDetailUnassignableFlag
+            // lblDetailQualificationFlag
             //
-            this.lblDetailUnassignableFlag.Location = new System.Drawing.Point(2,2);
-            this.lblDetailUnassignableFlag.Name = "lblDetailUnassignableFlag";
-            this.lblDetailUnassignableFlag.AutoSize = true;
-            this.lblDetailUnassignableFlag.Text = "Unassignable:";
-            this.lblDetailUnassignableFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailUnassignableFlag.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailUnassignableFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailQualificationFlag.Location = new System.Drawing.Point(2,2);
+            this.lblDetailQualificationFlag.Name = "lblDetailQualificationFlag";
+            this.lblDetailQualificationFlag.AutoSize = true;
+            this.lblDetailQualificationFlag.Text = "Unassignable:";
+            this.lblDetailQualificationFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailQualificationFlag.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailQualificationFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // dtpDetailUnassignableDate
+            // dtpDetailQualificationDate
             //
-            this.dtpDetailUnassignableDate.Location = new System.Drawing.Point(2,2);
-            this.dtpDetailUnassignableDate.Name = "dtpDetailUnassignableDate";
-            this.dtpDetailUnassignableDate.Enabled = false;
-            this.dtpDetailUnassignableDate.Size = new System.Drawing.Size(94, 28);
+            this.dtpDetailQualificationDate.Location = new System.Drawing.Point(2,2);
+            this.dtpDetailQualificationDate.Name = "dtpDetailQualificationDate";
+            this.dtpDetailQualificationDate.Enabled = false;
+            this.dtpDetailQualificationDate.Size = new System.Drawing.Size(94, 28);
             //
-            // lblDetailUnassignableDate
+            // lblDetailQualificationDate
             //
-            this.lblDetailUnassignableDate.Location = new System.Drawing.Point(2,2);
-            this.lblDetailUnassignableDate.Name = "lblDetailUnassignableDate";
-            this.lblDetailUnassignableDate.AutoSize = true;
-            this.lblDetailUnassignableDate.Text = "Unassignable Date:";
-            this.lblDetailUnassignableDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailUnassignableDate.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailUnassignableDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailQualificationDate.Location = new System.Drawing.Point(2,2);
+            this.lblDetailQualificationDate.Name = "lblDetailQualificationDate";
+            this.lblDetailQualificationDate.AutoSize = true;
+            this.lblDetailQualificationDate.Text = "Unassignable Date:";
+            this.lblDetailQualificationDate.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailQualificationDate.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailQualificationDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailDeletableFlag
             //
@@ -274,16 +274,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailQualificationAreaName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailQualificationFlag, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailQualificationAreaName, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailQualificationFlag, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaDescr, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaDescr, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailQualificationAreaDescr, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailQualificationDate, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailQualificationAreaDescr, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDetailQualificationDate, 3, 1);
             //
             // tbbSave
             //
@@ -299,7 +299,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Ability Area";
+            this.tbbNew.Text = "New Professional Area";
             //
             // tbrMain
             //
@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAbilityAreaSetup
+            // TFrmProfessionalAreaSetup
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -473,8 +473,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAbilityAreaSetup";
-            this.Text = "Maintain Ability Areas";
+            this.Name = "TFrmProfessionalAreaSetup";
+            this.Text = "Maintain Professional Areas";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -504,14 +504,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaName;
-        private System.Windows.Forms.Label lblDetailAbilityAreaName;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaDescr;
-        private System.Windows.Forms.Label lblDetailAbilityAreaDescr;
-        private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
-        private System.Windows.Forms.Label lblDetailUnassignableFlag;
-        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;
-        private System.Windows.Forms.Label lblDetailUnassignableDate;
+        private System.Windows.Forms.TextBox txtDetailQualificationAreaName;
+        private System.Windows.Forms.Label lblDetailQualificationAreaName;
+        private System.Windows.Forms.TextBox txtDetailQualificationAreaDescr;
+        private System.Windows.Forms.Label lblDetailQualificationAreaDescr;
+        private System.Windows.Forms.CheckBox chkDetailQualificationFlag;
+        private System.Windows.Forms.Label lblDetailQualificationFlag;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailQualificationDate;
+        private System.Windows.Forms.Label lblDetailQualificationDate;
         private System.Windows.Forms.CheckBox chkDetailDeletableFlag;
         private System.Windows.Forms.Label lblDetailDeletableFlag;
         private System.Windows.Forms.ToolStrip tbrMain;

@@ -1,9 +1,9 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Ability Areas
+    FormTitle: Maintain Valuable Items
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtAbilityArea
-    CacheableTable: AbilityAreaList
+    DetailTable: PtValuableItem
+    CacheableTable: ValuableItemList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
@@ -24,22 +24,22 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAbilityAreaName, DetailAbilityAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailValuableItemName, DetailValuableItemDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Relationship Category Code}
+                DetailValuableItemName: {Label=Valuable Item}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
+                Row0: [txtDetailValuableItemName, txtDetailValuableItemDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
-        txtDetailAbilityAreaDescr: {Label=Description, Width=290}
+        txtDetailValuableItemName: {Label=Valuable Item, CharacterCasing=Upper}
+        txtDetailValuableItemDescr: {Label=Description, Width=285}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Ability Area
+            Label: New Valuable Item

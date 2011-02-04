@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from AbilityAreaSetup.yaml
+// auto generated with nant generateWinforms from ValuableItemSetup.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -32,7 +32,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    partial class TFrmAbilityAreaSetup
+    partial class TFrmValuableItemSetup
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmAbilityAreaSetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmValuableItemSetup));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
@@ -73,10 +73,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.btnNew = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.txtDetailAbilityAreaName = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaName = new System.Windows.Forms.Label();
-            this.txtDetailAbilityAreaDescr = new System.Windows.Forms.TextBox();
-            this.lblDetailAbilityAreaDescr = new System.Windows.Forms.Label();
+            this.txtDetailValuableItemName = new System.Windows.Forms.TextBox();
+            this.lblDetailValuableItemName = new System.Windows.Forms.Label();
+            this.txtDetailValuableItemDescr = new System.Windows.Forms.TextBox();
+            this.lblDetailValuableItemDescr = new System.Windows.Forms.Label();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
             this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
@@ -179,38 +179,38 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.AutoSize = true;
             this.pnlDetails.Controls.Add(this.tableLayoutPanel2);
             //
-            // txtDetailAbilityAreaName
+            // txtDetailValuableItemName
             //
-            this.txtDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaName.Name = "txtDetailAbilityAreaName";
-            this.txtDetailAbilityAreaName.Size = new System.Drawing.Size(150, 28);
-            this.txtDetailAbilityAreaName.CharacterCasing = CharacterCasing.Upper;
+            this.txtDetailValuableItemName.Location = new System.Drawing.Point(2,2);
+            this.txtDetailValuableItemName.Name = "txtDetailValuableItemName";
+            this.txtDetailValuableItemName.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailValuableItemName.CharacterCasing = CharacterCasing.Upper;
             //
-            // lblDetailAbilityAreaName
+            // lblDetailValuableItemName
             //
-            this.lblDetailAbilityAreaName.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaName.Name = "lblDetailAbilityAreaName";
-            this.lblDetailAbilityAreaName.AutoSize = true;
-            this.lblDetailAbilityAreaName.Text = "Ability Area:";
-            this.lblDetailAbilityAreaName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaName.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailValuableItemName.Location = new System.Drawing.Point(2,2);
+            this.lblDetailValuableItemName.Name = "lblDetailValuableItemName";
+            this.lblDetailValuableItemName.AutoSize = true;
+            this.lblDetailValuableItemName.Text = "Valuable Item:";
+            this.lblDetailValuableItemName.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailValuableItemName.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailValuableItemName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDetailAbilityAreaDescr
+            // txtDetailValuableItemDescr
             //
-            this.txtDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.txtDetailAbilityAreaDescr.Name = "txtDetailAbilityAreaDescr";
-            this.txtDetailAbilityAreaDescr.Size = new System.Drawing.Size(290, 28);
+            this.txtDetailValuableItemDescr.Location = new System.Drawing.Point(2,2);
+            this.txtDetailValuableItemDescr.Name = "txtDetailValuableItemDescr";
+            this.txtDetailValuableItemDescr.Size = new System.Drawing.Size(285, 28);
             //
-            // lblDetailAbilityAreaDescr
+            // lblDetailValuableItemDescr
             //
-            this.lblDetailAbilityAreaDescr.Location = new System.Drawing.Point(2,2);
-            this.lblDetailAbilityAreaDescr.Name = "lblDetailAbilityAreaDescr";
-            this.lblDetailAbilityAreaDescr.AutoSize = true;
-            this.lblDetailAbilityAreaDescr.Text = "Description:";
-            this.lblDetailAbilityAreaDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailAbilityAreaDescr.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailAbilityAreaDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailValuableItemDescr.Location = new System.Drawing.Point(2,2);
+            this.lblDetailValuableItemDescr.Name = "lblDetailValuableItemDescr";
+            this.lblDetailValuableItemDescr.AutoSize = true;
+            this.lblDetailValuableItemDescr.Text = "Description:";
+            this.lblDetailValuableItemDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailValuableItemDescr.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailValuableItemDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailUnassignableFlag
             //
@@ -274,15 +274,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaName, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailValuableItemName, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaName, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailValuableItemName, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailAbilityAreaDescr, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailValuableItemDescr, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailAbilityAreaDescr, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailValuableItemDescr, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
             //
             // tbbSave
@@ -299,7 +299,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Ability Area";
+            this.tbbNew.Text = "New Valuable Item";
             //
             // tbrMain
             //
@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmAbilityAreaSetup
+            // TFrmValuableItemSetup
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -473,8 +473,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmAbilityAreaSetup";
-            this.Text = "Maintain Ability Areas";
+            this.Name = "TFrmValuableItemSetup";
+            this.Text = "Maintain Valuable Items";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);
@@ -504,10 +504,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaName;
-        private System.Windows.Forms.Label lblDetailAbilityAreaName;
-        private System.Windows.Forms.TextBox txtDetailAbilityAreaDescr;
-        private System.Windows.Forms.Label lblDetailAbilityAreaDescr;
+        private System.Windows.Forms.TextBox txtDetailValuableItemName;
+        private System.Windows.Forms.Label lblDetailValuableItemName;
+        private System.Windows.Forms.TextBox txtDetailValuableItemDescr;
+        private System.Windows.Forms.Label lblDetailValuableItemDescr;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
         private System.Windows.Forms.Label lblDetailUnassignableFlag;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;

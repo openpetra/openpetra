@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Ability Areas
+    FormTitle: Maintain Country/Event Preference Levels
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtAbilityArea
-    CacheableTable: AbilityAreaList
+    DetailTable: PtXyzTbdPreferenceLevel
+    CacheableTable: XyzTbdPreferenceLevelList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 750
-    WindowHeight: 600
+    WindowWidth: 660
+    WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,22 +24,22 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAbilityAreaName, DetailAbilityAreaDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Relationship Category Code}
+                DetailCode: {Label=Preference Code}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailAbilityAreaName, txtDetailAbilityAreaDescr]
+                Row0: [txtDetailCode, txtDetailDescription]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityAreaName: {Label=Ability Area, CharacterCasing=Upper}
-        txtDetailAbilityAreaDescr: {Label=Description, Width=290}
+        txtDetailCode: {Label=Level Code, Width=30}
+        txtDetailDescription: {Label=Description, Width=323}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}
     Toolbar:
         tbbNew:
-            Label: New Ability Area
+            Label: New Country/Event Preference Level
