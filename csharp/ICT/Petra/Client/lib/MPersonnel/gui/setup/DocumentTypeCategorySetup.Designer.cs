@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from DocumentTypesCategorySetup.yaml
+// auto generated with nant generateWinforms from DocumentTypeCategorySetup.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -32,7 +32,7 @@ using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    partial class TFrmDocumentTypesCategorySetup
+    partial class TFrmDocumentTypeCategorySetup
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmDocumentTypesCategorySetup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmDocumentTypeCategorySetup));
 
             this.pnlContent = new System.Windows.Forms.Panel();
             this.pnlGrid = new System.Windows.Forms.Panel();
@@ -458,7 +458,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.AutoSize = true;
 
             //
-            // TFrmDocumentTypesCategorySetup
+            // TFrmDocumentTypeCategorySetup
             //
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -472,7 +472,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Controls.Add(this.stbMain);
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
-            this.Name = "TFrmDocumentTypesCategorySetup";
+            this.Name = "TFrmDocumentTypeCategorySetup";
             this.Text = "Maintain Document Type Categories";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);

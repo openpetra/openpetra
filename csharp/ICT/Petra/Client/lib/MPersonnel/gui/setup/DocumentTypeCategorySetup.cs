@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from DocumentTypesCategorySetup.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from DocumentTypeCategorySetup.yaml and template windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
 
   /// auto generated: Maintain Document Type Categories
-  public partial class TFrmDocumentTypesCategorySetup: System.Windows.Forms.Form, IFrmPetraEdit
+  public partial class TFrmDocumentTypeCategorySetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         public static PmDocumentCategoryTable PmDocumentCategory;
     }
     /// constructor
-    public TFrmDocumentTypesCategorySetup(IntPtr AParentFormHandle) : base()
+    public TFrmDocumentTypeCategorySetup(IntPtr AParentFormHandle) : base()
     {
       Control[] FoundCheckBoxes;
 

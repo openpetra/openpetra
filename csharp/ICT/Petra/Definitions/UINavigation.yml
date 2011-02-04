@@ -186,7 +186,7 @@ OpenPetra:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
                         AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}                           
                         DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}   
-                        DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypesCategorySetup}
+                        DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
                         LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
                         LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 

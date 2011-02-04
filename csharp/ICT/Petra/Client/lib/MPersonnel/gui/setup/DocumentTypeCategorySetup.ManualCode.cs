@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmDocumentTypesCategorySetup
+    public partial class TFrmDocumentTypeCategorySetup
     {
         private void RunOnceOnActivationManual()
         {
