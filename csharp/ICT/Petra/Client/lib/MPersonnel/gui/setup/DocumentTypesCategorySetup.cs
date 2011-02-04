@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
 
-  /// auto generated: Maintain Document Types Categories
+  /// auto generated: Maintain Document Type Categories
   public partial class TFrmDocumentTypesCategorySetup: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
-      this.lblDetailCode.Text = Catalog.GetString("Document Type Category Code:");
+      this.lblDetailCode.Text = Catalog.GetString("Document Type Category:");
       this.lblDetailDescription.Text = Catalog.GetString("Description:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Assignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Document Category Code");
+      this.tbbNew.Text = Catalog.GetString("New Document Type Category");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Document Types Categories");
+      this.Text = Catalog.GetString("Maintain Document Type Categories");
       #endregion
 
       this.txtDetailCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       FMainDS.PmDocumentCategory.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Document Type Category", FMainDS.PmDocumentCategory.ColumnCode);
+      grdDetails.AddTextColumn("Document Type Cat.", FMainDS.PmDocumentCategory.ColumnCode);
       grdDetails.AddTextColumn("Description", FMainDS.PmDocumentCategory.ColumnDescription);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PmDocumentCategory.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unssignable Date", FMainDS.PmDocumentCategory.ColumnUnassignableDate);

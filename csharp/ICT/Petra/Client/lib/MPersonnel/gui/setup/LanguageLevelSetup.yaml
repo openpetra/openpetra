@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 400
+    WindowHeight: 467
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,7 +24,7 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag, DetailLanguageComment]
+            Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailLanguageComment, DetailDeletableFlag]
             CustomColumns:
                 DetailLanguageLevel: {Label=Language Level, Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
@@ -34,15 +34,16 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailLanguageLevel, txtDetailLanguageLevelDescr]
-                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
-                Row2: [chkDetailDeletableFlag]
-                Row3: [txtDetailLanguageComment]
-        txtDetailLanguageLevel: {Format=Integer}
-        txtDetailLanguageLevelDescr: {Label=Description, Width=360}
+                Row1: [txtDetailLanguageComment]
+                Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row3: [chkDetailDeletableFlag]                
+        txtDetailLanguageLevel: {Format=Integer, Width=30}
+        txtDetailLanguageLevelDescr: {Label=Description, Width=370}
+        txtDetailLanguageComment: {Label=Language Comment, Width=530, ColSpan=3}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
-        txtDetailLanguageComment: {Label=Language Comment, Width=600, ColSpan=3}
+        
     Toolbar:
         tbbNew:
             Label: New Language Level

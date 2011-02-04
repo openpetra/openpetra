@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailValuableItemDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailValuableItemDescr.Name = "txtDetailValuableItemDescr";
-            this.txtDetailValuableItemDescr.Size = new System.Drawing.Size(250, 28);
+            this.txtDetailValuableItemDescr.Size = new System.Drawing.Size(285, 28);
             //
             // lblDetailValuableItemDescr
             //
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 400);
+            this.ClientSize = new System.Drawing.Size(750, 600);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

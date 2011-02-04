@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 400
+    WindowHeight: 440
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -35,8 +35,8 @@ RootNode:
                 Row0: [txtDetailVisionLevel, txtDetailVisionLevelDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailVisionLevel: {Format=Integer}
-        txtDetailVisionLevelDescr: {Label=Description, Width=360}
+        txtDetailVisionLevel: {Format=Integer, Width=30}
+        txtDetailVisionLevelDescr: {Label=Description, Width=410}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}

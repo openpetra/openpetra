@@ -77,14 +77,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailLanguageLevel = new System.Windows.Forms.Label();
             this.txtDetailLanguageLevelDescr = new System.Windows.Forms.TextBox();
             this.lblDetailLanguageLevelDescr = new System.Windows.Forms.Label();
+            this.txtDetailLanguageComment = new System.Windows.Forms.TextBox();
+            this.lblDetailLanguageComment = new System.Windows.Forms.Label();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
             this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailUnassignableDate = new System.Windows.Forms.Label();
             this.chkDetailDeletableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailDeletableFlag = new System.Windows.Forms.Label();
-            this.txtDetailLanguageComment = new System.Windows.Forms.TextBox();
-            this.lblDetailLanguageComment = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
             this.tbbSave = new System.Windows.Forms.ToolStripButton();
             this.tbbNew = new System.Windows.Forms.ToolStripButton();
@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailLanguageLevel.Location = new System.Drawing.Point(2,2);
             this.txtDetailLanguageLevel.Name = "txtDetailLanguageLevel";
-            this.txtDetailLanguageLevel.Size = new System.Drawing.Size(80, 28);
+            this.txtDetailLanguageLevel.Size = new System.Drawing.Size(30, 28);
             this.txtDetailLanguageLevel.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
             this.txtDetailLanguageLevel.DecimalPlaces = 2;
             this.txtDetailLanguageLevel.NullValueAllowed = true;
@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailLanguageLevelDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailLanguageLevelDescr.Name = "txtDetailLanguageLevelDescr";
-            this.txtDetailLanguageLevelDescr.Size = new System.Drawing.Size(360, 28);
+            this.txtDetailLanguageLevelDescr.Size = new System.Drawing.Size(370, 28);
             //
             // lblDetailLanguageLevelDescr
             //
@@ -215,6 +215,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailLanguageLevelDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailLanguageLevelDescr.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailLanguageLevelDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // txtDetailLanguageComment
+            //
+            this.txtDetailLanguageComment.Location = new System.Drawing.Point(2,2);
+            this.txtDetailLanguageComment.Name = "txtDetailLanguageComment";
+            this.txtDetailLanguageComment.Size = new System.Drawing.Size(530, 28);
+            //
+            // lblDetailLanguageComment
+            //
+            this.lblDetailLanguageComment.Location = new System.Drawing.Point(2,2);
+            this.lblDetailLanguageComment.Name = "lblDetailLanguageComment";
+            this.lblDetailLanguageComment.AutoSize = true;
+            this.lblDetailLanguageComment.Text = "Language Comment:";
+            this.lblDetailLanguageComment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailLanguageComment.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailLanguageComment.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // chkDetailUnassignableFlag
             //
@@ -269,22 +285,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailDeletableFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailDeletableFlag.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailDeletableFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
-            // txtDetailLanguageComment
-            //
-            this.txtDetailLanguageComment.Location = new System.Drawing.Point(2,2);
-            this.txtDetailLanguageComment.Name = "txtDetailLanguageComment";
-            this.txtDetailLanguageComment.Size = new System.Drawing.Size(600, 28);
-            //
-            // lblDetailLanguageComment
-            //
-            this.lblDetailLanguageComment.Location = new System.Drawing.Point(2,2);
-            this.lblDetailLanguageComment.Name = "lblDetailLanguageComment";
-            this.lblDetailLanguageComment.AutoSize = true;
-            this.lblDetailLanguageComment.Text = "Language Comment:";
-            this.lblDetailLanguageComment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailLanguageComment.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailLanguageComment.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.tableLayoutPanel2.ColumnCount = 4;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -296,18 +296,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageLevel, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageComment, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageComment, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageLevel, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
             this.tableLayoutPanel2.SetColumnSpan(this.txtDetailLanguageComment, 3);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageComment, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageComment, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailLanguageLevelDescr, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailLanguageLevelDescr, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 2);
             //
             // tbbSave
             //
@@ -488,7 +488,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 400);
+            this.ClientSize = new System.Drawing.Size(750, 467);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -532,14 +532,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Label lblDetailLanguageLevel;
         private System.Windows.Forms.TextBox txtDetailLanguageLevelDescr;
         private System.Windows.Forms.Label lblDetailLanguageLevelDescr;
+        private System.Windows.Forms.TextBox txtDetailLanguageComment;
+        private System.Windows.Forms.Label lblDetailLanguageComment;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
         private System.Windows.Forms.Label lblDetailUnassignableFlag;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;
         private System.Windows.Forms.Label lblDetailUnassignableDate;
         private System.Windows.Forms.CheckBox chkDetailDeletableFlag;
         private System.Windows.Forms.Label lblDetailDeletableFlag;
-        private System.Windows.Forms.TextBox txtDetailLanguageComment;
-        private System.Windows.Forms.Label lblDetailLanguageComment;
         private System.Windows.Forms.ToolStrip tbrMain;
         private System.Windows.Forms.ToolStripButton tbbSave;
         private System.Windows.Forms.ToolStripButton tbbNew;

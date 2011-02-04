@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Driver Status Code");
+      this.tbbNew.Text = Catalog.GetString("New Driver Status");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");

@@ -71,10 +71,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailLanguageLevel.Text = Catalog.GetString("Language Level:");
       this.lblDetailLanguageLevelDescr.Text = Catalog.GetString("Description:");
+      this.lblDetailLanguageComment.Text = Catalog.GetString("Language Comment:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
-      this.lblDetailLanguageComment.Text = Catalog.GetString("Language Comment:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
       this.tbbNew.Text = Catalog.GetString("New Language Level");
@@ -102,10 +102,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
             FPetraUtilsObject.SetStatusBarText(txtDetailLanguageLevel, Catalog.GetString("Numeric representation of level of language."));
       FPetraUtilsObject.SetStatusBarText(txtDetailLanguageLevelDescr, Catalog.GetString("Enter a description for this level of language fluency."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailLanguageComment, Catalog.GetString("Exhaustive explanation of the Language Level."));
       FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if this contact is no longer assignable."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which this contact cannot be listed."));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletableFlag, Catalog.GetString("Indicates if a record can be deleted."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailLanguageComment, Catalog.GetString("Exhaustive explanation of the Language Level."));
 
       /*
        * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
@@ -157,8 +157,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       grdDetails.AddTextColumn("Description", FMainDS.PtLanguageLevel.ColumnLanguageLevelDescr);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtLanguageLevel.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtLanguageLevel.ColumnUnassignableDate);
-      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtLanguageLevel.ColumnDeletableFlag);
       grdDetails.AddTextColumn("Language Comment", FMainDS.PtLanguageLevel.ColumnLanguageComment);
+      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtLanguageLevel.ColumnDeletableFlag);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
@@ -257,6 +257,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             txtDetailLanguageLevel.NumberValueInt = ARow.LanguageLevel;
             txtDetailLanguageLevel.ReadOnly = (ARow.RowState != DataRowState.Added);
             txtDetailLanguageLevelDescr.Text = ARow.LanguageLevelDescr;
+            if (ARow.IsLanguageCommentNull())
+            {
+                txtDetailLanguageComment.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailLanguageComment.Text = ARow.LanguageComment;
+            }
             if (ARow.IsUnassignableFlagNull())
             {
                 chkDetailUnassignableFlag.Checked = false;
@@ -280,14 +288,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             else
             {
                 chkDetailDeletableFlag.Checked = ARow.DeletableFlag;
-            }
-            if (ARow.IsLanguageCommentNull())
-            {
-                txtDetailLanguageComment.Text = String.Empty;
-            }
-            else
-            {
-                txtDetailLanguageComment.Text = ARow.LanguageComment;
             }
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
@@ -314,6 +314,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         {
             ARow.LanguageLevel = Convert.ToInt32(txtDetailLanguageLevel.NumberValueInt);
             ARow.LanguageLevelDescr = txtDetailLanguageLevelDescr.Text;
+            if (txtDetailLanguageComment.Text.Length == 0)
+            {
+                ARow.SetLanguageCommentNull();
+            }
+            else
+            {
+                ARow.LanguageComment = txtDetailLanguageComment.Text;
+            }
             ARow.UnassignableFlag = chkDetailUnassignableFlag.Checked;
             if (dtpDetailUnassignableDate.Date == null)
             {
@@ -324,14 +332,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 ARow.UnassignableDate = dtpDetailUnassignableDate.Date.Value;
             }
             ARow.DeletableFlag = chkDetailDeletableFlag.Checked;
-            if (txtDetailLanguageComment.Text.Length == 0)
-            {
-                ARow.SetLanguageCommentNull();
-            }
-            else
-            {
-                ARow.LanguageComment = txtDetailLanguageComment.Text;
-            }
         }
     }
 

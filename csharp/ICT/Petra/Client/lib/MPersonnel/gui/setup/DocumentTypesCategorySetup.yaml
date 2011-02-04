@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Document Types Categories
+    FormTitle: Maintain Document Type Categories
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PmDocumentCategory
     CacheableTable: DocumentTypeCategoryList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 890
-    WindowHeight: 700
+    WindowWidth: 750
+    WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -26,7 +26,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Document Type Category, Type=String}
+                DetailCode: {Label=Document Type Cat., Type=String}
                 DetailDescription: {Label=Description, Type=String}
                 DetailUnassignableFlag: {Label=Unassignable?, Type=Boolean}
                 DetailUnassignableDate: {Label=Unssignable Date, Type=DateTime}
@@ -38,11 +38,11 @@ RootNode:
                 Row0: [txtDetailCode, txtDetailDescription]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailCode: {Label=Document Type Category Code}
+        txtDetailCode: {Label=Document Type Category, CharacterCasing=Upper, Width=120}
         chkDetailUnassignableFlag: {Label=Assignable, OnChange=EnableDisableUnassignableDate}
-        txtDetailDescription: {Width=328}
+        txtDetailDescription: {Width=250}
         dtpDetailUnassignableDate: {Label=Unassignable Date}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Document Category Code
+            Label: New Document Type Category

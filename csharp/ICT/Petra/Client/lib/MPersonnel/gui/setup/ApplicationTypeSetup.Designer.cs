@@ -77,6 +77,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailAppTypeName = new System.Windows.Forms.Label();
             this.txtDetailAppTypeDescr = new System.Windows.Forms.TextBox();
             this.lblDetailAppTypeDescr = new System.Windows.Forms.Label();
+            this.lblAppFormType = new System.Windows.Forms.Label();
+            this.rgrDetailAppFormType = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.rbtSHORTFORM = new System.Windows.Forms.RadioButton();
+            this.rbtLONGFORM = new System.Windows.Forms.RadioButton();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailUnassignableFlag = new System.Windows.Forms.Label();
             this.dtpDetailUnassignableDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
@@ -113,6 +118,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlDetails.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.rgrDetailAppFormType.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.tbrMain.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
@@ -159,7 +166,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.btnNew.Name = "btnNew";
             this.btnNew.AutoSize = true;
             this.btnNew.Click += new System.EventHandler(this.NewRecord);
-            this.btnNew.Text = "New Application Type";
+            this.btnNew.Text = "New";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.RowCount = 1;
@@ -200,7 +207,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailAppTypeDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailAppTypeDescr.Name = "txtDetailAppTypeDescr";
-            this.txtDetailAppTypeDescr.Size = new System.Drawing.Size(250, 28);
+            this.txtDetailAppTypeDescr.Size = new System.Drawing.Size(110, 28);
             //
             // lblDetailAppTypeDescr
             //
@@ -211,6 +218,51 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailAppTypeDescr.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailAppTypeDescr.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailAppTypeDescr.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // lblAppFormType
+            //
+            this.lblAppFormType.Location = new System.Drawing.Point(2,2);
+            this.lblAppFormType.Name = "lblAppFormType";
+            this.lblAppFormType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAppFormType.AutoSize = true;
+            this.lblAppFormType.Text = "Form Type:";
+            this.lblAppFormType.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            //
+            // rgrDetailAppFormType
+            //
+            this.rgrDetailAppFormType.Location = new System.Drawing.Point(2,2);
+            this.rgrDetailAppFormType.Name = "rgrDetailAppFormType";
+            this.rgrDetailAppFormType.AutoSize = true;
+            //
+            // tableLayoutPanel3
+            //
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.AutoSize = true;
+            this.rgrDetailAppFormType.Controls.Add(this.tableLayoutPanel3);
+            //
+            // rbtSHORTFORM
+            //
+            this.rbtSHORTFORM.Location = new System.Drawing.Point(2,2);
+            this.rbtSHORTFORM.Name = "rbtSHORTFORM";
+            this.rbtSHORTFORM.AutoSize = true;
+            this.rbtSHORTFORM.Text = "SHORT FORM";
+            this.rbtSHORTFORM.Checked = true;
+            //
+            // rbtLONGFORM
+            //
+            this.rbtLONGFORM.Location = new System.Drawing.Point(2,2);
+            this.rbtLONGFORM.Name = "rbtLONGFORM";
+            this.rbtLONGFORM.AutoSize = true;
+            this.rbtLONGFORM.Text = "LONG FORM";
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Controls.Add(this.rbtSHORTFORM, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.rbtLONGFORM, 1, 0);
+            this.rgrDetailAppFormType.Text = "Form Type";
             //
             // chkDetailUnassignableFlag
             //
@@ -270,20 +322,24 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailAppTypeName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblAppFormType, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 3);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailAppTypeName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 3);
             this.tableLayoutPanel2.Controls.Add(this.lblDetailAppTypeDescr, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
+            this.tableLayoutPanel2.SetColumnSpan(this.rgrDetailAppFormType, 2);
+            this.tableLayoutPanel2.Controls.Add(this.rgrDetailAppFormType, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailAppTypeDescr, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 2);
             //
             // tbbSave
             //
@@ -299,7 +355,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Ability Area";
+            this.tbbNew.Text = "New Application Type";
             //
             // tbrMain
             //
@@ -485,6 +541,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
             this.tbrMain.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.rgrDetailAppFormType.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.pnlDetails.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -508,6 +566,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.Label lblDetailAppTypeName;
         private System.Windows.Forms.TextBox txtDetailAppTypeDescr;
         private System.Windows.Forms.Label lblDetailAppTypeDescr;
+        private System.Windows.Forms.Label lblAppFormType;
+        private System.Windows.Forms.Panel rgrDetailAppFormType;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.RadioButton rbtSHORTFORM;
+        private System.Windows.Forms.RadioButton rbtLONGFORM;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;
         private System.Windows.Forms.Label lblDetailUnassignableFlag;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailUnassignableDate;

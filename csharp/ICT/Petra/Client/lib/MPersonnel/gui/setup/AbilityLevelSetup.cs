@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       FMainDS.PtAbilityLevel.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("", FMainDS.PtAbilityLevel.ColumnAbilityLevel);
+      grdDetails.AddTextColumn("Ability Level", FMainDS.PtAbilityLevel.ColumnAbilityLevel);
       grdDetails.AddTextColumn("Description", FMainDS.PtAbilityLevel.ColumnAbilityLevelDescr);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtAbilityLevel.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtAbilityLevel.ColumnUnassignableDate);

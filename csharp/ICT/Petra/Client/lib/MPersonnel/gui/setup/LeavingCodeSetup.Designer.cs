@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailLeavingCodeInd.Location = new System.Drawing.Point(2,2);
             this.txtDetailLeavingCodeInd.Name = "txtDetailLeavingCodeInd";
-            this.txtDetailLeavingCodeInd.Size = new System.Drawing.Size(55, 28);
+            this.txtDetailLeavingCodeInd.Size = new System.Drawing.Size(150, 28);
             //
             // lblDetailLeavingCodeInd
             //
@@ -199,7 +199,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailLeavingCodeDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailLeavingCodeDescr.Name = "txtDetailLeavingCodeDescr";
-            this.txtDetailLeavingCodeDescr.Size = new System.Drawing.Size(307, 28);
+            this.txtDetailLeavingCodeDescr.Size = new System.Drawing.Size(288, 28);
+            this.txtDetailLeavingCodeDescr.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailLeavingCodeDescr
             //
@@ -462,7 +463,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(672, 500);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

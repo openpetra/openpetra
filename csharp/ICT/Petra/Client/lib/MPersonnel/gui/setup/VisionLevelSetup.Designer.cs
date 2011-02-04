@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailVisionLevel.Location = new System.Drawing.Point(2,2);
             this.txtDetailVisionLevel.Name = "txtDetailVisionLevel";
-            this.txtDetailVisionLevel.Size = new System.Drawing.Size(80, 28);
+            this.txtDetailVisionLevel.Size = new System.Drawing.Size(30, 28);
             this.txtDetailVisionLevel.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
             this.txtDetailVisionLevel.DecimalPlaces = 2;
             this.txtDetailVisionLevel.NullValueAllowed = true;
@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailVisionLevelDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailVisionLevelDescr.Name = "txtDetailVisionLevelDescr";
-            this.txtDetailVisionLevelDescr.Size = new System.Drawing.Size(360, 28);
+            this.txtDetailVisionLevelDescr.Size = new System.Drawing.Size(410, 28);
             //
             // lblDetailVisionLevelDescr
             //
@@ -466,7 +466,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 400);
+            this.ClientSize = new System.Drawing.Size(750, 440);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

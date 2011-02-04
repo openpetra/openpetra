@@ -26,7 +26,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Passport Type Code}
+                DetailCode: {Label=Passport Type}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:

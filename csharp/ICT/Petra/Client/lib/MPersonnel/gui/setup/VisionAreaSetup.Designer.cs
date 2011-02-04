@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailVisionAreaDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailVisionAreaDescr.Name = "txtDetailVisionAreaDescr";
-            this.txtDetailVisionAreaDescr.Size = new System.Drawing.Size(293, 28);
+            this.txtDetailVisionAreaDescr.Size = new System.Drawing.Size(292, 28);
             //
             // lblDetailVisionAreaDescr
             //
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 400);
+            this.ClientSize = new System.Drawing.Size(750, 500);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

@@ -75,8 +75,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDetailPositionName = new System.Windows.Forms.TextBox();
             this.lblDetailPositionName = new System.Windows.Forms.Label();
-            this.txtDetailPositionScope = new System.Windows.Forms.TextBox();
-            this.lblDetailPositionScope = new System.Windows.Forms.Label();
             this.txtDetailPositionDescr = new System.Windows.Forms.TextBox();
             this.lblDetailPositionDescr = new System.Windows.Forms.Label();
             this.chkDetailUnassignableFlag = new System.Windows.Forms.CheckBox();
@@ -198,22 +196,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailPositionName.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailPositionName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // txtDetailPositionScope
-            //
-            this.txtDetailPositionScope.Location = new System.Drawing.Point(2,2);
-            this.txtDetailPositionScope.Name = "txtDetailPositionScope";
-            this.txtDetailPositionScope.Size = new System.Drawing.Size(150, 28);
-            //
-            // lblDetailPositionScope
-            //
-            this.lblDetailPositionScope.Location = new System.Drawing.Point(2,2);
-            this.lblDetailPositionScope.Name = "lblDetailPositionScope";
-            this.lblDetailPositionScope.AutoSize = true;
-            this.lblDetailPositionScope.Text = "Position Scope:";
-            this.lblDetailPositionScope.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailPositionScope.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailPositionScope.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            //
             // txtDetailPositionDescr
             //
             this.txtDetailPositionDescr.Location = new System.Drawing.Point(2,2);
@@ -288,23 +270,20 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.Controls.Add(this.lblDetailPositionName, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailPositionDescr, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableFlag, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailDeletableFlag, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailPositionName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailPositionDescr, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 3);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailPositionScope, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 2);
-            this.tableLayoutPanel2.Controls.Add(this.txtDetailPositionScope, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 2);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailUnassignableFlag, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.chkDetailDeletableFlag, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailPositionDescr, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.lblDetailUnassignableDate, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txtDetailPositionDescr, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.dtpDetailUnassignableDate, 3, 1);
             //
             // tbbSave
             //
@@ -485,7 +464,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(750, 400);
+            this.ClientSize = new System.Drawing.Size(750, 600);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -527,8 +506,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TextBox txtDetailPositionName;
         private System.Windows.Forms.Label lblDetailPositionName;
-        private System.Windows.Forms.TextBox txtDetailPositionScope;
-        private System.Windows.Forms.Label lblDetailPositionScope;
         private System.Windows.Forms.TextBox txtDetailPositionDescr;
         private System.Windows.Forms.Label lblDetailPositionDescr;
         private System.Windows.Forms.CheckBox chkDetailUnassignableFlag;

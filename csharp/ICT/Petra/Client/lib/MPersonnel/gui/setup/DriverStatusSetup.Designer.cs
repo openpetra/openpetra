@@ -184,6 +184,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.txtDetailCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCode.Name = "txtDetailCode";
             this.txtDetailCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailCode
             //
@@ -199,7 +200,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailDescription.Name = "txtDetailDescription";
-            this.txtDetailDescription.Size = new System.Drawing.Size(398, 28);
+            this.txtDetailDescription.Size = new System.Drawing.Size(256, 28);
             //
             // lblDetailDescription
             //
@@ -297,7 +298,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Driver Status Code";
+            this.tbbNew.Text = "New Driver Status";
             //
             // tbrMain
             //
@@ -462,7 +463,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(890, 700);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

@@ -7,8 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 672
-    WindowHeight: 500
+    WindowWidth: 750
+    WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -36,8 +36,8 @@ RootNode:
                 Row2: [chkDetailDeletableFlag]
             CustomControls:
                 DetailUnassignableDate: {type=DateTime}
-        txtDetailLeavingCodeInd: {Label=Leaving Code, Width=55}
-        txtDetailLeavingCodeDescr: {Label=Description, Width=307}
+        txtDetailLeavingCodeInd: {Label=Leaving Code}
+        txtDetailLeavingCodeDescr: {Label=Description, CharacterCasing=Upper, Width=288}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date}
         chkDetailDeletableFlag: {Label=Deletable}

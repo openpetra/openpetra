@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailQualificationLevel.Location = new System.Drawing.Point(2,2);
             this.lblDetailQualificationLevel.Name = "lblDetailQualificationLevel";
             this.lblDetailQualificationLevel.AutoSize = true;
-            this.lblDetailQualificationLevel.Text = "Level Code:";
+            this.lblDetailQualificationLevel.Text = "Qualification Level:";
             this.lblDetailQualificationLevel.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailQualificationLevel.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailQualificationLevel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailQualificationLevelDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailQualificationLevelDescr.Name = "txtDetailQualificationLevelDescr";
-            this.txtDetailQualificationLevelDescr.Size = new System.Drawing.Size(323, 28);
+            this.txtDetailQualificationLevelDescr.Size = new System.Drawing.Size(380, 28);
             //
             // lblDetailQualificationLevelDescr
             //
@@ -467,7 +467,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(660, 700);
+            this.ClientSize = new System.Drawing.Size(750, 440);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);

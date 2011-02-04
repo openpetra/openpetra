@@ -70,7 +70,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailPositionName.Text = Catalog.GetString("Position:");
-      this.lblDetailPositionScope.Text = Catalog.GetString("Position Scope:");
       this.lblDetailPositionDescr.Text = Catalog.GetString("Description:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
@@ -97,12 +96,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       #endregion
 
       this.txtDetailPositionName.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailPositionScope.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailPositionDescr.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
             FPetraUtilsObject.SetStatusBarText(txtDetailPositionName, Catalog.GetString("Enter a name for this position, e.g. Team Leader, Book keeper."));
-      FPetraUtilsObject.SetStatusBarText(txtDetailPositionScope, Catalog.GetString("Select a scope for this position."));
       FPetraUtilsObject.SetStatusBarText(txtDetailPositionDescr, Catalog.GetString("Enter a description for this position."));
       FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if position is no longer assignable."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which the position is unassignable."));
@@ -155,7 +152,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Position", FMainDS.PtPosition.ColumnPositionName);
-      grdDetails.AddTextColumn("Position Scope", FMainDS.PtPosition.ColumnPositionScope);
       grdDetails.AddTextColumn("Description", FMainDS.PtPosition.ColumnPositionDescr);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtPosition.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtPosition.ColumnUnassignableDate);
@@ -243,7 +239,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
         txtDetailPositionName.ReadOnly = AReadOnly;
-        txtDetailPositionScope.ReadOnly = AReadOnly;
     }
 
     private void ShowDetails(PtPositionRow ARow)
@@ -258,8 +253,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             FPreviouslySelectedDetailRow = ARow;
             txtDetailPositionName.Text = ARow.PositionName;
             txtDetailPositionName.ReadOnly = (ARow.RowState != DataRowState.Added);
-            txtDetailPositionScope.Text = ARow.PositionScope;
-            txtDetailPositionScope.ReadOnly = (ARow.RowState != DataRowState.Added);
             if (ARow.IsPositionDescrNull())
             {
                 txtDetailPositionDescr.Text = String.Empty;
@@ -309,7 +302,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         if (ARow != null)
         {
             ARow.PositionName = txtDetailPositionName.Text;
-            ARow.PositionScope = txtDetailPositionScope.Text;
             if (txtDetailPositionDescr.Text.Length == 0)
             {
                 ARow.SetPositionDescrNull();

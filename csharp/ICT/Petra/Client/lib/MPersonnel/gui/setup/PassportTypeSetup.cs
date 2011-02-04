@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       FMainDS.PtPassportType.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Passport Type Code", FMainDS.PtPassportType.ColumnCode);
+      grdDetails.AddTextColumn("Passport Type", FMainDS.PtPassportType.ColumnCode);
       grdDetails.AddTextColumn("Description", FMainDS.PtPassportType.ColumnDescription);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtPassportType.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtPassportType.ColumnUnassignableDate);

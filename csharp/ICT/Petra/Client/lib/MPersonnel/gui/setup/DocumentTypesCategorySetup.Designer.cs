@@ -183,14 +183,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailCode.Location = new System.Drawing.Point(2,2);
             this.txtDetailCode.Name = "txtDetailCode";
-            this.txtDetailCode.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailCode.Size = new System.Drawing.Size(120, 28);
+            this.txtDetailCode.CharacterCasing = CharacterCasing.Upper;
             //
             // lblDetailCode
             //
             this.lblDetailCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailCode.Name = "lblDetailCode";
             this.lblDetailCode.AutoSize = true;
-            this.lblDetailCode.Text = "Document Type Category Code:";
+            this.lblDetailCode.Text = "Document Type Category:";
             this.lblDetailCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -199,7 +200,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailDescription.Location = new System.Drawing.Point(2,2);
             this.txtDetailDescription.Name = "txtDetailDescription";
-            this.txtDetailDescription.Size = new System.Drawing.Size(328, 28);
+            this.txtDetailDescription.Size = new System.Drawing.Size(250, 28);
             //
             // lblDetailDescription
             //
@@ -297,7 +298,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.tbbNew.Name = "tbbNew";
             this.tbbNew.AutoSize = true;
             this.tbbNew.Click += new System.EventHandler(this.NewRecord);
-            this.tbbNew.Text = "New Document Category Code";
+            this.tbbNew.Text = "New Document Type Category";
             //
             // tbrMain
             //
@@ -462,7 +463,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Font = new System.Drawing.Font("Verdana", 8.25f);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 
-            this.ClientSize = new System.Drawing.Size(890, 700);
+            this.ClientSize = new System.Drawing.Size(750, 400);
 
             this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.tbrMain);
@@ -472,7 +473,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "TFrmDocumentTypesCategorySetup";
-            this.Text = "Maintain Document Types Categories";
+            this.Text = "Maintain Document Type Categories";
 
             this.Activated += new System.EventHandler(this.TFrmPetra_Activated);
             this.Load += new System.EventHandler(this.TFrmPetra_Load);

@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 400
+    WindowHeight: 600
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,7 +24,7 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailPositionName, DetailPositionScope, DetailPositionDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailPositionName, DetailPositionDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailCode: {Label=Relationship Category Code}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
@@ -32,12 +32,10 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailPositionName, txtDetailPositionScope]
-                Row1: [txtDetailPositionDescr]
-                Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
-                Row3: [chkDetailDeletableFlag]
+                Row0: [txtDetailPositionName, txtDetailPositionDescr]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
         txtDetailPositionName: {Label=Position, CharacterCasing=Upper}
-        txtDetailPositionScope: {Label=Position Scope}
         txtDetailPositionDescr: {Label=Description, Width=290}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}

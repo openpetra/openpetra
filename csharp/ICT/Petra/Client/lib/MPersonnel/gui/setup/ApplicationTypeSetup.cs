@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from ApplicationTypeSetup.yaml and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from ApplicationTypeSetup.yaml and template windowMaintainTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -36,7 +36,6 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -56,6 +55,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     {
         public static PtApplicationTypeTable PtApplicationType;
     }
+
     /// constructor
     public TFrmApplicationTypeSetup(IntPtr AParentFormHandle) : base()
     {
@@ -68,15 +68,19 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       #region CATALOGI18N
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-      this.btnNew.Text = Catalog.GetString("New Application Type");
+      this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailAppTypeName.Text = Catalog.GetString("Application Type:");
       this.lblDetailAppTypeDescr.Text = Catalog.GetString("Description:");
+      this.lblAppFormType.Text = Catalog.GetString("Form Type:");
+      this.rbtSHORTFORM.Text = Catalog.GetString("SHORT FORM");
+      this.rbtLONGFORM.Text = Catalog.GetString("LONG FORM");
+      this.rgrDetailAppFormType.Text = Catalog.GetString("Form Type");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Ability Area");
+      this.tbbNew.Text = Catalog.GetString("New Application Type");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -99,11 +103,35 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.txtDetailAppTypeDescr.Font = TAppSettingsManager.GetDefaultBoldFont();
 
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            FPetraUtilsObject.SetStatusBarText(txtDetailAppTypeName, Catalog.GetString("Name of the type of application, e.g. Short-Term, Long-Term."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailAppTypeName, Catalog.GetString("Name of the type of application, e.g. Short-Term, Long-Term."));
       FPetraUtilsObject.SetStatusBarText(txtDetailAppTypeDescr, Catalog.GetString("Enter a description for this application type.."));
       FPetraUtilsObject.SetStatusBarText(chkDetailUnassignableFlag, Catalog.GetString("Check box if application type is no longer assignable."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailUnassignableDate, Catalog.GetString("Date from which the position is unassignable."));
       FPetraUtilsObject.SetStatusBarText(chkDetailDeletableFlag, Catalog.GetString("Indicates if a record can be deleted."));
+      FMainDS.PtApplicationType = new PtApplicationTypeTable();
+      Ict.Common.Data.TTypedDataTable TypedTable;
+      TRemote.MCommon.DataReader.GetData(PtApplicationTypeTable.GetTableDBName(), null, out TypedTable);
+      FMainDS.PtApplicationType.Merge(TypedTable);
+      grdDetails.Columns.Clear();
+      grdDetails.AddTextColumn("Application Type", FMainDS.PtApplicationType.ColumnAppTypeName);
+      grdDetails.AddTextColumn("Description", FMainDS.PtApplicationType.ColumnAppTypeDescr);
+      grdDetails.AddTextColumn("Form Type", FMainDS.PtApplicationType.ColumnAppFormType);
+      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtApplicationType.ColumnUnassignableFlag);
+      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtApplicationType.ColumnUnassignableDate);
+      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtApplicationType.ColumnDeletableFlag);
+      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+      DataView myDataView = FMainDS.PtApplicationType.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+      // Ensure that the Details Panel is disabled if there are no records
+      if (FMainDS.PtApplicationType.Rows.Count == 0)
+      {
+        ShowDetails(null);
+      }
+
+      FPetraUtilsObject.InitActionState();
 
       /*
        * Automatically disable 'Deletable' CheckBox (it must not get changed by the user because records where the
@@ -115,8 +143,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       {
           FoundCheckBoxes[0].Enabled = false;
       }
-
-      LoadDataAndFinishScreenSetup();
     }
 
     private void TFrmPetra_Activated(object sender, EventArgs e)
@@ -137,40 +163,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     private void Form_KeyDown(object sender, KeyEventArgs e)
     {
         FPetraUtilsObject.Form_KeyDown(sender, e);
-    }
-
-    /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
-    /// <returns>void</returns>
-    private void LoadDataAndFinishScreenSetup()
-    {
-      Type DataTableType;
-
-      // Load Data
-      FMainDS.PtApplicationType = new PtApplicationTypeTable();
-      DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("PtApplicationTypeList", String.Empty, null, out DataTableType);
-      FMainDS.PtApplicationType.Merge(CacheDT);
-
-      grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Application Type", FMainDS.PtApplicationType.ColumnAppTypeName);
-      grdDetails.AddTextColumn("Description", FMainDS.PtApplicationType.ColumnAppTypeDescr);
-      grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtApplicationType.ColumnUnassignableFlag);
-      grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtApplicationType.ColumnUnassignableDate);
-      grdDetails.AddTextColumn("Form Type", FMainDS.PtApplicationType.ColumnAppFormType);
-      grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtApplicationType.ColumnDeletableFlag);
-
-      FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-
-      DataView myDataView = FMainDS.PtApplicationType.DefaultView;
-      myDataView.AllowNew = false;
-      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.PtApplicationType.Rows.Count == 0)
-      {
-        ShowDetails(null);
-      }
-
-      FPetraUtilsObject.InitActionState();
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -421,7 +413,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("PtApplicationTypeList", ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.SaveData(PtApplicationTypeTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (System.Net.Sockets.SocketException)
                 {

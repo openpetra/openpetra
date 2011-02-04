@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("New");
-      this.lblDetailQualificationLevel.Text = Catalog.GetString("Level Code:");
+      this.lblDetailQualificationLevel.Text = Catalog.GetString("Qualification Level:");
       this.lblDetailQualificationLevelDescr.Text = Catalog.GetString("Description:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       FMainDS.PtQualificationLevel.Merge(CacheDT);
 
       grdDetails.Columns.Clear();
-      grdDetails.AddTextColumn("Qualification Level", FMainDS.PtQualificationLevel.ColumnQualificationLevel);
+      grdDetails.AddTextColumn("Level", FMainDS.PtQualificationLevel.ColumnQualificationLevel);
       grdDetails.AddTextColumn("Description", FMainDS.PtQualificationLevel.ColumnQualificationLevelDescr);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtQualificationLevel.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtQualificationLevel.ColumnUnassignableDate);
