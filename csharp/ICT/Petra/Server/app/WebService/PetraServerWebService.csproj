@@ -69,6 +69,9 @@
     <Reference Include="Ict.Petra.Shared.Interfaces.ServerAdminInterface">
       <HintPath>..\..\..\ServerAdmin\_bin\Debug\Ict.Petra.Shared.Interfaces.ServerAdminInterface.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MConference.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataSets.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
     </Reference>

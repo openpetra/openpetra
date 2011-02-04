@@ -76,6 +76,9 @@
     <Reference Include="Ict.Petra.Shared.MConference">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MConference.DataSets">
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataSets.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MConference.DataTables">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MConference.DataTables.dll</HintPath>
     </Reference>
@@ -133,10 +136,23 @@
       <Project>{1F2FFC91-5C00-44ED-8EFD-3940426793CF}</Project>
       <Name>Ict.Petra.Server.MCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MPartner\data\Ict.Petra.Server.MPartner.DataAccess.csproj">
+      <Project>{6372DC9A-981C-48F8-8719-E5B2CF7157DF}</Project>
+      <Name>Ict.Petra.Server.MPartner.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MPersonnel\data\Ict.Petra.Server.MPersonnel.DataAccess.csproj">
+      <Project>{A2B90810-5C72-4154-8E6C-47F243E6538D}</Project>
+      <Name>Ict.Petra.Server.MPersonnel.DataAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="data\Ict.Petra.Server.MConference.DataAccess.csproj">
       <Project>{FB826CB1-81C5-47BB-B699-A7EB79CF800A}</Project>
       <Name>Ict.Petra.Server.MConference.DataAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="data\Ict.Petra.Server.MConference.DatasetAccess.csproj">
+      <Project>{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}</Project>
+      <Name>Ict.Petra.Server.MConference.DatasetAccess</Name>
+    </ProjectReference>
+    <Compile Include="ConferenceApplications.cs" />
     <Compile Include="Cacheable.cs" />
   </ItemGroup>
 </Project>

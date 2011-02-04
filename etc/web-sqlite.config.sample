@@ -14,14 +14,28 @@
 	<add key="Server.DebugLevel" value="0" />						<!-- Default Value: "0" -->
     <add key="Server.RDBMSType" value="SQLite" />
     <add key="Server.LogFile" value="../log/WebServer.log" />   <!-- Default Value: "Server.log" in current working directory -->
+    <add key="Server.PathTemp" value="../log" />
+    <add key="Server.PathData" value="../data" />
     <add key="Server.PostgreSQLServer" value = "../setup/petra0300/demo.db" />                <!-- Default Value: "Dns.GetHostName()" -->
     <add key="Server.BaseDatabase" value = "../setup/petra0300/petra.db" />  <!-- database will be copied to the userappdata directory for a new user -->
     <add key="Server.PostgreSQLServerPort" value = "5432" />                                <!-- Default Value: "5432" -->
     <add key="Server.Credentials" value="" />     <!-- this is the password for user petraserver for the PostgreSQL databases -->
+    <add key="AnonymousUserPasswd" value="TOBESETBYINSTALLER2" />
+
+    <add key="SmtpHost" value="localhost"/>
+    <add key="SmtpUser" value="TOBESETBYINSTALLER3"/>
+    <add key="SmtpPassword" value="TOBESETBYINSTALLER4"/>
+    <add key="SmtpEnableSsl" value="true"/>
 
 	<add key="Reporting.PathStandardReports" value="../XmlReports" />
 	<add key="Reporting.PathCustomReports" value="../XmlReports/custom" />
+    <add key="Formletters.Path" value="../demodata/formletters"/>
 
-   </appSettings>
+</appSettings>
+<system.web>
+    <httpModules>
+        <add name="DirectRequestModule" type="Ext.Net.DirectRequestModule, Ext.Net"/>
+    </httpModules>
+</system.web>
 
 </configuration>

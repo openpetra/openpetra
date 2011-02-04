@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,6 +63,8 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
 
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
             AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
 
             FHtmlDoc = ParseHtml(AHtmlDocument);
@@ -397,6 +399,8 @@ namespace Ict.Common.Printing
         {
             float oldYPos = FPrinter.CurrentYPos;
 
+            XmlNode origNode = curNode;
+
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 if (curNode.Name == "table")
@@ -418,23 +422,33 @@ namespace Ict.Common.Printing
 
                     if (TXMLParser.HasAttribute(curNode, "width") && TXMLParser.HasAttribute(curNode, "height"))
                     {
-                        float WidthPercentage = 1.0f;
-                        float HeightPercentage = 1.0f;
+                        float WidthPercentage = 0.0f;
+                        float HeightPercentage = 0.0f;
+                        float Width = 0.0f;
+                        float Height = 0.0f;
 
-                        string Width = TXMLParser.GetAttribute(curNode, "width");
-                        string Height = TXMLParser.GetAttribute(curNode, "height");
+                        string WidthString = TXMLParser.GetAttribute(curNode, "width");
+                        string HeightString = TXMLParser.GetAttribute(curNode, "height");
 
-                        if (Width.EndsWith("%"))
+                        if (WidthString.EndsWith("%"))
                         {
-                            WidthPercentage = (float)Convert.ToDouble(Width.Substring(0, Width.Length - 1)) / 100.0f;
+                            WidthPercentage = (float)Convert.ToDouble(WidthString.Substring(0, WidthString.Length - 1)) / 100.0f;
+                        }
+                        else
+                        {
+                            Width = (float)Convert.ToDouble(WidthString);
                         }
 
-                        if (Height.EndsWith("%"))
+                        if (HeightString.EndsWith("%"))
                         {
-                            HeightPercentage = (float)Convert.ToDouble(Height.Substring(0, Width.Length - 1)) / 100.0f;
+                            HeightPercentage = (float)Convert.ToDouble(HeightString.Substring(0, HeightString.Length - 1)) / 100.0f;
+                        }
+                        else
+                        {
+                            Height = (float)Convert.ToDouble(HeightString);
                         }
 
-                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, WidthPercentage, HeightPercentage);
+                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, Width, Height, WidthPercentage, HeightPercentage);
                     }
                     else
                     {
@@ -528,6 +542,35 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                     FPrinter.CurrentAlignment = origAlignment;
                 }
+                else if ((curNode.Name.Length > 1) && (curNode.Name[0] == 'h') && char.IsDigit(curNode.Name[1]))
+                {
+                    // heading
+                    eFont previousFont = FPrinter.CurrentFont;
+                    FPrinter.CurrentFont = eFont.eHeadingFont;
+                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+
+                    if (curNode.Name[1] == '1')
+                    {
+                        FPrinter.CurrentRelativeFontSize += 2;
+                    }
+                    else
+                    {
+                        FPrinter.CurrentRelativeFontSize += 1;
+                    }
+
+                    XmlNode child = curNode.FirstChild;
+                    RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    FPrinter.CurrentFont = previousFont;
+                    FPrinter.CurrentRelativeFontSize = previousFontSize;
+                    curNode = curNode.NextSibling;
+                    FPrinter.LineFeed();
+                }
                 else if (curNode.Name == "#comment")
                 {
                     // just skip comments
@@ -554,6 +597,11 @@ namespace Ict.Common.Printing
                 // todo: checked and unchecked checkbox
                 // todo: page break
                 // todo: header div style with tray information; config file with local tray names???
+            }
+
+            if ((origNode == curNode) && (curNode != null))
+            {
+                throw new Exception("page too small, at " + curNode.Name);
             }
 
             return FPrinter.CurrentYPos - oldYPos;

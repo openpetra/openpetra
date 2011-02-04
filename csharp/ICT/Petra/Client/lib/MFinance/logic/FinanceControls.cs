@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             AControl.Columns.Clear();
-            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             AControl.Columns.Clear();
-            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);

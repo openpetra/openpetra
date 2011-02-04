@@ -58,6 +58,7 @@
     <Compile Include="DataSets.AssemblyInfo.cs" />
     <Compile Include="Finance.Gift.DataSets.cs" />
     <Compile Include="Finance.GL.DataSets.cs" />
+    <None Include="Shared.sln" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MPartner\data\Ict.Petra.Shared.MPartner.DataSets.csproj">

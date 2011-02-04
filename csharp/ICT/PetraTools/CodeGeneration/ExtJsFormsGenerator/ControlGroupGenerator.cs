@@ -83,6 +83,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     ctrlSnippet.SetCodelet("COLUMNWIDTH", "");
 
                     ctrlSnippet.SetCodelet("ITEMNAME", ctrl.controlName);
+                    ctrlSnippet.SetCodelet("ITEMID", childCtrl.controlName);
 
                     if (ChildControlName == Controls[0])
                     {
