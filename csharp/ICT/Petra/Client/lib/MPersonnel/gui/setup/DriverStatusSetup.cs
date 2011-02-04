@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailCode.Text = Catalog.GetString("Driver Status Code:");
       this.lblDetailDescription.Text = Catalog.GetString("Description:");
-      this.lblDetailUnassignableFlag.Text = Catalog.GetString("Assignable:");
+      this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");

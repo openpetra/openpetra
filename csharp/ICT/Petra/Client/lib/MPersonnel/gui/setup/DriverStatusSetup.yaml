@@ -39,7 +39,7 @@ RootNode:
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
         txtDetailCode: {Label=Driver Status Code, CharacterCasing=Upper}
-        chkDetailUnassignableFlag: {Label=Assignable, OnChange=EnableDisableUnassignableDate}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=256}
         dtpDetailUnassignableDate: {Label=Unassignable Date}
         chkDetailDeletableFlag: {Label=Deletable}

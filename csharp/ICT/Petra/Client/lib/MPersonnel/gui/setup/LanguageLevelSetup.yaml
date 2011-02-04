@@ -24,7 +24,7 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailLanguageComment, DetailDeletableFlag]
+            Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailLanguageComment, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailLanguageLevel: {Label=Language Level, Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}

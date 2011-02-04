@@ -155,9 +155,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Language Level", FMainDS.PtLanguageLevel.ColumnLanguageLevel);
       grdDetails.AddTextColumn("Description", FMainDS.PtLanguageLevel.ColumnLanguageLevelDescr);
+      grdDetails.AddTextColumn("Language Comment", FMainDS.PtLanguageLevel.ColumnLanguageComment);
       grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtLanguageLevel.ColumnUnassignableFlag);
       grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtLanguageLevel.ColumnUnassignableDate);
-      grdDetails.AddTextColumn("Language Comment", FMainDS.PtLanguageLevel.ColumnLanguageComment);
       grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtLanguageLevel.ColumnDeletableFlag);
 
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;

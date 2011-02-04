@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             this.lblDetailUnassignableFlag.Location = new System.Drawing.Point(2,2);
             this.lblDetailUnassignableFlag.Name = "lblDetailUnassignableFlag";
             this.lblDetailUnassignableFlag.AutoSize = true;
-            this.lblDetailUnassignableFlag.Text = "Assignable:";
+            this.lblDetailUnassignableFlag.Text = "Unassignable:";
             this.lblDetailUnassignableFlag.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailUnassignableFlag.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailUnassignableFlag.TextAlign = System.Drawing.ContentAlignment.TopRight;
