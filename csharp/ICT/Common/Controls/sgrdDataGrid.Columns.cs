@@ -136,10 +136,12 @@ namespace Ict.Common.Controls
         public override SourceGrid.Cells.ICellVirtual GetDataCell(int AGridRow)
         {
             SourceGrid.Cells.ICellVirtual ReturnValue;
-            int Reminder;
+            SourceGrid.Cells.ICellVirtual BaseDataCell = base.GetDataCell(AGridRow);
             SourceGrid.Cells.ICellVirtual AlternatingDataCellSelected;
+            int Reminder;
+
             HeaderCell.View = ((TSgrdDataGrid)FGrid).ColumnHeaderView;
-            FDataCellSelected = DataCell.Copy();
+            FDataCellSelected = BaseDataCell.Copy();
 
             // Create a ToolTip
             FDataCellSelected.AddController(SourceGrid.Cells.Controllers.ToolTipText.Default);
@@ -289,7 +291,7 @@ namespace Ict.Common.Controls
                         // MessageBox.Show('TToolTipModel.GetToolTipText.  Inquiring ToolTip Text...');
                         ReturnValue = TheGrid.ToolTipTextDelegate((short)ACellContext.Position.Column, (short)(ACellContext.Position.Row - 1));
 
-//						MessageBox.Show("TToolTipModel.GetToolTipText.  ToolTip Text: " + ReturnValue);
+//                      MessageBox.Show("TToolTipModel.GetToolTipText.  ToolTip Text: " + ReturnValue);
                         return ReturnValue;
                     }
                 }
