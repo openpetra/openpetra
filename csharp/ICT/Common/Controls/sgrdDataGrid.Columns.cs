@@ -159,7 +159,7 @@ namespace Ict.Common.Controls
                 if (((TSgrdDataGrid)FGrid).AlternatingBackgroundColour != Color.Empty)
                 {
                     AlternatingDataCellSelected = FDataCellSelected.Copy();
-                    AlternatingDataCellSelected.View = (SourceGrid.Cells.Views.IView)DataCell.View.Clone();
+                    AlternatingDataCellSelected.View = (SourceGrid.Cells.Views.IView)FDataCellSelected.View.Clone();
                     AlternatingDataCellSelected.View.BackColor = ((TSgrdDataGrid)FGrid).AlternatingBackgroundColour;
                     ReturnValue = AlternatingDataCellSelected;
                 }
