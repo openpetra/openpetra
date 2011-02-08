@@ -24,6 +24,7 @@ using System;
 using System.Windows.Forms;
 using System.Collections;
 using System.Xml; 
+using System.Collections.Generic; 
 
 using Ict.Common;
 
@@ -32,6 +33,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
     ///<summary>Logic class for the internal behaviour of a Shepherd</summary>
     public class TPetraShepherdFormLogic : object
     {
+    	private const string STARTPAGE_NAME = "|||START PAGE|||";
         private const string FINISHPAGE_NAME = "|||FINISH PAGE|||";
         
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's</summary>
@@ -112,6 +114,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
           
             FForm.ShowCurrentPage();
         }
+        /// <summary>
+        /// Switches to the first page 
+        /// </summary>
+        protected void SwitchToStartPage()
+        {
+        	TLogging.Log("SwitchToStartPage (in TPetrashepherdFormLogic)"); 
+        	//iterate through the list of pages and find the first instance that is visible and enabled 
+        	//get the name, pass it to SwitchToPage(); 
+ 			int counter = 0;  //debugging counter to show how many pages are being read in 
+        	List<string> listOfPages = new List<string>(FShepherdPages.Pages.Keys); 
+        	foreach(string i in listOfPages) 
+        	{
+        		TLogging.Log("SwitchToStartPage() was called for page number " + counter + " and the key of that page was: "+  i);
+        		counter++; 
+        	}
+        	SwitchToPage(STARTPAGE_NAME); 
+        }
 
         ///<summary>Switches the Finish page</summary>
         protected void SwitchToFinishPage()
@@ -126,7 +145,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
             // ....
-            SwitchToPage("2"); 
+            SwitchToStartPage(); 
+            //SwitchToPage("2"); 
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>

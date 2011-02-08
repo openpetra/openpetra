@@ -359,7 +359,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	//...Required LastChild.LastChild.FirstChild because of the structure of the XML File after parsing.
         	
         	int counter = 0; 
-        	while(temporaryXmlNode != null) 
+        	while(temporaryXmlNode != null) //temporarily commented while I try a foreach instead for this loop..
+        	//i've found that this loop only iterates through one element in XmlPages, and is therefore 
+        	//useless 
+        	
         	{
             	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode);
             	//Conrstuctor call for each page built off an XML node. 
@@ -367,7 +370,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             	TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
             	
             	FPagesList.Add(temporaryPetraShepherdPage.ID,temporaryPetraShepherdPage);
-            	temporaryXmlNode = XmlPages.NextSibling;
+            	temporaryXmlNode = XmlPages.PreviousSibling;
             	counter++; 
             }
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");    

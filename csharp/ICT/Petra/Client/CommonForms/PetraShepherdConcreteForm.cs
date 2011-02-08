@@ -118,6 +118,11 @@ namespace Ict.Petra.Client.CommonForms
             
             FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
 
+            //instead of ShowCurrentPage(); 
+            //FLogic.SwitchToStartPage()
+            //this will do the initialization of the first pages
+            //Controls.Add() needs to be added to show current page 
+            
             ShowCurrentPage(); 
 
             TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");                      

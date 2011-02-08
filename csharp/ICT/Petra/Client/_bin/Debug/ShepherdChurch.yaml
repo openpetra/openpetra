@@ -13,13 +13,25 @@ ShepherdPages:
         IsFirstPage: False
     ShepherdPage2:
         ID: 56
-        Title: Personnel Shepherd
-        Note: This is a test, this is only a test.
-        Visible: True
+        Title: Other Shepherd
+        Note: Giggity giggity goo
+        Visible: False
         Enabled: True
         UserControlNamespace: Ict.Petra.Petra.Client.MPartner.Gui
         UserControlClassName: TUC_PartnerDetails_Family
-        HelpContext: HELPME!!!
-        UserControlType: Theafotianfwtoiaen
+        HelpContext: You cannot be helped 
+        UserControlType: PantsOnTheGround
         IsLastPage: False
-        IsFirstPage: False
+        IsFirstPage: True
+    ShepherdPage3:
+        ID: 12
+        Title: Final Shepherd 
+        Note: This is a temporary note 
+        Visible: False
+        Enabled: False 
+        UserControlNamespace: Ict.Petra.Petra.Client.MPartner.Gui
+        UserControlClassName: TUC_PartnerDetails_Family
+        HelpContext: No one can be helped 
+        UserControlType: OnceUponATime
+        IsLastPage: False
+        IsFirstPage: True
