@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,7 +111,18 @@ namespace Ict.Common.IO
             }
             catch (Exception ex)
             {
-                //MessageBox.Show("There was an error while sending the message:\n\n" + ex.ToString());
+                // SSL authentication error: RemoteCertificateNotAvailable
+                // see http://mono.1490590.n4.nabble.com/SSL-authentication-error-RemoteCertificateNotAvailable-RemoteCertificateChainErrors-td1755733.html
+                // and http://www.mono-project.com/FAQ:_Security#Does_SSL_works_for_SMTP.2C_like_GMail_.3F
+                // on Mono command prompt:
+                //    mozroots --import --ask-remove --machine
+                //    mozroots --import --ask-remove
+                //    certmgr -ssl smtps://tim00.hostsharing.net:443
+
+                TLogging.Log("There has been a problem sending the email");
+                TLogging.Log(ex.ToString() + " " + ex.Message);
+                TLogging.Log(ex.StackTrace);
+
                 throw ex;
             }
         }

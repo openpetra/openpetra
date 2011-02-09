@@ -42,5 +42,14 @@ csharp/ICT/experimenting/treasurerEmails/obj
 *Setup-*.exe
 /tmp
 /delivery
+/data
 *.patch
 /log
+/webserver/images
+/webserver/images/default
+/webserver/js/ext-all-debug.js
+/webserver/js/ext-all.js
+/webserver/js/ext-base.js
+/webserver/css/ext-all.css
+*lang-template.js
+gen/

@@ -147,7 +147,16 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
          <property name="toReplace" value="{#PASSWORDSALTDEMO}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
-         
+
+         <property name="passwordChangeme" value="TOBESETBYINSTALLER2"/>
+         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
+         <property name="toReplace" value="{#PASSWORDHASHANONYMOUS}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
+         <property name="toReplace" value="{#PASSWORDSALTANONYMOUS}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
+
         <if test="${DBMS.Type=='sqlite'}">
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>

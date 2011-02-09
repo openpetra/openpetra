@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -369,7 +369,6 @@ namespace Ict.Common.Printing
             }
         }
 
-
         /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
@@ -551,11 +550,16 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// todoComment
+        /// Draw a bitmap.
+        ///
+        /// Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+        /// Same applies to Height
         /// </summary>
         public virtual void DrawBitmap(string APath,
             float AXPos,
             float AYPos,
+            float AWidth,
+            float AHeight,
             float AWidthPercentage,
             float AHeightPercentage)
         {

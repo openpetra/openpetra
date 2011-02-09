@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             //clbIncludeSpecialTypes.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludeSpecialTypes.Columns.Clear();
-            clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17);
+            clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 60);
             clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember], 200);
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
