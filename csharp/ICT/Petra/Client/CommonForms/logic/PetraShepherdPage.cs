@@ -353,24 +353,32 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
             
-            TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.ChildNodes.Count);
+            TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.LastChild.LastChild.ChildNodes.Count);
             
         	XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.FirstChild; 
         	//...Required LastChild.LastChild.FirstChild because of the structure of the XML File after parsing.
         	
         	int counter = 0; 
-        	while(temporaryXmlNode != null) //temporarily commented while I try a foreach instead for this loop..
+        	//while(temporaryXmlNode != null) //temporarily commented while I try a foreach instead for this loop..
         	//i've found that this loop only iterates through one element in XmlPages, and is therefore 
-        	//useless 
-        	
+        	//useless
+        	//ckatpetra: In the constructor of TPetraShepherdPagesList you get data into the XmlPages variable. XmlPages is of Type XmlDocument.
+			//ckatpetra: This can easily be saved to a file, see e.g. the code example here:
+        	// to read the YAML into an XML file, check out http://msdn.microsoft.com/en-us/library/dw229a22(v=VS.80).aspx
+
+        	XmlNodeList nodeList; 
+        	XmlNode root = XmlPages.DocumentElement; 
+        	nodeList = XmlPages.LastChild.LastChild.ChildNodes; 
+        	TLogging.Log("The amount of nodes in the nodeList in the TPetraShepherdPagesList constructor is as follows: " + nodeList.Count); 
+        	foreach(XmlNode node in nodeList)
         	{
-            	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(temporaryXmlNode);
+            	TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(node);
             	//Conrstuctor call for each page built off an XML node. 
             	
             	TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
             	
             	FPagesList.Add(temporaryPetraShepherdPage.ID,temporaryPetraShepherdPage);
-            	temporaryXmlNode = XmlPages.PreviousSibling;
+            	//temporaryXmlNode = XmlPages.NextSibling;
             	counter++; 
             }
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");    

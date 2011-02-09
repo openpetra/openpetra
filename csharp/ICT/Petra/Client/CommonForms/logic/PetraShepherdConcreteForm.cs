@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             // for the Finish Page (that is not specified in the YAML file!)
             // Note: That Finish Page (and only this) will have IsLastPage = true!!!
             
-            TLogging.Log("TPetraShepherdFormLogic Constructor ran.");            
+            TLogging.Log("TPetraShepherdFormLogic Constructor ran and returned to the TPetraShepherdFormLogic constructor in PetraShepherdConcreteForm.");            
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>
