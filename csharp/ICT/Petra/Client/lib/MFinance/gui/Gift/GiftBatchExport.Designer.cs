@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -589,8 +589,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbDateFormat.Location = new System.Drawing.Point(2,2);
             this.cmbDateFormat.Name = "cmbDateFormat";
-            this.cmbDateFormat.Size = new System.Drawing.Size(80, 28);
-            this.cmbDateFormat.Items.AddRange(new object[] {"DMY","MDY"});
+            this.cmbDateFormat.Size = new System.Drawing.Size(160, 28);
+            this.cmbDateFormat.Items.AddRange(new object[] {"MM/dd/yyyy","dd/MM/yyyy","yyyy-MM-dd"});
             //
             // lblDateFormat
             //

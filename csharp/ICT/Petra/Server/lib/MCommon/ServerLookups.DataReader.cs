@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                 {
                     tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
-                }                
+                }
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
                     tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);

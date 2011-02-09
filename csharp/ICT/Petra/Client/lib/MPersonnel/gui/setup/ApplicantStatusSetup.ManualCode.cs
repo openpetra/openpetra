@@ -59,7 +59,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ARow.Code = newName;
-          
         }
 
         private void NewRecord(Object sender, EventArgs e)
