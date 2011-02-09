@@ -88,8 +88,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
+  <ItemGroup></ItemGroup>
   <ItemGroup>
     <Compile Include="AbilityAreaSetup.cs" />
     <Compile Include="AbilityAreaSetup.Designer.cs">
@@ -104,7 +103,7 @@
     </Compile>
     <Compile Include="AbilityLevelSetup.ManualCode.cs">
       <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
-    </Compile>    
+    </Compile>
     <Compile Include="ApplicationTypeSetup.cs" />
     <Compile Include="ApplicationTypeSetup.Designer.cs">
       <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
@@ -197,7 +196,7 @@
     <Compile Include="DriverStatusSetup.ManualCode.cs">
       <DependentUpon>DriverStatusSetup.cs</DependentUpon>
     </Compile>
-	<Compile Include="ProfessionalAreaSetup.cs" />
+    <Compile Include="ProfessionalAreaSetup.cs" />
     <Compile Include="ProfessionalAreaSetup.Designer.cs">
       <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
     </Compile>
@@ -215,7 +214,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LeavingCodeSetup.resx">
       <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
-    </EmbeddedResource>    
+    </EmbeddedResource>
     <EmbeddedResource Include="LanguageLevelSetup.resx">
       <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
     </EmbeddedResource>

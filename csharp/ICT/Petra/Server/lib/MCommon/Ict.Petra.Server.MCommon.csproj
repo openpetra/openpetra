@@ -78,7 +78,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
-      <HintPath>..\..\..\..\..\..\..\dev_0000135_readonly_checkboxes_in_grids\csharp\ICT\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
+      <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
