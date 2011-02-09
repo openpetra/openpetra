@@ -60,8 +60,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             CreateNewPtVisionLevel();
         }
 
-
-
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
             dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
