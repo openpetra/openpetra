@@ -126,6 +126,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	List<string> listOfPages = new List<string>(FShepherdPages.Pages.Keys); 
         	foreach(string i in listOfPages) 
         	{
+        		//TODO this is the current step; implement this to grab each shepherd page IsVisible or IsEnabled. 
+        		//listOfPages[i]. 
         		TLogging.Log("SwitchToStartPage() was called for page number " + counter + " and the key of that page was: "+  i);
         		counter++; 
         	}
