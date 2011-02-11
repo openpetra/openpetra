@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -92,6 +93,7 @@
     <EmbeddedResource Include="PetraUserControl.resx">
       <DependentUpon>PetraUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Ict.Petra.Client.CommonForms.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\app\Core\Ict.Petra.Client.App.Core.csproj">
@@ -114,5 +116,8 @@
       <Project>{BAA2B5EE-C149-483D-89E2-95ACBEFB20DE}</Project>
       <Name>Ict.Petra.Client.CommonForms.Logic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Ict.Petra.Client.CommonForms.cd" />
   </ItemGroup>
 </Project>
