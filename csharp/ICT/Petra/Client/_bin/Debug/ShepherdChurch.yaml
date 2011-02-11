@@ -10,7 +10,7 @@ ShepherdPages:
         HelpContext: HELPME!!!
         UserControlType: Theafotianfwtoiaen
         IsLastPage: False
-        IsFirstPage: False
+        IsFirstPage: True
     ShepherdPage.OtherShepherd:
         ID: 56
         Title: Other Shepherd

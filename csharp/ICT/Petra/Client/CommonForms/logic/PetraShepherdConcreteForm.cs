@@ -116,22 +116,24 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
         /// <summary>
         /// Switches to the first page 
+        /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled. 
         /// </summary>
         protected void SwitchToStartPage()
         {
         	TLogging.Log("SwitchToStartPage (in TPetrashepherdFormLogic)"); 
-        	//iterate through the list of pages and find the first instance that is visible and enabled 
-        	//get the name, pass it to SwitchToPage(); 
- 			int counter = 0;  //debugging counter to show how many pages are being read in 
-        	List<string> listOfPages = new List<string>(FShepherdPages.Pages.Keys); 
-        	foreach(string i in listOfPages) 
-        	{
-        		//TODO this is the current step; implement this to grab each shepherd page IsVisible or IsEnabled. 
-        		//listOfPages[i]. 
-        		TLogging.Log("SwitchToStartPage() was called for page number " + counter + " and the key of that page was: "+  i);
-        		counter++; 
-        	}
-        	SwitchToPage(STARTPAGE_NAME); 
+        	
+ 			string startPage = ""; //temporary string to hold the key of the StartPage
+    		foreach(KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages) 
+    		{
+    			if(pair.Value.Visible && pair.Value.Enabled)
+    			{
+    				TLogging.Log("SwitchToStartPage foreach loop returned the following value that was both visible and enabled: " + pair.Key); 
+    				startPage = pair.Key; 
+    			}
+    		}
+    		TLogging.Log("temporary page was assigned to " + startPage + " in SwitchToStartPage.");
+    		
+        	SwitchToPage(startPage);
         }
 
         ///<summary>Switches the Finish page</summary>

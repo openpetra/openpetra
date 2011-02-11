@@ -291,8 +291,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsFirstPage"].Value);
             TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
             
-//            RealiseUserControl(); 
-//            TLogging.Log("PetraShepherdPage: Control has passed the statement RealiseUserControl()"); 
+            RealiseUserControl(); 
+            TLogging.Log("PetraShepherdPage: Control has passed the statement RealiseUserControl()"); 
         }
         
         /// <summary> 
@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		  
 		    FUserControl = (UserControl) Activator.CreateInstance(classType);
 		    
-//		    FUserControl.Controls.Add(FUserControl);
+		    //FUserControl.Controls.Add();
 		    
 		    TLogging.Log("PetraShepherdPage: The user controls have been realised."); 
 		    

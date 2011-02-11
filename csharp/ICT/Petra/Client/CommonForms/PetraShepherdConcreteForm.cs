@@ -142,6 +142,9 @@ namespace Ict.Petra.Client.CommonForms
 //			  TODO: THIS IS THE NEXT STEP IN DEVELOPMENT 
 //            pnlContent.Controls.Clear();
 //            pnlContent.Controls.Add(FLogic.CurrentPage.UserControlInstance);
+//				instantiate the instance of the user control -- nothing is coming into memory 
+// 				teptrashepherdformlogic is in charge of finding out what is or isn't in memory 
+//				
 
             UpdateNavigation();
         }
