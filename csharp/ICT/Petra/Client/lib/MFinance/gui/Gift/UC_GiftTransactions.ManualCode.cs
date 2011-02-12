@@ -23,6 +23,9 @@
 //
 using System;
 using System.Data;
+using System.Collections;
+using System.Collections.Specialized;
+
 
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -79,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, ActiveOnly);
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
             TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
+            //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
 
 //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -87,6 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
         }
 
+        bool FinRecipientKeyChanging = false;
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
@@ -94,16 +99,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String strMotivationGroup;
             String strMotivationDetail;
 
-            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
-            strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-
-            if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                    APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
+            if (FinRecipientKeyChanging | FPetraUtilsObject.SuppressChangeDetection)
             {
-                if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                return;
+            }
+
+            FinRecipientKeyChanging = true;
+            try
+            {
+                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+                strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
+                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                        APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
                 {
-                    cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                    if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                    {
+                        cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                    }
                 }
+
+                if (!FInKeyMinistryChanging)
+                {
+                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
+                    TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, APartnerKey);
+                }
+            }
+            finally
+            {
+                FinRecipientKeyChanging = false;
             }
         }
 
@@ -144,6 +168,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
                 }
+            }
+        }
+
+        bool FInKeyMinistryChanging = false;
+        private void KeyMinistryChanged(object sender, EventArgs e)
+        {
+            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            FInKeyMinistryChanging = true;
+            try
+            {
+                Object val = cmbMinistry.SelectedValue;
+
+                if (val != null)
+                {
+                    Int64 rcp = (Int64)val;
+
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+                }
+            }
+            finally
+            {
+                FInKeyMinistryChanging = false;
             }
         }
 
@@ -417,6 +467,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, ARow.RecipientKey);
+            txtField.Text = String.Format("{0:0000000000}", TFinanceControls.FieldNumber);
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
 

@@ -1305,8 +1305,8 @@ namespace Ict.Petra.Client.CommonControls
                     || (this.FListTable == TListTableEnum.Extract)
                     || (this.FListTable == TListTableEnum.Conference)))
             {
+                timerGetKey.Stop();         //dont loop if exception in UpdateDisplayedValue
                 this.UpdateDisplayedValue();
-                timerGetKey.Stop();
             }
         }
 

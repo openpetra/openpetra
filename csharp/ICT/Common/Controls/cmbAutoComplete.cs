@@ -310,7 +310,8 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
+                    //Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
+                    Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
                     base.SelectedIndex = m_SelectedIndex;
                 }
             }
@@ -1094,6 +1095,38 @@ namespace Ict.Common.Controls
                     throw new ArgumentException(DEFAULT_COMPLAIN + DataSource.GetType().ToString());
                 }
             }
+        }
+
+        /// <summary>
+        /// This function returns the index of the combobox items with the following
+        /// characteristics:
+        /// - item is exactly the searched String and in the given column (value column)
+        /// </summary>
+        /// <param name="SearchString">The string which is search for in the ComboBox</param>
+        /// <param name="ColumnIndex">The index of table Column where to search for the String.</param>
+        /// <returns>The index of the item if found or -1 if nothing is found.
+        /// </returns>
+        public int FindExactString(string SearchString, int ColumnIndex)
+        {
+            foreach (object ComboboxItem in this.Items)
+            {
+                System.Data.DataRowView TmpRowView = (System.Data.DataRowView)ComboboxItem;
+                Object Item = TmpRowView[ColumnIndex];
+                String ItemString;
+
+                if (Item != null)
+                {
+                    ItemString = Item.ToString();
+
+                    if (SearchString.Equals(ItemString))
+                    {
+                        return this.Items.IndexOf(ComboboxItem);
+                    }
+                }
+            }
+
+            //not found
+            return -1;
         }
 
         /// <summary>

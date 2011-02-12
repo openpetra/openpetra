@@ -99,7 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtField.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailGiftCommentOne.Font = TAppSettingsManager.GetDefaultBoldFont();

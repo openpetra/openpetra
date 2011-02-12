@@ -99,11 +99,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailConfidentialGiftFlag = new System.Windows.Forms.Label();
             this.txtDetailRecipientKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblDetailRecipientKey = new System.Windows.Forms.Label();
-            this.txtField = new System.Windows.Forms.TextBox();
+            this.txtField = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
             this.lblField = new System.Windows.Forms.Label();
             this.chkDetailChargeFlag = new System.Windows.Forms.CheckBox();
             this.lblDetailChargeFlag = new System.Windows.Forms.Label();
-            this.cmbMinistry = new Ict.Common.Controls.TCmbAutoComplete();
+            this.cmbMinistry = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblMinistry = new System.Windows.Forms.Label();
             this.cmbDetailMailingCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.lblDetailMailingCode = new System.Windows.Forms.Label();
@@ -462,9 +462,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.txtField.Location = new System.Drawing.Point(2,2);
             this.txtField.Name = "txtField";
-            this.txtField.Size = new System.Drawing.Size(150, 28);
+            this.txtField.Size = new System.Drawing.Size(370, 28);
             this.txtField.ReadOnly = true;
             this.txtField.TabStop = false;
+            this.txtField.ASpecialSetting = true;
+            this.txtField.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtField.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtField.PartnerClass = "";
+            this.txtField.MaxLength = 32767;
+            this.txtField.Tag = "CustomDisableAlthoughInvisible";
+            this.txtField.TextBoxWidth = 80;
+            this.txtField.ButtonWidth = 0;
+            this.txtField.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtField.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
             //
             // lblField
             //
@@ -498,7 +508,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //
             this.cmbMinistry.Location = new System.Drawing.Point(2,2);
             this.cmbMinistry.Name = "cmbMinistry";
-            this.cmbMinistry.Size = new System.Drawing.Size(150, 28);
+            this.cmbMinistry.Size = new System.Drawing.Size(250, 28);
+            this.cmbMinistry.SelectedValueChanged += new System.EventHandler(this.KeyMinistryChanged);
+            this.cmbMinistry.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
             // lblMinistry
             //
@@ -758,7 +770,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.SetColumnSpan(this.txtDetailRecipientKey, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailRecipientKey, 1, 5);
             this.tableLayoutPanel3.Controls.Add(this.txtField, 1, 6);
-            this.tableLayoutPanel3.SetColumnSpan(this.cmbMinistry, 3);
+            this.tableLayoutPanel3.SetColumnSpan(this.cmbMinistry, 2);
             this.tableLayoutPanel3.Controls.Add(this.cmbMinistry, 1, 7);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMailingCode, 1, 8);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMotivationGroupCode, 1, 9);
@@ -847,11 +859,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailConfidentialGiftFlag;
         private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtDetailRecipientKey;
         private System.Windows.Forms.Label lblDetailRecipientKey;
-        private System.Windows.Forms.TextBox txtField;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtField;
         private System.Windows.Forms.Label lblField;
         private System.Windows.Forms.CheckBox chkDetailChargeFlag;
         private System.Windows.Forms.Label lblDetailChargeFlag;
-        private Ict.Common.Controls.TCmbAutoComplete cmbMinistry;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbMinistry;
         private System.Windows.Forms.Label lblMinistry;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailMailingCode;
         private System.Windows.Forms.Label lblDetailMailingCode;

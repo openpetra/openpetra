@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Logic
 {
@@ -468,6 +469,63 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AppearanceSetup(new int[] { 150 }, -1);
 
             AControl.Filter = AAccountHierarchyTable.GetLedgerNumberDBName() + " = " + ALedgerNr.ToString();
+        }
+
+        static PUnitTable FKeyMinTable = null;
+        static Int64 fieldNumber = -1;
+
+        public static long FieldNumber {
+            get
+            {
+                return fieldNumber;
+            }
+        }
+
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void InitialiseKeyMinList(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        {
+            if (FKeyMinTable != null)
+            {
+                if (FindAndSelect(ref AControl, APartnerKey))
+                {
+                    return;
+                }
+            }
+
+            string DisplayMember = PUnitTable.GetUnitNameDBName();
+            string ValueMember = PUnitTable.GetPartnerKeyDBName();
+            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
+
+            FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
+
+            AControl.InitialiseUserControl(FKeyMinTable,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+            AControl.AppearanceSetup(new int[] { 250 }, -1);
+
+            FindAndSelect(ref AControl, APartnerKey);
+        }
+
+        static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        {
+            foreach (PUnitRow pr in FKeyMinTable.Rows)
+            {
+                if (pr.PartnerKey == APartnerKey)
+                {
+                    //AControl.SetSelectedInt64(APartnerKey);
+                    AControl.SelectedItem = APartnerKey;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

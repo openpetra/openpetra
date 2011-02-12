@@ -353,6 +353,25 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Selects an item with the given Int64 value in the first column. Selects first element if the Int64 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt64
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt64(System.Int64 ANr)
+        {
+            this.cmbAutoPopulated.cmbCombobox.SetSelectedInt64(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int64 GetSelectedInt64()
+        {
+            return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt64();
+        }
+
+        /// <summary>
         /// initialise user controls for specific tables
         /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
         /// </summary>
