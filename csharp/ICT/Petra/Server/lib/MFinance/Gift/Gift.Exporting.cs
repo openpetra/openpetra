@@ -505,7 +505,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteDate(DateTime dateField, bool bLineEnd)
         {
-            FStringWriter.Write(String.Format(FDateFormatString, dateField));
+            FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);
         }
 

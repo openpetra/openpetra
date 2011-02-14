@@ -4,7 +4,7 @@ RootNode:
     FormType: SubmitForm
     Template: assistantForm
     WindowWidth: 750
-    WindowHeight: 800
+    WindowHeight: 300
     FormFrame: true
     LabelWidth: 200
     FormHeader: false
@@ -14,6 +14,7 @@ RootNode:
             Buttons: [btnConfirm]
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
+            Height: 300
             Label: Welcome
             Controls: [lblWelcome, lblWelcome2, lblWelcome3, hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole]
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
@@ -24,6 +25,7 @@ RootNode:
         hidRegistrationCountryCode: {value=en-US}
         hidRole: {value=TS-SERVE}
         aspPersonalDetails:
+            Height: 800
             Label: "Personal Questions"
             Controls: 
                 Row0: [grpPersonalQuestions]

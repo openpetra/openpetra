@@ -540,13 +540,13 @@ namespace Ict.Petra.Client.MPartner
             String FAddRemoveHeaderText;
 
             SourceGrid.Cells.Editors.TextBoxUITypeEditor l_editor;
-            TPetraBooleanToYesNoConverter PetraBooleanToYesNoConverter;
+            Ict.Common.TypeConverter.TBooleanToYesNoConverter BooleanToYesNoConverter;
             l_editor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(Boolean));
             l_editor.EditableMode = EditableMode.None;
-            PetraBooleanToYesNoConverter = new TPetraBooleanToYesNoConverter();
+            BooleanToYesNoConverter = new Ict.Common.TypeConverter.TBooleanToYesNoConverter();
 
             // PetraDtConverter.
-            l_editor.TypeConverter = PetraBooleanToYesNoConverter;
+            l_editor.TypeConverter = BooleanToYesNoConverter;
             this.DataGrid = AGrid;
 
             // Assemble column heading

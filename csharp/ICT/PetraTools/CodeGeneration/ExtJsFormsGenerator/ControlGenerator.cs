@@ -111,14 +111,16 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOAD");
+            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADVALID");
 
             ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADTITLE", ctrl,
                 ctrl.GetAttribute("MissingUploadTitle"));
             ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADMESSAGE", ctrl,
                 ctrl.GetAttribute("MissingUploadMessage"));
 
-            writer.FTemplate.InsertSnippet("CUSTOMFUNCTIONS", uploadCheckAssistantSnippet);
+            writer.FTemplate.InsertSnippet("ISVALID", uploadCheckAssistantSnippet);
+            writer.FTemplate.InsertSnippet("ONSHOW", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADSHOW"));
+            writer.FTemplate.InsertSnippet("ONHIDE", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADHIDE"));
 
             ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
 
@@ -449,6 +451,29 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             else
             {
                 ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", String.Empty);
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONSHOW"))
+            {
+                ctrlSnippet.SetCodelet("ONSHOW", writer.FTemplate.FCodelets["ONSHOW"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONSHOW");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ISVALID"))
+            {
+                ctrlSnippet.SetCodelet("ISVALID", writer.FTemplate.FCodelets["ISVALID"].ToString());
+                writer.FTemplate.FCodelets.Remove("ISVALID");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONHIDE"))
+            {
+                ctrlSnippet.SetCodelet("ONHIDE", writer.FTemplate.FCodelets["ONHIDE"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONHIDE");
+            }
+
+            if (ACtrl.HasAttribute("Height"))
+            {
+                ctrlSnippet.AddToCodelet("ONSHOW", String.Format("MainForm.setHeight({0});", ACtrl.GetAttribute("Height")));
             }
 
             PageCounter++;

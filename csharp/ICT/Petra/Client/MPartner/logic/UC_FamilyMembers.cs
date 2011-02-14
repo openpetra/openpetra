@@ -524,16 +524,16 @@ namespace Ict.Petra.Client.MPartner
         public void CreateColumns()
         {
             SourceGrid.Cells.Editors.TextBoxUITypeEditor l_editorDt2;
-            TPetraDateConverter PetraDTConverter;
+            Ict.Common.TypeConverter.TDateConverter DateTypeConverter;
             FFamilyMembersDT = FMainDS.FamilyMembers;
 
             // Editor for Date of Birth column (Petra Date format)
             l_editorDt2 = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
             l_editorDt2.EditableMode = EditableMode.None;
-            PetraDTConverter = new TPetraDateConverter();
+            DateTypeConverter = new Ict.Common.TypeConverter.TDateConverter();
 
-            // PetraDtConverter.
-            l_editorDt2.TypeConverter = PetraDTConverter;
+            // DateTypeConverter.
+            l_editorDt2.TypeConverter = DateTypeConverter;
             try
             {
                 this.FDataGrid.AddTextColumn("Person Name",

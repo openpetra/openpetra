@@ -26,7 +26,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailAbilityLevel, DetailAbilityLevelDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailAbilityLevel: {Type=Integer}
+                DetailAbilityLevel: {Label="Ability Level", Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
@@ -35,8 +35,8 @@ RootNode:
                 Row0: [txtDetailAbilityLevel, txtDetailAbilityLevelDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailAbilityLevel: {Format=Integer}
-        txtDetailAbilityLevelDescr: {Label=Description, Width=360}
+        txtDetailAbilityLevel: {Format=Integer, Width=30}
+        txtDetailAbilityLevelDescr: {Label=Description, Width=410}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}
