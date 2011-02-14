@@ -90,7 +90,7 @@ namespace Ict.Tools.NAntTasks
 </patternset>
 
 </project>
-"                                                                                                                                                                                                                                                                                                                                                                                         ;
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                ;
         const string NANT_REFERENCE_TEMPLATE =
             @"<property name=""ProjectGuid"" value=""{{{3}}}"" />
 
@@ -104,7 +104,7 @@ namespace Ict.Tools.NAntTasks
   <property name=""target"" value=""compile"" overwrite=""false"" />
   <call target=""${{target}}"" cascade=""false"" />
 </target>
-"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
         const string NANT_FILE_REFERENCE_INC_TEMPLATE = @"
   <include name=""{0}.dll""/>"                                                            ;
 
@@ -344,18 +344,18 @@ namespace Ict.Tools.NAntTasks
             AddRefsToUsings();
 
             // Read in assembly to uuid for project file Map
-            if (File.Exists(_uuidfile)) {
-            	Log(Level.Debug, "Read uuidfile " + _uuidfile + " ...");
-              ReadMap(uuidfile, _assembly2uuid);
+            if (File.Exists(_uuidfile))
+            {
+                Log(Level.Debug, "Read uuidfile " + _uuidfile + " ...");
+                ReadMap(uuidfile, _assembly2uuid);
             }
-            
+
             // Write the nant files for each directory
             WriteNantFiles();
 
             // Write uuid map, if updated to project file Map
             Log(Level.Debug, "Write uuidfile " + _uuidfile + " ...");
             WriteMap(_uuidfile, _assembly2uuid);
-
         }
 
         /// <summary>
@@ -512,8 +512,17 @@ namespace Ict.Tools.NAntTasks
             return rc;
         }
 
-        private void WriteMap(string filename, Hashtable map) {
-			StreamWriter sw = new StreamWriter(filename);
+        private void WriteMap(string filename, Hashtable map)
+        {
+            // If the directory does not exist, we have to create it
+            string dirname = Path.GetDirectoryName(filename);
+
+            if (!Directory.Exists(dirname))
+            {
+                Directory.CreateDirectory(dirname);
+            }
+
+            StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine("# Generated with CsDepend at " + DATE_TIME_STRING);
 
             foreach (string key in ToSortedArray(map.Keys))
@@ -523,32 +532,38 @@ namespace Ict.Tools.NAntTasks
                     sw.WriteLine(key + "=" + name);
                 }
             }
+
             sw.Close();
         }
+
         /// <summary>
-        /// Reads the filename in the format 
+        /// Reads the filename in the format
         ///   key=val
         /// into the given hash table
         /// </summary>
         /// <param name="filename">file to open for reading</param>
         /// <param name="map">The map to write</param>
-        private void ReadMap(string filename, Hashtable map) {
-	        StreamReader sr = new StreamReader(filename);
-	        while (sr.Peek() >= 0)
-	        {
-	            string line = sr.ReadLine();
-	            Match match = exceptionRegex.Match(line);
-	
-	            if (match.Success && (match.Groups.Count > 2))
-	            {
-	                string key = match.Groups[1].ToString();
-	                string val = match.Groups[2].ToString();
-	                Log(Level.Debug, "Found map entry: " + key + "=" + val);
-	                AddToDict(map, key, val);
-	            }
-	        }	
-	        sr.Close();
-		}
+        private void ReadMap(string filename, Hashtable map)
+        {
+            StreamReader sr = new StreamReader(filename);
+
+            while (sr.Peek() >= 0)
+            {
+                string line = sr.ReadLine();
+                Match match = exceptionRegex.Match(line);
+
+                if (match.Success && (match.Groups.Count > 2))
+                {
+                    string key = match.Groups[1].ToString();
+                    string val = match.Groups[2].ToString();
+                    Log(Level.Debug, "Found map entry: " + key + "=" + val);
+                    AddToDict(map, key, val);
+                }
+            }
+
+            sr.Close();
+        }
+
         /// <summary>
         /// Reads in the name space maps for all other assemblies
         /// </summary>
@@ -571,20 +586,23 @@ namespace Ict.Tools.NAntTasks
                 // Read in the file
                 Log(Level.Debug, "Read namespace map:" + filename);
                 ReadMap(filename, _namespace2assembly);
-           }
+            }
         }
 
-        private string GetUUID(string assemblyname) {
-        	if (! _assembly2uuid.Contains(assemblyname)) {
-  			   Log(Level.Debug, "UUID for " + assemblyname + " not found!");
-        	   AddToDict(_assembly2uuid, assemblyname, Guid.NewGuid().ToString("D").ToUpper());
-        	}
-        	IEnumerable uuids = ((Hashtable)(_assembly2uuid[assemblyname])).Keys;
-        	IEnumerator uuidsIter = uuids.GetEnumerator();
-        	uuidsIter.MoveNext();
-        	return (string)(uuidsIter.Current);
+        private string GetUUID(string assemblyname)
+        {
+            if (!_assembly2uuid.Contains(assemblyname))
+            {
+                Log(Level.Debug, "UUID for " + assemblyname + " not found!");
+                AddToDict(_assembly2uuid, assemblyname, Guid.NewGuid().ToString("D").ToUpper());
+            }
+
+            IEnumerable uuids = ((Hashtable)(_assembly2uuid[assemblyname])).Keys;
+            IEnumerator uuidsIter = uuids.GetEnumerator();
+            uuidsIter.MoveNext();
+            return (string)(uuidsIter.Current);
         }
-        
+
         /// <summary>
         /// Writes a map with the known namespaces to assembly names into a file
         /// </summary>
