@@ -139,16 +139,20 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("ShowCurrentPage");
             
-//			  TODO: THIS IS THE NEXT STEP IN DEVELOPMENT 
-//            pnlContent.Controls.Clear();
-//            pnlContent.Controls.Add(FLogic.CurrentPage.UserControlInstance);
+//			  TODO: THIS IS THE NEXT STEP IN DEVELOPMENT                    
 //				instantiate the instance of the user control -- nothing is coming into memory 
-// 				teptrashepherdformlogic is in charge of finding out what is or isn't in memory 
-//				
+// 				teptrashepherdformlogic is in charge of finding out what is or isn't in memory 		
+
+			TLogging.Log("In ShowCurrentPage() method, at line 147, the current page is set to: " + FLogic.CurrentPage.ID ); 
+
+			pnlContent.Controls.Clear();			
+			pnlContent.Controls.Add(FLogic.CurrentPage.UserControlInstance);
+            
+
 
             UpdateNavigation();
         }
-
+	
         ///<summary>Closes the Shepherd without any further ado and without saving</summary>
         public void CancelShepherd()
         {

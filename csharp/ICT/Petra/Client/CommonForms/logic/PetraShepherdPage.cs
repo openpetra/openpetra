@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         bool FIsFirstPage = false;
         #endregion 
         
-        #region Attribute Definitions 
+        #region AttributeDefinitions 
         /// <summary>Return/Set Shepherd Page ID</summary>
         public string ID
         {
@@ -285,14 +285,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FUserControlType=ShepherdPageNode.Attributes["UserControlType"].Value;
             TLogging.Log("~~UserControlType Assigned~~ ");
             
+/*
             FIsLastPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsLastPage"].Value);
             TLogging.Log("~~IsLastPage Assigned~~ " + System.Convert.ToString(FIsLastPage));
             
             FIsFirstPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsFirstPage"].Value);
             TLogging.Log("~~IsFirstPage Assigned~~ " + System.Convert.ToString(FIsFirstPage));
-            
-            RealiseUserControl(); 
-            TLogging.Log("PetraShepherdPage: Control has passed the statement RealiseUserControl()"); 
+*/          
         }
         
         /// <summary> 
@@ -378,9 +377,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             	TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
             	
             	FPagesList.Add(temporaryPetraShepherdPage.ID,temporaryPetraShepherdPage);
-            	//temporaryXmlNode = XmlPages.NextSibling;
             	counter++; 
             }
+        	
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");    
         }
     }

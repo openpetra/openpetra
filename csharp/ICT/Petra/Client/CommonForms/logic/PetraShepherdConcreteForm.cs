@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's</summary>
         private TPetraShepherdPagesList FShepherdPages;
         /// <summary>Holds the instance of the Shepherd Form management class</summary>
-        private IPetraShepherdConcreteFormInterface FForm;
+        private IPetraShepherdConcreteFormInterface FForm;	
         /// <summary>Holds the instance of the current shepherd page</summary>
         private TPetraShepherdPage FCurrentPage;
         /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB</summary>
@@ -86,12 +86,16 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
 
             FShepherdPages = new TPetraShepherdPagesList(AYamlFile);
+            
+            SwitchToStartPage();
+            TLogging.Log("The TPetraShepherdFormLogic constructor has switched to the first page."); 
 
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
 
             // FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
             // for the Finish Page (that is not specified in the YAML file!)
             // Note: That Finish Page (and only this) will have IsLastPage = true!!!
+            
             
             TLogging.Log("TPetraShepherdFormLogic Constructor ran and returned to the TPetraShepherdFormLogic constructor in PetraShepherdConcreteForm.");            
         }
@@ -111,15 +115,26 @@ namespace Ict.Petra.Client.CommonForms.Logic
             // ....  
             CurrentPage = FShepherdPages.Pages[APage];
             TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID); 
-          
-            FForm.ShowCurrentPage();
+            
+            try{
+            	 FForm.ShowCurrentPage();
+            }
+            catch(Exception e) 
+            {
+            	//This line always throws an exception during the first run of the code; 
+            	//I don't know if that's okay, but we should probably resolve it.
+            	TLogging.Log("The exception for ShowCurrentPage() was caught.");  
+            }
+           
         }
+        
         /// <summary>
         /// Switches to the first page 
         /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled. 
         /// </summary>
         protected void SwitchToStartPage()
         {
+        	//Should switch to start page set the isFirstPage attribute in the ShepherdPages dictionary to true? 
         	TLogging.Log("SwitchToStartPage (in TPetrashepherdFormLogic)"); 
         	
  			string startPage = ""; //temporary string to hold the key of the StartPage
@@ -129,12 +144,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
     			{
     				TLogging.Log("SwitchToStartPage foreach loop returned the following value that was both visible and enabled: " + pair.Key); 
     				startPage = pair.Key; 
+    				CurrentPage = pair.Value; 
     			}
     		}
     		TLogging.Log("temporary page was assigned to " + startPage + " in SwitchToStartPage.");
     		
-        	SwitchToPage(startPage);
+        	SwitchToPage(startPage); 
         }
+
 
         ///<summary>Switches the Finish page</summary>
         protected void SwitchToFinishPage()
@@ -149,8 +166,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
             // ....
-            SwitchToStartPage(); 
-            //SwitchToPage("2"); 
+            //TODO: Obviously, this isn't what's supposed to happen here, but for temporary testing purposes, this is going to be set. 
+            SwitchToPage("56"); 
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
