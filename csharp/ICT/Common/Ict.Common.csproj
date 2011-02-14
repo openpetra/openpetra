@@ -66,6 +66,7 @@
     <Compile Include="RemotingHelper.cs" />
     <Compile Include="ServerSettings.cs" />
     <Compile Include="StringHelper.cs" />
+    <Compile Include="TypeConverter.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Variant.cs" />
