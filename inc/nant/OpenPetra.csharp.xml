@@ -88,7 +88,7 @@
     <mkdir dir="${dir.namespace.map}" />
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
     <CsDepend ns-default="${Namespace}" ns-map-dir="${dir.namespace.map}" 
-      basedir="${project::get-base-directory()}"
+      basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}">
       <sources>
         <include name="${csdependfiles}" />
