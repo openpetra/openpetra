@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!FInKeyMinistryChanging)
                 {
                     //...this does not work as expected, because the timer fires valuechanged event after this value is reset
-                    TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, APartnerKey);
+                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
                 }
             }
             finally
@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInKeyMinistryChanging = true;
             try
             {
-                Object val = cmbMinistry.SelectedValue;
+                Object val = cmbMinistry.SelectedValueCell;
 
                 if (val != null)
                 {
@@ -467,7 +467,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, ARow.RecipientKey);
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
             txtField.Text = String.Format("{0:0000000000}", TFinanceControls.FieldNumber);
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);

@@ -109,7 +109,8 @@
     <EmbeddedResource Include="cmbVersatile.resx">
       <DependentUpon>cmbVersatile.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icons.resx"></EmbeddedResource>
+    <EmbeddedResource Include="Icons.resx">
+    </EmbeddedResource>
     <EmbeddedResource Include="lblVarioText.resx">
       <DependentUpon>lblVarioText.cs</DependentUpon>
     </EmbeddedResource>

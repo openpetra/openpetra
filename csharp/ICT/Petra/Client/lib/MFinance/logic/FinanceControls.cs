@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
-        public static void InitialiseKeyMinList(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        public static void GetRecipientData(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
         {
             if (FKeyMinTable != null)
             {
@@ -519,8 +519,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (pr.PartnerKey == APartnerKey)
                 {
-                    //AControl.SetSelectedInt64(APartnerKey);
-                    AControl.SelectedItem = APartnerKey;
+                    AControl.SelectedValueCell = APartnerKey;
                     return true;
                 }
             }

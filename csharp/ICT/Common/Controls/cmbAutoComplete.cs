@@ -272,7 +272,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member
+        /// SelectedItem is about the display member, SelectedValue reflects the value member, at the moment only Strings are supported
         /// </summary>
         public new System.Object SelectedItem
         {
@@ -310,13 +310,69 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
+                    Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
+                    base.SelectedIndex = m_SelectedIndex;
+                }
+            }
+        }
+        /// <summary>
+        /// This is yet another version of getting and setting the current selection:
+        ///
+        /// SelectedValueCell is for setting and getting exact the value column if datasource is used:
+        /// we take the object from the table at the special marked value column and at the selected row
+        /// </summary>
+        public System.Object SelectedValueCell
+        {
+            get
+            {
+                if (DesignMode)
+                {
+                    return base.SelectedItem;
+                }
+
+                if (DataSource == null)
+                {
+                    if ((Items.Count > 0) && (SelectedIndex > -1))
+                    {
+                        // use the normal Items values, not the datasource etc
+                        Object mySelectedItem = Items[this.SelectedIndex];
+                        //TODO for composed values return the correct cell instead
+                        return mySelectedItem;
+                    }
+                    else
+                    {
+                        return System.DBNull.Value;
+                    }
+                }
+                else
+                {
+                    DataRowView mRowView = GetSelectedRowView();
+
+                    if (mRowView == null)
+                    {
+                        return System.DBNull.Value;
+                    }
+                    else
+                    {
+                        return mRowView[GetColumnNrOfValueMember()];
+                    }
+                }
+            }
+
+            set
+            {
+                if ((value == null) || (value.ToString() == ""))
+                {
+                    base.SelectedIndex = -1;
+                }
+                else
+                {
                     //Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
                     Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
                     base.SelectedIndex = m_SelectedIndex;
                 }
             }
         }
-
         /// <summary>
         /// property for the current selection;
         /// SelectedItem is about the display member, SelectedValue reflects the value member

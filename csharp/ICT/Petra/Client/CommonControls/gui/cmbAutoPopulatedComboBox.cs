@@ -217,6 +217,21 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>todoComment</summary>
+        public System.Object SelectedValueCell
+        {
+            get
+            {
+                return cmbAutoPopulated.cmbCombobox.SelectedValueCell;
+            }
+
+            set
+            {
+                cmbAutoPopulated.cmbCombobox.SelectedValueCell = value;
+            }
+        }
+
+
+        /// <summary>todoComment</summary>
         public int ComboBoxWidth
         {
             get
