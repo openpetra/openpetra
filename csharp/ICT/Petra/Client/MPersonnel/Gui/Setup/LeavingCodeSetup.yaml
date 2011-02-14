@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Leaving Codes
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtLeavingCode

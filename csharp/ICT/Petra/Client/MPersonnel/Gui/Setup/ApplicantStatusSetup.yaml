@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Applicant Statuses
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtApplicantStatus
