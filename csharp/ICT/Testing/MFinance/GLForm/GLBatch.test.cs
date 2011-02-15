@@ -36,7 +36,7 @@ using Ict.Testing.NUnitPetraClient;
 using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using SourceGrid; 
+using SourceGrid;
 
 namespace Tests.MFinance.GLBatches
 {
@@ -64,7 +64,7 @@ namespace Tests.MFinance.GLBatches
         {
             TFrmGLBatchTester tFrmGLBatchTester = new TFrmGLBatchTester();
 
-            Assert.AreEqual(43,fLedgerNumber,"...");
+            Assert.AreEqual(43, fLedgerNumber, "...");
             tFrmGLBatchTester.tFrmGLBatch.Show();
             tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
 
@@ -124,8 +124,8 @@ namespace Tests.MFinance.GLBatches
                 tFrmGLBatchTester.ttpgBatches.dtpDetailDateEffective.Properties.Text =
                     dateConverter.GetDateString(dteToUse);
                 tFrmGLBatchTester.ttpgBatches.dtpDetailDateEffective.FireEvent("Validating");
-                
-                // tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.FireEvent 
+
+                // tFrmGLBatchTester.ttpgBatches.txtDetailBatchControlTotal.FireEvent
 
                 tFrmGLBatchTester.tbbSave.Click();
             }
@@ -175,43 +175,54 @@ namespace Tests.MFinance.GLBatches
 
             tFrmGLBatchTester.tFrmGLBatch.Show();
             tFrmGLBatchTester.tFrmGLBatch.LedgerNumber = fLedgerNumber;
-            
+
             tFrmGLBatchTester.ttpgBatches.SelectThisTab();
-             
-            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(2,true);
-            
+            tFrmGLBatchTester.ttpgBatches.btnNew.Click();
+            tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text = "Batch 1";
+
+            tFrmGLBatchTester.ttpgBatches.btnNew.Click();
+            tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text = "Batch 2";
+            tFrmGLBatchTester.ttpgBatches.btnNew.Click();
+            tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text = "Batch 3";
+            tFrmGLBatchTester.ttpgBatches.btnNew.Click();
+            tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text = "Batch 4";
+
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Name);
-            tFrmGLBatchTester.ttpgBatches.grdDetails.FireEvent("SelectionChanged");
-            
+
+            tFrmGLBatchTester.ttpgBatches.grdDetails.SelectRow(4);
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.SelectRow(1);
+            System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.txtDetailBatchDescription.Properties.Text);
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.GetSelectionRegion());
 
             System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
-            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(0,true);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(0, true);
             //tFrmGLBatchTester.ttpgBatches.grdDetails.SelectRow(0);
 
-           
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.ToString());
             System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
-            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(1,true);
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(1, true);
 
             System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
-            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(2,true);
-            
+            tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.SelectRow(2, true);
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
-            
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgJournals.txtDetailJournalDescription.Properties.Text);
             System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.ToString());
-            
+
             System.Console.WriteLine(tFrmGLBatchTester.ttpgBatches.grdDetails.Properties.Selection.GetSelectionRegion());
         }
 
         [Test]
         public void Test_102_AddJournals()
         {
-        	Button btn = new Button();
-        	
-            
-        	
+            Button btn = new Button();
+
+
             Assert.AreEqual(true, true, "...");
         }
 
