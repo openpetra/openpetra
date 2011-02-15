@@ -46,5 +46,10 @@
   <include name="CMicroParser.dll" /> <!-- YAML Parser -->
 </patternset>
 
+<patternset id="NunitPattern">
+  <include name="nunit.framework.dll"/>
+  <include name="NUnitForms.dll"/>
+</patternset>
+
 
 </project>

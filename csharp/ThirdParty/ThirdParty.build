@@ -16,6 +16,7 @@
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
         <patternset refid="3rdPartyPattern" />
+        <patternset refid="NunitPattern" />
         <!-- for mono we need to take the managed only version -->        
         <exclude name="System.Data.SQLite.dll" />
       </fileset>

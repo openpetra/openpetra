@@ -57,7 +57,7 @@ namespace Ict.Tools.NAntTasks
                     this.CommandLineArguments = "-u " + SuperUser + " " + this.CommandLineArguments.Substring(2);
                 }
             }
-            else if (NAnt.Core.PlatformHelper.IsWin32)
+            else if (NAnt.Core.PlatformHelper.IsWindows)
             {
                 this.FileName = "cmd.exe";
                 this.CommandLineArguments = "/C" + this.CommandLineArguments.Substring(2);

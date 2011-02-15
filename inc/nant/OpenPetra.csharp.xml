@@ -7,6 +7,7 @@
 <include buildfile="OpenPetra.references.xml"/>
 
 <property name="RunCsDepend" value="true" overwrite="false"/>
+<property name="CsDependAdditionalLibReferences" value="" overwrite="false"/> 
 <property name="OutputType" value="library" overwrite="false"/>
 <property name="csc-ouput-ext" value="dll" if="${OutputType=='library'}" />
 <property name="csc-ouput-ext" value="exe" unless="${OutputType=='library'}" />
@@ -89,7 +90,8 @@
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
     <CsDepend ns-default="${Namespace}" ns-map-dir="${dir.namespace.map}" 
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
-      referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}">
+      referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
+      additionalRefs="${CsDependAdditionalLibReferences}" outputtpye="${OutputType}" >
       <sources>
         <include name="${csdependfiles}" />
         <exclude name="${excludecsfiles}" />
