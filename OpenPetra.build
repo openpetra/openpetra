@@ -12,7 +12,7 @@
     <echo>
 list of available commands:
   clean: cleans everything
-  compile: compiles OpenPetra
+  compile: compiles OpenPetra including testing
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. compile should already be executed
   startPetraServer: run a local Petra Server
@@ -31,6 +31,7 @@ compat:
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
+  translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
 
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
@@ -39,10 +40,8 @@ list of commands, which works in the specific csharp directories:
 
 not supported
   loc, ploc: count the lines of code, to be used for COCOMO etc
-  translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
-  compileTesting: build the testing projects and copy the version.txt
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
   buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0
   setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
@@ -85,6 +84,161 @@ not supported
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
         depends="csharp,nanttasks" />
 
+<!-- BEGIN buildRelease -->
+<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" />
+
+<target name="buildReleaseLinux" if="${platform::is-unix()}">
+  <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
+  <call target="compile" unless="${target::has-executed('compile')}" />
+  <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
+  <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
+  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
+  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="setupLinuxServer" unless="${target::has-executed('setupLinuxServer')}"/>
+</target>
+
+<target name="buildReleaseWindows" if="${platform::is-windows()}">
+  <call target="compile" unless="${target::has-executed('compile')}" />
+  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
+  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+<!--  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/> -->
+</target> 
+
+<property name="BuildClientArchive" value="false" overwrite="false" />
+<property name="SkipDatabases" value="false" overwrite="false" />
+<property name="PetraRelease" value="0300" overwrite="false" />
+<target name="setupLinuxServer">
+<!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
+     bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
+     reports30, sql30 with the sql scripts, etc30 with the 2 config files; start and maintain script in the root
+     LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? -->
+  <property name="setupDir" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <delete dir="${setupDir}"/>
+  <mkdir dir="${setupDir}"/>
+
+  <if test="${SkipDatabases!='true'}">
+    <mkdir dir="${setupDir}/db30"/>
+    <mkdir dir="${setupDir}/demo30"/>
+    <mkdir dir="${setupDir}/log30"/>
+    <mkdir dir="${setupDir}/etc30"/>
+    <mkdir dir="${setupDir}/reports30"/>
+    <mkdir dir="${setupDir}/patches30"/>  
+    <if test="${not BuildClientArchive}">
+      <copy todir="${setupDir}/etc30">
+          <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
+              <include name="*.config" />
+          </fileset>
+      </copy>
+    </if>
+    <copy todir="${setupDir}/demo30">
+        <fileset basedir="${dir.bin}/demodata/">
+            <include name="**/*.*" />
+        </fileset>
+    </copy>
+  </if>
+  <mkdir dir="${setupDir}/manuals30"/>
+  <mkdir dir="${setupDir}/sql30"/>
+  <mkdir dir="${setupDir}/resources30"/>
+  <mkdir dir="${setupDir}/bin30"/>
+  <copy file="${dir.root}/db/patches/version.txt" tofile="${setupDir}/bin30/version.txt" />
+  <copy todir="${setupDir}/bin30">
+    <fileset basedir="${dir.bin}">
+      <include name="*.dll" />
+      <include name="*.exe" />
+      <exclude name="Tests*" />
+      <include name="*/*.dll" /> <!-- i18n DLLs-->
+    </fileset>
+  </copy>
+  <copy file="${dir.bin}/csharp/ICT/Petra/Definitions/UINavigation.yml"
+              tofile="${setupDir}/bin30/UINavigation.yml"/>
+  <copy todir="${setupDir}/resources30">
+    <fileset basedir="${dir.bin}/resources">
+        <include name="*.ico" />
+        <include name="*.png" />
+    </fileset>
+  </copy>       
+  <if test="${BuildClientArchive}">
+    <copy todir="${setupDir}/etc30" 
+          file="${dir.bin}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
+  </if>
+  <copy todir="${setupDir}/manuals30">
+    <fileset basedir="${dir.bin}/setup/petra${PetraRelease}/releasenotes/">
+      <include name="*.html" />
+    </fileset>
+  </copy>
+  <copy todir="${setupDir}/reports30">
+    <fileset basedir="${dir.bin}/XmlReports/">
+      <include name="*.dtd" />
+      <include name="**/*.xml" />
+    </fileset>
+  </copy>
+  <copy file="${dir.bin}/LICENSE" tofile="${setupDir}/LICENSE"/>
+  <if test="${not BuildClientArchive}">
+    <copy todir="${setupDir}/sql30">
+      <fileset basedir="${dir.bin}/csharp/ICT/Petra/Server/sql/">
+          <include name="*.sql" />
+          <include name="*.yml" />
+      </fileset>
+    </copy>
+    <if test="${SkipDatabases!='true'}">
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/demo.db"
+                  tofile="${setupDir}/db30/demo.db"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
+                  tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
+                  tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
+                  tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-MySQL.sql"
+                  tofile="${setupDir}/db30/createtables-MySQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
+                  tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-MySQL.sql"
+                  tofile="${setupDir}/db30/demodata-MySQL.sql"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/INSTALL"
+                  tofile="${setupDir}/INSTALL"/>
+      <if test="${SkipCompileClient!='true'}">
+        <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
+                tofile="${setupDir}/startClient.sh"/>
+      </if>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
+                  tofile="${setupDir}/openpetraorg-server.sh"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
+                  tofile="${setupDir}/initpg.sh"/>
+      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
+                  tofile="${setupDir}/initmysql.sh"/>
+      <if test="${platform::is-unix()}">
+        <!-- change the executable flag -->
+        <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
+        <!-- make sure that the script files are in unix format -->
+        <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
+        
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.setup}/openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
+
+        <!-- to avoid problem with symbolic link with delete dir task -->
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
+      </if>
+    </if>
+    <if test="${SkipDatabases=='true'}">
+      <!-- this can be useful if we just need the binary files and not the scripts for an existing Linux OpenPetra server to update -->
+      <tar destfile="${dir.setup}/openpetraorg-server-update-${ReleaseID}.tar.gz" compression="GZip">
+          <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+              <include name="**/*" />
+          </fileset>
+      </tar>
+    </if>
+  </if>
+  <if test="${BuildClientArchive}">
+    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
+    <tar destfile="${dir.setup}/openpetraorg-client-backup-${ReleaseID}.tar.gz" compression="GZip">
+        <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+            <include name="**/*" />
+        </fileset>
+    </tar>
+  </if>
+</target> 
+<!-- END buildRelease -->
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
   <call target="generateCsprojectNoCompile" />

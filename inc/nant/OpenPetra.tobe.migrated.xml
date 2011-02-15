@@ -19,6 +19,12 @@
   <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
 </target>
 
+<target name="translation" description="extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery">
+  <nant inheritall="false" target="extractMsgs" 
+        buildfile="${dir.root}/i18n/i18n.build" />
+  <nant inheritall="false" target="translationCompilePOFile" 
+        buildfile="${dir.root}/i18n/i18n.build" />
+</target>
 
 <!-- Add the database a as is. Add properties for compat -->
 <property name="DBMS.Type" value="sqlite" overwrite="false" />

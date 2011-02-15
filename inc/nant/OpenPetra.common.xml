@@ -85,6 +85,8 @@
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
+<property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
+          overwrite="false" />
 <property name="dir.namespace.map" value="${path::combine(dir.delivery, 'nsMap')}"
           overwrite="false" />
  <!-- projectfiles -->
