@@ -93,6 +93,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailReceiptLetterCode = new System.Windows.Forms.Label();
             this.dtpDateEntered = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEntered = new System.Windows.Forms.Label();
+            this.txtGiftTotal = new Ict.Common.Controls.TTxtNumericTextBox();
+            this.lblGiftTotal = new System.Windows.Forms.Label();
             this.txtDetailGiftTransactionAmount = new Ict.Common.Controls.TTxtNumericTextBox();
             this.lblDetailGiftTransactionAmount = new System.Windows.Forms.Label();
             this.chkDetailConfidentialGiftFlag = new System.Windows.Forms.CheckBox();
@@ -393,11 +395,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDateEntered.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDateEntered.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // txtGiftTotal
+            //
+            this.txtGiftTotal.Location = new System.Drawing.Point(2,2);
+            this.txtGiftTotal.Name = "txtGiftTotal";
+            this.txtGiftTotal.Size = new System.Drawing.Size(150, 28);
+            this.txtGiftTotal.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtGiftTotal.DecimalPlaces = 2;
+            this.txtGiftTotal.NullValueAllowed = true;
+            //
+            // lblGiftTotal
+            //
+            this.lblGiftTotal.Location = new System.Drawing.Point(2,2);
+            this.lblGiftTotal.Name = "lblGiftTotal";
+            this.lblGiftTotal.AutoSize = true;
+            this.lblGiftTotal.Text = "Total:";
+            this.lblGiftTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblGiftTotal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblGiftTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
             // txtDetailGiftTransactionAmount
             //
             this.txtDetailGiftTransactionAmount.Location = new System.Drawing.Point(2,2);
             this.txtDetailGiftTransactionAmount.Name = "txtDetailGiftTransactionAmount";
             this.txtDetailGiftTransactionAmount.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailGiftTransactionAmount.TextChanged += new System.EventHandler(this.GiftDetailAmountChanged);
             this.txtDetailGiftTransactionAmount.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
             this.txtDetailGiftTransactionAmount.DecimalPlaces = 2;
             this.txtDetailGiftTransactionAmount.NullValueAllowed = true;
@@ -780,6 +802,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.txtDetailGiftCommentThree, 1, 13);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailMethodOfPaymentCode, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailReceiptLetterCode, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblGiftTotal, 2, 3);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailConfidentialGiftFlag, 2, 4);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailChargeFlag, 2, 6);
             this.tableLayoutPanel3.Controls.Add(this.lblDetailTaxDeductable, 2, 8);
@@ -790,6 +813,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel3.Controls.Add(this.lblDetailCommentThreeType, 2, 13);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailMethodOfPaymentCode, 3, 1);
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailReceiptLetterCode, 3, 2);
+            this.tableLayoutPanel3.Controls.Add(this.txtGiftTotal, 3, 3);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailConfidentialGiftFlag, 3, 4);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailChargeFlag, 3, 6);
             this.tableLayoutPanel3.Controls.Add(this.chkDetailTaxDeductable, 3, 8);
@@ -853,6 +877,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailReceiptLetterCode;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEntered;
         private System.Windows.Forms.Label lblDateEntered;
+        private Ict.Common.Controls.TTxtNumericTextBox txtGiftTotal;
+        private System.Windows.Forms.Label lblGiftTotal;
         private Ict.Common.Controls.TTxtNumericTextBox txtDetailGiftTransactionAmount;
         private System.Windows.Forms.Label lblDetailGiftTransactionAmount;
         private System.Windows.Forms.CheckBox chkDetailConfidentialGiftFlag;

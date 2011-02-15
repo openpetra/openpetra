@@ -225,6 +225,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void GiftDetailAmountChanged(object sender, EventArgs e)
+        {
+            updateGiftAmountTotal();
+        }
+
+        private void updateGiftAmountTotal()
+        {
+            Decimal GiftTotal = 0;
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                txtGiftTotal.Text = "";
+                return;
+            }
+
+            Int32 GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+
+            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            {
+                if ((gdr.GiftTransactionNumber == GiftNumber) && (gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                {
+                    if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                    {
+                        GiftTotal += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                    }
+                    else
+                    {
+                        GiftTotal += gdr.GiftTransactionAmount;
+                    }
+                }
+            }
+
+            txtGiftTotal.NumberValueDecimal = GiftTotal;
+            txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+            txtGiftTotal.ReadOnly = true;   //this is here because at the moment the generator does not generate this
+        }
+
         /// reset the control
         public void ClearCurrentSelection()
         {
@@ -517,6 +554,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbDetailReceiptLetterCode.SetSelectedString(giftRow.ReceiptLetterCode);
             }
+
+            updateGiftAmountTotal();
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)

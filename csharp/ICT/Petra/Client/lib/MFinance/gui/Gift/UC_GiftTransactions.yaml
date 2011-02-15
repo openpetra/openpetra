@@ -52,7 +52,7 @@ RootNode:
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
-                Row3: [dtpDateEntered]
+                Row3: [dtpDateEntered,txtGiftTotal]
                 Row4: [txtDetailGiftTransactionAmount, chkDetailConfidentialGiftFlag]
                 Row5: [txtDetailRecipientKey]
                 Row6: [txtField,chkDetailChargeFlag]
@@ -65,6 +65,7 @@ RootNode:
                 Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference}
         cmbDetailReceiptLetterCode:
@@ -80,7 +81,7 @@ RootNode:
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
-        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency}
+        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
         txtDetailGiftCommentOne: {Label=Comment 1,Width=250}

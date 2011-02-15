@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailReference.Text = Catalog.GetString("Reference:");
       this.lblDetailReceiptLetterCode.Text = Catalog.GetString("Letter Code:");
       this.lblDateEntered.Text = Catalog.GetString("Gift Date:");
+      this.lblGiftTotal.Text = Catalog.GetString("Total:");
       this.lblDetailGiftTransactionAmount.Text = Catalog.GetString("Amount:");
       this.lblDetailConfidentialGiftFlag.Text = Catalog.GetString("Confidential?:");
       this.txtDetailRecipientKey.ButtonText = Catalog.GetString("Find");
