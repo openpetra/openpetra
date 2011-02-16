@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey, out Int64 fieldNumber)
         {
             Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = new PUnitTable();
-            fieldNumber = -1;
+            fieldNumber = 0;
 
             if (partnerKey != 0)
             {
@@ -566,7 +566,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             case MPartnerConstants.PARTNERCLASS_UNIT:
 
-                                processUnit(ref unitTable, ref Transaction, ref fieldNumber, partnerKey);
+                                ProcessUnit(ref unitTable, ref Transaction, ref fieldNumber, partnerKey);
 
                                 break;
 
@@ -587,7 +587,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return unitTable;
         }
 
-        static void processUnit(ref Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable,
+        static void ProcessUnit(ref Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable,
             ref TDBTransaction Transaction,
             ref Int64 fieldNumber,
             Int64 partnerKey)

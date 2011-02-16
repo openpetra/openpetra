@@ -364,10 +364,10 @@ namespace Ict.Common.Controls
                 if ((value == null) || (value.ToString() == ""))
                 {
                     base.SelectedIndex = -1;
+                    base.ResetText();
                 }
                 else
                 {
-                    //Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
                     Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
                     base.SelectedIndex = m_SelectedIndex;
                 }

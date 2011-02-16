@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailBatchHashTotal.Text = Catalog.GetString("Hash Total:");
       this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate To Base:");
-      this.lblDetailMethodOfPayment.Text = Catalog.GetString("Method of Payment:");
+      this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of Payment:");
       this.rbtGift.Text = Catalog.GetString("Gift");
       this.rbtGiftInKind.Text = Catalog.GetString("Gift In Kind");
       this.rbtOther.Text = Catalog.GetString("Other");
@@ -125,6 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailCurrencyCode, Catalog.GetString("Select a currency code to use for the journal transactions."));
       cmbDetailCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(txtDetailExchangeRateToBase, Catalog.GetString("Enter the exchange rate from the transaction currency to base."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
@@ -246,6 +247,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
             cmbDetailCurrencyCode.SetSelectedString(ARow.CurrencyCode);
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
+            if (ARow.IsMethodOfPaymentCodeNull())
+            {
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(ARow.MethodOfPaymentCode);
+            }
             ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
@@ -289,6 +298,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
             ARow.ExchangeRateToBase = Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
+            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+            {
+                ARow.SetMethodOfPaymentCodeNull();
+            }
+            else
+            {
+                ARow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
             ARow.EndEdit();
         }
     }

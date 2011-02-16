@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,8 +101,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailCurrencyCode = new System.Windows.Forms.Label();
             this.txtDetailExchangeRateToBase = new System.Windows.Forms.TextBox();
             this.lblDetailExchangeRateToBase = new System.Windows.Forms.Label();
-            this.cmbDetailMethodOfPayment = new Ict.Common.Controls.TCmbAutoComplete();
-            this.lblDetailMethodOfPayment = new System.Windows.Forms.Label();
+            this.cmbDetailMethodOfPaymentCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.lblDetailMethodOfPaymentCode = new System.Windows.Forms.Label();
             this.rgrDetailGiftType = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.rbtGift = new System.Windows.Forms.RadioButton();
@@ -450,21 +450,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailExchangeRateToBase.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
-            // cmbDetailMethodOfPayment
+            // cmbDetailMethodOfPaymentCode
             //
-            this.cmbDetailMethodOfPayment.Location = new System.Drawing.Point(2,2);
-            this.cmbDetailMethodOfPayment.Name = "cmbDetailMethodOfPayment";
-            this.cmbDetailMethodOfPayment.Size = new System.Drawing.Size(150, 28);
+            this.cmbDetailMethodOfPaymentCode.Location = new System.Drawing.Point(2,2);
+            this.cmbDetailMethodOfPaymentCode.Name = "cmbDetailMethodOfPaymentCode";
+            this.cmbDetailMethodOfPaymentCode.Size = new System.Drawing.Size(300, 28);
+            this.cmbDetailMethodOfPaymentCode.SelectedValueChanged += new System.EventHandler(this.MethodOfPaymentChanged);
+            this.cmbDetailMethodOfPaymentCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
             //
-            // lblDetailMethodOfPayment
+            // lblDetailMethodOfPaymentCode
             //
-            this.lblDetailMethodOfPayment.Location = new System.Drawing.Point(2,2);
-            this.lblDetailMethodOfPayment.Name = "lblDetailMethodOfPayment";
-            this.lblDetailMethodOfPayment.AutoSize = true;
-            this.lblDetailMethodOfPayment.Text = "Method of Payment:";
-            this.lblDetailMethodOfPayment.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.lblDetailMethodOfPayment.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblDetailMethodOfPayment.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblDetailMethodOfPaymentCode.Location = new System.Drawing.Point(2,2);
+            this.lblDetailMethodOfPaymentCode.Name = "lblDetailMethodOfPaymentCode";
+            this.lblDetailMethodOfPaymentCode.AutoSize = true;
+            this.lblDetailMethodOfPaymentCode.Text = "Method of Payment:";
+            this.lblDetailMethodOfPaymentCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblDetailMethodOfPaymentCode.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblDetailMethodOfPaymentCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // rgrDetailGiftType
             //
@@ -530,7 +532,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5.Controls.Add(this.lblDetailGlEffectiveDate, 0, 3);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailBatchHashTotal, 0, 4);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailExchangeRateToBase, 0, 5);
-            this.tableLayoutPanel5.Controls.Add(this.lblDetailMethodOfPayment, 0, 6);
+            this.tableLayoutPanel5.Controls.Add(this.lblDetailMethodOfPaymentCode, 0, 6);
             this.tableLayoutPanel5.SetColumnSpan(this.rgrDetailGiftType, 2);
             this.tableLayoutPanel5.Controls.Add(this.rgrDetailGiftType, 0, 7);
             this.tableLayoutPanel5.SetColumnSpan(this.txtDetailBatchDescription, 3);
@@ -542,7 +544,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel5.Controls.Add(this.dtpDetailGlEffectiveDate, 1, 3);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailBatchHashTotal, 1, 4);
             this.tableLayoutPanel5.Controls.Add(this.txtDetailExchangeRateToBase, 1, 5);
-            this.tableLayoutPanel5.Controls.Add(this.cmbDetailMethodOfPayment, 1, 6);
+            this.tableLayoutPanel5.Controls.Add(this.cmbDetailMethodOfPaymentCode, 1, 6);
             this.tableLayoutPanel5.SetColumnSpan(this.lblValidDateRange, 2);
             this.tableLayoutPanel5.Controls.Add(this.lblValidDateRange, 2, 3);
             this.tableLayoutPanel5.Controls.Add(this.lblDetailCurrencyCode, 2, 4);
@@ -674,8 +676,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.Label lblDetailCurrencyCode;
         private System.Windows.Forms.TextBox txtDetailExchangeRateToBase;
         private System.Windows.Forms.Label lblDetailExchangeRateToBase;
-        private Ict.Common.Controls.TCmbAutoComplete cmbDetailMethodOfPayment;
-        private System.Windows.Forms.Label lblDetailMethodOfPayment;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailMethodOfPaymentCode;
+        private System.Windows.Forms.Label lblDetailMethodOfPaymentCode;
         private System.Windows.Forms.GroupBox rgrDetailGiftType;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.RadioButton rbtGift;

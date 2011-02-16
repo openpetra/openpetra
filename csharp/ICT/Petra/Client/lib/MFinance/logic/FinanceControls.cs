@@ -412,8 +412,11 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.InitialiseUserControl(Table,
                 AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
                 AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
-                null);
+                null,
+                AMethodOfPaymentTable.GetActiveDBName()
+                );
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
             if (AActiveOnly)
@@ -510,7 +513,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { 250 }, -1);
 
-            FindAndSelect(ref AControl, APartnerKey);
+            if (!FindAndSelect(ref AControl, APartnerKey))
+            {
+                //Clear the combobox
+                AControl.SelectedValueCell = null;
+            }
         }
 
         static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)

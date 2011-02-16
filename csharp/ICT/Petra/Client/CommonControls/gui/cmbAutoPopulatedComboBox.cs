@@ -725,7 +725,13 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ADisplayDBName"></param>
         /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
         /// <param name="AColumnsToSearch"></param>
-        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
+        /// <param name="AActiveDBName"></param>
+        public void InitialiseUserControl(DataTable ATable,
+            string AValueDBName,
+            string ADisplayDBName,
+            string ADescDBName,
+            string AColumnsToSearch,
+            string AActiveDBName)
         {
             FDataCache_ListTable = ATable;
 
@@ -739,6 +745,12 @@ namespace Ict.Petra.Client.CommonControls
                 DataRow Dr = FDataCache_ListTable.NewRow();
                 Dr[AValueDBName] = FNotSetValue;
                 Dr[ADisplayDBName] = FNotSetDisplay;
+
+                if (AActiveDBName != null)
+                {
+                    Dr[AActiveDBName] = true;
+                }
+
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
 
@@ -764,6 +776,20 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.SelectedItem = null;
 
             FUserControlInitialised = true;
+        }
+
+        /// <summary>
+        /// overload activeColumn not given/ needed
+        /// does not depend on table implementations
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <param name="AValueDBName">name of the column in the table that has the name</param>
+        /// <param name="ADisplayDBName"></param>
+        /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
+        /// <param name="AColumnsToSearch"></param>
+        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
+        {
+            InitialiseUserControl(ATable, AValueDBName, ADisplayDBName, ADescDBName, AColumnsToSearch, null);
         }
 
         /// <summary>

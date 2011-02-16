@@ -69,6 +69,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
+            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
@@ -252,6 +255,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
+        }
+
+        /// <summary>
+        /// return the method of Payment for the transaction tab
+        /// </summary>
+
+        public String MethodOfPaymentCode {
+            get
+            {
+                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
+        }
+        private void MethodOfPaymentChanged(object sender, EventArgs e)
+        {
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
         }
     }
 }

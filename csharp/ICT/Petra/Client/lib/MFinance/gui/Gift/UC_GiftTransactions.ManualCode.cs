@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
+
             TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
             TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, ActiveOnly);
@@ -85,8 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
 
-//TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
-//TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+            //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
+            //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
         }
@@ -227,10 +228,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-            updateGiftAmountTotal();
+            UpdateGiftAmountTotal();
         }
 
-        private void updateGiftAmountTotal()
+        private void UpdateGiftAmountTotal()
         {
             Decimal GiftTotal = 0;
 
@@ -259,7 +260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtGiftTotal.NumberValueDecimal = GiftTotal;
             txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
-            txtGiftTotal.ReadOnly = true;   //this is here because at the moment the generator does not generate this
+            txtGiftTotal.ReadOnly = true;                           //this is here because at the moment the generator does not generate this
         }
 
         /// reset the control
@@ -325,7 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.AGift.Rows.Remove(gift);
 
-// we cannot update primary keys easily, therefore we have to do it later on the server side
+                // we cannot update primary keys easily, therefore we have to do it later on the server side
 #if DISABLED
                 string filterAllDetailsOfBatch = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
@@ -418,6 +419,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
             batchRow.LastGiftNumber++;
             giftRow.LastDetailNumber = 1;
+
+            if (BatchHasMethodOfPayment())
+            {
+                giftRow.MethodOfPaymentCode = GetMethodOfPaymentFromBatch();
+            }
+
             FMainDS.AGift.Rows.Add(giftRow);
 
             GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
@@ -505,18 +512,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
-            txtField.Text = String.Format("{0:0000000000}", TFinanceControls.FieldNumber);
+            txtField.Text = TFinanceControls.FieldNumber.ToString();
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
-            txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
+            txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
 
-            bool firstIsEnabled = (ARow.DetailNumber == 1);
-            dtpDateEntered.Enabled = firstIsEnabled;
-            txtDetailDonorKey.Enabled = firstIsEnabled;
-            cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
-            cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled;
-            txtDetailReference.Enabled = firstIsEnabled;
-            cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
 
+            UpdateControlsProtection(ARow);
+
+            ShowDetailsForGift(ARow);
+
+            UpdateGiftAmountTotal();
+        }
+
+        void ShowDetailsForGift(AGiftDetailRow ARow)
+        {
+            // this is a special case - normally these lines would be produced by the generator
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
 
             if (giftRow.IsMethodOfGivingCodeNull())
@@ -554,8 +564,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbDetailReceiptLetterCode.SetSelectedString(giftRow.ReceiptLetterCode);
             }
+        }
 
-            updateGiftAmountTotal();
+        /// <summary>
+        /// set the correct protection from outside
+        /// </summary>
+        public void UpdateControlsProtection()
+        {
+            UpdateControlsProtection(FPreviouslySelectedDetailRow);
+        }
+
+        private void UpdateControlsProtection(AGiftDetailRow ARow)
+        {
+            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
+
+            dtpDateEntered.Enabled = firstIsEnabled;
+            txtDetailDonorKey.Enabled = firstIsEnabled;
+            cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
+
+            cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
+            txtDetailReference.Enabled = firstIsEnabled;
+            cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
+        }
+
+        private Boolean BatchHasMethodOfPayment()
+        {
+            String batchMop =
+                GetMethodOfPaymentFromBatch();
+
+            return batchMop != null && batchMop.Length > 0;
+        }
+
+        private String GetMethodOfPaymentFromBatch()
+        {
+            return ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
