@@ -13,9 +13,9 @@ ShepherdPages:
         ID: 56
         Title: Other Shepherd
         Note: Giggity giggity goo
-        Visible: False
+        Visible: True
         Enabled: True
-        UserControlNamespace: Ict.Petra.Petra.Client.MPartner.Gui
+        UserControlNamespace: Ict.Petra.Client.MPartner.Gui
         UserControlClassName: TUC_PartnerDetails_Family
         HelpContext: You cannot be helped 
         UserControlType: PantsOnTheGround
@@ -23,9 +23,9 @@ ShepherdPages:
         ID: 12
         Title: Final Shepherd 
         Note: This is a temporary note 
-        Visible: False
+        Visible: True
         Enabled: True 
-        UserControlNamespace: Ict.Petra.Petra.Client.MPartner.Gui
+        UserControlNamespace: Ict.Petra.Client.MPartner.Gui
         UserControlClassName: TUC_PartnerDetails_Family
         HelpContext: No one can be helped 
         UserControlType: OnceUponATime

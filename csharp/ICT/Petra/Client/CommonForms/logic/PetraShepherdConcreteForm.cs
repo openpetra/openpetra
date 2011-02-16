@@ -123,7 +123,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
             	//This line always throws an exception during the first run of the code; 
             	//I don't know if that's okay, but we should probably resolve it.
-            	TLogging.Log("The exception for ShowCurrentPage() was caught.");  
+            	TLogging.Log("The exception for ShowCurrentPage() in PetraShepherdConcreteForm was caught."); 
+            	TLogging.Log(e.Message); 
             }
            
         }
@@ -145,11 +146,18 @@ namespace Ict.Petra.Client.CommonForms.Logic
     				TLogging.Log("SwitchToStartPage foreach loop returned the following value that was both visible and enabled: " + pair.Key); 
     				startPage = pair.Key; 
     				CurrentPage = pair.Value; 
+    				break;
     			}
     		}
     		TLogging.Log("temporary page was assigned to " + startPage + " in SwitchToStartPage.");
-    		
-        	SwitchToPage(startPage); 
+    		try
+    		{
+    			SwitchToPage(startPage); 
+    		}
+    		catch (KeyNotFoundException ex)
+        	{
+        		TLogging.Log("KeyNotFoundException Thrown in SwitchToStartPage when SwitchToPage(startPage) was called."); 
+        	}
         }
 
 
@@ -164,19 +172,72 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Switches to the 'next' page (whatever page this is)</summary>
         public virtual void HandleActionNext()
         {
-            TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
-            // ....
-            //TODO: Obviously, this isn't what's supposed to happen here, but for temporary testing purposes, this is going to be set. 
-            SwitchToPage("56"); 
+        	TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");   
+        	
+        	string nextPage = ""; //temporary string to hold the key of the StartPage
+        	bool hasPassedCurrentPage = false; // used to tell if the iteration has already checked to see if you have passed the current page.
+     		bool hasPassedItAgain = false; 
+        	
+    		foreach(KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages) 
+    		{
+    			if(hasPassedCurrentPage)  //TODO: there has to be a better way to handle iterating through the loop one more time; it works now, but is ugly.
+    				hasPassedItAgain = true; 
+    			if(pair.Key == CurrentPage.ID)
+    			{
+    				TLogging.Log("Found the equivilance."); 
+    				hasPassedCurrentPage = true; 
+    				TLogging.Log("Set the hasPassedCurrentPage bool to true."); 
+    			}
+    			if(pair.Value.Visible && pair.Value.Enabled && hasPassedItAgain)
+    			{
+    				TLogging.Log("Switchtonextpage foreach loop returned the following value that was both visible and enabled: " + pair.Key); 
+    				nextPage = pair.Key; 
+    				CurrentPage = pair.Value; 
+    				break; 
+    			}
+    		}
+    		TLogging.Log("temporary next page was assigned to " + nextPage + " in HandleActionNext().");
+            
+            try // rather than a try/catch statement, the next button should instead be greyed out 
+            {
+            	SwitchToPage(nextPage);
+            }
+            catch(KeyNotFoundException e)
+            {
+            	TLogging.Log("KeyNotFoundException Thrown at HandleActionNext when SwitchToPage(nextPage) was called."); 
+            }
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
         public virtual void HandleActionBack()
         {
             TLogging.Log("HandleActionBack (in TPetraShepherdFormLogic)");   
-            // ....
+	
+            string backPage = ""; //temporary string to hold the key of the StartPage
+        	bool hasPassedCurrentPage = false; // used to tell if the iteration has already checked to see if you have passed the current page.
+        	TPetraShepherdPage temporaryPage = null;      
+        	int counter = 0; 
+    		foreach(KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages) 
+    		{
+    			TLogging.Log("Entering foreach loop -- loop #: " + counter); 
+    			if(pair.Key == CurrentPage.ID)
+    			{
+    				TLogging.Log("Found the equivilance."); 
+					TLogging.Log("HandleActionBack() set the previous page to the following: " + temporaryPage);  
+    				CurrentPage = temporaryPage;
+    				break; 
+    				TLogging.Log("Set the hasPassedCurrentPage bool to true."); 
+    			}
+	 			if(pair.Value.Visible && pair.Value.Enabled)
+    			{
+    				TLogging.Log("HandleActionBack() foreach loop returned the following value that was both visible and enabled: " + pair.Key); 
+    				temporaryPage = pair.Value; 
+    				TLogging.Log("HandleActionBack() set the temporaryPage to the following: " + temporaryPage.Title); 
+    			}
+	 			counter++; 
+    		}
 
-            SwitchToPage(String.Empty);
+            SwitchToPage(backPage);
         }
 
         ///<summary>Causes to close the Shepherd without saving if the user chooses to do that</summary>
