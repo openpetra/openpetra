@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       this.lblDetailBankAccountCode.Text = Catalog.GetString("Bank Account:");
       this.lblDetailGlEffectiveDate.Text = Catalog.GetString("GL Effective Date:");
       this.lblValidDateRange.Text = Catalog.GetString("Valid Date Range:");
-      this.lblDetailBatchHashTotal.Text = Catalog.GetString("Hash Total:");
+      this.lblDetailHashTotal.Text = Catalog.GetString("Hash Total:");
       this.lblDetailCurrencyCode.Text = Catalog.GetString("Currency Code:");
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate To Base:");
       this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of Payment:");
@@ -93,7 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailBatchDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
-      this.txtDetailBatchHashTotal.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailExchangeRateToBase.Font = TAppSettingsManager.GetDefaultBoldFont();
     }
 
@@ -122,16 +121,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailBankCostCentre, Catalog.GetString("Enter a cost centre code"));
       FPetraUtilsObject.SetStatusBarText(cmbDetailBankAccountCode, Catalog.GetString("Enter the bank account which this batch is for."));
       FPetraUtilsObject.SetStatusBarText(dtpDetailGlEffectiveDate, Catalog.GetString("Effective date to be used when posted to the general ledger."));
+      FPetraUtilsObject.SetStatusBarText(txtDetailHashTotal, Catalog.GetString("Enter a hash total for the gift batch."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailCurrencyCode, Catalog.GetString("Select a currency code to use for the journal transactions."));
       cmbDetailCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(txtDetailExchangeRateToBase, Catalog.GetString("Enter the exchange rate from the transaction currency to base."));
       FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);
-      grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
       grdDetails.AddDateColumn("GL Effective Date", FMainDS.AGiftBatch.ColumnGlEffectiveDate);
-      grdDetails.AddCurrencyColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
+      grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
       grdDetails.AddTextColumn("Batch description", FMainDS.AGiftBatch.ColumnBatchDescription);
+      grdDetails.AddCurrencyColumn("Hash Total", FMainDS.AGiftBatch.ColumnHashTotal);
+      grdDetails.AddCurrencyColumn("Batch Total", FMainDS.AGiftBatch.ColumnBatchTotal);
+      grdDetails.AddTextColumn("Gift Transaction Currency", FMainDS.AGiftBatch.ColumnCurrencyCode);
+      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AGiftBatch.ColumnBankCostCentre);
+      grdDetails.AddTextColumn("Bank Account", FMainDS.AGiftBatch.ColumnBankAccountCode);
+      grdDetails.AddTextColumn("Gift Type", FMainDS.AGiftBatch.ColumnGiftType);
+      grdDetails.AddDateColumn("Modified Date", FMainDS.AGiftBatch.ColumnDateModified);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.AGiftBatch.DefaultView;
@@ -245,6 +251,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre);
             cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode);
             dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
+            if (ARow.IsHashTotalNull())
+            {
+                txtDetailHashTotal.NumberValueDecimal = null;
+            }
+            else
+            {
+                txtDetailHashTotal.NumberValueDecimal = Convert.ToDecimal(ARow.HashTotal);
+            }
             cmbDetailCurrencyCode.SetSelectedString(ARow.CurrencyCode);
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
             if (ARow.IsMethodOfPaymentCodeNull())
@@ -296,6 +310,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.BankCostCentre = cmbDetailBankCostCentre.GetSelectedString();
             ARow.BankAccountCode = cmbDetailBankAccountCode.GetSelectedString();
             ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
+            if (txtDetailHashTotal.NumberValueDecimal == null)
+            {
+                ARow.SetHashTotalNull();
+            }
+            else
+            {
+                ARow.HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
+            }
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
             ARow.ExchangeRateToBase = Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
             if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)

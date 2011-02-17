@@ -228,12 +228,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-            UpdateGiftAmountTotal();
+            UpdateTotals();
         }
 
-        private void UpdateGiftAmountTotal()
+        private void UpdateTotals()
         {
-            Decimal GiftTotal = 0;
+            Decimal sum = 0;
+            Decimal sumBatch = 0;
 
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -245,22 +246,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
             {
-                if ((gdr.GiftTransactionNumber == GiftNumber) && (gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
                 {
-                    if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                    if (gdr.GiftTransactionNumber == GiftNumber)
                     {
-                        GiftTotal += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                        {
+                            sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                            sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                        }
+                        else
+                        {
+                            sum += gdr.GiftTransactionAmount;
+                            sumBatch += gdr.GiftTransactionAmount;
+                        }
                     }
                     else
                     {
-                        GiftTotal += gdr.GiftTransactionAmount;
+                        sumBatch += gdr.GiftTransactionAmount;
                     }
                 }
             }
 
-            txtGiftTotal.NumberValueDecimal = GiftTotal;
+            txtGiftTotal.NumberValueDecimal = sum;
             txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
             txtGiftTotal.ReadOnly = true;                           //this is here because at the moment the generator does not generate this
+            //Now we look at the batch and update the batch data
+            AGiftBatchRow batch = GetBatchRow();
+            batch.BatchTotal = sumBatch;
         }
 
         /// reset the control
@@ -521,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowDetailsForGift(ARow);
 
-            UpdateGiftAmountTotal();
+            UpdateTotals();
         }
 
         void ShowDetailsForGift(AGiftDetailRow ARow)
@@ -564,6 +577,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbDetailReceiptLetterCode.SetSelectedString(giftRow.ReceiptLetterCode);
             }
+        }
+
+        /// <summary>
+        /// set the currency symbols for the currency field from outside
+        /// </summary>
+        public void UpdateCurrencySymbols(String ACurrencyCode)
+        {
+            txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
         }
 
         /// <summary>

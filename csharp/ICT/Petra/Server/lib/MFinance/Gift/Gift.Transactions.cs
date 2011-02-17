@@ -132,43 +132,56 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-
-            // AGiftDetailAccess.LoadViaGiftBatch does not exist; but we can easily simulate it:
-            AGiftDetailAccess.LoadViaForeignKey(AGiftDetailTable.TableId,
-                AGiftBatchTable.TableId,
-                MainDS,
-                new string[2] { AGiftBatchTable.GetLedgerNumberDBName(), AGiftBatchTable.GetBatchNumberDBName() },
-                new System.Object[2] { ALedgerNumber, ABatchNumber },
-                null,
-                Transaction,
-                null,
-                0,
-                0);
-
-            DataView giftView = new DataView(MainDS.AGift);
-
-            // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
-            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+            try
             {
-                // get the gift
-                giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-                AGiftRow giftRow = (AGiftRow)giftView[0].Row;
+                AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-                StringCollection shortName = new StringCollection();
-                shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
-                PPartnerTable partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+                // AGiftDetailAccess.LoadViaGiftBatch does not exist; but we can easily simulate it:
+                AGiftDetailAccess.LoadViaForeignKey(AGiftDetailTable.TableId,
+                    AGiftBatchTable.TableId,
+                    MainDS,
+                    new string[2] { AGiftBatchTable.GetLedgerNumberDBName(), AGiftBatchTable.GetBatchNumberDBName() },
+                    new System.Object[2] { ALedgerNumber, ABatchNumber },
+                    null,
+                    Transaction,
+                    null,
+                    0,
+                    0);
 
-                giftDetail.DonorKey = giftRow.DonorKey;
-                giftDetail.DonorName = partner[0].PartnerShortName;
-                giftDetail.DateEntered = giftRow.DateEntered;
+                DataView giftView = new DataView(MainDS.AGift);
+
+                // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    // get the gift
+                    giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+
+                    AGiftRow giftRow = (AGiftRow)giftView[0].Row;
+
+                    StringCollection shortName = new StringCollection();
+                    shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
+                    PPartnerTable partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+
+                    giftDetail.DonorKey = giftRow.DonorKey;
+                    giftDetail.DonorName = partner[0].PartnerShortName;
+                    //do the same for the Recipient
+                    partner.Clear();
+                    partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+                    giftDetail.RecipientDescription = partner[0].PartnerShortName;
+                    giftDetail.DateEntered = giftRow.DateEntered;
+                }
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
             return MainDS;
         }
 

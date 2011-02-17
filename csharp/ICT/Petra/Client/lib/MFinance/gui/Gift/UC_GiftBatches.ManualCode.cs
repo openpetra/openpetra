@@ -271,5 +271,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
         }
+
+        private void CurrencyChanged(object sender, EventArgs e)
+        {
+            String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
+
+            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+        }
     }
 }
