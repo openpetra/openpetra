@@ -964,7 +964,7 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="ADLLName"></param>
         /// <returns></returns>
-        public String GetMd5Sum(String ADLLName)
+        public static String GetMd5Sum(String ADLLName)
         {
             String ReturnValue;
             MD5CryptoServiceProvider cr;

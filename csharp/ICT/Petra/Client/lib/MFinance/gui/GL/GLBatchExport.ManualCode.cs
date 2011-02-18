@@ -54,7 +54,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             dtpDateFrom.Date = firstDayMonth.AddMonths(-1);
             dtpDateTo.Date = firstDayMonth.AddDays(-1);
             dtpDateSummary.Date = dtpDateTo.Date;
-            //cmbDontSummarizeAccount.AddNotSetRow("","");
+            System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;
+
+            if (!cmbDateFormat.Items.Contains(regionalDateString))
+            {
+                cmbDateFormat.Items.Insert(0, regionalDateString);
+            }
 
             LoadUserDefaults();
         }
@@ -149,6 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             impOptions += ConvertNumberFormat(cmbNumberFormat);
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
+            TUserDefaults.SaveChangedUserDefaults();
         }
 
         /// <summary>
@@ -162,12 +169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             try
             {
                 String fileName = txtFilename.Text;
-                String dateFormatString = "{0:MM}/{0:dd}/{0:yyyy}";
-
-                if (cmbDateFormat.SelectedItem.Equals("DMY"))
-                {
-                    dateFormatString = "{0:dd}/{0:MM}/{0:yyyy}";
-                }
+                String dateFormatString = cmbDateFormat.SelectedItem.ToString();
 
                 // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
                 if (FMainDS == null)

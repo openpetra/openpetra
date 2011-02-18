@@ -57,6 +57,7 @@
       <HintPath>..\..\..\ThirdParty\SQLite\System.Data.SQLite.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>

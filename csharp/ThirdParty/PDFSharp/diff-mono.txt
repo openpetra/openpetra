@@ -1,0 +1,216 @@
+diff -r -N -u PDFsharp/code/BuildAll-PdfSharp.sln PDFsharp.Mono/code/BuildAll-PdfSharp.sln
+--- PDFsharp/code/BuildAll-PdfSharp.sln	2009-08-10 13:29:42.000000000 +0200
++++ PDFsharp.Mono/code/BuildAll-PdfSharp.sln	2011-01-24 18:14:51.986470100 +0100
+@@ -1,6 +1,7 @@
+ ﻿
+ Microsoft Visual Studio Solution File, Format Version 10.00
+ # Visual Studio 2008
++# SharpDevelop 3.2.0.5777
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfSharp", "PdfSharp\PdfSharp.csproj", "{5384CE57-1F94-4D22-860D-2E9C1AC12DDF}"
+ EndProject
+ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfSharp.Charting", "PdfSharp.Charting\PdfSharp.Charting.csproj", "{CFDB7D46-EA8D-47DE-B10A-9E755A1B48BA}"
+@@ -73,6 +74,16 @@
+ 		{EB658532-0D55-4F7C-92FB-E33279869851}.Release|Mixed Platforms.Build.0 = Release|Win32
+ 		{EB658532-0D55-4F7C-92FB-E33279869851}.Release|Win32.ActiveCfg = Release|Win32
+ 		{EB658532-0D55-4F7C-92FB-E33279869851}.Release|Win32.Build.0 = Release|Win32
++		{EB658532-0D55-4F7C-92FB-E33279869851}.Debug|Any CPU.Build.0 = Debug|Any CPU
++		{EB658532-0D55-4F7C-92FB-E33279869851}.Release|Any CPU.Build.0 = Release|Any CPU
++		{FF94D394-D59D-43A9-9A88-96ED3FAD4DAC}.Debug|Win32.Build.0 = Debug|Win32
++		{FF94D394-D59D-43A9-9A88-96ED3FAD4DAC}.Release|Win32.Build.0 = Release|Win32
++		{6403D294-D12F-48EA-A9DD-A864035D2A1D}.Debug|Win32.Build.0 = Debug|Win32
++		{6403D294-D12F-48EA-A9DD-A864035D2A1D}.Release|Win32.Build.0 = Release|Win32
++		{CFDB7D46-EA8D-47DE-B10A-9E755A1B48BA}.Debug|Win32.Build.0 = Debug|Win32
++		{CFDB7D46-EA8D-47DE-B10A-9E755A1B48BA}.Release|Win32.Build.0 = Release|Win32
++		{5384CE57-1F94-4D22-860D-2E9C1AC12DDF}.Debug|Win32.Build.0 = Debug|Win32
++		{5384CE57-1F94-4D22-860D-2E9C1AC12DDF}.Release|Win32.Build.0 = Release|Win32
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs PDFsharp.Mono/code/PdfSharp/PdfSharp/ProductVersionInfo.cs
+--- PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2009-11-25 13:21:44.000000000 +0100
++++ PDFsharp.Mono/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2011-01-25 14:32:56.157585600 +0100
+@@ -109,7 +109,7 @@
+     /// <summary>
+     /// The build number of the product.
+     /// </summary>
+-    public const string VersionBuild = "1789";  // Build = days since 2005-01-01  -  change this values ONLY HERE
++    public const string VersionBuild = "2215";  // Build = days since 2005-01-01  -  change this values ONLY HERE
+ 
+     /// <summary>
+     /// The patch number of the product.
+diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.csproj PDFsharp.Mono/code/PdfSharp/PdfSharp.csproj
+--- PDFsharp/code/PdfSharp/PdfSharp.csproj	2009-11-24 14:39:50.000000000 +0100
++++ PDFsharp.Mono/code/PdfSharp/PdfSharp.csproj	2011-01-25 14:20:58.387366900 +0100
+@@ -25,7 +25,7 @@
+     </FileUpgradeFlags>
+     <UpgradeBackupLocation>
+     </UpgradeBackupLocation>
+-    <SignAssembly>true</SignAssembly>
++    <SignAssembly>false</SignAssembly>
+     <OldToolsVersion>2.0</OldToolsVersion>
+     <IsWebBootstrapper>false</IsWebBootstrapper>
+     <PublishUrl>publish\</PublishUrl>
+@@ -42,6 +42,8 @@
+     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+     <UseApplicationTrust>false</UseApplicationTrust>
+     <BootstrapperEnabled>true</BootstrapperEnabled>
++    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\timotheusp\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
++    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+     <OutputPath>bin\Debug\</OutputPath>
+@@ -55,16 +57,15 @@
+     <DebugSymbols>true</DebugSymbols>
+     <FileAlignment>4096</FileAlignment>
+     <NoStdLib>false</NoStdLib>
+-    <NoWarn>
+-    </NoWarn>
+     <Optimize>false</Optimize>
+     <RegisterForComInterop>false</RegisterForComInterop>
+     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
++    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+     <WarningLevel>4</WarningLevel>
+     <LangVersion>default</LangVersion>
+     <ErrorReport>prompt</ErrorReport>
+     <PlatformTarget>AnyCPU</PlatformTarget>
++    <DebugType>Full</DebugType>
+   </PropertyGroup>
+   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+     <OutputPath>bin\Release\</OutputPath>
+@@ -78,15 +79,16 @@
+     <DebugSymbols>false</DebugSymbols>
+     <FileAlignment>4096</FileAlignment>
+     <NoStdLib>false</NoStdLib>
+-    <NoWarn>
+-    </NoWarn>
+     <Optimize>true</Optimize>
+     <RegisterForComInterop>false</RegisterForComInterop>
+     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
++    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+     <WarningLevel>4</WarningLevel>
+     <PlatformTarget>AnyCPU</PlatformTarget>
+-    <DebugType>none</DebugType>
++    <DebugType>None</DebugType>
++  </PropertyGroup>
++  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
++    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+   </PropertyGroup>
+   <ItemGroup>
+     <Reference Include="System">
+diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs
+--- PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2009-11-09 15:24:48.000000000 +0100
++++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2011-01-25 14:39:33.269502100 +0100
+@@ -251,10 +251,11 @@
+ 
+ #if GDI
+       // HACK: This does not work with MediumTrust
+-      this.gfx = Graphics.FromHwnd(IntPtr.Zero);
++      //this.gfx = Graphics.FromHwnd(IntPtr.Zero);
++      
+       this.targetContext = XGraphicTargetContext.GDI;
+-      //Bitmap bm = new Bitmap(10, 10);
+-      //this.gfx = Graphics.FromImage(bm);
++      Bitmap bm = new Bitmap(10, 10);
++      this.gfx = Graphics.FromImage(bm);
+ #endif
+ #if WPF && !SILVERLIGHT
+       this.dv = new DrawingVisual();
+diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs
+--- PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2011-01-25 16:06:11.921994100 +0100
++++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2011-01-25 16:27:33.547773700 +0100
+@@ -126,6 +126,32 @@
+       //    //////}
+       //  }
+       //}
++    
++      // Console.WriteLine("looking for " + gdiFont.Name);
++      foreach (string fontFile in NativeMethods._FontFiles)
++      {
++        try
++        {
++          BinaryReader br = new BinaryReader(File.OpenRead(fontFile));
++          byte[] buffer = br.ReadBytes((int)br.BaseStream.Length);
++          br.Close();
++
++          FontData fd = new FontData(buffer);
++
++          //System.Console.WriteLine(fd.name.Name);
++
++          if (fd.name.Name.Trim().ToLower() == gdiFont.Name.Trim().ToLower())
++          {
++            this.data = buffer;
++            break;
++          }
++        }
++        catch
++        {
++          //System.Console.WriteLine(exc.ToString());
++        }
++      }
++
+       if (this.data == null)
+       {
+         int error;
+diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs
+--- PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2009-05-21 00:48:48.000000000 +0200
++++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2011-01-25 14:43:09.192759000 +0100
+@@ -28,6 +28,8 @@
+ #endregion
+ 
+ using System;
++using System.Collections.Generic;
++using System.IO;
+ using System.Diagnostics;
+ using System.Runtime.InteropServices;
+ using System.Security;
+@@ -37,8 +39,47 @@
+   /// <summary>
+   /// Required native Win32 calls. Don't know what to do under Mono.
+   /// </summary>
+-  static class NativeMethods
++  public static class NativeMethods
+   {
++    static string _FontDirectory = "";
++    static List<string> _FontDirectories = new List<string>();
++    public static List<string> _FontFiles = new List<string>();
++    
++    public static string FontDirectory
++    {
++     set
++     {
++       _FontDirectory = value;
++       _FontDirectories.Add(value);
++       RecursiveFontLookup(value);
++     }
++    }
++
++    public static List<string> FontDirectories
++    {
++      get { return _FontDirectories; }
++    }
++
++    static void RecursiveFontLookup(string dir)
++    {
++      string[] files = Directory.GetFiles(dir);
++      foreach (string file in files)
++      {
++        if (file.EndsWith(".ttf"))
++        {
++          _FontFiles.Add(file);
++        }
++      }
++
++      string[] directories = Directory.GetDirectories(dir);
++
++      foreach (string directory in directories)
++      {
++        _FontDirectories.Add(directory);
++        RecursiveFontLookup(directory);
++      }
++    }
++
+     /// <summary>
+     /// Reflected from System.Drawing.SafeNativeMethods+LOGFONT
+     /// </summary>

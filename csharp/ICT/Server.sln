@@ -114,6 +114,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MFinance.Instantiator", "Petra\Server\lib\MFinance\connect\Ict.Petra.Server.MFinance.Instantiator.csproj", "{1D1F527D-D7B6-43C9-B500-D2BE1CD41F29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ict.Petra.Server.MConference.DatasetAccess", "Petra\Server\lib\MConference\data\Ict.Petra.Server.MConference.DatasetAccess.csproj", "{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -344,5 +346,9 @@ Global
 		{1D1F527D-D7B6-43C9-B500-D2BE1CD41F29}.Debug|x86.ActiveCfg = Debug|x86
 		{1D1F527D-D7B6-43C9-B500-D2BE1CD41F29}.Release|x86.Build.0 = Release|x86
 		{1D1F527D-D7B6-43C9-B500-D2BE1CD41F29}.Release|x86.ActiveCfg = Release|x86
+		{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}.Debug|x86.Build.0 = Debug|x86
+		{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}.Debug|x86.ActiveCfg = Debug|x86
+		{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}.Release|x86.Build.0 = Release|x86
+		{3DE5012D-9B9F-46F2-8F94-2CC5FC594A5C}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

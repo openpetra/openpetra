@@ -89,7 +89,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup></ItemGroup>
-  <ItemGroup></ItemGroup>
   <ItemGroup>
     <Compile Include="AbilityAreaSetup.cs" />
     <Compile Include="AbilityAreaSetup.Designer.cs">
@@ -105,12 +104,152 @@
     <Compile Include="AbilityLevelSetup.ManualCode.cs">
       <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationTypeSetup.cs" />
+    <Compile Include="ApplicationTypeSetup.Designer.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicationTypeSetup.ManualCode.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="LeavingCodeSetup.cs" />
+    <Compile Include="LeavingCodeSetup.Designer.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LeavingCodeSetup.ManualCode.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageLevelSetup.cs" />
+    <Compile Include="LanguageLevelSetup.Designer.cs">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportTypeSetup.cs" />
+    <Compile Include="PassportTypeSetup.Designer.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportTypeSetup.ManualCode.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PositionSetup.cs" />
+    <Compile Include="PositionSetup.Designer.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageLevelSetup.ManualCode.cs">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PositionSetup.ManualCode.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValuableItemSetup.cs" />
+    <Compile Include="ValuableItemSetup.Designer.cs">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValuableItemSetup.ManualCode.cs">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionLevelSetup.cs" />
+    <Compile Include="VisionLevelSetup.Designer.cs">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionLevelSetup.ManualCode.cs">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionAreaSetup.cs" />
+    <Compile Include="VisionAreaSetup.Designer.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionAreaSetup.ManualCode.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.cs" />
+    <Compile Include="ApplicantStatusSetup.Designer.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.ManualCode.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Country_EventLevelSetup.cs" />
+    <Compile Include="Country_EventLevelSetup.Designer.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Country_EventLevelSetup.ManualCode.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.cs" />
+    <Compile Include="QualificationLevelSetup.Designer.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.ManualCode.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentTypeCategorySetup.cs" />
+    <Compile Include="DocumentTypeCategorySetup.Designer.cs">
+      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentTypeCategorySetup.ManualCode.cs">
+      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DriverStatusSetup.cs" />
+    <Compile Include="DriverStatusSetup.Designer.cs">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DriverStatusSetup.ManualCode.cs">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProfessionalAreaSetup.cs" />
+    <Compile Include="ProfessionalAreaSetup.Designer.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProfessionalAreaSetup.ManualCode.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AbilityAreaSetup.resx">
       <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AbilityLevelSetup.resx">
       <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicationTypeSetup.resx">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LeavingCodeSetup.resx">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageLevelSetup.resx">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PassportTypeSetup.resx">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PositionSetup.resx">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValuableItemSetup.resx">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisionLevelSetup.resx">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisionAreaSetup.resx">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicantStatusSetup.resx">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Country_EventLevelSetup.resx">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QualificationLevelSetup.resx">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DocumentTypeCategorySetup.resx">
+      <DependentUpon>DocumentTypeCategorySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DriverStatusSetup.resx">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfessionalAreaSetup.resx">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -316,6 +316,8 @@ namespace Ict.Petra.Client.App.Core
             Hashtable ARemotingURLs;
             try
             {
+                Ict.Petra.Shared.Security.TPetraPrincipal LocalUserInfo;
+
                 AClientManager.ConnectClient(AUserName, APassword,
                     TClientInfo.ClientComputerName,
                     TClientInfo.ClientIPAddress,
@@ -329,7 +331,9 @@ namespace Ict.Petra.Client.App.Core
                     out AProcessID,
                     out AWelcomeMessage,
                     out ASystemEnabled,
-                    out Ict.Petra.Shared.UserInfo.GUserInfo);
+                    out LocalUserInfo);
+
+                Ict.Petra.Shared.UserInfo.GUserInfo = LocalUserInfo;
 
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT))
                 {

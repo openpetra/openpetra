@@ -23,31 +23,20 @@
 //
 using System;
 using System.Collections;
-using System.Data;
-using System.Windows.Forms;
 using System.IO;
-using System.Xml;
-using System.Globalization;
-using GNU.Gettext;
+using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Core;
-
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftBatches
     {
-        private String FImportMessage;
-        private String FImportLine;
-        private TDlgSelectCSVSeparator FdlgSeparator = null;
-        GiftBatchTDS FMergeDS = null;
+        private TDlgSelectCSVSeparator FdlgSeparator;
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -55,6 +44,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
             bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
             OpenFileDialog dialog = new OpenFileDialog();
 
@@ -63,20 +61,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                TDlgSelectCSVSeparator FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.CSVFileName = dialog.FileName;
 
-                if (dateFormatString.Equals("MDY"))
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.DateFormat = "MM/dd/yyyy";
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
                 }
-                else
-                {
-                    FdlgSeparator.DateFormat = "dd/MM/yyyy";
-                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
@@ -85,82 +84,63 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    //requestParams.Add("NumberFormat", FdlgSeparator.N);
-
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
+                    requestParams.Add("NewLine", Environment.NewLine);
 
                     String importString;
                     TVerificationResultCollection AMessages;
 
 
                     importString = File.ReadAllText(dialog.FileName);
-                    string ErrorMessages = String.Empty;
 
-                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatchData(
+                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                         requestParams,
                         importString,
-                        out AMessages,
-                        out FMergeDS);
+                        out AMessages);
 
-                    if (AMessages.Count > 0)
-                    {
-                        foreach (TVerificationResult message in AMessages)
-                        {
-                            ErrorMessages += "[" + message.ResultContext + "] " +
-                                             message.ResultTextCaption + ": " +
-                                             message.ResultText + Environment.NewLine;
-                        }
-                    }
-
-                    if (ErrorMessages.Length > 0)
-                    {
-                        System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"),
-
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
+                    ShowMessages(AMessages);
                 }
 
                 if (ok)
                 {
-                    FMainDS.Merge(FMergeDS);
-                    //TODO refresh the gui
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
+                    LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.DisableSaveButton();
                 }
             }
         }
 
-        private String ImportString(String message)
+        private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
         {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn;
+            TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
+            impOptions = FdlgSeparator.SelectedSeparator;
+            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
+            TUserDefaults.SaveChangedUserDefaults();
         }
 
-        private Boolean ImportBoolean(String message)
+        private void ShowMessages(TVerificationResultCollection AMessages)
         {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return sReturn.ToLower().Equals("yes");
-        }
+            string ErrorMessages = String.Empty;
 
-        private Int64 ImportInt64(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt64(sReturn);
-        }
+            if (AMessages.Count > 0)
+            {
+                foreach (TVerificationResult message in AMessages)
+                {
+                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                }
+            }
 
-        private Int32 ImportInt32(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToInt32(sReturn);
-        }
-
-        private Decimal ImportDecimal(String message)
-        {
-            FImportMessage = Catalog.GetString("Parsing the " + message);
-            String sReturn = StringHelper.GetNextCSV(ref FImportLine, FdlgSeparator.SelectedSeparator);
-            return Convert.ToDecimal(sReturn);
+            if (ErrorMessages.Length > 0)
+            {
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

@@ -466,24 +466,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// export all the Data of the batches array list to a String
+        /// Import Gift batch data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediatelya
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params </param>
-        /// <param name="importString">Big parts of the export file as a simple String</param>
+        /// <param name="importString">The import file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
-        /// <param name="FMainDS">DataSet for reloading the gift batches</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ImportGiftBatchData(
+        public static bool ImportGiftBatches(
             Hashtable requestParams,
             String importString,
-            out TVerificationResultCollection AMessages,
-            out GiftBatchTDS FMainDS
+            out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting importing = new TGiftImporting();
 
-            return importing.ImportGiftBatchData(requestParams, importString, out AMessages, out FMainDS);
+            return importing.ImportGiftBatches(requestParams, importString, out AMessages);
         }
     }
 }

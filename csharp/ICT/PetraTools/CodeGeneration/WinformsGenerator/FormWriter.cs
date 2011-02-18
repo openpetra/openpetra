@@ -472,6 +472,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             WriteFile(DesignerFile, designerTemplate);
         }
 
+        public override string CalculateDestinationFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   this.CodeFileExtension;
+        }
+
+        public override string CalculateManualCodeFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   ".ManualCode" + this.CodeFileExtension;
+        }
+
         public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
             FTemplate.AddToCodelet("CONTROLINITIALISATION",

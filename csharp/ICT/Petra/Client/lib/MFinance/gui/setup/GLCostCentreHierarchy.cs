@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -214,7 +214,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
-        SaveChanges();
+      try {
+         SaveChanges();
+      } catch (CancelSaveException) {}
     }
 
     /// <summary>

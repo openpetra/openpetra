@@ -399,23 +399,22 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteDelimiter(bLineEnd);
         }
 
-        /*
-         * void WriteCurrency(decimal currencyField, bool bLineEnd)
-         * {
-         * Int64 integerNumber = Convert.ToInt64(currencyField);
-         *
-         * if (Convert.ToDecimal(integerNumber) == currencyField)
-         * {
-         * FStringWriter.Write(String.Format("{0:d}", integerNumber));
-         * }
-         * else
-         * {
-         * FStringWriter.Write(String.Format(FCultureInfo, "{0:f}", currencyField));
-         * }
-         *
-         * WriteDelimiter(bLineEnd);
-         * }
-         */
+        void WriteCurrency(decimal currencyField, bool bLineEnd)
+        {
+            Int64 integerNumber = Convert.ToInt64(currencyField);
+
+            if (Convert.ToDecimal(integerNumber) == currencyField)
+            {
+                FStringWriter.Write(String.Format("{0:d}", integerNumber));
+            }
+            else
+            {
+                FStringWriter.Write(String.Format(FCultureInfo, "{0:###########0.00}", currencyField));
+            }
+
+            WriteDelimiter(bLineEnd);
+        }
+
         void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
             Int64 integerNumber = Convert.ToInt64(generalNumberField);
@@ -429,7 +428,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         void WriteDate(DateTime dateField, bool bLineEnd)
         {
-            FStringWriter.Write(String.Format(FDateFormatString, dateField));
+            FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);
         }
 
@@ -440,7 +439,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         void WriteCurrency(decimal currencyField)
         {
-            WriteGeneralNumber(currencyField, false);
+            WriteCurrency(currencyField, false);
         }
 
         void WriteGeneralNumber(decimal generalNumberField)
@@ -460,7 +459,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         void WriteLineCurrency(decimal currencyField)
         {
-            WriteGeneralNumber(currencyField, true);
+            WriteCurrency(currencyField, true);
         }
 
         void WriteLineGeneralNumber(decimal generalNumberField)

@@ -154,17 +154,36 @@
     </target>
 
     <target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+        <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${WebServerInstall.dir}/js/ext-base.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${WebServerInstall.dir}/js/ext-all.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${WebServerInstall.dir}/js/ext-all-debug.js"/>
+        <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${WebServerInstall.dir}/css/ext-all.css"/>
+        <unzip zipfile="${OpenPetraRoot.dir}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${WebServerInstall.dir}/images"/>
+
         <copy file="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
                     tofile="${WebServerInstall.dir}/server.asmx" overwrite="true"/>
         <mkdir dir="${WebServerInstall.dir}/bin" failonerror="false"/>
         <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
             <!-- some unmanaged dlls cause problems for mono xsp -->
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client/_bin/Debug/">
+                <include name="*.dll" />
+                <exclude name="Mono*" />
+            </fileset>
+        </copy>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <fileset basedir="${OpenPetraRoot.dir}/csharp/ThirdParty/ext.net">
+                <include name="*.dll" />
+            </fileset>
+        </copy>
+        <copy todir="${WebServerInstall.dir}/bin" overwrite="true">
+            <!-- some unmanaged dlls cause problems for mono xsp -->
             <fileset basedir="${OpenPetraRoot.dir}/csharp/ICT/Petra/Server/_bin/Debug/">
                 <include name="*.dll" />
                 <exclude name="Mono*" />
-                <exclude name="intl.dll" />
             </fileset>
         </copy>
+        <copy file="${OpenPetraRoot.dir}/db/patches/version.txt"
+            tofile="${WebServerInstall.dir}/bin/version.txt" overwrite="true"/>
         <if test="${not file::exists(WebConfigFile)}">
             <copy file="${OpenPetraRoot.dir}/etc/web-${DBMS.Type}.config.sample"
                 tofile="${WebConfigFile}" overwrite="true"/>
@@ -180,12 +199,10 @@
                 spawn="true">
             <environment>
                 <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+                <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\2.0"/>
                 <variable name="MONO_OPTIONS" value="--debug"/>
             </environment>
         </exec>
-        <echo message="in your browser, go to http://localhost:8081/server.asmx"/>
-        
-        <echo message="in your browser, go to http://localhost:8081/OpenPetraOrg.qx/source for the qooxdoo test"/>
-        <echo message="                 or to http://localhost:8081/OpenPetraOrg.ext for the extjs test"/>
+        <echo message="in your browser, go to http://localhost:8081/"/>
     </target>
 </project>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -79,10 +82,10 @@ namespace Ict.Common.Printing
             FXBlackPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), Cm(0.05f));
 
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
-            FXSmallPrintFont = new XFont("Arial", Point(6 + XFONTSIZE));
-            FXDefaultFont = new XFont("Arial", Point(8 + XFONTSIZE));
-            FXDefaultBoldFont = new XFont("Arial", Point(8 + XFONTSIZE), XFontStyle.Bold);
-            FXHeadingFont = new XFont("Arial", Point(10 + XFONTSIZE), XFontStyle.Bold);
+            FXSmallPrintFont = new XFont("Arial", 0.12); // Point(6 + XFONTSIZE)
+            FXDefaultFont = new XFont("Arial", 0.14); // Point(8 + XFONTSIZE)
+            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold); // Point(8 + XFONTSIZE)
+            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold); // Point(10 + XFONTSIZE)
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
             FXRight.Alignment = XStringAlignment.Far;
@@ -221,7 +224,7 @@ namespace Ict.Common.Printing
                     ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 }
 
-                TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
+                //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
                 FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
             }
 
@@ -297,9 +300,15 @@ namespace Ict.Common.Printing
             float AXPos,
             float AYPos)
         {
+            if (!File.Exists(APath))
+            {
+                TLogging.Log("cannot draw bitmap because file does not exist " + APath);
+                return;
+            }
+
             Bitmap img = new System.Drawing.Bitmap(APath);
 
-            if (PrintingMode == ePrintingMode.eDoPrint)
+            if ((img != null) && (PrintingMode == ePrintingMode.eDoPrint))
             {
                 FXGraphics.DrawImage(img, AXPos, AYPos);
             }
@@ -310,13 +319,23 @@ namespace Ict.Common.Printing
             CurrentXPos += img.Size.Width / img.HorizontalResolution;
         }
 
+        float Pixel2Twips(float APixelNumber)
+        {
+            return APixelNumber / 100.0f;
+        }
+
         /// <summary>
         /// draw a bitmap at the given position;
         /// the current position is moved
+        ///
+        /// Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+        /// Same applies to Height
         /// </summary>
         public override void DrawBitmap(string APath,
             float AXPos,
             float AYPos,
+            float AWidth,
+            float AHeight,
             float AWidthPercentage,
             float AHeightPercentage)
         {
@@ -326,8 +345,27 @@ namespace Ict.Common.Printing
             }
 
             Bitmap img = new System.Drawing.Bitmap(APath);
-            float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
-            float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
+            float Height = img.Size.Height;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Height = Height / img.VerticalResolution * AHeightPercentage;
+            }
+            else
+            {
+                Height = Pixel2Twips(AHeight);
+            }
+
+            float Width = img.Size.Width;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Width = Width / img.HorizontalResolution * AWidthPercentage;
+            }
+            else
+            {
+                Width = Pixel2Twips(AWidth);
+            }
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -340,6 +378,16 @@ namespace Ict.Common.Printing
             CurrentXPos += Width;
         }
 
+        private float GetFontHeight(eFont AFont)
+        {
+            return GetFontHeight(GetXFont(AFont));
+        }
+
+        private float GetFontHeight(XFont AFont)
+        {
+            return (float)Math.Round(AFont.Size, 2);     //  .GetHeight(FXGraphics)
+        }
+
         /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
@@ -347,7 +395,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics);
+            CurrentYPos = CurrentYPos + GetFontHeight(AFont);
             return CurrentYPos;
         }
 
@@ -357,7 +405,7 @@ namespace Ict.Common.Printing
         /// <returns>the new current line</returns>
         public override float LineFeed()
         {
-            CurrentYPos = CurrentYPos + (float)FXBiggestLastUsedFont.GetHeight(FXGraphics);
+            CurrentYPos += GetFontHeight(FXBiggestLastUsedFont);
 
             // reset the biggest last used font
             FXBiggestLastUsedFont = FXDefaultFont;
@@ -372,7 +420,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics) / 2;
+            CurrentYPos = CurrentYPos + GetFontHeight(AFont) / 2;
             return CurrentYPos;
         }
 
@@ -383,7 +431,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos - Point((float)GetXFont(AFont).GetHeight(FXGraphics));
+            CurrentYPos = CurrentYPos - GetFontHeight(AFont);
             return CurrentYPos;
         }
 
@@ -399,6 +447,7 @@ namespace Ict.Common.Printing
             {
                 FEv = AEv;
                 FEv.Graphics.PageUnit = GraphicsUnit.Inch;
+                FEv.Graphics.TranslateTransform(0, 0);
                 FXGraphics = XGraphics.FromGraphics(AEv.Graphics, PageSizeConverter.ToSize(PageSize.A4));
                 InitFontsAndPens();
             }
@@ -412,8 +461,19 @@ namespace Ict.Common.Printing
         /// <param name="AFilename"></param>
         public void SavePDF(string AFilename)
         {
-            // should we catch an exception if document cannot be written?
-            PdfDocument pdfDocument = new PdfDocument(AFilename);
+            if (Directory.Exists("/usr/share/fonts/"))
+            {
+                PdfSharp.Internal.NativeMethods.FontDirectory = "/usr/share/fonts/";
+            }
+
+            if (RegionInfo.CurrentRegion == null)
+            {
+                // https://bugzilla.novell.com/show_bug.cgi?id=588708
+                // RegionInfo.CurrentRegion is null
+                throw new Exception("Mono bug: CurrentRegion is still null, invariant culture. Please set LANG environment variable");
+            }
+
+            PdfDocument pdfDocument = new PdfDocument();
 
             do
             {
@@ -423,25 +483,36 @@ namespace Ict.Common.Printing
 
                 if (FEv == null)
                 {
-                    PageSettings myPageSettings = new PageSettings();
+                    PrinterSettings myPrinterSettings = new PrinterSettings();
+                    PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
                     myPageSettings.Margins = new Margins(20, 20, 20, 39);
-                    myPageSettings.PaperSize = new PaperSize("A4", 1169, 827);
-                    myPageSettings.PrinterResolution.X = 600;
-                    myPageSettings.PrinterResolution.Y = 600;
+                    myPageSettings.PaperSize = new PaperSize("A4", 900, 827);
+                    try
+                    {
+                        myPageSettings.PrinterResolution.X = 600;
+                        myPageSettings.PrinterResolution.Y = 600;
+                    }
+                    catch (Exception)
+                    {
+                        // if no printer is installed we get an exception, but it should work anyway
+                    }
                     FEv = new PrintPageEventArgs(FXGraphics.Graphics,
                         new Rectangle(20, 20, 787, 1110),
                         new Rectangle(0, 0, 827, 1169),
                         myPageSettings);
                     FEv.HasMorePages = true;
                     FEv.Graphics.PageUnit = GraphicsUnit.Inch;
+                    FEv.Graphics.TranslateTransform(0, 0);
                     InitFontsAndPens();
                 }
 
                 PrintPage(null, FEv);
             } while (HasMorePages());
 
+            // should we catch an exception if document cannot be written?
+            pdfDocument.Save(AFilename);
             pdfDocument.Close();
         }
     }

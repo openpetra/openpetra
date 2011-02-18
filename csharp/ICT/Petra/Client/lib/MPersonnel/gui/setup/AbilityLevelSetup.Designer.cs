@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailAbilityLevel.Location = new System.Drawing.Point(2,2);
             this.txtDetailAbilityLevel.Name = "txtDetailAbilityLevel";
-            this.txtDetailAbilityLevel.Size = new System.Drawing.Size(80, 28);
+            this.txtDetailAbilityLevel.Size = new System.Drawing.Size(30, 28);
             this.txtDetailAbilityLevel.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
             this.txtDetailAbilityLevel.DecimalPlaces = 2;
             this.txtDetailAbilityLevel.NullValueAllowed = true;
@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //
             this.txtDetailAbilityLevelDescr.Location = new System.Drawing.Point(2,2);
             this.txtDetailAbilityLevelDescr.Name = "txtDetailAbilityLevelDescr";
-            this.txtDetailAbilityLevelDescr.Size = new System.Drawing.Size(360, 28);
+            this.txtDetailAbilityLevelDescr.Size = new System.Drawing.Size(410, 28);
             //
             // lblDetailAbilityLevelDescr
             //

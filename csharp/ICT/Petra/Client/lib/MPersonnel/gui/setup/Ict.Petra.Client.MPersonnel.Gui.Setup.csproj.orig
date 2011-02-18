@@ -1,0 +1,282 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{34FF59D0-55BE-408F-9849-7177F88C08E5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ict.Petra.Client.MPersonnel.Gui.Setup</RootNamespace>
+    <AssemblyName>Ict.Petra.Client.MPersonnel.Gui.Setup</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <BaseIntermediateOutputPath>..\..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
+    <DocumentationFile>..\..\..\..\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.xml</DocumentationFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0067</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel.DataSets">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MPersonnel.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MPersonnel.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbilityAreaSetup.cs" />
+    <Compile Include="AbilityAreaSetup.Designer.cs">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AbilityAreaSetup.ManualCode.cs">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </Compile>
+<<<<<<< TREE
+    <Compile Include="ApplicationTypeSetup.cs" />
+    <Compile Include="ApplicationTypeSetup.Designer.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+=======
+    <Compile Include="AbilityLevelSetup.cs" />
+    <Compile Include="AbilityLevelSetup.Designer.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
+    </Compile>
+<<<<<<< TREE
+    <Compile Include="ApplicationTypeSetup.ManualCode.cs">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+=======
+    <Compile Include="AbilityLevelSetup.ManualCode.cs">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
+    </Compile>
+    <Compile Include="Ict.Petra.Client.MPersonnel.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="LeavingCodeSetup.cs" />
+    <Compile Include="LeavingCodeSetup.Designer.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LeavingCodeSetup.ManualCode.cs">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageLevelSetup.cs" />
+    <Compile Include="LanguageLevelSetup.Designer.cs">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportTypeSetup.cs" />
+    <Compile Include="PassportTypeSetup.Designer.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PassportTypeSetup.ManualCode.cs">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PositionSetup.cs" />
+    <Compile Include="PositionSetup.Designer.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageLevelSetup.ManualCode.cs">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PositionSetup.ManualCode.cs">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValuableItemSetup.cs" />
+    <Compile Include="ValuableItemSetup.Designer.cs">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValuableItemSetup.ManualCode.cs">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionLevelSetup.cs" />
+    <Compile Include="VisionLevelSetup.Designer.cs">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionLevelSetup.ManualCode.cs">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionAreaSetup.cs" />
+    <Compile Include="VisionAreaSetup.Designer.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VisionAreaSetup.ManualCode.cs">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.cs" />
+    <Compile Include="ApplicantStatusSetup.Designer.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApplicantStatusSetup.ManualCode.cs">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Country_EventLevelSetup.cs" />
+    <Compile Include="Country_EventLevelSetup.Designer.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Country_EventLevelSetup.ManualCode.cs">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.cs" />
+    <Compile Include="QualificationLevelSetup.Designer.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QualificationLevelSetup.ManualCode.cs">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentTypesCategorySetup.cs" />
+    <Compile Include="DocumentTypesCategorySetup.Designer.cs">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DocumentTypesCategorySetup.ManualCode.cs">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DriverStatusSetup.cs" />
+    <Compile Include="DriverStatusSetup.Designer.cs">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DriverStatusSetup.ManualCode.cs">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </Compile>
+	<Compile Include="ProfessionalAreaSetup.cs" />
+    <Compile Include="ProfessionalAreaSetup.Designer.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProfessionalAreaSetup.ManualCode.cs">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AbilityAreaSetup.resx">
+      <DependentUpon>AbilityAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+<<<<<<< TREE
+    <EmbeddedResource Include="ApplicationTypeSetup.resx">
+      <DependentUpon>ApplicationTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LeavingCodeSetup.resx">
+      <DependentUpon>LeavingCodeSetup.cs</DependentUpon>
+    </EmbeddedResource>    
+    <EmbeddedResource Include="LanguageLevelSetup.resx">
+      <DependentUpon>LanguageLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PassportTypeSetup.resx">
+      <DependentUpon>PassportTypeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PositionSetup.resx">
+      <DependentUpon>PositionSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValuableItemSetup.resx">
+      <DependentUpon>ValuableItemSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisionLevelSetup.resx">
+      <DependentUpon>VisionLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisionAreaSetup.resx">
+      <DependentUpon>VisionAreaSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplicantStatusSetup.resx">
+      <DependentUpon>ApplicantStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Country_EventLevelSetup.resx">
+      <DependentUpon>Country_EventLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QualificationLevelSetup.resx">
+      <DependentUpon>QualificationLevelSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DocumentTypesCategorySetup.resx">
+      <DependentUpon>DocumentTypesCategorySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DriverStatusSetup.resx">
+      <DependentUpon>DriverStatusSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfessionalAreaSetup.resx">
+      <DependentUpon>ProfessionalAreaSetup.cs</DependentUpon>
+=======
+    <EmbeddedResource Include="AbilityLevelSetup.resx">
+      <DependentUpon>AbilityLevelSetup.cs</DependentUpon>
+>>>>>>> MERGE-SOURCE
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
+      <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
+      <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

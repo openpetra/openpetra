@@ -50,8 +50,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         private PSubscriptionTable TablePSubscription;
         private PLocationTable TablePLocation;
         private PartnerEditTDSPPartnerLocationTable TablePPartnerLocation;
-        private PartnerEditTDSPPersonTable TablePPerson;
         private PartnerEditTDSPFamilyTable TablePFamily;
+        private PartnerEditTDSPPersonTable TablePPerson;
         private PUnitTable TablePUnit;
         private UmUnitStructureTable TableUmUnitStructure;
         private POrganisationTable TablePOrganisation;
@@ -140,20 +140,20 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
 
         /// auto generated
-        public PartnerEditTDSPPersonTable PPerson
-        {
-            get
-            {
-                return this.TablePPerson;
-            }
-        }
-
-        /// auto generated
         public PartnerEditTDSPFamilyTable PFamily
         {
             get
             {
                 return this.TablePFamily;
+            }
+        }
+
+        /// auto generated
+        public PartnerEditTDSPPersonTable PPerson
+        {
+            get
+            {
+                return this.TablePPerson;
             }
         }
 
@@ -378,8 +378,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.Tables.Add(new PSubscriptionTable("PSubscription"));
             this.Tables.Add(new PLocationTable("PLocation"));
             this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
-            this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
             this.Tables.Add(new PartnerEditTDSPFamilyTable("PFamily"));
+            this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
             this.Tables.Add(new PUnitTable("PUnit"));
             this.Tables.Add(new UmUnitStructureTable("UmUnitStructure"));
             this.Tables.Add(new POrganisationTable("POrganisation"));
@@ -428,13 +428,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.Tables.Add(new PartnerEditTDSPPartnerLocationTable("PPartnerLocation"));
             }
-            if ((ds.Tables.IndexOf("PPerson") != -1))
-            {
-                this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
-            }
             if ((ds.Tables.IndexOf("PFamily") != -1))
             {
                 this.Tables.Add(new PartnerEditTDSPFamilyTable("PFamily"));
+            }
+            if ((ds.Tables.IndexOf("PPerson") != -1))
+            {
+                this.Tables.Add(new PartnerEditTDSPPersonTable("PPerson"));
             }
             if ((ds.Tables.IndexOf("PUnit") != -1))
             {
@@ -555,13 +555,13 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             {
                 this.TablePPartnerLocation.InitVars();
             }
-            if ((this.TablePPerson != null))
-            {
-                this.TablePPerson.InitVars();
-            }
             if ((this.TablePFamily != null))
             {
                 this.TablePFamily.InitVars();
+            }
+            if ((this.TablePPerson != null))
+            {
+                this.TablePPerson.InitVars();
             }
             if ((this.TablePUnit != null))
             {
@@ -666,8 +666,8 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this.TablePSubscription = ((PSubscriptionTable)(this.Tables["PSubscription"]));
             this.TablePLocation = ((PLocationTable)(this.Tables["PLocation"]));
             this.TablePPartnerLocation = ((PartnerEditTDSPPartnerLocationTable)(this.Tables["PPartnerLocation"]));
-            this.TablePPerson = ((PartnerEditTDSPPersonTable)(this.Tables["PPerson"]));
             this.TablePFamily = ((PartnerEditTDSPFamilyTable)(this.Tables["PFamily"]));
+            this.TablePPerson = ((PartnerEditTDSPPersonTable)(this.Tables["PPerson"]));
             this.TablePUnit = ((PUnitTable)(this.Tables["PUnit"]));
             this.TableUmUnitStructure = ((UmUnitStructureTable)(this.Tables["UmUnitStructure"]));
             this.TablePOrganisation = ((POrganisationTable)(this.Tables["POrganisation"]));
@@ -1325,6 +1325,223 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         }
     }
 
+    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
+    [Serializable()]
+    public class PartnerEditTDSPFamilyTable : PFamilyTable
+    {
+        /// TableId for Ict.Common.Data generic functions
+        public new static short TableId = 48;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnUnitNameId = 15;
+
+        /// constructor
+        public PartnerEditTDSPFamilyTable() :
+                base("PFamily")
+        {
+        }
+
+        /// constructor
+        public PartnerEditTDSPFamilyTable(string ATablename) :
+                base(ATablename)
+        {
+        }
+
+        /// constructor for serialization
+        public PartnerEditTDSPFamilyTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+                base(info, context)
+        {
+        }
+
+        ///
+        public DataColumn ColumnUnitName;
+
+        /// create the columns
+        protected override void InitClass()
+        {
+            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_members_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_different_surnames_l", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
+            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
+        }
+
+        /// assign columns to properties, set primary key
+        public override void InitVars()
+        {
+            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
+            this.ColumnFamilyMembers = this.Columns["p_family_members_l"];
+            this.ColumnTitle = this.Columns["p_title_c"];
+            this.ColumnFirstName = this.Columns["p_first_name_c"];
+            this.ColumnFamilyName = this.Columns["p_family_name_c"];
+            this.ColumnDifferentSurnames = this.Columns["p_different_surnames_l"];
+            this.ColumnFieldKey = this.Columns["p_field_key_n"];
+            this.ColumnMaritalStatus = this.Columns["p_marital_status_c"];
+            this.ColumnMaritalStatusSince = this.Columns["p_marital_status_since_d"];
+            this.ColumnMaritalStatusComment = this.Columns["p_marital_status_comment_c"];
+            this.ColumnDateCreated = this.Columns["s_date_created_d"];
+            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
+            this.ColumnDateModified = this.Columns["s_date_modified_d"];
+            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
+            this.ColumnModificationId = this.Columns["s_modification_id_c"];
+            this.ColumnUnitName = this.Columns["p_unit_name_c"];
+            this.PrimaryKey = new System.Data.DataColumn[1] {
+                    ColumnPartnerKey};
+        }
+
+        /// Access a typed row by index
+        public new PartnerEditTDSPFamilyRow this[int i]
+        {
+            get
+            {
+                return ((PartnerEditTDSPFamilyRow)(this.Rows[i]));
+            }
+        }
+
+        /// create a new typed row
+        public new PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
+        {
+            PartnerEditTDSPFamilyRow ret = ((PartnerEditTDSPFamilyRow)(this.NewRow()));
+            if ((AWithDefaultValues == true))
+            {
+                ret.InitValues();
+            }
+            return ret;
+        }
+
+        /// create a new typed row, always with default values
+        public new PartnerEditTDSPFamilyRow NewRowTyped()
+        {
+            return this.NewRowTyped(true);
+        }
+
+        /// new typed row using DataRowBuilder
+        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
+        {
+            return new PartnerEditTDSPFamilyRow(builder);
+        }
+
+        /// get typed set of changes
+        public new PartnerEditTDSPFamilyTable GetChangesTyped()
+        {
+            return ((PartnerEditTDSPFamilyTable)(base.GetChangesTypedInternal()));
+        }
+
+        /// return the CamelCase name of the table
+        public static new string GetTableName()
+        {
+            return "PFamily";
+        }
+
+        /// return the name of the table as it is used in the database
+        public static new string GetTableDBName()
+        {
+            return "p_family";
+        }
+
+        /// get an odbc parameter for the given column
+        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
+        {
+            return CreateOdbcParameter(TableId, AColumnNr);
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetUnitNameDBName()
+        {
+            return "p_unit_name_c";
+        }
+
+        /// get character length for column
+        public static short GetUnitNameLength()
+        {
+            return 160;
+        }
+
+    }
+
+    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
+    [Serializable()]
+    public class PartnerEditTDSPFamilyRow : PFamilyRow
+    {
+        private PartnerEditTDSPFamilyTable myTable;
+
+        /// Constructor
+        public PartnerEditTDSPFamilyRow(System.Data.DataRowBuilder rb) :
+                base(rb)
+        {
+            this.myTable = ((PartnerEditTDSPFamilyTable)(this.Table));
+        }
+
+        ///
+        public String UnitName
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnUnitName.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnUnitName)
+                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
+                {
+                    this[this.myTable.ColumnUnitName] = value;
+                }
+            }
+        }
+
+        /// set default values
+        public override void InitValues()
+        {
+            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this[this.myTable.ColumnFamilyMembers.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnTitle);
+            this.SetNull(this.myTable.ColumnFirstName);
+            this.SetNull(this.myTable.ColumnFamilyName);
+            this[this.myTable.ColumnDifferentSurnames.Ordinal] = false;
+            this.SetNull(this.myTable.ColumnFieldKey);
+            this[this.myTable.ColumnMaritalStatus.Ordinal] = "U";
+            this.SetNull(this.myTable.ColumnMaritalStatusSince);
+            this.SetNull(this.myTable.ColumnMaritalStatusComment);
+            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
+            this.SetNull(this.myTable.ColumnCreatedBy);
+            this.SetNull(this.myTable.ColumnDateModified);
+            this.SetNull(this.myTable.ColumnModifiedBy);
+            this.SetNull(this.myTable.ColumnModificationId);
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+
+        /// test for NULL value
+        public bool IsUnitNameNull()
+        {
+            return this.IsNull(this.myTable.ColumnUnitName);
+        }
+
+        /// assign NULL value
+        public void SetUnitNameNull()
+        {
+            this.SetNull(this.myTable.ColumnUnitName);
+        }
+    }
+
     /// Details of a person.  A person must also have a related FAMILY class p_partner record.
     [Serializable()]
     public class PartnerEditTDSPPersonTable : PPersonTable
@@ -1552,223 +1769,6 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this[this.myTable.ColumnFamilyId.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnFieldKey);
             this.SetNull(this.myTable.ColumnAcademicTitle);
-            this.SetNull(this.myTable.ColumnMaritalStatusSince);
-            this.SetNull(this.myTable.ColumnMaritalStatusComment);
-            this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
-            this.SetNull(this.myTable.ColumnCreatedBy);
-            this.SetNull(this.myTable.ColumnDateModified);
-            this.SetNull(this.myTable.ColumnModifiedBy);
-            this.SetNull(this.myTable.ColumnModificationId);
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-
-        /// test for NULL value
-        public bool IsUnitNameNull()
-        {
-            return this.IsNull(this.myTable.ColumnUnitName);
-        }
-
-        /// assign NULL value
-        public void SetUnitNameNull()
-        {
-            this.SetNull(this.myTable.ColumnUnitName);
-        }
-    }
-
-    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
-    [Serializable()]
-    public class PartnerEditTDSPFamilyTable : PFamilyTable
-    {
-        /// TableId for Ict.Common.Data generic functions
-        public new static short TableId = 48;
-        /// used for generic TTypedDataTable functions
-        public static short ColumnUnitNameId = 15;
-
-        /// constructor
-        public PartnerEditTDSPFamilyTable() :
-                base("PFamily")
-        {
-        }
-
-        /// constructor
-        public PartnerEditTDSPFamilyTable(string ATablename) :
-                base(ATablename)
-        {
-        }
-
-        /// constructor for serialization
-        public PartnerEditTDSPFamilyTable(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
-                base(info, context)
-        {
-        }
-
-        ///
-        public DataColumn ColumnUnitName;
-
-        /// create the columns
-        protected override void InitClass()
-        {
-            this.Columns.Add(new System.Data.DataColumn("p_partner_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_members_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("p_title_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_first_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_family_name_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_different_surnames_l", typeof(Boolean)));
-            this.Columns.Add(new System.Data.DataColumn("p_field_key_n", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("p_marital_status_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_marital_status_since_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("p_marital_status_comment_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
-            this.Columns.Add(new System.Data.DataColumn("p_unit_name_c", typeof(String)));
-        }
-
-        /// assign columns to properties, set primary key
-        public override void InitVars()
-        {
-            this.ColumnPartnerKey = this.Columns["p_partner_key_n"];
-            this.ColumnFamilyMembers = this.Columns["p_family_members_l"];
-            this.ColumnTitle = this.Columns["p_title_c"];
-            this.ColumnFirstName = this.Columns["p_first_name_c"];
-            this.ColumnFamilyName = this.Columns["p_family_name_c"];
-            this.ColumnDifferentSurnames = this.Columns["p_different_surnames_l"];
-            this.ColumnFieldKey = this.Columns["p_field_key_n"];
-            this.ColumnMaritalStatus = this.Columns["p_marital_status_c"];
-            this.ColumnMaritalStatusSince = this.Columns["p_marital_status_since_d"];
-            this.ColumnMaritalStatusComment = this.Columns["p_marital_status_comment_c"];
-            this.ColumnDateCreated = this.Columns["s_date_created_d"];
-            this.ColumnCreatedBy = this.Columns["s_created_by_c"];
-            this.ColumnDateModified = this.Columns["s_date_modified_d"];
-            this.ColumnModifiedBy = this.Columns["s_modified_by_c"];
-            this.ColumnModificationId = this.Columns["s_modification_id_c"];
-            this.ColumnUnitName = this.Columns["p_unit_name_c"];
-            this.PrimaryKey = new System.Data.DataColumn[1] {
-                    ColumnPartnerKey};
-        }
-
-        /// Access a typed row by index
-        public new PartnerEditTDSPFamilyRow this[int i]
-        {
-            get
-            {
-                return ((PartnerEditTDSPFamilyRow)(this.Rows[i]));
-            }
-        }
-
-        /// create a new typed row
-        public new PartnerEditTDSPFamilyRow NewRowTyped(bool AWithDefaultValues)
-        {
-            PartnerEditTDSPFamilyRow ret = ((PartnerEditTDSPFamilyRow)(this.NewRow()));
-            if ((AWithDefaultValues == true))
-            {
-                ret.InitValues();
-            }
-            return ret;
-        }
-
-        /// create a new typed row, always with default values
-        public new PartnerEditTDSPFamilyRow NewRowTyped()
-        {
-            return this.NewRowTyped(true);
-        }
-
-        /// new typed row using DataRowBuilder
-        protected override System.Data.DataRow NewRowFromBuilder(System.Data.DataRowBuilder builder)
-        {
-            return new PartnerEditTDSPFamilyRow(builder);
-        }
-
-        /// get typed set of changes
-        public new PartnerEditTDSPFamilyTable GetChangesTyped()
-        {
-            return ((PartnerEditTDSPFamilyTable)(base.GetChangesTypedInternal()));
-        }
-
-        /// return the CamelCase name of the table
-        public static new string GetTableName()
-        {
-            return "PFamily";
-        }
-
-        /// return the name of the table as it is used in the database
-        public static new string GetTableDBName()
-        {
-            return "p_family";
-        }
-
-        /// get an odbc parameter for the given column
-        public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
-        {
-            return CreateOdbcParameter(TableId, AColumnNr);
-        }
-
-        /// get the name of the field in the database for this column
-        public static string GetUnitNameDBName()
-        {
-            return "p_unit_name_c";
-        }
-
-        /// get character length for column
-        public static short GetUnitNameLength()
-        {
-            return 160;
-        }
-
-    }
-
-    /// Contains details about a family in Partnership with us.  May have P_Person records linked to it.
-    [Serializable()]
-    public class PartnerEditTDSPFamilyRow : PFamilyRow
-    {
-        private PartnerEditTDSPFamilyTable myTable;
-
-        /// Constructor
-        public PartnerEditTDSPFamilyRow(System.Data.DataRowBuilder rb) :
-                base(rb)
-        {
-            this.myTable = ((PartnerEditTDSPFamilyTable)(this.Table));
-        }
-
-        ///
-        public String UnitName
-        {
-            get
-            {
-                object ret;
-                ret = this[this.myTable.ColumnUnitName.Ordinal];
-                if ((ret == System.DBNull.Value))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return ((String)(ret));
-                }
-            }
-            set
-            {
-                if ((this.IsNull(this.myTable.ColumnUnitName)
-                            || (((String)(this[this.myTable.ColumnUnitName])) != value)))
-                {
-                    this[this.myTable.ColumnUnitName] = value;
-                }
-            }
-        }
-
-        /// set default values
-        public override void InitValues()
-        {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
-            this[this.myTable.ColumnFamilyMembers.Ordinal] = false;
-            this.SetNull(this.myTable.ColumnTitle);
-            this.SetNull(this.myTable.ColumnFirstName);
-            this.SetNull(this.myTable.ColumnFamilyName);
-            this[this.myTable.ColumnDifferentSurnames.Ordinal] = false;
-            this.SetNull(this.myTable.ColumnFieldKey);
-            this[this.myTable.ColumnMaritalStatus.Ordinal] = "U";
             this.SetNull(this.myTable.ColumnMaritalStatusSince);
             this.SetNull(this.myTable.ColumnMaritalStatusComment);
             this[this.myTable.ColumnDateCreated.Ordinal] = DateTime.Today;
@@ -8161,7 +8161,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
             this[this.myTable.ColumnFamilyKey.Ordinal] = 0;
             this.SetNull(this.myTable.ColumnPreviousName);
             this.SetNull(this.myTable.ColumnField);
-            this[this.myTable.ColumnFieldKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnFieldKey);
             this.SetNull(this.myTable.ColumnNotes);
         }
 
@@ -8521,7 +8521,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// set default values
         public virtual void InitValues()
         {
-            this[this.myTable.ColumnParentUnitKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnParentUnitKey);
             this.SetNull(this.myTable.ColumnParentUnitName);
         }
 
