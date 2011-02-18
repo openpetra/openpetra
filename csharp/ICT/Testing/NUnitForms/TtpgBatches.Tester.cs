@@ -58,7 +58,8 @@ namespace Ict.Testing.NUnitForms
             this.tFrmGLBatchTester = tFrmGLBatchTester;
 
 
-            txtLedgerNumber = new TextBoxTester("ucoBatches.pnlContent.pnlInfo.tableLayoutPanel1.pnlLedgerInfo.tableLayoutPanel2.txtLedgerNumber", tFrmGLBatch);
+            txtLedgerNumber = new TextBoxTester("ucoBatches.pnlContent.pnlInfo.tableLayoutPanel1.pnlLedgerInfo.tableLayoutPanel2.txtLedgerNumber",
+                tFrmGLBatch);
 
             rbtPosting = new RadioButtonTester("rbtPosting", tFrmGLBatch);
             rbtEditing = new RadioButtonTester("rbtEditing", tFrmGLBatch);
@@ -73,11 +74,7 @@ namespace Ict.Testing.NUnitForms
             dtpDetailDateEffective = new TextBoxTester("ucoBatches.pnlContent.pnlDetails.tableLayoutPanel5.dtpDetailDateEffective", tFrmGLBatch);
 
             lblValidDateRange = new LabelTester("lblValidDateRange", tFrmGLBatch);
-            System.Console.WriteLine("123");
             grdDetails = new TSgrdDataGridPagedTester("ucoBatches.pnlContent.pnlDetailGrid.grdDetails", tFrmGLBatch);
-            System.Console.WriteLine("123#");
-//            grdDetails.AddASourceGridSelectionTester(
-//            	new SourceGridSelectionTester("tpgBatches.grdDetails.Selection"));
         }
 
         public void SelectThisTab()

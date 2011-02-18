@@ -136,17 +136,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
-            UpdateChangeableStatus(true);
+            UpdateChangeableStatus(ARow != null);
 
-            FPetraUtilsObject.DetailProtectedMode =
-                (ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED)
-                 || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
+            if (ARow != null)
+            {
+                FPetraUtilsObject.DetailProtectedMode =
+                    (ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED)
+                     || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
-            ((TFrmGLBatch)ParentForm).LoadJournals(
-                ARow.LedgerNumber,
-                ARow.BatchNumber);
+                ((TFrmGLBatch)ParentForm).LoadJournals(
+                    ARow.LedgerNumber,
+                    ARow.BatchNumber);
 
-            FSelectedBatchNumber = ARow.BatchNumber;
+                FSelectedBatchNumber = ARow.BatchNumber;
+            }
         }
 
         /// <summary>
@@ -167,8 +170,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            // CreateNewABatch();
-
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
@@ -180,17 +181,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-
             grdDetails.Refresh();
-
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+            // dtpDetailDateEffective.Date = DefaultDate;
 
-
-            dtpDetailDateEffective.Date = DefaultDate;
-
-            // TODO: on change of FMainDS.ABatch[GetSelectedDetailDataTableIndex()].DateEffective
-            // also change FMainDS.ABatch[GetSelectedDetailDataTableIndex()].BatchPeriod
-            // and control this.dtpDateCantBeBeyond
+            // grdDetails.Selection.SelectRow(1,true);
         }
 
         /// <summary>
@@ -262,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
 
@@ -365,30 +360,60 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowIndex;
         }
 
+        public void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            {
+                rowIndex = 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                grdDetails.Selection.ResetSelection(false);
+                FPreviouslySelectedDetailRow = null;
+            }
+        }
+
         /// <summary>
         /// This routine is invoked if no Batch-Row has been selected. The idea was to
         /// select the "old row again" defined by row index but in this case
         /// the list of batches ist filtered. So the row must not exist any more.
         /// </summary>
         /// <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
-        private void SelectByIndex(int rowIndex)
-        {
-            // In the very first call FPetraUtilsObject does not exists
-            // Thererfore try-catch ..
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchControlTotal.Text = "";
-                txtDetailBatchDescription.Text = "";
-                dtpDetailDateEffective.Text = "";
-                UpdateChangeableStatus(false);
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
-            catch (Exception)
-            {
-            }
-            ;
-        }
+//        private void SelectByIndex(int rowIndex)
+//        {
+//            // In the very first call FPetraUtilsObject does not exists
+//            // Thererfore try-catch ..
+//            try
+//            {
+//                FPetraUtilsObject.DisableDataChangedEvent();
+//                txtDetailBatchControlTotal.Text = "";
+//                txtDetailBatchDescription.Text = "";
+//                dtpDetailDateEffective.Text = "";
+//                UpdateChangeableStatus(false);
+//                FPetraUtilsObject.EnableDataChangedEvent();
+////                if (rowIndex >=   grdDetails.Rows)
+////                {
+////                    rowIndex = rowIndex--;
+////                }
+//                grdDetails.Selection.SelectRow(rowIndex,true);
+//            }
+//            catch (Exception)
+//            {
+//            }
+//            ;
+//        }
 
         /// <summary>
         /// Program reaction of a change of the value of 3 nested radio buttons, which means

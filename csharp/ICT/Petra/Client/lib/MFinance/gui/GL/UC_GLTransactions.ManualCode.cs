@@ -40,6 +40,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
 
+
+        ForeignCurrencyCalculations foreignCurrencyCalculations;
+
+
         /// <summary>
         /// Exchange rate for the forreign currency will be stored here after it is read from the
         /// Journal tab. The "do not use" value is zero.
@@ -172,6 +176,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+                foreignCurrencyCalculations = new ForeignCurrencyCalculations(
+                    TransactionCurrency, GetJournalRow().DateEffective);
             }
         }
 
@@ -252,8 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow != null)
             {
-                ARow.AmountInBaseCurrency = exchangeRateForeign * ARow.TransactionAmount;
-                ARow.AmountInIntlCurrency = exchangeRateInternational * ARow.TransactionAmount;
+                ARow.AmountInBaseCurrency = ARow.TransactionAmount / exchangeRateForeign;
+                ARow.AmountInIntlCurrency = ARow.TransactionAmount / exchangeRateInternational;
             }
 
             // transactions are filtered for this journal; add up the total amounts

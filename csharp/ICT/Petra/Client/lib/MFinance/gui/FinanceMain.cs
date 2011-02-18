@@ -306,6 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui
     protected void OpenScreenSetupDailyExchangeRate(object sender, EventArgs e)
     {
         Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate frm = new Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupDailyExchangeRate(this.Handle);
+        frm.LedgerNumber = FLedgerNumber;
         frm.Show();
     }
 

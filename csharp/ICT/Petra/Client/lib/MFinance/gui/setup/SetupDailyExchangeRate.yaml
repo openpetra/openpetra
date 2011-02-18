@@ -42,9 +42,9 @@ RootNode:
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {Label=&Rate of exchange}
-        lblValueOneDirection: {TODO=true}
-        lblValueOtherDirection: {TODO=true}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange}
+        lblValueOneDirection: 
+        lblValueOtherDirection: 
     Menu:
         mniExchangeRates:
             mniImport:

@@ -24,13 +24,13 @@ using System.Windows.Forms;
 using NUnit.Extensions.Forms;
 using Ict.Common.Controls;
 using Ict.Testing.NUnitForms;
-using SourceGrid;  
+using SourceGrid;
 
 namespace Ict.Testing.NUnitForms
 {
-	/// <summary>
-	/// Description of SourceGridSelectionTester.
-	/// </summary>
+    /// <summary>
+    /// Description of SourceGridSelectionTester.
+    /// </summary>
     public class SourceGridSelectionTester : ControlTester
     {
         private SourceGrid.Selection.RowSelection TheObject;
@@ -38,19 +38,17 @@ namespace Ict.Testing.NUnitForms
         /// constructor
         public SourceGridSelectionTester(string name)
         {
-            Finder <SourceGrid.Selection.RowSelection>finder = 
-            	new Finder <SourceGrid.Selection.RowSelection>(name);
+            Finder <SourceGrid.Selection.RowSelection>finder =
+                new Finder <SourceGrid.Selection.RowSelection>(name);
             TheObject = finder.Find();
         }
 
         /// constructor
         public SourceGridSelectionTester()
         {
-            Finder <SourceGrid.Selection.RowSelection>finder = 
-            	new Finder <SourceGrid.Selection.RowSelection>();
+            Finder <SourceGrid.Selection.RowSelection>finder =
+                new Finder <SourceGrid.Selection.RowSelection>();
             TheObject = finder.Find();
         }
-
-        
     }
 }

@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -239,6 +239,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
+            ShowDetailsManual(ARow);
         }
         else
         {
@@ -250,6 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dtpDetailDateEffectiveFrom.Date = ARow.DateEffectiveFrom;
             dtpDetailDateEffectiveFrom.Enabled = (ARow.RowState == DataRowState.Added);
             txtDetailRateOfExchange.Text = ARow.RateOfExchange.ToString();
+            ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
