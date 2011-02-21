@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
       this.lblDetailTransactionCurrency.Text = Catalog.GetString("Currency:");
       this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
       this.lblDetailExchangeRateToBase.Text = Catalog.GetString("Exchange Rate to Base:");
+      this.btnGetSetExchangeRate.Text = Catalog.GetString("Get/Set Exchange Rate");
       #endregion
 
       this.txtCurrentPeriod.Font = TAppSettingsManager.GetDefaultBoldFont();

@@ -32,12 +32,16 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
+using Ict.Petra.Client.MFinance.Gui.Setup;
+
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLJournals
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        
+        private string strCurrencySymbol;
 
 
         /// <summary>
@@ -71,6 +75,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
             UpdateChangeableStatus();
+            
+            
+        }
+        
+        public void WorkAroundInitialization()
+        {
+        	this.btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
+        }
+        
+        private void SetExchangeRateValue(Object sender, EventArgs e)
+        {
+        	TFrmSetupDailyExchangeRate setupDailyExchangeRate = 
+        		new TFrmSetupDailyExchangeRate(this.Handle);
+        	setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
+        	setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value, 
+        	                                      cmbDetailTransactionCurrency.GetSelectedString());
+        	setupDailyExchangeRate.ShowDialog(this);
+        	txtDetailExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate;
         }
 
         /// <summary>
@@ -109,6 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            strCurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
         }
 
         private void ShowDetailsManual(AJournalRow ARow)

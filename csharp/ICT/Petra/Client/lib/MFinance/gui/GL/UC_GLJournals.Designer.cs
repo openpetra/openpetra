@@ -100,6 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailDateEffective = new System.Windows.Forms.Label();
             this.txtDetailExchangeRateToBase = new System.Windows.Forms.TextBox();
             this.lblDetailExchangeRateToBase = new System.Windows.Forms.Label();
+            this.btnGetSetExchangeRate = new System.Windows.Forms.Button();
 
             this.pnlContent.SuspendLayout();
             this.pnlInfo.SuspendLayout();
@@ -437,7 +438,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDetailExchangeRateToBase.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailExchangeRateToBase.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailExchangeRateToBase.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel3.ColumnCount = 2;
+            //
+            // btnGetSetExchangeRate
+            //
+            this.btnGetSetExchangeRate.Location = new System.Drawing.Point(2,2);
+            this.btnGetSetExchangeRate.Name = "btnGetSetExchangeRate";
+            this.btnGetSetExchangeRate.AutoSize = true;
+            this.btnGetSetExchangeRate.Text = "Get/Set Exchange Rate";
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.RowCount = 6;
@@ -459,6 +468,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tableLayoutPanel3.Controls.Add(this.cmbDetailTransactionCurrency, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.dtpDetailDateEffective, 1, 4);
             this.tableLayoutPanel3.Controls.Add(this.txtDetailExchangeRateToBase, 1, 5);
+            this.tableLayoutPanel3.Controls.Add(this.btnGetSetExchangeRate, 2, 5);
 
             //
             // TUC_GLJournals
@@ -521,5 +531,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblDetailDateEffective;
         private System.Windows.Forms.TextBox txtDetailExchangeRateToBase;
         private System.Windows.Forms.Label lblDetailExchangeRateToBase;
+        private System.Windows.Forms.Button btnGetSetExchangeRate;
     }
 }

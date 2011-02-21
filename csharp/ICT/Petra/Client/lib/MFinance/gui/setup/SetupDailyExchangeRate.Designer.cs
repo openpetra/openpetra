@@ -72,6 +72,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnNew = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.pnlDetails = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.cmbDetailFromCurrencyCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
@@ -82,6 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDateEffectiveFrom = new System.Windows.Forms.Label();
             this.txtDetailRateOfExchange = new System.Windows.Forms.TextBox();
             this.lblDetailRateOfExchange = new System.Windows.Forms.Label();
+            this.btnInvertExchangeRate = new System.Windows.Forms.Button();
             this.lblValueOneDirection = new System.Windows.Forms.Label();
             this.lblValueOtherDirection = new System.Windows.Forms.Label();
             this.tbrMain = new System.Windows.Forms.ToolStrip();
@@ -171,13 +174,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnDelete.AutoSize = true;
             this.btnDelete.Click += new System.EventHandler(this.DeleteRow);
             this.btnDelete.Text = "&Delete";
+            //
+            // btnClose
+            //
+            this.btnClose.Location = new System.Drawing.Point(2,2);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.AutoSize = true;
+            this.btnClose.Click += new System.EventHandler(this.CloseDialog);
+            this.btnClose.Text = "Close";
+            //
+            // btnCancel
+            //
+            this.btnCancel.Location = new System.Drawing.Point(2,2);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.AutoSize = true;
+            this.btnCancel.Click += new System.EventHandler(this.CancelDialog);
+            this.btnCancel.Text = "Cancel";
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.btnNew, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.btnDelete, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnClose, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnCancel, 0, 3);
             //
             // pnlDetails
             //
@@ -258,6 +281,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailRateOfExchange.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailRateOfExchange.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // btnInvertExchangeRate
+            //
+            this.btnInvertExchangeRate.Location = new System.Drawing.Point(2,2);
+            this.btnInvertExchangeRate.Name = "btnInvertExchangeRate";
+            this.btnInvertExchangeRate.AutoSize = true;
+            this.btnInvertExchangeRate.Text = "&Invert value";
+            //
             // lblValueOneDirection
             //
             this.lblValueOneDirection.Location = new System.Drawing.Point(2,2);
@@ -273,7 +303,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblValueOtherDirection.AutoSize = true;
             this.lblValueOtherDirection.Text = "Value Other Direction:";
             this.lblValueOtherDirection.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
-            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.RowCount = 6;
@@ -295,6 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.Controls.Add(this.cmbDetailToCurrencyCode, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.dtpDetailDateEffectiveFrom, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailRateOfExchange, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.btnInvertExchangeRate, 2, 3);
             //
             // tbbSave
             //
@@ -352,10 +384,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             this.mniClose.Name = "mniClose";
             this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.actClose);
-            this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
-            this.mniClose.ToolTipText = "Closes this window";
-            this.mniClose.Text = "&Close";
+            this.mniClose.Click += new System.EventHandler(this.CloseDialog);
+            this.mniClose.Text = "Close";
             //
             // mniFile
             //
@@ -530,6 +560,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel pnlDetails;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbDetailFromCurrencyCode;
@@ -540,6 +572,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblDetailDateEffectiveFrom;
         private System.Windows.Forms.TextBox txtDetailRateOfExchange;
         private System.Windows.Forms.Label lblDetailRateOfExchange;
+        private System.Windows.Forms.Button btnInvertExchangeRate;
         private System.Windows.Forms.Label lblValueOneDirection;
         private System.Windows.Forms.Label lblValueOtherDirection;
         private System.Windows.Forms.ToolStrip tbrMain;

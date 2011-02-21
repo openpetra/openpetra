@@ -45,7 +45,13 @@ RootNode:
             RowFilter: AJournal.BatchNumber
         pnlDetails:
             Dock: Bottom
-            Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]
+            Controls: 
+                Row0: [txtDetailJournalDescription]
+                Row1: [cmbDetailSubSystemCode]
+                Row2: [cmbDetailTransactionTypeCode]
+                Row3: [cmbDetailTransactionCurrency]
+                Row4: [dtpDetailDateEffective]
+                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
         txtDetailJournalDescription: {Label=Journal Description, Width=350}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
@@ -54,3 +60,4 @@ RootNode:
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label= Exchange Rate to Base}
+        btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

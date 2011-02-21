@@ -46,6 +46,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ucoBatches.FMainDS_ALedgerIsValidNow();
                 ucoTransactions.FMainDS_ALedgerIsValidNow();
                 ucoJournals.FMainDS_ALedgerIsValidNow();
+                
+                ucoJournals.WorkAroundInitialization();
             }
         }
 

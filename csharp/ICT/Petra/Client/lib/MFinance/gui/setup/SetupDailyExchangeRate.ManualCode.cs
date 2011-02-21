@@ -51,6 +51,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// The base currency is used to initialize the "from" combobox
         /// </summary>
         String baseCurrencyOfLedger;
+        
+        String strModalFormReturnValue;
+        
+        String strCurrencyToDefault;
+        DateTime dateTimeDefault;
+        bool blnUseDateTimeDefault = false;
 
         bool blnSelectedRowChangeable = false;
 
@@ -98,16 +104,73 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 this.tbbSave.Click +=
                     new System.EventHandler(this.SetTheFocusToTheGrid);
+                
+                this.btnInvertExchangeRate.Click +=
+                	new System.EventHandler(this.InvertExchangeRate);
+                
+                FMainDS.ADailyExchangeRate.DefaultView.Sort = 
+                	"a_date_effective_from_d desc, a_time_effective_from_i desc";
             }
         }
+        
+        public void SetDataFilters(DateTime dteEffective, string strCurrencyTo)
+        {
+        	DateTime dateLimit = dteEffective.AddDays(1.0);
+            DateTimeFormatInfo dateTimeFormat =
+            	new System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
+            string dateString = dateLimit.ToString("d", dateTimeFormat);
+        	
+        	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
+        		"a_from_currency_code_c = '" + baseCurrencyOfLedger + "' and " + 
+        		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
+        		"a_date_effective_from_d < '" + dateString + "'";
+
+        	strCurrencyToDefault = strCurrencyTo;
+            dateTimeDefault = dteEffective;
+            blnUseDateTimeDefault = true;
+        }
+        
+        public String CurrencyExchangeRate
+        {
+        	get 
+        	{
+        		return strModalFormReturnValue;
+        	}
+        }
+        
+        private void CloseDialog(object sender, EventArgs e)
+        {
+        	
+        	if (FPetraUtilsObject.CloseFormCheck())
+        	{
+        		if (CanClose()) {
+        			strModalFormReturnValue = txtDetailRateOfExchange.Text;
+        			blnUseDateTimeDefault = false;
+        			this.SaveChanges();
+        			Close();
+        		}
+        	} else {
+        		strModalFormReturnValue = "1.0";
+        		blnUseDateTimeDefault = false;
+        		Close();
+        	}
+        }
+        
+        private void CancelDialog(object sender, EventArgs e)
+        {
+        	strModalFormReturnValue = "1.0";
+        	blnUseDateTimeDefault = false;
+        	Close();
+        }
+        
 
         /// <summary>
         /// The focus is send to the grid to "unfocus" the input controls and to
-        /// enforce that the dataset is closed
+        /// enforce that the dataset verification routines are invoked
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
-        public void SetTheFocusToTheGrid(object sender, EventArgs e)
+        private void SetTheFocusToTheGrid(object sender, EventArgs e)
         {
             grdDetails.Focus();
         }
@@ -119,23 +182,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            DateTime dateTimeNow = DateTime.Now;
+        	DateTime dateTimeNow;
+            if (!blnUseDateTimeDefault) {
+            	dateTimeNow = DateTime.Now;
+            } else {
+            	dateTimeNow = dateTimeDefault;
+            }
             DateTime dateDate = DateTime.Parse(dateTimeNow.ToLongDateString());
+            dateTimeNow = DateTime.Now;
             DateTime dateTime = DateTime.Parse(dateTimeNow.ToLongTimeString());
 
             ADailyExchangeRateRow aDailyExchangeRateRow = FMainDS.ADailyExchangeRate.NewRowTyped();
 
             aDailyExchangeRateRow.FromCurrencyCode = baseCurrencyOfLedger;
 
+            if (strCurrencyToDefault == null) {
+            	if (FPreviouslySelectedDetailRow == null)
+            	{
+            		aDailyExchangeRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+            		aDailyExchangeRateRow.RateOfExchange = 1.0m;
+            	}
+            	else
+            	{
+            		aDailyExchangeRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
+            		aDailyExchangeRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
+            	}
+            } else {
+            	aDailyExchangeRateRow.ToCurrencyCode = strCurrencyToDefault;
+            	aDailyExchangeRateRow.RateOfExchange = 1.0m;
+            }
+            
             if (FPreviouslySelectedDetailRow == null)
             {
-                aDailyExchangeRateRow.ToCurrencyCode = baseCurrencyOfLedger;
-                aDailyExchangeRateRow.RateOfExchange = 1.0m;
-            }
-            else
-            {
-                aDailyExchangeRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-                aDailyExchangeRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
+            	cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
             }
 
             aDailyExchangeRateRow.DateEffectiveFrom = dateDate;
@@ -143,9 +222,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 (dateTime.Hour * 60 + dateTime.Minute) * 60 + dateTime.Second;
 
             FMainDS.ADailyExchangeRate.Rows.Add(aDailyExchangeRateRow);
+            grdDetails.Refresh();
 
             FPetraUtilsObject.SetChangedFlag();
             SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
+            
         }
 
         /// <summary>
@@ -191,10 +272,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             decimal exchangeRate;
             exchangeRate = Decimal.Parse(txtDetailRateOfExchange.Text);
 
-            lblValueOneDirection.Text = "1.0 " +
-                                        FPreviouslySelectedDetailRow.FromCurrencyCode.ToString() + " " +
-                                        exchangeRate.ToString("N", numberFormatInfo) + " " +
-                                        FPreviouslySelectedDetailRow.ToCurrencyCode.ToString();
+            if (FPreviouslySelectedDetailRow == null)
+            {
+            	lblValueOneDirection.Text = "#";
+            } else {
+            	lblValueOtherDirection.Text = "1.0 " +
+                                          FPreviouslySelectedDetailRow.ToCurrencyCode.ToString() + " " +
+                                          exchangeRate.ToString("N", numberFormatInfo) + " " +
+                                          FPreviouslySelectedDetailRow.FromCurrencyCode.ToString();
+            }
+
             try
             {
                 exchangeRate = 1 / exchangeRate;
@@ -203,10 +290,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 exchangeRate = 0;
             }
-            lblValueOtherDirection.Text = "1.0 " +
-                                          FPreviouslySelectedDetailRow.ToCurrencyCode.ToString() + " " +
-                                          exchangeRate.ToString("N", numberFormatInfo) + " " +
-                                          FPreviouslySelectedDetailRow.FromCurrencyCode.ToString();
+            if (FPreviouslySelectedDetailRow == null)
+            {
+            	lblValueOtherDirection.Text = "#";
+            } else {
+            	lblValueOneDirection.Text = "1.0 " +
+                                        FPreviouslySelectedDetailRow.FromCurrencyCode.ToString() + " " +
+                                        exchangeRate.ToString("N", numberFormatInfo) + " " +
+                                        FPreviouslySelectedDetailRow.ToCurrencyCode.ToString();
+            }
         }
 
         /// <summary>
@@ -224,18 +316,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void ValueChangedCurrencyCode()
         {
+        	if (FPreviouslySelectedDetailRow != null)
+        	{
+        	FPreviouslySelectedDetailRow.ToCurrencyCode = 
+        		cmbDetailToCurrencyCode.GetSelectedString();
+        	FPreviouslySelectedDetailRow.FromCurrencyCode = 
+        		cmbDetailFromCurrencyCode.GetSelectedString();
+        	}
             if (cmbDetailFromCurrencyCode.GetSelectedString() ==
                 cmbDetailToCurrencyCode.GetSelectedString())
             {
                 txtDetailRateOfExchange.Text = "1.0";
                 ValidatedExchangeRate();
                 txtDetailRateOfExchange.Enabled = false;
-            }
+                btnInvertExchangeRate.Enabled = false;
+        	}
             else
             {
                 if (blnSelectedRowChangeable)
                 {
                     txtDetailRateOfExchange.Enabled = true;
+                    btnInvertExchangeRate.Enabled = true; 
                 }
             }
 
@@ -248,6 +349,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     (cmbDetailToCurrencyCode.GetSelectedString() == baseCurrencyOfLedger);
             }
         }
+        
+        private void InvertExchangeRate(System.Object sender, EventArgs e)
+        {
+        	decimal exchangeRate;
+        	try 
+        	{
+        		exchangeRate = decimal.Parse(txtDetailRateOfExchange.Text);
+        		exchangeRate = 1/exchangeRate;
+        		exchangeRate = Math.Round(exchangeRate, numberFormatInfo.NumberDecimalDigits);
+        		txtDetailRateOfExchange.Text = exchangeRate.ToString("N",numberFormatInfo);
+        	} catch (Exception) {};
+        	ValidatedExchangeRate();
+        }
 
         /// <summary>
         /// Standardroutine
@@ -255,31 +369,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ARow"></param>
         private void ShowDetailsManual(ADailyExchangeRateRow ARow)
         {
-//              if (ARow.RowState == DataRowState.Added)
-//              {
-//                      System.Diagnostics.Debug.WriteLine("Added");
-//              }
-//              if (ARow.RowState == DataRowState.Deleted)
-//              {
-//                      System.Diagnostics.Debug.WriteLine("Deleted");
-//              }
-//              if (ARow.RowState == DataRowState.Detached)
-//              {
-//                      System.Diagnostics.Debug.WriteLine("Detached");
-//              }
-//              if (ARow.RowState == DataRowState.Modified)
-//              {
-//                      System.Diagnostics.Debug.WriteLine("Modified");
-//              }
-//              if (ARow.RowState == DataRowState.Unchanged)
-//              {
-//                      System.Diagnostics.Debug.WriteLine("Unchanged");
-//              }
-            blnSelectedRowChangeable = !(ARow.RowState == DataRowState.Unchanged);
-            ValidatedExchangeRate();
-            txtDetailRateOfExchange.Enabled = (ARow.RowState == DataRowState.Added);
-            blnSelectedRowChangeable = (ARow.RowState == DataRowState.Added);
-            ValueChangedCurrencyCode();
+        	if (ARow != null) {
+        		blnSelectedRowChangeable = !(ARow.RowState == DataRowState.Unchanged);
+        		ValidatedExchangeRate();
+        		txtDetailRateOfExchange.Enabled = (ARow.RowState == DataRowState.Added);
+        		btnInvertExchangeRate.Enabled = (ARow.RowState == DataRowState.Added);
+        		blnSelectedRowChangeable = (ARow.RowState == DataRowState.Added);
+        		ValueChangedCurrencyCode();
+        	} else {
+        		blnSelectedRowChangeable = false;
+        		txtDetailRateOfExchange.Enabled = false;
+        		txtDetailRateOfExchange.Text = "";
+        	}
         }
 
         /// <summary>

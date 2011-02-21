@@ -45,6 +45,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>../../../../../../Common/_bin/Debug/Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Client.MFinance.Gui.Setup">
+      <HintPath>..\..\..\..\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MCommon">
       <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
     </Reference>

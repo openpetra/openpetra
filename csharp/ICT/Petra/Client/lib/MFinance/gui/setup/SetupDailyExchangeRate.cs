@@ -70,10 +70,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.btnNew.Text = Catalog.GetString("&New");
       this.btnDelete.Text = Catalog.GetString("&Delete");
+      this.btnClose.Text = Catalog.GetString("Close");
+      this.btnCancel.Text = Catalog.GetString("Cancel");
       this.lblDetailFromCurrencyCode.Text = Catalog.GetString("&From Currency Code:");
       this.lblDetailToCurrencyCode.Text = Catalog.GetString("&To Currency Code:");
       this.lblDetailDateEffectiveFrom.Text = Catalog.GetString("D&ate:");
       this.lblDetailRateOfExchange.Text = Catalog.GetString("&Rate of exchange:");
+      this.btnInvertExchangeRate.Text = Catalog.GetString("&Invert value");
       this.lblValueOneDirection.Text = Catalog.GetString("Value One Direction:");
       this.lblValueOtherDirection.Text = Catalog.GetString("Value Other Direction:");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
@@ -82,8 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
-      this.mniClose.ToolTipText = Catalog.GetString("Closes this window");
-      this.mniClose.Text = Catalog.GetString("&Close");
+      this.mniClose.Text = Catalog.GetString("Close");
       this.mniFile.Text = Catalog.GetString("&File");
       this.mniEditUndoCurrentField.Text = Catalog.GetString("Undo &Current Field");
       this.mniEditUndoScreen.Text = Catalog.GetString("&Undo Screen");
@@ -492,6 +494,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             btnDelete.Enabled = e.Enabled;
         }
+        if (e.ActionName == "actClose")
+        {
+            btnClose.Enabled = e.Enabled;
+            mniClose.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCancel")
+        {
+            btnCancel.Enabled = e.Enabled;
+        }
         if (e.ActionName == "actSave")
         {
             tbbSave.Enabled = e.Enabled;
@@ -502,10 +513,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             tbbImport.Enabled = e.Enabled;
             mniImport.Enabled = e.Enabled;
         }
-        if (e.ActionName == "actClose")
-        {
-            mniClose.Enabled = e.Enabled;
-        }
         mniFilePrint.Enabled = false;
         mniEditUndoCurrentField.Enabled = false;
         mniEditUndoScreen.Enabled = false;
@@ -514,12 +521,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         mniHelpBugReport.Enabled = false;
         mniHelpAboutPetra.Enabled = false;
         mniHelpDevelopmentTeam.Enabled = false;
-    }
-
-    /// auto generated
-    protected void actClose(object sender, EventArgs e)
-    {
-        FPetraUtilsObject.ExecuteAction(eActionId.eClose);
     }
 
 #endregion
