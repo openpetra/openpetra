@@ -89,9 +89,9 @@ namespace Ict.Petra.Client.App.Core
                 "Reported by UnhandledExceptionHandler: (Application is terminating: " + AEventArgs.IsTerminating.ToString() + ')');
             UEDialogue = new TUnhandledExceptionForm();
 
-//            UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
-//            UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
-//            UEDialogue.ShowDialog();
+            UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
+            UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
+            UEDialogue.ShowDialog();
         }
     }
 
@@ -113,16 +113,15 @@ namespace Ict.Petra.Client.App.Core
 
             if (!(AEventArgs.Exception is NotImplementedException))
             {
-                // for the moment, until the proper window works:
-                MessageBox.Show(
-                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
+//                MessageBox.Show(
+//                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
 
                 ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
                 UEDialogue = new TUnhandledExceptionForm();
 
-                //            UEDialogue.NonRecoverable = false;
-                //            UEDialogue.TheException = AEventArgs.Exception;
-                //            UEDialogue.ShowDialog();
+                UEDialogue.NonRecoverable = false;
+                UEDialogue.TheException = AEventArgs.Exception;
+                UEDialogue.ShowDialog();
             }
             else
             {
