@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -268,11 +268,23 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         /// used for generic TTypedDataTable functions
         public static short ColumnDonorNameId = 30;
         /// used for generic TTypedDataTable functions
-        public static short ColumnDateEnteredId = 31;
+        public static short ColumnDonorClassId = 31;
         /// used for generic TTypedDataTable functions
-        public static short ColumnRecipientDescriptionId = 32;
+        public static short ColumnDateEnteredId = 32;
         /// used for generic TTypedDataTable functions
-        public static short ColumnAccountCodeId = 33;
+        public static short ColumnRecipientDescriptionId = 33;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnRecipientFieldId = 34;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptNumberId = 35;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnReceiptPrintedId = 36;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfGivingCodeId = 37;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnMethodOfPaymentCodeId = 38;
+        /// used for generic TTypedDataTable functions
+        public static short ColumnAccountCodeId = 39;
 
         /// constructor
         public GiftBatchTDSAGiftDetailTable() :
@@ -297,9 +309,21 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         ///
         public DataColumn ColumnDonorName;
         ///
+        public DataColumn ColumnDonorClass;
+        ///
         public DataColumn ColumnDateEntered;
         ///
         public DataColumn ColumnRecipientDescription;
+        ///
+        public DataColumn ColumnRecipientField;
+        ///
+        public DataColumn ColumnReceiptNumber;
+        ///
+        public DataColumn ColumnReceiptPrinted;
+        ///
+        public DataColumn ColumnMethodOfGivingCode;
+        ///
+        public DataColumn ColumnMethodOfPaymentCode;
         ///
         public DataColumn ColumnAccountCode;
 
@@ -336,10 +360,16 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("s_modification_id_c", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("DonorKey", typeof(Int64)));
-            this.Columns.Add(new System.Data.DataColumn("DonorName", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("DonorName", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("DonorClass", typeof(String)));
             this.Columns.Add(new System.Data.DataColumn("DateEntered", typeof(DateTime)));
-            this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(string)));
-            this.Columns.Add(new System.Data.DataColumn("AccountCode", typeof(string)));
+            this.Columns.Add(new System.Data.DataColumn("RecipientDescription", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("RecipientField", typeof(Int64)));
+            this.Columns.Add(new System.Data.DataColumn("ReceiptNumber", typeof(Int32)));
+            this.Columns.Add(new System.Data.DataColumn("ReceiptPrinted", typeof(Boolean)));
+            this.Columns.Add(new System.Data.DataColumn("MethodOfGivingCode", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("MethodOfPaymentCode", typeof(String)));
+            this.Columns.Add(new System.Data.DataColumn("AccountCode", typeof(String)));
         }
 
         /// assign columns to properties, set primary key
@@ -376,8 +406,14 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.ColumnModificationId = this.Columns["s_modification_id_c"];
             this.ColumnDonorKey = this.Columns["DonorKey"];
             this.ColumnDonorName = this.Columns["DonorName"];
+            this.ColumnDonorClass = this.Columns["DonorClass"];
             this.ColumnDateEntered = this.Columns["DateEntered"];
             this.ColumnRecipientDescription = this.Columns["RecipientDescription"];
+            this.ColumnRecipientField = this.Columns["RecipientField"];
+            this.ColumnReceiptNumber = this.Columns["ReceiptNumber"];
+            this.ColumnReceiptPrinted = this.Columns["ReceiptPrinted"];
+            this.ColumnMethodOfGivingCode = this.Columns["MethodOfGivingCode"];
+            this.ColumnMethodOfPaymentCode = this.Columns["MethodOfPaymentCode"];
             this.ColumnAccountCode = this.Columns["AccountCode"];
             this.PrimaryKey = new System.Data.DataColumn[4] {
                     ColumnLedgerNumber,ColumnBatchNumber,ColumnGiftTransactionNumber,ColumnDetailNumber};
@@ -464,6 +500,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// get the name of the field in the database for this column
+        public static string GetDonorClassDBName()
+        {
+            return "DonorClass";
+        }
+
+        /// get character length for column
+        public static short GetDonorClassLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
         public static string GetDateEnteredDBName()
         {
             return "DateEntered";
@@ -483,6 +531,66 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
 
         /// get character length for column
         public static short GetRecipientDescriptionLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetRecipientFieldDBName()
+        {
+            return "RecipientField";
+        }
+
+        /// get character length for column
+        public static short GetRecipientFieldLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetReceiptNumberDBName()
+        {
+            return "ReceiptNumber";
+        }
+
+        /// get character length for column
+        public static short GetReceiptNumberLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetReceiptPrintedDBName()
+        {
+            return "ReceiptPrinted";
+        }
+
+        /// get character length for column
+        public static short GetReceiptPrintedLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMethodOfGivingCodeDBName()
+        {
+            return "MethodOfGivingCode";
+        }
+
+        /// get character length for column
+        public static short GetMethodOfGivingCodeLength()
+        {
+            return -1;
+        }
+
+        /// get the name of the field in the database for this column
+        public static string GetMethodOfPaymentCodeDBName()
+        {
+            return "MethodOfPaymentCode";
+        }
+
+        /// get character length for column
+        public static short GetMethodOfPaymentCodeLength()
         {
             return -1;
         }
@@ -541,7 +649,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string DonorName
+        public String DonorName
         {
             get
             {
@@ -553,15 +661,41 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((String)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnDonorName)
-                            || (((string)(this[this.myTable.ColumnDonorName])) != value)))
+                            || (((String)(this[this.myTable.ColumnDonorName])) != value)))
                 {
                     this[this.myTable.ColumnDonorName] = value;
+                }
+            }
+        }
+
+        ///
+        public String DonorClass
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnDonorClass.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnDonorClass)
+                            || (((String)(this[this.myTable.ColumnDonorClass])) != value)))
+                {
+                    this[this.myTable.ColumnDonorClass] = value;
                 }
             }
         }
@@ -593,7 +727,7 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string RecipientDescription
+        public String RecipientDescription
         {
             get
             {
@@ -605,13 +739,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((String)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnRecipientDescription)
-                            || (((string)(this[this.myTable.ColumnRecipientDescription])) != value)))
+                            || (((String)(this[this.myTable.ColumnRecipientDescription])) != value)))
                 {
                     this[this.myTable.ColumnRecipientDescription] = value;
                 }
@@ -619,7 +753,137 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         ///
-        public string AccountCode
+        public Int64 RecipientField
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnRecipientField.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int64)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnRecipientField)
+                            || (((Int64)(this[this.myTable.ColumnRecipientField])) != value)))
+                {
+                    this[this.myTable.ColumnRecipientField] = value;
+                }
+            }
+        }
+
+        ///
+        public Int32 ReceiptNumber
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnReceiptNumber.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Int32)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnReceiptNumber)
+                            || (((Int32)(this[this.myTable.ColumnReceiptNumber])) != value)))
+                {
+                    this[this.myTable.ColumnReceiptNumber] = value;
+                }
+            }
+        }
+
+        ///
+        public Boolean ReceiptPrinted
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnReceiptPrinted.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    throw new System.Data.StrongTypingException("Error: DB null", null);
+                }
+                else
+                {
+                    return ((Boolean)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnReceiptPrinted)
+                            || (((Boolean)(this[this.myTable.ColumnReceiptPrinted])) != value)))
+                {
+                    this[this.myTable.ColumnReceiptPrinted] = value;
+                }
+            }
+        }
+
+        ///
+        public String MethodOfGivingCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMethodOfGivingCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMethodOfGivingCode)
+                            || (((String)(this[this.myTable.ColumnMethodOfGivingCode])) != value)))
+                {
+                    this[this.myTable.ColumnMethodOfGivingCode] = value;
+                }
+            }
+        }
+
+        ///
+        public String MethodOfPaymentCode
+        {
+            get
+            {
+                object ret;
+                ret = this[this.myTable.ColumnMethodOfPaymentCode.Ordinal];
+                if ((ret == System.DBNull.Value))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return ((String)(ret));
+                }
+            }
+            set
+            {
+                if ((this.IsNull(this.myTable.ColumnMethodOfPaymentCode)
+                            || (((String)(this[this.myTable.ColumnMethodOfPaymentCode])) != value)))
+                {
+                    this[this.myTable.ColumnMethodOfPaymentCode] = value;
+                }
+            }
+        }
+
+        ///
+        public String AccountCode
         {
             get
             {
@@ -631,13 +895,13 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
                 }
                 else
                 {
-                    return ((string)(ret));
+                    return ((String)(ret));
                 }
             }
             set
             {
                 if ((this.IsNull(this.myTable.ColumnAccountCode)
-                            || (((string)(this[this.myTable.ColumnAccountCode])) != value)))
+                            || (((String)(this[this.myTable.ColumnAccountCode])) != value)))
                 {
                     this[this.myTable.ColumnAccountCode] = value;
                 }
@@ -678,8 +942,14 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
             this.SetNull(this.myTable.ColumnModificationId);
             this.SetNull(this.myTable.ColumnDonorKey);
             this.SetNull(this.myTable.ColumnDonorName);
+            this.SetNull(this.myTable.ColumnDonorClass);
             this.SetNull(this.myTable.ColumnDateEntered);
             this.SetNull(this.myTable.ColumnRecipientDescription);
+            this.SetNull(this.myTable.ColumnRecipientField);
+            this.SetNull(this.myTable.ColumnReceiptNumber);
+            this.SetNull(this.myTable.ColumnReceiptPrinted);
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
             this.SetNull(this.myTable.ColumnAccountCode);
         }
 
@@ -708,6 +978,18 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         }
 
         /// test for NULL value
+        public bool IsDonorClassNull()
+        {
+            return this.IsNull(this.myTable.ColumnDonorClass);
+        }
+
+        /// assign NULL value
+        public void SetDonorClassNull()
+        {
+            this.SetNull(this.myTable.ColumnDonorClass);
+        }
+
+        /// test for NULL value
         public bool IsDateEnteredNull()
         {
             return this.IsNull(this.myTable.ColumnDateEntered);
@@ -729,6 +1011,66 @@ namespace Ict.Petra.Shared.MFinance.Gift.Data
         public void SetRecipientDescriptionNull()
         {
             this.SetNull(this.myTable.ColumnRecipientDescription);
+        }
+
+        /// test for NULL value
+        public bool IsRecipientFieldNull()
+        {
+            return this.IsNull(this.myTable.ColumnRecipientField);
+        }
+
+        /// assign NULL value
+        public void SetRecipientFieldNull()
+        {
+            this.SetNull(this.myTable.ColumnRecipientField);
+        }
+
+        /// test for NULL value
+        public bool IsReceiptNumberNull()
+        {
+            return this.IsNull(this.myTable.ColumnReceiptNumber);
+        }
+
+        /// assign NULL value
+        public void SetReceiptNumberNull()
+        {
+            this.SetNull(this.myTable.ColumnReceiptNumber);
+        }
+
+        /// test for NULL value
+        public bool IsReceiptPrintedNull()
+        {
+            return this.IsNull(this.myTable.ColumnReceiptPrinted);
+        }
+
+        /// assign NULL value
+        public void SetReceiptPrintedNull()
+        {
+            this.SetNull(this.myTable.ColumnReceiptPrinted);
+        }
+
+        /// test for NULL value
+        public bool IsMethodOfGivingCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMethodOfGivingCode);
+        }
+
+        /// assign NULL value
+        public void SetMethodOfGivingCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMethodOfGivingCode);
+        }
+
+        /// test for NULL value
+        public bool IsMethodOfPaymentCodeNull()
+        {
+            return this.IsNull(this.myTable.ColumnMethodOfPaymentCode);
+        }
+
+        /// assign NULL value
+        public void SetMethodOfPaymentCodeNull()
+        {
+            this.SetNull(this.myTable.ColumnMethodOfPaymentCode);
         }
 
         /// test for NULL value

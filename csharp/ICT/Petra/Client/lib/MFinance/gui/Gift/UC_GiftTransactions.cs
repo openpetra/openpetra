@@ -64,14 +64,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       this.lblLedgerNumber.Text = Catalog.GetString("Ledger:");
+      this.lblBatchTotal.Text = Catalog.GetString("Batch Total:");
       this.lblBatchNumber.Text = Catalog.GetString("Gift Batch:");
+      this.lblHashTotal.Text = Catalog.GetString("Hash Total:");
       this.btnNewGift.Text = Catalog.GetString("&Add Gift");
       this.btnNewDetail.Text = Catalog.GetString("Add Detai&l");
       this.btnDeleteDetail.Text = Catalog.GetString("&Delete Detail");
       this.txtDetailDonorKey.ButtonText = Catalog.GetString("Find");
       this.lblDetailDonorKey.Text = Catalog.GetString("Donor:");
       this.lblDetailMethodOfGivingCode.Text = Catalog.GetString("Method of Giving:");
-      this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of payment:");
+      this.lblDetailMethodOfPaymentCode.Text = Catalog.GetString("Method of Payment:");
       this.lblDetailReference.Text = Catalog.GetString("Reference:");
       this.lblDetailReceiptLetterCode.Text = Catalog.GetString("Letter Code:");
       this.lblDateEntered.Text = Catalog.GetString("Gift Date:");
@@ -99,6 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
       this.txtLedgerNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtBatchNumber.Font = TAppSettingsManager.GetDefaultBoldFont();
+      this.txtBatchStatus.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailReference.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailCostCentreCode.Font = TAppSettingsManager.GetDefaultBoldFont();
       this.txtDetailAccountCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -146,13 +149,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Gift Transaction Number", FMainDS.AGiftDetail.ColumnGiftTransactionNumber);
       grdDetails.AddTextColumn("Gift Number", FMainDS.AGiftDetail.ColumnDetailNumber);
-      grdDetails.AddDateColumn("Date Entered", FMainDS.AGiftDetail.ColumnDateEntered);
-      grdDetails.AddTextColumn("Donor Key", FMainDS.AGiftDetail.ColumnDonorKey);
       grdDetails.AddTextColumn("Donor Name", FMainDS.AGiftDetail.ColumnDonorName);
+      grdDetails.AddTextColumn("Class", FMainDS.AGiftDetail.ColumnDonorClass);
+      grdDetails.AddCheckBoxColumn("Confidential Gift", FMainDS.AGiftDetail.ColumnConfidentialGiftFlag);
       grdDetails.AddCurrencyColumn("Transaction Gift Amount", FMainDS.AGiftDetail.ColumnGiftTransactionAmount);
       grdDetails.AddTextColumn("Recipient", FMainDS.AGiftDetail.ColumnRecipientDescription);
+      grdDetails.AddTextColumn("Field", FMainDS.AGiftDetail.ColumnRecipientField);
       grdDetails.AddTextColumn("Motivation Group", FMainDS.AGiftDetail.ColumnMotivationGroupCode);
       grdDetails.AddTextColumn("Motivation Detail", FMainDS.AGiftDetail.ColumnMotivationDetailCode);
+      grdDetails.AddTextColumn("Receipt", FMainDS.AGiftDetail.ColumnReceiptNumber);
+      grdDetails.AddCheckBoxColumn("Receipt Printed", FMainDS.AGiftDetail.ColumnReceiptPrinted);
+      grdDetails.AddTextColumn("Method of Giving", FMainDS.AGiftDetail.ColumnMethodOfGivingCode);
+      grdDetails.AddTextColumn("Method of Payment", FMainDS.AGiftDetail.ColumnMethodOfPaymentCode);
+      grdDetails.AddTextColumn("Mailing Code", FMainDS.AGiftDetail.ColumnMailingCode);
+      grdDetails.AddTextColumn("Gift Amount (Base)", FMainDS.AGiftDetail.ColumnGiftAmount);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.AGiftDetail.DefaultView;
@@ -258,6 +268,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         else
         {
             FPreviouslySelectedDetailRow = ARow;
+            if (ARow.IsMethodOfGivingCodeNull())
+            {
+                cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMethodOfGivingCode.SetSelectedString(ARow.MethodOfGivingCode);
+            }
+            if (ARow.IsMethodOfPaymentCodeNull())
+            {
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(ARow.MethodOfPaymentCode);
+            }
             txtDetailGiftTransactionAmount.NumberValueDecimal = Convert.ToDecimal(ARow.GiftTransactionAmount);
             chkDetailConfidentialGiftFlag.Checked = ARow.ConfidentialGiftFlag;
             txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
@@ -381,6 +407,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         if (ARow != null)
         {
             ARow.BeginEdit();
+            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+            {
+                ARow.SetMethodOfGivingCodeNull();
+            }
+            else
+            {
+                ARow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+            }
+            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+            {
+                ARow.SetMethodOfPaymentCodeNull();
+            }
+            else
+            {
+                ARow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
             ARow.GiftTransactionAmount = Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
             ARow.ConfidentialGiftFlag = chkDetailConfidentialGiftFlag.Checked;
             ARow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);

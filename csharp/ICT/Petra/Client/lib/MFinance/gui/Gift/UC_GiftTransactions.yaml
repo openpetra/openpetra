@@ -19,10 +19,15 @@ RootNode:
             Dock: Fill
         pnlInfo:
             Controls:
-                Row0: [txtLedgerNumber, txtBatchNumber]
+                Row0: [txtLedgerNumber, Empty0, txtBatchTotal]
+                Row1: [txtBatchNumber, txtBatchStatus, txtHashTotal]
             Dock: Top
+        Empty0:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
+        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true}
+        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
+        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -36,12 +41,20 @@ RootNode:
             TableName: AGiftDetail
             Dock: Fill
             #TODO: support split gifts, and deal with gift details properly
-            Columns: [GiftTransactionNumber, DetailNumber, DateEntered, DonorKey, DonorName, GiftTransactionAmount, RecipientDescription, MotivationGroupCode, MotivationDetailCode]
+            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
             CustomColumns:
+                Confidential: {Label=C, Type=Boolean}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
+                DonorClass: {Label=Class, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
+                RecipientField: {Label=Field, type=Int64}
+                GiftAmount: {Label=Gift Amount (Base), Type=Decimal}
+                MethodOfGivingCode: {Label=Method of Giving, Type=String}
+                MethodOfPaymentCode: {Label=Method of Payment, Type=String}
+                ReceiptNumber: {Label=Receipt, Type=Int32}
+                ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber

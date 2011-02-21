@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);	
         }
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
@@ -279,5 +279,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
         }
+        private void HashTotalChanged(object sender, EventArgs e)
+        {
+        	Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
+			Form p=ParentForm;
+			if (p!=null)
+			{
+				TUC_GiftTransactions t=((TFrmGiftBatch)ParentForm).GetTransactionsControl();
+            	
+            	if (t!=null)   t.UpdateHashTotal(HashTotal);
+        	}
+		}
+            
+            
     }
 }

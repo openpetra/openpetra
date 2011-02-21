@@ -70,8 +70,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtLedgerNumber = new System.Windows.Forms.TextBox();
             this.lblLedgerNumber = new System.Windows.Forms.Label();
+            this.txtBatchTotal = new Ict.Common.Controls.TTxtNumericTextBox();
+            this.lblBatchTotal = new System.Windows.Forms.Label();
             this.txtBatchNumber = new System.Windows.Forms.TextBox();
             this.lblBatchNumber = new System.Windows.Forms.Label();
+            this.txtBatchStatus = new System.Windows.Forms.TextBox();
+            this.txtHashTotal = new Ict.Common.Controls.TTxtNumericTextBox();
+            this.lblHashTotal = new System.Windows.Forms.Label();
             this.pnlDetailGrid = new System.Windows.Forms.Panel();
             this.grdDetails = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlDetailButtons = new System.Windows.Forms.Panel();
@@ -182,6 +187,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblLedgerNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblLedgerNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // txtBatchTotal
+            //
+            this.txtBatchTotal.Location = new System.Drawing.Point(2,2);
+            this.txtBatchTotal.Name = "txtBatchTotal";
+            this.txtBatchTotal.Size = new System.Drawing.Size(150, 28);
+            this.txtBatchTotal.ReadOnly = true;
+            this.txtBatchTotal.TabStop = false;
+            this.txtBatchTotal.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtBatchTotal.DecimalPlaces = 2;
+            this.txtBatchTotal.NullValueAllowed = true;
+            //
+            // lblBatchTotal
+            //
+            this.lblBatchTotal.Location = new System.Drawing.Point(2,2);
+            this.lblBatchTotal.Name = "lblBatchTotal";
+            this.lblBatchTotal.AutoSize = true;
+            this.lblBatchTotal.Text = "Batch Total:";
+            this.lblBatchTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblBatchTotal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblBatchTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
             // txtBatchNumber
             //
             this.txtBatchNumber.Location = new System.Drawing.Point(2,2);
@@ -199,17 +225,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblBatchNumber.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblBatchNumber.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblBatchNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.tableLayoutPanel1.ColumnCount = 4;
+            //
+            // txtBatchStatus
+            //
+            this.txtBatchStatus.Location = new System.Drawing.Point(2,2);
+            this.txtBatchStatus.Name = "txtBatchStatus";
+            this.txtBatchStatus.Size = new System.Drawing.Size(150, 28);
+            this.txtBatchStatus.ReadOnly = true;
+            this.txtBatchStatus.TabStop = false;
+            //
+            // txtHashTotal
+            //
+            this.txtHashTotal.Location = new System.Drawing.Point(2,2);
+            this.txtHashTotal.Name = "txtHashTotal";
+            this.txtHashTotal.Size = new System.Drawing.Size(150, 28);
+            this.txtHashTotal.ReadOnly = true;
+            this.txtHashTotal.TabStop = false;
+            this.txtHashTotal.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            this.txtHashTotal.DecimalPlaces = 2;
+            this.txtHashTotal.NullValueAllowed = true;
+            //
+            // lblHashTotal
+            //
+            this.lblHashTotal.Location = new System.Drawing.Point(2,2);
+            this.lblHashTotal.Name = "lblHashTotal";
+            this.lblHashTotal.AutoSize = true;
+            this.lblHashTotal.Text = "Hash Total:";
+            this.lblHashTotal.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+            this.lblHashTotal.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblHashTotal.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.tableLayoutPanel1.ColumnCount = 5;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Controls.Add(this.lblLedgerNumber, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblBatchNumber, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtLedgerNumber, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblBatchNumber, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtBatchNumber, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtBatchNumber, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtBatchStatus, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.lblBatchTotal, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.lblHashTotal, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtBatchTotal, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtHashTotal, 4, 1);
             //
             // pnlDetailGrid
             //
@@ -341,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.lblDetailMethodOfPaymentCode.Location = new System.Drawing.Point(2,2);
             this.lblDetailMethodOfPaymentCode.Name = "lblDetailMethodOfPaymentCode";
             this.lblDetailMethodOfPaymentCode.AutoSize = true;
-            this.lblDetailMethodOfPaymentCode.Text = "Method of payment:";
+            this.lblDetailMethodOfPaymentCode.Text = "Method of Payment:";
             this.lblDetailMethodOfPaymentCode.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
             this.lblDetailMethodOfPaymentCode.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailMethodOfPaymentCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -854,8 +916,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txtLedgerNumber;
         private System.Windows.Forms.Label lblLedgerNumber;
+        private Ict.Common.Controls.TTxtNumericTextBox txtBatchTotal;
+        private System.Windows.Forms.Label lblBatchTotal;
         private System.Windows.Forms.TextBox txtBatchNumber;
         private System.Windows.Forms.Label lblBatchNumber;
+        private System.Windows.Forms.TextBox txtBatchStatus;
+        private Ict.Common.Controls.TTxtNumericTextBox txtHashTotal;
+        private System.Windows.Forms.Label lblHashTotal;
         private System.Windows.Forms.Panel pnlDetailGrid;
         private Ict.Common.Controls.TSgrdDataGridPaged grdDetails;
         private System.Windows.Forms.Panel pnlDetailButtons;

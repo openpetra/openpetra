@@ -406,6 +406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.txtDetailHashTotal.Location = new System.Drawing.Point(2,2);
             this.txtDetailHashTotal.Name = "txtDetailHashTotal";
             this.txtDetailHashTotal.Size = new System.Drawing.Size(150, 28);
+            this.txtDetailHashTotal.TextChanged += new System.EventHandler(this.HashTotalChanged);
             this.txtDetailHashTotal.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
             this.txtDetailHashTotal.DecimalPlaces = 2;
             this.txtDetailHashTotal.NullValueAllowed = true;

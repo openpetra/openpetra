@@ -270,7 +270,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtGiftTotal.NumberValueDecimal = sum;
             txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
-            txtGiftTotal.ReadOnly = true;                           //this is here because at the moment the generator does not generate this
+            txtGiftTotal.ReadOnly = true;
+            //this is here because at the moment the generator does not generate this
+            txtBatchTotal.NumberValueDecimal = sumBatch;
             //Now we look at the batch and update the batch data
             AGiftBatchRow batch = GetBatchRow();
             batch.BatchTotal = sumBatch;
@@ -502,10 +504,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
-
-            if (GetBatchRow() != null)
+            
+			AGiftBatchRow batchRow = GetBatchRow();
+            if (batchRow != null)
             {
-                txtDetailGiftTransactionAmount.CurrencySymbol = GetBatchRow().CurrencyCode;
+                txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
+                txtBatchStatus.Text = batchRow.BatchStatus;
             }
 
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
@@ -585,6 +589,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
             txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
+            txtGiftTotal.CurrencySymbol =  ACurrencyCode;
+            txtBatchTotal.CurrencySymbol =  ACurrencyCode;
+            txtHashTotal.CurrencySymbol =  ACurrencyCode;
+        }
+        
+        /// <summary>
+        /// set the Hash Total symbols for the currency field from outside
+        /// </summary>
+        public void UpdateHashTotal(Decimal AHashTotal)
+        {
+            txtHashTotal.NumberValueDecimal = AHashTotal;
+        }
+        
+        /// <summary>
+        /// update the Batch Status from outside
+        /// </summary>
+        public void UpdateBatchStatus(String ABatchStatus)
+        {
+            txtBatchStatus.Text = ABatchStatus;
         }
 
         /// <summary>
