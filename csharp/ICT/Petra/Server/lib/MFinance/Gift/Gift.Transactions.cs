@@ -170,13 +170,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.DonorKey = giftRow.DonorKey;
                     giftDetail.DonorName = partner[0].PartnerShortName;
                     giftDetail.DonorClass = partner[0].PartnerClass;
-                    giftDetail.MethodOfGivingCode =giftRow.MethodOfGivingCode;
+                    giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                     giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                     giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
                     giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
                     giftDetail.RecipientField = 0;
-              
-                    
+
+
                     //do the same for the Recipient
                     partner.Clear();
                     partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);

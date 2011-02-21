@@ -504,8 +504,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
-            
-			AGiftBatchRow batchRow = GetBatchRow();
+
+            AGiftBatchRow batchRow = GetBatchRow();
+
             if (batchRow != null)
             {
                 txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
@@ -589,11 +590,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
             txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
-            txtGiftTotal.CurrencySymbol =  ACurrencyCode;
-            txtBatchTotal.CurrencySymbol =  ACurrencyCode;
-            txtHashTotal.CurrencySymbol =  ACurrencyCode;
+            txtGiftTotal.CurrencySymbol = ACurrencyCode;
+            txtBatchTotal.CurrencySymbol = ACurrencyCode;
+            txtHashTotal.CurrencySymbol = ACurrencyCode;
         }
-        
+
         /// <summary>
         /// set the Hash Total symbols for the currency field from outside
         /// </summary>
@@ -601,7 +602,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtHashTotal.NumberValueDecimal = AHashTotal;
         }
-        
+
         /// <summary>
         /// update the Batch Status from outside
         /// </summary>
