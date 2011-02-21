@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ict.Petra.Shared.MConference.DataSets</name>
+    </assembly>
+    <members>
+        <member name="T:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.#ctor">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            auto generated for serialization
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.#ctor(System.String)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.GetChangesTyped(System.Boolean)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.InitTables">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.InitTables(System.Data.DataSet)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.MapTables">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.InitVars">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.InitConstraints">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.PPartner">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.PcConference">
+            auto generated
+        </member>
+    </members>
+</doc>
