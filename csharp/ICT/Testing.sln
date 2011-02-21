@@ -1,7 +1,7 @@
-
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-# SharpDevelop 3.2.0.5777
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.2.1.6466
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Reporting", "Testing\Reporting\Tests.Reporting.csproj", "{BA377109-67E1-4E95-BF24-758AE808109F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common", "Testing\Common\Tests.Common.csproj", "{B153A068-F378-4DC5-8936-DF8F26D0C92F}"
@@ -31,6 +31,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.MFinance.GiftBatches", "Testing\MFinance\GiftForm\Tests.MFinance.GiftBatches.csproj", "{1DA473A2-2B45-44B9-908F-35AA56D32583}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common.Controls", "Testing\Common\Controls\Tests.Common.Controls.csproj", "{377F84AE-DC3F-4F86-A39E-9C26081E4B6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Shepherd", "Testing\Tests.Shepherd\Tests.Shepherd.csproj", "{8A1CAFA5-DF68-41B2-B41C-E2F56ECC5283}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,13 +92,17 @@ Global
 		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Debug|x86.ActiveCfg = Debug|x86
 		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Release|x86.Build.0 = Release|x86
 		{D20D39D9-033E-42CE-AEB8-B8E7EF3609B9}.Release|x86.ActiveCfg = Release|x86
-		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Debug|x86.Build.0 = Debug|x86      
-		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Debug|x86.ActiveCfg = Debug|x86    
-		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Release|x86.Build.0 = Release|x86  
+		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Debug|x86.Build.0 = Debug|x86
+		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Debug|x86.ActiveCfg = Debug|x86
+		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Release|x86.Build.0 = Release|x86
 		{1DA473A2-2B45-44B9-908F-35AA56D32583}.Release|x86.ActiveCfg = Release|x86
 		{377F84AE-DC3F-4F86-A39E-9C26081E4B6C}.Debug|x86.Build.0 = Debug|x86
 		{377F84AE-DC3F-4F86-A39E-9C26081E4B6C}.Debug|x86.ActiveCfg = Debug|x86
 		{377F84AE-DC3F-4F86-A39E-9C26081E4B6C}.Release|x86.Build.0 = Release|x86
 		{377F84AE-DC3F-4F86-A39E-9C26081E4B6C}.Release|x86.ActiveCfg = Release|x86
+		{8A1CAFA5-DF68-41B2-B41C-E2F56ECC5283}.Debug|x86.Build.0 = Debug|x86
+		{8A1CAFA5-DF68-41B2-B41C-E2F56ECC5283}.Debug|x86.ActiveCfg = Debug|x86
+		{8A1CAFA5-DF68-41B2-B41C-E2F56ECC5283}.Release|x86.Build.0 = Release|x86
+		{8A1CAFA5-DF68-41B2-B41C-E2F56ECC5283}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

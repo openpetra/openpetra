@@ -14,6 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>../../../_bin/Debug/Tests.MFinance.Server.Gift.xml</DocumentationFile>
     <NoWarn>0067</NoWarn>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\Paul\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\_bin\Debug\</OutputPath>
