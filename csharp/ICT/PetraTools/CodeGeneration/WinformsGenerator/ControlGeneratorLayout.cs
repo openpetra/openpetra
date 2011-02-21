@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -162,7 +162,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             #region ColumnStyles and RowStyles
 
-            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString());
+            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString(), false);
 
             /*
              * Generate ColumnStyles which influence the width of the Columns. If custom widths are specified by the user,
@@ -210,7 +210,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString());
+            writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString(), false);
 
             /*
              * Generate RowStyles which influence the height of the Columns. If custom heights are specified by the user,
