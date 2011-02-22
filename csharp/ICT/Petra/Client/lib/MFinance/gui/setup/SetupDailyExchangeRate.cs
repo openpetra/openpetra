@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       grdDetails.AddTextColumn("From Currency Code", FMainDS.ADailyExchangeRate.ColumnFromCurrencyCode);
       grdDetails.AddTextColumn("To Currency Code", FMainDS.ADailyExchangeRate.ColumnToCurrencyCode);
       grdDetails.AddDateColumn("Date Effective From", FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom);
-      grdDetails.AddCurrencyColumn("Rate of exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange);
+      grdDetails.AddCurrencyColumn("Rate of Exchange", FMainDS.ADailyExchangeRate.ColumnRateOfExchange, 10);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;

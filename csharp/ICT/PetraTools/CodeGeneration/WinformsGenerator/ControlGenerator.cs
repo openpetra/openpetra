@@ -935,6 +935,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class SourceGridGenerator : TControlGenerator
     {
+        Int16 FDecimalPrecision = 2;
+
         public SourceGridGenerator()
             : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
         {
@@ -958,6 +960,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
+            string PotentialDecimalPrecision;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -966,17 +969,55 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (AColumnType.Contains("Currency"))
             {
                 ColumnType = "Currency";
+
+                if (AColumnType.Contains("Currency("))
+                {
+                    PotentialDecimalPrecision = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
+                        AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
+
+//Console.WriteLine("AddColumnToGrid: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
+
+                    if (PotentialDecimalPrecision != String.Empty)
+                    {
+                        try
+                        {
+                            FDecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
+                        }
+                        catch (System.FormatException)
+                        {
+                            throw new ApplicationException(
+                                "Grid Column with currency formatting: The specifier for the currency precision '" + PotentialDecimalPrecision +
+                                "' is not a number!");
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
             else if (AColumnType.Contains("Boolean"))
             {
                 ColumnType = "CheckBox";
             }
 
-            writer.Template.AddToCodelet("INITMANUALCODE",
-                AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
-                "FMainDS." +
-                ATableName + ".Column" +
-                AColumnName + ");" + Environment.NewLine);
+            if ((ColumnType != "Currency")
+                || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ");" + Environment.NewLine);
+            }
+            else
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
+            }
         }
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
@@ -1527,10 +1568,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         || (NumberFormat.StartsWith("Currency(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
-                            NumberFormat.Length - NumberFormat.IndexOf(')'));
+                            NumberFormat.IndexOf(')') - NumberFormat.IndexOf('(') - 1)
 
-//Console.WriteLine("PotentialDecimalPrecision: " + PotentialDecimalPrecision);
-                        if (PotentialDecimalPrecision != String.Empty)
+//Console.WriteLine("TTxtNumericTextBoxGenerator: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
+                                                    if (PotentialDecimalPrecision != String.Empty)
                         {
                             try
                             {
