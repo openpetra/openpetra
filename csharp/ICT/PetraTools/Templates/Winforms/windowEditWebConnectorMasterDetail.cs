@@ -107,7 +107,9 @@ namespace {#NAMESPACE}
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+        DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+        myDataView.AllowNew = false;
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         grdDetails.Refresh();
         SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
         

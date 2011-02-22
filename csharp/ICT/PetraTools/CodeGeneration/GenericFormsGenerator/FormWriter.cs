@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,7 +45,11 @@ namespace Ict.Tools.CodeGeneration
         public abstract void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir);
         public abstract string CalculateDestinationFilename(string AYamlFilename);
         public abstract string CalculateManualCodeFilename(string AYamlFilename);
-        public abstract void SetControlProperty(string AControlName, string APropertyName, string APropertyValue);
+        public abstract void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel);
+        public void SetControlProperty(TControlDef ACtrl, string APropertyName, string APropertyValue)
+        {
+            SetControlProperty(ACtrl.controlName, APropertyName, APropertyValue, !(ACtrl.GetAttribute("VariableLabelText") == "true"));
+        }
 
         /// <summary>
         /// check if the control has an attribute with the property name in the xml definition
@@ -57,7 +61,7 @@ namespace Ict.Tools.CodeGeneration
         {
             if (TYml2Xml.HasAttribute(ACtrl.xmlNode, APropertyName))
             {
-                SetControlProperty(ACtrl.controlName, APropertyName, TYml2Xml.GetAttribute(ACtrl.xmlNode, APropertyName));
+                SetControlProperty(ACtrl, APropertyName, TYml2Xml.GetAttribute(ACtrl.xmlNode, APropertyName));
             }
         }
 

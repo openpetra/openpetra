@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="OpenPetra">
+<project name="OpenPetra" default="help">
 
 <echo>operating system=${operating-system::to-string(environment::get-operating-system())}</echo>
 <echo>platform=${platform::get-name()}</echo>
@@ -408,7 +408,6 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   </if>
 </target> 
 <!-- END buildRelease -->
-
 
 </project>
 

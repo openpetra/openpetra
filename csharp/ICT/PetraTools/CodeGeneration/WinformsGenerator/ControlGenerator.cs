@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,13 +77,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + labelText + "\"");
-            writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
+            writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
+            writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
 
             if (FRightAlign)
             {
-                writer.SetControlProperty(ctrl.controlName, "Dock", "System.Windows.Forms.DockStyle.Right");
-                writer.SetControlProperty(ctrl.controlName, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
+                writer.SetControlProperty(ctrl, "Dock", "System.Windows.Forms.DockStyle.Right");
+                writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
 
             return writer.FTemplate;
@@ -108,7 +108,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";" + Environment.NewLine);
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
             return writer.FTemplate;
         }
@@ -128,11 +128,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             StringCollection DynamicControlTypes;
 
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "Dock", "Fill");
+            writer.SetControlProperty(ctrl, "Dock", "Fill");
 
             if (ctrl.HasAttribute("ToolTip"))
             {
-                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + ctrl.GetAttribute("ToolTip") + "\"");
+                writer.SetControlProperty(ctrl, "ToolTipText", "\"" + ctrl.GetAttribute("ToolTip") + "\"");
             }
 
             #region Dynamic TabPage UserControl loading ('LoadPageDynamically' attribute and 'DynamicControlTypes' Element)
@@ -359,14 +359,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (GenerateLabel(ctrl))
             {
-                writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             }
 
             FGenerateLabel = false;
 
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
-                writer.SetControlProperty(ctrl.controlName,
+                writer.SetControlProperty(ctrl,
                     "Checked",
                     TXMLParser.GetAttribute(ctrl.xmlNode, "RadioChecked"));
             }
@@ -439,7 +439,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.GetAttribute("AutoComplete").EndsWith("History"))
             {
-                writer.SetControlProperty(ctrl.controlName, "AcceptNewValues", "true");
+                writer.SetControlProperty(ctrl, "AcceptNewValues", "true");
                 writer.SetEventHandlerToControl(ctrl.controlName,
                     "AcceptNewEntries",
                     "TAcceptNewEntryEventHandler",
@@ -474,7 +474,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
+            writer.SetControlProperty(ctrl, "ListTable", "TCmbAutoPopulated.TListTableEnum." + ctrl.GetAttribute("List"));
 
             if (ctrl.GetAttribute("List") != "UserDefinedList")
             {
@@ -597,7 +597,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (defaultValue.Length > 0)
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Text", "\"" + defaultValue + "\"");
+                    writer.SetControlProperty(ctrl, "Text", "\"" + defaultValue + "\"");
                 }
             }
 
@@ -627,22 +627,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
+                    writer.SetControlProperty(ctrl, "Text", "\"\"");
                 }
                 else
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+                    writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
                     if (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
                     {
-                        writer.SetControlProperty(ctrl.controlName, "CheckAlign", "System.Drawing.ContentAlignment.MiddleRight");
+                        writer.SetControlProperty(ctrl, "CheckAlign", "System.Drawing.ContentAlignment.MiddleRight");
                     }
                     else
                     {
-                        writer.SetControlProperty(ctrl.controlName, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                        writer.SetControlProperty(ctrl, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
                     }
 
-                    writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
                 }
             }
             else
@@ -653,8 +653,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 base.SetControlProperties(writer, ctrl);
 
-                writer.SetControlProperty(ctrl.controlName, "Text", "\"\"");
-                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(3, 0, 3, 0)");
+                writer.SetControlProperty(ctrl, "Text", "\"\"");
+                writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 0, 3, 0)");
             }
 
             return writer.FTemplate;
@@ -691,7 +691,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            writer.SetControlProperty(ctrl.controlName, "FixedRows", "1");
+            writer.SetControlProperty(ctrl, "FixedRows", "1");
             return writer.FTemplate;
         }
     }
@@ -834,40 +834,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
-                writer.SetControlProperty(ctrl.controlName,
+                writer.SetControlProperty(ctrl,
                     "Text",
                     "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
 
             if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "Multiline") == "true"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Multiline", "true");
+                writer.SetControlProperty(ctrl, "Multiline", "true");
 
                 if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "WordWrap") == "false"))
                 {
-                    writer.SetControlProperty(ctrl.controlName, "WordWrap", "false");
+                    writer.SetControlProperty(ctrl, "WordWrap", "false");
                 }
 
                 if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ScrollBars"))
                 {
-                    writer.SetControlProperty(ctrl.controlName, "ScrollBars", "ScrollBars." + TXMLParser.GetAttribute(ctrl.xmlNode, "ScrollBars"));
+                    writer.SetControlProperty(ctrl, "ScrollBars", "ScrollBars." + TXMLParser.GetAttribute(ctrl.xmlNode, "ScrollBars"));
                 }
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "TextAlign"))
             {
-                writer.SetControlProperty(ctrl.controlName, "TextAlign", "HorizontalAlignment." + TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
+                writer.SetControlProperty(ctrl, "TextAlign", "HorizontalAlignment." + TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "CharacterCasing"))
             {
-                writer.SetControlProperty(ctrl.controlName, "CharacterCasing", "CharacterCasing." +
+                writer.SetControlProperty(ctrl, "CharacterCasing", "CharacterCasing." +
                     TXMLParser.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
             }
 
             if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true"))
             {
-                writer.SetControlProperty(ctrl.controlName, "UseSystemPasswordChar", "true");
+                writer.SetControlProperty(ctrl, "UseSystemPasswordChar", "true");
             }
 
             return writer.FTemplate;
@@ -935,6 +935,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
     public class SourceGridGenerator : TControlGenerator
     {
+        Int16 FDecimalPrecision = 2;
+
         public SourceGridGenerator()
             : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
         {
@@ -958,6 +960,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
+            string PotentialDecimalPrecision;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -966,17 +969,55 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (AColumnType.Contains("Currency"))
             {
                 ColumnType = "Currency";
+
+                if (AColumnType.Contains("Currency("))
+                {
+                    PotentialDecimalPrecision = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
+                        AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
+
+//Console.WriteLine("AddColumnToGrid: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
+
+                    if (PotentialDecimalPrecision != String.Empty)
+                    {
+                        try
+                        {
+                            FDecimalPrecision = Convert.ToInt16(PotentialDecimalPrecision);
+                        }
+                        catch (System.FormatException)
+                        {
+                            throw new ApplicationException(
+                                "Grid Column with currency formatting: The specifier for the currency precision '" + PotentialDecimalPrecision +
+                                "' is not a number!");
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
             else if (AColumnType.Contains("Boolean"))
             {
                 ColumnType = "CheckBox";
             }
 
-            writer.Template.AddToCodelet("INITMANUALCODE",
-                AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
-                "FMainDS." +
-                ATableName + ".Column" +
-                AColumnName + ");" + Environment.NewLine);
+            if ((ColumnType != "Currency")
+                || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ");" + Environment.NewLine);
+            }
+            else
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
+            }
         }
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
@@ -1429,7 +1470,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            string ControlName = ctrl.controlName;
             Int32 buttonWidth = 40;
             Int32 textBoxWidth = 80;
 
@@ -1437,34 +1477,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
             {
-                writer.SetControlProperty(ControlName, "ShowLabel", "false");
+                writer.SetControlProperty(ctrl, "ShowLabel", "false");
             }
 
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
-            writer.SetControlProperty(ControlName, "ASpecialSetting", "true");
-            writer.SetControlProperty(ControlName, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
-            writer.SetControlProperty(ControlName, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." +
+            writer.SetControlProperty(ctrl, "ASpecialSetting", "true");
+            writer.SetControlProperty(ctrl, "ButtonTextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+            writer.SetControlProperty(ctrl, "ListTable", "TtxtAutoPopulatedButtonLabel.TListTableEnum." +
                 FButtonLabelType);
-            writer.SetControlProperty(ControlName, "PartnerClass", "\"" + ctrl.GetAttribute("PartnerClass") + "\"");
-            writer.SetControlProperty(ControlName, "MaxLength", "32767");
-            writer.SetControlProperty(ControlName, "Tag", "\"CustomDisableAlthoughInvisible\"");
-            writer.SetControlProperty(ControlName, "TextBoxWidth", textBoxWidth.ToString());
+            writer.SetControlProperty(ctrl, "PartnerClass", "\"" + ctrl.GetAttribute("PartnerClass") + "\"");
+            writer.SetControlProperty(ctrl, "MaxLength", "32767");
+            writer.SetControlProperty(ctrl, "Tag", "\"CustomDisableAlthoughInvisible\"");
+            writer.SetControlProperty(ctrl, "TextBoxWidth", textBoxWidth.ToString());
 
             if (!(ctrl.HasAttribute("ReadOnly") && (ctrl.GetAttribute("ReadOnly").ToLower() == "true")))
             {
-                writer.SetControlProperty(ControlName, "ButtonWidth", buttonWidth.ToString());
-                writer.SetControlProperty(ControlName, "ReadOnly", "false");
-                writer.SetControlProperty(ControlName,
+                writer.SetControlProperty(ctrl, "ButtonWidth", buttonWidth.ToString());
+                writer.SetControlProperty(ctrl, "ReadOnly", "false");
+                writer.SetControlProperty(ctrl,
                     "Font",
                     "new System.Drawing.Font(\"Verdana\", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0)");
-                writer.SetControlProperty(ControlName, "ButtonText", "\"Find\"");
+                writer.SetControlProperty(ctrl, "ButtonText", "\"Find\"");
             }
             else
             {
-                writer.SetControlProperty(ControlName, "ButtonWidth", "0");
-                writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
-                writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
+                writer.SetControlProperty(ctrl, "ButtonWidth", "0");
+                writer.SetControlProperty(ctrl, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
+                writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
 
             return writer.FTemplate;
@@ -1528,9 +1568,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         || (NumberFormat.StartsWith("Currency(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
-                            NumberFormat.Length - NumberFormat.IndexOf(')'));
+                            NumberFormat.IndexOf(')') - NumberFormat.IndexOf('(') - 1);
 
-//Console.WriteLine("PotentialDecimalPrecision: " + PotentialDecimalPrecision);
+//Console.WriteLine("TTxtNumericTextBoxGenerator: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
                         if (PotentialDecimalPrecision != String.Empty)
                         {
                             try
@@ -1661,21 +1701,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            string ControlName = ctrl.controlName;
-
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
             {
-                writer.SetControlProperty(ControlName, "ShowLabel", "false");
+                writer.SetControlProperty(ctrl, "ShowLabel", "false");
             }
 
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
-            writer.SetControlProperty(ControlName, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." +
+            writer.SetControlProperty(ctrl, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." +
                 Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
-            writer.SetControlProperty(ControlName, "DecimalPlaces", FDecimalPrecision.ToString());
-            writer.SetControlProperty(ControlName, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
+            writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
+            writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
 
             return writer.FTemplate;
         }
@@ -1708,16 +1746,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
-            writer.SetControlProperty(ctrl.controlName, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
+            writer.SetControlProperty(ctrl, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
 
             if (ctrl.HasAttribute("DragTabPageEnabled") && (ctrl.GetAttribute("DragTabPageEnabled").ToLower() == "false"))
             {
-                writer.SetControlProperty(ctrl.controlName, "AllowDrop", "false");
+                writer.SetControlProperty(ctrl, "AllowDrop", "false");
             }
 
             if (ctrl.HasAttribute("ShowToolTips") && (ctrl.GetAttribute("ShowToolTips").ToLower() == "true"))
             {
-                writer.SetControlProperty(ctrl.controlName, "ShowToolTips", "true");
+                writer.SetControlProperty(ctrl, "ShowToolTips", "true");
             }
 
             writer.Template.SetCodelet("TABPAGECTRL", ctrl.controlName);
@@ -1998,7 +2036,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))
             {
-                writer.SetControlProperty(ControlName, "Text", "\"" + ctrl.Label + "\"");
+                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             }
 
             return writer.FTemplate;
@@ -2195,7 +2233,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.HasAttribute("SplitterOrientation"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Orientation", "System.Windows.Forms.Orientation." +
+                writer.SetControlProperty(ctrl, "Orientation", "System.Windows.Forms.Orientation." +
                     StringHelper.UpperCamelCase(ctrl.GetAttribute("SplitterOrientation")));
             }
 
@@ -2272,7 +2310,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", ActionEnabling);
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 
@@ -2406,7 +2444,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
             return writer.FTemplate;
         }
@@ -2440,7 +2478,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
 
-            writer.SetControlProperty(ctrl.controlName, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
 
             return writer.FTemplate;
         }

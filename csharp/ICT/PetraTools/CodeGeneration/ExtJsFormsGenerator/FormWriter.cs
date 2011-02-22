@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,7 +80,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
-        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
+        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel)
         {
             // TODO
         }
