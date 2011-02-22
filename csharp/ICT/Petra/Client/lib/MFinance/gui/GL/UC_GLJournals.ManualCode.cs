@@ -90,7 +90,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         		new TFrmSetupDailyExchangeRate(this.Handle);
         	setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
         	setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value, 
-        	                                      cmbDetailTransactionCurrency.GetSelectedString());
+        	                                      cmbDetailTransactionCurrency.GetSelectedString(),
+        	                                      txtDetailExchangeRateToBase.Text);
         	setupDailyExchangeRate.ShowDialog(this);
         	txtDetailExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate;
         }

@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// CultureRecord for the exchange rate ...
         /// </summary>
         NumberFormatInfo numberFormatInfo = null;
+        NumberFormatInfo currencyFormatInfo = null;
 
         /// <summary>
         /// The base currency is used to initialize the "from" combobox
@@ -59,9 +60,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         bool blnUseDateTimeDefault = false;
 
         bool blnSelectedRowChangeable = false;
+        
+        bool blnIsInModalMode;
 
         /// <summary>
-        /// The definition of the ledgernumber is used to define some
+        /// The definition of the ledger number is used to define some
         /// default values and it initializes the dialog to run in the non modal 
         /// form ...
         /// </summary>
@@ -81,6 +84,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     numberFormatInfo =
                         new System.Globalization.CultureInfo(
                             ledger.CountryCode, false).NumberFormat;
+                    currencyFormatInfo = 
+                        new System.Globalization.CultureInfo(
+                            ledger.CountryCode, false).NumberFormat;
                 }
                 catch (System.NotSupportedException)
                 {
@@ -89,9 +95,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     numberFormatInfo =
                         new System.Globalization.CultureInfo(
                             "en-US", false).NumberFormat;
+                    currencyFormatInfo = 
+                        new System.Globalization.CultureInfo(
+                            "en-US", false).NumberFormat;
                 }
 
+                
+                
                 numberFormatInfo.NumberDecimalDigits = 8;
+                currencyFormatInfo.NumberDecimalDigits = 2;
 
 
                 this.txtDetailRateOfExchange.Validating +=
@@ -118,10 +130,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 	"a_date_effective_from_d desc, a_time_effective_from_i desc";
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
                 
-                this.btnClose.Visible = false; 
-                this.btnCancel.Visible = false; 
-                this.btnUseDateToFilter.Visible = true;
-                
+                btnClose.Visible = false; 
+                btnCancel.Visible = false; 
+                btnUseDateToFilter.Visible = true;
+                mniImport.Enabled = true;
+                tbbImport.Enabled = true;
+                blnIsInModalMode = true;
+                strModalFormReturnValue = "";
             }
         }
         
@@ -133,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         /// <param name="dteEffective">Effective date of the actual acounting process</param>
         /// <param name="strCurrencyTo">The actual foreign currency value</param>
-        public void SetDataFilters(DateTime dteEffective, string strCurrencyTo)
+        public void SetDataFilters(DateTime dteEffective, string strCurrencyTo, string strExchangeDefault)
         {
         	DateTime dateLimit = dteEffective.AddDays(1.0);
         	// Do not use local formats here!
@@ -150,9 +165,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dateTimeDefault = dteEffective;
             blnUseDateTimeDefault = true;
 
-            this.btnClose.Visible = true;
-            this.btnCancel.Visible = true;
-            this.btnUseDateToFilter.Visible = false;
+            btnClose.Visible = true;
+            btnCancel.Visible = true;
+            btnUseDateToFilter.Visible = false;
+            mniImport.Enabled = false;
+            tbbImport.Enabled = false;
+            
+            strModalFormReturnValue = strExchangeDefault;
+            blnIsInModalMode = true;
         }
         
         public String CurrencyExchangeRate
@@ -171,17 +191,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void CloseDialog(object sender, EventArgs e)
         {
-        	
         	if (FPetraUtilsObject.CloseFormCheck())
         	{
         		if (CanClose()) {
         			strModalFormReturnValue = txtDetailRateOfExchange.Text;
         			blnUseDateTimeDefault = false;
-        			this.SaveChanges();
+        			SaveChanges();
         			Close();
         		}
         	} else {
-        		strModalFormReturnValue = "1.0";
         		blnUseDateTimeDefault = false;
         		Close();
         	}
@@ -194,7 +212,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void CancelDialog(object sender, EventArgs e)
         {
-        	strModalFormReturnValue = "1.0";
         	blnUseDateTimeDefault = false;
         	Close();
         }
@@ -250,7 +267,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             
             if (FPreviouslySelectedDetailRow == null)
             {
-            	cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
+            	// cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
             }
 
             aDailyExchangeRateRow.DateEffectiveFrom = dateDate;
@@ -311,11 +328,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FPreviouslySelectedDetailRow == null)
             {
-            	lblValueOneDirection.Text = "#";
+            	lblValueOneDirection.Text = "-";
             } else {
             	lblValueOneDirection.Text = 
             		String.Format(numberFormatInfo, strLblText,
-            		              1.0m, FPreviouslySelectedDetailRow.FromCurrencyCode.ToString(),
+            		              1.0m.ToString("N",currencyFormatInfo),
+            		              FPreviouslySelectedDetailRow.FromCurrencyCode.ToString(),
             		              exchangeRate.ToString("N", numberFormatInfo) , 
             		              FPreviouslySelectedDetailRow.ToCurrencyCode.ToString());
             }
@@ -330,13 +348,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             if (FPreviouslySelectedDetailRow == null)
             {
-            	lblValueOtherDirection.Text = "#";
+            	lblValueOtherDirection.Text = "-";
             } else {
             	lblValueOtherDirection.Text = 
             		String.Format(numberFormatInfo, strLblText,
-            		              1.0m, FPreviouslySelectedDetailRow.ToCurrencyCode.ToString(),
+            		              1.0m.ToString("N",currencyFormatInfo),
+            		              FPreviouslySelectedDetailRow.ToCurrencyCode.ToString(),
             		              exchangeRate.ToString("N", numberFormatInfo), 
             		              FPreviouslySelectedDetailRow.FromCurrencyCode.ToString());
+            }
+            if (blnIsInModalMode) {
+            	dtpDetailDateEffectiveFrom.Enabled = false;
             }
         }
 
@@ -355,13 +377,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void ValueChangedCurrencyCode()
         {
-        	if (FPreviouslySelectedDetailRow != null)
-        	{
-        	FPreviouslySelectedDetailRow.ToCurrencyCode = 
-        		cmbDetailToCurrencyCode.GetSelectedString();
-        	FPreviouslySelectedDetailRow.FromCurrencyCode = 
-        		cmbDetailFromCurrencyCode.GetSelectedString();
-        	}
             if (cmbDetailFromCurrencyCode.GetSelectedString() ==
                 cmbDetailToCurrencyCode.GetSelectedString())
             {
@@ -381,8 +396,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (blnSelectedRowChangeable)
             {
-                cmbDetailToCurrencyCode.Enabled =
-                    (cmbDetailFromCurrencyCode.GetSelectedString() == baseCurrencyOfLedger);
+            	if (blnIsInModalMode) {
+            		cmbDetailToCurrencyCode.Enabled = false;
+            	} else {
+            		cmbDetailToCurrencyCode.Enabled =
+            			(cmbDetailFromCurrencyCode.GetSelectedString() == baseCurrencyOfLedger);
+            	}
 
                 cmbDetailFromCurrencyCode.Enabled =
                     (cmbDetailToCurrencyCode.GetSelectedString() == baseCurrencyOfLedger);
@@ -433,6 +452,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         		String strBtnUseDateToFilter1 = Catalog.GetString("Use Date To Filter");
         		btnUseDateToFilter.Text = strBtnUseDateToFilter1;
         	}
+        	cmbDetailToCurrencyCode.Enabled = false;
+        	txtDetailRateOfExchange.Enabled = false;
+        	dtpDetailDateEffectiveFrom.Enabled = false;
         }
 
         /// <summary>
