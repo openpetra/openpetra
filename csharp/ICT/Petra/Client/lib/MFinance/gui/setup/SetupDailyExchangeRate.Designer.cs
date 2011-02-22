@@ -82,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailToCurrencyCode = new System.Windows.Forms.Label();
             this.dtpDetailDateEffectiveFrom = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDetailDateEffectiveFrom = new System.Windows.Forms.Label();
+            this.btnUseDateToFilter = new System.Windows.Forms.Button();
             this.txtDetailRateOfExchange = new System.Windows.Forms.TextBox();
             this.lblDetailRateOfExchange = new System.Windows.Forms.Label();
             this.btnInvertExchangeRate = new System.Windows.Forms.Button();
@@ -265,6 +266,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.lblDetailDateEffectiveFrom.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblDetailDateEffectiveFrom.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
+            // btnUseDateToFilter
+            //
+            this.btnUseDateToFilter.Location = new System.Drawing.Point(2,2);
+            this.btnUseDateToFilter.Name = "btnUseDateToFilter";
+            this.btnUseDateToFilter.AutoSize = true;
+            this.btnUseDateToFilter.Text = "Use Date To Filter";
+            //
             // txtDetailRateOfExchange
             //
             this.txtDetailRateOfExchange.Location = new System.Drawing.Point(2,2);
@@ -326,6 +334,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.tableLayoutPanel2.Controls.Add(this.cmbDetailToCurrencyCode, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.dtpDetailDateEffectiveFrom, 1, 2);
             this.tableLayoutPanel2.Controls.Add(this.txtDetailRateOfExchange, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.btnUseDateToFilter, 2, 2);
             this.tableLayoutPanel2.Controls.Add(this.btnInvertExchangeRate, 2, 3);
             //
             // tbbSave
@@ -570,6 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private System.Windows.Forms.Label lblDetailToCurrencyCode;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailDateEffectiveFrom;
         private System.Windows.Forms.Label lblDetailDateEffectiveFrom;
+        private System.Windows.Forms.Button btnUseDateToFilter;
         private System.Windows.Forms.TextBox txtDetailRateOfExchange;
         private System.Windows.Forms.Label lblDetailRateOfExchange;
         private System.Windows.Forms.Button btnInvertExchangeRate;
