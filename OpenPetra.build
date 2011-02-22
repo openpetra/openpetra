@@ -19,6 +19,7 @@ list of available commands:
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
+  buildRelease: Build the release for the target platform we are building on
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
@@ -43,7 +44,6 @@ not supported
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
-  buildRelease: requires this parameter: -D:ReleaseID=0.0.2.0
   setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
   createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
   packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
@@ -65,8 +65,13 @@ not supported
       </fileset>
     </delete>
   </foreach>
+  <delete> 
+    <fileset basedir="${dir.delivery}" >  
+      <include name="OpenPetraSetup-*.exe" />
+    </fileset>
+  </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />                           
+  <call target="translationCompilePOFile" />    
 </target>
 
 <target name="nanttasks" depends="" description="goes into the directory inc/nantasks">
@@ -84,9 +89,183 @@ not supported
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
         depends="csharp,nanttasks" />
 
-<!-- BEGIN buildRelease -->
-<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" />
+<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
+  <call target="generateCsprojectNoCompile" />
+  <call target="generate-solution-all-internal" />
+</target>
 
+<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
+  <call target="generateSolutionNoCompile" />
+</target>
+
+<!-- Generate solution targets -->
+<target name="generate-solution-all-internal" >
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <call target="generate-solution-internal" />
+  </foreach>
+</target>
+
+
+<target name="generate-solution-internal" >
+  <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
+  <property name="TemplateProject" value="" />
+  <property name="TemplateConfiguration" value="" />
+  <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
+  <foreach item="File" property="ProjectFile">
+    <in>
+      <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
+        <include name="*.csproj"/>
+      </items>
+    </in>
+    <do>  
+      <xmlpeek file="${ProjectFile}"
+              xpath="/*[local-name()='Project']/*[local-name()='PropertyGroup']/*[local-name()='ProjectGuid']"
+              property="ProjectGuid"/>
+      <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
+      <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
+                property="tempTemplateProject" encoding="utf-8">  
+        <filterchain>
+          <expandproperties />
+        </filterchain>
+      </loadfile>
+      <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
+      <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
+                property="tempTemplateConfiguration" encoding="utf-8">  
+        <filterchain>
+          <expandproperties />
+        </filterchain>
+      </loadfile>
+      <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
+    </do>
+  </foreach>
+  <copy file="${path::combine(templatedir, 'template.sln')}"
+        tofile="${path::combine(dir.projectfiles,
+                                path::combine(devenv-name, 'OpenPetra.sln'))}" 
+        overwrite="true">  
+    <filterchain>
+      <expandproperties />
+    </filterchain>
+  </copy>
+
+</target>
+
+<!-- Include default implementation -->
+<include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
+
+<!-- Compat targets -->
+<include buildfile="inc/nant/OpenPetra.tobe.migrated.xml"/>
+
+<!-- BEGIN buildRelease -->
+<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" 
+        description="Build the release for the target platform we are building on" />
+
+<property name="BuildClientArchive" value="false" overwrite="false" />
+<property name="SkipDatabases" value="false" overwrite="false" />
+<property name="PetraRelease" value="0300" overwrite="false" />
+
+<!-- Windows -->
+<target name="buildReleaseWindows" if="${platform::is-windows()}">
+  <call target="compile" unless="${target::has-executed('compile')}" />
+  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
+  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/>
+</target> 
+
+<script language="C#">
+  <references>
+    <include name="System.dll" />
+  </references>
+  <code><![CDATA[ 
+[Function("CalculateStandaloneDBUpdateFileName")]
+public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
+{
+    string[] numbers = ReleaseID.Split(new char[]{'.', '-'});
+    
+    // need to manually code the medium version increases
+    if (numbers[1] == "1" && numbers[2] == "0")
+    {
+        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                        0, 0, 15,
+                        numbers[0], numbers[1], numbers[2]);
+    }
+
+    if (numbers[1] == "2" && numbers[2] == "0")
+    {
+        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                        0, 1, 0,
+                        numbers[0], numbers[1], numbers[2]);
+    }
+
+    // this is for smaller patches
+    return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+                        numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
+                        numbers[0], numbers[1], numbers[2]);
+}
+]]>
+    </code>
+</script> 
+  
+<target name="setupStandalone">
+    <echo file="${dir.root}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseID}</echo>
+    <property name="DBUpdate.file" value="${dir.root}/db/patches/${script::CalculateStandaloneDBUpdateFileName(ReleaseID)}"/>
+    <if test="${not file::exists(DBUpdate.file)}">
+        <echo message="${DBUpdate.file}"/>
+        <fail message="We are missing the db upgrade file for sqlite standalone databases." />
+    </if>
+    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
+    <call target="setupTemplate"/>
+</target>
+
+<target name="setupTemplate">
+    <property name="Current.File" value="${SetupOriginal.File}.local"/>
+
+    <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
+
+    <property name="toReplace" value="{#UINAVIGATION}"/>
+    <property name="UINavigation.file" value="UINavigation.yml.my"/>
+    <if test="${file::exists(UINavigation.file)}">
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+    </if>
+    <if test="${not file::exists(UINavigation.file)}">
+        <property name="UINavigation.file" value="UINavigation.yml"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+    </if>
+
+    <property name="toReplace" value="{#REMOTECONFIG}"/>
+    <property name="Config.file" value="PetraClientRemote.config.my"/>
+    <if test="${file::exists(Config.file)}">
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+    </if>
+    <if test="${not file::exists(Config.file)}">
+        <property name="Config.file" value="PetraClientRemote.config"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+    </if>
+
+    <property name="toReplace" value="{#RELEASEVERSION}"/>
+    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
+    <property name="toReplace" value="{#RELEASEID}"/>
+    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
+    <property name="toReplace" value="{#PATCHVERSION}"/>
+    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
+    <property name="toReplace" value="{#DELIVERY.DIR}"/>
+    <echo message='${script::ReplaceInFile(Current.File, toReplace, dir.delivery)}'/>
+    
+    <!-- for remote installer -->
+    <if test="${property::exists('OrgName')}">
+        <property name="toReplace" value="{#ORGNAME}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, OrgName)}'/>
+        <property name="toReplace" value="{#PUBLISHERURL}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, PublisherUrl)}'/>
+        <property name="toReplace" value="{#SERVERHOST}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerHost)}'/>
+        <property name="toReplace" value="{#SERVERPORT}"/>
+        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
+    </if>
+    <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
+          workingdir="${path::get-directory-name(Current.File)}"/>
+</target>
+
+<!-- Linux -->
 <target name="buildReleaseLinux" if="${platform::is-unix()}">
   <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
   <call target="compile" unless="${target::has-executed('compile')}" />
@@ -97,16 +276,6 @@ not supported
   <call target="setupLinuxServer" unless="${target::has-executed('setupLinuxServer')}"/>
 </target>
 
-<target name="buildReleaseWindows" if="${platform::is-windows()}">
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-<!--  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/> -->
-</target> 
-
-<property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="SkipDatabases" value="false" overwrite="false" />
-<property name="PetraRelease" value="0300" overwrite="false" />
 <target name="setupLinuxServer">
 <!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
      bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
@@ -214,7 +383,7 @@ not supported
         <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
         
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.setup}/openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.setup}/openpetraorg-mono-${ReleaseID}.tar.gz *&quot;"/>
 
         <!-- to avoid problem with symbolic link with delete dir task -->
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
@@ -240,71 +409,6 @@ not supported
 </target> 
 <!-- END buildRelease -->
 
-<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
-  <call target="generateCsprojectNoCompile" />
-  <call target="generate-solution-all-internal" />
-</target>
-
-<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
-  <call target="generateSolutionNoCompile" />
-</target>
-
-<!-- Generate solution targets -->
-<target name="generate-solution-all-internal" >
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <call target="generate-solution-internal" />
-  </foreach>
-</target>
-
-
-<target name="generate-solution-internal" >
-  <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
-  <property name="TemplateProject" value="" />
-  <property name="TemplateConfiguration" value="" />
-  <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
-  <foreach item="File" property="ProjectFile">
-    <in>
-      <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
-        <include name="*.csproj"/>
-      </items>
-    </in>
-    <do>  
-      <xmlpeek file="${ProjectFile}"
-              xpath="/*[local-name()='Project']/*[local-name()='PropertyGroup']/*[local-name()='ProjectGuid']"
-              property="ProjectGuid"/>
-      <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
-      <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
-                property="tempTemplateProject" encoding="utf-8">  
-        <filterchain>
-          <expandproperties />
-        </filterchain>
-      </loadfile>
-      <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
-      <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
-                property="tempTemplateConfiguration" encoding="utf-8">  
-        <filterchain>
-          <expandproperties />
-        </filterchain>
-      </loadfile>
-      <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
-    </do>
-  </foreach>
-  <copy file="${path::combine(templatedir, 'template.sln')}"
-        tofile="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.sln'))}" 
-        overwrite="true">  
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
-
-</target>
-
-<!-- Include default implementation -->
-<include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
-
-<!-- Compat targets -->
-<include buildfile="inc/nant/OpenPetra.tobe.migrated.xml"/>
 
 </project>
 

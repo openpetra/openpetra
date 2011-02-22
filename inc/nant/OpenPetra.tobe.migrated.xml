@@ -4,6 +4,99 @@
 
 <include buildfile="OpenPetra.common.xml"/>
 
+<script language="C#">
+<references>
+  <include name="System.dll" />
+  <include name="System.Web.dll" /> 
+</references>
+<imports>
+  <import namespace="System.Text.RegularExpressions" />
+  <import namespace="System.Web.Security" />
+  <import namespace="System.Security.Cryptography" /> 
+</imports>    
+<code><![CDATA[
+[Function("ReplaceInFile")]
+public static bool ReplaceInFile(string filename, string oldValue, string newValue)
+{
+  String line = "start";
+  StreamReader sr = new StreamReader(filename);
+  StreamWriter sw = new StreamWriter(filename + ".new");
+  bool attachToEnd = false;
+  bool doRegExpr = false;
+  if (oldValue.StartsWith("RegEx:"))
+  {
+    doRegExpr = true;
+    oldValue = oldValue.Substring("RegEx:".Length);
+    if (oldValue=="^^")
+    {
+        // prepend to beginning of file
+        sw.WriteLine(newValue);
+        oldValue = "";
+        doRegExpr = false;
+    }
+    else if (oldValue=="$$")
+    {
+        // attach to end of file
+        oldValue = "";
+        doRegExpr = false;
+        attachToEnd = true;
+    }
+  }
+  bool firstLine = true;
+  while (line != null)
+  {
+    line = sr.ReadLine();
+    if (line != null)
+    {
+        if (!firstLine)
+        {
+            // for uncrustify we have no linebreak on the last line
+            sw.WriteLine();
+        }
+        firstLine = false;
+        if (doRegExpr)
+        {
+            Regex reg=new Regex(oldValue);
+            line=reg.Replace(line,newValue);
+        }
+        else if (oldValue.Length > 0)
+        {
+            line = line.Replace(oldValue, newValue);
+        }
+        
+        sw.Write(line);
+    }
+  }
+  if (attachToEnd)
+  {
+    sw.WriteLine();
+    sw.Write(newValue);
+  }
+  sr.Close();
+  sw.Close();
+  File.Delete(filename);
+  File.Move(filename + ".new", filename);
+  return true;
+}
+
+            [Function("GetPasswordSalt")]
+            public static string GetPasswordSalt() {
+                  //Generate a cryptographic random number.
+                  RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                  byte[] buff = new byte[32];
+                  rng.GetBytes(buff);
+
+                  // Return a Base64 string representation of the random number.
+                  return Convert.ToBase64String(buff);
+            }
+            [Function("GetPasswordHash")]
+            public static string GetPasswordHash(string APassword, string ASalt) {
+                return FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword, ASalt), "SHA1"); 
+            }               
+  ]]>
+  </code>
+</script>             
+
 <target name="cleanPetra" depends="clean" />
 <target name="compilePetra" depends="compile" />
 
@@ -40,7 +133,9 @@
   <property name="PostgreSQL.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
   <property name="pgdump.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/pg_dump.exe" overwrite="false"/>
   <property name="MySQL.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
-  <property name="MySQLDump.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysqldump.exe" overwrite="false"/> 
+  <property name="MySQLDump.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysqldump.exe" 
+            overwrite="false"/> 
+  <property name="Innosetup.ISCC" value="${environment::get-variable('ProgramFiles')}/Inno Setup 5/ISCC.exe" overwrite="false"/>
   <!-- Is this really needed?? -->
   <property name="MonoBinPath" value="" overwrite="false"/>     
 </if>
@@ -59,16 +154,58 @@
 <!-- Add the database as is add properties for compat, which will be removed -->
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
-<property name="SQLitedb.file" value="${dir.bin}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
+<property name="SQLitedb.file" value="${dir.root}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
 <property name="PetraToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />
 <property name="Tmp.dir" value="${tempdir}"/>
+<property name="ReleaseVersion" value="${ReleaseID}" />
 
 
 <target name="init">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
-</target>
+  <if test="${'win32'==platform::get-name()}" > <!-- This hack only works on windows -->
+    <script language="C#">
+      <references>
+        <include name="System.dll" />
+      </references>
+      <code><![CDATA[ 
+    // this will reverse the effect of the MSDOS subst command, ie a locally mapped network drive will be mapped back to the real path behind it
+    // see also http://bloggingabout.net/blogs/ramon/archive/2007/04/05/get-the-physical-path-of-a-path-that-uses-a-subst-drive.aspx
+      [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+      static extern uint QueryDosDevice(string lpDeviceName, StringBuilder lpTargetPath, int ucc);
+        
+      [Function("GetRealPath")]
+    public static string GetRealPath(string path)
+      {
+          const int BUFFER_LENGTH = 1024;
+
+          if (Directory.Exists(path))
+          {
+              path = new DirectoryInfo(path).FullName;
+          }
+          else if (File.Exists(path))
+          {
+              path = new FileInfo(path).FullName;
+          }
+
+          StringBuilder pathInformation = new StringBuilder(BUFFER_LENGTH);
+          QueryDosDevice(path.Substring(0,2), pathInformation, BUFFER_LENGTH);
+
+          // If drive is substed, the result will be in the format of "\??\C:\RealPath\".
+          // after that strip the \??\ prefix and combine the paths.
+          if (pathInformation.ToString().Contains(@"\??\"))
+          {
+              return pathInformation.ToString(4, pathInformation.Length-4) + path.Substring(2); // Remove the drive letter
+          }
+
+          return path;
+      }
+      ]]>
+      </code>
+    </script>         
+  </if>
+ </target>
   
 <include buildfile="../../OpenPetra.build.database.tasks" />
 
