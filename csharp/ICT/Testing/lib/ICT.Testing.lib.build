@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ICT-testing-lib-Build">
 
-<property name="Namespace" value="Tests" />
+<property name="Namespace" value="Tests-lib" />
 
 <property name="RunCsDepend" value="true" /> 
 <property name="CsDependAdditionalLibReferences" value="NunitPattern" /> 

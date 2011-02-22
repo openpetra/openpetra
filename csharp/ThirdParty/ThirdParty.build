@@ -7,6 +7,7 @@
   <delete>
     <fileset basedir="${dir.bin}">
       <patternset refid="3rdPartyPattern" />
+      <patternset refid="NunitPattern" />
     </fileset>
   </delete>
 </target>

@@ -8,6 +8,15 @@
 
 <target name="clean" >
   <delete dir="${tempdir}/i18n"/>
+  <foreach item="File" property="TargetLanguage.PofileWithPath">
+    <in><items>
+          <include name="${dir.root}/i18n/*.po" />
+          <exclude name="${dir.root}/i18n/doNotTranslate.po" />
+    </items></in>
+    <do>
+      <delete dir="${dir.bin}/${path::get-file-name-without-extension(TargetLanguage.PofileWithPath)}"/>
+    </do>
+  </foreach>
 </target>
 
 <target name="compilePoFileInternal-windows" if="${platform::is-windows()}" >

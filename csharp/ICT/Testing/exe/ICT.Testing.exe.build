@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ICT-testing-exe-Build">
 
-<property name="Namespace" value="Tests" />
+<property name="Namespace" value="Tests-exe" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" /> 
