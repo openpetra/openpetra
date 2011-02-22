@@ -17,6 +17,8 @@ using Ict.Common;
 using Ict.Common.Data;
 using System.Xml; 
 using System.Collections.Generic; 
+using Ict.Petra.Client.MPartner.Gui; 
+using Tests.Shepherd; 
 
 namespace Ict.Petra.Client.CommonForms.Logic
 {
@@ -59,13 +61,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
 				}
 			}
 		}
-		
+
+
 		[Test]
 		public void TestPetraShepherdFormLogicHandleActionNext()
 		{
-			System.Console.WriteLine("Beginning the tests of the HandleActionNext() button.. "); 
-			IPetraShepherdConcreteFormInterface testInterface = null; 
-			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testInterface); 
+			System.Console.WriteLine("Beginning the tests of the HandleActionNext() button.. ");
+			Tests.Shepherd.TestInterface testShepherdLogic = new Tests.Shepherd.TestInterface(); 
+			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
 			System.Console.WriteLine(testFormLogic.CurrentPage.ID); 
 			
 			Assert.AreEqual(testFormLogic.CurrentPage.ID, "5"); 
