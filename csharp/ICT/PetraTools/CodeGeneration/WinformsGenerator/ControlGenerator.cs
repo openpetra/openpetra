@@ -1568,10 +1568,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         || (NumberFormat.StartsWith("Currency(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
-                            NumberFormat.IndexOf(')') - NumberFormat.IndexOf('(') - 1)
+                            NumberFormat.IndexOf(')') - NumberFormat.IndexOf('(') - 1);
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator: PotentialDecimalPrecision: " + PotentialDecimalPrecision);
-                                                    if (PotentialDecimalPrecision != String.Empty)
+                        if (PotentialDecimalPrecision != String.Empty)
                         {
                             try
                             {
