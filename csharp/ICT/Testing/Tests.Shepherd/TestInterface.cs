@@ -8,7 +8,6 @@
  */
 using System;
 using Ict.Petra.Client.CommonForms.Logic; 
-using System;
 using NUnit.Framework;
 using System.Threading;
 using System.Collections;

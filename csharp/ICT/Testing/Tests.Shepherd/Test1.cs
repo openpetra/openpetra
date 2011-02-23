@@ -66,12 +66,102 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		[Test]
 		public void TestPetraShepherdFormLogicHandleActionNext()
 		{
-			System.Console.WriteLine("Beginning the tests of the HandleActionNext() button.. ");
+			System.Console.WriteLine("TEST 2.1 Beginning the tests of the HandleActionNext() button.. ");
 			Tests.Shepherd.TestInterface testShepherdLogic = new Tests.Shepherd.TestInterface(); 
 			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
-			System.Console.WriteLine(testFormLogic.CurrentPage.ID); 
 			
+			//TESTS to show that the HandleActionNext() method moves from page to page under normal operating circumstances..
+			System.Console.WriteLine("TEST 2.2 Checking to make sure that it starts on page number 5.");
 			Assert.AreEqual(testFormLogic.CurrentPage.ID, "5"); 
+			
+			System.Console.WriteLine("TEST 2.3 Checking to make sure that it moves to the next page.."); 
+			testFormLogic.HandleActionNext(); 
+			Assert.AreEqual(testFormLogic.CurrentPage.ID,"56"); 
+			
+			System.Console.WriteLine("TEST 2.4 Checking to make sure that it moves to the next page.."); 
+			testFormLogic.HandleActionNext(); 
+			Assert.AreEqual(testFormLogic.CurrentPage.ID,"12"); 
+			
+			System.Console.WriteLine("TEST 2.5 Checking to make sure that the page doesn't move off the end of the list.."); 
+			testFormLogic.HandleActionNext(); 
+			Assert.AreEqual(testFormLogic.CurrentPage.ID,"12"); 
+			
+			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible
+			
+			TPetraShepherdFormLogic testNotVisibleLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			
+			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleLogic.ShepherdPages.Pages)
+    		{
+				switch(pair.Key)
+				{
+					case "56":
+						pair.Value.Visible = false; 
+						break;
+				}
+			}
+			
+			System.Console.WriteLine("TEST 2.6 Testing to make sure that the first page is visible."); 
+			Assert.True(testNotVisibleLogic.CurrentPage.Visible);
+			
+			System.Console.WriteLine("TEST 2.7 Testing to make sure that the second page was skipped because it was made invisible."); 
+			testNotVisibleLogic.HandleActionNext(); 
+			Assert.AreEqual(testNotVisibleLogic.CurrentPage.ID,"12"); 
+			
+
+			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not enabled
+			
+			TPetraShepherdFormLogic testNotEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			
+			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotEnabledLogic.ShepherdPages.Pages)
+    		{
+				switch(pair.Key)
+				{
+					case "56":
+						pair.Value.Enabled = false; 
+						break;
+				}
+			}
+			
+			System.Console.WriteLine("TEST 2.9 Testing to make sure that the first page is visible."); 
+			Assert.True(testNotEnabledLogic.CurrentPage.Enabled);
+			
+			System.Console.WriteLine("TEST 2.10 Testing to make sure that the second page was skipped because it was made invisible."); 
+			testNotEnabledLogic.HandleActionNext(); 
+			Assert.AreEqual(testNotEnabledLogic.CurrentPage.ID,"12"); 			
+			
+			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible nor enabled
+			
+			TPetraShepherdFormLogic testNotVisibleOrEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			
+			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
+    		{
+				switch(pair.Key)
+				{
+					case "56":
+						pair.Value.Visible = false; 
+						pair.Value.Enabled = false; 
+						break;
+				}
+			}
+			
+			System.Console.WriteLine("TEST 2.11 Testing to make sure that the first page is visible."); 
+			Assert.True(testNotVisibleOrEnabledLogic.CurrentPage.Visible);
+			
+			System.Console.WriteLine("TEST 2.12 Testing to make sure that the second page was skipped because it was made invisible."); 
+			testNotVisibleOrEnabledLogic.HandleActionNext(); 
+			Assert.AreEqual(testNotVisibleOrEnabledLogic.CurrentPage.ID,"12"); 
+
+		}		
+		
+		[Test]
+		public void TestPetraShepherdFormLogicSwitchToStartPage()
+		{
+			Tests.Shepherd.TestInterface testShepherdLogic = new Tests.Shepherd.TestInterface(); 
+			TPetraShepherdFormLogic testFormLogicSwitchToStartPage = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic);
+			
+			Assert.AreEqual(testFormLogicSwitchToStartPage.CurrentPage, "5"); 
+			testFormLogicSwitchToStartPage.HandleActionNext(); 
+			testFormLogicSwitchToStartPage
 		}
 	}
 }
