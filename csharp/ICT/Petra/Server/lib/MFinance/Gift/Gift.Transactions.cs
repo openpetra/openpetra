@@ -174,13 +174,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                     giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
                     giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
-                    giftDetail.RecipientField = 0;
+                    // This may be not very fast we can optimize later
+                    Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
 
 
                     //do the same for the Recipient
                     partner.Clear();
-                    partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
-                    giftDetail.RecipientDescription = partner[0].PartnerShortName;
+                    Int64 fieldNumber;
+
+                    LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
+                    giftDetail.RecipientField = fieldNumber;
+
+                    //partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+                    if (partner.Count > 0)
+                    {
+                        giftDetail.RecipientDescription = partner[0].PartnerShortName;
+                    }
+                    else
+                    {
+                        giftDetail.RecipientDescription = "INVALID";
+                    }
+
                     giftDetail.DateEntered = giftRow.DateEntered;
                 }
             }
@@ -522,7 +536,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
                 PPartnerAccess.LoadByPrimaryKey(PartnerDS, DonorKey, Transaction);
             }
@@ -547,66 +561,81 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey, out Int64 fieldNumber)
         {
-            Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = new PUnitTable();
+            TDBTransaction Transaction = null;
+
+            Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
+            PPartnerTable partnerTable = null;
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+
+                LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partnerTable, partnerKey, out fieldNumber);
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return unitTable;
+        }
+
+        // First check if partner is in class "unit"
+
+
+        //TODO Get the field in p_person.p_om_field_key_n
+
+        //TODO Get the field in p_family.p_om_field_key_n.
+
+
+        private static void LoadKeyMinistryInsideTrans(ref TDBTransaction Transaction,
+            ref Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable,
+            ref PPartnerTable APartnerTable,
+            Int64 partnerKey,
+            out Int64 fieldNumber)
+        {
+            unitTable = new PUnitTable();
             fieldNumber = 0;
 
             if (partnerKey != 0)
             {
-                TDBTransaction Transaction = null;
+                APartnerTable = PPartnerAccess.LoadByPrimaryKey(partnerKey, Transaction);
 
-                try
+                if (APartnerTable.Rows.Count == 1)
                 {
-                    Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                    // First check if partner is in class "unit"
-                    PPartnerTable myPPartnerTable = PPartnerAccess.LoadByPrimaryKey(partnerKey, Transaction);
+                    PPartnerRow partnerRow = (PPartnerRow)APartnerTable.Rows[0];
 
-                    if (myPPartnerTable.Rows.Count == 1)
+                    switch (partnerRow.PartnerClass)
                     {
-                        PPartnerRow partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
+                        case MPartnerConstants.PARTNERCLASS_PERSON:
+                            break;
 
-                        switch (partnerRow.PartnerClass)
-                        {
-                            case MPartnerConstants.PARTNERCLASS_PERSON:
-                                //TODO Get the field in p_person.p_om_field_key_n
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_FAMILY:
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_FAMILY:
-                                //TODO Get the field in p_family.p_om_field_key_n.
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_BANK:
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_BANK:
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_VENUE:
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_VENUE:
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_ORGANISATION:
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_ORGANISATION:
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_CHURCH:
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_CHURCH:
-                                break;
+                        case MPartnerConstants.PARTNERCLASS_UNIT:
+                            ProcessUnit(ref unitTable, ref Transaction, ref fieldNumber, partnerKey);
+                            break;
 
-                            case MPartnerConstants.PARTNERCLASS_UNIT:
-
-                                ProcessUnit(ref unitTable, ref Transaction, ref fieldNumber, partnerKey);
-
-                                break;
-
-                            default:
-                                break;
-                        }
-                    }
-                }
-                finally
-                {
-                    if (Transaction != null)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        default:
+                            break;
                     }
                 }
             }
-
-            return unitTable;
         }
 
         static void ProcessUnit(ref Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable,

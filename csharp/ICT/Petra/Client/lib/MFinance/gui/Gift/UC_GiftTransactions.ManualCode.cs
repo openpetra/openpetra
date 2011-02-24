@@ -138,34 +138,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // At the moment this event is thrown twice
             // We want to deal only on manual entered changes, not on selections changes
-            if (APartnerKey > 0)
+            if (FPetraUtilsObject.SuppressChangeDetection)
             {
-                if (FPetraUtilsObject.SuppressChangeDetection)
+                FLastDonor = APartnerKey;
+            }
+            else
+            {
+                if (APartnerKey != FLastDonor)
                 {
-                    FLastDonor = APartnerKey;
-                }
-                else
-                {
-                    if (APartnerKey != FLastDonor)
+                    GLSetupTDS PartnerDS = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+
+                    if (PartnerDS.PPartner.Rows.Count > 0)
                     {
-                        GLSetupTDS PartnerDS = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+                        PPartnerRow pr = PartnerDS.PPartner[0];
+                        chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
+                    }
 
-                        if (PartnerDS.PPartner.Rows.Count > 0)
+                    FLastDonor = APartnerKey;
+
+                    foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+                    {
+                        if (giftDetail.BatchNumber.Equals(FBatchNumber)
+                            && giftDetail.GiftTransactionNumber.Equals(FPreviouslySelectedDetailRow.GiftTransactionNumber))
                         {
-                            PPartnerRow pr = PartnerDS.PPartner[0];
-                            chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
-                        }
-
-                        FLastDonor = APartnerKey;
-
-                        foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-                        {
-                            if (giftDetail.BatchNumber.Equals(FBatchNumber)
-                                && giftDetail.GiftTransactionNumber.Equals(FPreviouslySelectedDetailRow.GiftTransactionNumber))
-                            {
-                                giftDetail.DonorKey = APartnerKey;
-                                giftDetail.DonorName = APartnerShortName;
-                            }
+                            giftDetail.DonorKey = APartnerKey;
+                            giftDetail.DonorName = APartnerShortName;
                         }
                     }
                 }
@@ -657,17 +654,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             giftRow.DateEntered = dtpDateEntered.Date.Value;
-
-            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-            {
-                if (giftDetail.BatchNumber.Equals(FBatchNumber)
-                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
-                {
-                    giftDetail.DateEntered = giftRow.DateEntered;
-                    giftDetail.DonorKey = giftRow.DonorKey;
-                    giftDetail.DonorName = txtDetailDonorKey.LabelText;
-                }
-            }
+//
+//            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+//            {
+//                if (giftDetail.BatchNumber.Equals(FBatchNumber)
+//                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
+//                {
+//                    giftDetail.DateEntered = giftRow.DateEntered;
+//                    giftDetail.DonorKey = giftRow.DonorKey;
+//                    // this does not work
+//                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
+//                }
+//            }
 
             //  join by hand
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
