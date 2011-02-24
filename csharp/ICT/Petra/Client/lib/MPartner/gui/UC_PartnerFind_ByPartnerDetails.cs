@@ -977,7 +977,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialisePartnerFindCriteria()
         {
             ucoPartnerFindCriteria.PetraUtilsObject = FPetraUtilsObject;
-            ucoPartnerFindCriteria.InitialiseUserControl();
+            ucoPartnerFindCriteria.InitUserControl();
 
             // Load items that should go into the left and right columns from User Defaults
             ucoPartnerFindCriteria.CriteriaFieldsLeft =
