@@ -65,9 +65,14 @@ namespace Ict.Petra.Shared.MFinance
         MethodOfGivingList,
 
         /// <summary>
-        /// Media"" types of money received.  Eg: Cash, Check Credit Card.
+        /// Media types of money received. Eg: Cash, Check Credit Card
         /// </summary>
         MethodOfPaymentList,
+
+        /// <summary>
+        /// This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes
+        /// </summary>
+        MotivationGroupList,
 
         /// <summary>
         /// list of motivations (for gifts)

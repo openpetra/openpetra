@@ -854,8 +854,21 @@ namespace Ict.Common.Controls
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
         {
+            AddCurrencyColumn(AColumnTitle, ADataColumn, 2);
+        }
+
+        /// <summary>
+        /// add a column that shows a currency value.
+        /// aligns the value to the right.
+        /// prints number in red if it is negative
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AFractionDigits">Number of digits after the decimal point</param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int AFractionDigits)
+        {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
-            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N");
+            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N" + AFractionDigits.ToString());
 
             CurrencyEditor.EditableMode = EditableMode.None;
 

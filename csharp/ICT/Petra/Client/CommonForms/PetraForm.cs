@@ -71,29 +71,6 @@ namespace Ict.Petra.Client.CommonForms
     public delegate void ActionEventHandler(object sender, ActionEventArgs e);
 
     /// <summary>
-    /// todoComment
-    /// </summary>
-    public class ActionEventArgs
-    {
-        /// <summary>todoComment</summary>
-        public bool Enabled;
-
-        /// <summary>todoComment</summary>
-        public string ActionName;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AActionName"></param>
-        /// <param name="AEnabled"></param>
-        public ActionEventArgs(string AActionName, bool AEnabled)
-        {
-            this.ActionName = AActionName;
-            this.Enabled = AEnabled;
-        }
-    }
-
-    /// <summary>
     /// this class provides some useful methods for a Petra form
     /// </summary>
     public class TFrmPetraUtils

@@ -189,6 +189,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        {
+                            DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                         {
                             DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
@@ -451,6 +457,13 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             break;
                         case TCacheableFinanceTablesEnum.MethodOfPaymentList:
                             if (AMethodOfPaymentAccess.SubmitChanges((AMethodOfPaymentTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                            if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

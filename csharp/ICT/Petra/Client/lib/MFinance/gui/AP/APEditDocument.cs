@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -201,7 +201,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentDetail.DefaultView);
+        DataView myDataView = FMainDS.AApDocumentDetail.DefaultView;
+        myDataView.AllowNew = false;
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         grdDetails.Refresh();
         SelectDetailRowByDataTableIndex(FMainDS.AApDocumentDetail.Rows.Count - 1);
 

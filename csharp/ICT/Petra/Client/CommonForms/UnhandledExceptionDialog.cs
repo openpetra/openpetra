@@ -37,8 +37,7 @@ namespace Ict.Petra.Client.App.Core
     /// <summary>
     /// Dialog for displaying information to the user that a severe error occured in
     /// the PetraClient application.
-    /// </summary>
-    /// <description>
+    ///
     /// Mimics Windows' own 'application crash window', but allows
     ///   (1) different texts to be displayed (eg. depending on the situation, the
     ///       error, etc.)
@@ -51,8 +50,9 @@ namespace Ict.Petra.Client.App.Core
     ///   (5) e-mailing the Exception text to the Petra Team using the 'Bugreport'
     ///       feature (only enabled if Progress 4GL didn't crash)
     ///
-    /// This Form is intended to be called from Ict.Petra.Client.App.Core.ExceptionHandling.
-    /// </description>
+    /// @Comment This Form is intended to be called from
+    ///   Ict.Petra.Client.App.Core.ExceptionHandling.
+    /// </summary>
     public partial class TUnhandledExceptionForm : System.Windows.Forms.Form
     {
         readonly String StrNonRecoverableHeading = Catalog.GetString("OpenPetra Client Has Encountered An Error And Needs To Close");
@@ -88,7 +88,6 @@ namespace Ict.Petra.Client.App.Core
                        FInfo1Text = "",
                        FHeadingText = "";
 
-        /// <summary>The Exception that is handled by this screen.</summary>
         public Exception TheException
         {
             get
@@ -98,30 +97,10 @@ namespace Ict.Petra.Client.App.Core
 
             set
             {
-                string ApplicationVersion = String.Empty;
-
-                FException = value;
-
-                if (TClientInfo.ClientAssemblyVersion != null)
-                {
-                    ApplicationVersion =
-                        (new Version(TClientInfo.ClientAssemblyVersion)).ToString();
-                }
-
-                /* Build error details String */
-                FErrorDetails = FException.ToString() + Environment.NewLine + Environment.NewLine + "--------------------------------------" +
-                                Environment.NewLine;
-
-                if (ApplicationVersion != String.Empty)
-                {
-                    FErrorDetails = FErrorDetails + "OpenPetra Version " + ApplicationVersion + Environment.NewLine;
-                }
-
-                FErrorDetails = FErrorDetails + "Date/Time: " + DateTime.Now.ToString() + " (UTC: " + DateTime.UtcNow.ToString("r") + ")";
+                Set_Exception(value);
             }
         }
 
-        /// <summary>True if the Exception handled by this screen is non-recoverable, false if it is recoverable.</summary>
         public Boolean NonRecoverable
         {
             get
@@ -135,7 +114,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Set this to set a non-default Title for this Form.</summary>
         public String FormTitle
         {
             get
@@ -149,7 +127,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Set this to set a non-default heading.</summary>
         public String HeadingText
         {
             get
@@ -163,7 +140,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Set this to set a non-default Info 1 text (shown in the header part of the Form).</summary>
         public String Info1Text
         {
             get
@@ -177,7 +153,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Set this to set a non-default Info 2 text (shown in the lower part of the Form).</summary>
         public String Info2Text
         {
             get
@@ -191,7 +166,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Set this to set a non-default Info 3 text (shown in the lower part of the Form).</summary>
         public String Info3Text
         {
             get
@@ -205,9 +179,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         public TUnhandledExceptionForm() : base()
         {
             /*  */
@@ -218,6 +189,30 @@ namespace Ict.Petra.Client.App.Core
             /*  */
             /* TODO: Add any constructor code after InitializeComponent call */
             /*  */
+        }
+
+        public void Set_Exception(Exception Value)
+        {
+            string ApplicationVersion = String.Empty;
+
+            FException = Value;
+
+            if (TClientInfo.ClientAssemblyVersion != null)
+            {
+                ApplicationVersion =
+                    (new Version(TClientInfo.ClientAssemblyVersion)).ToString();
+            }
+
+            /* Build error details String */
+            FErrorDetails = FException.ToString() + Environment.NewLine + Environment.NewLine + "--------------------------------------" +
+                            Environment.NewLine;
+
+            if (ApplicationVersion != String.Empty)
+            {
+                FErrorDetails = FErrorDetails + "OpenPetra Version " + ApplicationVersion + Environment.NewLine;
+            }
+
+            FErrorDetails = FErrorDetails + "Date/Time: " + DateTime.Now.ToString() + " (UTC: " + DateTime.UtcNow.ToString("r") + ")";
         }
 
         private void BtnSend_Click(System.Object sender, System.EventArgs e)
@@ -239,6 +234,16 @@ namespace Ict.Petra.Client.App.Core
 
         private void TUnhandledExceptionForm_Load(System.Object sender, System.EventArgs e)
         {
+            if (TClientInfo.ClientAssemblyVersion != null)
+            {
+                this.Text = "OpenPetra.org " +
+                            (new Version(TClientInfo.ClientAssemblyVersion)).ToString() + ' ' + Catalog.GetString("Application Error");
+            }
+            else
+            {
+                this.Text = "OpenPetra.org " + Catalog.GetString("Application Error");
+            }
+
             if ((FException is System.Net.Sockets.SocketException
                  || FException is System.Runtime.Remoting.RemotingException)
                 || FException.InnerException is System.Net.Sockets.SocketException
@@ -318,18 +323,6 @@ namespace Ict.Petra.Client.App.Core
             if (FFormTitle != "")
             {
                 this.Text = FFormTitle;
-            }
-            else
-            {
-                if (TClientInfo.ClientAssemblyVersion != null)
-                {
-                    this.Text = "OpenPetra.org " +
-                                (new Version(TClientInfo.ClientAssemblyVersion)).ToString() + ' ' + Catalog.GetString("Application Error");
-                }
-                else
-                {
-                    this.Text = "OpenPetra.org " + Catalog.GetString("Application Error");
-                }
             }
 
             if (FHeadingText != "")

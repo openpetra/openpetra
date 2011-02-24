@@ -98,6 +98,7 @@
         <echo message="translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery"/>
         <echo message="translationCompilePOFile: create the dlls required to be delivered with a new release"/>
         <echo message="generateORM: generates the typed tables and typed datastore from the petra.xml"/>
+        <echo message="generateORMCachedTables: generates Cacheable DataTables from the definitions in the CacheableTablesAndLists.yaml file"/>
         <echo message="generateGlue: generates the interfaces and instantiators, which is the glue between client and server"/>
         <echo message="generateWinforms: generates the User Interface using System.Windows.Forms"/>
         <echo message="generateWinform: generate a single Winform. requires parameter: -D:file=MFinance/gui/GLCreateLedger.yaml"/>
@@ -300,6 +301,7 @@
         <property name="generateWinformsParameters" value="-TemplateDir:${OpenPetraRoot.dir}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${OpenPetraRoot.dir}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${TargetPlatform}"/>
         <property name="ClientPath" value="${OpenPetraRoot.dir}/csharp/ICT/Petra/Client"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/app/PetraClient ${generateWinformsParameters}"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/app/Core ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MConference/gui ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MCommon/gui ${generateWinformsParameters}"/>
         <ExecDotNet program="${PetraToolsExe.dir}/GenerateWinForms.exe" commandline="-ymlfile:${ClientPath}/lib/MCommon/gui/setup ${generateWinformsParameters}"/>

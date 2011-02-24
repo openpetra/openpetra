@@ -278,12 +278,17 @@ OpenPetra:
                     Language:
                         SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
-            Users:
-                Functions:
-                    MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
-                    #DeleteUser:
-                    #ModifyUserPermissions:
-                    #ImportUserPermissions:
+            Security:
+                Users:
+                    Maintenance:
+                        MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
+                        #DeleteUser:
+                        #ModifyUserPermissions:
+                        #ImportUserPermissions:
+                    Activity:
+                        #ViewCurrentUsers:
+                        #ViewLoginLog:
+                Setup:
             Finance:
                 #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
@@ -297,3 +302,15 @@ OpenPetra:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
                     ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
+            Auditing:
+                Logs:
+                    #ErrorLog
+                    #SystemStatusLog
+                Reports:
+                    #PartnerFullReport
+            SystemSettings:
+                Setup:
+                    #SystemParameters
+                    #Sites
+                    #Purging
+                

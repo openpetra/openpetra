@@ -181,7 +181,7 @@
         -->
     </target>
 
-    <target name="setupLinuxServer">
+    <target name="setupLinuxServer" depends="init">
         <!-- for the moment, just create a tar.gz file, with sub directories 
         manuals30 containing the release notes, 
         bin30 with just the server binaries,
@@ -335,7 +335,7 @@
                     <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
                     <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
                     
-                    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${Delivery.dir}/openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
+                    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${Delivery.dir}/openpetraorg-mono-${ReleaseVersion}.tar.gz openpetraorg-${ReleaseVersion}*&quot;"/>
 
                     <!-- to avoid problem with symbolic link with delete dir task -->
                     <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
