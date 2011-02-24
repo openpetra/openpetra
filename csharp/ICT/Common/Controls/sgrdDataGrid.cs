@@ -633,6 +633,33 @@ namespace Ict.Common.Controls
             ModelContainer AModel,
             IView AView)
         {
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth,
+                AController, AEditor, AModel, AView, null);
+        }
+
+        /// <summary>
+        /// Easy method to add a new Text column.
+        ///
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        /// <param name="AController"></param>
+        /// <param name="AEditor">An instance of an Editor (based on ICellVirtual.Editor)</param>
+        /// <param name="AModel"></param>
+        /// <param name="AView"></param>
+        /// <param name="AConditionView"></param>
+        ///
+        /// <returns>void</returns>
+        public void AddTextColumn(String AColumnTitle,
+            DataColumn ADataColumn,
+            Int16 AColumnWidth,
+            ControllerBase AController,
+            EditorBase AEditor,
+            ModelContainer AModel,
+            IView AView,
+            SourceGrid.Conditions.ConditionView AConditionView)
+        {
             SourceGrid.Cells.ICellVirtual ADataCell;
             SourceGrid.DataGridColumn AGridColumn;
 
@@ -672,12 +699,17 @@ namespace Ict.Common.Controls
             }
 
             AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
+
+            if (AConditionView != null)
+            {
+                AGridColumn.Conditions.Add(AConditionView);
+            }
+
             this.Columns.Insert(this.Columns.Count, AGridColumn);
         }
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound
@@ -690,7 +722,18 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
+        /// <returns>void</returns>
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, bool AReadOnly)
+        {
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, AReadOnly);
+        }
+
+        /// <summary>
+        /// Easy method to add a new CheckBox column.
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
@@ -699,19 +742,32 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, true);
         }
 
         /// <summary>
         /// Easy method to add a new CheckBox column.
-        ///
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
+        /// <returns>void</returns>
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, bool AReadOnly)
+        {
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, AReadOnly);
+        }
+
+        /// <summary>
+        /// Easy method to add a new CheckBox column.
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AEditor"></param>
+        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
         /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor)
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
         {
             SourceGrid.Cells.ICellVirtual ADataCell;
             SourceGrid.DataGridColumn AGridColumn;
@@ -729,6 +785,12 @@ namespace Ict.Common.Controls
             }
 
             AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
+
+            if (AReadOnly)
+            {
+                ADataCell.Editor.EnableEdit = false;
+            }
+
             this.Columns.Insert(this.Columns.Count, AGridColumn);
         }
 
@@ -768,16 +830,19 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// add a date column, that is readonly, and only shows the date
+        /// Add a date column that is read-only. The date is displayed in an a common international data format, independent of a computer's date formatting settings.
         /// </summary>
-        /// <param name="AColumnTitle"></param>
-        /// <param name="ADataColumn"></param>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         public void AddDateColumn(String AColumnTitle, DataColumn ADataColumn)
         {
-            SourceGrid.DataGridColumn gridColumn;
-            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(DateTime));
-            gridColumn.Width = 100;
-            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor DateEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            Ict.Common.TypeConverter.TDateConverter DateTypeConverter = new Ict.Common.TypeConverter.TDateConverter();
+
+            DateEditor.EditableMode = EditableMode.None;
+            DateEditor.TypeConverter = DateTypeConverter;
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, null, DateEditor, null, null);
         }
 
         /// <summary>
@@ -785,30 +850,39 @@ namespace Ict.Common.Controls
         /// aligns the value to the right.
         /// prints number in red if it is negative
         /// </summary>
-        /// <param name="AColumnTitle"></param>
-        /// <param name="ADataColumn"></param>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
         {
-            SourceGrid.DataGridColumn gridColumn;
-            gridColumn = Columns.Add(ADataColumn.ColumnName, AColumnTitle, typeof(decimal));
-            gridColumn.Width = 100;
+            AddCurrencyColumn(AColumnTitle, ADataColumn, 2);
+        }
+
+        /// <summary>
+        /// add a column that shows a currency value.
+        /// aligns the value to the right.
+        /// prints number in red if it is negative
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AFractionDigits">Number of digits after the decimal point</param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int AFractionDigits)
+        {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
+            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N" + AFractionDigits.ToString());
 
-            //CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.CurrencyTypeConverter(typeof(decimal));
-            CurrencyEditor.TypeConverter = new DevAge.ComponentModel.Converter.NumberTypeConverter(typeof(decimal), "N");
+            CurrencyEditor.EditableMode = EditableMode.None;
 
-            // could also use format string "#,###.00"
-            gridColumn.DataCell.Editor = CurrencyEditor;
-            gridColumn.DataCell.Editor.EditableMode = SourceGrid.EditableMode.None;
 
+            // Non-negative value View
             SourceGrid.Cells.Views.Cell view = new SourceGrid.Cells.Views.Cell();
             view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
-            gridColumn.DataCell.View = view;
 
+            // Negative value View
             SourceGrid.Cells.Views.Cell NegativeNumberView = new SourceGrid.Cells.Views.Cell();
             NegativeNumberView.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
             NegativeNumberView.ForeColor = Color.Red;
 
+            // Condition for negative value View
             SourceGrid.Conditions.ConditionView selectedConditionNegative =
                 new SourceGrid.Conditions.ConditionView(NegativeNumberView);
             selectedConditionNegative.EvaluateFunction = (delegate(SourceGrid.DataGridColumn column,
@@ -818,7 +892,8 @@ namespace Ict.Common.Controls
                                                               return row[ADataColumn.ColumnName] is decimal
                                                               && (decimal)row[ADataColumn.ColumnName] < 0;
                                                           });
-            gridColumn.Conditions.Add(selectedConditionNegative);
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, null, CurrencyEditor, null, view, selectedConditionNegative);
         }
 
         #endregion

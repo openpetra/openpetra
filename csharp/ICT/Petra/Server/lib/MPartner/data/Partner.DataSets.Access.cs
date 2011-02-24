@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 }
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                 }
 
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eDelete,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -373,7 +373,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))
@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Data.Access
                     SubmissionResult = TSubmitChangesResult.scrError;
                 }
                 if (SubmissionResult == TSubmitChangesResult.scrOK
-                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PFamily, SubmitChangesTransaction,
+                    && !TTypedDataAccess.SubmitChanges(AInspectDS.PPerson, SubmitChangesTransaction,
                             TTypedDataAccess.eSubmitChangesOperations.eInsert | TTypedDataAccess.eSubmitChangesOperations.eUpdate,
                             out AVerificationResult,
                             UserInfo.GUserInfo.UserID))

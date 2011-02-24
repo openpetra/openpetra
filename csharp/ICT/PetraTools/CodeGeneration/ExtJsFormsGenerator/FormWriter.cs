@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,6 +57,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new CheckboxGenerator());
             AddControlGenerator(new DateTimePickerGenerator());
             AddControlGenerator(new RadioGroupSimpleGenerator());
+            AddControlGenerator(new RadioGroupComplexGenerator());
             AddControlGenerator(new RadioButtonGenerator());
             AddControlGenerator(new GroupBoxGenerator());
             AddControlGenerator(new LabelGenerator());
@@ -67,6 +68,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new AssistantPageGenerator());
             AddControlGenerator(new InlineGenerator());
             AddControlGenerator(new UploadGenerator());
+            AddControlGenerator(new GridGenerator());
+            AddControlGenerator(new HiddenFieldGenerator());
         }
 
         public override string CodeFileExtension
@@ -77,7 +80,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
-        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
+        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel)
         {
             // TODO
         }
@@ -105,6 +108,31 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public override void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir)
         {
             // TODO
+        }
+
+        public override string CalculateDestinationFilename(string AYamlFilename)
+        {
+            string generatedFilesPath = System.IO.Path.GetDirectoryName(AYamlFilename) +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        "gen";
+
+            if (!Directory.Exists(generatedFilesPath))
+            {
+                Directory.CreateDirectory(generatedFilesPath);
+            }
+
+            return generatedFilesPath +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   this.CodeFileExtension;
+        }
+
+        public override string CalculateManualCodeFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   ".ManualCode" + this.CodeFileExtension;
         }
 
         public override void CallControlFunction(string AControlName, string AFunctionCall)
@@ -249,10 +277,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
             else
             {
-                StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Controls");
-
-                foreach (string child in children)
+                foreach (XmlNode childNode in childNodes)
                 {
+                    string child = TYml2Xml.GetElementName(childNode);
                     TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
                     IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
 
@@ -319,6 +346,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 FFormName = FFormName.Substring(0, FFormName.IndexOf("."));
             }
 
+            FFormName = FFormName.ToUpper()[0] + FFormName.Substring(1);
+            FFormName += "Form";
+
             // load default header with license and copyright
             TAppSettingsManager opts = new TAppSettingsManager(false);
             string templateDir = opts.GetValue("TemplateDir", true);
@@ -326,7 +356,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
 
-            FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "false");
+            FTemplate.SetCodelet("UPLOADFORM", "");
+            FTemplate.SetCodelet("CHECKFORVALIDUPLOAD", "");
 
             FLanguageFileTemplate = FTemplate.GetSnippet("LANGUAGEFILE");
 
@@ -346,8 +377,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());
-            FTemplate.SetCodelet("LABELWIDTH", "140");
+            FTemplate.SetCodelet("FORMHEIGHT", FCodeStorage.FHeight.ToString());
+
+            if (FCodeStorage.HasAttribute("LabelWidth"))
+            {
+                FTemplate.SetCodelet("LABELWIDTH", FCodeStorage.GetAttribute("LabelWidth"));
+            }
+            else
+            {
+                FTemplate.SetCodelet("LABELWIDTH", "140");
+            }
+
             FTemplate.SetCodelet("FORMNAME", FFormName);
+            FTemplate.SetCodelet("FORMTYPE", "T" + FFormName);
 
             string FormHeader = "true";
 
@@ -368,6 +410,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FTemplate.SetCodelet("FORMFRAME", FormFrame);
 
             FLanguageFileTemplate.SetCodelet("FORMNAME", FFormName);
+            FLanguageFileTemplate.SetCodelet("FORMTYPE", "T" + FFormName);
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -150,7 +150,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
+        public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel)
         {
             if (APropertyName == "Dock")
             {
@@ -163,7 +163,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("CONTROLINITIALISATION",
                 "this." + AControlName + "." + APropertyName + " = " + APropertyValue + ";" + Environment.NewLine);
 
-            if (APropertyName.EndsWith("Text"))
+            if (APropertyName.EndsWith("Text") && ACreateTranslationForLabel)
             {
                 if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
                 {
@@ -470,6 +470,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             designerTemplate = ATemplateDir + Path.DirectorySeparatorChar + designerTemplate;
 
             WriteFile(DesignerFile, designerTemplate);
+        }
+
+        public override string CalculateDestinationFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   this.CodeFileExtension;
+        }
+
+        public override string CalculateManualCodeFilename(string AYamlFilename)
+        {
+            return System.IO.Path.GetDirectoryName(AYamlFilename) +
+                   System.IO.Path.DirectorySeparatorChar +
+                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
+                   ".ManualCode" + this.CodeFileExtension;
         }
 
         public override void CallControlFunction(string AControlName, string AFunctionCall)

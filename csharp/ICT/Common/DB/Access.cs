@@ -30,6 +30,7 @@ using System.Text;
 using System.Threading;
 using System.IO;
 using System.Xml;
+using System.Web;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.IO;
 
@@ -70,9 +71,38 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
+        /// <summary>
+        /// this is the object that is used in the non ASP environment
+        /// </summary>
+        private static TDataBase MGDBAccessObj = null;
+
         /// <summary>Global Object in which the Application can store a reference to an Instance of
         /// <see cref="TDataBase" /></summary>
-        public static TDataBase GDBAccessObj;
+        public static TDataBase GDBAccessObj
+        {
+            set
+            {
+                if (HttpContext.Current == null)
+                {
+                    MGDBAccessObj = value;
+                }
+                else
+                {
+                    HttpContext.Current.Session["DBACCESSOBJ"] = value;
+                }
+            }
+            get
+            {
+                if (HttpContext.Current == null)
+                {
+                    return MGDBAccessObj;
+                }
+                else
+                {
+                    return (TDataBase)HttpContext.Current.Session["DBACCESSOBJ"];
+                }
+            }
+        }
     }
 
     /// <summary>

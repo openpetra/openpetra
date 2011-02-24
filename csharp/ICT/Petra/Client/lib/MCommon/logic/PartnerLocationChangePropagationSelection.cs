@@ -94,12 +94,12 @@ namespace Ict.Petra.Client.MCommon
         public void CreateColumnsPersonsLocations(TSgrdDataGrid AGrid, System.Data.DataTable ASourceTable)
         {
             SourceGrid.Cells.Editors.TextBoxUITypeEditor DateEditor;
-            TPetraDateConverter PetraDtConverter;
+            Ict.Common.TypeConverter.TDateConverter DateTypeConverter;
             this.DataGridPersonsLocations = AGrid;
             DateEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
             DateEditor.EditableMode = EditableMode.None;
-            PetraDtConverter = new TPetraDateConverter();
-            DateEditor.TypeConverter = PetraDtConverter;
+            DateTypeConverter = new Ict.Common.TypeConverter.TDateConverter();
+            DateEditor.TypeConverter = DateTypeConverter;
             this.FDataGridPersonsLocations.AddTextColumn(
                 TTypedDataTable.GetLabel(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId),
                 ASourceTable.Columns[PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerShortNameDBName()]);

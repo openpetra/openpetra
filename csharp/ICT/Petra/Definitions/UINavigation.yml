@@ -185,9 +185,23 @@ OpenPetra:
                 # Sub Module
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
-                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}   
-                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}   
+                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
+                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}                           
+                        DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}   
+                        DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
+                        LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
+                        LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
+                        PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 
+                        Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
+                        ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}   
+                        QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup} 						
+                        ValuableItem: {Label=Setup Valuable Items, Description=Maintain Valuable Items, ActionOpenScreen=TFrmValuableItemSetup}
+                        VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
+                        VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
                     Application-related:
+                        ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
+                        Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
+
                     
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
@@ -266,12 +280,17 @@ OpenPetra:
                     Language:
                         SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
-            Users:
-                Functions:
-                    MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
-                    #DeleteUser:
-                    #ModifyUserPermissions:
-                    #ImportUserPermissions:
+            Security:
+                Users:
+                    Maintenance:
+                        MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
+                        #DeleteUser:
+                        #ModifyUserPermissions:
+                        #ImportUserPermissions:
+                    Activity:
+                        #ViewCurrentUsers:
+                        #ViewLoginLog:
+                Setup:
             Finance:
                 #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
@@ -285,3 +304,15 @@ OpenPetra:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
                     ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
+            Auditing:
+                Logs:
+                    #ErrorLog
+                    #SystemStatusLog
+                Reports:
+                    #PartnerFullReport
+            SystemSettings:
+                Setup:
+                    #SystemParameters
+                    #Sites
+                    #Purging
+                

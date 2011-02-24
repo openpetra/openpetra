@@ -95,38 +95,18 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// Line Feed; increases the current y position by the height of the given font
+        /// Line Feed; increases the current y position by one
         /// </summary>
         /// <returns>the new current line
         /// </returns>
         public override float LineFeed(eFont AFont)
         {
-            String s;
-
-            System.Int32 counter;
-            bool HasDash;
-            bool HasOtherCharacters;
             CurrentYPos = CurrentYPos + 1;
 
             // check if line is only a marking line; in that case, jump over it
-            s = GetLine(Convert.ToInt32(CurrentYPos)).Trim();
-            HasDash = false;
-            HasOtherCharacters = false;
+            string s = GetLine(Convert.ToInt32(CurrentYPos)).Trim();
 
-            for (counter = 0; counter <= s.Length - 1; counter += 1)
-            {
-                if ((s[counter] != '-') && (s[counter] != ' '))
-                {
-                    HasOtherCharacters = true;
-                }
-
-                if (s[counter] == '-')
-                {
-                    HasDash = true;
-                }
-            }
-
-            if (HasDash && (!HasOtherCharacters))
+            if (s == new String('-', s.Length))
             {
                 CurrentYPos = CurrentYPos + 1;
             }

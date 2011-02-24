@@ -1,10 +1,14 @@
+// auto generated with nant generateWinforms from UnhandledExceptionDetailsDialog.yaml
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,22 +29,61 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Windows.Forms;
 using System.Data;
+using Ict.Petra.Shared;
 using System.Resources;
+using System.Collections.Specialized;
+using GNU.Gettext;
+using Ict.Common;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.App.Core
 {
-    /// <summary>
-    /// Form for displaying of Exception details of an Unhandled Exception.
-    /// </summary>
-    public class TUnhandledExceptionDetailsForm : System.Windows.Forms.Form
+
+  /// auto generated: Error Details - OpenPetra
+  public partial class TFrmUnhandledExceptionDetailsDialog: System.Windows.Forms.Form
+  {
+    /// constructor
+    public TFrmUnhandledExceptionDetailsDialog(IntPtr AParentFormHandle) : base()
     {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TUnhandledExceptionDetailsForm() : base()
+      //
+      // Required for Windows Form Designer support
+      //
+      InitializeComponent();
+      #region CATALOGI18N
+
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.btnCopyToClipboard.Text = Catalog.GetString("Copy To Clipboard");
+      this.btnOK.Text = Catalog.GetString("OK");
+      this.Text = Catalog.GetString("Error Details - OpenPetra");
+      #endregion
+
+      this.txtErrorDetails.Font = TAppSettingsManager.GetDefaultBoldFont();
+
+    }
+
+    private void TFrmPetra_Closed(object sender, EventArgs e)
+    {
+        // TODO? Save Window position
+    }
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actCopyToClipboard")
         {
-            // TODO: TUnhandledExceptionDetailsForm
+            btnCopyToClipboard.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actOK")
+        {
+            btnOK.Enabled = e.Enabled;
         }
     }
+
+#endregion
+  }
 }

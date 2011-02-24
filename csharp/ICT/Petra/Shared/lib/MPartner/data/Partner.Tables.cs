@@ -13114,7 +13114,7 @@ namespace Ict.Petra.Shared.MPartner.Partner.Data
         /// set default values
         public virtual void InitValues()
         {
-            this[this.myTable.ColumnPartnerKey.Ordinal] = 0;
+            this.SetNull(this.myTable.ColumnPartnerKey);
             this.SetNull(this.myTable.ColumnUnitName);
             this.SetNull(this.myTable.ColumnDescription);
             this.SetNull(this.myTable.ColumnUnitTypeCode);

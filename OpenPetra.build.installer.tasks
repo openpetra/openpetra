@@ -181,7 +181,7 @@
         -->
     </target>
 
-    <target name="setupLinuxServer">
+    <target name="setupLinuxServer" depends="init">
         <!-- for the moment, just create a tar.gz file, with sub directories 
         manuals30 containing the release notes, 
         bin30 with just the server binaries,
@@ -335,7 +335,7 @@
                     <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
                     <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
                     
-                    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${Delivery.dir}/openpetraorg-mono-${ReleaseVersion}.tar.gz *&quot;"/>
+                    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${Delivery.dir}/openpetraorg-mono-${ReleaseVersion}.tar.gz openpetraorg-${ReleaseVersion}*&quot;"/>
 
                     <!-- to avoid problem with symbolic link with delete dir task -->
                     <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
@@ -494,6 +494,49 @@
         <delete file="${OpenPetraRoot.dir}/tmp/PetraServerConsole.exe.config"/>
         <delete file="${OpenPetraRoot.dir}/tmp/PetraClient.exe.config"/>
         <delete file="${OpenPetraRoot.dir}/tmp/placeholder.txt"/>
+    </target>
+
+    <target name="packWebApp" depends="deleteBakFiles">
+        <copy file="${OpenPetraRoot.dir}/webserver/web.config" tofile="${OpenPetraRoot.dir}/tmp/web-sample.config" overwrite="true"/>
+        <zip zipfile="${Delivery.dir}/WebRelease.zip">
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/bin/" prefix="webserver/bin">
+                <include name="*.dll" />
+                <include name="version.txt" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/js" prefix="webserver/js">
+                <include name="**.js" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/images" prefix="webserver/images">
+                <include name="**.*" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/img" prefix="webserver/img">
+                <include name="**.*" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/js" prefix="webserver/js">
+                <include name="**.js" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/css" prefix="webserver/css">
+                <include name="**.css" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/webserver/Apps" prefix="webserver/Apps">
+                <include name="**.js" />
+                <include name="**.html" />
+                <include name="**.aspx" />
+            </fileset>
+
+            <fileset basedir="${OpenPetraRoot.dir}/webserver" prefix="webserver">
+                <include name="*.*" />
+                <exclude name="web.config" />
+            </fileset>
+            <fileset basedir="${OpenPetraRoot.dir}/tmp" prefix="webserver">
+                <include name="web-sample.config" />
+            </fileset>
+
+            <fileset basedir="${OpenPetraRoot.dir}/demodata/formletters" prefix="formletters">
+                <include name="*.*" />
+            </fileset>
+        </zip>
+        <delete file="${OpenPetraRoot.dir}/tmp/web-sample.config"/>
     </target>
 
 </project>

@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,6 +72,11 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// helper object for the whole screen
     public TFrmPetraReportingUtils PetraUtilsObject
     {
+        get
+        {
+            return FPetraUtilsObject;
+        }
+
         set
         {
             FPetraUtilsObject = value;

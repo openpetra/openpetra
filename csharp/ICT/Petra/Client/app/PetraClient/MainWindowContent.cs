@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.PetraClient

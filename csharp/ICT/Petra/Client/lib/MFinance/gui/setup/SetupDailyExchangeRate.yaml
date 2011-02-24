@@ -28,7 +28,9 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
-            Columns: [ADailyExchangeRate.FromCurrencyCode, ADailyExchangeRate.ToCurrencyCode, ADailyExchangeRate.DateEffectiveFrom, ADailyExchangeRate.RateOfExchange]
+            Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailRateOfExchange]
+            CustomColumns:
+                DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
