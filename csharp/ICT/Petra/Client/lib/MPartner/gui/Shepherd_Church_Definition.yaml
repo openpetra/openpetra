@@ -3,8 +3,8 @@ ShepherdPages:
         ID: 5
         Title: Personnel Shepherd
         Note: This is a test, this is only a test.
-        Visible: False
-        Enabled: False
+        Visible: True
+        Enabled: True
         UserControlNamespace: Ict.Petra.Client.MPartner.Gui
         UserControlClassName: TUC_PartnerDetails_Church
         HelpContext: HELPME!!!
@@ -13,8 +13,8 @@ ShepherdPages:
         ID: 56
         Title: Other Shepherd
         Note: Giggity giggity goo
-        Visible: False
-        Enabled: False
+        Visible: True
+        Enabled: True
         UserControlNamespace: Ict.Petra.Client.MPartner.Gui
         UserControlClassName: TUC_PartnerDetails_Family
         HelpContext: You cannot be helped 
@@ -23,9 +23,9 @@ ShepherdPages:
         ID: 12
         Title: Final Shepherd 
         Note: This is a temporary note 
-        Visible: False
-        Enabled: False
-        UserControlNamespace: Ict.Petra.Client.MPartner.Gui
-        UserControlClassName: TUC_PartnerDetails_Family
+        Visible: True
+        Enabled: True 
+        UserControlNamespace: Ict.Petra.Client.CommonForms
+        UserControlClassName: TUC_PetraShepherdFinishPage
         HelpContext: No one can be helped 
         UserControlType: OnceUponATime

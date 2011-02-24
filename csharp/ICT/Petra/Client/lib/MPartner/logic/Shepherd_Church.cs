@@ -34,21 +34,25 @@ namespace Ict.Petra.Client.MPartner.Logic
     public class TShepherdChurchFormLogic : TPetraShepherdFormLogic
     {
         ///<summary>Constructor</summary>
-        public TShepherdChurchFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm) : base(AYamlFile, APetraShepherdForm)
+        public TShepherdChurchFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm) : base(AYamlFile,
+                                                                                                                        APetraShepherdForm)
         {
-            TLogging.Log("Entering TShepherdChurchFormLogic Constructor. AYamlFile = " + AYamlFile + "; APetraShepherdForm = " + APetraShepherdForm.ToString() + "...");
-                        
-            TLogging.Log("TShepherdChurchFormLogic Constructor ran.");                                   
+            TLogging.Log(
+                "Entering TShepherdChurchFormLogic Constructor. AYamlFile = " + AYamlFile + "; APetraShepherdForm = " +
+                APetraShepherdForm.ToString() +
+                "...");
+
+            TLogging.Log("TShepherdChurchFormLogic Constructor ran.");
         }
-        
+
         /// <summary>
         /// Skips the first page of the Shepherd ('Ledger Selection')
         /// </summary>
         public void SkipFirstShepherdPage()
         {
-            TLogging.Log("SkipLedgerSelectionPage got called --> skipping 'Ledger Selection' Shepherd Page!");            
-            
-            base.SwitchToPage("Name of Church");            
-        }                    
+            TLogging.Log("SkipLedgerSelectionPage got called --> skipping 'Ledger Selection' Shepherd Page!");
+
+            base.SwitchToPage("Name of Church");
+        }
     }
 }

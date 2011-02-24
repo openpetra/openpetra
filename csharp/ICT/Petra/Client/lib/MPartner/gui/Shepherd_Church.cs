@@ -38,9 +38,9 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         ///<summary>Instance of this Shepherd's Logic.</summary>
         private TShepherdChurchFormLogic FSpecificLogic;
-    
+
         private bool FSkipLedgerSelectionPage = false;
-        
+
         public bool SkipLedgerSelectionPage
         {
             get
@@ -52,15 +52,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FSkipLedgerSelectionPage = value;
             }
         }
-            
+
         /// <summary>
         /// Constructor.
         /// </summary>
-        public TShepherdChurchForm(IntPtr AParentFormHandle)
-        {            
+        public TShepherdChurchForm(IntPtr AParentFormHandle) : base(AParentFormHandle)
+        {
             TLogging.Log("Entering TShepherdChurchForm Constructor...");
-                        
-            FYamlFile = "ShepherdChurch.yaml";
+
+            FYamlFile = "Shepherd_Church_Definition.yaml";
 
             FLogic = new TShepherdChurchFormLogic(FYamlFile, this);
             FSpecificLogic = (TShepherdChurchFormLogic)FLogic;
@@ -69,14 +69,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            
+
             //
             // TODO: Add constructor code after the InitializeComponent() call.
             //
-            
-            TLogging.Log("TShepherdChurchForm Constructor ran.");                       
+
+            TLogging.Log("TShepherdChurchForm Constructor ran.");
         }
-        
+
         /// <summary>
         /// Load Event for the TShepherdChurchForm.
         /// </summary>
@@ -85,27 +85,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         protected override void Form_Load(object sender, EventArgs e)
         {
             TLogging.Log("Entering TShepherdChurchForm Form_Load...");
-            
+
             base.Form_Load(sender, e);
-            
+
             this.Text = "Add New Church Shepherd";   // this should come out of the YAML file and should have been set in the TPetraShepherdConcreteForm.Form_Load Method!
-            
+
             if (FSkipLedgerSelectionPage)
             {
-                FSpecificLogic.SkipFirstShepherdPage();                         
-            }            
-            
-            TLogging.Log("TShepherdChurchForm Form_Load ran.");
-                        try
-            {
-            	TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID); 
-            	testStatusMessage.Text = FLogic.CurrentPage.ID;
-            }
-            catch(Exception exception) 
-            {
-            	TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception."); 
+                FSpecificLogic.SkipFirstShepherdPage();
             }
 
+            TLogging.Log("TShepherdChurchForm Form_Load ran.");
+            try
+            {
+                TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
+                testStatusMessage.Text = FLogic.CurrentPage.ID;
+            }
+            catch (Exception exception)
+            {
+                TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception.");
+            }
         }
     }
 }

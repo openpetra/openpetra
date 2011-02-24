@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 
   /// auto generated user control
-  public partial class TUC_PartnerDetails_Church: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  public partial class TUC_PartnerDetails_Church: System.Windows.Forms.UserControl, IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -89,6 +89,11 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// helper object for the whole screen
     public TFrmPetraEditUtils PetraUtilsObject
     {
+        get
+        {
+            return FPetraUtilsObject;
+        }
+
         set
         {
             FPetraUtilsObject = value;

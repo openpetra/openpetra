@@ -346,6 +346,14 @@
     <EmbeddedResource Include="UC_PartnerTypes.resx">
       <DependentUpon>UC_PartnerTypes.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Shepherd_Church_Definition.yaml">
+      <DependentUpon>Shepherd_Church.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shepherd_Family_Definition.yaml">
+      <DependentUpon>Shepherd_Family.cs</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">

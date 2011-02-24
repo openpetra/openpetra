@@ -86,6 +86,13 @@
     <Compile Include="PetraUserControl.Designer.cs">
       <DependentUpon>PetraUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PetraShepherdFinishPage.cs" />
+    <Compile Include="UC_PetraShepherdFinishPage.Designer.cs">
+      <DependentUpon>UC_PetraShepherdFinishPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_PetraShepherdFinishPage.ManualCode.cs">
+      <DependentUpon>UC_PetraShepherdFinishPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="WindowHandling.cs" />
     <EmbeddedResource Include="PetraShepherdForm.resx">
       <DependentUpon>PetraShepherdForm.cs</DependentUpon>
@@ -93,12 +100,19 @@
     <EmbeddedResource Include="PetraUserControl.resx">
       <DependentUpon>PetraUserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_PetraShepherdFinishPage.resx">
+      <DependentUpon>UC_PetraShepherdFinishPage.cs</DependentUpon>
+    </EmbeddedResource>
     <Content Include="Ict.Petra.Client.CommonForms.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\app\Core\Ict.Petra.Client.App.Core.csproj">
       <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
       <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\app\Gui\Ict.Petra.Client.App.Gui.csproj">
       <Project>{7C72F5ED-C494-4B58-AA90-2B948D4CF1D7}</Project>

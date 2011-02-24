@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       AustinS
+//       AustinS, ChristianK
 //
 // Copyright 2004-2011 by OM International
 //
@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.CommonForms
             InitializeComponent();
         }
 
-        #region ButtonEvents 
+        #region ButtonEvents
         /// <summary>
         /// Virtual function: implementor should handle action for Finish button click
         /// </summary>
@@ -54,7 +54,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         protected virtual void BtnFinishClick(object sender, EventArgs e)
         {
-
         }
 
         /// <summary>
@@ -64,7 +63,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         protected virtual void BtnNextClick(object sender, EventArgs e)
         {
-
         }
 
         /// <summary>
@@ -74,7 +72,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         protected virtual void BtnBackClick(object sender, EventArgs e)
         {
-
         }
 
         /// <summary>
@@ -84,7 +81,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         protected virtual void BtnCancelClick(object sender, EventArgs e)
         {
-
         }
 
         /// <summary>
@@ -94,7 +90,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="e"></param>
         protected virtual void BtnHelpClick(object sender, EventArgs e)
         {
-
         }
 
         /// <summary>
@@ -105,17 +100,17 @@ namespace Ict.Petra.Client.CommonForms
         protected virtual void Form_Load(object sender, EventArgs e)
         {
         }
-        
+
         /// <summary>
         /// TODO: This is a temporary Action: we are using this to test the page switching functionality
-        /// of the shepherd. 
+        /// of the shepherd.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void TextBox1TextChanged(object sender, EventArgs e)
         {
-        	
         }
-        #endregion 
+
+        #endregion
     }
 }

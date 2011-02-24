@@ -35,23 +35,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 return 0;
             }
         }
-    	
+
         /// <summary>
-        /// TODO: 
+        /// TODO:
         /// </summary>
         /// <param name="AShepherdPages"></param>
         /// <param name="APanelCollapsible"></param>
         public TShepherdNavigationHelper(TPetraShepherdPagesList AShepherdPages, Panel APanelCollapsible)
         {
             TLogging.Log("Entering TShepherdNavigationHelper Constructor...");
-            
+
             TLogging.Log("TShepherdNavigationHelper Constructor ran.");
         }
-        
+
         /// <summary>Redraws the Navigation Panel only</summary>
         public void Refresh()
         {
             TLogging.Log("Refresh");
-        }    
+        }
     }
 }

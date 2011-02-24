@@ -38,9 +38,9 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         ///<summary>Instance of this Shepherd's Logic.</summary>
         private TShepherdFamilyFormLogic FSpecificLogic;
-    
+
         private bool FSkipLedgerSelectionPage = false;
-        
+
         public bool SkipLedgerSelectionPage
         {
             get
@@ -52,15 +52,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FSkipLedgerSelectionPage = value;
             }
         }
-            
+
         /// <summary>
         /// Constructor.
         /// </summary>
-        public TShepherdFamilyForm(IntPtr AParentFormHandle)
-        {            
+        public TShepherdFamilyForm(IntPtr AParentFormHandle) : base(AParentFormHandle)
+        {
             TLogging.Log("Entering TShepherdFamilyForm Constructor...");
-                        
-            FYamlFile = "ShepherdFamily.yaml";
+
+            FYamlFile = "Shepherd_Family_Definition.yaml";
 
             FLogic = new TShepherdFamilyFormLogic(FYamlFile, this);
             FSpecificLogic = (TShepherdFamilyFormLogic)FLogic;
@@ -69,16 +69,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            
-            
-            
+
+
             //
             // TODO: Add constructor code after the InitializeComponent() call.
             //
-            
-            TLogging.Log("TShepherdFamilyForm Constructor ran.");                       
+
+            TLogging.Log("TShepherdFamilyForm Constructor ran.");
         }
-        
+
         /// <summary>
         /// Load Event for the TShepherdFamilyForm.
         /// </summary>
@@ -87,16 +86,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         protected override void Form_Load(object sender, EventArgs e)
         {
             TLogging.Log("Entering TShepherdFamilyForm Form_Load...");
-            
+
             base.Form_Load(sender, e);
-            
+
             this.Text = "Add New Family Shepherd";   // this should come out of the YAML file and should have been set in the TPetraShepherdConcreteForm.Form_Load Method!
-            
+
             if (FSkipLedgerSelectionPage)
             {
-                FSpecificLogic.SkipFirstShepherdPage();                         
-            }            
-            
+                FSpecificLogic.SkipFirstShepherdPage();
+            }
+
             TLogging.Log("TShepherdFamilyForm Form_Load ran.");
         }
     }
