@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!FCriteriaSetup)
                 {
                     ucoPartnerFindCriteriaSetup.ResetSearchCriteriaValuesToDefault();
-                    ucoPartnerFindCriteriaSetup.InitialiseUserControl();
+                    ucoPartnerFindCriteriaSetup.InitUserControl();
                     ucoPartnerFindCriteriaSetup.CriteriaSetupMode = true;
                     ucoPartnerFindCriteriaSetup.CriteriaFieldsLeft = FCriteriaFieldsLeft;
                     ucoPartnerFindCriteriaSetup.CriteriaFieldsRight = FCriteriaFieldsRight;

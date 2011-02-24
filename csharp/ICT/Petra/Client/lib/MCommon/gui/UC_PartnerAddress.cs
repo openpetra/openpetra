@@ -524,7 +524,7 @@ namespace Ict.Petra.Client.MCommon
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void InitialiseUserControl()
+        public void InitUserControl()
         {
             String LocalisedCountyLabel;
             String Dummy;
