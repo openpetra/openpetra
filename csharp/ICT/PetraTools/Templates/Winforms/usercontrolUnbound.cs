@@ -32,14 +32,16 @@ namespace {#NAMESPACE}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 
+{#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
 
 {#IFDEF TABPAGECTRL}
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
     private event TTabPageEventHandler FTabPageEvent;
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
 {#ENDIF TABPAGECTRL}
-
+   
     /// constructor
     public {#CLASSNAME}() : base()
     {
@@ -59,12 +61,18 @@ namespace {#NAMESPACE}
     /// helper object for the whole screen
     public {#UTILOBJECTCLASS} PetraUtilsObject
     {
+        get
+        {
+            return FPetraUtilsObject;
+        }
+
         set
         {
             FPetraUtilsObject = value;
         }
     }
-
+    
+{#IFDEF DATASETTYPE}
     /// dataset for the whole screen
     public {#DATASETTYPE} MainDS
     {
@@ -74,6 +82,7 @@ namespace {#NAMESPACE}
         }
     }
 
+{#ENDIF DATASETTYPE}
     /// <summary>todoComment</summary>
     public event System.EventHandler DataLoadingStarted;
 
