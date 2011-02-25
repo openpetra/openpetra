@@ -1459,7 +1459,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void InitialiseUserControl()
+        public void InitUserControl()
         {
             SingleLineFlow LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);
 

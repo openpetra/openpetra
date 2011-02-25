@@ -1,0 +1,55 @@
+RootNode:
+    BaseYaml: ../../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Application Types
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtApplicationType
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 750
+    WindowHeight: 400
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailAppTypeName, DetailAppTypeDescr, DetailAppFormType, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailAppTypeName: {Label=Application Type}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailAppTypeName, txtDetailAppTypeDescr]
+                Row1: [lblAppFormType, rgrDetailAppFormType]
+                Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row3: [chkDetailDeletableFlag]                
+        lblAppFormType: {Label=Form Type, Align=right, ColSpan=0}
+#        Empty:
+        rgrDetailAppFormType:
+            OptionalValues: ["SHORT FORM", "LONG FORM"]
+            Label: Form Type
+            BorderVisible: false
+            ControlsOrientation: horizontal
+#            Align: Left
+#            Width: 200
+#            Height: 45
+        txtDetailAppTypeName: {Label=Application Type, CharacterCasing=Upper}
+        txtDetailAppTypeDescr: {Label=Description, Width=110}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Application Type

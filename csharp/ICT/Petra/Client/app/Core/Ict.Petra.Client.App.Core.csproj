@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -43,7 +44,9 @@
   <ItemGroup>
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Common.Data">
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
@@ -118,7 +121,18 @@
   <ItemGroup>
     <Compile Include="Cache.cs" />
     <Compile Include="Cache.Lookup.cs" />
+    <Compile Include="FormActions.cs" />
     <Compile Include="Ict.Petra.Client.App.Core.AssemblyInfo.cs" />
+    <Compile Include="UnhandledExceptionDetailsDialog.Designer.cs">
+      <DependentUpon>UnhandledExceptionDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UnhandledExceptionDetailsDialog.ManualCode.cs">
+      <DependentUpon>UnhandledExceptionDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UnhandledExceptionDialog.cs" />
+    <Compile Include="UnhandledExceptionDialog.Designer.cs">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserDefaults.cs" />
     <Compile Include="Connector.cs" />
     <Compile Include="KeepAlive.cs" />
@@ -133,13 +147,12 @@
     <Compile Include="PollClientTasks.cs" />
     <Compile Include="ProcessReminders.cs" />
     <Compile Include="ExceptionHandling.cs" />
-    <Compile Include="UnhandledExceptionDialog.cs" />
     <Compile Include="UnhandledExceptionDetailsDialog.cs" />
-    <EmbeddedResource Include="UnhandledExceptionDialog.resx">
-      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UnhandledExceptionDetailsDialog.resx">
       <DependentUpon>UnhandledExceptionDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UnhandledExceptionDialog.resx">
+      <DependentUpon>UnhandledExceptionDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
