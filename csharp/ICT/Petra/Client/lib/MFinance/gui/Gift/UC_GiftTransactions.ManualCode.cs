@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            btnDeleteDetail.Enabled = FPetraUtilsObject.DetailProtectedMode;
+            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 

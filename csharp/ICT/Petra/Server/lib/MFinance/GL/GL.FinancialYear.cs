@@ -67,13 +67,17 @@ namespace Ict.Petra.Server.MFinance.GL
                 if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
                 {
                     // check if this period is either the current period or one of the forward posting periods
-                    if ((LedgerTable.Count == 1)
-                        && ((row.AccountingPeriodNumber >= LedgerTable[0].CurrentPeriod)
-                            && (row.AccountingPeriodNumber <= LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods)))
+                    if (LedgerTable.Count == 1)
                     {
+                    	int ACurrentPeriod=LedgerTable[0].CurrentPeriod;
+                    	int AAllowedForwardPeriod=ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
+                   
                         AFinancialPeriod = row.AccountingPeriodNumber;
-                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
-                        return true;
+                        if ((AFinancialPeriod <= ACurrentPeriod) && (ACurrentPeriod <= AAllowedForwardPeriod))
+                        {
+	                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+	                        return true;
+                        }
                     }
                 }
             }
