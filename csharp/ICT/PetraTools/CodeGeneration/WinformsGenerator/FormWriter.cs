@@ -787,6 +787,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FCodeStorage.GetAttribute("DatasetType").Substring(FCodeStorage.GetAttribute("DatasetType").LastIndexOf(".") + 1));
                 FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
             }
+            else
+            {
+                FTemplate.SetCodelet("DATASETTYPE", String.Empty);
+            }
 
 //    FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
 

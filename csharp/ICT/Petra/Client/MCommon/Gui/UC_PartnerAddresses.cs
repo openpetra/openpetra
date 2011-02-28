@@ -539,7 +539,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // Initialise dependent UserControl
             ucoDetails.PetraUtilsObject = FPetraUtilsObject;
-            ucoDetails.InitialiseUserControl();
+            ucoDetails.InitUserControl();
             ucoDetails.DisabledControlClickHandler = @HandleDisabledControlClick;
 
             // Create SourceDataGrid columns

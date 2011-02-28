@@ -50,6 +50,11 @@ namespace {#NAMESPACE}
     /// helper object for the whole screen
     public {#UTILOBJECTCLASS} PetraUtilsObject
     {
+        get
+        {
+            return FPetraUtilsObject;
+        }
+
         set
         {
             FPetraUtilsObject = value;
