@@ -24,11 +24,7 @@
 using System;
 using System.Data;
 using System.Threading;
-#if GTK
-using Ict.Common.GTK;
-#else
 using System.Windows.Forms;
-#endif
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;

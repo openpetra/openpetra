@@ -652,30 +652,19 @@ public class CreateInterfaces : AutoGenerationWriter
         }
 
         // get all csharp files that might hold implementations of remotable classes
-        List <CSParser>CSFiles = new List <CSParser>();
-
+        List <CSParser>CSFiles = null;
         if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name))
         {
             // any class in the module can contain a webconnector
-            string[] filePaths = Directory.GetFiles(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name, "*.csproj",
-                SearchOption.AllDirectories);
+            CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/M" + tn.Name, 
+                                                                     SearchOption.AllDirectories);
 
-            Array.Sort(filePaths);
-
-            foreach (string filePath in filePaths)
-            {
-                // excluding the data directory
-                if (!filePath.Replace("\\", "/").Contains("/data/"))
-                {
-                    CSParser.GetCSFilesInProject(filePath, ref CSFiles);
-                }
-            }
+        } else {
+        	CSFiles = new List <CSParser>();
         }
+            SortedList InterfaceNames = GetInterfaceNamesFromImplementation(CSFiles);
 
-        SortedList InterfaceNames = GetInterfaceNamesFromImplementation(CSFiles);
-
-        WriteNamespaces(tn, InterfaceNames, CSFiles);
-
+            WriteNamespaces(tn, InterfaceNames, CSFiles);
         Close();
     }
 

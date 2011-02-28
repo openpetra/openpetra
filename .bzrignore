@@ -1,3 +1,5 @@
+*-generated.build
+csharp/ICT/Petra/Client/generatewinforms.log
 setup/petra0300/dbdoc
 setup/petra0300/i18n
 setup/petra0300/ndoc
@@ -29,7 +31,6 @@ webserver/bin
 webserver/Server.log
 webserver/server.asmx
 webserver/web.config
-/csharp/ThirdParty/NAnt/Ict.Tools.NAntTasks.dll
 csharp/ICT/experimenting/DonorHistoryReports/bin
 csharp/ICT/experimenting/DonorHistoryReports/obj
 csharp/ICT/experimenting/treasurerEmails/bin
@@ -45,6 +46,11 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /data
 *.patch
 /log
+./delivery
+./delivery/**
+./projectfiles/**
+csharp/ICT/Petra/Server/lib/data/*.cs
+csharp/ICT/Petra/Shared/lib/data/*.cs
 /webserver/images
 /webserver/images/default
 /webserver/js/ext-all-debug.js

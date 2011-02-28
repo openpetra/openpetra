@@ -1,0 +1,39 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: GL Batches
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    FormType: browse
+    Template: windowTDS
+    WindowWidth: 660
+    WindowHeight: 700
+    UsingNamespaces: [Ict.Petra.Shared.Interfaces] 
+    Controls:
+        pnlContent:
+            Controls: [tabGLBatch]
+            Dock: Fill
+        tabGLBatch: {Dock=Fill, DragTabPageEnabled=false}
+        tpgBatches:
+            Label: Batches
+            Controls: [ucoBatches]
+        tpgJournals:
+            Label: Journals
+            Controls: [ucoJournals]
+        tpgTransactions:
+            Label: Transactions
+            Controls: [ucoTransactions]
+        tpgAttributes:
+            Label: Attributes
+            Controls: [ucoAttributes]            
+        ucoBatches:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches
+            Dock: Fill
+        ucoJournals:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals
+            Dock: Fill
+        ucoTransactions:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions
+            Dock: Fill
+        ucoAttributes:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_GLAttributes
+            Dock: Fill    

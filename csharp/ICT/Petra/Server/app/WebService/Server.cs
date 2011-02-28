@@ -27,7 +27,9 @@ using System.Web.Services;
 using System.Data;
 using System.Collections;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
