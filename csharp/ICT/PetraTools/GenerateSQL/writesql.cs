@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.IO;
 using Ict.Common;
+using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
 
 namespace GenerateSQL

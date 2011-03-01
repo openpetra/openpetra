@@ -26,11 +26,7 @@ using System.Runtime.Remoting;
 using System.Collections;
 using System.Net.Sockets;
 using System.Threading;
-#if GTK
-using Ict.Common.GTK;
-#else
 using System.Windows.Forms;
-#endif
 using Ict.Common;
 
 namespace Ict.Petra.Client.App.Core

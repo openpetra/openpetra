@@ -25,11 +25,7 @@ using System;
 using System.Data;
 using System.Threading;
 using Ict.Common;
-#if GTK
-using Ict.Common.GTK;
-#else
 using System.Windows.Forms;
-#endif
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 

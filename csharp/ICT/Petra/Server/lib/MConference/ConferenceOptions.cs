@@ -31,7 +31,6 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MConference;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
