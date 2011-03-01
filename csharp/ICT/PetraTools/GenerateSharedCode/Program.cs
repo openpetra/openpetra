@@ -102,9 +102,9 @@ class Program
         try
         {
             CreateInterfaces interfaces = new CreateInterfaces();
-            interfaces.CreateFiles(namespaces, OutputDir + "\\Shared\\lib\\Interfaces", YmlFileName);
+            interfaces.CreateFiles(namespaces, OutputDir + "/Shared/lib/Interfaces", YmlFileName);
             CreateInstantiators instantiators = new CreateInstantiators();
-            instantiators.CreateFiles(namespaces, OutputDir + "\\Server\\lib\\", YmlFileName, cmd.GetOptValue("TemplateDir"));
+            instantiators.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
         }
         catch (Exception e)
         {

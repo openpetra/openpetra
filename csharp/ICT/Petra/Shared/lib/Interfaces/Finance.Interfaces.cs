@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -469,6 +470,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                         DateTime AStartDate,
                                         DateTime AEndDate,
                                         string AHTMLTemplate);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
+        GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
+        TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                   out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                       DateTime ADateEffective);
@@ -495,11 +501,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         bool ImportGiftBatches(Hashtable requestParams,
                                String importString,
                                out TVerificationResultCollection AMessages);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
-        GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector)</summary>
-        TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-                                                   out TVerificationResultCollection AVerificationResult);
     }
 
 }
