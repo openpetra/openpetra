@@ -379,7 +379,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 FPagesList.Add(temporaryPetraShepherdPage.ID, temporaryPetraShepherdPage);
                 counter++;
             }
-
+			
+            
+            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(); 
+            TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID); 
+            FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage); 
+            
+            
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");
         }
     }
@@ -392,7 +398,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// </summary>
         public TPetraShepherdFinishPage()
         {
-            base.FIsLastPage = true;
+        	base.ID = "FINISHPAGE_MASTER"; 
+        	base.Enabled = true;
+        	base.Visible = true; 
+            base.FIsLastPage = true;/*
+            base.UserControlClassName = "Class name"; 
+            base.UserControlNamespace = "Namespace";
+            base.Title = "Here is a summary of the information you have provided:"; */
+            base.HelpContext = "Choose \'Finish\' to commit the data."; 
         }
     }
 }

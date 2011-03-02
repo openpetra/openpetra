@@ -220,25 +220,31 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
-        public virtual void HandleActionBack()
+        public virtual void HandleActionBack() //TODO: The handleActionBack method has an edge case that I can't figure out quite yet -- when only two pages are visible and enabled, hitting the back button repeatedly cycles through the two pages.. :-/ 
         {
             TLogging.Log("HandleActionBack (in TPetraShepherdFormLogic)");
 
             string backPage = ""; //temporary string to hold the key of the StartPage
-            bool hasPassedCurrentPage = false;     // used to tell if the iteration has already checked to see if you have passed the current page.
             TPetraShepherdPage temporaryPage = CurrentPage;
             int counter = 0;
-
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            
+            if(CurrentPage.IsFirstPage)
             {
-            	if(pair.Value == CurrentPage)
-            	{
-            		backPage = temporaryPage.ID; 
-            		break; 
-            		TLogging.Log("Set the backpage to the following: " + temporaryPage.ID); 
-            	}
-            	temporaryPage = pair.Value; 
-            	counter++; 
+            	backPage = CurrentPage.ID; 
+            }
+            else
+            {
+	            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+	            { 
+	            	if(pair.Value == CurrentPage && pair.Value.Enabled && pair.Value.Visible) 
+	            	{
+	            		backPage = temporaryPage.ID; 
+	            		break; 
+	            		TLogging.Log("Set the backpage to the following: " + temporaryPage.ID); 
+	            	}
+	            	temporaryPage = pair.Value; 
+	            	counter++; 
+	            }
             }
 			backPage = temporaryPage.ID; 
            	SwitchToPage(backPage);

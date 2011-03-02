@@ -159,5 +159,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			testFormLogicSwitchToStartPage; 
 		}
 		*/
+		[Test]
+		public void TestPetraShepherdFormLOgicSwitchToBackPage() 
+		{
+			Tests.Shepherd.TestInterface testShephredLogic = new Tests.Shepherd.TestInterface(); 
+			TPetraShepherdFormLogic testFormLogicBackButton = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShephredLogic); 
+			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "5", "The first page of the shephred was not 5, as expected."); 
+			testFormLogicBackButton.HandleActionNext(); 
+			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "56", "The second page of the shepherd was not 56, as expected."); 
+			testFormLogicBackButton.HandleActionBack(); 
+			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "5", "The shepherd should have jumped back to page 5, but didn't."); 
+			testFormLogicBackButton.HandleActionNext(); 
+			testFormLogicBackButton.HandleActionNext(); 
+			testFormLogicBackButton.HandleActionBack(); 
+			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "56", "The shepherd should have jumped back to page 56, but didn't."); 
+			testFormLogicBackButton.HandleActionBack(); 
+			testFormLogicBackButton.HandleActionBack();
+			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "5", "The shepherd should not have jumped farther back than 5."); 
+		}
 	}
 }
