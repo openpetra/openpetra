@@ -10,7 +10,10 @@
             and allows refreshing of this information.
             </summary>
         </member>
-        <member name="F:Ict.Petra.Shared.UserInfo.GUserInfo">
+        <member name="F:Ict.Petra.Shared.UserInfo.MUserInfo">
+            <summary>used internally to hold User Information</summary>
+        </member>
+        <member name="P:Ict.Petra.Shared.UserInfo.GUserInfo">
             <summary>used internally to hold User Information</summary>
         </member>
     </members>

@@ -2631,7 +2631,7 @@
         <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings.components">
@@ -2737,7 +2737,7 @@
         <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings.components">
@@ -2840,7 +2840,7 @@
         <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns.components">

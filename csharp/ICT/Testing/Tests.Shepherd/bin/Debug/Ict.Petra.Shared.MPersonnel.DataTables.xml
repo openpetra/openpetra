@@ -910,6 +910,9 @@
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnPlacementPartnerKeyId">
             used for generic TTypedDataTable functions
         </member>
+        <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnRawApplicationDataId">
+            used for generic TTypedDataTable functions
+        </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnDateCreatedId">
             used for generic TTypedDataTable functions
         </member>
@@ -950,8 +953,7 @@
             Describes what the application is for, eg. conference, year program.
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnOldLink">
-            Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-            yearly conference.
+            TODO: this field is a combination of registration office and application number. might not be needed???
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnGenAppPossSrvUnitKey">
             This is the possible field or team of service.
@@ -1021,6 +1023,9 @@
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnPlacementPartnerKey">
             This is the placement person handling this application.
+        </member>
+        <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnRawApplicationData">
+            stores the plain data received from the browser in JSON format
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.ColumnDateCreated">
             The date the record was created.
@@ -1236,6 +1241,12 @@
             get the name of the field in the database for this column
         </member>
         <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.GetPlacementPartnerKeyLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.GetRawApplicationDataDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.GetRawApplicationDataLength">
             get character length for column
         </member>
         <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationTable.GetDateCreatedDBName">
@@ -1454,6 +1465,12 @@
         <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.SetPlacementPartnerKeyNull">
             assign NULL value
         </member>
+        <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.IsRawApplicationDataNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.SetRawApplicationDataNull">
+            assign NULL value
+        </member>
         <member name="M:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.IsDateCreatedNull">
             test for NULL value
         </member>
@@ -1500,8 +1517,7 @@
             Describes what the application is for, eg. conference, year program.
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.OldLink">
-            Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-            yearly conference.
+            TODO: this field is a combination of registration office and application number. might not be needed???
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.GenAppPossSrvUnitKey">
             This is the possible field or team of service.
@@ -1571,6 +1587,9 @@
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.PlacementPartnerKey">
             This is the placement person handling this application.
+        </member>
+        <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.RawApplicationData">
+            stores the plain data received from the browser in JSON format
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmGeneralApplicationRow.DateCreated">
             The date the record was created.
@@ -4090,8 +4109,7 @@
             
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmShortTermApplicationTable.ColumnStBasicXyzTbdIdentifier">
-            Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-            yearly conference.
+            TODO: this field is a combination of registration office and application number. might not be needed???
         </member>
         <member name="F:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmShortTermApplicationTable.ColumnStBasicDeleteFlag">
             This field will not appear on the screen but will be updated when someone chooses to delete a record. Rather that an actual deletion, the record will be 'marked' for deletion after an agreed upon interval.
@@ -5196,8 +5214,7 @@
             
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmShortTermApplicationRow.StBasicXyzTbdIdentifier">
-            Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-            yearly conference.
+            TODO: this field is a combination of registration office and application number. might not be needed???
         </member>
         <member name="P:Ict.Petra.Shared.MPersonnel.Personnel.Data.PmShortTermApplicationRow.StBasicDeleteFlag">
             This field will not appear on the screen but will be updated when someone chooses to delete a record. Rather that an actual deletion, the record will be 'marked' for deletion after an agreed upon interval.

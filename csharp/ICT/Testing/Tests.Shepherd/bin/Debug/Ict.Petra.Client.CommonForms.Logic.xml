@@ -42,8 +42,8 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdFormLogic.SwitchToStartPage">
             <summary>
-            Switches to the first page 
-            Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled. 
+            Switches to the first page
+            Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
             </summary>
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdFormLogic.SwitchToFinishPage">
@@ -81,7 +81,7 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TShepherdNavigationHelper.#ctor(Ict.Petra.Client.CommonForms.Logic.TPetraShepherdPagesList,System.Windows.Forms.Panel)">
             <summary>
-            TODO: 
+            TODO:
             </summary>
             <param name="AShepherdPages"></param>
             <param name="APanelCollapsible"></param>
@@ -139,14 +139,14 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdPage.#ctor(System.Xml.XmlNode)">
             <summary>
-            Conrstructor for individual Shepherd pages. Each time a page is constructed, it 
-            recieves information from the ShepherdPageNode and stores it in each of the 
-            variables. 
+            Conrstructor for individual Shepherd pages. Each time a page is constructed, it
+            recieves information from the ShepherdPageNode and stores it in each of the
+            variables.
             </summary>
             <param name="ShepherdPageNode"></param>
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdPage.RealiseUserControl">
-            <summary> 
+            <summary>
             TODO: Function that instantiates and returns the UserControl needed for each Shepherd Page
             That user control will then be displayed in the content of each page
             </summary>
@@ -199,9 +199,9 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdPagesList.#ctor(System.String)">
             <summary>
-            Constructor for TPetraShepherdPagesList. This function reads in a yaml file from the appropriate 
-            namespace, parses it into xmlNodes, and adds them to the list of pages so that they can be read 
-            by the individual ShepherdPage constructor, which it calls. 
+            Constructor for TPetraShepherdPagesList. This function reads in a yaml file from the appropriate
+            namespace, parses it into xmlNodes, and adds them to the list of pages so that they can be read
+            by the individual ShepherdPage constructor, which it calls.
             </summary>
             <param name="AYamlFile"></param>
         </member>
@@ -215,7 +215,7 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.Logic.TPetraShepherdFinishPage.#ctor">
             <summary>
-            Constructor for TPetraShepherdFinish page creation. 
+            Constructor for TPetraShepherdFinish page creation.
             </summary>
         </member>
     </members>

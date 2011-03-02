@@ -430,37 +430,70 @@
              <param name="AView"></param>
              <returns>void</returns>
         </member>
-        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn)">
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddTextColumn(System.String,System.Data.DataColumn,System.Int16,SourceGrid.Cells.Controllers.ControllerBase,SourceGrid.Cells.Editors.EditorBase,SourceGrid.Cells.Models.ModelContainer,SourceGrid.Cells.Views.IView,SourceGrid.Conditions.ConditionView)">
              <summary>
-             Easy method to add a new CheckBox column.
-            
-             </summary>
-             <param name="AColumnTitle">Title of the HeaderColumn</param>
-             <param name="ADataColumn">DataColumn to which this column should be DataBound
-             </param>
-             <returns>void</returns>
-        </member>
-        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Int16)">
-             <summary>
-             Easy method to add a new CheckBox column.
-            
-             </summary>
-             <param name="AColumnTitle">Title of the HeaderColumn</param>
-             <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-             <param name="AColumnWidth">Column width in pixels (-1 for automatic width)
-             </param>
-             <returns>void</returns>
-        </member>
-        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Int16,SourceGrid.Cells.Editors.EditorBase)">
-             <summary>
-             Easy method to add a new CheckBox column.
+             Easy method to add a new Text column.
             
              </summary>
              <param name="AColumnTitle">Title of the HeaderColumn</param>
              <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
              <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
-             <param name="AEditor"></param>
+             <param name="AController"></param>
+             <param name="AEditor">An instance of an Editor (based on ICellVirtual.Editor)</param>
+             <param name="AModel"></param>
+             <param name="AView"></param>
+             <param name="AConditionView"></param>
+            
              <returns>void</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn)">
+            <summary>
+            Easy method to add a new CheckBox column.
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound
+            </param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Boolean)">
+            <summary>
+            Easy method to add a new CheckBox column.
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+            <param name="AReadOnly">Set to true if the column should be read-only</param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Int16)">
+            <summary>
+            Easy method to add a new CheckBox column.
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+            <param name="AColumnWidth">Column width in pixels (-1 for automatic width)
+            </param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Int16,System.Boolean)">
+            <summary>
+            Easy method to add a new CheckBox column.
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+            <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+            <param name="AReadOnly">Set to true if the column should be read-only</param>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCheckBoxColumn(System.String,System.Data.DataColumn,System.Int16,SourceGrid.Cells.Editors.EditorBase,System.Boolean)">
+            <summary>
+            Easy method to add a new CheckBox column.
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+            <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+            <param name="AEditor"></param>
+            <param name="AReadOnly">Set to true if the column should be read-only</param>
+            <returns>void</returns>
         </member>
         <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddImageColumn(Ict.Common.Controls.DelegateGetImageForRow)">
              <summary>
@@ -485,10 +518,10 @@
         </member>
         <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddDateColumn(System.String,System.Data.DataColumn)">
             <summary>
-            add a date column, that is readonly, and only shows the date
+            Add a date column that is read-only. The date is displayed in an a common international data format, independent of a computer's date formatting settings.
             </summary>
-            <param name="AColumnTitle"></param>
-            <param name="ADataColumn"></param>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         </member>
         <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCurrencyColumn(System.String,System.Data.DataColumn)">
             <summary>
@@ -496,8 +529,18 @@
             aligns the value to the right.
             prints number in red if it is negative
             </summary>
-            <param name="AColumnTitle"></param>
-            <param name="ADataColumn"></param>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        </member>
+        <member name="M:Ict.Common.Controls.TSgrdDataGrid.AddCurrencyColumn(System.String,System.Data.DataColumn,System.Int32)">
+            <summary>
+            add a column that shows a currency value.
+            aligns the value to the right.
+            prints number in red if it is negative
+            </summary>
+            <param name="AColumnTitle">Title of the HeaderColumn</param>
+            <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+            <param name="AFractionDigits">Number of digits after the decimal point</param>
         </member>
         <member name="M:Ict.Common.Controls.TSgrdDataGrid.OnEnabledChanged(System.EventArgs)">
             <summary>

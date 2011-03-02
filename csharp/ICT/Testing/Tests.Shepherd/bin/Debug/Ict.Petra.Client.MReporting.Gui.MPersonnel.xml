@@ -1975,7 +1975,7 @@
         <member name="M:Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmSelectEvent.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmSelectEvent.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmSelectEvent.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmSelectEvent.actClose(System.Object,System.EventArgs)">

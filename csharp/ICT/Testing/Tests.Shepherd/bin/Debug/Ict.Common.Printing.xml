@@ -217,10 +217,13 @@
             <param name="AXPos"></param>
             <param name="AYPos"></param>
         </member>
-        <member name="M:Ict.Common.Printing.TPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            todoComment
-            </summary>
+        <member name="M:Ict.Common.Printing.TPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+             <summary>
+             Draw a bitmap.
+            
+             Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+             Same applies to Height
+             </summary>
         </member>
         <member name="M:Ict.Common.Printing.TPrinter.#ctor">
              <summary>
@@ -512,11 +515,14 @@
             <param name="AXPos"></param>
             <param name="AYPos"></param>
         </member>
-        <member name="M:Ict.Common.Printing.TGfxPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            draw a bitmap at the given position;
-            the current position is moved
-            </summary>
+        <member name="M:Ict.Common.Printing.TGfxPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+             <summary>
+             draw a bitmap at the given position;
+             the current position is moved
+            
+             Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+             Same applies to Height
+             </summary>
         </member>
         <member name="M:Ict.Common.Printing.TGfxPrinter.LineFeed(Ict.Common.Printing.eFont)">
             <summary>
@@ -717,11 +723,14 @@
             <param name="AXPos"></param>
             <param name="AYPos"></param>
         </member>
-        <member name="M:Ict.Common.Printing.TPdfPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            draw a bitmap at the given position;
-            the current position is moved
-            </summary>
+        <member name="M:Ict.Common.Printing.TPdfPrinter.DrawBitmap(System.String,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+             <summary>
+             draw a bitmap at the given position;
+             the current position is moved
+            
+             Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+             Same applies to Height
+             </summary>
         </member>
         <member name="M:Ict.Common.Printing.TPdfPrinter.LineFeed(Ict.Common.Printing.eFont)">
             <summary>
@@ -1108,7 +1117,7 @@
         </member>
         <member name="M:Ict.Common.Printing.TTxtPrinter.LineFeed(Ict.Common.Printing.eFont)">
             <summary>
-            Line Feed; increases the current y position by the height of the given font
+            Line Feed; increases the current y position by one
             </summary>
             <returns>the new current line
             </returns>

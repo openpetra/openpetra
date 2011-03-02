@@ -443,24 +443,6 @@
         <member name="T:Ict.Petra.Client.CommonForms.ActionEventHandler">
             <summary>todoComment</summary>
         </member>
-        <member name="T:Ict.Petra.Client.CommonForms.ActionEventArgs">
-            <summary>
-            todoComment
-            </summary>
-        </member>
-        <member name="F:Ict.Petra.Client.CommonForms.ActionEventArgs.Enabled">
-            <summary>todoComment</summary>
-        </member>
-        <member name="F:Ict.Petra.Client.CommonForms.ActionEventArgs.ActionName">
-            <summary>todoComment</summary>
-        </member>
-        <member name="M:Ict.Petra.Client.CommonForms.ActionEventArgs.#ctor(System.String,System.Boolean)">
-            <summary>
-            constructor
-            </summary>
-            <param name="AActionName"></param>
-            <param name="AEnabled"></param>
-        </member>
         <member name="T:Ict.Petra.Client.CommonForms.eActionId">
             <summary>todoComment</summary>
         </member>
@@ -778,7 +760,7 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdForm.TextBox1TextChanged(System.Object,System.EventArgs)">
             <summary>
             TODO: This is a temporary Action: we are using this to test the page switching functionality
-            of the shepherd. 
+            of the shepherd.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -801,6 +783,12 @@
             not be able to load this method if it was changed manually.
             </summary>
         </member>
+        <member name="F:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.FPetraUtilsObject">
+            <summary>Helper object for Edit screens.</summary>
+        </member>
+        <member name="F:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.FMainDS">
+            <summary>Holds the DataSet that contains most data that is used on the screen.</summary>
+        </member>
         <member name="F:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.FYamlFile">
             <summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall</summary>
         </member>
@@ -810,7 +798,7 @@
         <member name="F:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.FShepherdNavigationHelper">
             <summary>Instance of helper Class for navigation purposes</summary>
         </member>
-        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.#ctor">
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.#ctor(System.IntPtr)">
             <summary>Constructor</summary>
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.BtnFinishClick(System.Object,System.EventArgs)">
@@ -824,7 +812,7 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.BtnNextClick(System.Object,System.EventArgs)">
             <summary>
             Overwrites virtual function in PetraShepherdForm.cs,
-            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
+            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -832,7 +820,7 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.BtnBackClick(System.Object,System.EventArgs)">
             <summary>
             Overwrites virtual function in PetraShepherdForm.cs,
-            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
+            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -840,7 +828,7 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.BtnCancelClick(System.Object,System.EventArgs)">
             <summary>
             Overwrites virtual function in PetraShepherdForm.cs,
-            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
+            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -848,7 +836,7 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.BtnHelpClick(System.Object,System.EventArgs)">
             <summary>
             Overwrites virtual function in PetraShepherdForm.cs,
-            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action 
+            calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
@@ -868,6 +856,38 @@
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.CancelShepherd">
             <summary>Closes the Shepherd without any further ado and without saving</summary>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.SaveChanges(System.Data.DataSet@)">
+            <summary>
+            Determines the changes in the screen's dataset and submits them to the
+            Server.
+            </summary>
+            <param name="AInspectDS">The screen's dataset
+            </param>
+            <returns>True if saving of data succeeded, otherwise false.</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.RunOnceOnActivation">
+            TODO
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.HookupAllInContainer(System.Windows.Forms.Control)">
+            TODO
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.CanClose">
+            TODO
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.GetPetraUtilsObject">
+            TODO
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdConcreteForm.SaveChanges">
+            <summary>
+            Calls the internal SaveChanges Method.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Ict.Petra.Client.CommonForms.TPetraUserControl">
              <summary>
@@ -891,11 +911,6 @@
         <member name="M:Ict.Petra.Client.CommonForms.TPetraUserControl.#ctor">
             <summary>
             constructor
-            </summary>
-        </member>
-        <member name="M:Ict.Petra.Client.CommonForms.TPetraUserControl.InitialiseUserControl">
-            <summary>
-            todoComment
             </summary>
         </member>
         <member name="M:Ict.Petra.Client.CommonForms.TPetraUserControl.DataSavingStartedEventFired">
@@ -959,6 +974,90 @@
         <member name="P:Ict.Petra.Client.CommonForms.IPetraEditUserControl.PetraUtilsObject">
             <summary>
             todoComment
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage">
+            auto generated user control
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.#ctor">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.OnDataLoadingStarted(System.Object,System.EventArgs)">
+            to avoid warning CS0067: unused event
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.OnDataLoadingFinished(System.Object,System.EventArgs)">
+            to avoid warning CS0067: unused event
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.InitUserControl">
+            needs to be called after FMainDS and FPetraUtilsObject have been set
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.PetraUtilsObject">
+            helper object for the whole screen
+        </member>
+        <member name="E:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.DataLoadingStarted">
+            <summary>todoComment</summary>
+        </member>
+        <member name="E:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.DataLoadingFinished">
+            <summary>todoComment</summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.SummaryText1">
+            <summary>
+            Summary Text #1
+            </summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.SummaryText2">
+            <summary>
+            Summary Text #2
+            </summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.FurtherActionOnFinishCheckBoxVisible">
+            <summary>
+            Determines whether the 'Further action on finish' CheckBox is shown (not shown by default).
+            </summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.FurtherActionOnFinishText">
+            <summary>
+            Text displayed for the 'Further action on finish' CheckBox.
+            </summary>
+        </member>
+        <member name="P:Ict.Petra.Client.CommonForms.TUC_PetraShepherdFinishPage.FurtherActionOnFinishChecked">
+            <summary>
+            Determines the Checked state of the 'Further action on finish' CheckBox (not Checked by default).
             </summary>
         </member>
         <member name="T:Ict.Petra.Client.CommonForms.WindowHandling">

@@ -27,7 +27,7 @@
         <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindow.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindow.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindow.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindow.actClose(System.Object,System.EventArgs)">
@@ -93,7 +93,7 @@
             needed for generated code
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.App.PetraClient.TUcoMainWindowContent.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.App.PetraClient.TUcoMainWindowContent.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             <summary>
             todoComment
             </summary>
@@ -188,7 +188,7 @@
         <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindowNew.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindowNew.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindowNew.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.App.PetraClient.TFrmMainWindowNew.actClose(System.Object,System.EventArgs)">

@@ -27,7 +27,7 @@
         <member name="M:Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain.OpenScreenReportPartnerByCity(System.Object,System.EventArgs)">

@@ -28,7 +28,7 @@
         <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.actClose(System.Object,System.EventArgs)">
@@ -97,7 +97,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainUsers.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainUsers.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MSysMan.Gui.TFrmMaintainUsers.actClose(System.Object,System.EventArgs)">

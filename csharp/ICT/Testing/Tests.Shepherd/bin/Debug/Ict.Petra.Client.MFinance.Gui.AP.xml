@@ -48,7 +48,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditDocument.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditDocument.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditDocument.actClose(System.Object,System.EventArgs)">
@@ -110,7 +110,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditSupplier.FileSave(System.Object,System.EventArgs)">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditSupplier.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditSupplier.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPEditSupplier.actClose(System.Object,System.EventArgs)">
@@ -191,7 +191,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPMain.actClose(System.Object,System.EventArgs)">
@@ -311,7 +311,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPPayment.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPPayment.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPPayment.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPPayment.actClose(System.Object,System.EventArgs)">
@@ -361,7 +361,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPSupplierTransactions.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPSupplierTransactions.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPSupplierTransactions.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.AP.TFrmAPSupplierTransactions.actClose(System.Object,System.EventArgs)">

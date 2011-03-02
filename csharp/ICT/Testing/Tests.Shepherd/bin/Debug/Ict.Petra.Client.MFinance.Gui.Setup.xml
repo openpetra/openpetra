@@ -47,7 +47,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityAreaSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityAreaSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityAreaSetup.actClose(System.Object,System.EventArgs)">
@@ -114,7 +114,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityLevelSetup.actClose(System.Object,System.EventArgs)">
@@ -132,6 +132,940 @@
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
         <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmAbilityLevelSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup">
+            auto generated: Maintain Application Types
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.CreateNewPtApplicationType">
+            automatically generated, create a new record of PtApplicationType and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicationTypeSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup">
+            auto generated: Maintain Leaving Codes
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.CreateNewPtLeavingCode">
+            automatically generated, create a new record of PtLeavingCode and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLeavingCodeSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup">
+            auto generated: Maintain Language Levels
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.CreateNewPtLanguageLevel">
+            automatically generated, create a new record of PtLanguageLevel and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmLanguageLevelSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup">
+            auto generated: Maintain Passport Types
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.CreateNewPtPassportType">
+            automatically generated, create a new record of PtPassportType and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPassportTypeSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup">
+            auto generated: Maintain Positions
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.CreateNewPtPosition">
+            automatically generated, create a new record of PtPosition and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmPositionSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup">
+            auto generated: Maintain Valuable Items
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.CreateNewPtValuableItem">
+            automatically generated, create a new record of PtValuableItem and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmValuableItemSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup">
+            auto generated: Maintain Vision Levels
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.CreateNewPtVisionLevel">
+            automatically generated, create a new record of PtVisionLevel and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionLevelSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup">
+            auto generated: Maintain Vision Areas
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.CreateNewPtVisionArea">
+            automatically generated, create a new record of PtVisionArea and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmVisionAreaSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup">
+            auto generated: Maintain Applicant Statuses
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.CreateNewPtApplicantStatus">
+            automatically generated, create a new record of PtApplicantStatus and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmApplicantStatusSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup">
+            auto generated: Maintain Country/Event Preference Levels
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.CreateNewPtXyzTbdPreferenceLevel">
+            automatically generated, create a new record of PtXyzTbdPreferenceLevel and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmCountry_EventLevelSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup">
+            auto generated: Maintain Qualification Levels
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.CreateNewPtQualificationLevel">
+            automatically generated, create a new record of PtQualificationLevel and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmQualificationLevelSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup">
+            auto generated: Maintain Document Type Categories
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.CreateNewPmDocumentCategory">
+            automatically generated, create a new record of PmDocumentCategory and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDocumentTypeCategorySetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup">
+            auto generated: Maintain Driver Statuses
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.CreateNewPtDriverStatus">
+            automatically generated, create a new record of PtDriverStatus and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmDriverStatusSetup.InitializeComponent">
+            <summary>
+            This method is required for Windows Forms designer support.
+            Do not change the method contents inside the source code editor. The Forms designer might
+            not be able to load this method if it was changed manually.
+            </summary>
+        </member>
+        <member name="T:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup">
+            auto generated: Maintain Professional Areas
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.#ctor(System.IntPtr)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.LoadDataAndFinishScreenSetup">
+            <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+            <returns>void</returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.CreateNewPtQualificationArea">
+            automatically generated, create a new record of PtQualificationArea and display on the edit screen
+            we create the table locally, no dataset
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.GetSelectedDetailRow">
+            return the selected row
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.RunOnceOnActivation">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.HookupAllControls">
+            <summary>
+            Adds event handlers for the appropiate onChange event to call a central procedure
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.HookupAllInContainer(System.Windows.Forms.Control)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.CanClose">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.GetPetraUtilsObject">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.FileSave(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.SaveChanges">
+            <summary>
+            save the changes on the screen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.actClose(System.Object,System.EventArgs)">
+            auto generated
+        </member>
+        <member name="F:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.components">
+            <summary>
+            Designer variable used to keep track of non-visual components.
+            </summary>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.Dispose(System.Boolean)">
+            <summary>
+            Disposes resources used by the form.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:Ict.Petra.Client.MPersonnel.Gui.Setup.TFrmProfessionalAreaSetup.InitializeComponent">
             <summary>
             This method is required for Windows Forms designer support.
             Do not change the method contents inside the source code editor. The Forms designer might

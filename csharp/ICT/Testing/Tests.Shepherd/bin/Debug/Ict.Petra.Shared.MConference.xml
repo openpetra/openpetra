@@ -14,6 +14,17 @@
             Lists types of options that can be used for a conference
             </summary>
         </member>
+        <member name="T:Ict.Petra.Shared.MConference.MConferenceConstants">
+            <summary>
+            some constants used in the conference module
+            </summary>
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.MConferenceConstants.APPTYPE_CONFERENCE">
+            <summary>Application type Conference</summary>
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.MConferenceConstants.APPSTATUS_ONHOLD">
+            <summary>Application status: On hold - Being processed</summary>
+        </member>
         <member name="T:Ict.Petra.Shared.MConference.TUnitTypeEnum">
             <summary>
             Defines the types of units that should be returned to the conference field reports.

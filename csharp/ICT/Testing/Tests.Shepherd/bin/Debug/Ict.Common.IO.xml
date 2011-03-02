@@ -1117,7 +1117,7 @@
         </member>
         <member name="P:Ict.Common.IO.TDlgSelectCSVSeparator.DateFormat">
             <summary>
-            read the date format that the user has selected
+            read/set the date format that the user has selected
             </summary>
         </member>
         <member name="P:Ict.Common.IO.TDlgSelectCSVSeparator.NumberFormatIndex">

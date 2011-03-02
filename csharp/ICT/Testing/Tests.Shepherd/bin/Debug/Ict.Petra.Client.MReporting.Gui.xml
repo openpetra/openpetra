@@ -1126,7 +1126,7 @@
         <member name="M:Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns.components">

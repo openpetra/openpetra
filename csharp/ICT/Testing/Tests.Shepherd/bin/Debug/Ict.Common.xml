@@ -1436,6 +1436,22 @@
         <member name="M:Ict.Common.StringHelper.ContainsI(System.String,System.String)">
             check if the needle occurs in s, ignoring case sensitivity
         </member>
+        <member name="T:Ict.Common.TypeConverter">
+            <summary>
+            Contains Type-converting classes that inherit from and follow the model of System.ComponentModel.TypeConverter.
+            </summary>
+        </member>
+        <member name="T:Ict.Common.TypeConverter.TDateConverter">
+            <summary>
+            Converts a date into a common international data format, independent of a computer's date formatting settings.
+            </summary>
+        </member>
+        <member name="T:Ict.Common.TypeConverter.TBooleanToYesNoConverter">
+            <summary>
+            Converts 'true' and 'false' values to 'Yes' and 'No' values.
+            </summary>
+            <remarks>TODO: In need of I8N support!</remarks>
+        </member>
         <member name="T:Ict.Common.TExecutingCLREnum">
             <summary>
             enum for several runtime environments

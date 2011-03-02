@@ -397,7 +397,12 @@
         <member name="F:Ict.Common.DB.DBAccess.DB_DEBUGLEVEL_TRACE">
             <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
         </member>
-        <member name="F:Ict.Common.DB.DBAccess.GDBAccessObj">
+        <member name="F:Ict.Common.DB.DBAccess.MGDBAccessObj">
+            <summary>
+            this is the object that is used in the non ASP environment
+            </summary>
+        </member>
+        <member name="P:Ict.Common.DB.DBAccess.GDBAccessObj">
             <summary>Global Object in which the Application can store a reference to an Instance of
             <see cref="T:Ict.Common.DB.TDataBase"/></summary>
         </member>

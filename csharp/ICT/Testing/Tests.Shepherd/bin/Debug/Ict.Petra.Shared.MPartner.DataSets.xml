@@ -49,10 +49,10 @@
         <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PPartnerLocation">
             auto generated
         </member>
-        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PPerson">
+        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PFamily">
             auto generated
         </member>
-        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PFamily">
+        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PPerson">
             auto generated
         </member>
         <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS.PUnit">
@@ -220,81 +220,6 @@
         <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPartnerLocationRow.Icon">
             
         </member>
-        <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable">
-            Details of a person.  A person must also have a related FAMILY class p_partner record.
-        </member>
-        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.TableId">
-            TableId for Ict.Common.Data generic functions
-        </member>
-        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.ColumnUnitNameId">
-            used for generic TTypedDataTable functions
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor">
-            constructor
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor(System.String)">
-            constructor
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            constructor for serialization
-        </member>
-        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.ColumnUnitName">
-            
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.InitClass">
-            create the columns
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.InitVars">
-            assign columns to properties, set primary key
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowTyped(System.Boolean)">
-            create a new typed row
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowTyped">
-            create a new typed row, always with default values
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowFromBuilder(System.Data.DataRowBuilder)">
-            new typed row using DataRowBuilder
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetChangesTyped">
-            get typed set of changes
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetTableName">
-            return the CamelCase name of the table
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetTableDBName">
-            return the name of the table as it is used in the database
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.CreateOdbcParameter(System.Int32)">
-            get an odbc parameter for the given column
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetUnitNameDBName">
-            get the name of the field in the database for this column
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetUnitNameLength">
-            get character length for column
-        </member>
-        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.Item(System.Int32)">
-            Access a typed row by index
-        </member>
-        <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow">
-            Details of a person.  A person must also have a related FAMILY class p_partner record.
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.#ctor(System.Data.DataRowBuilder)">
-            Constructor
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.InitValues">
-            set default values
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.IsUnitNameNull">
-            test for NULL value
-        </member>
-        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.SetUnitNameNull">
-            assign NULL value
-        </member>
-        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.UnitName">
-            
-        </member>
         <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPFamilyTable">
             Contains details about a family in Partnership with us.  May have P_Person records linked to it.
         </member>
@@ -368,6 +293,81 @@
             assign NULL value
         </member>
         <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPFamilyRow.UnitName">
+            
+        </member>
+        <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable">
+            Details of a person.  A person must also have a related FAMILY class p_partner record.
+        </member>
+        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.TableId">
+            TableId for Ict.Common.Data generic functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.ColumnUnitNameId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor(System.String)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            constructor for serialization
+        </member>
+        <member name="F:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.ColumnUnitName">
+            
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.InitClass">
+            create the columns
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.InitVars">
+            assign columns to properties, set primary key
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowTyped(System.Boolean)">
+            create a new typed row
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowTyped">
+            create a new typed row, always with default values
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.NewRowFromBuilder(System.Data.DataRowBuilder)">
+            new typed row using DataRowBuilder
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetChangesTyped">
+            get typed set of changes
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetTableName">
+            return the CamelCase name of the table
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetTableDBName">
+            return the name of the table as it is used in the database
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.CreateOdbcParameter(System.Int32)">
+            get an odbc parameter for the given column
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetUnitNameDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.GetUnitNameLength">
+            get character length for column
+        </member>
+        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonTable.Item(System.Int32)">
+            Access a typed row by index
+        </member>
+        <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow">
+            Details of a person.  A person must also have a related FAMILY class p_partner record.
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.#ctor(System.Data.DataRowBuilder)">
+            Constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.InitValues">
+            set default values
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.IsUnitNameNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.SetUnitNameNull">
+            assign NULL value
+        </member>
+        <member name="P:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow.UnitName">
             
         </member>
         <member name="T:Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSMiscellaneousDataTable">

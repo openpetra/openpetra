@@ -1005,7 +1005,7 @@
              </summary>
              <returns>void</returns>
         </member>
-        <member name="M:Ict.Petra.Client.MCommon.TUC_PartnerAddress.InitialiseUserControl">
+        <member name="M:Ict.Petra.Client.MCommon.TUC_PartnerAddress.InitUserControl">
              <summary>
              Sets up the Localised County Label and hooks up a data change Event.
             

@@ -28,35 +28,30 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		[Test]
 		public void TestTPetraShepherdPagesListConstructor()
 		{	
-			System.Console.WriteLine("Beginning tests of the Constructor for the TPetraShepherdPagesList constructor.. "); 
-			TPetraShepherdPagesList testPetraShepherdPagesList = new TPetraShepherdPagesList("ShepherdChurch.yaml"); 
-			System.Console.WriteLine("Testing to see if the count of the pages in the ShepherdPage is correct.. "); 
-			Assert.True(testPetraShepherdPagesList.Pages.Count == 3);
+			TPetraShepherdPagesList testPetraShepherdPagesList = new TPetraShepherdPagesList("ShepherdChurch.yaml");
+			Assert.True(testPetraShepherdPagesList.Pages.Count == 3, "Wrong shepherd page count.");
+	
+			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("5"), "Shepherd did not contain key 5");
+			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("56"), "Shepherd did not contain key 56");
+			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("12"), "Shepherd did not contain key 12"); 
 			
-			System.Console.Write("Testing to see the YAML contains all of the keys it should.. "); 
-			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("5"));
-			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("56"));
-			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("12")); 
+			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("123"), "Shepherd inadvertently contained key 123");
+			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("1532"), "Shepherd inadvertently contained key 1532");
+			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("00"), "Shepherd inadvertently contained key 00");
 			
-			System.Console.WriteLine("Testing to make sure that the parser is not grabbing inappropriate keys.. ");
-			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("123"));
-			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("1532"));
-			Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("00"));
-			
-			System.Console.WriteLine("Testing to make sure that the parser is parsing individual pages correctly.. ");
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testPetraShepherdPagesList.Pages)
     		{
 				switch(pair.Key)
 				{
 					case "5":
-						Assert.AreEqual(pair.Value.ID, "5"); 
-						Assert.AreEqual(pair.Value.Title, "Personnel Shepherd"); 
-						Assert.AreEqual(pair.Value.Note,"This is a test, this is only a test."); 
-						Assert.True(pair.Value.Visible); 
-						Assert.True(pair.Value.Enabled); 
-						Assert.AreEqual(pair.Value.UserControlNamespace,"Ict.Petra.Client.MPartner.Gui");
-						Assert.AreEqual(pair.Value.UserControlClassName,"TUC_PartnerDetails_Church");
-						Assert.AreEqual(pair.Value.HelpContext, "HELPME!!!");
+						Assert.AreEqual(pair.Value.ID, "5", "The shepherd page 5 did not have the key 5"); 
+						Assert.AreEqual(pair.Value.Title, "Personnel Shepherd", "The shepherd page 5 did not have the name Personnel Shepherd"); 
+						Assert.AreEqual(pair.Value.Note,"This is a test, this is only a test.", "The note did not match: This is a test, this ois only a test."); 
+						Assert.True(pair.Value.Visible, "The page was not visible.");
+						Assert.True(pair.Value.Enabled, "The page was not enabled");
+						Assert.AreEqual(pair.Value.UserControlNamespace,"Ict.Petra.Client.MPartner.Gui", "The namespace was not: Ict.Petra.Client.MPartner.Gui");
+						Assert.AreEqual(pair.Value.UserControlClassName,"TUC_PartnerDetails_Church", "The user control class name was not: TUC_PartnerDetails_Church");
+						Assert.AreEqual(pair.Value.HelpContext, "HELPME!!!", "The help context was not: HELPME!!!");
 						break;
 				}
 			}
@@ -152,7 +147,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			Assert.AreEqual(testNotVisibleOrEnabledLogic.CurrentPage.ID,"12"); 
 
 		}		
-		
+/*		
 		[Test]
 		public void TestPetraShepherdFormLogicSwitchToStartPage()
 		{
@@ -161,7 +156,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			
 			Assert.AreEqual(testFormLogicSwitchToStartPage.CurrentPage, "5"); 
 			testFormLogicSwitchToStartPage.HandleActionNext(); 
-			testFormLogicSwitchToStartPage
+			testFormLogicSwitchToStartPage; 
 		}
+		*/
 	}
 }

@@ -27,7 +27,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerContacts.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerContacts.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerContacts.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerContacts.actClose(System.Object,System.EventArgs)">
@@ -80,7 +80,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit.FileSave(System.Object,System.EventArgs)">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit.actClose(System.Object,System.EventArgs)">
@@ -667,7 +667,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen.actClose(System.Object,System.EventArgs)">
@@ -970,7 +970,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerImport.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerImport.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerImport.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerImport.actClose(System.Object,System.EventArgs)">
@@ -1036,7 +1036,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain.OpenScreenReportPartnerByCity(System.Object,System.EventArgs)">
@@ -2678,7 +2678,7 @@
         <member name="M:Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart.components">
@@ -3173,7 +3173,7 @@
             settings to UserDefaults.
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.MPartner.Gui.TUC_PartnerFindCriteria.InitialiseUserControl">
+        <member name="M:Ict.Petra.Client.MPartner.Gui.TUC_PartnerFindCriteria.InitUserControl">
             <summary>
             todoComment
             </summary>

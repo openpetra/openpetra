@@ -28,7 +28,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.Common.TFrmBankStatementImport.actClose(System.Object,System.EventArgs)">

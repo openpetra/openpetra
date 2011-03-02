@@ -40,5 +40,272 @@
         <member name="P:Ict.Petra.Shared.MConference.Data.SelectConferenceTDS.PcConference">
             auto generated
         </member>
+        <member name="T:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.#ctor">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            auto generated for serialization
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.#ctor(System.String)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.GetChangesTyped(System.Boolean)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.InitTables">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.InitTables(System.Data.DataSet)">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.MapTables">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.InitVars">
+            auto generated
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.InitConstraints">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.PPartner">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.PPerson">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.PmGeneralApplication">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.PmShortTermApplication">
+            auto generated
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS.ApplicationGrid">
+            auto generated
+        </member>
+        <member name="T:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable">
+            
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.TableId">
+            TableId for Ict.Common.Data generic functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnPartnerKeyId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnFirstNameId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnFamilyNameId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGenderId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnDateOfBirthId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGenAppDateId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGenApplicationStatusId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnStCongressCodeId">
+            used for generic TTypedDataTable functions
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.#ctor">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.#ctor(System.String)">
+            constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            constructor for serialization
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnPartnerKey">
+            This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnFirstName">
+            
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnFamilyName">
+            
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGender">
+            
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnDateOfBirth">
+            This is the date the rthe person was born
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGenAppDate">
+            Date of application.
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnGenApplicationStatus">
+            Indicates the status of the application.
+        </member>
+        <member name="F:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.ColumnStCongressCode">
+            Indicates the role for the Congress.
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.InitClass">
+            create the columns
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.InitVars">
+            assign columns to properties, set primary key
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.NewRowTyped(System.Boolean)">
+            create a new typed row
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.NewRowTyped">
+            create a new typed row, always with default values
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.NewRowFromBuilder(System.Data.DataRowBuilder)">
+            new typed row using DataRowBuilder
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetChangesTyped">
+            get typed set of changes
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetTableName">
+            return the CamelCase name of the table
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetTableDBName">
+            return the name of the table as it is used in the database
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.CreateOdbcParameter(System.Int32)">
+            get an odbc parameter for the given column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetFirstNameLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetFamilyNameLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenderDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenderLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetDateOfBirthDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetDateOfBirthLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenAppDateDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenAppDateLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenApplicationStatusDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetGenApplicationStatusLength">
+            get character length for column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetStCongressCodeDBName">
+            get the name of the field in the database for this column
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.GetStCongressCodeLength">
+            get character length for column
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridTable.Item(System.Int32)">
+            Access a typed row by index
+        </member>
+        <member name="T:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow">
+            
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.#ctor(System.Data.DataRowBuilder)">
+            Constructor
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.InitValues">
+            set default values
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsPartnerKeyNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetPartnerKeyNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsFirstNameNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetFirstNameNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsFamilyNameNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetFamilyNameNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsGenderNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetGenderNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsDateOfBirthNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetDateOfBirthNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsGenAppDateNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetGenAppDateNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsGenApplicationStatusNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetGenApplicationStatusNull">
+            assign NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.IsStCongressCodeNull">
+            test for NULL value
+        </member>
+        <member name="M:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.SetStCongressCodeNull">
+            assign NULL value
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.PartnerKey">
+            This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number.
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.FirstName">
+            
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.FamilyName">
+            
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.Gender">
+            
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.DateOfBirth">
+            This is the date the rthe person was born
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.GenAppDate">
+            Date of application.
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.GenApplicationStatus">
+            Indicates the status of the application.
+        </member>
+        <member name="P:Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDSApplicationGridRow.StCongressCode">
+            Indicates the role for the Congress.
+        </member>
     </members>
 </doc>

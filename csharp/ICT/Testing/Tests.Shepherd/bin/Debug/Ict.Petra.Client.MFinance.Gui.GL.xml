@@ -36,7 +36,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatch.actClose(System.Object,System.EventArgs)">
@@ -178,7 +178,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatchExport.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatchExport.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatchExport.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MFinance.Gui.GL.TFrmGLBatchExport.components">
@@ -426,7 +426,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLBatches.components">
@@ -530,7 +530,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLJournals.components">
@@ -641,7 +641,7 @@
         <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions.GetPetraUtilsObject">
             auto generated
         </member>
-        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions.ActionEnabledEvent(System.Object,Ict.Petra.Client.CommonForms.ActionEventArgs)">
+        <member name="M:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions.ActionEnabledEvent(System.Object,Ict.Petra.Client.App.Core.ActionEventArgs)">
             auto generated
         </member>
         <member name="F:Ict.Petra.Client.MFinance.Gui.GL.TUC_GLTransactions.components">

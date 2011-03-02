@@ -150,6 +150,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 {
                     TLogging.Log("SwitchToStartPage foreach loop returned the following value that was both visible and enabled: " + pair.Key);
                     startPage = pair.Key;
+                    pair.Value.IsFirstPage = true; 
                     CurrentPage = pair.Value;
                     break;
                 }
@@ -225,11 +226,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             string backPage = ""; //temporary string to hold the key of the StartPage
             bool hasPassedCurrentPage = false;     // used to tell if the iteration has already checked to see if you have passed the current page.
-            TPetraShepherdPage temporaryPage = null;
+            TPetraShepherdPage temporaryPage = CurrentPage;
             int counter = 0;
 
             foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
+            	TLogging.Log("Entering foreach loop -- loop #: " + counter); 
+            	if(pair.Value == CurrentPage)
+            	{
+            		backPage = temporaryPage.ID; 
+            	}
+            	temporaryPage = pair.Value; 
+            	counter++; 
+            	/*
                 TLogging.Log("Entering foreach loop -- loop #: " + counter);
 
                 if (pair.Key == CurrentPage.ID)
@@ -247,11 +256,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
                     temporaryPage = pair.Value;
                     TLogging.Log("HandleActionBack() set the temporaryPage to the following: " + temporaryPage.Title);
                 }
+                
+                if(temporaryPage.IsFirstPage)
+                {
+                	TLogging.Log("Already on the first page."); 
+                	temporaryPage = pair.Value;
+                	break;
+                }
 
                 counter++;
+                */
             }
-
-            SwitchToPage(backPage);
+			backPage = temporaryPage.ID; 
+           	SwitchToPage(backPage);
         }
 
         ///<summary>Causes to close the Shepherd without saving if the user chooses to do that</summary>
