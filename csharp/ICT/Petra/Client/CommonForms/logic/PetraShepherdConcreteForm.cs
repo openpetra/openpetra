@@ -231,41 +231,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
-            	TLogging.Log("Entering foreach loop -- loop #: " + counter); 
             	if(pair.Value == CurrentPage)
             	{
             		backPage = temporaryPage.ID; 
+            		break; 
+            		TLogging.Log("Set the backpage to the following: " + temporaryPage.ID); 
             	}
             	temporaryPage = pair.Value; 
             	counter++; 
-            	/*
-                TLogging.Log("Entering foreach loop -- loop #: " + counter);
-
-                if (pair.Key == CurrentPage.ID)
-                {
-                    TLogging.Log("Found the equivilance.");
-                    TLogging.Log("HandleActionBack() set the previous page to the following: " + temporaryPage);
-                    CurrentPage = temporaryPage;
-                    break;
-                    TLogging.Log("Set the hasPassedCurrentPage bool to true.");
-                }
-
-                if (pair.Value.Visible && pair.Value.Enabled)
-                {
-                    TLogging.Log("HandleActionBack() foreach loop returned the following value that was both visible and enabled: " + pair.Key);
-                    temporaryPage = pair.Value;
-                    TLogging.Log("HandleActionBack() set the temporaryPage to the following: " + temporaryPage.Title);
-                }
-                
-                if(temporaryPage.IsFirstPage)
-                {
-                	TLogging.Log("Already on the first page."); 
-                	temporaryPage = pair.Value;
-                	break;
-                }
-
-                counter++;
-                */
             }
 			backPage = temporaryPage.ID; 
            	SwitchToPage(backPage);
