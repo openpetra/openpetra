@@ -1,0 +1,1 @@
+nant generateWinform -D:file=MFinance\gui\GL\UC_GLJournals.yaml

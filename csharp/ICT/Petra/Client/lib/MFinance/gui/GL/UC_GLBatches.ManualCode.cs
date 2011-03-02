@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
             dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
             dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
+            txtDetailBatchControlTotal.Enabled = false;
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnCancel.Enabled = batchRowIsSelected;
             btnPostBatch.Enabled = batchRowIsSelected;
 
-            txtDetailBatchControlTotal.Enabled = batchRowIsSelected;
+            
             dtpDetailDateEffective.Enabled = batchRowIsSelected;
             txtDetailBatchDescription.Enabled = batchRowIsSelected;
 
@@ -267,6 +268,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // UpdateChangeableStatus();
             }
         }
+        
+        
+        public void UpdateTotals()
+        {
+        	txtDetailBatchControlTotal.NumberValueDecimal = 
+        		FPreviouslySelectedDetailRow.BatchRunningTotal;
+        }
+
 
         private void PostBatch(System.Object sender, EventArgs e)
         {

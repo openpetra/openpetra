@@ -765,7 +765,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e)
             {
+            	System.Diagnostics.Debug.WriteLine(e.ToString());
 #if DEBUGMODE
+
                 MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
 
                 // todo: use the verification tools from Christian

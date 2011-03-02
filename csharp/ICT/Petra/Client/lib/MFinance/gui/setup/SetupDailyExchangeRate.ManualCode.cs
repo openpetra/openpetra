@@ -45,23 +45,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// CultureRecord for the exchange rate ...
         /// </summary>
-        NumberFormatInfo numberFormatInfo = null;
-        NumberFormatInfo currencyFormatInfo = null;
+        private NumberFormatInfo numberFormatInfo = null;
+        private NumberFormatInfo currencyFormatInfo = null;
 
         /// <summary>
         /// The base currency is used to initialize the "from" combobox
         /// </summary>
-        String baseCurrencyOfLedger;
+        private String baseCurrencyOfLedger;
         
-        String strModalFormReturnValue;
+        private String strModalFormReturnValue;
         
-        String strCurrencyToDefault;
-        DateTime dateTimeDefault;
-        bool blnUseDateTimeDefault = false;
+        private String strCurrencyToDefault;
+        private DateTime dateTimeDefault;
+        private bool blnUseDateTimeDefault = false;
 
-        bool blnSelectedRowChangeable = false;
+        private bool blnSelectedRowChangeable = false;
         
-        bool blnIsInModalMode;
+        private bool blnIsInModalMode;
 
         /// <summary>
         /// The definition of the ledger number is used to define some
@@ -94,16 +94,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 	// This is the default
                     numberFormatInfo =
                         new System.Globalization.CultureInfo(
-                            "en-US", false).NumberFormat;
+                            String.Empty, false).NumberFormat;
                     currencyFormatInfo = 
                         new System.Globalization.CultureInfo(
-                            "en-US", false).NumberFormat;
+                            String.Empty, false).NumberFormat;
                 }
-
-                
-                
-                numberFormatInfo.NumberDecimalDigits = 8;
-                currencyFormatInfo.NumberDecimalDigits = 2;
+                numberFormatInfo.NumberDecimalDigits = 
+                	currencyFormatInfo.NumberDecimalDigits + 4;
 
 
                 this.txtDetailRateOfExchange.Validating +=
@@ -175,6 +172,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             blnIsInModalMode = true;
         }
         
+        /// <summary>
+        /// If the dialog has been used in modal form, this property shall be used to 
+        /// read the "answer".
+        /// </summary>
         public String CurrencyExchangeRate
         {
         	get 
@@ -267,7 +268,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             
             if (FPreviouslySelectedDetailRow == null)
             {
-            	// cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
+            	cmbDetailFromCurrencyCode.SetSelectedString(aDailyExchangeRateRow.FromCurrencyCode);
+            	cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
             }
 
             aDailyExchangeRateRow.DateEffectiveFrom = dateDate;

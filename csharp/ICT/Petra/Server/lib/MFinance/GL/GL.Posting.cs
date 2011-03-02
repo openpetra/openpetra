@@ -905,7 +905,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (isForeignAccount)
                 {
-                    GlmRow.YtdActualForeign += PostingLevelElement.transAmount;
+                	if (GlmRow.IsYtdActualForeignNull())
+                	{
+                		GlmRow.YtdActualForeign = PostingLevelElement.transAmount;
+                	} else {
+                		GlmRow.YtdActualForeign += PostingLevelElement.transAmount;
+                	}
                 }
 
                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
@@ -918,6 +923,8 @@ namespace Ict.Petra.Server.MFinance.GL
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
+                	
+                    System.Diagnostics.Debug.WriteLine("PeriodCount:" +PeriodCount);
                     GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
                                               TempGLMSequence.ToString() + " and " +
                                               AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" + PeriodCount.ToString();
@@ -939,7 +946,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (isForeignAccount)
                     {
-                        GlmPeriodRow.ActualForeign += PostingLevelElement.transAmount;
+                    	if (GlmPeriodRow.IsActualForeignNull()) {
+                    		GlmPeriodRow.ActualForeign = PostingLevelElement.transAmount;
+                    	} else {
+                    		GlmPeriodRow.ActualForeign += PostingLevelElement.transAmount;
+                    	}
                     }
                 }
             }
@@ -1036,7 +1047,13 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (!glmPeriodRow.IsActualForeignNull())
                                     {
-                                        DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+                                    	if (DBPeriodRow.IsActualForeignNull())
+                                    	{
+                                    		DBPeriodRow.ActualForeign = glmPeriodRow.ActualForeign;
+                                    	} else
+                                    	{
+                                    		DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+                                    	}
                                     }
 
                                     AGeneralLedgerMasterPeriodAccess.SubmitChanges(DBPeriodTable, Transaction, out AVerifications);
@@ -1057,8 +1074,12 @@ namespace Ict.Petra.Server.MFinance.GL
             catch (Exception e)
             {
                 AVerifications = new TVerificationResultCollection();
-
-                AVerifications.Add(new TVerificationResult("error during posting", e.Message, TResultSeverity.Resv_Critical));
+                
+                AVerifications.Add(new TVerificationResult("Exception in GL.Posting.cs " + Environment.NewLine
+                                                           + "[" + e.Source +
+                                                           "]" + Environment.NewLine + e.ToString(),
+                                                           "Message: " + e.Message, 
+                                                           TResultSeverity.Resv_Critical));
 
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);

@@ -125,6 +125,7 @@
     <Compile Include="GLEnterDateEffective.Designer.cs">
       <DependentUpon>GLEnterDateEffective.cs</DependentUpon>
     </Compile>
+    <Compile Include="GLRevaluation.cs" />
     <Compile Include="UC_GLAttributes.cs" />
     <Compile Include="UC_GLAttributes.Designer.cs">
       <DependentUpon>UC_GLAttributes.cs</DependentUpon>

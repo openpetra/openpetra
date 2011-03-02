@@ -641,6 +641,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
             FieldList.Add(AAccountTable.GetPostingStatusDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyFlagDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyCodeDBName());
             GLSetupTDS TempDS = new GLSetupTDS();
             AAccountAccess.LoadViaALedger(TempDS, ALedgerNumber, FieldList, AReadTransaction);
 

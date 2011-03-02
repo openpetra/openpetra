@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ucoJournals.FMainDS_ALedgerIsValidNow();
                 
                 ucoJournals.WorkAroundInitialization();
+                ucoTransactions.WorkAroundInitialization();
             }
         }
 
@@ -77,10 +78,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
         {
             this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber);
+            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
         }
 
         /// <summary>
