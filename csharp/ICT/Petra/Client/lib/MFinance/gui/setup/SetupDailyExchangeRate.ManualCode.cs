@@ -145,12 +145,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         /// <param name="dteEffective">Effective date of the actual acounting process</param>
         /// <param name="strCurrencyTo">The actual foreign currency value</param>
-        public void SetDataFilters(DateTime dteEffective, string strCurrencyTo, string strExchangeDefault)
+        /// <param name="strExchangeDefault">Defaut value for the exchange rate</param>
+        public void SetDataFilters(DateTime dteEffective, 
+                                   string strCurrencyTo, 
+                                   string strExchangeDefault)
         {
         	DateTime dateLimit = dteEffective.AddDays(1.0);
         	// Do not use local formats here!
             DateTimeFormatInfo dateTimeFormat =
-            	new System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
+            	new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             string dateString = dateLimit.ToString("d", dateTimeFormat);
         	
         	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
@@ -171,6 +174,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             strModalFormReturnValue = strExchangeDefault;
             blnIsInModalMode = true;
         }
+        
+        public decimal SetDataFilters(DateTime dteStart, 
+                                      DateTime dteEnd, 
+                                      string strCurrencyTo)
+        {
+        	DateTime dateEnd2 = dteEnd.AddDays(1.0);
+        	// Do not use local formats here!
+            DateTimeFormatInfo dateTimeFormat =
+            	new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
+            string strDteStart = dteStart.ToString("d", dateTimeFormat);
+            string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
+//        	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
+//        		"a_from_currency_code_c = '" + baseCurrencyOfLedger + "' and " + 
+//        		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
+//        		"a_date_effective_from_d < '" + dateString + "'";
+        	return 1.0m;
+        }
+        
         
         /// <summary>
         /// If the dialog has been used in modal form, this property shall be used to 

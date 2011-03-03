@@ -1,14 +1,10 @@
-// auto generated with nant generateWinforms from GLRevaluation.yaml
-//
-// DO NOT edit manually, DO NOT edit with the designer
-//
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2010 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,29 +20,28 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
-//
 using System;
 using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
 using System.Windows.Forms;
-using System.Data;
-using Ict.Petra.Shared;
-using System.Resources;
-using System.Collections.Specialized;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Common.Controls;
-using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
+	/// <summary>
+	/// Description of GLRevaluation.
+	/// </summary>
+	public partial class TGLRevaluation : Form
+	{
+		public TGLRevaluation(IntPtr AParentFormHandle) : base()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
 
-  /// auto generated: Revaluation ...
-  public partial class TFrmGLRevaluation: System.Windows.Forms.Form
-  {
-
-  }
+			
+			this.btnCancel.Click += new EventHandler(CancelRevaluation);
+			this.btnRevaluate.Click += new EventHandler(RunRevaluation);
+		}
+		
+	}
 }
