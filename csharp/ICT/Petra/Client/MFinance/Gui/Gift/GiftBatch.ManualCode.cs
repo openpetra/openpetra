@@ -98,6 +98,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Enabled = true;
         }
 
+        /// <summary>
+        /// directly access the batches control
+        /// </summary>
+        public TUC_GiftBatches GetBatchControl()
+        {
+            return ucoBatches;
+        }
+
+        /// <summary>
+        /// directly access the transactions control
+        /// </summary>
+        public TUC_GiftTransactions GetTransactionsControl()
+        {
+            return ucoTransactions;
+        }
+
         /// this window contains 2 tabs
         public enum eGiftTabs
         {
@@ -124,7 +140,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber);
-
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
             }

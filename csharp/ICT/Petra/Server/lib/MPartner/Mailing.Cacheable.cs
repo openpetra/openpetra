@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -173,6 +173,12 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableMailingTablesEnum.MailingList:
+                        {
+                            DataTable TmpTable = PMailingAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableMailingTablesEnum.PostCodeRegionList:
                         {
                             DataTable TmpTable = GetPostCodeRegionListTable(ReadTransaction, TableName);
@@ -274,6 +280,13 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                             break;
                         case TCacheableMailingTablesEnum.MergeFieldList:
                             if (PMergeFieldAccess.SubmitChanges((PMergeFieldTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableMailingTablesEnum.MailingList:
+                            if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

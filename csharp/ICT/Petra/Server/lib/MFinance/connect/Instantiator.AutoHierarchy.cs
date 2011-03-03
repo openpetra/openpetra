@@ -2242,6 +2242,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatches", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatches(requestParams, importString, out AMessages);
         }
+
+        /// generated method from connector
+        public GLSetupTDS LoadPartnerData(long DonorKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadPartnerData", ";LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadPartnerData(DonorKey);
+        }
+
+        /// generated method from connector
+        public Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
+                                                                                 out Int64 fieldNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
+        }
     }
 }
 

@@ -218,6 +218,21 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>todoComment</summary>
+        public System.Object SelectedValueCell
+        {
+            get
+            {
+                return cmbAutoPopulated.cmbCombobox.SelectedValueCell;
+            }
+
+            set
+            {
+                cmbAutoPopulated.cmbCombobox.SelectedValueCell = value;
+            }
+        }
+
+
+        /// <summary>todoComment</summary>
         public int ComboBoxWidth
         {
             get
@@ -351,6 +366,25 @@ namespace Ict.Petra.Client.CommonControls
         public Int32 GetSelectedInt32()
         {
             return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt32();
+        }
+
+        /// <summary>
+        /// Selects an item with the given Int64 value in the first column. Selects first element if the Int64 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt64
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt64(System.Int64 ANr)
+        {
+            this.cmbAutoPopulated.cmbCombobox.SetSelectedInt64(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int64 GetSelectedInt64()
+        {
+            return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt64();
         }
 
         /// <summary>
@@ -692,7 +726,13 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ADisplayDBName"></param>
         /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
         /// <param name="AColumnsToSearch"></param>
-        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
+        /// <param name="AActiveDBName"></param>
+        public void InitialiseUserControl(DataTable ATable,
+            string AValueDBName,
+            string ADisplayDBName,
+            string ADescDBName,
+            string AColumnsToSearch,
+            string AActiveDBName)
         {
             FDataCache_ListTable = ATable;
 
@@ -706,6 +746,12 @@ namespace Ict.Petra.Client.CommonControls
                 DataRow Dr = FDataCache_ListTable.NewRow();
                 Dr[AValueDBName] = FNotSetValue;
                 Dr[ADisplayDBName] = FNotSetDisplay;
+
+                if (AActiveDBName != null)
+                {
+                    Dr[AActiveDBName] = true;
+                }
+
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
 
@@ -731,6 +777,20 @@ namespace Ict.Petra.Client.CommonControls
             cmbAutoPopulated.cmbCombobox.SelectedItem = null;
 
             FUserControlInitialised = true;
+        }
+
+        /// <summary>
+        /// overload activeColumn not given/ needed
+        /// does not depend on table implementations
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <param name="AValueDBName">name of the column in the table that has the name</param>
+        /// <param name="ADisplayDBName"></param>
+        /// <param name="ADescDBName">name of the column in the table that has the description; can be empty</param>
+        /// <param name="AColumnsToSearch"></param>
+        public void InitialiseUserControl(DataTable ATable, string AValueDBName, string ADisplayDBName, string ADescDBName, string AColumnsToSearch)
+        {
+            InitialiseUserControl(ATable, AValueDBName, ADisplayDBName, ADescDBName, AColumnsToSearch, null);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -192,6 +192,11 @@ namespace Ict.Petra.Shared.MPartner
         /// Fields within a Mail Merge Form
         /// </summary>
         MergeFieldList,
+
+        /// <summary>
+        /// Lists mailings that are being tracked.   When entering gifts, the mailing that motivated the gift can be indicated.
+        /// </summary>
+        MailingList,
         /// <summary>
         /// todoComment
         /// </summary>

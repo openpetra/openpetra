@@ -69,6 +69,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
+            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
@@ -252,6 +255,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
+        }
+
+        /// <summary>
+        /// return the method of Payment for the transaction tab
+        /// </summary>
+
+        public String MethodOfPaymentCode {
+            get
+            {
+                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
+        }
+        private void MethodOfPaymentChanged(object sender, EventArgs e)
+        {
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
+        }
+
+        private void CurrencyChanged(object sender, EventArgs e)
+        {
+            String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
+
+            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+        }
+
+        private void HashTotalChanged(object sender, EventArgs e)
+        {
+            Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
+            Form p = ParentForm;
+
+            if (p != null)
+            {
+                TUC_GiftTransactions t = ((TFrmGiftBatch)ParentForm).GetTransactionsControl();
+
+                if (t != null)
+                {
+                    t.UpdateHashTotal(HashTotal);
+                }
+            }
         }
     }
 }

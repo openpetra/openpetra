@@ -23,15 +23,17 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
-using GNU.Gettext;
+using System.Collections;
+using System.Collections.Specialized;
+
+
 using Ict.Common;
-using Ict.Common.Data;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -39,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private Int64 FLastDonor = -1;
 
         /// <summary>
         /// load the gifts into the grid
@@ -54,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            btnDeleteDetail.Enabled = FPetraUtilsObject.DetailProtectedMode;
+            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
@@ -74,15 +77,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
+
             TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
+            TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, ActiveOnly);
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+            TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
+            //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
-//TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
-//TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+
+            //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
+            //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
         }
 
+        bool FinRecipientKeyChanging = false;
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
@@ -90,16 +100,98 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String strMotivationGroup;
             String strMotivationDetail;
 
-            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
-            strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-
-            if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                    APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
+            if (FinRecipientKeyChanging | FPetraUtilsObject.SuppressChangeDetection)
             {
-                if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                return;
+            }
+
+            FinRecipientKeyChanging = true;
+            try
+            {
+                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+                strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
+                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                        APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
                 {
-                    cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                    if (strMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                    {
+                        cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                    }
                 }
+
+                if (!FInKeyMinistryChanging)
+                {
+                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
+                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
+                }
+            }
+            finally
+            {
+                FinRecipientKeyChanging = false;
+            }
+        }
+
+        private void DonorKeyChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+            // At the moment this event is thrown twice
+            // We want to deal only on manual entered changes, not on selections changes
+            if (FPetraUtilsObject.SuppressChangeDetection)
+            {
+                FLastDonor = APartnerKey;
+            }
+            else
+            {
+                if (APartnerKey != FLastDonor)
+                {
+                    GLSetupTDS PartnerDS = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+
+                    if (PartnerDS.PPartner.Rows.Count > 0)
+                    {
+                        PPartnerRow pr = PartnerDS.PPartner[0];
+                        chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
+                    }
+
+                    FLastDonor = APartnerKey;
+
+                    foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+                    {
+                        if (giftDetail.BatchNumber.Equals(FBatchNumber)
+                            && giftDetail.GiftTransactionNumber.Equals(FPreviouslySelectedDetailRow.GiftTransactionNumber))
+                        {
+                            giftDetail.DonorKey = APartnerKey;
+                            giftDetail.DonorName = APartnerShortName;
+                        }
+                    }
+                }
+            }
+        }
+
+        bool FInKeyMinistryChanging = false;
+        private void KeyMinistryChanged(object sender, EventArgs e)
+        {
+            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            FInKeyMinistryChanging = true;
+            try
+            {
+                Object val = cmbMinistry.SelectedValueCell;
+
+                if (val != null)
+                {
+                    Int64 rcp = (Int64)val;
+
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+                }
+            }
+            finally
+            {
+                FInKeyMinistryChanging = false;
             }
         }
 
@@ -129,6 +221,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
                 }
             }
+        }
+
+        private void GiftDetailAmountChanged(object sender, EventArgs e)
+        {
+            UpdateTotals();
+        }
+
+        private void UpdateTotals()
+        {
+            Decimal sum = 0;
+            Decimal sumBatch = 0;
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                txtGiftTotal.Text = "";
+                return;
+            }
+
+            Int32 GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+
+            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            {
+                if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                {
+                    if (gdr.GiftTransactionNumber == GiftNumber)
+                    {
+                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                        {
+                            sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                            sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                        }
+                        else
+                        {
+                            sum += gdr.GiftTransactionAmount;
+                            sumBatch += gdr.GiftTransactionAmount;
+                        }
+                    }
+                    else
+                    {
+                        sumBatch += gdr.GiftTransactionAmount;
+                    }
+                }
+            }
+
+            txtGiftTotal.NumberValueDecimal = sum;
+            txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+            txtGiftTotal.ReadOnly = true;
+            //this is here because at the moment the generator does not generate this
+            txtBatchTotal.NumberValueDecimal = sumBatch;
+            //Now we look at the batch and update the batch data
+            AGiftBatchRow batch = GetBatchRow();
+            batch.BatchTotal = sumBatch;
         }
 
         /// reset the control
@@ -194,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.AGift.Rows.Remove(gift);
 
-// we cannot update primary keys easily, therefore we have to do it later on the server side
+                // we cannot update primary keys easily, therefore we have to do it later on the server side
 #if DISABLED
                 string filterAllDetailsOfBatch = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
@@ -287,6 +431,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
             batchRow.LastGiftNumber++;
             giftRow.LastDetailNumber = 1;
+
+            if (BatchHasMethodOfPayment())
+            {
+                giftRow.MethodOfPaymentCode = GetMethodOfPaymentFromBatch();
+            }
+
             FMainDS.AGift.Rows.Add(giftRow);
 
             GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
@@ -296,6 +446,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             newRow.DetailNumber = 1;
             newRow.DateEntered = giftRow.DateEntered;
             newRow.DonorKey = 0;
+            newRow.CommentOneType = "Both";
+            newRow.CommentTwoType = "Both";
+            newRow.CommentThreeType = "Both";
             FMainDS.AGiftDetail.Rows.Add(newRow);
 
             // TODO: use previous gifts of donor?
@@ -333,6 +486,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // TODO: use previous gifts of donor?
             // newRow.MotivationGroupCode = "GIFT";
             // newRow.MotivationDetailCode = "SUPPORT";
+            newRow.CommentOneType = "Both";
+            newRow.CommentTwoType = "Both";
+            newRow.CommentThreeType = "Both";
+
 
             return newRow;
         }
@@ -345,10 +502,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
 
-            if (GetBatchRow() != null)
+            AGiftBatchRow batchRow = GetBatchRow();
+
+            if (batchRow != null)
             {
-                txtCurrencyCode.Text = GetBatchRow().CurrencyCode;
+                txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
+                txtBatchStatus.Text = batchRow.BatchStatus;
             }
+
+            FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
+            FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
+            FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("Enter a reference code."));
+            FPetraUtilsObject.SetStatusBarText(cmbDetailReceiptLetterCode, Catalog.GetString("Select the receipt letter code"));
         }
 
         private void ShowDetailsManual(AGiftDetailRow ARow)
@@ -356,24 +521,188 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // show cost centre
             MotivationDetailChanged(null, null);
 
-            dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
-            txtDetailDonorKey.Text = String.Format("{0:0000000000}", ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey);
+            if (ARow == null)
+            {
+                return;
+            }
 
-            dtpDateEntered.Enabled = (ARow.DetailNumber == 1);
-            txtDetailDonorKey.Enabled = (ARow.DetailNumber == 1);
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
+            txtField.Text = TFinanceControls.FieldNumber.ToString();
+            dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
+            txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
+
+
+            UpdateControlsProtection(ARow);
+
+            ShowDetailsForGift(ARow);
+
+            UpdateTotals();
+        }
+
+        void ShowDetailsForGift(AGiftDetailRow ARow)
+        {
+            // this is a special case - normally these lines would be produced by the generator
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            if (giftRow.IsMethodOfGivingCodeNull())
+            {
+                cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMethodOfGivingCode.SetSelectedString(giftRow.MethodOfGivingCode);
+            }
+
+            if (giftRow.IsMethodOfPaymentCodeNull())
+            {
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(giftRow.MethodOfPaymentCode);
+            }
+
+            if (giftRow.IsReferenceNull())
+            {
+                txtDetailReference.Text = String.Empty;
+            }
+            else
+            {
+                txtDetailReference.Text = giftRow.Reference;
+            }
+
+            if (giftRow.IsReceiptLetterCodeNull())
+            {
+                cmbDetailReceiptLetterCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailReceiptLetterCode.SetSelectedString(giftRow.ReceiptLetterCode);
+            }
+        }
+
+        /// <summary>
+        /// set the currency symbols for the currency field from outside
+        /// </summary>
+        public void UpdateCurrencySymbols(String ACurrencyCode)
+        {
+            txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
+            txtGiftTotal.CurrencySymbol = ACurrencyCode;
+            txtBatchTotal.CurrencySymbol = ACurrencyCode;
+            txtHashTotal.CurrencySymbol = ACurrencyCode;
+        }
+
+        /// <summary>
+        /// set the Hash Total symbols for the currency field from outside
+        /// </summary>
+        public void UpdateHashTotal(Decimal AHashTotal)
+        {
+            txtHashTotal.NumberValueDecimal = AHashTotal;
+        }
+
+        /// <summary>
+        /// update the Batch Status from outside
+        /// </summary>
+        public void UpdateBatchStatus(String ABatchStatus)
+        {
+            txtBatchStatus.Text = ABatchStatus;
+        }
+
+        /// <summary>
+        /// set the correct protection from outside
+        /// </summary>
+        public void UpdateControlsProtection()
+        {
+            UpdateControlsProtection(FPreviouslySelectedDetailRow);
+        }
+
+        private void UpdateControlsProtection(AGiftDetailRow ARow)
+        {
+            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
+
+            dtpDateEntered.Enabled = firstIsEnabled;
+            txtDetailDonorKey.Enabled = firstIsEnabled;
+            cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
+
+            cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
+            txtDetailReference.Enabled = firstIsEnabled;
+            cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
+        }
+
+        private Boolean BatchHasMethodOfPayment()
+        {
+            String batchMop =
+                GetMethodOfPaymentFromBatch();
+
+            return batchMop != null && batchMop.Length > 0;
+        }
+
+        private String GetMethodOfPaymentFromBatch()
+        {
+            return ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
         }
 
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
 
+            if (ARow.DetailNumber != 1)
+            {
+                return;
+            }
+
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             giftRow.DateEntered = dtpDateEntered.Date.Value;
+//
+//            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+//            {
+//                if (giftDetail.BatchNumber.Equals(FBatchNumber)
+//                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
+//                {
+//                    giftDetail.DateEntered = giftRow.DateEntered;
+//                    giftDetail.DonorKey = giftRow.DonorKey;
+//                    // this does not work
+//                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
+//                }
+//            }
 
-            ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered = giftRow.DateEntered;
-            ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey = giftRow.DonorKey;
-            ((GiftBatchTDSAGiftDetailRow)ARow).DonorName = txtDetailDonorKey.LabelText;
+            //  join by hand
+            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+            {
+                giftRow.SetMethodOfGivingCodeNull();
+            }
+            else
+            {
+                giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+            }
+
+            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+            {
+                giftRow.SetMethodOfPaymentCodeNull();
+            }
+            else
+            {
+                giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
+
+            if (txtDetailReference.Text.Length == 0)
+            {
+                giftRow.SetReferenceNull();
+            }
+            else
+            {
+                giftRow.Reference = txtDetailReference.Text;
+            }
+
+            if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
+            {
+                giftRow.SetReceiptLetterCodeNull();
+            }
+            else
+            {
+                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+            }
         }
     }
 }

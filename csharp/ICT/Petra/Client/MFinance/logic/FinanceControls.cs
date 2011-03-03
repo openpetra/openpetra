@@ -22,20 +22,22 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.Collections.Specialized;
-using GNU.Gettext;
+using System.Data;
+
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Controls;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Client.CommonControls;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Logic
 {
@@ -373,6 +375,88 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// fill combobox values with method of giving list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMethodOfGivingCodeList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfGivingList);
+
+            AControl.InitialiseUserControl(Table,
+                AMethodOfGivingTable.GetMethodOfGivingCodeDBName(),
+                AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = AMethodOfGivingTable.GetActiveDBName() + " = true";
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
+        /// fill combobox values with method of payment list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialiseMethodOfPaymentCodeList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList);
+
+            AControl.InitialiseUserControl(Table,
+                AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                null,
+                AMethodOfPaymentTable.GetActiveDBName()
+                );
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = AMethodOfPaymentTable.GetActiveDBName() + " = true";
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
+        /// fill combobox values with the mailing codes
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="AActiveOnly"></param>
+        public static void InitialisePMailingList(ref TCmbAutoPopulated AControl,
+            bool AActiveOnly)
+        {
+            DataTable Table = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList);
+
+            AControl.InitialiseUserControl(Table,
+                PMailingTable.GetMailingCodeDBName(),
+                PMailingTable.GetMailingDescriptionDBName(),
+                null);
+            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+
+            if (AActiveOnly)
+            {
+                AControl.Filter = PMailingTable.GetViewableDBName() + " = true";
+                //TODO Add viewable until and date comparison
+            }
+            else
+            {
+                AControl.Filter = "";
+            }
+        }
+
+        /// <summary>
         /// This function fills the available account hierarchies of a given ledger into a combobox
         /// </summary>
         /// <param name="AControl"></param>
@@ -388,6 +472,66 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AppearanceSetup(new int[] { 150 }, -1);
 
             AControl.Filter = AAccountHierarchyTable.GetLedgerNumberDBName() + " = " + ALedgerNr.ToString();
+        }
+
+        static PUnitTable FKeyMinTable = null;
+        static Int64 fieldNumber = -1;
+
+        public static long FieldNumber {
+            get
+            {
+                return fieldNumber;
+            }
+        }
+
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void GetRecipientData(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        {
+            if (FKeyMinTable != null)
+            {
+                if (FindAndSelect(ref AControl, APartnerKey))
+                {
+                    return;
+                }
+            }
+
+            string DisplayMember = PUnitTable.GetUnitNameDBName();
+            string ValueMember = PUnitTable.GetPartnerKeyDBName();
+            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
+
+            FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
+
+            AControl.InitialiseUserControl(FKeyMinTable,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+            AControl.AppearanceSetup(new int[] { 250 }, -1);
+
+            if (!FindAndSelect(ref AControl, APartnerKey))
+            {
+                //Clear the combobox
+                AControl.SelectedValueCell = null;
+            }
+        }
+
+        static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        {
+            foreach (PUnitRow pr in FKeyMinTable.Rows)
+            {
+                if (pr.PartnerKey == APartnerKey)
+                {
+                    AControl.SelectedValueCell = APartnerKey;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

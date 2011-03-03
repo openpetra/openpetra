@@ -14,13 +14,20 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Width: 1000
+            Height: 700
             Dock: Fill
         pnlInfo:
             Controls:
-                Row0: [txtLedgerNumber, txtBatchNumber]
+                Row0: [txtLedgerNumber, Empty0, txtBatchTotal]
+                Row1: [txtBatchNumber, txtBatchStatus, txtHashTotal]
             Dock: Top
+        Empty0:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
+        txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true}
+        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
+        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -34,34 +41,76 @@ RootNode:
             TableName: AGiftDetail
             Dock: Fill
             #TODO: support split gifts, and deal with gift details properly
-            Columns: [GiftTransactionNumber, DetailNumber, DateEntered, DonorKey, DonorName, GiftTransactionAmount, RecipientDescription, MotivationGroupCode, MotivationDetailCode]
+            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
             CustomColumns:
+                Confidential: {Label=C, Type=Boolean}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
+                DonorClass: {Label=Class, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
+                RecipientField: {Label=Field, type=Int64}
+                GiftAmount: {Label=Gift Amount (Base), Type=Decimal}
+                MethodOfGivingCode: {Label=Method of Giving, Type=String}
+                MethodOfPaymentCode: {Label=Method of Payment, Type=String}
+                ReceiptNumber: {Label=Receipt, Type=Int32}
+                ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
         pnlDetails:
             Dock: Bottom
-            # TODO: many more details: confidential, comment, key ministry, etc
             # TODO: split gifts
             Controls: 
                 Row0: [txtDetailDonorKey]
-                Row0a: [dtpDateEntered]
-                Row1: [txtDetailGiftTransactionAmount, txtCurrencyCode]
-                Row2: [txtDetailRecipientKey]
-                Row3: [cmbDetailMotivationGroupCode]
-                Row4: [cmbDetailMotivationDetailCode]
-                Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row1: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
+                Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
+                Row3: [dtpDateEntered,txtGiftTotal]
+                Row4: [txtDetailGiftTransactionAmount, chkDetailConfidentialGiftFlag]
+                Row5: [txtDetailRecipientKey]
+                Row6: [txtField,chkDetailChargeFlag]
+                Row7: [cmbMinistry]
+                Row8: [cmbDetailMailingCode, chkDetailTaxDeductable]
+                Row9: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row10: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row11: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
+                Row12: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
+                Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
-        dtpDateEntered: {Help: This date is used for receipt printing, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true}
+        dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true, OnChange=DonorKeyChanged}
+        txtDetailReference: {Label=Reference}
+        cmbDetailReceiptLetterCode:
+            Label: Letter Code
+            OptionalValues: [NO*RECET]
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=3, OnChange=RecipientKeyChanged}
+        cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
+        cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
+        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
-        txtDetailGiftTransactionAmount: {Label=Amount}
-        txtCurrencyCode: {NoLabel=true, ReadOnly=true, Unbound=true}
+        chkDetailChargeFlag: {Label=Admin Grants?}
+        cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
+        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, OnChange=GiftDetailAmountChanged}
+        chkDetailConfidentialGiftFlag: {Label=Confidential?}
+        chkDetailTaxDeductable: {Label=Tax deductable?}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=250}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=250}
+        cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
+        cmbDetailCommentOneType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        cmbDetailCommentTwoType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office] 
+        cmbDetailCommentThreeType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]   
+
+   
+                   
+        

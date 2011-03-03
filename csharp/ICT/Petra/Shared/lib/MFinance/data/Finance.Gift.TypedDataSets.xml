@@ -9,10 +9,16 @@
         <Table sqltable="a_gift"/>
         <Table sqltable="a_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorName" type="string"/>
+            <CustomField name="DonorName" type="String"/>
+            <CustomField name="DonorClass" type="String"/>
             <CustomField name="DateEntered" type="DateTime"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <CustomField name="AccountCode" type="string"/>
+            <CustomField name="RecipientDescription" type="String"/>
+            <CustomField name="RecipientField" type="Int64"/>
+            <CustomField name="ReceiptNumber" type="Int32"/>
+            <CustomField name="ReceiptPrinted" type="Boolean"/>
+            <CustomField name="MethodOfGivingCode" type="String"/>
+            <CustomField name="MethodOfPaymentCode" type="String"/>
+            <CustomField name="AccountCode" type="String"/>
         </Table>
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
