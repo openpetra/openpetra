@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FJournalNumber = -1;
 
 
-        ForeignCurrencyCalculations foreignCurrencyCalculations;
+        ForeignCurrencyCalculationss foreignCurrencyCalculations;
 
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
-                foreignCurrencyCalculations = new ForeignCurrencyCalculations(
+                foreignCurrencyCalculations = new ForeignCurrencyCalculationss(
                     TransactionCurrency, GetJournalRow().DateEffective);
             }
         }

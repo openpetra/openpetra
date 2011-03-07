@@ -28,7 +28,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public class CurrencyCalculationConstants
+    public class CurrencyCalculationConstantss
     {
         static public int NoRounding = 0;
         static public int CurrencyRounding = 1;
@@ -38,7 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// <summary>
     /// Here all ForeigenCurrency calulation shall be done.
     /// </summary>
-    public class ForeignCurrencyCalculations
+    public class ForeignCurrencyCalculationss
     {
         private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
 
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// a_currency_code_c in the table a_currency</param>
         /// <param name="date">The date is a valid entry in the table
         /// a_daily_exchange_rate</param>
-        public ForeignCurrencyCalculations(String currencyCode, DateTime date)
+        public ForeignCurrencyCalculationss(String currencyCode, DateTime date)
         {
 //			System.Diagnostics.Debug.WriteLine("currencyCode: " + currencyCode);
 //			System.Diagnostics.Debug.WriteLine("date: " + date.ToString());
@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// This constructor may be used for the cases if the "foreign currency"
         /// is the base curency.
         /// </summary>
-        public ForeignCurrencyCalculations()
+        public ForeignCurrencyCalculationss()
         {
             exchangeRate = 1.0m;
         }
@@ -86,11 +86,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         public Decimal ToForeign(int roundingTpye)
         {
-            if (roundingTpye == CurrencyCalculationConstants.SummationRounding)
+            if (roundingTpye == CurrencyCalculationConstantss.SummationRounding)
             {
                 return Math.Round(foreignCurrency, 6);
             }
-            else if (roundingTpye == CurrencyCalculationConstants.CurrencyRounding)
+            else if (roundingTpye == CurrencyCalculationConstantss.CurrencyRounding)
             {
                 return Math.Round(foreignCurrency, 2);
             }
@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public Decimal RevertToBaseCurrency()
         {
             return Math.Round(
-                ToForeign(CurrencyCalculationConstants.CurrencyRounding) * exchangeRate, 2);
+                ToForeign(CurrencyCalculationConstantss.CurrencyRounding) * exchangeRate, 2);
         }
 
         public decimal GetExchangeRate()

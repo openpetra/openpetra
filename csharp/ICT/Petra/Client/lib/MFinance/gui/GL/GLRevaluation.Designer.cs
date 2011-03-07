@@ -23,6 +23,7 @@
 
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -56,6 +57,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 		/// </summary>
 		private void InitializeComponent()
 		{
+            System.ComponentModel.ComponentResourceManager 
+            	resources = new System.ComponentModel.ComponentResourceManager(
+            		typeof(TFrmGLBatch));
+			
 			
 			this.lblName = new System.Windows.Forms.Label();
 			
@@ -66,6 +71,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.lblDateStartValue = new System.Windows.Forms.Label();
 			this.lblDateEnd = new System.Windows.Forms.Label();
 			this.lblDateEndValue = new System.Windows.Forms.Label();
+
+			this.lblRevCur = new System.Windows.Forms.Label();
+			this.lblRevCurValue = new System.Windows.Forms.Label();
+			
+			grdDetails = new SourceGrid.DataGrid();
 			
             this.cmbCostCenter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
 			this.btnRevaluate = new System.Windows.Forms.Button();
@@ -73,11 +83,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.SuspendLayout();
 
 			int leftColStart = 32;
-			int leftColWidth = 140;
+			int leftColWidth = 240;
 			int colSpace = 15;
 			int rowY = 5;
 			int rowHeight = 25;
-			int rightColWidth = 250;
+			int rightColWidth = 350;
+			
+			int buttonTop = 210;
+			int buttonLeft = 140;
 			
 			// 
 			// lblAccountText
@@ -134,12 +147,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.lblDateEndValue.Size = new System.Drawing.Size(rightColWidth, 21);
 			lblDateEndValue.TextAlign = ContentAlignment.MiddleLeft;
 			
-			
-			
-			
-			
-			
-			
 			rowY = rowY + rowHeight;
 			
 			// 
@@ -158,14 +165,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.cmbCostCenter.Location = new System.Drawing.Point(
 				leftColStart+leftColWidth+colSpace,rowY);
 			this.cmbCostCenter.Name = "cmbCostCenter";
-			this.cmbCostCenter.Size = new System.Drawing.Size(182, 21);
+			this.cmbCostCenter.Size = new System.Drawing.Size(rightColWidth, 21);
 			this.cmbCostCenter.TabIndex = 1;
             this.cmbCostCenter.ListTable = 
             	TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+
+            
+			rowY = rowY + rowHeight;
+
 			// 
+			// lblRevCur
+			// 
+			this.lblRevCur.Location = new System.Drawing.Point(leftColStart, rowY);
+			this.lblRevCur.Name = "lblRevCur";
+			this.lblRevCur.Size = new System.Drawing.Size(leftColWidth, 21);
+			lblRevCur.TextAlign = ContentAlignment.MiddleRight; 
+
+			// 
+			// lblRevCurValue
+			// 
+			this.lblRevCurValue.Location = new System.Drawing.Point(
+				leftColStart+leftColWidth+colSpace,rowY);
+			this.lblRevCurValue.Name = "lblRevCurValue";
+			this.lblRevCurValue.Size = new System.Drawing.Size(rightColWidth, 21);
+			lblRevCurValue.TextAlign = ContentAlignment.MiddleLeft;
+			
+			
+			
+			
+			rowY = rowY + rowHeight;
+
+			this.grdDetails.Location = new System.Drawing.Point(leftColStart,rowY);
+			this.grdDetails.Size = new System.Drawing.Size(550,200);
+			grdDetails.BorderStyle = BorderStyle.FixedSingle;
+			//grdDetails.FixedRows = 3;
+			//grdDetails.a
+			
+			rowY = rowY + 230;
+	        
+            // 
 			// btnRevaluate
 			// 
-			this.btnRevaluate.Location = new System.Drawing.Point(26, 186);
+			this.btnRevaluate.Location = new System.Drawing.Point(buttonLeft, rowY);
 			this.btnRevaluate.Name = "btnRevaluate";
 			this.btnRevaluate.Size = new System.Drawing.Size(144, 23);
 			this.btnRevaluate.TabIndex = 2;
@@ -174,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			// 
 			// btnCancel
 			// 
-			this.btnCancel.Location = new System.Drawing.Point(233, 186);
+			this.btnCancel.Location = new System.Drawing.Point(200 + buttonLeft, rowY);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(137, 23);
 			this.btnCancel.TabIndex = 3;
@@ -188,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.Font = new System.Drawing.Font("Verdana", 8.25f);
             
 			
-			this.ClientSize = new System.Drawing.Size(415, 252);
+			this.ClientSize = new System.Drawing.Size(600, rowY+50);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnRevaluate);
 			this.Controls.Add(this.cmbCostCenter);
@@ -199,6 +240,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			this.Controls.Add(this.lblDateStartValue);
 			this.Controls.Add(this.lblDateEnd);
 			this.Controls.Add(this.lblDateEndValue);
+			this.Controls.Add(this.lblRevCur);
+			this.Controls.Add(this.lblRevCurValue);
+			this.Controls.Add(this.grdDetails);
+
+			this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
 			this.Name = "GLRevaluation";
 			this.Text = "Revaluation ...";
@@ -214,5 +260,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 		private System.Windows.Forms.Label lblDateStartValue;
 		private System.Windows.Forms.Label lblDateEnd;
 		private System.Windows.Forms.Label lblDateEndValue;
+		private System.Windows.Forms.Label lblRevCur;
+		private System.Windows.Forms.Label lblRevCurValue;
+		
+		private SourceGrid.DataGrid grdDetails;
 	}
 }

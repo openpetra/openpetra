@@ -161,23 +161,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
         		"a_date_effective_from_d < '" + dateString + "'";
 
+            strModalFormReturnValue = strExchangeDefault;
         	strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEffective;
-            blnUseDateTimeDefault = true;
-
-            btnClose.Visible = true;
-            btnCancel.Visible = true;
-            btnUseDateToFilter.Visible = false;
-            mniImport.Enabled = false;
-            tbbImport.Enabled = false;
-            
-            strModalFormReturnValue = strExchangeDefault;
-            blnIsInModalMode = true;
+        	DefineModalSettings();
         }
         
-        public decimal SetDataFilters(DateTime dteStart, 
+        public void SetDataFilters(DateTime dteStart, 
                                       DateTime dteEnd, 
-                                      string strCurrencyTo)
+                                      string strCurrencyTo, 
+                                      decimal decExchangeDefault)
         {
         	DateTime dateEnd2 = dteEnd.AddDays(1.0);
         	// Do not use local formats here!
@@ -185,13 +178,63 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             	new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             string strDteStart = dteStart.ToString("d", dateTimeFormat);
             string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
-//        	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
-//        		"a_from_currency_code_c = '" + baseCurrencyOfLedger + "' and " + 
-//        		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
-//        		"a_date_effective_from_d < '" + dateString + "'";
-        	return 1.0m;
+        	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
+        		"a_from_currency_code_c = '" + baseCurrencyOfLedger + "' and " + 
+        		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
+        		"a_date_effective_from_d < '" + strDteEnd + "' and " +
+        		"a_date_effective_from_d > '" + strDteStart+ "'";
+        	strModalFormReturnValue = decExchangeDefault.ToString("0.00000000");
+        	dateTimeDefault = dteEnd;
+        	strCurrencyToDefault = strCurrencyTo;
+        	DefineModalSettings();
         }
         
+        public decimal GetLastExchangeValueOfIntervall(DateTime dteStart, 
+                                                       DateTime dteEnd,
+                                                       string strCurrencyTo)
+        {
+        	DateTime dateEnd2 = dteEnd.AddDays(1.0);
+        	// Do not use local formats here!
+            DateTimeFormatInfo dateTimeFormat =
+            	new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
+            string strDteStart = dteStart.ToString("d", dateTimeFormat);
+            string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
+            
+        	FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
+        		"a_from_currency_code_c = '" + baseCurrencyOfLedger + "' and " + 
+        		"a_to_currency_code_c = '" + strCurrencyTo + "' and " +
+        		"a_date_effective_from_d < '" + strDteEnd + "' and " +
+        		"a_date_effective_from_d > '" + strDteStart+ "'";
+
+        	if (grdDetails.Rows.Count != 0)
+        	{
+        		try {
+        			// Code tut nicht!
+        			SelectDetailRowByDataTableIndex(1);
+        			ADailyExchangeRateRow dailyExchangeRateRow =
+        				(ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.DefaultView[0].Row;
+        			return dailyExchangeRateRow.RateOfExchange;
+        		} catch (Exception ex)
+        		{
+        			return 1.0m;
+        		}
+        	} else
+        	{
+        		return 1.0m;
+        	}
+        }
+        
+        private void DefineModalSettings()
+        {
+            blnUseDateTimeDefault = true;
+            btnClose.Visible = true;
+            btnCancel.Visible = true;
+            btnUseDateToFilter.Visible = false;
+            mniImport.Enabled = false;
+            tbbImport.Enabled = false;
+            
+            blnIsInModalMode = true;
+        }
         
         /// <summary>
         /// If the dialog has been used in modal form, this property shall be used to 

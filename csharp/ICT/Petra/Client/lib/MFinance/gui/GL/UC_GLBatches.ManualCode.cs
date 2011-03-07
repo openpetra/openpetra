@@ -56,7 +56,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-            ((TFrmGLBatch)ParentForm).GetAttributesControl().LedgerNumber = ALedgerNumber;
 
             rbtEditing.Checked = true;
 
