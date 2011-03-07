@@ -20,17 +20,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
-//this is a test
 using System;
 using System.Windows.Forms;
 using System.Collections;
 using System.Xml;
-using System.Collections.Generic; //another small change
-
+using System.Reflection;
+using System.Collections.Generic;
 using Ict.Common;
-/// <summary>
-/// this is a temporary change..
-/// </summary>
+using Ict.Common.IO;
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     ///<summary>Logic class for the internal behaviour of a Shepherd</summary>
@@ -87,6 +84,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             // Take AYamlFile and parse it into an XmlNode structure
 
+            ParseYAMLFileElements(AYamlFile); 
 
             FShepherdPages = new TPetraShepherdPagesList(AYamlFile);
 
@@ -102,6 +100,27 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             TLogging.Log(
                 "TPetraShepherdFormLogic Constructor ran and returned to the TPetraShepherdFormLogic constructor in PetraShepherdConcreteForm.");
+        }
+        
+        /// <summary>
+        /// Returns an XML node that defines a number of the properties of each Shepherd. Including size and title.
+        /// </summary>
+        /// <param name="AID"></param>
+        /// <returns></returns>
+        private XmlNode ParseYAMLFileElements(string AYamlFile)
+        {
+        	TLogging.Log("ParseYAMLFileElements method starting."); 
+        	TYml2Xml parser = new TYml2Xml(AYamlFile);
+            XmlDocument XmlPages = parser.ParseYML2XML();
+
+            TLogging.Log("ParseYAMLFileElements currently has this many attributes: " + XmlPages.LastChild.LastChild.Attributes.Count);
+
+            XmlNode FileElementData = XmlPages.DocumentElement;
+		
+            FileElementData = XmlPages.LastChild.LastChild; 
+            
+            TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Test"].Value); 
+            return FileElementData;
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>

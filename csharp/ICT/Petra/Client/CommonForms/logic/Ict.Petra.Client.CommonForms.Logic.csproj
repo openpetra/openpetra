@@ -94,6 +94,8 @@
     <Compile Include="PetraShepherdNavigationHelper.cs" />
     <Compile Include="PetraShepherdPage.cs" />
     <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
+    <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
+    <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../app/Core/Ict.Petra.Client.App.Core.csproj">

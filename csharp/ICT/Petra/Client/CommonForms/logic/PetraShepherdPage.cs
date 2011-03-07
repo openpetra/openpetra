@@ -401,10 +401,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	base.ID = "FINISHPAGE_MASTER"; 
         	base.Enabled = true;
         	base.Visible = true; 
-            base.FIsLastPage = true;/*
-            base.UserControlClassName = "Class name"; 
-            base.UserControlNamespace = "Namespace";
-            base.Title = "Here is a summary of the information you have provided:"; */
+            base.FIsLastPage = true;
+            //base.UserControlClassName = "Class name"; 
+            //UserControlNamespace = "TUC_PetraShepherdFinishPage";
+            //base.Title = "Here is a summary of the information you have provided:"; */
             base.HelpContext = "Choose \'Finish\' to commit the data."; 
         }
     }
