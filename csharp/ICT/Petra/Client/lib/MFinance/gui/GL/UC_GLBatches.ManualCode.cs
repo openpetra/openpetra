@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnCancel.Enabled = batchRowIsSelected;
             btnPostBatch.Enabled = batchRowIsSelected;
 
-            
+
             dtpDetailDateEffective.Enabled = batchRowIsSelected;
             txtDetailBatchDescription.Enabled = batchRowIsSelected;
 
@@ -267,14 +267,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // UpdateChangeableStatus();
             }
         }
-        
-        
+
         public void UpdateTotals()
         {
-        	txtDetailBatchControlTotal.NumberValueDecimal = 
-        		FPreviouslySelectedDetailRow.BatchRunningTotal;
+            txtDetailBatchControlTotal.NumberValueDecimal =
+                FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
-
 
         private void PostBatch(System.Object sender, EventArgs e)
         {

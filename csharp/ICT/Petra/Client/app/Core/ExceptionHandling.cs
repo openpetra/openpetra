@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.App.Core
 
             if (!(AEventArgs.Exception is NotImplementedException))
             {
-            	System.Diagnostics.Debug.Write(AEventArgs.Exception.ToString());
+                System.Diagnostics.Debug.Write(AEventArgs.Exception.ToString());
                 // for the moment, until the proper window works:
                 MessageBox.Show(
                     "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());

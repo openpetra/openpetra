@@ -26,22 +26,21 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-	/// <summary>
-	/// Description of GLRevaluation.
-	/// </summary>
-	public partial class TGLRevaluation : Form
-	{
-		public TGLRevaluation(IntPtr AParentFormHandle) : base()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
+    /// <summary>
+    /// Description of GLRevaluation.
+    /// </summary>
+    public partial class TGLRevaluation : Form
+    {
+        public TGLRevaluation(IntPtr AParentFormHandle) : base()
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
 
-			
-			this.btnCancel.Click += new EventHandler(CancelRevaluation);
-			this.btnRevaluate.Click += new EventHandler(RunRevaluation);
-		}
-		
-	}
+
+            this.btnCancel.Click += new EventHandler(CancelRevaluation);
+            this.btnRevaluate.Click += new EventHandler(RunRevaluation);
+        }
+    }
 }

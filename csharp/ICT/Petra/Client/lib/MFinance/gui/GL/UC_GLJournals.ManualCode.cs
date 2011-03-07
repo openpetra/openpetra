@@ -42,9 +42,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
-        
+
         private string strCurrencySymbol;
-        
+
         private const string DEFAULT_CURRENCY_EXCHANGE = "1.00";
 
 
@@ -79,43 +79,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
             UpdateChangeableStatus();
-            
+
             txtDetailExchangeRateToBase.Enabled = false;
-            
-            
-        }
-        
-        private void ResetExchangeCurrenyRate(object sender, EventArgs e)
-        {
-        	if (!FPetraUtilsObject.SuppressChangeDetection)
-        	{
-        		txtDetailExchangeRateToBase.Text = DEFAULT_CURRENCY_EXCHANGE;
-        		txtDetailExchangeRateToBase.BackColor = Color.LightPink;
-        	}
         }
 
+        private void ResetExchangeCurrenyRate(object sender, EventArgs e)
+        {
+            if (!FPetraUtilsObject.SuppressChangeDetection)
+            {
+                txtDetailExchangeRateToBase.Text = DEFAULT_CURRENCY_EXCHANGE;
+                txtDetailExchangeRateToBase.BackColor = Color.LightPink;
+            }
+        }
 
         public void WorkAroundInitialization()
         {
-        	btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
+            btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
             cmbDetailTransactionCurrency.SelectedValueChanged +=
-                    new System.EventHandler(ResetExchangeCurrenyRate);
+                new System.EventHandler(ResetExchangeCurrenyRate);
         }
-        
+
         private void SetExchangeRateValue(Object sender, EventArgs e)
         {
-        	TFrmSetupDailyExchangeRate setupDailyExchangeRate = 
-        		new TFrmSetupDailyExchangeRate(this.Handle);
-        	setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
-        	setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value, 
-        	                                      cmbDetailTransactionCurrency.GetSelectedString(),
-        	                                      txtDetailExchangeRateToBase.Text);
-        	setupDailyExchangeRate.ShowDialog(this);
-        	txtDetailExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate;
-        	if (!txtDetailExchangeRateToBase.Text.Equals(DEFAULT_CURRENCY_EXCHANGE))
-        	{
-        		txtDetailExchangeRateToBase.BackColor = Color.Empty;
-        	}
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(this.Handle);
+
+            setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
+            setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value,
+                cmbDetailTransactionCurrency.GetSelectedString(),
+                txtDetailExchangeRateToBase.Text);
+            setupDailyExchangeRate.ShowDialog(this);
+            txtDetailExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate;
+
+            if (!txtDetailExchangeRateToBase.Text.Equals(DEFAULT_CURRENCY_EXCHANGE))
+            {
+                txtDetailExchangeRateToBase.BackColor = Color.Empty;
+            }
         }
 
         /// <summary>
@@ -129,13 +128,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow != null)
             {
-            	txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
-            	txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
-            	txtControl.NumberValueDecimal =
-            		FPreviouslySelectedDetailRow.JournalDebitTotal -
-            		FPreviouslySelectedDetailRow.JournalCreditTotal;
+                txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
+                txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
+                txtControl.NumberValueDecimal =
+                    FPreviouslySelectedDetailRow.JournalDebitTotal -
+                    FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
-            
         }
 
         /// <summary>
@@ -144,20 +142,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="batch"></param>
         public void UpdateTotals(ABatchRow batch)
         {
-        	decimal sumDebits = 0.0M;
-        	decimal sumCredits = 0.0M;
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
 
-        	foreach (DataRowView v in FMainDS.AJournal.DefaultView)
-        	{
-        		AJournalRow r = (AJournalRow)v.Row;
-                
-        		sumCredits += r.JournalCreditTotal ; 
-        		sumDebits += r.JournalDebitTotal;
-        	}
-        	
-        	batch.BatchCreditTotal = sumCredits;
-        	batch.BatchDebitTotal = sumDebits;
-        	batch.BatchRunningTotal = Math.Round(sumDebits - sumCredits,2);
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+
+                sumCredits += r.JournalCreditTotal;
+                sumDebits += r.JournalDebitTotal;
+            }
+
+            batch.BatchCreditTotal = sumCredits;
+            batch.BatchDebitTotal = sumDebits;
+            batch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
 
             txtCurrentPeriod.Text = batch.BatchPeriod.ToString();
             txtDebit.NumberValueDecimal = batch.BatchDebitTotal;
@@ -192,10 +190,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARow.BatchNumber,
                     ARow.JournalNumber,
                     ARow.TransactionCurrency);
-            	bool help = ARow.JournalStatus.Equals(
-            		MFinanceConstants.BATCH_HAS_TRANSACTIONS);
-            	cmbDetailTransactionTypeCode.Enabled = !help;
-            	cmbDetailTransactionCurrency.Enabled = !help; 
+                bool help = ARow.JournalStatus.Equals(
+                    MFinanceConstants.BATCH_HAS_TRANSACTIONS);
+                cmbDetailTransactionTypeCode.Enabled = !help;
+                cmbDetailTransactionCurrency.Enabled = !help;
             }
         }
 
@@ -228,10 +226,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.TransactionTypeCode = "STD";
 
             ALedgerRow ledger =
-                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-            ANewRow.TransactionCurrency = ledger.BaseCurrency; 
-            
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            ANewRow.TransactionCurrency = ledger.BaseCurrency;
+
             ANewRow.ExchangeRateToBase = 1;
             ANewRow.DateEffective = row.DateEffective;
             ANewRow.JournalPeriod = row.BatchPeriod;

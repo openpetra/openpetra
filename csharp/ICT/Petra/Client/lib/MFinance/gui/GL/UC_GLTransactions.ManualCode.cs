@@ -34,7 +34,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
 
 
-
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLTransactions
@@ -98,8 +97,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
-            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, 
-                                                   true, false, ActiveOnly, false, AForeignCurrencyName);
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                true, false, ActiveOnly, false, AForeignCurrencyName);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
             ShowData();
@@ -272,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal sumCredits = 0.0M;
             decimal sumDebitsBase = 0.0M;
             decimal sumCreditsBase = 0.0M;
-                       
+
             foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
             {
                 ATransactionRow r = (ATransactionRow)v.Row;
@@ -280,25 +279,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (r.DebitCreditIndicator)
                 {
                     sumDebits += r.TransactionAmount;
-                    sumDebitsBase += r.AmountInBaseCurrency; 
+                    sumDebitsBase += r.AmountInBaseCurrency;
                 }
                 else
                 {
                     sumCredits += r.TransactionAmount;
-                    sumCreditsBase += r.AmountInBaseCurrency; 
+                    sumCreditsBase += r.AmountInBaseCurrency;
                 }
             }
-            
-            if (FMainDS.ATransaction.Rows.Count == 0) 
+
+            if (FMainDS.ATransaction.Rows.Count == 0)
             {
-            	journal.JournalStatus = MFinanceConstants.BATCH_UNPOSTED;
-            } else
+                journal.JournalStatus = MFinanceConstants.BATCH_UNPOSTED;
+            }
+            else
             {
-            	journal.JournalStatus = MFinanceConstants.BATCH_HAS_TRANSACTIONS;
+                journal.JournalStatus = MFinanceConstants.BATCH_HAS_TRANSACTIONS;
             }
 
             txtCreditTotalAmount.NumberValueDecimal = sumCredits;
-            txtDebitTotalAmount.NumberValueDecimal = sumDebits; 
+            txtDebitTotalAmount.NumberValueDecimal = sumDebits;
             txtCreditTotalAmountBase.NumberValueDecimal = sumCreditsBase;
             txtDebitTotalAmountBase.NumberValueDecimal = sumDebitsBase;
 
@@ -309,24 +309,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
         }
 
-        
         public void WorkAroundInitialization()
         {
-        	txtCreditAmount.Validated += new EventHandler(ControlHasChanged);  
-        	txtDebitAmount.Validated += new EventHandler(ControlHasChanged); 
-        	cmbDetailCostCentreCode.Validated += new EventHandler(ControlHasChanged); 
-        	cmbDetailAccountCode.Validated += new EventHandler(ControlHasChanged);  
-        	cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlHasChanged); 
-        	txtDetailNarrative.Validated += new EventHandler(ControlHasChanged); 
-        	txtDetailReference.Validated += new EventHandler(ControlHasChanged);  
-        	dtpDetailTransactionDate.Validated += new EventHandler(ControlHasChanged);  
-        	
+            txtCreditAmount.Validated += new EventHandler(ControlHasChanged);
+            txtDebitAmount.Validated += new EventHandler(ControlHasChanged);
+            cmbDetailCostCentreCode.Validated += new EventHandler(ControlHasChanged);
+            cmbDetailAccountCode.Validated += new EventHandler(ControlHasChanged);
+            cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlHasChanged);
+            txtDetailNarrative.Validated += new EventHandler(ControlHasChanged);
+            txtDetailReference.Validated += new EventHandler(ControlHasChanged);
+            dtpDetailTransactionDate.Validated += new EventHandler(ControlHasChanged);
         }
-        
+
         private void ControlHasChanged(System.Object sender, EventArgs e)
         {
-        	SourceGrid.RowEventArgs egrid = new SourceGrid.RowEventArgs(-10);
-        	FocusedRowChanged(sender,egrid);
+            SourceGrid.RowEventArgs egrid = new SourceGrid.RowEventArgs(-10);
+            FocusedRowChanged(sender, egrid);
         }
 
         private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
