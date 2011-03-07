@@ -55,6 +55,16 @@
     <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${ClientPath}/${yamldir} ${generateWinformsParameters}"/>
   </do></foreach>  
 </target>
+
+<target name="generateWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${file} ${generateWinformsParameters}"/>
+</target>
+
+
+
   
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
