@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		
             FileElementData = XmlPages.LastChild.LastChild; 
             
-            TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Test"].Value); 
+            TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Test"].Value);
             return FileElementData; // returns only the attributes of the YAML file. 
         }
 
