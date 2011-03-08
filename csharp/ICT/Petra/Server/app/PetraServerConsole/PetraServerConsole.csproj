@@ -51,6 +51,9 @@
       <HintPath>..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Server.MFinance.GL">
+      <HintPath>..\..\_bin\Debug\Ict.Petra.Server.MFinance.GL.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.Interfaces">
       <HintPath>..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

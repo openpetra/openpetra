@@ -32,6 +32,8 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
+
 namespace PetraServerConsole
 {
 #region TServer
@@ -156,6 +158,8 @@ public class TServer
             }
 #endif
             ReadLineLoopEnd = false;
+
+            TGLRevaluation tGLRevaluation = new TGLRevaluation();
 
             if ((!RunWithoutMenu))
             {

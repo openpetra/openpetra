@@ -212,9 +212,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 try
                 {
                     // Code tut nicht!
-                    SelectDetailRowByDataTableIndex(1);
+                    SelectDetailRowByDataTableIndex(0);
                     ADailyExchangeRateRow dailyExchangeRateRow =
-                        (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.DefaultView[0].Row;
+                        (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
                     return dailyExchangeRateRow.RateOfExchange;
                 }
                 catch (Exception ex)

@@ -108,6 +108,7 @@
     <Compile Include="GL.FinancialYear.cs" />
     <Compile Include="GL.Importing.cs" />
     <Compile Include="GL.Posting.cs" />
+    <Compile Include="GL.Revaluation.cs" />
     <Compile Include="GL.Transactions.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Reporting.UIConnectors.cs" />
