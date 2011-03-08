@@ -29,7 +29,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		public void TestTPetraShepherdPagesListConstructor()
 		{	
 			TPetraShepherdPagesList testPetraShepherdPagesList = new TPetraShepherdPagesList("ShepherdChurch.yaml");
-			Assert.True(testPetraShepherdPagesList.Pages.Count == 3, "Wrong shepherd page count.");
+			Assert.True(testPetraShepherdPagesList.Pages.Count == 4, "Wrong shepherd page count.");
 	
 			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("5"), "Shepherd did not contain key 5");
 			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("56"), "Shepherd did not contain key 56");
@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			
 			System.Console.WriteLine("TEST 2.5 Checking to make sure that the page doesn't move off the end of the list.."); 
 			testFormLogic.HandleActionNext(); 
-			Assert.AreEqual(testFormLogic.CurrentPage.ID,"12"); 
+			Assert.AreEqual(testFormLogic.CurrentPage.ID,"FINISHPAGE_MASTER"); 
 			
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible
 			

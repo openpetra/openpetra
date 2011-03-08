@@ -21,7 +21,7 @@ ShepherdPages:
         UserControlType: PantsOnTheGround
     ShepherdPage.FinalShepherd:
         ID: 12
-        Title: Final Shepherd 
+        Title: Final Shepherd
         Note: This is a temporary note 
         Visible: True
         Enabled: True 

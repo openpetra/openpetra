@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             // Take AYamlFile and parse it into an XmlNode structure
 
-            //ParseYAMLFileElements(AYamlFile); 
+            ParseYAMLFileElements(AYamlFile); 
 
             FShepherdPages = new TPetraShepherdPagesList(AYamlFile);
 
