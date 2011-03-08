@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FileElementData = XmlPages.LastChild.LastChild; 
             
             TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Test"].Value); 
-            return FileElementData;
+            return FileElementData; // returns only the attributes of the YAML file. 
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>
