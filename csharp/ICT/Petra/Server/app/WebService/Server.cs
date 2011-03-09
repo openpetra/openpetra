@@ -282,12 +282,17 @@ public class TOpenPetraOrg : WebService
         {
             if (key.ToString().StartsWith("ext-comp"))
             {
-                if (result.Length > 0)
-                {
-                    result += ",";
-                }
+                string content = parseJSonValues((JsonObject)ARoot[key]);
 
-                result += parseJSonValues((JsonObject)ARoot[key]);
+                if (content.Length > 0)
+                {
+                    if (result.Length > 0)
+                    {
+                        result += ",";
+                    }
+
+                    result += content;
+                }
             }
             else
             {
@@ -302,7 +307,7 @@ public class TOpenPetraOrg : WebService
                     Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
                 }
 
-                result += "\"" + key + "\":\"" + ARoot[key] + "\"";
+                result += "\"" + key + "\":\"" + ARoot[key].ToString().Replace("\n", "<br/>").Replace("\"", "&quot;") + "\"";
             }
         }
 
@@ -348,17 +353,21 @@ public class TOpenPetraOrg : WebService
         }
 
         // remove ext-comp controls, for multi-page forms
-        AJSONFormData = RemoveContainerControls(AJSONFormData);
-
-        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
-                        Replace("\"chk", "\"").
-                        Replace("\"rbt", "\"").
-                        Replace("\"cmb", "\"").
-                        Replace("\"hid", "\"").
-                        Replace("\"dtp", "\"");
+        TLogging.Log(AJSONFormData);
 
         try
         {
+            AJSONFormData = RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
             return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
         }
         catch (Exception e)

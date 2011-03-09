@@ -27,6 +27,7 @@ using System.Data;
 using System.Drawing.Printing;
 using System.Net.Mail;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -131,10 +132,20 @@ namespace Ict.Petra.Server.MPartner.Import
         /// relationship to the person which should be called if there are problems
         /// </summary>
         public string emergencyrelationship;
+        /// avoid default string when nothing gets entered
+        public string groupwish;
+        /// <summary>
+        /// last year's partner key
+        /// </summary>
+        public string existingpartnerkey;
         /// <summary>
         /// the temp filename of the photo of the participant, which has been uploaded by upload.aspx
         /// </summary>
         public string imageid;
+        /// <summary>
+        /// the form that should be used, for example helper or teenager application form
+        /// </summary>
+        public string formsid;
         /// the raw data in json format
         public string RawData;
     }
@@ -250,10 +261,16 @@ namespace Ict.Petra.Server.MPartner.Import
         }
 
         /// create PDF
-        private static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
+        public static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
         {
             string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
-                              Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
+                              Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + "." + AData.formsid + ".html";
+
+            if (!File.Exists(FileName))
+            {
+                FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                           Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
+            }
 
             string HTMLText = string.Empty;
 
@@ -268,13 +285,21 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
+            if (AData.groupwish == null)
+            {
+                Regex regex = new Regex(@"^.*#GROUPWISH.*$", RegexOptions.Multiline);
+                HTMLText = regex.Replace(HTMLText, "");
+            }
+
+            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
+
             HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
             HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValueStatic("Formletters.Path"));
             HTMLText = HTMLText.Replace("#REGISTRATIONID", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
             HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
                 Path.DirectorySeparatorChar + "photos" +
                 Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
-            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
+
             HTMLText = HTMLText.Replace("#HTMLRAWDATA", DataToHTMLTable(AData.RawData));
 
             PrintDocument doc = new PrintDocument();
@@ -349,10 +374,18 @@ namespace Ict.Petra.Server.MPartner.Import
             return ATemplate;
         }
 
-        private static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
+        /// send an email to the applicant and the registration office
+        public static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
         {
             string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
-                              Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
+                              Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + "." + AData.formsid + ".html";
+
+            if (!File.Exists(FileName))
+            {
+                FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                           Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
+            }
+
             string HTMLText = string.Empty;
             string SenderAddress = string.Empty;
             string BCCAddress = string.Empty;
@@ -410,7 +443,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
             if (!emailSender.SendMessage(ref msg))
             {
-                TLogging.Log("There has been a problem sending the email");
+                TLogging.Log("There has been a problem sending the email to " + AData.email);
                 return false;
             }
 
@@ -546,7 +579,7 @@ namespace Ict.Petra.Server.MPartner.Import
                             photosPath +
                             Path.DirectorySeparatorChar +
                             NewPersonPartnerKey +
-                            Path.GetExtension(imageTmpPath));
+                            Path.GetExtension(imageTmpPath).ToLower());
                     }
                 }
                 catch (Exception e)
