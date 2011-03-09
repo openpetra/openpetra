@@ -675,6 +675,15 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// insert another document into the current document. At the moment only used for PDF
+        /// </summary>
+        /// <param name="AFilename"></param>
+        public virtual void InsertDocument(string AFilename)
+        {
+            throw new Exception("cannot insert document " + AFilename + ", this currently only works for printing to PDF");
+        }
+
+        /// <summary>
         /// renders a table at the current FCurrentYPos
         /// does not support rowspan at the moment
         /// colspan might be implemented in the generation of the TTableRowGfx structure
@@ -703,7 +712,7 @@ namespace Ict.Common.Printing
                 {
                     // for each cell, start again at the top of the table
                     CurrentYPos = RowYPos;
-                    CurrentXPos = currentXPos;
+                    CurrentXPos = currentXPos + Cm(0.1f);
 
                     PushCurrentState();
 
@@ -715,9 +724,9 @@ namespace Ict.Common.Printing
                     FCurrentState.FNoWrap = cell.nowrap;
                     CurrentAlignment = cell.align;
                     XmlNode LocalNode = cell.content;
-                    cell.contentHeight = FPrinterLayout.RenderContent(currentXPos, cell.contentWidth, ref LocalNode);
+                    cell.contentHeight = FPrinterLayout.RenderContent(CurrentXPos, cell.contentWidth - Cm(0.2f), ref LocalNode);
                     LineFeed();
-                    cell.contentHeight = CurrentYPos - RowYPos;
+                    cell.contentHeight = CurrentYPos - RowYPos + Cm(0.1f);
 
                     if (cell.contentHeight > row.contentHeight)
                     {

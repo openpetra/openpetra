@@ -407,6 +407,15 @@ namespace Ict.Common.Printing
                 {
                     PrintTable(AXPos, AWidthAvailable, ref curNode);
                 }
+                else if (curNode.Name == "pdf")
+                {
+                    // insert PDF. this currently only works for printing to PDF
+                    string src = TXMLParser.GetAttribute(curNode, "src");
+                    src = System.IO.Path.Combine(FPath, src);
+
+                    FPrinter.InsertDocument(src);
+                    curNode = curNode.NextSibling;
+                }
                 else if (curNode.Name == "img")
                 {
                     // insert image
@@ -508,6 +517,31 @@ namespace Ict.Common.Printing
                     // line break
                     FPrinter.LineFeed();
                     FPrinter.CurrentXPos = AXPos;
+                    curNode = curNode.NextSibling;
+                }
+                else if (curNode.Name == "ul")
+                {
+                    FPrinter.LineFeed();
+                    FPrinter.CurrentXPos = AXPos;
+
+                    // list with bullet points
+                    foreach (XmlNode bulletPoint in curNode.ChildNodes)
+                    {
+                        if (bulletPoint.Name == "li")
+                        {
+                            FPrinter.PrintStringWrap("* ", FPrinter.CurrentFont, AXPos, AWidthAvailable, FPrinter.CurrentAlignment);
+
+                            foreach (XmlNode bulletChild in bulletPoint.ChildNodes)
+                            {
+                                XmlNode loopTemp = bulletChild;
+                                RenderContent(FPrinter.CurrentXPos, AWidthAvailable - (FPrinter.CurrentXPos - AXPos), ref loopTemp);
+                            }
+
+                            FPrinter.LineFeed();
+                            FPrinter.CurrentXPos = AXPos;
+                        }
+                    }
+
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "div")
@@ -726,6 +760,12 @@ namespace Ict.Common.Printing
                         TTableCellGfx preparedCell = new TTableCellGfx();
                         preparedCell.borderWidth = border;
                         preparedCell.content = cell.FirstChild;
+
+                        if (TXMLParser.HasAttribute(cell, "colspan"))
+                        {
+                            preparedCell.colSpan = Convert.ToInt16(TXMLParser.GetAttribute(cell, "colspan"));
+                        }
+
                         preparedCell.bold = (cell.Name == "th");
 
                         if (TXMLParser.GetAttribute(cell, "nowrap") == "nowrap")
@@ -749,6 +789,13 @@ namespace Ict.Common.Printing
                         }
 
                         preparedRow.cells.Add(preparedCell);
+
+                        // add a few dummy cells for column spanning
+                        for (int colspanCounter = 1; colspanCounter < preparedCell.colSpan; colspanCounter++)
+                        {
+                            preparedRow.cells.Add(new TTableCellGfx());
+                        }
+
                         cell = cell.NextSibling;
                     }
 
@@ -773,6 +820,26 @@ namespace Ict.Common.Printing
                         }
 
                         counter++;
+                    }
+
+                    // implement colspan
+                    Int16 CounterColumnSpan = 0;
+                    TTableCellGfx spanningCell = null;
+
+                    foreach (TTableCellGfx preparedCell in preparedRow.cells)
+                    {
+                        if (CounterColumnSpan > 0)
+                        {
+                            spanningCell.contentWidth += preparedCell.contentWidth;
+                            preparedCell.contentWidth = 0;
+                        }
+                        else
+                        {
+                            CounterColumnSpan = preparedCell.colSpan;
+                            spanningCell = preparedCell;
+                        }
+
+                        CounterColumnSpan--;
                     }
 
                     preparedRows.Add(preparedRow);
