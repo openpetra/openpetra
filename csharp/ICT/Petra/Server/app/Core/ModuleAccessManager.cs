@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// </summary>
         /// <param name="AModuleExpression">is in uppercase</param>
         /// <returns>true if the user has access permissions</returns>
-        static private bool CheckUserModulePermissions(string AModuleExpression)
+        static public bool CheckUserModulePermissions(string AModuleExpression)
         {
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
             {

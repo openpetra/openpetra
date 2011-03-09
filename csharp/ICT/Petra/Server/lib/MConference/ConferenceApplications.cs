@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MConference.Applications
 {
@@ -43,30 +44,83 @@ namespace Ict.Petra.Server.MConference.Applications
     public class TApplicationManagement
     {
         /// <summary>
+        /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
+        /// </summary>
+        /// <param name="AEventCode"></param>
+        /// <param name="AApplicationStatus"></param>
+        /// <returns></returns>
+        public static ConferenceApplicationTDS GetApplications(string AEventCode, string AApplicationStatus)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            try
+            {
+                // get all offices that have registrations for this event
+                DataTable offices = DBAccess.GDBAccessObj.SelectDT(
+                    String.Format("SELECT DISTINCT {0} FROM PUB_{1} WHERE {2} = '{3}'",
+                        PmShortTermApplicationTable.GetRegistrationOfficeDBName(),
+                        PmShortTermApplicationTable.GetTableDBName(),
+                        PmShortTermApplicationTable.GetConfirmedOptionCodeDBName(),
+                        AEventCode),
+                    "registrationoffice", Transaction);
+
+                foreach (DataRow officeRow in offices.Rows)
+                {
+                    Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
+                    try
+                    {
+                        if (TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
+                                    StringHelper.PartnerKeyToStr(RegistrationOffice))))
+                        {
+                            MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, Transaction));
+                        }
+                    }
+                    catch (EvaluateException)
+                    {
+                        // no permissions for this registration office
+                    }
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            MainDS.AcceptChanges();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// return a list of all applicants for a given event
         /// </summary>
         /// <param name="AEventCode"></param>
         /// <param name="ARegisteringOffice"></param>
+        /// <param name="AApplicationStatus"></param>
+        /// <param name="ATransaction"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDS GetApplications(string AEventCode, Int64 ARegisteringOffice)
+        private static ConferenceApplicationTDS GetApplications(string AEventCode,
+            Int64 ARegisteringOffice,
+            string AApplicationStatus,
+            TDBTransaction ATransaction)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
             PmShortTermApplicationRow TemplateRow = MainDS.PmShortTermApplication.NewRowTyped(false);
 
             TemplateRow.RegistrationOffice = ARegisteringOffice;
             TemplateRow.ConfirmedOptionCode = AEventCode;
-            PmShortTermApplicationAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+            PmShortTermApplicationAccess.LoadUsingTemplate(MainDS, TemplateRow, ATransaction);
 
             foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
             {
-                PPersonAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey, Transaction);
+                PPersonAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey, ATransaction);
                 PmGeneralApplicationAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey,
                     shortTermRow.ApplicationKey,
                     shortTermRow.RegistrationOffice,
-                    Transaction);
+                    ATransaction);
 
                 MainDS.PPerson.DefaultView.RowFilter =
                     String.Format("{0}={1}",
@@ -96,10 +150,53 @@ namespace Ict.Petra.Server.MConference.Applications
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
-                MainDS.ApplicationGrid.Rows.Add(newRow);
+                newRow.JSONData = StringHelper.MD5Sum(GeneralApplication.RawApplicationData);
+
+                if (AApplicationStatus.Length == 0)
+                {
+                    AApplicationStatus = "on hold";
+                }
+
+                if (AApplicationStatus != "all")
+                {
+                    // if there is already an application on hold for that person, drop the old row
+                    MainDS.ApplicationGrid.DefaultView.RowFilter =
+                        String.Format("JSONData = '{0}' AND {1} = 'H'", newRow.JSONData,
+                            ConferenceApplicationTDSApplicationGridTable.GetGenApplicationStatusDBName());
+
+                    while (MainDS.ApplicationGrid.DefaultView.Count > 0)
+                    {
+                        ConferenceApplicationTDSApplicationGridRow RowToDrop =
+                            (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[0].Row;
+                        //Console.WriteLine("dropping " + RowToDrop.FamilyName + " " + RowToDrop.FirstName + " " + RowToDrop.PartnerKey.ToString());
+                        RowToDrop.Delete();
+                    }
+                }
+
+                if ((AApplicationStatus == "on hold") && newRow.GenApplicationStatus.StartsWith("H"))
+                {
+                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                }
+                else if ((AApplicationStatus == "accepted") && newRow.GenApplicationStatus.StartsWith("A"))
+                {
+                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                }
+                else if ((AApplicationStatus == "cancelled")
+                         && ((newRow.GenApplicationStatus.StartsWith("R") || newRow.GenApplicationStatus.StartsWith("C"))))
+                {
+                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                }
+                else if (AApplicationStatus == "all")
+                {
+                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                }
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            // clear raw data, otherwise this is too big for the javascript client
+            foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
+            {
+                row.JSONData = string.Empty;
+            }
 
             MainDS.AcceptChanges();
 

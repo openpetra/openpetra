@@ -9,10 +9,16 @@
 <%@ Assembly Name="PetraServerWebService" %>
 <%@ Assembly Name="Ict.Petra.Server.MConference" %>
 <%@ Assembly Name="Ict.Petra.Shared.MConference.DataSets" %>
+<%@ Assembly Name="Ict.Petra.Shared.MPersonnel" %>
+<%@ Assembly Name="Ict.Petra.Shared.MPersonnel.DataTables" %>
+<%@ Assembly Name="Ict.Petra.Server.MPersonnel" %>
 <%@ Import Namespace="Ict.Common" %>
 <%@ Import Namespace="PetraWebService" %>
 <%@ Import Namespace="Ict.Petra.Server.MConference.Applications" %>
 <%@ Import Namespace="Ict.Petra.Shared.MConference.Data" %>
+<%@ Import Namespace="Ict.Petra.Shared.MPersonnel" %>
+<%@ Import Namespace="Ict.Petra.Shared.MPersonnel.Personnel.Data" %>
+<%@ Import Namespace="Ict.Petra.Server.MPersonnel.Person.Cacheable" %>
 
 <script runat="server">
     protected void Page_Load(object sender, EventArgs e)
@@ -60,7 +66,7 @@
         ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
         if (CurrentApplicants == null || sender != null || Session["CURRENTROW"] == null)
         {
-            CurrentApplicants = TApplicationManagement.GetApplications("SC001CNGRSS08", 43000000);
+            CurrentApplicants = TApplicationManagement.GetApplications("SC001CNGRSS08", this.FilterStatus.SelectedItem.Value);
             Session["CURRENTAPPLICANTS"] = CurrentApplicants;
             this.FormPanel1.SetValues(new {});
             this.FormPanel1.Disabled = true;
@@ -83,16 +89,19 @@
         this.StoreRole.DataBind();
     }
 
+    protected void ChangeFilter(object sender, DirectEventArgs e)
+    {
+        MyData_Refresh(null, null);
+    }
+
     protected void ApplicationStatus_Refresh(object sender, StoreRefreshDataEventArgs e)
     {
-        // TODO: load from database
-        this.StoreApplicationStatus.DataSource = new object[]
-        {
-            new object[] { "H", "On Hold" },
-            new object[] { "A", "Accepted" },
-            new object[] { "R", "Rejected" },
-            new object[] { "C", "Cancelled" }
-        };
+        TPersonnelCacheable cache = new TPersonnelCacheable();
+        Type dummy;
+        PtApplicantStatusTable statusTable = (PtApplicantStatusTable)cache.GetCacheableTable(TCacheablePersonTablesEnum.ApplicantStatusList,
+                                    String.Empty, true, out dummy);
+        
+        this.StoreApplicationStatus.DataSource = DataTableToArray(statusTable);
         
         this.StoreApplicationStatus.DataBind();
     }
@@ -450,6 +459,37 @@
             <TopBar>
             </TopBar>           
             <Items>
+                <ext:FormPanel 
+                    ID="FormPanelTop" 
+                    runat="server" 
+                    Region="North"
+                    Split="true"
+                    Margins="0 5 5 5"
+                    Title="Filter" 
+                    Height="80">
+                    <Items>
+                        <ext:ComboBox 
+                            ID="FilterStatus"
+                            runat="server" 
+                            FieldLabel="Filter by Application Status" 
+                            Editable="false"
+                            ForceSelection="true"
+                            EmptyText="Filter by..."
+                            Mode="Local"
+                            SelectOnFocus="true"
+                            SelectedIndex = "2">
+                            <Items>
+                                <ext:ListItem Text="All" Value="all" />
+                                <ext:ListItem Text="Accepted" Value="accepted" />
+                                <ext:ListItem Text="On Hold" Value="on hold" />
+                                <ext:ListItem Text="Cancelled" Value="cancelled" />
+                            </Items>                        
+                            <DirectEvents>
+                                <Select OnEvent="ChangeFilter"/>
+                            </DirectEvents>
+                        </ext:ComboBox>
+                    </Items>
+                </ext:FormPanel>
                 <ext:GridPanel 
                     ID="GridPanel1" 
                     runat="server" 
@@ -467,7 +507,7 @@
                             <ext:Column Header="Gender" Width="90" DataIndex="Gender"/>
                             <ext:DateColumn Header="Date of Birth" Width="100" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
                             <ext:DateColumn Header="Date Applied" Width="100" DataIndex="ApplicationDate" Format="dd-MMM-yyyy"/>
-                            <ext:Column Header="Application Status" Width="120" DataIndex="ApplicationStatus"/>
+                            <ext:Column Header="Application Status" Width="100" DataIndex="ApplicationStatus"/>
                             <ext:Column Header="Role" Width="120" DataIndex="Role"/>
                         </Columns>
                     </ColumnModel>
@@ -485,7 +525,7 @@
                     </SelectionModel>
                     <LoadMask ShowMask="true" />
                     <BottomBar>
-                        <ext:PagingToolbar ID="PagingToolBar2" runat="server" PageSize="10" StoreID="Store1" />
+                        <ext:PagingToolbar ID="PagingToolBar2" runat="server" PageSize="100" StoreID="Store1" />
                     </BottomBar>
                 </ext:GridPanel>
                 <ext:FormPanel 
@@ -552,6 +592,7 @@
                             DisplayField="StatusDescription"
                             ValueField="StatusCode"
                             Mode="Local"
+                            Width="300"
                             Resizable="true"
                             SelectOnFocus="true"                            
                         />

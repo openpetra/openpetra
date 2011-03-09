@@ -22,6 +22,7 @@
             <Field sqltable="pm_general_application" sqlfield="pm_gen_app_date_d"/>
             <Field sqltable="pm_general_application" sqlfield="pm_gen_application_status_c"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
+            <CustomField name="JSONData" type="string"/>
         </CustomTable>
         
     </DataSet>
