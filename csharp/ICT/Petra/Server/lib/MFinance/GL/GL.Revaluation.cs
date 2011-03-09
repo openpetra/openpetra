@@ -21,10 +21,13 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Text.RegularExpressions;
+
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
-
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 
 
 using Ict.Common;
@@ -32,24 +35,21 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
     /// <summary>
     /// Description of GL_Revaluation.
     /// </summary>
-    public class TGLRevaluation
+    public class TRevaluationWebConnector
     {
         /// <summary>
         /// Main Revalutate Routine!
@@ -64,22 +64,68 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <returns></returns>
 
-        public static Boolean Revaluate(int ALedgerNum,
+
+        [RequireModulePermission("FINANCE-1")]
+        public static bool Revaluate(int ALedgerNum,
             string ABaseCurrencyType,
             string ARevaluationAccount,
             string ARevaluationCostCenter,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate)
         {
+            CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum,
+                ABaseCurrencyType, ARevaluationAccount, ARevaluationCostCenter,
+                AForeignCurrency, ANewExchangeRate);
 
-        	DateTime dte = new GetAccountingPeriodInfo(ALedgerNum).GetDatePeriodStart(12);
-            System.Diagnostics.Debug.WriteLine(dte.ToLongDateString());
+            revaluation.RunRevaluation();
+            return true;
+        }
+    }
+
+    public class CLSRevaluation
+    {
+        private int intLedgerNum;
+        private string strBaseCurrencyType;
+        private string strRevaluationAccount;
+        private string strRevaluationCostCenter;
+        private string[] strArrForeignCurrencyType;
+        private decimal[] decArrExchangeRate;
+
+        private int intPtrToForeignData;
 
 
+        decimal decAccActForeign;
+        decimal decAccActBase;
+
+        decimal decAccActBaseRequired;
+
+        decimal decDelta;
+
+        private GLBatchTDS GLDataset = null;
+        private ABatchRow batch;
+        private AJournalRow journal;
+
+        public CLSRevaluation(int ALedgerNum,
+            string ABaseCurrencyType,
+            string ARevaluationAccount,
+            string ARevaluationCostCenter,
+            string[] AForeignCurrency,
+            decimal[] ANewExchangeRate)
+        {
+            intLedgerNum = ALedgerNum;
+            strBaseCurrencyType = ABaseCurrencyType;
+            strRevaluationAccount = ARevaluationAccount;
+            strRevaluationCostCenter = ARevaluationCostCenter;
+            strArrForeignCurrencyType = AForeignCurrency;
+            decArrExchangeRate = ANewExchangeRate;
+        }
+
+        public void RunRevaluation()
+        {
             AAccountTable accountTable =
-                AAccountAccess.LoadViaALedger(ALedgerNum, null);
+                AAccountAccess.LoadViaALedger(intLedgerNum, null);
             AGeneralLedgerMasterTable generalLedgerMasterTable =
-                AGeneralLedgerMasterAccess.LoadViaALedger(ALedgerNum, null);
+                AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
 
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
             {
@@ -93,11 +139,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         string strAccountCode = accountRow.AccountCode;
 
-                        for (int kCnt = 0; kCnt < AForeignCurrency.Length; ++kCnt)
+                        for (int kCnt = 0; kCnt < strArrForeignCurrencyType.Length; ++kCnt)
                         {
+                            intPtrToForeignData = kCnt;
+
                             // AForeignCurrency[] and ANewExchangeRate[] shall support a value
                             // for this account resp. for the currency of the account
-                            if (accountRow.ForeignCurrencyCode.Equals(AForeignCurrency[kCnt]))
+                            if (accountRow.ForeignCurrencyCode.Equals(strArrForeignCurrencyType[kCnt]))
                             {
                                 for (int jCnt = 0; jCnt < generalLedgerMasterTable.Rows.Count; ++jCnt)
                                 {
@@ -107,10 +155,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     // generalLedgerMaster shall support Entries for this account
                                     if (generalLedgerMasterRow.AccountCode.Equals(strAccountCode))
                                     {
-                                        RevaluateAccount(ALedgerNum, ABaseCurrencyType,
-                                            ARevaluationAccount, ARevaluationCostCenter,
-                                            AForeignCurrency[kCnt], ANewExchangeRate[kCnt],
-                                            accountRow.AccountCode);
+                                        // Account is localized ...
+                                        RevaluateAccount(accountRow.AccountCode);
                                     }
                                 }
                             }
@@ -118,59 +164,60 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
             }
-
-            return true;
         }
 
-        private static void RevaluateAccount(int ALedgerNum,
-            string ABaseCurrencyType,
-            string ARevaluationAccount,
-            string ARevaluationCostCenter,
-            string AForeignCurrency,
-            decimal ANewExchangeRate,
-            string ARelevantAccount)
+        private void RevaluateAccount(string ARelevantAccount)
         {
             AGeneralLedgerMasterTable generalLedgerMasterTable =
-                AGeneralLedgerMasterAccess.LoadViaAAccount(ALedgerNum, ARelevantAccount, null);
+                AGeneralLedgerMasterAccess.LoadViaAAccount(intLedgerNum, ARelevantAccount, null);
 
             for (int iCnt = 0; iCnt < generalLedgerMasterTable.Rows.Count; ++iCnt)
             {
                 AGeneralLedgerMasterRow generalLedgerMasterRow =
                     (AGeneralLedgerMasterRow)generalLedgerMasterTable[iCnt];
 
-                // Ytd ... shall not be zero otherwise a revaluation is senseless
-                if (generalLedgerMasterRow.YtdActualForeign != 0)
+                decAccActForeign = generalLedgerMasterRow.YtdActualForeign;
+                decAccActBase = generalLedgerMasterRow.YtdActualBase;
+
+                decAccActBaseRequired = generalLedgerMasterRow.YtdActualForeign /
+                                        decArrExchangeRate[intPtrToForeignData];
+
+                decDelta = decAccActBase - decAccActBaseRequired;
+                
+                System.Diagnostics.Debug.WriteLine("delta: " + decDelta.ToString());
+
+                // decDelta ... shall not be zero otherwise a revaluation is senseless
+                if (decDelta != 0)
                 {
                     // Now we have the relevant Cost Center ...
-                    //RevaluateCostCenter(
-                    System.Diagnostics.Debug.WriteLine("Cost Center   : " + generalLedgerMasterRow.CostCentreCode);
+                    RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
                 }
             }
         }
 
-        private static void RevaluateCostCenter(int ALedgerNum,
-            string ABaseCurrencyType,
-            string ARevaluationAccount,
-            string ARevaluationCostCenter,
-            string AForeignCurrency,
-            decimal ANewExchangeRate,
-            string ARelevantAccount,
-            string ACostCenter)
+        private void RevaluateCostCenter(string ARelevantAccount, string ACostCenter)
         {
+        	// In the very first run Batch and Journal shall be created ...
+            if (GLDataset == null)
+            {
+                InitBatchAndJournal();
+            }
+        	int intNoOfForeignDigts = new GetCurrencyInfo(
+            	strArrForeignCurrencyType[intPtrToForeignData]).digits;
+            CreateTransaction();
+            CreateTransaction();
         }
 
-        private static void CreateBatch(int ALedgerNumber)
+        private void InitBatchAndJournal()
         {
-            GLBatchTDS GLDataset = TTransactionWebConnector.CreateABatch(ALedgerNumber);
-            ABatchRow batch = GLDataset.ABatch[0];
-
+            GLDataset = TTransactionWebConnector.CreateABatch(intLedgerNum);
+            batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
-            //batch.DateEffective = giftbatch.GlEffectiveDate;
-
+            //batch.DateEffective = new
+            //	GetAccountingPeriodInfo(intLedgerNum).GetEffectiveDateOfPeriod(..);
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
-            // #######################################################
-            AJournalRow journal = GLDataset.AJournal.NewRowTyped();
+            journal = GLDataset.AJournal.NewRowTyped();
             journal.LedgerNumber = batch.LedgerNumber;
             journal.BatchNumber = batch.BatchNumber;
             journal.JournalNumber = 1;
@@ -182,11 +229,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
-
             journal.ExchangeRateToBase = 1.0M;
             GLDataset.AJournal.Rows.Add(journal);
-            // #######################################################
+        }
 
+        private void CreateTransaction()
+        {
             ATransactionRow transaction = null;
 
             transaction = GLDataset.ATransaction.NewRowTyped();
@@ -205,54 +253,72 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLDataset.ATransaction.Rows.Add(transaction);
         }
-
-        /// <summary>
-        /// This example shows how to invoke the Revaluate Method.
-        /// </summary>
-        public TGLRevaluation()
-        {
-            string[] currencies = new string[2];
-            currencies[0] = "GBP";
-            currencies[1] = "YEN";
-            decimal[] rates = new decimal[2];
-            rates[0] = 1.234m;
-            rates[1] = 2.345m;
-            Revaluate(43, "EUR", "5300", "3700", currencies, rates);
-        }
     }
 
+    
+    
     public class GetAccountingPeriodInfo
     {
-        private AAccountingPeriodTable periodTable;
+        private AAccountingPeriodTable periodTable = null;
 
         public GetAccountingPeriodInfo(int ALedgerNumber)
         {
             periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, null);
         }
 
+        private AAccountingPeriodRow GetRowOfPeriod(int APeriodNum)
+        {
+            if (periodTable != null)
+            {
+                if (periodTable.Rows.Count != 0)
+                {
+                    for (int i = 0; i < periodTable.Rows.Count; ++i)
+                    {
+                        AAccountingPeriodRow periodRow =
+                            (AAccountingPeriodRow)periodTable[i];
+
+                        if (periodRow.AccountingPeriodNumber == APeriodNum)
+                        {
+                            return periodRow;
+                        }
+                    }
+
+                    return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public DateTime GetEffectiveDateOfPeriod(int APeriodNum)
         {
-            try
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow == null)
             {
-                AAccountingPeriodRow periodRow =
-                    (AAccountingPeriodRow)periodTable[APeriodNum];
                 return periodRow.EffectiveDate;
             }
-            catch (System.IndexOutOfRangeException)
+            else
             {
                 return DateTime.MinValue;
             }
         }
-        
+
         public DateTime GetDatePeriodEnd(int APeriodNum)
         {
-            try
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow == null)
             {
-                AAccountingPeriodRow periodRow =
-                    (AAccountingPeriodRow)periodTable[APeriodNum];
                 return periodRow.PeriodEndDate;
             }
-            catch (System.IndexOutOfRangeException)
+            else
             {
                 return DateTime.MinValue;
             }
@@ -260,13 +326,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
         public DateTime GetDatePeriodStart(int APeriodNum)
         {
-            try
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow == null)
             {
-                AAccountingPeriodRow periodRow =
-                    (AAccountingPeriodRow)periodTable[APeriodNum];
                 return periodRow.PeriodStartDate;
             }
-            catch (System.IndexOutOfRangeException)
+            else
             {
                 return DateTime.MinValue;
             }

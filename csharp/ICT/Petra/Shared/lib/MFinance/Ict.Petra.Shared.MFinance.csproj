@@ -41,6 +41,27 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Common.DB.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.MCommon.DataAccess">
+      <HintPath>..\..\..\Server\_bin\Debug\Ict.Petra.Server.MCommon.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataSets">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -50,6 +71,7 @@
     <Compile Include="Cacheable.cs" />
     <Compile Include="CommonRoutines.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Petra.Compatibility.Tools.cs" />
     <Compile Include="Types.cs" />
   </ItemGroup>
 </Project>

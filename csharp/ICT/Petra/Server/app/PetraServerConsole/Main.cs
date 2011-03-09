@@ -159,8 +159,6 @@ public class TServer
 #endif
             ReadLineLoopEnd = false;
 
-            TGLRevaluation tGLRevaluation = new TGLRevaluation();
-
             if ((!RunWithoutMenu))
             {
                 do

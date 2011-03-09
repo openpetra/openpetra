@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -542,6 +542,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGLWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
+        bool Revaluate(int ALedgerNum,
+                       string ABaseCurrencyType,
+                       string ARevaluationAccount,
+                       string ARevaluationCostCenter,
+                       string[] AForeignCurrency,
+                       decimal[] ANewExchangeRate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                    out DateTime AStartDate,

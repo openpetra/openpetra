@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="GL.Revaluation.test.cs" />
     <Compile Include="GLAccountHierarchy.test.cs" />
     <Compile Include="GLBatch.test.cs" />
     <Compile Include="SetupDailyExchangeRate.test.cs" />
@@ -134,6 +135,10 @@
     <ProjectReference Include="..\..\NUnitForms\Ict.Testing.NUnitForms.csproj">
       <Project>{F12B57D7-3689-4129-BA9B-701DC0AC6B3A}</Project>
       <Name>Ict.Testing.NUnitForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NUnitPetraServer\Ict.Testing.NUnitServer.csproj">
+      <Project>{3035042E-B3A7-41AC-8006-6DA996FA7741}</Project>
+      <Name>Ict.Testing.NUnitServer</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

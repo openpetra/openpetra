@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2516,6 +2516,18 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TGLWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public bool Revaluate(int ALedgerNum,
+                              string ABaseCurrencyType,
+                              string ARevaluationAccount,
+                              string ARevaluationCostCenter,
+                              string[] AForeignCurrency,
+                              decimal[] ANewExchangeRate)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;STRING;STRING;STRING;STRING[];DECIMAL[];");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, ABaseCurrencyType, ARevaluationAccount, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate);
         }
 
         /// generated method from connector
