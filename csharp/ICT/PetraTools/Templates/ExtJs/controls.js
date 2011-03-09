@@ -129,10 +129,10 @@
     xtype: 'displayfield',
     hideLabel: true,
 {#IFDEF ALLOWBLANK}
-    value: this.{#LABEL},
+    value: this.{#LABEL}
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
-    value: this.{#LABEL}+' *',
+    value: this.{#LABEL}+' *'
 {#ENDIFN ALLOWBLANK}
 },
 {
