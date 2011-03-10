@@ -2033,7 +2033,7 @@ namespace Ict.Petra.Server.App.Main
             Int16 LowestAvailableRemotingPort;
 
             FreeRemotingPort = -1;
-            LowestAvailableRemotingPort = (short)(TSrvSetting.BaseIPAddress + 1);
+            LowestAvailableRemotingPort = (short)(TSrvSetting.IPBasePort + 1);
             ClientEnum = UClientObjects.GetEnumerator();
 
             if (UClientObjects.Count != 0)

@@ -697,7 +697,7 @@ namespace Ict.Petra.Server.App.Main
                                TSrvSetting.RDMBSType, TSrvSetting.ODBCDsn,
                                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort, TSrvSetting.PostgreSQLDatabaseName,
                                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
-                               (object)TSrvSetting.BaseIPAddress,
+                               (object)TSrvSetting.IPBasePort,
                                (object)TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
                                (object)TSrvSetting.ClientIdleStatusAfterXMinutes, (object)TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,

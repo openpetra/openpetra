@@ -48,7 +48,7 @@ namespace Ict.Common
         private static String UHostName;
         private static String UHostIPAddresses;
         private static System.Version UApplicationVersion;
-        private static System.Int16 UBaseIPAddress;
+        private static System.Int16 UIPBasePort;
         private static System.Int16 UDebugLevel;
         private static System.Int16 UClientIdleStatusAfterXMinutes;
         private static System.Int16 UClientKeepAliveCheckIntervalInSeconds;
@@ -156,11 +156,11 @@ namespace Ict.Common
         }
 
         /// <summary>IP Address at which the Server is listening for Client connection/disconnection requests</summary>
-        public static System.Int16 BaseIPAddress
+        public static System.Int16 IPBasePort
         {
             get
             {
-                return UBaseIPAddress;
+                return UIPBasePort;
             }
         }
 
@@ -353,7 +353,7 @@ namespace Ict.Common
             String APostgreSQLDatabaseName,
             String ADBUsername,
             String ADBPassword,
-            System.Int16 ABaseIPAddress,
+            System.Int16 AIPBasePort,
             System.Int16 ADebugLevel,
             String AServerLogFile,
             String AHostName,
@@ -380,7 +380,7 @@ namespace Ict.Common
             UPostgreSQLDatabaseName = APostgreSQLDatabaseName;
             UDBUsername = ADBUsername;
             UDBPassword = ADBPassword;
-            UBaseIPAddress = ABaseIPAddress;
+            UIPBasePort = AIPBasePort;
             UDebugLevel = ADebugLevel;
             UServerLogFile = AServerLogFile;
             UHostName = AHostName;

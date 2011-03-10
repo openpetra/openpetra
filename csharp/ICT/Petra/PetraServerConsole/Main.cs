@@ -449,7 +449,7 @@ ReadClientTaskPriority:
         catch (System.Net.Sockets.SocketException exp)
         {
             TLogging.Log(
-                Environment.NewLine + "Unable to start the Server: The IP Port " + TSrvSetting.BaseIPAddress.ToString() +
+                Environment.NewLine + "Unable to start the Server: The IP Port " + TSrvSetting.IPBasePort.ToString() +
                 " is being used by a different instance of the Server or some other application." + Environment.NewLine + exp.ToString());
         }
         catch (System.Runtime.Remoting.RemotingException exp)

@@ -517,7 +517,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <param name="APostgreSQLDatabaseName"></param>
         /// <param name="ADBUsername">DB Username</param>
         /// <param name="ADBPassword">DB Password</param>
-        /// <param name="ABaseIPAddress">BaseIPAddress setting</param>
+        /// <param name="AIPBasePort">IPBasePort setting</param>
         /// <param name="ADebugLevel">DebugLevel setting</param>
         /// <param name="AServerLogFile">complete path for log file to write logging to</param>
         /// <param name="AHostName">HostName setting</param>
@@ -548,7 +548,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             String APostgreSQLDatabaseName,
             String ADBUsername,
             String ADBPassword,
-            System.Int16 ABaseIPAddress,
+            System.Int16 AIPBasePort,
             System.Int16 ADebugLevel,
             String AServerLogFile,
             String AHostName,
@@ -577,7 +577,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 APostgreSQLDatabaseName,
                 ADBUsername,
                 ADBPassword,
-                ABaseIPAddress,
+                AIPBasePort,
                 ADebugLevel,
                 AServerLogFile,
                 AHostName,
