@@ -74,13 +74,13 @@ not supported
   <call target="translationCompilePOFile" />    
 </target>
 
-<target name="nanttasks" depends="" description="goes into the directory inc/nantasks">
+<target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
 </target>
 
-<target name="csharp" depends="nanttasks" description="goes into the diretory csharp">
+<target name="csharp" depends="nanttasks" description="goes into the directory csharp">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="csharp/csharp.build" />
@@ -101,6 +101,28 @@ not supported
 <!-- Generate solution targets -->
 <target name="generate-solution-all-internal" >
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <property name="includepaths" value="Common,Petra,PetraTools,Testing"/>
+    <property name="solution-name" value="OpenPetra.sln"/>
+    <call target="generate-solution-internal" />
+  </foreach>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <property name="includepaths" value="Common,Petra/Shared,Petra/Server,Petra/ServerPlugins,Petra/PetraServerConsole"/>
+    <property name="solution-name" value="OpenPetra.Server.sln"/>
+    <call target="generate-solution-internal" />
+  </foreach>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/PetraClient"/>
+    <property name="solution-name" value="OpenPetra.Client.sln"/>
+    <call target="generate-solution-internal" />
+  </foreach>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <property name="includepaths" value="Common,PetraTools"/>
+    <property name="solution-name" value="OpenPetra.Tools.sln"/>
+    <call target="generate-solution-internal" />
+  </foreach>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/Server,Petra/ServerPlugins,Testing"/>
+    <property name="solution-name" value="OpenPetra.Testing.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
 </target>
@@ -117,30 +139,45 @@ not supported
         <include name="*.csproj"/>
       </items>
     </in>
-    <do>  
+    <do>
+      <!-- do we need to remove the xmlns="http://schemas.microsoft.com/developer/msbuild/2003" from the project file so that xmlpeek works? -->
+      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlns', 'xmlnsDeactivated')}"/>
+      
       <xmlpeek file="${ProjectFile}"
-              xpath="/*[local-name()='Project']/*[local-name()='PropertyGroup']/*[local-name()='ProjectGuid']"
+              xpath="/Project/PropertyGroup/ProjectGuid"
               property="ProjectGuid"/>
-      <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
-      <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
-                property="tempTemplateProject" encoding="utf-8">  
-        <filterchain>
-          <expandproperties />
-        </filterchain>
-      </loadfile>
-      <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
-      <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
-                property="tempTemplateConfiguration" encoding="utf-8">  
-        <filterchain>
-          <expandproperties />
-        </filterchain>
-      </loadfile>
-      <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
+      <xmlpeek file="${ProjectFile}"
+              xpath="//Compile[1]/@Include"
+              property="FirstCSFile"/>
+      
+      <property name="FirstCSFile" value="${string::replace(FirstCSFile,dir.root,'')}"/>
+      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'\','/')}"/>
+      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'/csharp/ICT/','')}"/>
+      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlnsDeactivated', 'xmlns')}"/>
+      <foreach item="String" property="includePath" delim="," in="${includepaths}" >
+        <if test="${string::starts-with(FirstCSFile,includePath+'/')}">
+          <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
+          <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
+                    property="tempTemplateProject" encoding="utf-8">  
+            <filterchain>
+              <expandproperties />
+            </filterchain>
+          </loadfile>
+          <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
+          <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
+                    property="tempTemplateConfiguration" encoding="utf-8">  
+            <filterchain>
+              <expandproperties />
+            </filterchain>
+          </loadfile>
+          <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
+        </if>
+      </foreach>
     </do>
   </foreach>
   <copy file="${path::combine(templatedir, 'template.sln')}"
         tofile="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.sln'))}" 
+                                path::combine(devenv-name, solution-name))}" 
         overwrite="true">  
     <filterchain>
       <expandproperties />
