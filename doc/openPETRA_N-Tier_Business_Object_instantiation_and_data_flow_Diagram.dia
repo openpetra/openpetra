@@ -13,22 +13,22 @@
           <dia:string>#A3#</dia:string>
         </dia:attribute>
         <dia:attribute name="tmargin">
-          <dia:real val="2.8222000598907471"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="bmargin">
-          <dia:real val="2.8222000598907471"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="lmargin">
-          <dia:real val="2.8222000598907471"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="rmargin">
-          <dia:real val="2.8222000598907471"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="is_portrait">
           <dia:boolean val="false"/>
         </dia:attribute>
         <dia:attribute name="scaling">
-          <dia:real val="0.47999998927116394"/>
+          <dia:real val="0.56000000238418579"/>
         </dia:attribute>
         <dia:attribute name="fitto">
           <dia:boolean val="false"/>
@@ -1002,7 +1002,7 @@ Business Objects
             <dia:real val="0.59999999999999998"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="61.4354,20.88"/>
+            <dia:point val="61.4355,20.88"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -2847,7 +2847,7 @@ Interfaces#</dia:string>
         <dia:point val="8.5275,38.95"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="8.48755,38.9101;15.8273,40.2702"/>
+        <dia:rectangle val="8.48756,38.9101;15.8273,40.2702"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="8.5275,38.95"/>
@@ -3081,7 +3081,7 @@ Instantiators#</dia:string>
         <dia:point val="24.1115,40.0684"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="24.0763,39.7735;29.0783,40.3301"/>
+        <dia:rectangle val="24.0764,39.7735;29.0783,40.3301"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="24.1115,40.0684"/>
@@ -4336,7 +4336,7 @@ Instantiators#</dia:string>
         <dia:point val="7.36625,38"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="7.03798,37.2463;30.785,38.635"/>
+        <dia:rectangle val="7.03799,37.2463;30.785,38.635"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="7.36625,38"/>
@@ -4411,7 +4411,7 @@ Instantiators#</dia:string>
         <dia:point val="8.91874,41.55"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="8.88374,39.7402;15.8283,41.585"/>
+        <dia:rectangle val="8.88374,39.7401;15.8283,41.585"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="8.91874,41.55"/>
@@ -4951,7 +4951,7 @@ Layer#</dia:string>
         <dia:point val="8.59099,31"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="8.26273,30.865;39.9939,31.7538"/>
+        <dia:rectangle val="8.26273,30.865;39.994,31.7538"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="8.59099,31"/>
@@ -5001,7 +5001,7 @@ Layer#</dia:string>
         <dia:point val="6.255,42.68"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="5.92673,41.465;41.8283,43.985"/>
+        <dia:rectangle val="5.92674,41.465;41.8283,43.985"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="6.255,42.68"/>
@@ -5693,7 +5693,7 @@ Layer#</dia:string>
         <dia:point val="43.9726,30.8579"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="43.9019,30.8223;44.0081,32.9995"/>
+        <dia:rectangle val="43.9019,30.8223;44.0082,32.9995"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="43.9726,30.8579"/>
