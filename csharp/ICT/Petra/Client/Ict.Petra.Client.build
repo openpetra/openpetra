@@ -37,9 +37,9 @@
         <do>
           <loadfile file="${yamlfile}" property="yamlfilecontent"/>
           <if test="${not string::contains(yamlfilecontent, 'FormType: abstract') }" >
-            <delete file="${path::change-extension(yamlfile, '.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '.Designer.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '.resx')}" />
+            <delete file="${path::change-extension(yamlfile, '-generated.cs')}" />
+            <delete file="${path::change-extension(yamlfile, '-generated.Designer.cs')}" />
+            <delete file="${path::change-extension(yamlfile, '-generated.resx')}" />
           </if>
         </do>
     </foreach>

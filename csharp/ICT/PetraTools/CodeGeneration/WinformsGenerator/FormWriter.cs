@@ -397,7 +397,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string ResourceFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
                                   System.IO.Path.DirectorySeparatorChar +
                                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
-                                  ".resx";
+                                  "-generated.resx";
 
             XmlDocument OrigResourceDoc = null;
 
@@ -454,7 +454,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string DesignerFile = System.IO.Path.GetDirectoryName(AYamlFilename) +
                                   System.IO.Path.DirectorySeparatorChar +
                                   System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
-                                  ".Designer.cs";
+                                  "-generated.Designer.cs";
 
             string designerTemplate = String.Empty;
 
@@ -477,7 +477,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return System.IO.Path.GetDirectoryName(AYamlFilename) +
                    System.IO.Path.DirectorySeparatorChar +
                    System.IO.Path.GetFileNameWithoutExtension(AYamlFilename) +
-                   this.CodeFileExtension;
+                   "-generated" + this.CodeFileExtension;
         }
 
         public override string CalculateManualCodeFilename(string AYamlFilename)

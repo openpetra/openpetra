@@ -1,4 +1,7 @@
 *-generated.build
+*-generated.cs
+*-generated.resx
+*-generated.Designer.cs
 csharp/ICT/Petra/Client/generatewinforms.log
 setup/petra0300/dbdoc
 setup/petra0300/i18n
