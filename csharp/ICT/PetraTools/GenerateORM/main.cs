@@ -120,7 +120,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MSysMan.Data",
                             "SysMan.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "main", cmdLine.GetOptValue(
+                        codeGenerationTable.WriteTypedTable(store, "common", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MCommon.Data",
                             "Common.Tables");
@@ -174,7 +174,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MSysMan.Data.Access",
                             "SysMan.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "main", cmdLine.GetOptValue(
+                        codeGenerationAccess.WriteTypedDataAccess(store, "common", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MCommon.Data.Access",
                             "Common.Access");
@@ -186,7 +186,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     else if (cmdLine.GetOptValue("do") == "dataset")
                     {
                         string[] groups = new string[] {
-                            "main", "mailroom", "sysman", "partner",
+                            "common", "mailroom", "sysman", "partner",
                             "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
                         };
 
@@ -199,7 +199,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     else if (cmdLine.GetOptValue("do") == "datasetaccess")
                     {
                         string[] groups = new string[] {
-                            "main", "mailroom", "sysman", "partner",
+                            "common", "mailroom", "sysman", "partner",
                             "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
                         };
 

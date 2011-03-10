@@ -102,7 +102,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 NamespaceTable = "MPersonnel.Units";
             }
-            else if (ATableGroup == "main")
+            else if (ATableGroup == "common")
             {
                 NamespaceTable = "MCommon";
             }

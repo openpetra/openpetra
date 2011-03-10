@@ -72,8 +72,7 @@
                 </items>
             </in>
             <do>
-                <property name="filenameWithoutExtension" value="${script::GetFilenameWithoutExtension(filename)}"/>
-                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${filenameWithoutExtension}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
             </do>
         </foreach>
     </target>

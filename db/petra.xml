@@ -6,7 +6,7 @@
          area="Petra Data"
          label="Language"
          dumpname="p_langua"
-         group="main">
+         group="common">
     <tablefield name="p_language_code_c"
                 type="varchar"
                 descr="This is the code used to identify a language."
@@ -53,7 +53,7 @@
          area="Petra Data"
          label="Frequency"
          dumpname="a_freque"
-         group="main">
+         group="common">
     <tablefield name="a_frequency_code_c"
                 type="varchar"
                 descr=""
@@ -116,7 +116,7 @@
          area="Petra Data"
          label="International Postal Type"
          dumpname="p_intern"
-         group="main">
+         group="common">
     <tablefield name="p_internat_postal_type_code_c"
                 type="varchar"
                 descr=""
@@ -155,7 +155,7 @@
          area=""
          label="Country"
          dumpname="p_countr"
-         group="main">
+         group="common">
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
@@ -275,7 +275,7 @@
          area="Petra Data"
          label="Currency"
          dumpname="a_curren"
-         group="main">
+         group="common">
     <tablefield name="a_currency_code_c"
                 type="varchar"
                 descr="This defines which currency is being used"

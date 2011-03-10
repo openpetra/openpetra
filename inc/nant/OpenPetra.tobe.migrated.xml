@@ -129,7 +129,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >
   <echo>Running on MS Windows</echo>
-  <property name="Dia.exe" value="dia.exe" overwrite="false"/> 
+  <property name="Dia.exe" value="${environment::get-variable('ProgramFiles')}\Dia\bin\dia.exe" overwrite="false"/> 
   <property name="PostgreSQL.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
   <property name="pgdump.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/pg_dump.exe" overwrite="false"/>
   <property name="MySQL.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
