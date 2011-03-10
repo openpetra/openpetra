@@ -1,4 +1,7 @@
 ShepherdPages:
+    Test: This is a test 
+    Help: This is help context 
+    Size: 324
     ShepherdPage.PersonnelShepherd:
         ID: 5
         Title: Personnel Shepherd

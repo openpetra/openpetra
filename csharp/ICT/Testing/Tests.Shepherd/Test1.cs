@@ -62,8 +62,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		public void TestPetraShepherdFormLogicHandleActionNext()
 		{
 			System.Console.WriteLine("TEST 2.1 Beginning the tests of the HandleActionNext() button.. ");
-			Tests.Shepherd.TestInterface testShepherdLogic = new Tests.Shepherd.TestInterface(); 
-			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			TLogging.Log("THIS IS A TEST."); 
+			Tests.Shepherd.TestInterface thisIsAtest = new TestInterface(); 
+			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			//TESTS to show that the HandleActionNext() method moves from page to page under normal operating circumstances..
 			System.Console.WriteLine("TEST 2.2 Checking to make sure that it starts on page number 5.");
@@ -83,7 +84,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible
 			
-			TPetraShepherdFormLogic testNotVisibleLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			TPetraShepherdFormLogic testNotVisibleLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleLogic.ShepherdPages.Pages)
     		{
@@ -105,7 +106,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not enabled
 			
-			TPetraShepherdFormLogic testNotEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			TPetraShepherdFormLogic testNotEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotEnabledLogic.ShepherdPages.Pages)
     		{
@@ -126,7 +127,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible nor enabled
 			
-			TPetraShepherdFormLogic testNotVisibleOrEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdLogic); 
+			TPetraShepherdFormLogic testNotVisibleOrEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
     		{
@@ -160,10 +161,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		}
 		*/
 		[Test]
-		public void TestPetraShepherdFormLOgicSwitchToBackPage() 
+		public void TestPetraShepherdFormLogicSwitchToBackPage() 
 		{
-			Tests.Shepherd.TestInterface testShephredLogic = new Tests.Shepherd.TestInterface(); 
-			TPetraShepherdFormLogic testFormLogicBackButton = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShephredLogic); 
+			Tests.Shepherd.TestInterface test = new TestInterface(); 
+			TPetraShepherdFormLogic testFormLogicBackButton = new TPetraShepherdFormLogic("ShepherdChurch.yaml", test); 
 			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "5", "The first page of the shephred was not 5, as expected."); 
 			testFormLogicBackButton.HandleActionNext(); 
 			Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "56", "The second page of the shepherd was not 56, as expected."); 

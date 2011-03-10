@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         string FID;
 
         /// <summary>Displayed Title for each page.</summary>
-        string FTitle;
+        protected string FTitle;
 
         ///<summary>Displayed note for each page.</summary>
         string FNote;
@@ -54,13 +54,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
         UserControl FUserControl = null;
 
         ///<summary>Namespace in which the user control can be found.</summary>
-        string FUserControlNamespace;
+        protected string FUserControlNamespace;
 
         ///<summary>Class name for the user control.</summary>
-        string FUserControlClassName;
+        protected string FUserControlClassName;
 
         ///<summary>Information to be displayed in the help dialouge.</summary>
-        string FHelpContext;
+        protected string FHelpContext;
 
         ///<summary>TODO?</summary>
         string FUserControlType;
@@ -402,9 +402,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	base.Enabled = true;
         	base.Visible = true; 
             base.FIsLastPage = true;
-            //base.UserControlClassName = "Class name"; 
-            //UserControlNamespace = "TUC_PetraShepherdFinishPage";
-            //base.Title = "Here is a summary of the information you have provided:"; */
+            base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
+            base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
+            base.FTitle = "Here is a summary of the information you have provided:";
             base.HelpContext = "Choose \'Finish\' to commit the data."; 
         }
     }
