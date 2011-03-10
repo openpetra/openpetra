@@ -141,7 +141,7 @@
     <!-- filealign="4096"  for csc not supported on mono -->
     <csc output="${dir.bin}/${AssemblyName}" 
          doc="${dir.bin}/${Namespace}.xml"
-         target="${OutputType}" debug="${compile.debug}" 
+         target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
          noconfig="true">
       <references refid="assemblyfileset-references" /> 
       <sources>
@@ -273,7 +273,7 @@
       <property name="TemplateCompile" value="${TemplateCompile}${tempTemplateCompile}" />  
     </do>
   </foreach>
-  <!-- Add the finshed project -->
+  <!-- Add the finished project -->
   <copy file="${path::combine(templatedir, 'template.csproj')}"
         tofile="${path::combine(dir.projectfiles,
                                 path::combine(devenv-name, Namespace+'.csproj'))}" 

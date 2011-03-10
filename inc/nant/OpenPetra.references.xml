@@ -37,13 +37,13 @@
   <include name="GNU.Gettext.dll"/>
   <include name="SourceGrid.dll"/>
   <include name="PdfSharp.dll"/>
-  <include name="System.Data.SQLite.DLL"/>
+  <include name="System.Data.SQLite.dll"/>
   <include name="Npgsql.dll"/>
   <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
   <include name="ICSharpCode.SharpZipLib.dll"/>
   <include name="Jayrock.Json.dll"/>
-  <include name="CMicroParser.dll" /> <!-- YAML Parser -->
+  <include name="CMicroParser.dll" /> <!-- Winforms Generator -->
 </patternset>
 
 <patternset id="NunitPattern">

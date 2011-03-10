@@ -125,7 +125,7 @@
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
-<property name="DBMS.Type" value="postgresql"
+<property name="DBMS.Type" value="sqlite"
           overwrite="false" />
 <property name="DBMS.DBName" value="openpetra" 
           overwrite="false"/>          
@@ -142,7 +142,9 @@
 <!-- compiler flags -->
 <property name="compile.debug" value="true" 
           overwrite="false" />
-
+<!-- value = anycpu causes trouble for SQLite. see bug 294 -->
+<property name="compile.platform" value="x86"
+          overwrite="false" />
 
 <!-- path to custom NAnt tasks -->
 <property name="Ict.Tools.NAntTasks.DLL" value="${path::combine(dir.bin,'Ict.Tools.NAntTasks.dll')}" 
