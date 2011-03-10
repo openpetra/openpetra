@@ -95,6 +95,13 @@
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
 <property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+
+<!-- build tools -->
+<property name="devenv-name" value="sharpdevelop3"
+          overwrite="false" />
+<property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib/NAnt.Contrib.Tasks.dll"
+          overwrite="false"/>
+<property name="Configuration" value="DEBUG" overwrite="false"/>
           
  <!-- db -->
 <property name="dir.db" value="${path::combine(dir.root, 'db')}"
