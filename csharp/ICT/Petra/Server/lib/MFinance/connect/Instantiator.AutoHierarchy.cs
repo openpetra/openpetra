@@ -2520,14 +2520,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
         /// generated method from connector
         public bool Revaluate(int ALedgerNum,
+                              int AAccoutingPeriod,
                               string ABaseCurrencyType,
                               string ARevaluationAccount,
                               string ARevaluationCostCenter,
                               string[] AForeignCurrency,
                               decimal[] ANewExchangeRate)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;STRING;STRING;STRING;STRING[];DECIMAL[];");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, ABaseCurrencyType, ARevaluationAccount, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING;STRING;STRING[];DECIMAL[];");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ABaseCurrencyType, ARevaluationAccount, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate);
         }
 
         /// generated method from connector

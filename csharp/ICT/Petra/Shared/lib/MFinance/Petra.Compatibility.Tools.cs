@@ -27,24 +27,23 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Shared.MFinance
 {
-
-	/// <summary>
-	/// Get currency info is intended to be used to get some some specific infos 
-	/// using the old petra data base entries. GetCurrencyInfon is designed to get
-	/// a rough set of information which shall be used for foreign currency 
-	/// calculations and presentations. In normal cases open petra uses the 
-	/// user defined localisation ie the presentation and rounding rules.
-	/// But if you have to work with JPY (Japanese Yen) you have to know that
-	/// you have to round to 0 digits even if your user settings have selected the 
-	/// USD and two digits rounding. 
-	/// 
-	/// The routine works error regressive that means that invalid data (currency codes)
-	/// and damaged format strings will result in 2 digit rounding as a default.
-	/// </summary>
+    /// <summary>
+    /// Get currency info is intended to be used to get some some specific infos
+    /// using the old petra data base entries. GetCurrencyInfon is designed to get
+    /// a rough set of information which shall be used for foreign currency
+    /// calculations and presentations. In normal cases open petra uses the
+    /// user defined localisation ie the presentation and rounding rules.
+    /// But if you have to work with JPY (Japanese Yen) you have to know that
+    /// you have to round to 0 digits even if your user settings have selected the
+    /// USD and two digits rounding.
+    ///
+    /// The routine works error regressive that means that invalid data (currency codes)
+    /// and damaged format strings will result in 2 digit rounding as a default.
+    /// </summary>
     public class GetCurrencyInfo
     {
         private ACurrencyTable currencyTable = null;
-        
+
         /// <summary>
         /// Constructor which automatically loads one CurrencyTable Entry defined
         /// by the parameter.
@@ -53,27 +52,29 @@ namespace Ict.Petra.Shared.MFinance
         /// currency.</param>
         public GetCurrencyInfo(string ACurrenyCode)
         {
-        	currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrenyCode, null);
+            currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrenyCode, null);
         }
-        
+
         /// <summary>
         /// Calculates the number of digits by reading the row.DisplayFormat
-        /// Entry of the currency table and convert the old petra string to an 
+        /// Entry of the currency table and convert the old petra string to an
         /// integer response.
         /// </summary>
         public int digits
         {
-        	get {
-        		if (currencyTable.Rows.Count != 0)
-        		{
-        			ACurrencyRow row = (ACurrencyRow)currencyTable[0];
-        			return new FormatConverter(row.DisplayFormat).digits;
-        		} else {
-        			return 2; // default if currency is not defined
-        		}
-        	}
+            get
+            {
+                if (currencyTable.Rows.Count != 0)
+                {
+                    ACurrencyRow row = (ACurrencyRow)currencyTable[0];
+                    return new FormatConverter(row.DisplayFormat).digits;
+                }
+                else
+                {
+                    return 2;             // default if currency is not defined
+                }
+            }
         }
-        
     }
 
     /// <summary>
@@ -83,40 +84,48 @@ namespace Ict.Petra.Shared.MFinance
     ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9").digits.ToString());<br />
     /// The result is 2,1 and 0 digits ..
     /// </summary>
-	class FormatConverter {
-		string sRegex;
-		Regex reg;
-		MatchCollection matchCollection;
-		int intDigits;
-		public FormatConverter(string strFormat)
-		{
-			sRegex = ">9.(9)+|>9$";
-			reg = new Regex(sRegex);
-			matchCollection = reg.Matches(strFormat);
-			try {
-				intDigits = (matchCollection[0].Value).Length - 3;
-				if (intDigits == -1) {
-					intDigits = 0;
-				};
-				if (intDigits < -1)
-				{
-					intDigits = 2;
-				}
-			} catch (Exception)
-			{
-				intDigits = 2; // Default ...
-			}
-		}
-		
-		/// <summary>
-		/// Property to report the number of digits
-		/// </summary>
-		public int digits
-		{
-			get {
-				return intDigits;
-			}
-		}
-	}
-	
+    class FormatConverter
+    {
+        string sRegex;
+        Regex reg;
+        MatchCollection matchCollection;
+        int intDigits;
+        public FormatConverter(string strFormat)
+        {
+            sRegex = ">9.(9)+|>9$";
+            reg = new Regex(sRegex);
+            matchCollection = reg.Matches(strFormat);
+            try
+            {
+                intDigits = (matchCollection[0].Value).Length - 3;
+
+                if (intDigits == -1)
+                {
+                    intDigits = 0;
+                }
+
+                ;
+
+                if (intDigits < -1)
+                {
+                    intDigits = 2;
+                }
+            }
+            catch (Exception)
+            {
+                intDigits = 2;                 // Default ...
+            }
+        }
+
+        /// <summary>
+        /// Property to report the number of digits
+        /// </summary>
+        public int digits
+        {
+            get
+            {
+                return intDigits;
+            }
+        }
+    }
 }
