@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<project name="WebServer-Build">
+
+<include buildfile="../inc/nant/OpenPetra.common.xml"/>
+
+<!-- Include default implementation -->
+<include buildfile="../inc/nant/OpenPetra.subdirs.xml"/> 
+
+<!-- Compat targets -->
+<include buildfile="../inc/nant/OpenPetra.tobe.migrated.xml"/>
+
+<target name="custclean"> 
+  <!-- Remove generated files from generateWebForms -->
+  <delete failonerror="false"><fileset><include name="${dir.root}/**/gen/" /></fileset></delete>
+  <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.bak" /></fileset></delete>
+  <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.error" /></fileset></delete>
+  <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.yaml.xml" /></fileset></delete>
+  <delete failonerror="false" dir="${dir.delivery}/webserver" />
+</target>
+
+<target name="generateWebforms">
+  <!-- Generate webforms --> 
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="ClientPath" value="${dir.root}/webserver"/>
+  <ExecDotNet program="${dir.bin}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateWebformsParameters}"/>
+</target>
+
+<target name="generateWebform">
+  <!-- Generate single webform -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="ClientPath" value="${dir.root}/webserver"/>
+  <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
+</target>
+
+
+<target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+  <mkdir dir="${dir.webserver.bin}" failonerror="false"/>
+  <copy todir="${dir.webserver}" overwrite="true">
+    <fileset basedir="${dir.root}/webserver/">
+      <include name="**.*" />
+    </fileset>
+  </copy>
+  
+  <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
+  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${dir.webserver}/images"/>
+  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-lang.zip" todir="${dir.webserver}/js"/>
+
+  <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
+              tofile="${dir.webserver}/server.asmx" overwrite="true"/>
+  <copy todir="${dir.webserver.bin}" overwrite="true">
+    <!-- some unmanaged dlls cause problems for mono xsp -->
+    <fileset basedir="${dir.bin}">
+      <include name="*.dll" />
+      <exclude name="Mono*" />
+    </fileset>
+  </copy>
+  <copy todir="${dir.webserver.bin}" overwrite="true">
+    <fileset basedir="${dir.root}/csharp/ThirdParty/ext.net">
+      <include name="*.dll" />
+    </fileset>
+  </copy>
+
+  <!-- Create config files, if missing -->
+  <copy file="${dir.incdir.template.etc}/web-${DBMS.Type}.config"
+        tofile="${WebServerConfigFile}">
+    <filterchain>
+      <expandproperties />
+    </filterchain>
+  </copy>
+
+<!-- MGR: TODO: Remove copy. Should be during database work! -->
+  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
+      tofile="${path::combine(dir.webserver.bin, 'version.txt')}" 
+      overwrite="true"/>
+
+  <!-- TODO: run on linux as well? -->
+  <exec program="cmd.exe" 
+          workingdir="${dir.webserver}"
+          commandline="/C start xsp2.bat --verbose --root . --port 8081 --applications /:."
+          spawn="true">
+    <environment>
+      <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+      <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\2.0"/>
+      <variable name="MONO_OPTIONS" value="--debug"/>
+    </environment>
+  </exec>
+  <echo message="in your browser, go to http://localhost:8081/"/>
+</target>
+
+</project>

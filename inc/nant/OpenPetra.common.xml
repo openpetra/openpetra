@@ -95,6 +95,9 @@
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
 <property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+ <!-- webserver -->
+<property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
+<property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
 
 <!-- build tools -->
 <property name="devenv-name" value="sharpdevelop3"
@@ -124,6 +127,8 @@
 <property name="ServerConfigFile" value="${path::combine(dir.etc, 'Server.config')}"
           overwrite="false" />
 <property name="ServerAdminConfigFile" value="${dir.root}/etc/ServerAdmin.config"
+          overwrite="false" />
+<property name="WebServerConfigFile" value="${path::combine(dir.webserver, 'web.config')}"
           overwrite="false" />
 
 <!-- Server configuration -->

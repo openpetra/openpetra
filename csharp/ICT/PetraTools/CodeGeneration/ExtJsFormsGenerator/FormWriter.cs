@@ -112,7 +112,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         public override string CalculateDestinationFilename(string AYamlFilename)
         {
-            string generatedFilesPath = System.IO.Path.GetDirectoryName(AYamlFilename) +
+            string yamlFileDirectory = System.IO.Path.GetDirectoryName(AYamlFilename);
+            string generatedFilesPath = TAppSettingsManager.GetValueStatic("deliveryPath") +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        yamlFileDirectory.Substring(yamlFileDirectory.IndexOf("webserver") + "webserver".Length) +
                                         System.IO.Path.DirectorySeparatorChar +
                                         "gen";
 
