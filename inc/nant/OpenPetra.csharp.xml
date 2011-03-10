@@ -264,7 +264,20 @@
       </items>
     </in>
     <do>
-      <loadfile file="${path::combine(templatedir, 'template.csproj.compile')}"
+      <property name="template" value="template.csproj.compile" />
+      <if test="${string::contains(filename,'.Designer.cs')}">
+        <property name="DependentUpon" value="${string::replace(filename,'.Designer.cs','.cs')}" />
+        <if test="${file::exists(DependentUpon)}">
+          <property name="template" value="template.csproj.compile.DependentUpon" />
+        </if>
+      </if>
+      <if test="${string::contains(filename,'.ManualCode.cs')}">
+        <property name="DependentUpon" value="${string::replace(filename,'.ManualCode.cs','-generated.cs')}" />
+        <if test="${file::exists(DependentUpon)}">
+          <property name="template" value="template.csproj.compile.DependentUpon" />
+        </if>
+      </if>
+      <loadfile file="${path::combine(templatedir, template)}"
                 property="tempTemplateCompile" encoding="utf-8">  
         <filterchain>
           <expandproperties />
