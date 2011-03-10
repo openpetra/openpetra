@@ -85,6 +85,9 @@
       <HintPath>../../../../Petra/Shared/_bin/Server_Client/Debug/Ict.Petra.Shared.Interfaces.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance">
+      <HintPath>..\..\..\..\Petra\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Shared.MReporting">
       <HintPath>../../../../Petra/Shared/_bin/Server_Client/Debug/Ict.Petra.Shared.MReporting.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -108,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tests.MFinance.GL.AssemblyInfo.cs" />
-    <Compile Include="Tests.MFinance.GL.Test.cs" />
+    <Compile Include="Tests.MFinance.GL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../../NUnitPetraClient/Ict.Testing.NUnitClient.csproj">

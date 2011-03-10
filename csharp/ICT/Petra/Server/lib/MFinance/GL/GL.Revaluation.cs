@@ -189,6 +189,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 // decDelta ... shall not be zero otherwise a revaluation is senseless
                 if (decDelta != 0)
                 {
+
+                	System.Diagnostics.Debug.WriteLine("xxx");
                     // Now we have the relevant Cost Center ...
                     RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
                 }
@@ -206,6 +208,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             	strArrForeignCurrencyType[intPtrToForeignData]).digits;
             CreateTransaction();
             CreateTransaction();
+            System.Diagnostics.Debug.WriteLine("yyy");
         }
 
         private void InitBatchAndJournal()
@@ -230,7 +233,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
             journal.ExchangeRateToBase = 1.0M;
-            GLDataset.AJournal.Rows.Add(journal);
+            //GLDataset.AJournal.Rows.Add(journal);
+            
+ 
+//            TVerificationResultCollection AVerifications;
+//            System.Diagnostics.Debug.WriteLine("Saved:" + (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(
+//            	ref GLDataset, out AVerifications) == TSubmitChangesResult.scrOK).ToString());
         }
 
         private void CreateTransaction()
@@ -251,21 +259,33 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             transaction.AmountInBaseCurrency = 0;
             //transaction.TransactionDate = giftbatch.GlEffectiveDate;
 
-            GLDataset.ATransaction.Rows.Add(transaction);
+            //GLDataset.ATransaction.Rows.Add(transaction);
         }
     }
 
     
-    
+    /// <summary>
+    /// Gets the specific date informations of an accounting intervall. 
+    /// </summary>
     public class GetAccountingPeriodInfo
     {
         private AAccountingPeriodTable periodTable = null;
 
+        /// <summary>
+        /// Constructor needs a valid ledger number. 
+        /// </summary>
+        /// <param name="ALedgerNumber">Ledger number</param>
         public GetAccountingPeriodInfo(int ALedgerNumber)
         {
             periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, null);
         }
 
+        /// <summary>
+        /// Selects to correct AAccountingPeriodRow or - in case of an error - 
+        /// it sets to null
+        /// </summary>
+        /// <param name="APeriodNum">Number of the requested period</param>
+        /// <returns></returns>
         private AAccountingPeriodRow GetRowOfPeriod(int APeriodNum)
         {
             if (periodTable != null)
@@ -296,11 +316,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
         }
 
+        /// <summary>
+        /// Reads the effective date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
         public DateTime GetEffectiveDateOfPeriod(int APeriodNum)
         {
             AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
 
-            if (periodRow == null)
+            if (periodRow != null)
             {
                 return periodRow.EffectiveDate;
             }
@@ -310,11 +336,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
         }
 
+        /// <summary>
+        /// Reads the end date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
         public DateTime GetDatePeriodEnd(int APeriodNum)
         {
             AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
 
-            if (periodRow == null)
+            if (periodRow != null)
             {
                 return periodRow.PeriodEndDate;
             }
@@ -324,11 +356,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
         }
 
+        /// <summary>
+        /// Reads the start date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
         public DateTime GetDatePeriodStart(int APeriodNum)
         {
             AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
 
-            if (periodRow == null)
+            if (periodRow != null)
             {
                 return periodRow.PeriodStartDate;
             }

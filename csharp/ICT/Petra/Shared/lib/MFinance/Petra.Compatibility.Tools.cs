@@ -37,6 +37,9 @@ namespace Ict.Petra.Shared.MFinance
 	/// But if you have to work with JPY (Japanese Yen) you have to know that
 	/// you have to round to 0 digits even if your user settings have selected the 
 	/// USD and two digits rounding. 
+	/// 
+	/// The routine works error regressive that means that invalid data (currency codes)
+	/// and damaged format strings will result in 2 digit rounding as a default.
 	/// </summary>
     public class GetCurrencyInfo
     {
@@ -105,6 +108,9 @@ namespace Ict.Petra.Shared.MFinance
 			}
 		}
 		
+		/// <summary>
+		/// Property to report the number of digits
+		/// </summary>
 		public int digits
 		{
 			get {

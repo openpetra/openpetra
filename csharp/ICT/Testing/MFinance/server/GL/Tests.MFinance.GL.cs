@@ -30,13 +30,15 @@ using System.IO;
 using Ict.Common;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Shared.MFinance; 
 
 namespace Tests.MFinance.GL
 {
     /// TODO write your comment here
     [TestFixture]
-    public class TMyTest
+    public class TRevaluationTests
     {
+    	int fLedgerNumber;
         /// <summary>
         /// ...
         /// </summary>
@@ -45,6 +47,7 @@ namespace Tests.MFinance.GL
         {
             new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../../../../etc/TestServer.config");
+            fLedgerNumber = 43;
         }
 
         /// <summary>
@@ -56,11 +59,36 @@ namespace Tests.MFinance.GL
             TPetraServerConnector.Disconnect();
         }
 
+        [Test]
+        public void T01_GetCurrencyInfo()
+        {
+        	Assert.AreEqual(2, new GetCurrencyInfo("USD").digits, "GetCurrencyInfo of USD");
+        	Assert.AreEqual(0, new GetCurrencyInfo("JPY").digits, "GetCurrencyInfo of Japanese Jen");
+        }
+
+        [Test]
+        public void T02_GetAccountingPeriodInfo()
+        {
+        	// 1 = I assume that allways a first record exists ...
+        	Assert.AreNotEqual(DateTime.MinValue, 
+        	                   new GetAccountingPeriodInfo(fLedgerNumber).GetDatePeriodStart(1), 
+        	                   "This value should not be DateTime.MinValue because this is an error value");
+        	Assert.AreNotEqual(DateTime.MinValue, 
+        	                   new GetAccountingPeriodInfo(fLedgerNumber).GetDatePeriodEnd(1), 
+        	                   "This value should not be DateTime.MinValue because this is an error value");
+        	Assert.AreNotEqual(DateTime.MinValue, 
+        	                   new GetAccountingPeriodInfo(fLedgerNumber).GetEffectiveDateOfPeriod(1), 
+        	                   "This value should not be DateTime.MinValue because this is an error value");
+        }
+
+        
+        // GetAccountingPeriodInfo(intLedgerNum).GetEffectiveDateOfPeriod(..)
+        
         /// <summary>
         /// Some test, please add comment
         /// </summary>
         [Test]
-        public void Revaluation()
+        public void T03_Revaluation()
         {
             string[] currencies = new string[2];
             currencies[0] = "GBP";
