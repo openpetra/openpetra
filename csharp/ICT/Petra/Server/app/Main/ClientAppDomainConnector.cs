@@ -593,7 +593,7 @@ namespace Ict.Petra.Server.App.Main
             }
 #endif
             FRemoteLoader =
-                (TRemoteLoader)(FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.App.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
+                (TRemoteLoader)(FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
 #if DEBUGMODE
             if (TSrvSetting.DL >= 10)
             {
