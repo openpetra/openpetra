@@ -26,10 +26,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
 	public class Test1
 	{
 		[Test]
+		public void TestTPetraShepherdParseYAMLFileElementsMethod()
+		{
+			//This method needs to be tested, still, but I am not sure how to do it yet because the attributes that it currently
+			//collects are not being saved anywhere in the logic yet; it just peeks at them. We need to figure out what to do with 
+			//the attributes that are collected by ParseYAMLFileELements() 
+			Tests.Shepherd.TestInterface testShepherdInterface = new TestInterface(); 
+			TPetraShepherdFormLogic testParseYAMLFileELementsLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", testShepherdInterface); 
+		}
+		[Test]
 		public void TestTPetraShepherdPagesListConstructor()
 		{	
 			TPetraShepherdPagesList testPetraShepherdPagesList = new TPetraShepherdPagesList("ShepherdChurch.yaml");
-			Assert.True(testPetraShepherdPagesList.Pages.Count == 4, "Wrong shepherd page count.");
+			Assert.True(testPetraShepherdPagesList.Pages.Count == 4, "Wrong shepherd page count; expected: " + testPetraShepherdPagesList.Pages.Count);
 	
 			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("5"), "Shepherd did not contain key 5");
 			Assert.True(testPetraShepherdPagesList.Pages.ContainsKey("56"), "Shepherd did not contain key 56");
@@ -59,10 +68,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
 
 		[Test]
-		public void TestPetraShepherdFormLogicHandleActionNext()
+		public void TestPetraShepherdFormLogicHandleActionNextNormalCircumstances()
 		{
-			System.Console.WriteLine("TEST 2.1 Beginning the tests of the HandleActionNext() button.. ");
-			TLogging.Log("THIS IS A TEST."); 
 			Tests.Shepherd.TestInterface thisIsAtest = new TestInterface(); 
 			TPetraShepherdFormLogic testFormLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
@@ -81,9 +88,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			System.Console.WriteLine("TEST 2.5 Checking to make sure that the page doesn't move off the end of the list.."); 
 			testFormLogic.HandleActionNext(); 
 			Assert.AreEqual(testFormLogic.CurrentPage.ID,"FINISHPAGE_MASTER"); 
-			
+		}
+		
+		[Test]
+		public void TestPetraShepherdFormLogicHandleActionNextOneInvisible()
+		{
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible
-			
+			Tests.Shepherd.TestInterface thisIsAtest = new TestInterface(); 
 			TPetraShepherdFormLogic testNotVisibleLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleLogic.ShepherdPages.Pages)
@@ -103,9 +114,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			testNotVisibleLogic.HandleActionNext(); 
 			Assert.AreEqual(testNotVisibleLogic.CurrentPage.ID,"12"); 
 			
-
+		}
+		
+		[Test]
+		public void TestPetraShepherdFormLogicHandleActionNextOneUnenabled()
+		{
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not enabled
 			
+			Tests.Shepherd.TestInterface thisIsAtest = new TestInterface();
 			TPetraShepherdFormLogic testNotEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotEnabledLogic.ShepherdPages.Pages)
@@ -124,9 +140,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			System.Console.WriteLine("TEST 2.10 Testing to make sure that the second page was skipped because it was made invisible."); 
 			testNotEnabledLogic.HandleActionNext(); 
 			Assert.AreEqual(testNotEnabledLogic.CurrentPage.ID,"12"); 			
-			
+		}
+		
+		[Test]
+		public void TestPetraShepherdFormLogicHandleActionNextOneInvisibleOneUnenabled()
+		{
 			//TESTS to show that the HandleActionNext() method moves from page to page when there is a Page that is not visible nor enabled
 			
+			Tests.Shepherd.TestInterface thisIsAtest = new TestInterface(); 
 			TPetraShepherdFormLogic testNotVisibleOrEnabledLogic = new TPetraShepherdFormLogic("ShepherdChurch.yaml", thisIsAtest); 
 			
 			foreach(KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
@@ -146,8 +167,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			System.Console.WriteLine("TEST 2.12 Testing to make sure that the second page was skipped because it was made invisible."); 
 			testNotVisibleOrEnabledLogic.HandleActionNext(); 
 			Assert.AreEqual(testNotVisibleOrEnabledLogic.CurrentPage.ID,"12"); 
-
-		}		
+		}
 /*		
 		[Test]
 		public void TestPetraShepherdFormLogicSwitchToStartPage()
@@ -160,6 +180,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			testFormLogicSwitchToStartPage; 
 		}
 		*/
+		
 		[Test]
 		public void TestPetraShepherdFormLogicSwitchToBackPage() 
 		{

@@ -282,8 +282,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FHelpContext = ShepherdPageNode.Attributes["HelpContext"].Value;
             TLogging.Log("~~HelpContext Assigned~~ " + FHelpContext);
 
-            FUserControlType = ShepherdPageNode.Attributes["UserControlType"].Value;
-            TLogging.Log("~~UserControlType Assigned~~ ");
+            //FUserControlType = ShepherdPageNode.Attributes["UserControlType"].Value;
+            //TLogging.Log("~~UserControlType Assigned~~ ");
 
 /*
  *          FIsLastPage=System.Convert.ToBoolean(ShepherdPageNode.Attributes["IsLastPage"].Value);
@@ -351,9 +351,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
 
-            TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.LastChild.LastChild.ChildNodes.Count);
+            TLogging.Log("TPetraShepherdPagesList currently has this many nodes: " + XmlPages.LastChild.LastChild.LastChild.ChildNodes.Count);
 
-            XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.FirstChild;
+            XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.LastChild.FirstChild;
             //...Required LastChild.LastChild.FirstChild because of the structure of the XML File after parsing.
 
             int counter = 0;
@@ -366,17 +366,24 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             XmlNodeList nodeList;
             XmlNode root = XmlPages.DocumentElement;
-            nodeList = XmlPages.LastChild.LastChild.ChildNodes;
+            nodeList = XmlPages.LastChild.LastChild.LastChild.ChildNodes;
             TLogging.Log("The amount of nodes in the nodeList in the TPetraShepherdPagesList constructor is as follows: " + nodeList.Count);
 
             foreach (XmlNode node in nodeList)
             {
-                TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(node);
-                //Conrstuctor call for each page built off an XML node.
-
-                TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
-
-                FPagesList.Add(temporaryPetraShepherdPage.ID, temporaryPetraShepherdPage);
+            	if(node.Name.Contains("SubShepherd."))
+            	{
+            		TLogging.Log("TPetraSHepherdPagesList Contsructor loop: Found a sub shepherd.. Skipping.. "); 
+            	}
+            	else
+            	{
+	                TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(node);
+	                //Conrstuctor call for each page built off an XML node.
+	
+	                TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
+	
+	                FPagesList.Add(temporaryPetraShepherdPage.ID, temporaryPetraShepherdPage);	            		
+            	}
                 counter++;
             }
 			
