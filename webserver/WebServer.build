@@ -11,7 +11,6 @@
 
 <target name="custclean"> 
   <!-- Remove generated files from generateWebForms -->
-  <delete failonerror="false"><fileset><include name="${dir.root}/**/gen/" /></fileset></delete>
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.bak" /></fileset></delete>
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.error" /></fileset></delete>
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.yaml.xml" /></fileset></delete>
@@ -34,12 +33,12 @@
   <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
 </target>
 
-
-<target name="startWebServer" description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
+<target name="prepareWebServer" description="create a directory in delivery with all files required for the webserver">
   <mkdir dir="${dir.webserver.bin}" failonerror="false"/>
   <copy todir="${dir.webserver}" overwrite="true">
     <fileset basedir="${dir.root}/webserver/">
       <include name="**.*" />
+      <exclude name="WebServer.build" />
     </fileset>
   </copy>
   
@@ -53,9 +52,13 @@
   <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
               tofile="${dir.webserver}/server.asmx" overwrite="true"/>
   <copy todir="${dir.webserver.bin}" overwrite="true">
-    <!-- some unmanaged dlls cause problems for mono xsp -->
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
+      <include name="PetraServerConsole.exe" />
+      <exclude name="Tests-*"/>
+      <exclude name="Ict.Petra.Client.*"/>
+      <exclude name="Ict.Tools.*"/>
+      <!-- some unmanaged dlls cause problems for mono xsp -->
       <exclude name="Mono*" />
     </fileset>
   </copy>
@@ -77,6 +80,10 @@
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.webserver.bin, 'version.txt')}" 
       overwrite="true"/>
+</target>
+
+<target name="startWebServer" depends="prepareWebServer"
+      description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
 
   <!-- TODO: run on linux as well? -->
   <exec program="cmd.exe" 
@@ -90,6 +97,50 @@
     </environment>
   </exec>
   <echo message="in your browser, go to http://localhost:8081/"/>
+</target>
+
+<target name="packWebApp" depends="clean, prepareWebServer, generateWebforms">
+  <copy file="${dir.webserver}/web.config" tofile="${tempdir}/web-sample.config" overwrite="true"/>
+  <zip zipfile="${dir.delivery}/WebRelease.zip">
+    <fileset basedir="${dir.webserver.bin}" prefix="webserver/bin">
+      <include name="*.dll" />
+      <include name="*.exe" />
+      <exclude name="PetraClient.exe" />
+      <include name="version.txt" />
+    </fileset>
+    <fileset basedir="${dir.webserver}/js" prefix="webserver/js">
+      <include name="**.js" />
+    </fileset>
+    <fileset basedir="${dir.webserver}/images" prefix="webserver/images">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${dir.webserver}/img" prefix="webserver/img">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${dir.webserver}/css" prefix="webserver/css">
+      <include name="**.css" />
+    </fileset>
+    <fileset basedir="${dir.webserver}/Apps" prefix="webserver/Apps">
+      <include name="**.js" />
+      <include name="**.html" />
+      <include name="**.png" />
+      <include name="**.aspx" />
+    </fileset>
+
+    <fileset basedir="${dir.webserver}" prefix="webserver">
+      <include name="*.*" />
+      <exclude name="web.config" />
+      <exclude name="index.html" />
+    </fileset>
+    <fileset basedir="${tempdir}" prefix="webserver">
+      <include name="web-sample.config" />
+    </fileset>
+
+    <fileset basedir="${dir.root}/demodata/formletters" prefix="formletters">
+      <include name="*.*" />
+    </fileset>
+  </zip>
+  <delete file="${tempdir}/web-sample.config"/>
 </target>
 
 </project>
