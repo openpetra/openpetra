@@ -416,8 +416,9 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public static void GetCSFilesInProject(string AProjName, ref List <CSParser>ACSFiles)
         {
-throw new NotImplementedException();
-        	if (!File.Exists(AProjName))
+            throw new NotImplementedException();
+
+            if (!File.Exists(AProjName))
             {
                 return;
             }
@@ -533,43 +534,56 @@ throw new NotImplementedException();
         /// <summary>
         /// Reads in the name space maps for all other assemblies
         /// </summary>
-        private static void ReadNamespaceMaps() {
-        	if (null == _nsmap) { // singelton
-        		_nsmap = new Hashtable();
-	        	// TODO: The directory should not be hardcoded!!
-	        	string[] filePaths = Directory.GetFiles(ICTPath + "/../../delivery/nsMap", "*.namespace-map");
-	            foreach (string filename in filePaths) {
-	                // Read in the file
-	                StreamReader sr = new StreamReader(filename);
-	                while (sr.Peek() >= 0) {
-	                    string line = sr.ReadLine();
-	                    Match match = exceptionRegex.Match(line);
-	                    if (match.Success && match.Groups.Count > 2) {
-	                        string key = match.Groups[1].ToString();
-	                        string val = match.Groups[2].ToString();
-				            if (!_nsmap.Contains(key)) {
-				            	_nsmap.Add(key, new List<string>());
-				            }
-	                        // Add value as directory name TODO: Convention of "Ict." only once in name!!
-	                        ((List<string>)_nsmap[key]).Add(ICTPath + val.Replace("Ict.", "/").Replace('.', '/'));
-	                    }
-	                }
-	                sr.Close();
-	            }
-        	}
+        private static void ReadNamespaceMaps()
+        {
+            if (null == _nsmap)       // singelton
+            {
+                _nsmap = new Hashtable();
+                // TODO: The directory should not be hardcoded!!
+                string[] filePaths = Directory.GetFiles(ICTPath + "/../../delivery/nsMap", "*.namespace-map");
+
+                foreach (string filename in filePaths)
+                {
+                    // Read in the file
+                    StreamReader sr = new StreamReader(filename);
+
+                    while (sr.Peek() >= 0)
+                    {
+                        string line = sr.ReadLine();
+                        Match match = exceptionRegex.Match(line);
+
+                        if (match.Success && (match.Groups.Count > 2))
+                        {
+                            string key = match.Groups[1].ToString();
+                            string val = match.Groups[2].ToString();
+
+                            if (!_nsmap.Contains(key))
+                            {
+                                _nsmap.Add(key, new List <string>());
+                            }
+
+                            // Add value as directory name TODO: Convention of "Ict." only once in name!!
+                            ((List <string> )_nsmap[key]).Add(ICTPath + val.Replace("Ict.", "/").Replace('.', '/'));
+                        }
+                    }
+
+                    sr.Close();
+                }
+            }
         }
-        
+
         /// <summary>
         /// Reads the nsmap generated from csdepend and searches for all directories
         /// including this namespace
         /// </summary>
         /// <param name="ns"></param>
         /// <returns></returns>
-        public static List<string> GetSourceDirectory(string ns)
+        public static List <string>GetSourceDirectory(string ns)
         {
-        	ReadNamespaceMaps();
-        	return (List<string>)_nsmap[ns];
+            ReadNamespaceMaps();
+            return (List <string> )_nsmap[ns];
         }
+
         private static Hashtable _CSFilesPerDir = new Hashtable();
 
         /// <summary>
@@ -578,19 +592,25 @@ throw new NotImplementedException();
         /// </summary>
         /// <param name="dir">string with the directory to parse</param>
         /// <returns>List of CSParser instances</returns>
-        public static List <CSParser> GetCSFilesForDirectory(string dir, SearchOption option)
+        public static List <CSParser>GetCSFilesForDirectory(string dir, SearchOption option)
         {
-        	string dirfull = Path.GetFullPath(dir);
-        	if (! _CSFilesPerDir.Contains(dirfull)) {
-            	List <CSParser> CSFiles = new List <CSParser>();
-		        foreach (string filename in Directory.GetFiles(dir, "*.cs", option)) {
-            		CSFiles.Add(new CSParser(filename));
-		        }
-        		_CSFilesPerDir.Add(dirfull, CSFiles);
-        	}
-        	return (List <CSParser>)_CSFilesPerDir[dirfull];
+            string dirfull = Path.GetFullPath(dir);
+
+            if (!_CSFilesPerDir.Contains(dirfull))
+            {
+                List <CSParser>CSFiles = new List <CSParser>();
+
+                foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
+                {
+                    CSFiles.Add(new CSParser(filename));
+                }
+
+                _CSFilesPerDir.Add(dirfull, CSFiles);
+            }
+
+            return (List <CSParser> )_CSFilesPerDir[dirfull];
         }
-        
+
         /// <summary>
         /// get the web connector classes that fit the server namespace
         /// </summary>
@@ -598,21 +618,29 @@ throw new NotImplementedException();
         /// <returns></returns>
         public static List <ClassNode>GetWebConnectorClasses(string AServerNamespace)
         {
-        	// Look up in nsmap for directory
-        	List<string> dirList = GetSourceDirectory(AServerNamespace);       	
-        	if (null == dirList) {
-        		return null;
-        	}
-        	List <CSParser> CSFiles = new List <CSParser>();
-        	foreach (string dir in dirList) {
-	          Console.WriteLine("Namespace '"+ AServerNamespace + "' found in '" + dir + "'\n");
-	          foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly)) {
-	          	// Copy the list, because namespace could be in more then one directory
-	          	CSFiles.Add(tempCSFile);
-	          }
-        	}
-			return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
-	   }
+            // Look up in nsmap for directory
+            List <string>dirList = GetSourceDirectory(AServerNamespace);
+
+            if (null == dirList)
+            {
+                return null;
+            }
+
+            List <CSParser>CSFiles = new List <CSParser>();
+
+            foreach (string dir in dirList)
+            {
+                Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + dir + "'\n");
+
+                foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly))
+                {
+                    // Copy the list, because namespace could be in more then one directory
+                    CSFiles.Add(tempCSFile);
+                }
+            }
+
+            return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
+        }
 
         /// <summary>
         /// check if there is a webconnector method for that table and function, eg CreateNew + AApDocument

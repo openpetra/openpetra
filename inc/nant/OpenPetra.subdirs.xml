@@ -12,6 +12,11 @@
   <call target="internal-subdirs" />
 </target>
 
+<target name="uncrustify">
+  <property name="target" value="uncrustify" />
+  <call target="internal-subdirs" />
+</target>
+
 <target name="compile" >
   <property name="target" value="compile" />
   <call target="internal-subdirs" />

@@ -415,10 +415,12 @@ namespace Ict.Petra.Server.App.ClientDomain
                 ChannelProperties.Add("port", RemotingPortInt.ToString());
 
                 string SpecificIPAddress = TAppSettingsManager.GetValueStatic("ListenOnIPAddress", "", false);
+
                 if (SpecificIPAddress.Length > 0)
                 {
                     ChannelProperties.Add("machineName", SpecificIPAddress);
                 }
+
                 FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
                 ChannelServices.RegisterChannel(FTcpChannel, false);
             }

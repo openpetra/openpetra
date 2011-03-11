@@ -12,6 +12,10 @@
   </delete>
 </target>
 
+<target name="uncrustify">
+  <!-- nothing to do here -->
+</target>
+
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">

@@ -33,7 +33,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces; // Implicit reference  
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;

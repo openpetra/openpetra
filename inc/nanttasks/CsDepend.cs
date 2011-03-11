@@ -91,7 +91,7 @@ namespace Ict.Tools.NAntTasks
 </patternset>
 
 </project>
-"                                                                                                                                                                                                                                                                                                                                                                                                                                                ;
+";
         const string NANT_REFERENCE_PATTERNSET_TEMPLATE = @"
   <patternset refid=""{0}"" />";
 
@@ -110,7 +110,7 @@ namespace Ict.Tools.NAntTasks
   <property name=""target"" value=""compile"" overwrite=""false"" />
   <call target=""${{target}}"" cascade=""false"" />
 </target>
-"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
+";
         const string NANT_FILE_REFERENCE_INC_TEMPLATE = @"
   <include name=""{0}.dll""/>"                                                            ;
 
@@ -450,12 +450,13 @@ namespace Ict.Tools.NAntTasks
             string targets = String.Empty;
             bool referenceAdded = false;
             ArrayList knownTargets = new ArrayList();
-			string additionalRefsString = String.Empty;
-			
-			foreach (string addRef in _additionalRefs.Split(new char[]{',',';'}, StringSplitOptions.RemoveEmptyEntries)) {
-				additionalRefsString += string.Format(NANT_REFERENCE_PATTERNSET_TEMPLATE, addRef.Trim());
-			}
-            
+            string additionalRefsString = String.Empty;
+
+            foreach (string addRef in _additionalRefs.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                additionalRefsString += string.Format(NANT_REFERENCE_PATTERNSET_TEMPLATE, addRef.Trim());
+            }
+
             foreach (AssemblyData assembly in _assembly2data.Values)
             {
                 Log(Level.Debug, "Processing assembly '" + assembly.name + "'");
@@ -506,7 +507,7 @@ namespace Ict.Tools.NAntTasks
                 if (nsDefault == assembly.name)   // This one is written at the end
                 {   // Add the references at the beginning of the targets
                     targets = string.Format(NANT_REFERENCE_TEMPLATE, assembly.name, refs + additionalRefsString,
-                	                        depstring, GetUUID(assembly.name), _outputtpye) + targets;
+                        depstring, GetUUID(assembly.name), _outputtpye) + targets;
                     referenceAdded = true;
                 }
                 else
@@ -516,7 +517,7 @@ namespace Ict.Tools.NAntTasks
                     Log(Level.Debug, "Write filename: " + filename);
                     StreamWriter sw = new StreamWriter(filename);
                     sw.Write(string.Format(NANT_BUILD_FILE_TEMPLATE, DATE_TIME_STRING,
-                            assembly.name, refs + additionalRefsString, buildincfile, 
+                            assembly.name, refs + additionalRefsString, buildincfile,
                             GetUUID(assembly.name), _outputtpye));
                     sw.Close();
                     // Add a target for compiling this namespace

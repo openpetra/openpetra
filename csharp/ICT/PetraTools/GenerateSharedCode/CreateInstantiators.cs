@@ -290,13 +290,13 @@ class CreateInstantiators : AutoGenerationWriter
         if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/" + module))
         {
             // any class in the module can contain a webconnector
-            CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/" + module, 
-                                                                     SearchOption.AllDirectories);
-
-        } else {
-        	CSFiles = new List <CSParser>();
+            CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/" + module,
+                SearchOption.AllDirectories);
         }
-
+        else
+        {
+            CSFiles = new List <CSParser>();
+        }
 
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
         interfacesSnippet.SetCodelet("METHOD", "");
@@ -567,8 +567,8 @@ class CreateInstantiators : AutoGenerationWriter
     public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         // get the appropriate cs file
-        CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces", 
-                                                                     SearchOption.TopDirectoryOnly);
+        CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces",
+            SearchOption.TopDirectoryOnly);
 
         foreach (TNamespace tn in ANamespaces)
         {
