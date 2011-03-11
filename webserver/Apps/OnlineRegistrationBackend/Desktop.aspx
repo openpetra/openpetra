@@ -6,12 +6,11 @@
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
 <%@ Assembly Name="Ict.Common" %>
-<%@ Assembly Name="PetraServerWebService" %>
-<%@ Assembly Name="Ict.Petra.Server.MConference" %>
-<%@ Assembly Name="Ict.Petra.Shared.MConference.DataSets" %>
-<%@ Assembly Name="Ict.Petra.Shared.MPersonnel" %>
-<%@ Assembly Name="Ict.Petra.Shared.MPersonnel.DataTables" %>
-<%@ Assembly Name="Ict.Petra.Server.MPersonnel" %>
+<%@ Assembly Name="Ict.Petra.Server.app.WebService" %>
+<%@ Assembly Name="Ict.Petra.Server.lib.MConference" %>
+<%@ Assembly Name="Ict.Petra.Shared.lib.data" %>
+<%@ Assembly Name="Ict.Petra.Shared.lib.MPersonnel" %>
+<%@ Assembly Name="Ict.Petra.Server.lib.MPersonnel" %>
 <%@ Import Namespace="Ict.Common" %>
 <%@ Import Namespace="PetraWebService" %>
 <%@ Import Namespace="Ict.Petra.Server.MConference.Applications" %>

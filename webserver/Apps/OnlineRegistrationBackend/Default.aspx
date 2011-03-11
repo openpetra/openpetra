@@ -2,7 +2,7 @@
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
 <%@ Assembly Name="Ict.Common" %>
-<%@ Assembly Name="PetraServerWebService" %>
+<%@ Assembly Name="Ict.Petra.Server.app.WebService" %>
 <%@ Import Namespace="Ict.Common" %>
 <%@ Import Namespace="PetraWebService" %>
 
