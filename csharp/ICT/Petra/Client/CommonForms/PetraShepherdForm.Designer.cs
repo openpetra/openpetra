@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnFinish = new System.Windows.Forms.Button();
             this.pnlNavigation = new System.Windows.Forms.Panel();
             this.pnlContent = new System.Windows.Forms.Panel();
-            this.testStatusMessage = new System.Windows.Forms.TextBox();
+            //this.testStatusMessage = new System.Windows.Forms.TextBox();
             this.lblHeading2 = new System.Windows.Forms.Label();
             this.lblHeading1 = new System.Windows.Forms.Label();
             this.pnlHeadings = new System.Windows.Forms.Panel();
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.CommonForms
             //
             this.pnlContent.AutoSize = true;
             this.pnlContent.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlContent.Controls.Add(this.testStatusMessage);
+            //this.pnlContent.Controls.Add(this.testStatusMessage);
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.Location = new System.Drawing.Point(157, 40);
             this.pnlContent.Name = "pnlContent";
@@ -187,11 +187,13 @@ namespace Ict.Petra.Client.CommonForms
             //
             // testStatusMessage
             //
+            /*
             this.testStatusMessage.Location = new System.Drawing.Point(35, 112);
             this.testStatusMessage.Name = "testStatusMessage";
             this.testStatusMessage.Size = new System.Drawing.Size(184, 20);
             this.testStatusMessage.TabIndex = 0;
             this.testStatusMessage.TextChanged += new System.EventHandler(this.TextBox1TextChanged);
+            */
             //
             // lblHeading2
             //
@@ -315,7 +317,7 @@ namespace Ict.Petra.Client.CommonForms
         private System.Windows.Forms.Panel pnlHeadings;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel1;
-        protected System.Windows.Forms.TextBox testStatusMessage;
+        //protected System.Windows.Forms.TextBox testStatusMessage;
 
         protected System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;

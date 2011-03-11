@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
-                testStatusMessage.Text = FLogic.CurrentPage.ID;
+                //testStatusMessage.Text = FLogic.CurrentPage.ID;
             }
             catch (Exception exception)
             {
