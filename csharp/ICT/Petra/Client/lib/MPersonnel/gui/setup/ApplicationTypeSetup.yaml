@@ -32,19 +32,14 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailAppTypeName, txtDetailAppTypeDescr]
-                Row1: [lblAppFormType, rgrDetailAppFormType]
+                Row1: [rgrDetailAppFormType]
                 Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row3: [chkDetailDeletableFlag]                
-        lblAppFormType: {Label=Form Type, Align=right, ColSpan=0}
-#        Empty:
         rgrDetailAppFormType:
             OptionalValues: ["SHORT FORM", "LONG FORM"]
             Label: Form Type
             BorderVisible: false
             ControlsOrientation: horizontal
-#            Align: Left
-#            Width: 200
-#            Height: 45
         txtDetailAppTypeName: {Label=Application Type, CharacterCasing=Upper}
         txtDetailAppTypeDescr: {Label=Description, Width=110}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}

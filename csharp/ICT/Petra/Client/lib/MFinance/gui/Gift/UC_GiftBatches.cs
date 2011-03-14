@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -125,6 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
       FPetraUtilsObject.SetStatusBarText(cmbDetailCurrencyCode, Catalog.GetString("Select a currency code to use for the journal transactions."));
       cmbDetailCurrencyCode.InitialiseUserControl();
       FPetraUtilsObject.SetStatusBarText(txtDetailExchangeRateToBase, Catalog.GetString("Enter the exchange rate from the transaction currency to base."));
+      FPetraUtilsObject.SetStatusBarText(rgrDetailGiftType, Catalog.GetString("Enter the gift type (gift/gift in kind/etc.)"));
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Batch Number", FMainDS.AGiftBatch.ColumnBatchNumber);
       grdDetails.AddTextColumn("Batch Status", FMainDS.AGiftBatch.ColumnBatchStatus);
@@ -246,6 +247,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
             cmbDetailCurrencyCode.SetSelectedString(ARow.CurrencyCode);
             txtDetailExchangeRateToBase.Text = ARow.ExchangeRateToBase.ToString();
+            if(ARow.GiftType == "Gift")
+            {
+                rbtGift.Checked = true;
+                rbtGiftInKind.Checked = false;
+                rbtOther.Checked = false;
+            }
+            else if(ARow.GiftType == "Gift In Kind")
+            {
+                rbtGift.Checked = false;
+                rbtGiftInKind.Checked = true;
+                rbtOther.Checked = false;
+            }
+            else if(ARow.GiftType == "Other")
+            {
+                rbtGift.Checked = false;
+                rbtGiftInKind.Checked = false;
+                rbtOther.Checked = true;
+            }
             ShowDetailsManual(ARow);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
@@ -289,6 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.GlEffectiveDate = dtpDetailGlEffectiveDate.Date.Value;
             ARow.CurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
             ARow.ExchangeRateToBase = Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
+            ARow.GiftType = rbtGift.Checked ? rbtGift.Text : rbtGiftInKind.Checked ? rbtGiftInKind.Text : rbtOther.Checked ? rbtOther.Text : null;
             ARow.EndEdit();
         }
     }

@@ -71,10 +71,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
       this.btnNew.Text = Catalog.GetString("New");
       this.lblDetailAppTypeName.Text = Catalog.GetString("Application Type:");
       this.lblDetailAppTypeDescr.Text = Catalog.GetString("Description:");
-      this.lblAppFormType.Text = Catalog.GetString("Form Type:");
       this.rbtSHORTFORM.Text = Catalog.GetString("SHORT FORM");
       this.rbtLONGFORM.Text = Catalog.GetString("LONG FORM");
       this.rgrDetailAppFormType.Text = Catalog.GetString("Form Type");
+      this.lblDetailAppFormType.Text = Catalog.GetString("Form Type:");
       this.lblDetailUnassignableFlag.Text = Catalog.GetString("Unassignable:");
       this.lblDetailUnassignableDate.Text = Catalog.GetString("Unassignable Date:");
       this.lblDetailDeletableFlag.Text = Catalog.GetString("Deletable:");
@@ -257,7 +257,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
             if (ARow.IsAppFormTypeNull())
             {
-                rbtSHORTFORM.Checked = true;
+                if(ARow.RowState == DataRowState.Added)
+                {
+                    rbtSHORTFORM.Checked = true;
+                    rbtLONGFORM.Checked = false;
+                }
+                else
+                {
+                    rbtSHORTFORM.Checked = false;
+                    rbtLONGFORM.Checked = false;
+                }
             }
             else
             {
@@ -268,8 +277,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 }
                 else if(ARow.AppFormType == "LONG FORM")
                 {
-                    rbtLONGFORM.Checked = true;
                     rbtSHORTFORM.Checked = false;
+                    rbtLONGFORM.Checked = true;
                 }
             }
             if (ARow.IsUnassignableFlagNull())
@@ -328,17 +337,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 ARow.AppTypeDescr = txtDetailAppTypeDescr.Text;
             }
-
-            if (rbtSHORTFORM.Checked)
-            {
-                ARow.AppFormType = rbtSHORTFORM.Text;
-            }
-            else if(rbtLONGFORM.Checked)
-            {
-                ARow.AppFormType = rbtLONGFORM.Text;
-            }
-            
-            
+            ARow.AppFormType = rbtSHORTFORM.Checked ? rbtSHORTFORM.Text : rbtLONGFORM.Checked ? rbtLONGFORM.Text : null;
             ARow.UnassignableFlag = chkDetailUnassignableFlag.Checked;
             if (dtpDetailUnassignableDate.Date == null)
             {
