@@ -100,9 +100,7 @@ namespace Tests.MFinance.GL
             decimal[] rates = new decimal[2];
             rates[0] = 1.234m;
             rates[1] = 2.345m;
-            TRevaluationWebConnector.Revaluate(43, 1, "EUR",
-                "5003", "3700",
-                currencies, rates);
+            TRevaluationWebConnector.Revaluate(43, 1, "3700", currencies, rates);
         }
     }
 }

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -70,14 +71,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool Revaluate(
             int ALedgerNum,
             int AAccoutingPeriod,
-            string ABaseCurrencyType,
-            string ARevaluationAccount,
             string ARevaluationCostCenter,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate)
         {
             CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum, AAccoutingPeriod,
-                ABaseCurrencyType, ARevaluationAccount, ARevaluationCostCenter,
+                ARevaluationCostCenter,
                 AForeignCurrency, ANewExchangeRate);
 
             return revaluation.RunRevaluation();
@@ -94,11 +93,12 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         private int intLedgerNum;
         private int intAccountingPeriod;
-        private string strBaseCurrencyType;
-        private string strRevaluationAccount;
         private string strRevaluationCostCenter;
         private string[] strArrForeignCurrencyType;
         private decimal[] decArrExchangeRate;
+
+        private string strBaseCurrencyType;
+        private string strRevaluationAccount;
 
         private int intPtrToForeignData;
 
@@ -114,38 +114,52 @@ namespace Ict.Petra.Server.MFinance.GL
         private ABatchRow batch;
         private AJournalRow journal;
 
-        private bool blnReturnValue;
+        TVerificationResultCollection verificationCollection = null;
+        TResultSeverity resultSeverity = TResultSeverity.Resv_Noncritical;
+        private bool blnVerificationCollectionContainsData = false;
+
 
         /// <summary>
         /// Constructor to initialize a variable set.
         /// </summary>
         /// <param name="ALedgerNum"></param>
         /// <param name="AAccoutingPeriod"></param>
-        /// <param name="ABaseCurrencyType"></param>
-        /// <param name="ARevaluationAccount"></param>
         /// <param name="ARevaluationCostCenter"></param>
         /// <param name="AForeignCurrency"></param>
         /// <param name="ANewExchangeRate"></param>
         public CLSRevaluation(int ALedgerNum,
             int AAccoutingPeriod,
-            string ABaseCurrencyType,
-            string ARevaluationAccount,
             string ARevaluationCostCenter,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate)
         {
             intLedgerNum = ALedgerNum;
             intAccountingPeriod = AAccoutingPeriod;
-            strBaseCurrencyType = ABaseCurrencyType;
-            strRevaluationAccount = new GetLedgerInfo(ALedgerNum).RevaluationAccount;
+            GetLedgerInfo gli = new GetLedgerInfo(ALedgerNum);
+            strBaseCurrencyType = gli.BaseCurrency;
+            strRevaluationAccount = gli.RevaluationAccount;
             strRevaluationCostCenter = ARevaluationCostCenter;
             strArrForeignCurrencyType = AForeignCurrency;
             decArrExchangeRate = ANewExchangeRate;
-            blnReturnValue = false;
+            blnVerificationCollectionContainsData = false;
         }
 
         public bool RunRevaluation()
         {
+            try
+            {
+                RunRevaluationIntern();
+            }
+            catch (RevaluationException)
+            {
+            }
+            return resultSeverity == TResultSeverity.Resv_Critical;
+        }
+
+        private void RunRevaluationIntern()
+        {
+            //AddVerificationResultMessage("Test","Test", TResultSeverity.Resv_Critical);
+            //throw new RevaluationException();
             AAccountTable accountTable =
                 AAccountAccess.LoadViaALedger(intLedgerNum, null);
             AGeneralLedgerMasterTable generalLedgerMasterTable =
@@ -188,9 +202,6 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
-
-            System.Diagnostics.Debug.WriteLine("blnReturnValue: " + blnReturnValue.ToString());
-            return blnReturnValue;
         }
 
         private void RevaluateAccount(string ARelevantAccount)
@@ -211,12 +222,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
                 decAccActBaseRequired = Math.Round(decAccActBaseRequired, intNoOfForeignDigts);
 
-                decDelta = decAccActBase - decAccActBaseRequired;
+                decDelta = decAccActBaseRequired - decAccActBase;
 
                 // decDelta ... shall not be zero otherwise a revaluation is senseless
                 if (decDelta != 0)
                 {
-                    System.Diagnostics.Debug.WriteLine("xxx");
                     // Now we have the relevant Cost Center ...
                     RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
                 }
@@ -242,32 +252,32 @@ namespace Ict.Petra.Server.MFinance.GL
             string strAccountTo;
             bool blnDebitFlag;
 
-            if (decDelta < 0)
+            if (decDelta > 0)
             {
                 strMessage = strMsgGain;
-                strAccountTo = strRevaluationAccount;
-                strAccountFrom = ARelevantAccount;
                 blnDebitFlag = true;
             }
             else
             {
                 strMessage = strMsgLoss;
-                strAccountTo = ARelevantAccount;
-                strAccountFrom = strRevaluationAccount;
                 blnDebitFlag = false;
             }
 
+            strAccountTo = ARelevantAccount;
+            strAccountFrom = strRevaluationAccount;
+
+            decDelta = Math.Abs(decDelta);
+
             strMessage = String.Format(strMessage, ARelevantAccount, ACostCenter);
 
-            CreateTransaction(strMessage, strAccountFrom, blnDebitFlag, ACostCenter);
-            CreateTransaction(strMessage, strAccountTo, !blnDebitFlag, ACostCenter);
+            CreateTransaction(strMessage, strAccountFrom, !blnDebitFlag, ACostCenter);
+            CreateTransaction(strMessage, strAccountTo, blnDebitFlag, ACostCenter);
             journal.JournalDebitTotal = journal.JournalDebitTotal + decDelta;
             journal.JournalCreditTotal = journal.JournalCreditTotal + decDelta;
         }
 
         private void InitBatchAndJournal()
         {
-            blnReturnValue = false;
             GLDataset = TTransactionWebConnector.CreateABatch(intLedgerNum);
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
@@ -306,11 +316,10 @@ namespace Ict.Petra.Server.MFinance.GL
             transaction.AccountCode = AAccount;
             transaction.CostCentreCode = ACostCenter;
             transaction.Narrative = AMessage;
-            transaction.Reference = Catalog.GetString("FX REVAL");
+            transaction.Reference = MFinanceConstants.TRANSACTION_FX_REVAL;
             transaction.DebitCreditIndicator = ADebitFlag;
-            transaction.TransactionAmount = 0;
             transaction.AmountInBaseCurrency = decDelta;
-            transaction.TransactionAmount = decDelta;
+            transaction.TransactionAmount = 0;
             transaction.TransactionDate = batch.DateEffective;
 
             GLDataset.ATransaction.Rows.Add(transaction);
@@ -321,13 +330,40 @@ namespace Ict.Petra.Server.MFinance.GL
             if (GLDataset != null)
             {
                 TVerificationResultCollection AVerifications;
-                blnReturnValue = (TTransactionWebConnector.SaveGLBatchTDS(
-                                      ref GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
-//              blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
-//                      batch.LedgerNumber, batch.BatchNumber, out AVerifications)
-//                      == TSubmitChangesResult.scrOK);
+                bool blnReturnValue = (TTransactionWebConnector.SaveGLBatchTDS(
+                                           ref GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
+
+                if (blnReturnValue)
+                {
+                    blnVerificationCollectionContainsData = true;
+                }
+
+                ;
+                blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
+                                      batch.LedgerNumber, batch.BatchNumber, out AVerifications));
             }
         }
+
+        public void AddVerificationResultMessage(
+            string AResultContext, string AResultText, TResultSeverity AResultSeverity)
+        {
+            if (verificationCollection == null)
+            {
+                verificationCollection = new TVerificationResultCollection();
+            }
+
+            verificationCollection.Add(new TVerificationResult(
+                    AResultContext, AResultText, AResultSeverity));
+
+            if (AResultSeverity == TResultSeverity.Resv_Critical)
+            {
+                resultSeverity = TResultSeverity.Resv_Critical;
+            }
+        }
+    }
+
+    public class RevaluationException : System.Exception
+    {
     }
 
 
@@ -479,6 +515,15 @@ namespace Ict.Petra.Server.MFinance.GL
                     throw new InvalidLedgerInfoException(
                         String.Format(message, ledgerNumber), catchedException);
                 }
+            }
+        }
+
+        public string BaseCurrency
+        {
+            get
+            {
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.BaseCurrency;
             }
         }
     }

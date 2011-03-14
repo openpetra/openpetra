@@ -251,10 +251,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else if (Batch.BatchCreditTotal == 0)
             {
-                AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
-                        TResultSeverity.Resv_Critical));
+//                AVerifications.Add(new TVerificationResult(
+//                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+//                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
+//                        TResultSeverity.Resv_Critical));
             }
             else if ((Batch.BatchControlTotal != 0) && (Convert.ToDecimal(Batch.BatchControlTotal) != Convert.ToDecimal(Batch.BatchCreditTotal)))
             {
@@ -282,8 +282,6 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 // just make sure that the correct BatchPeriod is used
                 Batch.BatchPeriod = DateEffectivePeriodNumber;
-
-                // TODO: BatchYear?
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -294,8 +292,6 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 journal.DateEffective = Batch.DateEffective;
                 journal.JournalPeriod = Batch.BatchPeriod;
-
-                // TODO: JournalYear?
 
                 journal.JournalCreditTotal = 0.0M;
                 journal.JournalDebitTotal = 0.0M;
@@ -350,14 +346,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
-                            AVerifications.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                    String.Format(Catalog.GetString(
-                                            "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
-                                        transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
-                                        Account.ForeignCurrencyCode,
-                                        transaction.AccountCode),
-                                    TResultSeverity.Resv_Critical));
+                            if (false)
+                            {
+                                AVerifications.Add(new TVerificationResult(
+                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                        String.Format(Catalog.GetString(
+                                                "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
+                                            transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
+                                            Account.ForeignCurrencyCode,
+                                            transaction.AccountCode),
+                                        TResultSeverity.Resv_Critical));
+                            }
                         }
                     }
 

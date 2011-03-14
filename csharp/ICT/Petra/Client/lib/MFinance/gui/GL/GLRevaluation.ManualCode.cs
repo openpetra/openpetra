@@ -46,6 +46,8 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
 
+using Ict.Petra.Client.App.Core.RemoteObjects;
+
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     /// <summary>
@@ -70,6 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
+
         LinkClickDelete linkClickDelete = new LinkClickDelete();
 
         /// <summary>
@@ -91,9 +94,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     out EndDateLastForwardingPeriod,
                     out DefaultDate);
 
+
+                //GetCurrencyInfo getCurrencyInfo = new GetCurrencyInfo(FLedgerNumber);
+                //getCurrencyInfo.
                 CreateDataGridHeader();
                 GetListOfRevaluationCurrencies();
-
 
                 LoadUserDefaults();
 
@@ -249,6 +254,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunRevaluation(object btn, EventArgs e)
         {
+            //  TRemote.MFinance.GL.WebConnectors
+
+            int intUsedEntries = 0;
+
+            for (int i = 0; i < currencyExchangeList.Count; ++i)
+            {
+                if (currencyExchangeList[i].DoRevaluation)
+                {
+                    ++intUsedEntries;
+                }
+            }
+
+            string[] currencies = new string[intUsedEntries];
+            decimal[] rates = new decimal[intUsedEntries];
+            int j = 0;
+
+            for (int i = 0; i < currencyExchangeList.Count; ++i)
+            {
+                if (currencyExchangeList[i].DoRevaluation)
+                {
+                    currencies[j] = currencyExchangeList[i].Currency;
+                    rates[j] = currencyExchangeList[i].ExchangeRate;
+                }
+            }
+
+            TRemote.MFinance.GL.WebConnectors.Revaluate(
+                FLedgerNumber, 1, "3700",
+                currencies, rates);
             SaveUserDefaults();
             this.Close();
         }

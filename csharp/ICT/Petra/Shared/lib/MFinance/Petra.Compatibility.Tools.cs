@@ -43,16 +43,28 @@ namespace Ict.Petra.Shared.MFinance
     public class GetCurrencyInfo
     {
         private ACurrencyTable currencyTable = null;
+        private ACurrencyRow currencyRow = null;
 
         /// <summary>
         /// Constructor which automatically loads one CurrencyTable Entry defined
         /// by the parameter.
         /// </summary>
-        /// <param name="ACurrenyCode">Three digit description to define the
+        /// <param name="ACurrencyCode">Three digit description to define the
         /// currency.</param>
-        public GetCurrencyInfo(string ACurrenyCode)
+        public GetCurrencyInfo(string ACurrencyCode)
         {
-            currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrenyCode, null);
+            currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrencyCode, null);
+
+            if (currencyTable.Rows.Count == 1)
+            {
+                currencyRow = (ACurrencyRow)currencyTable[0];
+            }
+            else
+            {
+                throw new GetCurrencyInfoException(
+                    "GetCurrencyInfo-Constructor: currencyTable.Rows.Count = " +
+                    currencyTable.Rows.Count.ToString());
+            }
         }
 
         /// <summary>
@@ -64,15 +76,7 @@ namespace Ict.Petra.Shared.MFinance
         {
             get
             {
-                if (currencyTable.Rows.Count != 0)
-                {
-                    ACurrencyRow row = (ACurrencyRow)currencyTable[0];
-                    return new FormatConverter(row.DisplayFormat).digits;
-                }
-                else
-                {
-                    return 2;             // default if currency is not defined
-                }
+                return new FormatConverter(currencyRow.DisplayFormat).digits;
             }
         }
     }
@@ -95,25 +99,24 @@ namespace Ict.Petra.Shared.MFinance
             sRegex = ">9.(9)+|>9$";
             reg = new Regex(sRegex);
             matchCollection = reg.Matches(strFormat);
-            try
+
+            if (matchCollection.Count != 1)
             {
-                intDigits = (matchCollection[0].Value).Length - 3;
-
-                if (intDigits == -1)
-                {
-                    intDigits = 0;
-                }
-
-                ;
-
-                if (intDigits < -1)
-                {
-                    intDigits = 2;
-                }
+                throw new GetCurrencyInfoException(
+                    String.Format("The regular expression {0} does not fit for a match in {1}",
+                        sRegex, strFormat));
             }
-            catch (Exception)
+
+            intDigits = (matchCollection[0].Value).Length - 3;
+
+            if (intDigits == -1)
             {
-                intDigits = 2;                 // Default ...
+                intDigits = 0;
+            }
+
+            if (intDigits < -1)
+            {
+                intDigits = 2;
             }
         }
 
@@ -126,6 +129,21 @@ namespace Ict.Petra.Shared.MFinance
             {
                 return intDigits;
             }
+        }
+    }
+
+    /// <summary>
+    /// This exception shall be thrown if the value of a_currency:a_display_format_c
+    /// is changed and cannot be used to calculate the number of currency digits anymore.
+    /// </summary>
+    public class GetCurrencyInfoException : System.Exception
+    {
+        public GetCurrencyInfoException()
+        {
+        }
+
+        public GetCurrencyInfoException(string message) : base(message)
+        {
         }
     }
 }
