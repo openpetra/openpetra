@@ -1,0 +1,30 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Recurring Gift Batches
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS
+    FormType: browse
+    Template: windowTDS
+    WindowWidth: 1000
+    WindowHeight: 700
+
+    Events:
+        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+
+    Controls:
+        pnlContent:
+            Controls: [tabGiftBatch]
+            Dock: Fill
+        tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}        
+        tpgBatches: 
+            Label: Batches
+            Controls: [ucoBatches]
+        tpgTransactions: 
+            Label: Details
+            Controls: [ucoTransactions]
+        ucoBatches:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftBatches
+            Dock: Fill
+        ucoTransactions:
+            Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftTransactions
+            Dock: Fill    

@@ -25,6 +25,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 using System;
 
 namespace Ict.Petra.Shared.MFinance
@@ -65,7 +66,7 @@ namespace Ict.Petra.Shared.MFinance
         MethodOfGivingList,
 
         /// <summary>
-        /// Media types of money received. Eg: Cash, Check Credit Card
+        /// Media"" types of money received.  Eg: Cash, Check Credit Card.
         /// </summary>
         MethodOfPaymentList,
 

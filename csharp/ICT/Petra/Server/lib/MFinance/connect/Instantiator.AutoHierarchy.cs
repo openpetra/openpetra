@@ -2193,10 +2193,24 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public RecurringGiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateARecurringGiftBatch", ";INT;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateARecurringGiftBatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadAGiftBatch", ";INT;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadAGiftBatch(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadARecurringGiftBatch", ";INT;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadARecurringGiftBatch(ALedgerNumber);
         }
 
         /// generated method from connector
@@ -2208,11 +2222,27 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
+                                                               Int32 ABatchNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadRecurringTransactions", ";INT;INT;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
         public TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                                      out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveGiftBatchTDS", ";GIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+                                                              out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveRecurringGiftBatchTDS", ";RECURRINGGIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveRecurringGiftBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
         /// generated method from connector
