@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <project name="WebServer-Build">
 
-<include buildfile="../inc/nant/OpenPetra.common.xml"/>
+<property name="Namespace" value="Ict.Petra.WebServer" />
 
-<!-- Include default implementation -->
-<include buildfile="../inc/nant/OpenPetra.subdirs.xml"/> 
+<include buildfile="../inc/nant/OpenPetra.common.xml"/>
 
 <!-- Compat targets -->
 <include buildfile="../inc/nant/OpenPetra.tobe.migrated.xml"/>
@@ -125,6 +124,7 @@
       <include name="**.html" />
       <include name="**.png" />
       <include name="**.aspx" />
+      <include name="**.aspx.cs" />
     </fileset>
 
     <fileset basedir="${dir.webserver}" prefix="webserver">
@@ -139,8 +139,34 @@
     <fileset basedir="${dir.root}/demodata/formletters" prefix="formletters">
       <include name="*.*" />
     </fileset>
+
+    <!-- special files for quick links to the legal documents, for each country -->
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/de" prefix="webserver/de">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/at" prefix="webserver/at">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/uk" prefix="webserver/uk">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/fi" prefix="webserver/fi">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/nl" prefix="webserver/nl">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/fo" prefix="webserver/fo">
+      <include name="**.*" />
+    </fileset>
+    <fileset basedir="${OpenPetraRoot.dir}/webserver/ch" prefix="webserver/ch">
+      <include name="**.*" />
+    </fileset>
+
   </zip>
   <delete file="${tempdir}/web-sample.config"/>
 </target>
+
+<include buildfile="../inc/nant/OpenPetra.csharp.xml"/> 
 
 </project>
