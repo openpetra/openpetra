@@ -89,8 +89,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FShepherdPages = new TPetraShepherdPagesList(AYamlFile);
 
             SwitchToStartPage();
+            
             TLogging.Log("The TPetraShepherdFormLogic constructor has switched to the first page.");
-
+	
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
 
             // FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
@@ -118,11 +119,38 @@ namespace Ict.Petra.Client.CommonForms.Logic
             XmlNode FileElementData = XmlPages.DocumentElement;
 		
             FileElementData = XmlPages.LastChild.LastChild; 
-            //For the following attributes, I'm not sure what to do with them quite yet-- they need to be assigned to something 
+            //For the following attributes, I'm not sure 	what to do with them quite yet-- they need to be assigned to something 
             TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
-            TLogging.Log("Printing the size of shepherd: " + FileElementData.Attributes["Size"]); // Can't print size because I don't know how to handle this YAML datatype
+            TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"]); // Can't print size because I don't know how to handle this YAML datatype
+            TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"]); // Can't print size because I don't know how to handle this YAML datatype
             TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value); 
             return FileElementData; // returns only the attributes of the YAML file. 
+            
+	            /*
+	             * Yes, just a moment...
+	             * Add a Method void UpdateShepherdFormProperties(string ATitle, Size AFormSize) 
+	             * to the Interface 'IPetraShepherdConcreteFormInterface'.
+				[9:14:02 AM] ckatpetra: http://msdn.microsoft.com/en-us/library/system.windows.forms.control.size(v=VS.80).aspx
+				[9:14:39 AM] ckatpetra: You assign that to a Form like this: 
+				MyForminstance.Size = new System.Drawing.Size(xxx, yyy);
+				[9:15:11 AM] ckatpetra: In your case you would create the instance of ASize already in ParseYAMLFileElemnts
+				[9:15:30 AM] ckatpetra: ...and then assign it in UpdateShepherdFormProperties
+				[9:16:41 AM] ckatpetra: ... our you could also just pass in two int arguments for Width and Height to  U
+				pdateShepherdFormProperties instead of the Size Argument and construct the Size only in  
+				UpdateShepherdFormProperties
+	             */
+        }
+        protected void UpdateShepherdFormProperties(string ATitle, int width, int height)
+        {
+        	 //= new System.Drawing.Size(width, height); 
+        	 
+        	 /*
+        	  Well, it can't, as it is of Type IPetraShepherdConcreteFormInterface!
+			[9:49:44 AM] ckatpetra: You will need to do somehting similar as for the Text and Size properties here:
+			[9:51:00 AM] ckatpetra: Create a new Method, say 'UpdateProgress' and give it Arguments whose values you 
+			set in turn in that Method. Define that Method in the Interface IPetraShepherdConcreteFormInterface and you 
+			can call it. Presto!
+        	  */
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>

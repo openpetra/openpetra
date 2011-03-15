@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.CommonForms
         {
             FLogic.HandleActionFinish();
         }
-
         /// <summary>
         /// Overwrites virtual function in PetraShepherdForm.cs,
         /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
@@ -141,6 +140,11 @@ namespace Ict.Petra.Client.CommonForms
         public void UpdateNavigation()
         {
             TLogging.Log("UpdateNavigation");
+        }
+        
+        public void UpdateShepherdFormProperties(string AString, int width, int height) 
+        {
+        	TLogging.Log("UpdateSHepherdFormProperties"); 
         }
 
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
