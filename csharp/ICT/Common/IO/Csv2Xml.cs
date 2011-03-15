@@ -134,7 +134,8 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// convert a CSV file to an XmlDocument.
-        /// the first line is expected to contain the column names/captions
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
         public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator)
         {
@@ -149,26 +150,16 @@ namespace Ict.Common.IO
 
                 if (ASeparator == string.Empty)
                 {
-                    if (!headerLine.StartsWith("#") && !headerLine.StartsWith("\"#"))
+                    if (!headerLine.StartsWith("\""))
                     {
                         throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
                             Environment.NewLine +
-                            Catalog.GetString("There must be a row with the column captions, each caption starting with the # character."));
-                    }
-
-                    // read separator from header line. at least the first two columns need a # at the beginning of the column name
-                    if (headerLine[0] == '"')
-                    {
-                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
+                            Catalog.GetString("There must be a row with the column captions, at least the first caption must be in quotes."));
                     }
                     else
                     {
-                        separator = headerLine[headerLine.IndexOf("#", 2) - 1].ToString();
-
-                        if (separator == "\"")
-                        {
-                            separator = headerLine[headerLine.IndexOf("#", 2) - 2].ToString();
-                        }
+                        // read separator from header line. at least the first column need to be quoted
+                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
                     }
                 }
 
@@ -178,13 +169,10 @@ namespace Ict.Common.IO
                 {
                     string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
 
-                    if (attrName.StartsWith("#"))
+                    if (attrName.Length == 0)
                     {
-                        attrName = attrName.Substring(1);
-                    }
-                    else if (attrName.Length == 0)
-                    {
-                        throw new Exception(Catalog.GetString("There is an empty column name. This is not allowed"));
+                        TLogging.Log("Csv2Xml: found empty column header, will not consider any following columns");
+                        break;
                     }
 
                     if (attrName.Length > 1)
