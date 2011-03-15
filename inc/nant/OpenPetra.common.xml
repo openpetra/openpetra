@@ -139,9 +139,11 @@
 <!-- database -->
 <property name="DBMS.Type" value="sqlite"
           overwrite="false" />
-<property name="DBMS.DBName" value="openpetra" 
-          overwrite="false"/>          
-<property name="DBMS.Password" value="hm5MMxmjthwalVK2PXwN"
+<property name="DBMS.DBName" value="openpetra"
+          overwrite="false"/>
+<property name="DBMS.UserName" value="petraserver"
+          overwrite="false"/>
+<property name="DBMS.Password" value="petra"
           overwrite="false" />
 
 

@@ -119,10 +119,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
         buildfile="${dir.root}/i18n/i18n.build" />
 </target>
 
-<!-- Add the database a as is. Add properties for compat -->
-<property name="DBMS.Type" value="sqlite" overwrite="false" />
-<property name="DBMS.DBName" value="openpetra" overwrite="false" />
-<property name="DBMS.Password" value="petra" overwrite="false" /> 
+<!-- Some database settings -->
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="SelectedDemo" value="demodataGermany" overwrite="false"/>
 
