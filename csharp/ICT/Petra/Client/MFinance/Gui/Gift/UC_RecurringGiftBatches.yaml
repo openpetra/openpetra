@@ -33,7 +33,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ARecurringGiftBatch
-            Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
+            Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             SortOrder: BatchNumber DESC

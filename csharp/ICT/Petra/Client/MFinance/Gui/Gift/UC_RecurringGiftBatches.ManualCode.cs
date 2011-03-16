@@ -147,8 +147,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!((TFrmRecurringGiftBatch)ParentForm).SaveChanges())
                 {
                     // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"));
+                    MessageBox.Show(Catalog.GetString("The batch was not submitted due to problems during saving; ") + Environment.NewLine +
+                        Catalog.GetString("Please first save the batch, and then submit it!"));
                     return;
                 }
             }

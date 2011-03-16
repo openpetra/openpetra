@@ -120,11 +120,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                if (!FInKeyMinistryChanging)
-                {
-                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
-                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
-                }
+//                if (!FInKeyMinistryChanging)
+//                {
+//                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
+//                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
+//                }
             }
             finally
             {
@@ -169,31 +169,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        bool FInKeyMinistryChanging = false;
-        private void KeyMinistryChanged(object sender, EventArgs e)
-        {
-            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
-            {
-                return;
-            }
-
-            FInKeyMinistryChanging = true;
-            try
-            {
-                Object val = cmbMinistry.SelectedValueCell;
-
-                if (val != null)
-                {
-                    Int64 rcp = (Int64)val;
-
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
-                }
-            }
-            finally
-            {
-                FInKeyMinistryChanging = false;
-            }
-        }
+//        bool FInKeyMinistryChanging = false;
+//        private void KeyMinistryChanged(object sender, EventArgs e)
+//        {
+//            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
+//            {
+//                return;
+//            }
+//
+//            FInKeyMinistryChanging = true;
+//            try
+//            {
+//                Object val = cmbMinistry.SelectedValueCell;
+//
+//                if (val != null)
+//                {
+//                    Int64 rcp = (Int64)val;
+//
+//                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+//                }
+//            }
+//            finally
+//            {
+//                FInKeyMinistryChanging = false;
+//            }
+//        }
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
@@ -249,8 +249,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
                         {
-                            sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                            sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                            sum += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
+                            sumBatch += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
                         }
                         else
                         {
@@ -266,7 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+            txtGiftTotal.CurrencySymbol = txtDetailGiftAmount.CurrencySymbol;
             txtGiftTotal.ReadOnly = true;
             //this is here because at the moment the generator does not generate this
             txtBatchTotal.NumberValueDecimal = sumBatch;
@@ -425,6 +425,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARecurringGiftBatchRow batchRow = GetBatchRow();
 
             ARecurringGiftRow giftRow = FMainDS.ARecurringGift.NewRowTyped(true);
+            giftRow.Active = true;
 
             giftRow.LedgerNumber = batchRow.LedgerNumber;
             giftRow.BatchNumber = batchRow.BatchNumber;
@@ -506,7 +507,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (batchRow != null)
             {
-                txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
+                txtDetailGiftAmount.CurrencySymbol = batchRow.CurrencyCode;
             }
 
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
@@ -525,9 +526,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
+            //TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
             txtField.Text = TFinanceControls.FieldNumber.ToString();
-            dtpDateEntered.Date = ((RecurringGiftBatchTDSARecurringGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = ((RecurringGiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
 
 
@@ -585,7 +585,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
+            txtDetailGiftAmount.CurrencySymbol = ACurrencyCode;
             txtGiftTotal.CurrencySymbol = ACurrencyCode;
             txtBatchTotal.CurrencySymbol = ACurrencyCode;
             txtHashTotal.CurrencySymbol = ACurrencyCode;
@@ -599,14 +599,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtHashTotal.NumberValueDecimal = AHashTotal;
         }
 
-        /// <summary>
-        /// update the Batch Status from outside
-        /// </summary>
-        public void UpdateBatchStatus(String ABatchStatus)
-        {
-            txtBatchStatus.Text = ABatchStatus;
-        }
-
+       
         /// <summary>
         /// set the correct protection from outside
         /// </summary>
@@ -619,7 +612,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
 
-            dtpDateEntered.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
             cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
 

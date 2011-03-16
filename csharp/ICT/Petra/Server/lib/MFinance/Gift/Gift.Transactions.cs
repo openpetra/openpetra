@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
                 // AGiftDetailAccess.LoadViaGiftBatch does not exist; but we can easily simulate it:
-                ARecurringGiftDetailAccess.LoadViaForeignKey(AGiftDetailTable.TableId,
+                ARecurringGiftDetailAccess.LoadViaForeignKey(ARecurringGiftDetailTable.TableId,
                     ARecurringGiftBatchTable.TableId,
                     MainDS,
                     new string[2] { ARecurringGiftBatchTable.GetLedgerNumberDBName(), ARecurringGiftBatchTable.GetBatchNumberDBName() },
