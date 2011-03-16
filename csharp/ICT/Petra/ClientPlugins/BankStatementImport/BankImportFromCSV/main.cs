@@ -27,6 +27,7 @@ using System.IO;
 using System.Xml;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;

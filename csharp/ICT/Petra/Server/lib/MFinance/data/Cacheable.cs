@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -180,6 +180,18 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                         {
                             DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.MethodOfPaymentList:
+                        {
+                            DataTable TmpTable = AMethodOfPaymentAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        {
+                            DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -438,6 +450,20 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             break;
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                             if (AMethodOfGivingAccess.SubmitChanges((AMethodOfGivingTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.MethodOfPaymentList:
+                            if (AMethodOfPaymentAccess.SubmitChanges((AMethodOfPaymentTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                            if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

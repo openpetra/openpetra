@@ -9,7 +9,7 @@ LicenseFile=..\..\..\LICENSE
 VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
-VersionInfoCopyright=2010 OM International
+VersionInfoCopyright=2011 OM International
 OutputBaseFilename=OpenPetraSetup-{#RELEASEVERSION}
 OutputDir={#DELIVERY.DIR}
 PrivilegesRequired=admin
@@ -29,23 +29,22 @@ Name: {app}/sql30
 Name: {app}/demo30
 
 [Files]
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
 
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_ServerAdmin\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\Ict.Petra.Server*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\Ict.Petra.ServerAdmin*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\ServerAdmin\_bin\Release\PetraServerAdminConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Server\_bin\Release\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Common*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Client*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Shared*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Server*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.ServerAdmin*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\PetraServerAdminConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
-Source: ..\..\..\tmp\i18n\*.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
+Source: ..\..\..\delivery\bin\OpenPetra.resources.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30

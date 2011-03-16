@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.App.Core
         private static String UPostgreSql_DataDir = "";
         private static String UPetraWebsite_Link = "";
         private static String UPetraPatches_Link = "";
+        private static String UPetraSupportTeamEmail = "";
 
         /// <summary>Name of .NET Configuration File, if specified via command line options</summary>
         public static String ConfigurationFile
@@ -274,6 +275,15 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
+        /// <summary>Email address of the openPETRA support team of an organisation</summary>
+        public static string PetraSupportTeamEmail
+        {
+            get
+            {
+                return UPetraSupportTeamEmail;
+            }
+        }
+
         /// get temp path in the user directory. this is called from PetraClientMain directly
         public static string GetPathTemp()
         {
@@ -375,6 +385,7 @@ namespace Ict.Petra.Client.App.Core
             UPetra_Path_Patches = "";
             UPetraWebsite_Link = FAppSettings.GetValue("OpenPetra.Website", "http://www.openpetra.org");
             UPetraPatches_Link = FAppSettings.GetValue("OpenPetra.Path.RemotePatches", "http://www.example.org/index.php?page=OpenPetraPatches");
+            UPetraSupportTeamEmail = FAppSettings.GetValue("OpenPetra.SupportTeamEmail", String.Empty);
 
             if (URunAsStandalone == true)
             {

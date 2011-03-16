@@ -1,0 +1,40 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Contacts with Partners
+    Comment: this screen shows who has been contacted by us via letter, phone, personal meeting, email, etc
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: browse
+    Template: windowFind
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    MasterTable: PPartnerContact
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces]
+    Actions:
+        actSearch: {ActionClick=Search}
+        actDeleteContacts: {ActionClick=DeleteContacts}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlParameters, grdDetails]
+        pnlParameters:
+            Controls:
+                Row0: [dtpContactDate]
+                Row1: [txtContactor]
+                Row2: [txtCommentContains]
+                Row3: [txtModule]
+                Row4: [txtMethodOfContact, txtMailingCode]
+        dtpContactDate:
+        txtContactor:
+        txtCommentContains:
+        # TODO: use a combobox with modules
+        txtModule:
+        # TODO: cmbbox from table p_method_of_contact
+        txtMethodOfContact:
+        # TODO: use a combobox with mailing codes
+        txtMailingCode:
+        grdDetails:
+            Dock: Fill
+            TableName: PPartnerContact
+            Columns: [PartnerKey, ContactDate, ContactCode, Contactor, ContactComment, ModuleId, MailingCode]
+    Toolbar:
+        tbbSearch:
+        tbbDeleteContacts:

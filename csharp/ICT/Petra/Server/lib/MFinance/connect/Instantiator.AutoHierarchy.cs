@@ -24,6 +24,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 //
 // Contains a remotable class that instantiates an Object which gives access to
 // the MPartner Namespace (from the Client's perspective).
@@ -97,11 +98,11 @@ using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors;
-using Ict.Petra.Server.MFinance.AP;
-using Ict.Petra.Server.MFinance.AR;
+//using Ict.Petra.Server.MFinance.AP;
+//using Ict.Petra.Server.MFinance.AR;
 //using Ict.Petra.Server.MFinance.Budget;
 using Ict.Petra.Server.MFinance.Cacheable;
-using Ict.Petra.Server.MFinance.ImportExport;
+//using Ict.Petra.Server.MFinance.ImportExport;
 //using Ict.Petra.Server.MFinance.Gift;
 //using Ict.Petra.Server.MFinance.GL;
 //using Ict.Petra.Server.MFinance.ICH;
@@ -2162,6 +2163,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "LoadMotivationDetails", ";INT;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
+                                                          out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "SaveMotivationDetails", ";GIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
                                              DateTime ADateEffective)
         {
@@ -2228,18 +2244,18 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
+        public GLSetupTDS LoadPartnerData(long DonorKey)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "LoadMotivationDetails", ";INT;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.LoadMotivationDetails(ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadPartnerData", ";LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadPartnerData(DonorKey);
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-                                                          out TVerificationResultCollection AVerificationResult)
+        public Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
+                                                                                 out Int64 fieldNumber)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector), "SaveMotivationDetails", ";GIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGiftSetupWebConnector.SaveMotivationDetails(ref AInspectDS, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
         }
     }
 }

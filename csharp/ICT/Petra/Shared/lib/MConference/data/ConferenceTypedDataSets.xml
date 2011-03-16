@@ -1,10 +1,30 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MConference.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="SelectConferenceTDS">
         <Table sqltable="p_partner" sqlfield="p_partner_short_name_c" />
         <Table sqltable="pc_conference"/>
+    </DataSet>
+
+    <DataSet name="ConferenceApplicationTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="p_person"/>
+        <Table sqltable="pm_general_application"/>
+        <Table sqltable="pm_short_term_application"/>
+        <CustomTable name="ApplicationGrid">
+            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_gender_c"/>
+            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_gen_app_date_d"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_gen_application_status_c"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
+            <CustomField name="JSONData" type="string"/>
+        </CustomTable>
+        
     </DataSet>
 
 </PetraDataSets>

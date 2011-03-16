@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="ICT-Build">
+
+
+<target name="common" depends="" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="Common/ICT.Common.build" />
+</target>
+
+<target name="petratools" depends="common" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="PetraTools/ICT.PetraTools.build" />
+</target>
+
+<target name="petra" depends="common,petratools" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="Petra/Petra.build" />
+</target>
+
+<target name="testing" depends="common,petratools,petra" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="Testing/ICT.Testing.build" />
+</target>
+
+<target name="internal-subdirs" 
+        depends="common,petra,petratools,testing" />
+
+<!-- Include default implementation -->
+<include buildfile="../../inc/nant/OpenPetra.subdirs.xml"/> 
+
+</project>

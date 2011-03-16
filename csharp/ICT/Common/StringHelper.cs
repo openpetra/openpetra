@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using Ict.Common;
 using System.Globalization;
-
+using System.Security.Cryptography;
 
 namespace Ict.Common
 {
@@ -339,6 +339,18 @@ namespace Ict.Common
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// calcuate the md5 hash sum of a string
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string MD5Sum(string s)
+        {
+            MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
+
+            return BitConverter.ToString(cr.ComputeHash(System.Text.Encoding.Default.GetBytes(s))).Replace("-", "").ToLower();
         }
 
         /// <summary>

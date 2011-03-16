@@ -24,6 +24,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 //
 // Contains a remotable class that instantiates an Object which gives access to
 // the MPartner Namespace (from the Client's perspective).

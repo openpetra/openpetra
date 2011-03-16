@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-subdirs">
+
+<include buildfile="OpenPetra.default.targets.xml"/>
+
+<if test="${not target::exists('custclean')}">
+  <include buildfile="OpenPetra.target-custclean.xml"/>
+</if>
+
+<target name="clean" depends="custclean">
+  <property name="target" value="clean" />
+  <call target="internal-subdirs" />
+</target>
+
+<target name="uncrustify">
+  <property name="target" value="uncrustify" />
+  <call target="internal-subdirs" />
+</target>
+
+<target name="compile" >
+  <property name="target" value="compile" />
+  <call target="internal-subdirs" />
+</target>
+
+<target name="generateCsproject" >
+  <property name="target" value="generateCsproject" />
+  <call target="internal-subdirs" />
+</target>
+
+<target name="generateCsprojectNoCompile" >
+  <property name="target" value="generateCsprojectNoCompile" />
+  <call target="internal-subdirs" />
+</target>
+
+
+<!-- Hack for allowing to override the target -->
+<if test="${not target::exists('internal-subdirs')}">
+  <include buildfile="OpenPetra.subdirs.internal.xml"/>
+</if>
+
+</project>

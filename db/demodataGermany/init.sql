@@ -1,5 +1,6 @@
 -- passwords are inserted by OpenPetra.build
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', false);
 
 INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
 
@@ -23,6 +24,27 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_bank');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_venue');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_organisation');
+
+-- setup the user ANONYMOUS for the webforms
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PTNRUSER', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'CONFERENCE', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'DEVUSER', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PERSONNEL', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-1', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-2', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-3', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'LEDGER0043', true);
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_location');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_type');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_location');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_church');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_family');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_person');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_unit');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_bank');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_venue');
+INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_organisation');
 
 -- setup the sample site Germany 43000000
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '{#RELEASEVERSION}');

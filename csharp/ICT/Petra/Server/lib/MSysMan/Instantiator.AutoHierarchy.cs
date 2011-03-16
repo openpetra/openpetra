@@ -24,6 +24,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 //
 // Contains a remotable class that instantiates an Object which gives access to
 // the MPartner Namespace (from the Client's perspective).
@@ -83,10 +84,10 @@ using Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
-using Ict.Petra.Server.MSysMan.Application;
+//using Ict.Petra.Server.MSysMan.Application;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
-using Ict.Petra.Server.MSysMan.ImportExport;
+//using Ict.Petra.Server.MSysMan.ImportExport;
 //using Ict.Petra.Server.MSysMan.PrintManagement;
 using Ict.Petra.Server.MSysMan.Security;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;

@@ -1,0 +1,77 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{57C9A0FC-CCA5-4E4B-9A8A-A0F267466849}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ict.Petra.Shared.MFinance</RootNamespace>
+    <AssemblyName>Ict.Petra.Shared.MFinance</AssemblyName>
+    <BaseIntermediateOutputPath>..\..\_bin\Server_Client\ObjCode\</BaseIntermediateOutputPath>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\_bin\Server_Client\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>..\..\_bin\Server_Client\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\_bin\Server_Client\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\_bin\Server_Client\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.DB">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Common.DB.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.MCommon.DataAccess">
+      <HintPath>..\..\..\Server\_bin\Debug\Ict.Petra.Server.MCommon.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataSets">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Cacheable.cs" />
+    <Compile Include="CommonRoutines.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Petra.Compatibility.Tools.cs" />
+    <Compile Include="Types.cs" />
+  </ItemGroup>
+</Project>

@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.App.Main
         {
             get
             {
-                return TSrvSetting.BaseIPAddress;
+                return TSrvSetting.IPBasePort;
             }
         }
 
@@ -154,7 +154,7 @@ namespace Ict.Petra.Server.App.Main
             get
             {
                 return String.Format(Catalog.GetString("PETRAServer is running and listening @ {0}:{1}"),
-                    TSrvSetting.HostIPAddresses, TSrvSetting.BaseIPAddress);
+                    TSrvSetting.HostIPAddresses, TSrvSetting.IPBasePort);
             }
         }
 
@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.App.Main
             String ServerIPAddresses;
             String ODBCDsnAppSetting;
             TDBType RDBMSTypeAppSetting;
-            Int16 ServerBaseIPAddress;
+            Int16 ServerIPBasePort;
             Int16 ServerDebugLevel;
             Int16 ClientIdleStatusAfterXMinutes;
             Int16 ClientKeepAliveCheckIntervalInSeconds;
@@ -384,7 +384,7 @@ namespace Ict.Petra.Server.App.Main
             }
 
             // Server.IPBasePort
-            ServerBaseIPAddress = AppSettingsManager.GetInt16("Server.IPBasePort", 9000);
+            ServerIPBasePort = AppSettingsManager.GetInt16("Server.IPBasePort", 9000);
 
             // Server.DebugLevel
             ServerDebugLevel = AppSettingsManager.GetInt16("Server.DebugLevel", 0);
@@ -471,7 +471,7 @@ namespace Ict.Petra.Server.App.Main
                 PostgreSQLDatabaseName,
                 PostgreSQLUserName,
                 ServerCredentials,
-                ServerBaseIPAddress,
+                ServerIPBasePort,
                 ServerDebugLevel,
                 ServerLogFile,
                 ServerName,

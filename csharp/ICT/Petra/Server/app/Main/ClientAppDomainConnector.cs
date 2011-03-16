@@ -55,49 +55,49 @@ namespace Ict.Petra.Server.App.Main
     public class TRemoteLoader : MarshalByRefObject
     {
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.App.ClientDomain";
+        public const String CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.app.ClientDomain";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.ClientDomain.TClientDomainManager";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MCOMMON_DLLNAME = "Ict.Petra.Server.MCommon.Instantiator";
+        public const String MCOMMON_DLLNAME = "Ict.Petra.Server.lib.MCommon";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MCOMMON_CLASSNAME = "Ict.Petra.Server.MCommon.Instantiator.TMCommonNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MCONFERENCE_DLLNAME = "Ict.Petra.Server.MConference.Instantiator";
+        public const String MCONFERENCE_DLLNAME = "Ict.Petra.Server.lib.MConference";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MCONFERENCE_CLASSNAME = "Ict.Petra.Server.MConference.Instantiator.TMConferenceNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.MSysMan.Instantiator";
+        public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.lib.MSysMan";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MSYSMAN_CLASSNAME = "Ict.Petra.Server.MSysMan.Instantiator.TMSysManNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MPARTNER_DLLNAME = "Ict.Petra.Server.MPartner.Instantiator";
+        public const String MPARTNER_DLLNAME = "Ict.Petra.Server.lib.MPartner";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MPARTNER_CLASSNAME = "Ict.Petra.Server.MPartner.Instantiator.TMPartnerNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MPERSONNEL_DLLNAME = "Ict.Petra.Server.MPersonnel.Instantiator";
+        public const String MPERSONNEL_DLLNAME = "Ict.Petra.Server.lib.MPersonnel";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MPERSONNEL_CLASSNAME = "Ict.Petra.Server.MPersonnel.Instantiator.TMPersonnelNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MFINANCE_DLLNAME = "Ict.Petra.Server.MFinance.Instantiator";
+        public const String MFINANCE_DLLNAME = "Ict.Petra.Server.lib.MFinance.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MFINANCE_CLASSNAME = "Ict.Petra.Server.MFinance.Instantiator.TMFinanceNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MREPORTING_DLLNAME = "Ict.Petra.Server.MReporting.Instantiator";
+        public const String MREPORTING_DLLNAME = "Ict.Petra.Server.lib.MReporting.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MREPORTING_CLASSNAME = "Ict.Petra.Server.MReporting.Instantiator.TMReportingNamespaceLoader";
@@ -593,7 +593,7 @@ namespace Ict.Petra.Server.App.Main
             }
 #endif
             FRemoteLoader =
-                (TRemoteLoader)(FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.App.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
+                (TRemoteLoader)(FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
 #if DEBUGMODE
             if (TSrvSetting.DL >= 10)
             {
@@ -697,7 +697,7 @@ namespace Ict.Petra.Server.App.Main
                                TSrvSetting.RDMBSType, TSrvSetting.ODBCDsn,
                                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort, TSrvSetting.PostgreSQLDatabaseName,
                                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
-                               (object)TSrvSetting.BaseIPAddress,
+                               (object)TSrvSetting.IPBasePort,
                                (object)TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
                                (object)TSrvSetting.ClientIdleStatusAfterXMinutes, (object)TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,

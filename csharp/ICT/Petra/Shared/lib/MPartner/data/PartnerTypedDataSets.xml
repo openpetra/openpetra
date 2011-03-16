@@ -16,11 +16,11 @@
           <CustomField name="BestAddress" type="bool"/>  
           <CustomField name="Icon" type="Int32"/>
         </Table>
-        <Table sqltable="p_person">
-          <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
-        </Table>
         <Table sqltable="p_family">
           <Field sqltable="p_unit" sqlfield="p_unit_name_c"/> 
+        </Table>
+        <Table sqltable="p_person">
+          <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
         </Table>
         <Table sqltable="p_unit"/>
         <Table sqltable="um_unit_structure"/>

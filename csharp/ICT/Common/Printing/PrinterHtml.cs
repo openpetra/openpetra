@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,6 +63,8 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
 
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
+            AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
             AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
 
             FHtmlDoc = ParseHtml(AHtmlDocument);
@@ -397,11 +399,22 @@ namespace Ict.Common.Printing
         {
             float oldYPos = FPrinter.CurrentYPos;
 
+            XmlNode origNode = curNode;
+
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 if (curNode.Name == "table")
                 {
                     PrintTable(AXPos, AWidthAvailable, ref curNode);
+                }
+                else if (curNode.Name == "pdf")
+                {
+                    // insert PDF. this currently only works for printing to PDF
+                    string src = TXMLParser.GetAttribute(curNode, "src");
+                    src = System.IO.Path.Combine(FPath, src);
+
+                    FPrinter.InsertDocument(src);
+                    curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "img")
                 {
@@ -418,23 +431,33 @@ namespace Ict.Common.Printing
 
                     if (TXMLParser.HasAttribute(curNode, "width") && TXMLParser.HasAttribute(curNode, "height"))
                     {
-                        float WidthPercentage = 1.0f;
-                        float HeightPercentage = 1.0f;
+                        float WidthPercentage = 0.0f;
+                        float HeightPercentage = 0.0f;
+                        float Width = 0.0f;
+                        float Height = 0.0f;
 
-                        string Width = TXMLParser.GetAttribute(curNode, "width");
-                        string Height = TXMLParser.GetAttribute(curNode, "height");
+                        string WidthString = TXMLParser.GetAttribute(curNode, "width");
+                        string HeightString = TXMLParser.GetAttribute(curNode, "height");
 
-                        if (Width.EndsWith("%"))
+                        if (WidthString.EndsWith("%"))
                         {
-                            WidthPercentage = (float)Convert.ToDouble(Width.Substring(0, Width.Length - 1)) / 100.0f;
+                            WidthPercentage = (float)Convert.ToDouble(WidthString.Substring(0, WidthString.Length - 1)) / 100.0f;
+                        }
+                        else
+                        {
+                            Width = (float)Convert.ToDouble(WidthString);
                         }
 
-                        if (Height.EndsWith("%"))
+                        if (HeightString.EndsWith("%"))
                         {
-                            HeightPercentage = (float)Convert.ToDouble(Height.Substring(0, Width.Length - 1)) / 100.0f;
+                            HeightPercentage = (float)Convert.ToDouble(HeightString.Substring(0, HeightString.Length - 1)) / 100.0f;
+                        }
+                        else
+                        {
+                            Height = (float)Convert.ToDouble(HeightString);
                         }
 
-                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, WidthPercentage, HeightPercentage);
+                        FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, Width, Height, WidthPercentage, HeightPercentage);
                     }
                     else
                     {
@@ -496,6 +519,31 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
                 }
+                else if (curNode.Name == "ul")
+                {
+                    FPrinter.LineFeed();
+                    FPrinter.CurrentXPos = AXPos;
+
+                    // list with bullet points
+                    foreach (XmlNode bulletPoint in curNode.ChildNodes)
+                    {
+                        if (bulletPoint.Name == "li")
+                        {
+                            FPrinter.PrintStringWrap("* ", FPrinter.CurrentFont, AXPos, AWidthAvailable, FPrinter.CurrentAlignment);
+
+                            foreach (XmlNode bulletChild in bulletPoint.ChildNodes)
+                            {
+                                XmlNode loopTemp = bulletChild;
+                                RenderContent(FPrinter.CurrentXPos, AWidthAvailable - (FPrinter.CurrentXPos - AXPos), ref loopTemp);
+                            }
+
+                            FPrinter.LineFeed();
+                            FPrinter.CurrentXPos = AXPos;
+                        }
+                    }
+
+                    curNode = curNode.NextSibling;
+                }
                 else if (curNode.Name == "div")
                 {
                     XmlNode child = curNode.FirstChild;
@@ -528,6 +576,35 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                     FPrinter.CurrentAlignment = origAlignment;
                 }
+                else if ((curNode.Name.Length > 1) && (curNode.Name[0] == 'h') && char.IsDigit(curNode.Name[1]))
+                {
+                    // heading
+                    eFont previousFont = FPrinter.CurrentFont;
+                    FPrinter.CurrentFont = eFont.eHeadingFont;
+                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+
+                    if (curNode.Name[1] == '1')
+                    {
+                        FPrinter.CurrentRelativeFontSize += 2;
+                    }
+                    else
+                    {
+                        FPrinter.CurrentRelativeFontSize += 1;
+                    }
+
+                    XmlNode child = curNode.FirstChild;
+                    RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    FPrinter.CurrentFont = previousFont;
+                    FPrinter.CurrentRelativeFontSize = previousFontSize;
+                    curNode = curNode.NextSibling;
+                    FPrinter.LineFeed();
+                }
                 else if (curNode.Name == "#comment")
                 {
                     // just skip comments
@@ -554,6 +631,11 @@ namespace Ict.Common.Printing
                 // todo: checked and unchecked checkbox
                 // todo: page break
                 // todo: header div style with tray information; config file with local tray names???
+            }
+
+            if ((origNode == curNode) && (curNode != null))
+            {
+                throw new Exception("page too small, at " + curNode.Name);
             }
 
             return FPrinter.CurrentYPos - oldYPos;
@@ -678,6 +760,12 @@ namespace Ict.Common.Printing
                         TTableCellGfx preparedCell = new TTableCellGfx();
                         preparedCell.borderWidth = border;
                         preparedCell.content = cell.FirstChild;
+
+                        if (TXMLParser.HasAttribute(cell, "colspan"))
+                        {
+                            preparedCell.colSpan = Convert.ToInt16(TXMLParser.GetAttribute(cell, "colspan"));
+                        }
+
                         preparedCell.bold = (cell.Name == "th");
 
                         if (TXMLParser.GetAttribute(cell, "nowrap") == "nowrap")
@@ -701,6 +789,13 @@ namespace Ict.Common.Printing
                         }
 
                         preparedRow.cells.Add(preparedCell);
+
+                        // add a few dummy cells for column spanning
+                        for (int colspanCounter = 1; colspanCounter < preparedCell.colSpan; colspanCounter++)
+                        {
+                            preparedRow.cells.Add(new TTableCellGfx());
+                        }
+
                         cell = cell.NextSibling;
                     }
 
@@ -725,6 +820,26 @@ namespace Ict.Common.Printing
                         }
 
                         counter++;
+                    }
+
+                    // implement colspan
+                    Int16 CounterColumnSpan = 0;
+                    TTableCellGfx spanningCell = null;
+
+                    foreach (TTableCellGfx preparedCell in preparedRow.cells)
+                    {
+                        if (CounterColumnSpan > 0)
+                        {
+                            spanningCell.contentWidth += preparedCell.contentWidth;
+                            preparedCell.contentWidth = 0;
+                        }
+                        else
+                        {
+                            CounterColumnSpan = preparedCell.colSpan;
+                            spanningCell = preparedCell;
+                        }
+
+                        CounterColumnSpan--;
                     }
 
                     preparedRows.Add(preparedRow);

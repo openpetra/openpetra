@@ -1,0 +1,199 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{AFEFBB50-D2A7-4CA2-A513-1FDA1F3156C6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Ict.Petra.Client.MFinance.Gui.Setup</RootNamespace>
+    <AssemblyName>Ict.Petra.Client.MFinance.Gui.Setup</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <BaseIntermediateOutputPath>..\..\..\..\_bin\ObjCode\</BaseIntermediateOutputPath>
+    <DocumentationFile>..\..\..\..\_bin\Debug\Ict.Petra.Client.MFinance.Gui.Setup.xml</DocumentationFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0067</NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\..\..\..\_bin\Debug\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <IntermediateOutputPath>..\..\..\..\_bin\ObjCode\</IntermediateOutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Controls">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\..\..\..\Common\_bin\Debug\Ict.Common.Verification.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.Interfaces">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MCommon.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MCommon.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataSets">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataSets.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.MFinance.DataTables">
+      <HintPath>..\..\..\..\..\Shared\_bin\Server_Client\Debug\Ict.Petra.Shared.MFinance.DataTables.dll</HintPath>
+    </Reference>
+    <Reference Include="GNU.Gettext">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\GNU\GNU.Gettext.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>..\..\..\..\..\..\..\ThirdParty\DevAge\SourceGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GiftMotivationSetup.cs" />
+    <Compile Include="GiftMotivationSetup.Designer.cs">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GiftMotivationSetup.ManualCode.cs">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLAccountHierarchy.cs" />
+    <Compile Include="GLAccountHierarchy.Designer.cs">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLAccountHierarchy.ManualCode.cs">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCostCentreHierarchy.cs" />
+    <Compile Include="GLCostCentreHierarchy.Designer.cs">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCostCentreHierarchy.ManualCode.cs">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCreateLedger.cs" />
+    <Compile Include="GLCreateLedger.Designer.cs">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GLCreateLedger.ManualCode.cs">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ict.Petra.Client.MFinance.Gui.Setup.AssemblyInfo.cs" />
+    <Compile Include="SetupAnalysisTypes.cs" />
+    <Compile Include="SetupAnalysisTypes.Designer.cs">
+      <DependentUpon>SetupAnalysisTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupAnalysisTypes.ManualCode.cs">
+      <DependentUpon>SetupAnalysisTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupDailyExchangeRate.cs" />
+    <Compile Include="SetupDailyExchangeRate.Designer.cs">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetupDailyExchangeRate.ManualCode.cs">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_AccountAnalysisAttributes.cs" />
+    <Compile Include="UC_AccountAnalysisAttributes.Designer.cs">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_AccountAnalysisAttributes.ManualCode.cs">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_SetupAnalysisValues.cs" />
+    <Compile Include="UC_SetupAnalysisValues.Designer.cs">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_SetupAnalysisValues.ManualCode.cs">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="GiftMotivationSetup.resx">
+      <DependentUpon>GiftMotivationSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLAccountHierarchy.resx">
+      <DependentUpon>GLAccountHierarchy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLCostCentreHierarchy.resx">
+      <DependentUpon>GLCostCentreHierarchy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GLCreateLedger.resx">
+      <DependentUpon>GLCreateLedger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupAnalysisTypes.resx">
+      <DependentUpon>SetupAnalysisTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupDailyExchangeRate.resx">
+      <DependentUpon>SetupDailyExchangeRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_AccountAnalysisAttributes.resx">
+      <DependentUpon>UC_AccountAnalysisAttributes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_SetupAnalysisValues.resx">
+      <DependentUpon>UC_SetupAnalysisValues.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.csproj">
+      <Project>{69E21FFC-F815-451A-96BB-66499CDDEB6E}</Project>
+      <Name>Ict.Petra.Client.App.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\app\Core\Ict.Petra.Client.App.Core.RemoteObjects.csproj">
+      <Project>{A3E8D62A-D07D-44D9-A286-68220B3AA94F}</Project>
+      <Name>Ict.Petra.Client.App.Core.RemoteObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonControls\gui\Ict.Petra.Client.CommonControls.Gui.csproj">
+      <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
+      <Name>Ict.Petra.Client.CommonControls.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\CommonForms\Ict.Petra.Client.CommonForms.csproj">
+      <Project>{115F2398-E0E0-4F79-854C-BBFC5DEB076F}</Project>
+      <Name>Ict.Petra.Client.CommonForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\logic\Ict.Petra.Client.MFinance.Logic.csproj">
+      <Project>{45767519-3EC2-4143-B0CC-252033363D35}</Project>
+      <Name>Ict.Petra.Client.MFinance.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

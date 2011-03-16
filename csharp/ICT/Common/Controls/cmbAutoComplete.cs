@@ -272,7 +272,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member
+        /// SelectedItem is about the display member, SelectedValue reflects the value member, at the moment only Strings are supported
         /// </summary>
         public new System.Object SelectedItem
         {
@@ -315,7 +315,64 @@ namespace Ict.Common.Controls
                 }
             }
         }
+        /// <summary>
+        /// This is yet another version of getting and setting the current selection:
+        ///
+        /// SelectedValueCell is for setting and getting exact the value column if datasource is used:
+        /// we take the object from the table at the special marked value column and at the selected row
+        /// </summary>
+        public System.Object SelectedValueCell
+        {
+            get
+            {
+                if (DesignMode)
+                {
+                    return base.SelectedItem;
+                }
 
+                if (DataSource == null)
+                {
+                    if ((Items.Count > 0) && (SelectedIndex > -1))
+                    {
+                        // use the normal Items values, not the datasource etc
+                        Object mySelectedItem = Items[this.SelectedIndex];
+                        //TODO for composed values return the correct cell instead
+                        return mySelectedItem;
+                    }
+                    else
+                    {
+                        return System.DBNull.Value;
+                    }
+                }
+                else
+                {
+                    DataRowView mRowView = GetSelectedRowView();
+
+                    if (mRowView == null)
+                    {
+                        return System.DBNull.Value;
+                    }
+                    else
+                    {
+                        return mRowView[GetColumnNrOfValueMember()];
+                    }
+                }
+            }
+
+            set
+            {
+                if ((value == null) || (value.ToString() == ""))
+                {
+                    base.SelectedIndex = -1;
+                    base.ResetText();
+                }
+                else
+                {
+                    Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
+                    base.SelectedIndex = m_SelectedIndex;
+                }
+            }
+        }
         /// <summary>
         /// property for the current selection;
         /// SelectedItem is about the display member, SelectedValue reflects the value member
@@ -1094,6 +1151,38 @@ namespace Ict.Common.Controls
                     throw new ArgumentException(DEFAULT_COMPLAIN + DataSource.GetType().ToString());
                 }
             }
+        }
+
+        /// <summary>
+        /// This function returns the index of the combobox items with the following
+        /// characteristics:
+        /// - item is exactly the searched String and in the given column (value column)
+        /// </summary>
+        /// <param name="SearchString">The string which is search for in the ComboBox</param>
+        /// <param name="ColumnIndex">The index of table Column where to search for the String.</param>
+        /// <returns>The index of the item if found or -1 if nothing is found.
+        /// </returns>
+        public int FindExactString(string SearchString, int ColumnIndex)
+        {
+            foreach (object ComboboxItem in this.Items)
+            {
+                System.Data.DataRowView TmpRowView = (System.Data.DataRowView)ComboboxItem;
+                Object Item = TmpRowView[ColumnIndex];
+                String ItemString;
+
+                if (Item != null)
+                {
+                    ItemString = Item.ToString();
+
+                    if (SearchString.Equals(ItemString))
+                    {
+                        return this.Items.IndexOf(ComboboxItem);
+                    }
+                }
+            }
+
+            //not found
+            return -1;
         }
 
         /// <summary>
