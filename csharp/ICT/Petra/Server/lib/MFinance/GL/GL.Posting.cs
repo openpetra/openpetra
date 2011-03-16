@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
                     if (!((transaction.Reference == MFinanceConstants.TRANSACTION_FX_REVAL)
-                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_FX_REVAL)))
+                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_REVAL)))
                     {
                         // get the account that this transaction is writing to
                         accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = '" + transaction.AccountCode + "'";
@@ -917,14 +917,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                 {
                     GlmRow.ClosingPeriodActualBase += PostingLevelElement.baseAmount;
-                }
+                } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
                 for (Int32 PeriodCount = FromPeriod;
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
-                    System.Diagnostics.Debug.WriteLine("PeriodCount:" + PeriodCount);
                     GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
                                               TempGLMSequence.ToString() + " and " +
                                               AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" + PeriodCount.ToString();

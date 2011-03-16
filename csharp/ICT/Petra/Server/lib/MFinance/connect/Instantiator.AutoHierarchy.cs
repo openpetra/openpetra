@@ -2523,10 +2523,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                               int AAccoutingPeriod,
                               string ARevaluationCostCenter,
                               string[] AForeignCurrency,
-                              decimal[] ANewExchangeRate)
+                              decimal[] ANewExchangeRate,
+                              out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING[];DECIMAL[];");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING[];DECIMAL[];TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
         }
 
         /// generated method from connector

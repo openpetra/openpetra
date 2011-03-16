@@ -42,11 +42,13 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
+
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -279,22 +281,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            TRemote.MFinance.GL.WebConnectors.Revaluate(
-                FLedgerNumber, 1, "3700",
-                currencies, rates);
+            TVerificationResultCollection verificationResult;
+            bool blnRevalutationState =
+                TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1,
+                    cmbCostCenter.GetSelectedString(),
+                    currencies, rates, out verificationResult);
+
+            if (blnRevalutationState)
+            {
+                MessageBox.Show(verificationResult.BuildVerificationResultString(),
+                    Catalog.GetString("Revaluation errors ..."));
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Revaluation properly done!"));
+            }
+
             SaveUserDefaults();
             this.Close();
         }
 
+        /// <summary>
+        /// A CurrencyExchange-Element is a member of a currencyExchangeList which is used as a
+        /// data base local to tue revaluation gui. Here the settings of the user dialogs are stored
+        /// </summary>
         public class CurrencyExchange
         {
+            /// <summary>
+            /// In this status the exchange rate is not defined. So you cannot change between
+            /// DO_REVALUATION and DO_NO_REVALUATION.
+            /// </summary>
+            public const int IS_NOT_INITIALIZED = 0;
+
+            /// <summary>
+            /// The Revaluation shall be done ...
+            /// </summary>
+            public const int DO_REVALUATION = 1;
+
+            /// <summary>
+            /// The revalueation shall not to be done even if the exchange rate is valid.
+            /// </summary>
+            public const int DO_NO_REVALUATION = 2;
+
             private string strMessageNotInitialized = Catalog.GetString("Not initialzed");
             private string strMessageRunRevaluation = Catalog.GetString("Revaluation");
             private string strMessageRunNoRevaluation = Catalog.GetString("No Revaluation");
-
-            public const int IS_NOT_INITIALIZED = 0;
-            public const int DO_REVALUATION = 1;
-            public const int DO_NO_REVALUATION = 2;
 
             private bool mDoRevaluation = true;
             private string mCurrency = "?";
@@ -345,12 +377,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            /// <summary>
+            /// The only one custructor ...
+            /// </summary>
+            /// <param name="ACurrency">Defines the foreign currency</param>
+            /// <param name="AExchangeRate">Defines the exchange rate and 0 is the
+            /// value to define a invalid rate.</param>
             public CurrencyExchange(string ACurrency, decimal AExchangeRate)
             {
                 mCurrency = ACurrency;
                 SetRateAndStatus(AExchangeRate);
             }
 
+            /// <summary>
+            /// DoRevalution is defined in the set and the get-paths and so the user can
+            /// use the checkbox in the grid to change the value.
+            /// </summary>
             public bool DoRevaluation
             {
                 get
@@ -367,6 +409,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            /// <summary>
+            /// For currency only the get part is defined. So the user cannot change the
+            /// value by using the grid.
+            /// </summary>
             public string Currency
             {
                 get
@@ -375,6 +421,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            /// <summary>
+            /// For the exchange rate only the get part is defined. So the user cannot change the
+            /// value by using the grid.
+            /// </summary>
             public decimal ExchangeRate
             {
                 get
@@ -383,6 +433,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            /// <summary>
+            /// The status is readonly too ...
+            /// </summary>
             public string Status
             {
                 get
@@ -391,6 +444,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            /// <summary>
+            /// External interface routine to update the exchange rate.
+            /// </summary>
+            /// <param name="newRate"></param>
             public void updateExchangeRate(decimal newRate)
             {
                 if (newRate != mExchangeRate)
