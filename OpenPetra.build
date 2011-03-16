@@ -31,7 +31,8 @@ compat:
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
-  generateORM: generates the cachedtables from the petra.xml
+  generateORM: generates Object Relational Mapping routines from petra.xml
+     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
@@ -478,6 +479,20 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       <solution configuration="${Configuration}" solutionfile="${solution.file}" />
     </if>
   </if>
+</target>
+
+<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
+  <echo message="please compile the code after the files have been regenerated"/>
+</target>
+
+<target name="generateORMData">
+  <!-- generate the files for Ict.Petra.Shared.lib.data, ie. the tables and datasets -->
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Shared/Ict.Petra.Shared.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateORMAccess">
+  <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
 </target>
 
 </project>

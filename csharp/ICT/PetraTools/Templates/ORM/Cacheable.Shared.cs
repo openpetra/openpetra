@@ -2,7 +2,6 @@
 // Do not modify this file manually!
 //
 {#GPLFILEHEADER}
-
 using System;
 
 namespace {#NAMESPACE}

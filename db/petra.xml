@@ -9958,7 +9958,7 @@
     <!-- Explicit Indexes on table a_method_of_giving  -->
   </table>
   <table name="a_method_of_payment"
-         descr="Media&quot;&quot; types of money received.  Eg: Cash, Check Credit Card."
+         descr="Media types of money received. Eg: Cash, Check Credit Card"
          area="Petra Data"
          label="Method of Payment"
          dumpname="a_metpay"
