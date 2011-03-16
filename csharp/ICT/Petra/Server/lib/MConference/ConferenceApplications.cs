@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
+using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -108,20 +110,48 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
-            PmShortTermApplicationRow TemplateRow = MainDS.PmShortTermApplication.NewRowTyped(false);
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
 
-            TemplateRow.RegistrationOffice = ARegisteringOffice;
-            TemplateRow.ConfirmedOptionCode = AEventCode;
-            PmShortTermApplicationAccess.LoadUsingTemplate(MainDS, TemplateRow, ATransaction);
+            OdbcParameter parameter = new OdbcParameter("registrationoffice", OdbcType.Decimal, 10);
+            parameter.Value = ARegisteringOffice;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+            parameter.Value = AEventCode;
+            parameters.Add(parameter);
+
+            string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
+                                               "FROM PUB_pm_short_term_application " +
+                                               "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
+                                               "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ?";
+            string queryGeneralApplication = "SELECT PUB_pm_general_application.* " +
+                                             "FROM PUB_pm_short_term_application, PUB_pm_general_application " +
+                                             "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
+                                             "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                             "  AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
+                                             "  AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
+                                             +
+                                             "  AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n";
+            string queryPerson = "SELECT PUB_p_person.* " +
+                                 "FROM PUB_pm_short_term_application, PUB_p_person " +
+                                 "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
+                                 "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                 "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryShortTermApplication,
+                MainDS.PmShortTermApplication.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryPerson,
+                MainDS.PPerson.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryGeneralApplication,
+                MainDS.PmGeneralApplication.TableName, ATransaction, parameters.ToArray());
 
             foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
             {
-                PPersonAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey, ATransaction);
-                PmGeneralApplicationAccess.LoadByPrimaryKey(MainDS, shortTermRow.PartnerKey,
-                    shortTermRow.ApplicationKey,
-                    shortTermRow.RegistrationOffice,
-                    ATransaction);
-
                 MainDS.PPerson.DefaultView.RowFilter =
                     String.Format("{0}={1}",
                         PPersonTable.GetPartnerKeyDBName(),
@@ -264,6 +294,92 @@ namespace Ict.Petra.Server.MConference.Applications
             AMainDS.AcceptChanges();
 
             return result;
+        }
+
+        /// <summary>
+        /// export accepted applications to Petra
+        /// </summary>
+        /// <returns></returns>
+        public static string DownloadApplications(ref ConferenceApplicationTDS AMainDS)
+        {
+            // TODO: export all partners that have not been imported to the local database yet
+            // TODO: export all partners where application status has changed, cancelled etc
+            // TODO: currently exporting all partners that are part of the currently displayed list
+            string result = string.Empty;
+
+            result += "PersonPartnerKey;EventPartnerKey;ApplicationDate;AcquisitionCode;Title;FirstName;FamilyName;Street;PostCode;City;";
+            result += "Country;Phone;Mobile;Email;DateOfBirth;MaritalStatus;Gender;Vegetarian;MedicalNeeds;ArrivalDate;DepartureDate;";
+            result += "EventRole;AppStatus;PreviousAttendance;AppComments;NotesPerson;HorstID\n";
+
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
+                    PmShortTermApplicationRow TemplateRow = AMainDS.PmShortTermApplication.NewRowTyped(false);
+
+                    // one person is only registered once for the same event. each registration is a new partner key
+                    TemplateRow.PartnerKey = row.PartnerKey;
+                    // TODO more flexible for event code
+                    TemplateRow.ConfirmedOptionCode = "TS111CNGRS.08";
+                    PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
+
+                    PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
+                    PLocationRow LocationRow = PLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+                    PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+
+                    PmGeneralApplicationRow GeneralApplicationRow =
+                        PmGeneralApplicationAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey,
+                            ShortTermApplicationRow.ApplicationKey,
+                            ShortTermApplicationRow.RegistrationOffice,
+                            Transaction)[0];
+
+                    // TODO old partner key
+                    result += "\"\";";
+                    // TODO event partner key in config file? different for each country?
+                    result += "\"1110198\";";
+                    result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
+                    // TODO AcquisitionCode
+                    result += "\"" + "\";";
+                    result += "\"" + PersonRow.Title + "\";";
+                    result += "\"" + PersonRow.FirstName + "\";";
+                    result += "\"" + PersonRow.FamilyName + "\";";
+                    result += "\"" + LocationRow.StreetName + "\";";
+                    result += "\"" + LocationRow.PostalCode + "\";";
+                    result += "\"" + LocationRow.City + "\";";
+                    result += "\"" + LocationRow.CountryCode + "\";";
+                    result += "\"" + PartnerLocationRow.TelephoneNumber + "\";";
+                    result += "\"" + PartnerLocationRow.MobileNumber + "\";";
+                    result += "\"" + PartnerLocationRow.EmailAddress + "\";";
+                    result += "\"" + PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy") + "\";";
+                    result += "\"" + PersonRow.MaritalStatus + "\";";
+                    result += "\"" + PersonRow.Gender + "\";";
+                    result += "\"" + /* vegetarian + */ "\";";
+                    result += "\"" + /* MedicalNeeds + */ "\";";
+                    result += "\"" + /* ArrivalDate + */ "\";";
+                    result += "\"" + /* DepartureDate + */ "\";";
+                    result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
+                    result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
+                    result += "\"" + /* PreviousAttendance + */ "\";";
+                    result += "\"" + /* AppComments + */ "\";";
+                    result += "\"" + /* NotesPerson + */ "\";";
+                    result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
+                    result += "\n";
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                return String.Empty;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
         }
     }
 }

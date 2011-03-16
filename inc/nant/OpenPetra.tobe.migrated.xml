@@ -100,12 +100,11 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <target name="cleanPetra" depends="clean" />
 <target name="compilePetra" depends="compile" />
 
-<target name="generateORM" depends="" description="Generates the cached tables">
+<target name="generateORMCachedTables" depends="" description="Generates the cached tables">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
 </target> 
-
 
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
@@ -119,10 +118,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
         buildfile="${dir.root}/i18n/i18n.build" />
 </target>
 
-<!-- Add the database a as is. Add properties for compat -->
-<property name="DBMS.Type" value="sqlite" overwrite="false" />
-<property name="DBMS.DBName" value="openpetra" overwrite="false" />
-<property name="DBMS.Password" value="petra" overwrite="false" /> 
+<!-- Some database settings -->
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="SelectedDemo" value="demodataGermany" overwrite="false"/>
 

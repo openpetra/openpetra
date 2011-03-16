@@ -44,7 +44,7 @@ namespace Tests.MFinance.Server.Gift
         public void Init()
         {
             new TLogging("TestServer.log");
-            TPetraServerConnector.Connect("../../../../../etc/TestServer.config");
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 
         /// <summary>

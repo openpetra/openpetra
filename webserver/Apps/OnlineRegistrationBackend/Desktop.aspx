@@ -1,250 +1,15 @@
-<%@ Page Language="C#" %>
-
-<%@ Import Namespace="System.Collections.Generic" %>
-<%@ Import Namespace="System.Data" %>
-<%@ Import Namespace="System.IO" %>
+<%@ Page Language="C#"
+    Inherits="Ict.Petra.WebServer.MConference.TPageOnlineApplication"
+    src="Desktop.aspx.cs" %>
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
-<%@ Assembly Name="Ict.Common" %>
-<%@ Assembly Name="Ict.Petra.Server.app.WebService" %>
-<%@ Assembly Name="Ict.Petra.Server.lib.MConference" %>
-<%@ Assembly Name="Ict.Petra.Shared.lib.data" %>
-<%@ Assembly Name="Ict.Petra.Shared.lib.MPersonnel" %>
-<%@ Assembly Name="Ict.Petra.Server.lib.MPersonnel" %>
-<%@ Import Namespace="Ict.Common" %>
-<%@ Import Namespace="PetraWebService" %>
-<%@ Import Namespace="Ict.Petra.Server.MConference.Applications" %>
-<%@ Import Namespace="Ict.Petra.Shared.MConference.Data" %>
-<%@ Import Namespace="Ict.Petra.Shared.MPersonnel" %>
-<%@ Import Namespace="Ict.Petra.Shared.MPersonnel.Personnel.Data" %>
-<%@ Import Namespace="Ict.Petra.Server.MPersonnel.Person.Cacheable" %>
 
-<script runat="server">
-    protected void Page_Load(object sender, EventArgs e)
-    {
-        // check for valid user
-        TOpenPetraOrg myServer = new TOpenPetraOrg();
-        if (!myServer.IsUserLoggedIn())
-        {
-            this.Response.Redirect("Default.aspx");
-            return;
-        }
-        
-        if (!X.IsAjaxRequest)
-        {
-            Session["CURRENTROW"] = null;
-            MyData_Refresh(null, null);
-            RoleData_Refresh(null, null);
-            ApplicationStatus_Refresh(null, null);
-        }
-    }
-
-    private object[] DataTableToArray(DataTable ATable)
-    {
-        ArrayList Result = new ArrayList();
-        foreach (DataRow row in ATable.Rows)
-        {
-            object[]NewRow = new object[ATable.Columns.Count];
-            for (int count = 0; count < ATable.Columns.Count; count++)
-            {
-                NewRow[count] = row[count];
-            }
-            
-            Result.Add(NewRow);
-        }
-        
-        return Result.ToArray();
-    }
-
-    /// load data from the database
-    protected void MyData_Refresh(object sender, StoreRefreshDataEventArgs e)
-    {
-        // TODO get the current sitekey of the user
-        // TODO offer all available conferences???
-
-        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-        if (CurrentApplicants == null || sender != null || Session["CURRENTROW"] == null)
-        {
-            CurrentApplicants = TApplicationManagement.GetApplications("SC001CNGRSS08", this.FilterStatus.SelectedItem.Value);
-            Session["CURRENTAPPLICANTS"] = CurrentApplicants;
-            this.FormPanel1.SetValues(new {});
-            this.FormPanel1.Disabled = true;
-        }
-
-        this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
-        this.Store1.DataBind();
-    }
-
-    protected void RoleData_Refresh(object sender, StoreRefreshDataEventArgs e)
-    {
-        // TODO: load from database
-        this.StoreRole.DataSource = new object[]
-        {
-            new object[] { "TS-TEEN-A" },
-            new object[] { "TS-TEEN-O" },
-            new object[] { "TS-SERVE" }
-        };
-        
-        this.StoreRole.DataBind();
-    }
-
-    protected void ChangeFilter(object sender, DirectEventArgs e)
-    {
-        MyData_Refresh(null, null);
-    }
-
-    protected void ApplicationStatus_Refresh(object sender, StoreRefreshDataEventArgs e)
-    {
-        TPersonnelCacheable cache = new TPersonnelCacheable();
-        Type dummy;
-        PtApplicantStatusTable statusTable = (PtApplicantStatusTable)cache.GetCacheableTable(TCacheablePersonTablesEnum.ApplicantStatusList,
-                                    String.Empty, true, out dummy);
-        
-        this.StoreApplicationStatus.DataSource = DataTableToArray(statusTable);
-        
-        this.StoreApplicationStatus.DataBind();
-    }
-
-    protected void RowSelect(object sender, DirectEventArgs e)
-    {
-        Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
-
-        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-        CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
-
-        ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
-        Session["CURRENTROW"] = row;
-
-        this.FormPanel1.Disabled = false;
-
-        this.FormPanel1.SetValues(new {
-            row.PartnerKey,
-            row.FirstName,                          
-            row.FamilyName,
-            row.Gender,
-            row.DateOfBirth,
-            row.GenAppDate,
-            row.GenApplicationStatus,
-            row.StCongressCode
-        });
-        
-        Random rand = new Random();
-        Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1,10000).ToString();
-    }
-
-    protected void SaveApplication(object sender, DirectEventArgs e)
-    {
-        ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
-        
-        //Console.WriteLine(e.ExtraParams["Values"]);
-        
-        Dictionary<string,string> values = JSON.Deserialize<Dictionary<string, string>>(e.ExtraParams["Values"]);
-        
-        row.FamilyName = values["FamilyName"];
-        row.FirstName = values["FirstName"];
-        row.Gender = values["Gender"];
-        if (values["DateOfBirth"].Length == 0)
-        {
-            row.SetDateOfBirthNull();
-        }
-        else
-        {
-            row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
-        }
-        row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-        row.StCongressCode = values["StCongressCode_Value"];
-        row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-
-        ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-        if (TApplicationManagement.SaveApplications(ref CurrentApplicants) != TSubmitChangesResult.scrOK)
-        {
-            X.Msg.Alert("Error", "Saving did not work").Show();            
-        }
-        
-        MyData_Refresh(null, null);
-    }
-    
-    protected void Logout_Click(object sender, DirectEventArgs e)
-    {
-        // Logout from Authenticated Session
-        TOpenPetraOrg myServer = new TOpenPetraOrg();
-        myServer.Logout();
-        this.Response.Redirect("Default.aspx");
-    }
-
-    protected void UploadClick(object sender, DirectEventArgs e)
-    {
-    try
-    {
-        Dictionary<string,string> values = JSON.Deserialize<Dictionary<string, string>>(e.ExtraParams["Values"]);
-        
-        Int64 PartnerKey = Convert.ToInt64(values["PartnerKey"]);
-        
-        if (this.FileUploadField1.HasFile)
-        {
-            // TODO: use a generic upload function for images, with max size and dimension parameters, same as in upload.aspx for the participants
-            int FileLen = this.FileUploadField1.PostedFile.ContentLength;
-            if (FileLen > 10*1024*1024)
-            {
-               X.Msg.Show(new MessageBoxConfig
-                {
-                    Buttons = MessageBox.Button.OK,
-                    Icon = MessageBox.Icon.ERROR,
-                    Title = "Fail",
-                    Message = "We do not support files greater than 10 MB " + FileLen.ToString()
-                });
-                return;
-            }
-
-            // TODO: convert to jpg
-            if (Path.GetExtension(this.FileUploadField1.PostedFile.FileName).ToLower() != ".jpg" && Path.GetExtension(this.FileUploadField1.PostedFile.FileName).ToLower() != ".jpeg")
-            {
-               X.Msg.Show(new MessageBoxConfig
-                {
-                    Buttons = MessageBox.Button.OK,
-                    Icon = MessageBox.Icon.ERROR,
-                    Title = "Fail",
-                    Message = "we only support jpg files"
-                });
-                return;
-            }
-
-            // TODO: scale image
-            // TODO: rotate image
-            // TODO: allow editing of image, select the photo from a square image etc
-           
-            this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValueStatic("Server.PathData") + 
-                    Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + PartnerKey.ToString() + ".jpg");
-            Random rand = new Random();
-            Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1,10000).ToString();
-           
-            // hide wait message, uploading
-            X.Msg.Hide();
-        }
-        else
-        {
-           X.Msg.Show(new MessageBoxConfig
-            {
-                Buttons = MessageBox.Button.OK,
-                Icon = MessageBox.Icon.ERROR,
-                Title = "Fail",
-                Message = "No file uploaded"
-            });
-        }
-    }
-    catch (Exception ex)
-    {  
-        Console.WriteLine(ex.Message);
-    }
-    }    
-</script>
-    
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Desktop - Ext.NET Examples</title>    
+    <title>Online Registration Backend</title>    
     
     <style type="text/css">        
         .start-button {
@@ -276,7 +41,11 @@
             position: absolute !important;
         }
     </style>
-    
+<script type="text/javascript">
+        var submitValue = function (grid) {
+            grid.submitData(false);
+        };
+</script>        
 </head>
 <body>
     <form runat="server">
@@ -333,7 +102,7 @@
             </StartMenu>
         </ext:Desktop>
         
-        <ext:Store ID="Store1" runat="server" OnRefreshData="MyData_Refresh">
+        <ext:Store ID="Store1" runat="server" OnRefreshData="MyData_Refresh" OnSubmitData="DownloadPetra">
             <Reader>
                 <ext:ArrayReader>
                     <Fields>
@@ -445,6 +214,65 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winAcceptMany" 
+            runat="server" 
+            Title="Accept many applicants by Registration key" 
+            Width="500"
+            Height="600"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="AcceptForm" 
+                            runat="server"
+                            Region="Center"
+                            Width="300"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="50">                
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:TextArea ID="RegistrationsKeys" DataIndex="RegistrationsKeys" runat="server" FieldLabel="Registration Keys" Height="360"/>
+                                <ext:Label runat="server" Text="Please enter all keys of applicants that you want to set to application status 'Accepted'. "/>
+                                <ext:Label runat="server" Text="You have to enter the registration key that is printed on the PDF, not the partner key from your Petra."/>
+                                <ext:Label runat="server" Text="You can leave out the 000400..., so just type for example 12123 or 8651."/>
+                                <ext:Label runat="server" Text="One key per line."/>
+                            </Items>
+                            <Buttons>
+                                <ext:Button ID="AcceptButton" runat="server" Text="Accept All">
+                                    <DirectEvents>
+                                        <Click OnEvent="AcceptManyApplicants">
+                                            <EventMask ShowMask="true" />
+                                            <ExtraParams>
+                                                <ext:Parameter Name="Values" Value="#{AcceptForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                    <Listeners>
+                                        <Click Handler="#{winAcceptMany}.hide();" />
+                                    </Listeners>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winAcceptMany}.hide();#{AcceptForm}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
+        
+            </Items>
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winApplications" 
             runat="server" 
             InitCenter="false"
@@ -454,6 +282,7 @@
             Height="520"
             PageX="200" 
             PageY="125"
+            Maximized="true"
             Layout="Border">
             <TopBar>
             </TopBar>           
@@ -464,8 +293,8 @@
                     Region="North"
                     Split="true"
                     Margins="0 5 5 5"
-                    Title="Filter" 
-                    Height="80">
+                    Title="" 
+                    Height="120">
                     <Items>
                         <ext:ComboBox 
                             ID="FilterStatus"
@@ -487,6 +316,16 @@
                                 <Select OnEvent="ChangeFilter"/>
                             </DirectEvents>
                         </ext:ComboBox>
+                        <ext:Button ID="btnDownloadPetra" runat="server" Text="Download for Petra" Icon="PageAttach">
+                            <Listeners>
+                                <Click Handler="submitValue(#{GridPanel1});" />
+                            </Listeners>
+                        </ext:Button>
+                        <ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
+                            <Listeners>
+                                <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
+                            </Listeners>
+                        </ext:Button>
                     </Items>
                 </ext:FormPanel>
                 <ext:GridPanel 

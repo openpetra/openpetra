@@ -24,6 +24,7 @@ list of available commands:
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
   buildRelease: Build the release for the target platform we are building on
+  initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
@@ -31,7 +32,8 @@ compat:
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
-  generateORM: generates the cachedtables from the petra.xml
+  generateORM: generates Object Relational Mapping routines from petra.xml
+     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
@@ -111,11 +113,15 @@ not supported
   </foreach>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <property name="includepaths" value="Common,Petra/Shared,Petra/Server,Petra/ServerPlugins,Petra/PetraServerConsole"/>
+    <property name="startupproject" value="PetraServerConsole"/>
+    <property name="startuparguments" value="-C:${ServerConfigFile}"/>
     <property name="solution-name" value="OpenPetra.Server.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/PetraClient"/>
+    <property name="startupproject" value="PetraClient"/>
+    <property name="startuparguments" value="-C:${ClientConfigFile}"/>
     <property name="solution-name" value="OpenPetra.Client.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
@@ -125,7 +131,7 @@ not supported
     <call target="generate-solution-internal" />
   </foreach>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/Server,Petra/ServerPlugins,Testing"/>
+    <property name="includepaths" value="Common,PetraTools,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/Server,Petra/ServerPlugins,Testing"/>
     <property name="solution-name" value="OpenPetra.Testing.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
@@ -137,12 +143,29 @@ not supported
   <property name="TemplateProject" value="" />
   <property name="TemplateConfiguration" value="" />
   <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
+  <property name="startupproject" value="" overwrite="false"/>
+
+  <!-- collect all project files, but without the startup project, so we can add that at the last position -->
+  <property name="projectfiles" value="^"/>
   <foreach item="File" property="ProjectFile">
     <in>
       <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
         <include name="*.csproj"/>
+        <exclude name="${startupproject}.csproj"/>
       </items>
     </in>
+    <do>
+      <property name="projectfiles" value="${projectfiles},${ProjectFile}"/>
+    </do>
+  </foreach>
+  <property name="projectfiles" value="${string::replace(projectfiles,'^,','')}"/>
+  <if test="${string::get-length(startupproject) > 0}">
+    <property name="startupproject" value="${path::combine(path::combine(dir.projectfiles, devenv-name),startupproject+'.csproj')}"/>
+    <property name="temp" value="${script::ReplaceInFile(startupproject, '&lt;/Optimize&gt;', '&lt;/Optimize&gt;&lt;StartArguments&gt;'+startuparguments+'&lt;/StartArguments&gt;')}"/>
+    <property name="projectfiles" value="${projectfiles},${startupproject}"/>
+  </if>
+  <property name="startupproject" value="" overwrite="true"/>
+  <foreach item="String" property="ProjectFile" delim="," in="${projectfiles}">
     <do>
       <!-- do we need to remove the xmlns="http://schemas.microsoft.com/developer/msbuild/2003" from the project file so that xmlpeek works? -->
       <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlns', 'xmlnsDeactivated')}"/>
@@ -478,6 +501,56 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       <solution configuration="${Configuration}" solutionfile="${solution.file}" />
     </if>
   </if>
+</target>
+
+<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
+  <echo message="please compile the code after the files have been regenerated"/>
+</target>
+
+<target name="generateORMData">
+  <!-- generate the files for Ict.Petra.Shared.lib.data, ie. the tables and datasets -->
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Shared/Ict.Petra.Shared.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateORMAccess">
+  <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
+  <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
+        tofile="${ServerConfigFile}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>
+  </copy>
+
+  <copy file="${dir.incdir.template.etc}/Client.config"
+        tofile="${ClientConfigFile}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+
+  <copy file="${dir.incdir.template.etc}/TestServer.config"
+        tofile="${path::combine(dir.etc, 'TestServer.config')}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+
+  <copy file="${dir.incdir.template.etc}/TestClient.config"
+        tofile="${path::combine(dir.etc, 'TestClient.config')}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+  
+<!-- MGR: TODO: Remove copy. Should be during database work! -->
+  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
+      tofile="${path::combine(dir.bin, 'version.txt')}" 
+      overwrite="true"/>
+  
 </target>
 
 </project>
