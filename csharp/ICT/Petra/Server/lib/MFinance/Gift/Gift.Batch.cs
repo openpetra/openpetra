@@ -105,7 +105,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             MainDS.AGiftBatch.Rows.Add(NewRow);
             return NewRow;
         }
-                /// <summary>
+
+        /// <summary>
         /// create a new batch with a consecutive batch number in the ledger
         /// for call inside a server function
         /// for performance reasons submitting (save the data in the database) is done later (not here)
@@ -125,8 +126,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.LedgerNumber = ALedgerNumber;
             LedgerTable[0].LastRecGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
-         
-              
+
+
             // TODO: bank account as a parameter, set on the gift matching screen, etc
             NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());

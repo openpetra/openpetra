@@ -1,0 +1,29 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Submit recurring Batch 
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    FormType: browse
+    Template: window
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actSubmitBatch: {Label=&OK, ActionClick=SubmitBatch}
+        actClose: {Label=&Cancel, ActionClick=BtnCloseClick}
+        actHelp: {Label=&Help, ActionClick=BtnHelpClick}
+    Controls:
+        pnlContent:
+            Controls:
+                Row0: [dtpEffectiveDate]
+                Row1: [pnlButtons]
+            Dock: Fill
+        pnlButtons:
+            Dock:Top
+            Controls:
+                Row0: [btnHelp, btnOK, btnClose]
+            ColWidths: [0=Fixed:400,1=Fixed:100,2=Fixed:100]    
+        btnHelp: {Action=actHelp}
+        btnClose: {Action=actClose}
+        btnOK: {Action=actSubmitBatch}                
+        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use}
+    Toolbar:
+        

@@ -132,14 +132,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.CreateNewARecurringGiftBatch();
         }
 
-                 
         private void DeleteRow(System.Object sender, System.EventArgs e)
         {
-        	//TODO
+            //TODO
         }
+
         private void Submit(System.Object sender, System.EventArgs e)
         {
-            TVerificationResultCollection Verifications;
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
+                return;
+            }
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -152,41 +157,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
             }
-			//TODO	Implement GIftBatchSubmit
-			//TODO Implement server function for submit
-//            // ask if the user really wants to post the batch
-//            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
-//                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
-//            {
-//                return;
-//            }
-//
-//            if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
-//            {
-//                string ErrorMessages = String.Empty;
-//
-//                foreach (TVerificationResult verif in Verifications)
-//                {
-//                    ErrorMessages += "[" + verif.ResultContext + "] " +
-//                                     verif.ResultTextCaption + ": " +
-//                                     verif.ResultText + Environment.NewLine;
-//                }
-//
-//                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
-//            }
-//            else
-//            {
-//                // TODO: print reports on successfully posted batch
-//                MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-//
-//                // TODO: refresh the grid, to reflect that the batch has been posted
-//                LoadBatches(FLedgerNumber);
-//
-//                FPetraUtilsObject.DisableSaveButton();
-//            }
-        }
 
-     
+            TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(this.Handle);
+            submitForm.LedgerNumber = FLedgerNumber;
+            submitForm.BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            submitForm.MainDS = FMainDS;
+            submitForm.Show();
+        }
 
         /// <summary>
         /// enable or disable the buttons
@@ -194,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void UpdateChangeableStatus()
         {
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
-                                 
+
 
             this.btnDelete.Enabled = changeable;
             pnlDetails.Enabled = changeable;

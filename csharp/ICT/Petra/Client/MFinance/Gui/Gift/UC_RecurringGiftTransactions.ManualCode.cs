@@ -425,6 +425,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARecurringGiftBatchRow batchRow = GetBatchRow();
 
             ARecurringGiftRow giftRow = FMainDS.ARecurringGift.NewRowTyped(true);
+
             giftRow.Active = true;
 
             giftRow.LedgerNumber = batchRow.LedgerNumber;
@@ -543,6 +544,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is a special case - normally these lines would be produced by the generator
             ARecurringGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
 
+            if (giftRow.IsActiveNull())
+            {
+                chkDetailActive.Checked = false;
+            }
+            else
+            {
+                chkDetailActive.Checked = giftRow.Active;
+            }
+
             if (giftRow.IsMethodOfGivingCodeNull())
             {
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
@@ -599,7 +609,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtHashTotal.NumberValueDecimal = AHashTotal;
         }
 
-       
         /// <summary>
         /// set the correct protection from outside
         /// </summary>
@@ -659,6 +668,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //            }
 
             //  join by hand
+
+            giftRow.Active = chkDetailActive.Checked;
+
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
             {
                 giftRow.SetMethodOfGivingCodeNull();

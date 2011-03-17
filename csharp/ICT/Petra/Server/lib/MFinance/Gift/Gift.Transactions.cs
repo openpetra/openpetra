@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             return CreateAGiftBatch(ALedgerNumber, DateTime.Today);
         }
-        
+
         /// <summary>
         /// create a new recurring batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
@@ -145,7 +145,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-      
         /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc
@@ -164,7 +163,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
-		  /// <summary>
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
@@ -182,6 +182,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
+
         /// <summary>
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
@@ -267,7 +268,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return MainDS;
         }
-		   /// <summary>
+
+        /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -337,7 +339,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         giftDetail.RecipientDescription = "INVALID";
                     }
-
                 }
             }
             finally
@@ -349,6 +350,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return MainDS;
         }
+
         /// <summary>
         /// this will store all new and modified batches, gift transactions and details
         /// </summary>
@@ -373,14 +375,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             return SubmissionResult;
         }
-         /// <summary>
+
+        /// <summary>
         /// this will store all new and modified recurring batches, recurring gift transactions and recurring details
         /// </summary>
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-		public static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+        public static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
@@ -397,6 +400,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             return SubmissionResult;
         }
+
         /// <summary>
         /// creates the GL batch needed for posting the gift batch
         /// </summary>
