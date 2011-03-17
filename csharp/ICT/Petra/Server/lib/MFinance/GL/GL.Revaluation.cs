@@ -22,7 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -117,7 +116,9 @@ namespace Ict.Petra.Server.MFinance.GL
         private AJournalRow journal;
 
 
-        TVerificationResultCollection verificationCollection = null;
+        string strStatusContent = Catalog.GetString("Revaluation ...");
+        
+        TVerificationResultCollection verificationCollection = new TVerificationResultCollection();
         TResultSeverity resultSeverity = TResultSeverity.Resv_Noncritical;
         private bool blnVerificationCollectionContainsData = false;
 
@@ -160,16 +161,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
             }
-            catch (InvalidLedgerInfoException ex)
+            catch (InternalException ex)
             {
                 AddVerificationResultMessage("LedgerInfo invalid",
                     ex.Message, "REVAL.02",
-                    TResultSeverity.Resv_Critical);
-            }
-            catch (RevaluationException ex)
-            {
-                AddVerificationResultMessage("Common Revaluation Exception",
-                    ex.Message, "REVAL.01",
                     TResultSeverity.Resv_Critical);
             }
             return resultSeverity == TResultSeverity.Resv_Critical;
@@ -177,11 +172,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void RunRevaluationIntern()
         {
-            AAccountTable accountTable =
-                AAccountAccess.LoadViaALedger(intLedgerNum, null);
-            AGeneralLedgerMasterTable generalLedgerMasterTable =
-                AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
-
+        	AAccountTable accountTable =
+        		AAccountAccess.LoadViaALedger(intLedgerNum, null);
+        	AGeneralLedgerMasterTable generalLedgerMasterTable =
+        		AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
+        	
+        	if (accountTable.Rows.Count == 0) {
+        		throw new InternalException("001",Catalog.GetString(
+        			"No Entries in GeneralLedgerMasterTable"));
+        	}
+        	
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
             {
                 AAccountRow accountRow = (AAccountRow)accountTable[iCnt];
@@ -192,11 +192,10 @@ namespace Ict.Petra.Server.MFinance.GL
                     // Account shall hold foreign Currency values
                     if (accountRow.ForeignCurrencyFlag)
                     {
-                        string strAccountCode = accountRow.AccountCode;
-
                         for (int kCnt = 0; kCnt < strArrForeignCurrencyType.Length; ++kCnt)
                         {
                             intPtrToForeignData = kCnt;
+                            bool blnFoundGlmEntry = false;
 
                             // AForeignCurrency[] and ANewExchangeRate[] shall support a value
                             // for this account resp. for the currency of the account
@@ -208,17 +207,56 @@ namespace Ict.Petra.Server.MFinance.GL
                                         (AGeneralLedgerMasterRow)generalLedgerMasterTable[jCnt];
 
                                     // generalLedgerMaster shall support Entries for this account
-                                    if (generalLedgerMasterRow.AccountCode.Equals(strAccountCode))
+                                    if (generalLedgerMasterRow.AccountCode.Equals(accountRow.AccountCode))
                                     {
                                         // Account is localized ...
                                         RevaluateAccount(accountRow.AccountCode);
+                                        blnFoundGlmEntry = true;
                                     }
                                 }
                             }
+                            if (!blnFoundGlmEntry) {
+                            	string strMessage = Catalog.GetString(
+                            		"The account {0} has no glm-entry and a revaluation is not necessary");
+                            	strMessage = String.Format(strMessage,accountRow.AccountCode);
+                            	verificationCollection.Add(new TVerificationResult(
+                            		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                            }
                         }
+                    } else 
+                    {
+                    	string strMessage = Catalog.GetString(
+                    		"The account {0} is not defined as foreign and a revaluation is not possible");
+                    	strMessage = String.Format(strMessage,accountRow.AccountCode);
+                    	verificationCollection.Add(new TVerificationResult(
+                    		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
+                } else {
+                	string strMessage = Catalog.GetString(
+                		"The account {0} is not active and a revaluation is not possible");
+                	strMessage = String.Format(strMessage,accountRow.AccountCode);
+                	verificationCollection.Add(new TVerificationResult(
+                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
             }
+        }
+        
+        /// <summary>
+        /// In order to be able to use a unit test for the calculation, it is public ...
+        /// </summary>
+        /// <param name="AAmountInBaseCurency">Available account value in base currency units</param>
+        /// <param name="AAmountInForeignCurrency">Available account value in foreign currency units</param>
+        /// <param name="AExchangeRate">The exchange rate which shall be realized after the
+        /// accounting has been done</param>
+        /// <param name="ACurrency">The type of the foreign currency value (GBP or EUR).</param>
+        public decimal CalcAmountToAccount(decimal AAmountInBaseCurency, 
+                                           decimal AAmountInForeignCurrency,
+                                           decimal AExchangeRate, string ACurrency)
+        {
+        	int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
+        	return AAmountInBaseCurency - 
+        		Math.Round((AAmountInForeignCurrency / AExchangeRate),intNoOfForeignDigts);
+
         }
 
         private void RevaluateAccount(string ARelevantAccount)
@@ -230,23 +268,50 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AGeneralLedgerMasterRow generalLedgerMasterRow =
                     (AGeneralLedgerMasterRow)generalLedgerMasterTable[iCnt];
-
-                decAccActForeign = generalLedgerMasterRow.YtdActualForeign;
-                decAccActBase = generalLedgerMasterRow.YtdActualBase;
-
-                decAccActBaseRequired = generalLedgerMasterRow.YtdActualForeign /
-                                        decArrExchangeRate[intPtrToForeignData];
-                int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
-                decAccActBaseRequired = Math.Round(decAccActBaseRequired, intNoOfForeignDigts);
-
-                decDelta = decAccActBaseRequired - decAccActBase;
-
-                // decDelta ... shall not be zero otherwise a revaluation is senseless
-                if (decDelta != 0)
+                
+                try{
+                	decDelta = CalcAmountToAccount(generalLedgerMasterRow.YtdActualBase, 
+                	                               generalLedgerMasterRow.YtdActualForeign, 
+                	                               decArrExchangeRate[intPtrToForeignData], 
+                	                               strBaseCurrencyType);
+                	if (decDelta != 0)
+                	{
+                		// Now we have the relevant Cost Center ...
+                		RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
+                	} else {
+                		string strMessage = Catalog.GetString(
+                			"The account {1}:{0} was allread valuated to {2}");
+                		strMessage = String.Format(strMessage, ARelevantAccount,
+                	                           generalLedgerMasterRow.CostCentreCode,
+                	                           decArrExchangeRate[intPtrToForeignData]);
+                		verificationCollection.Add(new TVerificationResult(
+                			strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                	}
+                } catch (InternalException internalException)
                 {
-                    // Now we have the relevant Cost Center ...
-                    RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
+                	string strMessage = "{0}:[{1}:{2}] {3}";
+                	strMessage = String.Format(strMessage, internalException.ErrorCode, 
+                	                           ARelevantAccount,
+                	                           generalLedgerMasterRow.CostCentreCode,
+                	                           internalException.Message);
+                	verificationCollection.Add(new TVerificationResult(
+                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
+                catch (DivideByZeroException)
+                {
+                	string strMessage = Catalog.GetString(
+                		"DivideByZeroException");
+                	verificationCollection.Add(new TVerificationResult(
+                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                }
+                catch (OverflowException)
+                {
+                	string strMessage = Catalog.GetString(
+                		"OverflowException");
+                	verificationCollection.Add(new TVerificationResult(
+                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                }
+
             }
 
             CloseRevaluationAccountingBatch();
@@ -356,14 +421,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        public void AddVerificationResultMessage(
+        
+        private void AddVerificationResultMessage(
             string AResultContext, string AResultText, string ALocalCode, TResultSeverity AResultSeverity)
         {
-            if (verificationCollection == null)
-            {
-                verificationCollection = new TVerificationResultCollection();
-            }
-
             verificationCollection.Add(new TVerificationResult(
                     AResultContext, AResultText, "REVAL", "REVAL:" + ALocalCode, AResultSeverity));
 
@@ -373,11 +434,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
     }
-
-    public class RevaluationException : System.Exception
-    {
-    }
-
 
     /// <summary>
     /// Gets the specific date informations of an accounting intervall.
@@ -492,11 +548,23 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
-    public class InvalidLedgerInfoException : SystemException
+    /// <summary>
+    /// This exception shall handle the internal errors of type critcal.
+    /// </summary>
+    public class InternalException : SystemException
     {
-        public InvalidLedgerInfoException(string message, Exception innerException)
-            : base(message, innerException)
+    	string strErrorCode;
+        public InternalException(string errorCode, string message)
+            : base(message)
         {
+    		strErrorCode = errorCode;
+        }
+        public string ErrorCode
+        {
+        	get 
+        	{
+        		return strErrorCode;
+        	}
         }
     }
 
@@ -524,8 +592,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     string message =
                         "The RevaluationAccount of leger {0} has been unsuccessfully required!";
-                    throw new InvalidLedgerInfoException(
-                        String.Format(message, ledgerNumber), catchedException);
+                    throw new InternalException("",
+                        String.Format(message, ledgerNumber));
                 }
             }
         }
@@ -539,17 +607,110 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
     }
+    /// <summary>
+    /// Get currency info is intended to be used to get some some specific infos
+    /// using the old petra data base entries. GetCurrencyInfon is designed to get
+    /// a rough set of information which shall be used for foreign currency
+    /// calculations and presentations. In normal cases open petra uses the
+    /// user defined localisation ie the presentation and rounding rules.
+    /// But if you have to work with JPY (Japanese Yen) you have to know that
+    /// you have to round to 0 digits even if your user settings have selected the
+    /// USD and two digits rounding.
+    ///
+    /// The routine works error regressive that means that invalid data (currency codes)
+    /// and damaged format strings will result in 2 digit rounding as a default.
+    /// </summary>
+    public class GetCurrencyInfo
+    {
+        private ACurrencyTable currencyTable = null;
+        private ACurrencyRow currencyRow = null;
+
+        /// <summary>
+        /// Constructor which automatically loads one CurrencyTable Entry defined
+        /// by the parameter.
+        /// </summary>
+        /// <param name="ACurrencyCode">Three digit description to define the
+        /// currency.</param>
+        public GetCurrencyInfo(string ACurrencyCode)
+        {
+            currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrencyCode, null);
+
+            if (currencyTable.Rows.Count == 1)
+            {
+                currencyRow = (ACurrencyRow)currencyTable[0];
+            }
+            else
+            {
+                throw new InternalException("GetCurrencyInfo.01",
+                    Catalog.GetString(String.Format(
+            	                            	"There exists no account for the Currency code {0}",
+            	                            	ACurrencyCode)));
+            }
+        }
+
+        /// <summary>
+        /// Calculates the number of digits by reading the row.DisplayFormat
+        /// Entry of the currency table and convert the old petra string to an
+        /// integer response.
+        /// </summary>
+        public int digits
+        {
+            get
+            {
+                return new FormatConverter(currencyRow.DisplayFormat).digits;
+            }
+        }
+    }
+
+    /// <summary>
+    /// This class is a local Format converter <br />
+    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9.99").digits.ToString());<br />
+    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9.9").digits.ToString());<br />
+    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9").digits.ToString());<br />
+    /// The result is 2,1 and 0 digits ..
+    /// </summary>
+    class FormatConverter
+    {
+        string sRegex;
+        Regex reg;
+        MatchCollection matchCollection;
+        int intDigits;
+        public FormatConverter(string strFormat)
+        {
+            sRegex = ">9.(9)+|>9$";
+            reg = new Regex(sRegex);
+            matchCollection = reg.Matches(strFormat);
+
+            if (matchCollection.Count != 1)
+            {
+                throw new InternalException("FormatConverter.01",
+                    String.Format("The regular expression {0} does not fit for a match in {1}",
+                        sRegex, strFormat));
+            }
+
+            intDigits = (matchCollection[0].Value).Length - 3;
+
+            if (intDigits == -1)
+            {
+                intDigits = 0;
+            }
+
+            if (intDigits < -1)
+            {
+                intDigits = 2;
+            }
+        }
+
+        /// <summary>
+        /// Property to report the number of digits
+        /// </summary>
+        public int digits
+        {
+            get
+            {
+                return intDigits;
+            }
+        }
+    }
+
 }
-
-
-//				System.Diagnostics.Debug.WriteLine("#########################################################");
-//				System.Diagnostics.Debug.WriteLine("Ledger        : " + ALedgerNum);
-//				System.Diagnostics.Debug.WriteLine("Account       : " + ARelevantAccount);
-//				System.Diagnostics.Debug.WriteLine("Cost Center   : " + generalLedgerMasterRow.CostCentreCode);
-//				System.Diagnostics.Debug.WriteLine("Base Currency : " +
-//				                                   generalLedgerMasterRow.YtdActualBase + "[" + ABaseCurrencyType + "]");
-//				System.Diagnostics.Debug.WriteLine("For. Currency : " +
-//				                                   generalLedgerMasterRow.YtdActualForeign + "[" + AForeignCurrency + "]");
-//				System.Diagnostics.Debug.WriteLine("Revaluation   : " + ARevaluationCostCenter + ":" + ARevaluationAccount);
-//				System.Diagnostics.Debug.WriteLine("Exchange-Rate : " + ANewExchangeRate.ToString());
-//				System.Diagnostics.Debug.WriteLine("#########################################################");

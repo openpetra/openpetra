@@ -35,7 +35,6 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Printing;
-using Ict.Tools.CodeGeneration;
 using Ict.Petra.Shared.MReporting;
 using Ict.Testing.NUnitPetraClient;
 

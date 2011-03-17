@@ -29,7 +29,6 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 using System.IO;
-using Ict.Tools.CodeGeneration;
 using Ict.Common;
 using Ict.Common.IO;
 
