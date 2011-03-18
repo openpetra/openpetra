@@ -2200,6 +2200,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean SubmitRecurringGiftBatch(Hashtable requestParams,
+                                                out TVerificationResultCollection AMessages)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SubmitRecurringGiftBatch", ";HASHTABLE;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SubmitRecurringGiftBatch(requestParams, out AMessages);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadAGiftBatch", ";INT;");

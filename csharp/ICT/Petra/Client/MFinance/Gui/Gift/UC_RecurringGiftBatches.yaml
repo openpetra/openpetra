@@ -33,7 +33,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ARecurringGiftBatch
-            Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType]
+            Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             SortOrder: BatchNumber DESC
@@ -43,14 +43,12 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
-                Row3: [lblValidDateRange]
-                Row4: [txtDetailHashTotal, cmbDetailCurrencyCode]
-                Row5: [cmbDetailMethodOfPaymentCode]
-                Row6: [rgrDetailGiftType]
+                Row3: [txtDetailHashTotal, cmbDetailCurrencyCode]
+                Row4: [cmbDetailMethodOfPaymentCode]
+                Row5: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, OnChange=HashTotalChanged}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}

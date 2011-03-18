@@ -73,13 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
 
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-            DateTime DefaultDate;
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
-            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
-
             ShowData();
         }
 

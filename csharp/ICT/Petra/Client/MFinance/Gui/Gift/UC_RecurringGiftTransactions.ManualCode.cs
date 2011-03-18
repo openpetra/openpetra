@@ -120,11 +120,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-//                if (!FInKeyMinistryChanging)
-//                {
-//                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
-//                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
-//                }
+                if (!FInKeyMinistryChanging)
+                {
+                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
+                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
+                }
             }
             finally
             {
@@ -169,31 +169,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-//        bool FInKeyMinistryChanging = false;
-//        private void KeyMinistryChanged(object sender, EventArgs e)
-//        {
-//            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
-//            {
-//                return;
-//            }
-//
-//            FInKeyMinistryChanging = true;
-//            try
-//            {
-//                Object val = cmbMinistry.SelectedValueCell;
-//
-//                if (val != null)
-//                {
-//                    Int64 rcp = (Int64)val;
-//
-//                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
-//                }
-//            }
-//            finally
-//            {
-//                FInKeyMinistryChanging = false;
-//            }
-//        }
+        bool FInKeyMinistryChanging = false;
+        private void KeyMinistryChanged(object sender, EventArgs e)
+        {
+            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            FInKeyMinistryChanging = true;
+            try
+            {
+                Object val = cmbMinistry.SelectedValueCell;
+
+                if (val != null)
+                {
+                    Int64 rcp = (Int64)val;
+
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+                }
+            }
+            finally
+            {
+                FInKeyMinistryChanging = false;
+            }
+        }
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {

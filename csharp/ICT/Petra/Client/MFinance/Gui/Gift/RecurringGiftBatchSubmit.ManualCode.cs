@@ -26,14 +26,15 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -61,6 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FBatchNumber = value;
+                txtExchangeRateToBase.Text="1";
             }
         }
 
@@ -79,6 +81,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
+                DateTime StartDateCurrentPeriod;
+                DateTime EndDateLastForwardingPeriod;
+                DateTime DefaultDate;
+                TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
+                    out StartDateCurrentPeriod,
+                    out EndDateLastForwardingPeriod,
+                    out DefaultDate);
+                lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                    StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             }
         }
 
@@ -89,8 +100,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
-            bool found = false;
-
             foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
             {
                 if ((gift.BatchNumber == FBatchNumber) && (gift.LedgerNumber == FLedgerNumber)
@@ -116,37 +125,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Close();
             return;
 Found:
+            Hashtable requestParams = new Hashtable();
+            requestParams.Add("ALedgerNumber", FLedgerNumber);
+            requestParams.Add("ABatchNumber", FBatchNumber);
+            requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
+            requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date);
+            TVerificationResultCollection AMessages;
+            Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch( requestParams, out AMessages);
 
+            if (submitOK)
+            {
+                MessageBox.Show(Catalog.GetString("Your recurring batch  was submitted successfully!"),
+                    Catalog.GetString("Success"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") + Environment.NewLine +
+                        Catalog.GetString("Reasons:"), AMessages));
+            }
 
-//                      // Assuming all relevant data is loaded in FMainDS
-//                foreach (ARecurringGiftBatchRow batch  in FMainDS.ARecurringGiftBatch.Rows)
-//                {
-//                      if ((batch.BatchNumber == FBatchNumber) && (batch.LedgerNumber== FLedgerNumber))
-//
-//                      {
-//                              foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
-//                              {
-//                                      if ((gift.BatchNumber == FBatchNumber) && (gift.LedgerNumber== FLedgerNumber))
-//                                      {
-//                                              foreach (ARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
-//                                              {
-//                                                      if ((giftDetail.GiftTransactionNumber == gift.GiftTransactionNumber) &&
-//                                                          (giftDetail.BatchNumber == FBatchNumber) && (giftDetail.LedgerNumber== FLedgerNumber)
-//                                                          {
-//
-//                                                          }
-//
-//
-//                                              }
-//                                      }
-//                              }
-//
-//                      }
-//                }
-            MessageBox.Show(Catalog.GetString("Your recurring batch  was submitted successfully!"),
-                Catalog.GetString("Success"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
             Close();
         }
 

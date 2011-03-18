@@ -22,7 +22,6 @@ RootNode:
                 Row0: [txtLedgerNumber, txtBatchTotal]
                 Row1: [txtBatchNumber, txtHashTotal]
             Dock: Top
-        Empty0:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
         txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
@@ -40,8 +39,9 @@ RootNode:
             TableName: ARecurringGiftDetail
             Dock: Fill
             #TODO: support split gifts, and deal with gift details properly
-            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, GiftAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, MethodOfGivingCode, MethodOfPaymentCode]
+            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, MethodOfGivingCode, MethodOfPaymentCode, MailingCode]
             CustomColumns:
+                Confidential: {Label=C, Type=Boolean}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
@@ -66,17 +66,17 @@ RootNode:
                 Row6: [dtpStartDonations, dtpEndDonations]
                 Row7: [txtDetailRecipientKey]
                 Row8: [txtField,chkDetailChargeFlag]
-                Row9: [cmbDetailMailingCode, chkDetailTaxDeductable]
-                Row10: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
-                Row11: [txtDetailCostCentreCode, txtDetailAccountCode]
-                Row12: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
-                Row13: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
-                Row14: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
+                Row9: [cmbMinistry]
+                Row10: [cmbDetailMailingCode, chkDetailTaxDeductable]
+                Row11: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row12: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row13: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
+                Row14: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
+                Row15: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         lblReceipt: {Label=*Receipt Each Gift*}        
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference}
@@ -92,6 +92,7 @@ RootNode:
         txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
+        cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
         txtDetailGiftAmount: {Label=Amount,Format=Currency, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}

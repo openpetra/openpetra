@@ -146,6 +146,65 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// create a gift batch from a recurring gift batch
+        /// including gift and gift detail
+        /// </summary>
+        /// <param name="requestParams ">HashTable with many parameters</param>
+        /// <param name="AMessages ">Output structure for user error messages</param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean SubmitRecurringGiftBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        {
+            Boolean ok = false;
+
+            AMessages = new TVerificationResultCollection();
+            GiftBatchTDS GMainDS = new GiftBatchTDS();
+            Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
+            DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
+            Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
+
+            RecurringGiftBatchTDS FMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
+                // Assuming all relevant data is loaded in FMainDS
+                foreach (ARecurringGiftBatchRow batch  in FMainDS.ARecurringGiftBatch.Rows)
+                {
+                    if ((batch.BatchNumber == ABatchNumber) && (batch.LedgerNumber == ALedgerNumber))
+                    {
+                        foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
+                        {
+                            if ((gift.BatchNumber == ABatchNumber) && (gift.LedgerNumber == ALedgerNumber))
+                            {
+                                foreach (ARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
+                                {
+                                    if ((giftDetail.GiftTransactionNumber == gift.GiftTransactionNumber)
+                                        && (giftDetail.BatchNumber == ABatchNumber) && (giftDetail.LedgerNumber == ALedgerNumber))
+                                    {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+                ok = true;
+            }
+            catch (Exception ex)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw new Exception("Error in SubmitRecurringGiftBatch", ex);
+            }
+            finally
+            {
+            }
+            return ok;
+        }
+
+        /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
