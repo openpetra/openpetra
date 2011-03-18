@@ -12665,7 +12665,7 @@
                 type="number"
                 length="24"
                 decimals="10"
-                descr="This is a number of currency units"
+                descr="This is the amount in transaction currency. This field should be renamed to a_gift_transaction_amount_n, to be in analogy to a_gift_detail.a_gift_transaction_amount_n"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Gift Amount"
                 help="Enter the amount"
