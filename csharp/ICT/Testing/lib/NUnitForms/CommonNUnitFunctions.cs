@@ -23,6 +23,9 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+
 using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -35,7 +38,8 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Testing.NUnitForms;
 using Ict.Testing.NUnitPetraClient;
-using System.Text.RegularExpressions;
+
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.NUnitForms
 {
@@ -46,6 +50,8 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class CommonNUnitFunctions : NUnitFormTest
     {
+        private Int32 FLedgerNumber;
+
         /// <summary>
         /// Empty Constructor ...
         /// </summary>
@@ -87,6 +93,69 @@ namespace Ict.Testing.NUnitForms
 
                 tester.SendCommand(cmd);
             };
+        }
+
+        /// <summary>
+        /// Routine to initialize the connection to TestServer.config and TestServer.log
+        /// </summary>
+        public void InitServerConnection()
+        {
+            string strAssemblyPath = System.AppDomain.CurrentDomain.BaseDirectory.ToString();
+
+            string[] strArr = strAssemblyPath.Split(new char[] { '\\', '/' });
+            string strTrunkRoot = "";
+
+            for (int i = 0; i < strArr.Length - 2; ++i)
+            {
+                strTrunkRoot = strTrunkRoot + strArr[i] + "/";
+            }
+
+            string strNameLog = strTrunkRoot + "log/TestServer.log";
+            string strNameConfig = strTrunkRoot + "etc/TestServer.config";
+
+            new TLogging(strNameLog);
+            TPetraServerConnector.Connect(strNameConfig);
+        }
+
+        /// <summary>
+        /// Routine to load a test specific data base.
+        /// </summary>
+        /// <param name="strSqlFilePathFromCSharpName"></param>
+        public void LoadTestDataBase(string strSqlFilePathFromCSharpName)
+        {
+            nant("stopPetraServer", false);
+            // csharp\\ICT\\Testing\\MFinance\\GiftForm\\TestData\\withpartners.sql"
+            nant("loadDatabase -D:LoadDB.file=" + strSqlFilePathFromCSharpName, true);
+            nant("startPetraServer", true);
+        }
+
+        /// <summary>
+        /// Routine to start nant ...
+        /// </summary>
+        /// <param name="argument"></param>
+        /// <param name="ignoreError"></param>
+        private void nant(String argument, bool ignoreError)
+        {
+            Process NantProcess = new Process();
+
+            NantProcess.EnableRaisingEvents = false;
+            NantProcess.StartInfo.FileName = "cmd"; //if you have trouble and want to check the dos box try with cmd and /k nant xxx as arguments
+            NantProcess.StartInfo.Arguments = "/c nant " + argument;
+            NantProcess.StartInfo.CreateNoWindow = false;
+            NantProcess.StartInfo.WorkingDirectory = "../../../../..";
+            NantProcess.StartInfo.UseShellExecute = true;
+            NantProcess.EnableRaisingEvents = true;
+            NantProcess.StartInfo.ErrorDialog = true;
+
+            if (!NantProcess.Start())
+            {
+                Debug.Print("failed to start " + NantProcess.StartInfo.FileName);
+            }
+            else
+            {
+                NantProcess.WaitForExit(60000);
+                Debug.Print("OS says nant process ist finished");
+            }
         }
     }
 

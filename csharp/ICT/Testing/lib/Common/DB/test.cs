@@ -72,7 +72,7 @@ namespace Ict.Common.DB.Testing
         public void Init()
         {
             new TLogging("test.log");
-            settings = new TAppSettingsManager("../../../../../etc/TestServer.config");
+            settings = new TAppSettingsManager("../../etc/TestServer.config");
 
             EstablishDBConnection();
         }

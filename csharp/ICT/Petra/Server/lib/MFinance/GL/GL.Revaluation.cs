@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
         string strStatusContent = Catalog.GetString("Revaluation ...");
-        
+
         TVerificationResultCollection verificationCollection = new TVerificationResultCollection();
         TResultSeverity resultSeverity = TResultSeverity.Resv_Noncritical;
         private bool blnVerificationCollectionContainsData = false;
@@ -172,16 +172,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void RunRevaluationIntern()
         {
-        	AAccountTable accountTable =
-        		AAccountAccess.LoadViaALedger(intLedgerNum, null);
-        	AGeneralLedgerMasterTable generalLedgerMasterTable =
-        		AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
-        	
-        	if (accountTable.Rows.Count == 0) {
-        		throw new InternalException("001",Catalog.GetString(
-        			"No Entries in GeneralLedgerMasterTable"));
-        	}
-        	
+            AAccountTable accountTable =
+                AAccountAccess.LoadViaALedger(intLedgerNum, null);
+            AGeneralLedgerMasterTable generalLedgerMasterTable =
+                AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
+
+            if (accountTable.Rows.Count == 0)
+            {
+                throw new InternalException("001", Catalog.GetString(
+                        "No Entries in GeneralLedgerMasterTable"));
+            }
+
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
             {
                 AAccountRow accountRow = (AAccountRow)accountTable[iCnt];
@@ -215,48 +216,35 @@ namespace Ict.Petra.Server.MFinance.GL
                                     }
                                 }
                             }
-                            if (!blnFoundGlmEntry) {
-                            	string strMessage = Catalog.GetString(
-                            		"The account {0} has no glm-entry and a revaluation is not necessary");
-                            	strMessage = String.Format(strMessage,accountRow.AccountCode);
-                            	verificationCollection.Add(new TVerificationResult(
-                            		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+
+                            if (!blnFoundGlmEntry)
+                            {
+                                string strMessage = Catalog.GetString(
+                                    "The account {0} has no glm-entry and a revaluation is not necessary");
+                                strMessage = String.Format(strMessage, accountRow.AccountCode);
+                                verificationCollection.Add(new TVerificationResult(
+                                        strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                             }
                         }
-                    } else 
-                    {
-                    	string strMessage = Catalog.GetString(
-                    		"The account {0} is not defined as foreign and a revaluation is not possible");
-                    	strMessage = String.Format(strMessage,accountRow.AccountCode);
-                    	verificationCollection.Add(new TVerificationResult(
-                    		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
-                } else {
-                	string strMessage = Catalog.GetString(
-                		"The account {0} is not active and a revaluation is not possible");
-                	strMessage = String.Format(strMessage,accountRow.AccountCode);
-                	verificationCollection.Add(new TVerificationResult(
-                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    else
+                    {
+                        string strMessage = Catalog.GetString(
+                            "The account {0} is not defined as foreign and a revaluation is not possible");
+                        strMessage = String.Format(strMessage, accountRow.AccountCode);
+                        verificationCollection.Add(new TVerificationResult(
+                                strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    }
+                }
+                else
+                {
+                    string strMessage = Catalog.GetString(
+                        "The account {0} is not active and a revaluation is not possible");
+                    strMessage = String.Format(strMessage, accountRow.AccountCode);
+                    verificationCollection.Add(new TVerificationResult(
+                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
             }
-        }
-        
-        /// <summary>
-        /// In order to be able to use a unit test for the calculation, it is public ...
-        /// </summary>
-        /// <param name="AAmountInBaseCurency">Available account value in base currency units</param>
-        /// <param name="AAmountInForeignCurrency">Available account value in foreign currency units</param>
-        /// <param name="AExchangeRate">The exchange rate which shall be realized after the
-        /// accounting has been done</param>
-        /// <param name="ACurrency">The type of the foreign currency value (GBP or EUR).</param>
-        public decimal CalcAmountToAccount(decimal AAmountInBaseCurency, 
-                                           decimal AAmountInForeignCurrency,
-                                           decimal AExchangeRate, string ACurrency)
-        {
-        	int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
-        	return AAmountInBaseCurency - 
-        		Math.Round((AAmountInForeignCurrency / AExchangeRate),intNoOfForeignDigts);
-
         }
 
         private void RevaluateAccount(string ARelevantAccount)
@@ -268,50 +256,55 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AGeneralLedgerMasterRow generalLedgerMasterRow =
                     (AGeneralLedgerMasterRow)generalLedgerMasterTable[iCnt];
-                
-                try{
-                	decDelta = CalcAmountToAccount(generalLedgerMasterRow.YtdActualBase, 
-                	                               generalLedgerMasterRow.YtdActualForeign, 
-                	                               decArrExchangeRate[intPtrToForeignData], 
-                	                               strBaseCurrencyType);
-                	if (decDelta != 0)
-                	{
-                		// Now we have the relevant Cost Center ...
-                		RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
-                	} else {
-                		string strMessage = Catalog.GetString(
-                			"The account {1}:{0} was allread valuated to {2}");
-                		strMessage = String.Format(strMessage, ARelevantAccount,
-                	                           generalLedgerMasterRow.CostCentreCode,
-                	                           decArrExchangeRate[intPtrToForeignData]);
-                		verificationCollection.Add(new TVerificationResult(
-                			strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
-                	}
-                } catch (InternalException internalException)
+
+                try
                 {
-                	string strMessage = "{0}:[{1}:{2}] {3}";
-                	strMessage = String.Format(strMessage, internalException.ErrorCode, 
-                	                           ARelevantAccount,
-                	                           generalLedgerMasterRow.CostCentreCode,
-                	                           internalException.Message);
-                	verificationCollection.Add(new TVerificationResult(
-                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
+                    decDelta = AccountDelta(generalLedgerMasterRow.YtdActualBase,
+                        generalLedgerMasterRow.YtdActualForeign,
+                        decArrExchangeRate[intPtrToForeignData],
+                        intNoOfForeignDigts);
+
+                    if (decDelta != 0)
+                    {
+                        // Now we have the relevant Cost Center ...
+                        RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
+                    }
+                    else
+                    {
+                        string strMessage = Catalog.GetString(
+                            "The account {1}:{0} was allread valuated to {2}");
+                        strMessage = String.Format(strMessage, ARelevantAccount,
+                            generalLedgerMasterRow.CostCentreCode,
+                            decArrExchangeRate[intPtrToForeignData]);
+                        verificationCollection.Add(new TVerificationResult(
+                                strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    }
+                }
+                catch (InternalException internalException)
+                {
+                    string strMessage = "{0}:[{1}:{2}] {3}";
+                    strMessage = String.Format(strMessage, internalException.ErrorCode,
+                        ARelevantAccount,
+                        generalLedgerMasterRow.CostCentreCode,
+                        internalException.Message);
+                    verificationCollection.Add(new TVerificationResult(
+                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
                 catch (DivideByZeroException)
                 {
-                	string strMessage = Catalog.GetString(
-                		"DivideByZeroException");
-                	verificationCollection.Add(new TVerificationResult(
-                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    string strMessage = Catalog.GetString(
+                        "DivideByZeroException");
+                    verificationCollection.Add(new TVerificationResult(
+                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
                 catch (OverflowException)
                 {
-                	string strMessage = Catalog.GetString(
-                		"OverflowException");
-                	verificationCollection.Add(new TVerificationResult(
-                		strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    string strMessage = Catalog.GetString(
+                        "OverflowException");
+                    verificationCollection.Add(new TVerificationResult(
+                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
-
             }
 
             CloseRevaluationAccountingBatch();
@@ -421,7 +414,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        
         private void AddVerificationResultMessage(
             string AResultContext, string AResultText, string ALocalCode, TResultSeverity AResultSeverity)
         {
@@ -432,6 +424,23 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 resultSeverity = TResultSeverity.Resv_Critical;
             }
+        }
+
+        /// <summary>
+        /// In order to be able to use a unit test for the calculation, it is public ...
+        /// </summary>
+        /// <param name="AAmountInBaseCurency">Available account value in base currency units</param>
+        /// <param name="AAmountInForeignCurrency">Available account value in foreign currency units</param>
+        /// <param name="AExchangeRate">The exchange rate which shall be realized after the
+        /// accounting has been done</param>
+        /// <param name="ACurrencyDigits">Number of rounding digits</param>
+        /// <returns></returns>
+        public static decimal AccountDelta(decimal AAmountInBaseCurency,
+            decimal AAmountInForeignCurrency,
+            decimal AExchangeRate, int ACurrencyDigits)
+        {
+            return AAmountInBaseCurency -
+                   Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits);
         }
     }
 
@@ -553,21 +562,25 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class InternalException : SystemException
     {
-    	string strErrorCode;
+        string strErrorCode;
         public InternalException(string errorCode, string message)
             : base(message)
         {
-    		strErrorCode = errorCode;
+            strErrorCode = errorCode;
         }
+
         public string ErrorCode
         {
-        	get 
-        	{
-        		return strErrorCode;
-        	}
+            get
+            {
+                return strErrorCode;
+            }
         }
     }
 
+    /// <summary>
+    /// This routine reads the line of a_ledger defined by the ledger number
+    /// </summary>
     public class GetLedgerInfo
     {
         int ledgerNumber;
@@ -583,18 +596,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                try
-                {
-                    ALedgerRow row = (ALedgerRow)ledger[0];
-                    return row.ForexGainsLossesAccount;
-                }
-                catch (Exception catchedException)
-                {
-                    string message =
-                        "The RevaluationAccount of leger {0} has been unsuccessfully required!";
-                    throw new InternalException("",
-                        String.Format(message, ledgerNumber));
-                }
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.ForexGainsLossesAccount;
             }
         }
 
@@ -643,8 +646,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 throw new InternalException("GetCurrencyInfo.01",
                     Catalog.GetString(String.Format(
-            	                            	"There exists no account for the Currency code {0}",
-            	                            	ACurrencyCode)));
+                            "There exists no account for the Currency code {0}",
+                            ACurrencyCode)));
             }
         }
 
@@ -669,7 +672,7 @@ namespace Ict.Petra.Server.MFinance.GL
     ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9").digits.ToString());<br />
     /// The result is 2,1 and 0 digits ..
     /// </summary>
-    class FormatConverter
+    public class FormatConverter
     {
         string sRegex;
         Regex reg;
@@ -683,7 +686,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (matchCollection.Count != 1)
             {
-                throw new InternalException("FormatConverter.01",
+                throw new InternalException("GetCurrencyInfo.02",
                     String.Format("The regular expression {0} does not fit for a match in {1}",
                         sRegex, strFormat));
             }
@@ -712,5 +715,4 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
     }
-
 }

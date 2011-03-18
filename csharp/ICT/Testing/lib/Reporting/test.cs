@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,11 +43,11 @@ namespace Tests.Reporting
     /// This is a test for the reports.
     /// It runs as a NUnit test, and the login is defined in the config file.
     [TestFixture]
-    public class TReportingTest : System.Object
+    public class TReportingTest
     {
         private CultureInfo OrigCulture;
 
-        /// the System.Object that is able to deal with all the parameters, and can calculate a report
+        /// the object that is able to deal with all the parameters, and can calculate a report
         public TRptCalculator FCalculator;
         public String PathToTestData;
         public String PathToSettingsData;
@@ -60,10 +60,12 @@ namespace Tests.Reporting
             // todo: what about different cultures?
             OrigCulture = new CultureInfo("en-GB", false);
             Thread.CurrentThread.CurrentCulture = OrigCulture;
-            TPetraConnector.Connect("../../../../../etc/TestReporting.config");
+            TPetraConnector.Connect("../../etc/TestClient.config");
             FCalculator = new TRptCalculator();
-            PathToTestData = "../../Reporting/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
-            PathToSettingsData = "../../../XMLReports/Settings/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToTestData = TAppSettingsManager.GetValueStatic("Testing.Path") + "/lib/Reporting/TestData/".Replace("/",
+                System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToSettingsData = TAppSettingsManager.GetValueStatic("Reporting.PathReportSettings") + "/".Replace("/",
+                System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
         [TearDown]
