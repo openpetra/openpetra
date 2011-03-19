@@ -126,12 +126,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             newNode.Tag = ADetailRow;
             newNode.Name = nodeLabel;
 
-            FMainDS.AAccountHierarchyDetail.DefaultView.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
-            FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter =
+            DataView view = new DataView(FMainDS.AAccountHierarchyDetail);
+            view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
+            view.RowFilter =
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
                 AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
 
-            foreach (DataRowView rowView in FMainDS.AAccountHierarchyDetail.DefaultView)
+            foreach (DataRowView rowView in view)
             {
                 AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
                 InsertNodeIntoTreeView(newNode.Nodes, accountDetail);
