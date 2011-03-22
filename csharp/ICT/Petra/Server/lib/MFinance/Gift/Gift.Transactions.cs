@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
+using System.Diagnostics;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -155,7 +156,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean SubmitRecurringGiftBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
         {
-            Boolean ok = false;
+            Boolean success = false;
 
             AMessages = new TVerificationResultCollection();
             GiftBatchTDS GMainDS = new GiftBatchTDS();
@@ -164,46 +165,161 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
             Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
 
-            RecurringGiftBatchTDS FMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+            RecurringGiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                ARecurringGiftBatchAccess.LoadByPrimaryKey(RMainDS, ALedgerNumber, ABatchNumber, Transaction);
+
                 // Assuming all relevant data is loaded in FMainDS
-                foreach (ARecurringGiftBatchRow batch  in FMainDS.ARecurringGiftBatch.Rows)
+                foreach (ARecurringGiftBatchRow recBatch  in RMainDS.ARecurringGiftBatch.Rows)
                 {
-                    if ((batch.BatchNumber == ABatchNumber) && (batch.LedgerNumber == ALedgerNumber))
+                    if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                     {
-                        foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
+                        Decimal batchTotal = 0;
+                        AGiftBatchRow batch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref GMainDS,
+                            ref Transaction,
+                            ref LedgerTable,
+                            ALedgerNumber,
+                            AEffectiveDate);
+                        //batch.GlEffectiveDate=AEffectiveDate;
+                        batch.BatchDescription = recBatch.BatchDescription;
+                        batch.BankCostCentre = recBatch.BankCostCentre;
+                        batch.BankAccountCode = recBatch.BankAccountCode;
+                        batch.ExchangeRateToBase = AExchangeRateToBase;
+                        batch.MethodOfPaymentCode = recBatch.MethodOfPaymentCode;
+                        batch.GiftType = recBatch.GiftType;
+                        //batch.HashTotal = recBatch.HashTotal; // Does this  make sense? Active Gifts are not
+                        batch.CurrencyCode = recBatch.CurrencyCode;
+
+                        foreach (ARecurringGiftRow recGift in RMainDS.ARecurringGift.Rows)
                         {
-                            if ((gift.BatchNumber == ABatchNumber) && (gift.LedgerNumber == ALedgerNumber))
+                            if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                             {
-                                foreach (ARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
+                                //Look if there is a detail which is in the donation period (else continue)
+                                bool foundDetail = false;
+
+                                foreach (ARecurringGiftDetailRow recGiftDetail in RMainDS.ARecurringGiftDetail.Rows)
                                 {
-                                    if ((giftDetail.GiftTransactionNumber == gift.GiftTransactionNumber)
-                                        && (giftDetail.BatchNumber == ABatchNumber) && (giftDetail.LedgerNumber == ALedgerNumber))
+                                    if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
+                                        && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
+                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        )
                                     {
+                                        foundDetail = true;
+                                        break;
                                     }
                                 }
+
+                                if (!foundDetail)
+                                {
+                                    continue;
+                                }
+
+                                // make the gift from recGift
+                                AGiftRow gift = GMainDS.AGift.NewRowTyped();
+                                gift.LedgerNumber = batch.LedgerNumber;
+                                gift.BatchNumber = batch.BatchNumber;
+                                gift.GiftTransactionNumber = batch.LastGiftNumber + 1;
+                                gift.DonorKey = recGift.DonorKey;
+                                gift.MethodOfGivingCode =  recGift.MethodOfGivingCode;
+                                if (gift.MethodOfGivingCode.Length ==0)
+                                	gift.SetMethodOfGivingCodeNull();
+                                gift.MethodOfPaymentCode = recGift.MethodOfPaymentCode;
+                                
+                                gift.Reference = recGift.Reference;
+                                gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
+
+
+                                GMainDS.AGift.Rows.Add(gift);
+                                batch.LastGiftNumber++;
+                                //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
+                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
+
+                                foreach (ARecurringGiftDetailRow recGiftDetail in RMainDS.ARecurringGiftDetail.Rows)
+                                {
+                                    if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
+                                        && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
+                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        )
+                                    {
+                                        AGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
+                                        detail.LedgerNumber = gift.LedgerNumber;
+                                        detail.BatchNumber = gift.BatchNumber;
+                                        detail.GiftTransactionNumber = gift.GiftTransactionNumber;
+                                        detail.DetailNumber = gift.LastDetailNumber + 1;
+                                        gift.LastDetailNumber++;
+
+                                        detail.GiftTransactionAmount = recGiftDetail.GiftAmount;
+                                        batchTotal += recGiftDetail.GiftAmount;
+                                        detail.RecipientKey = recGiftDetail.RecipientKey;
+                                        //maybe that this is unused
+                                        detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
+                                        detail.ChargeFlag = recGiftDetail.ChargeFlag;
+                                        detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
+                                        detail.TaxDeductable = recGiftDetail.TaxDeductable;
+                                        detail.MailingCode = recGiftDetail.MailingCode;
+                                        // TODO convert with exchange rate to get the amount in base currency
+                                        // detail.GiftAmount=
+
+                                        detail.MotivationGroupCode = recGiftDetail.MotivationGroupCode;
+                                        detail.MotivationDetailCode = recGiftDetail.MotivationDetailCode;
+                                        detail.GiftCommentOne = recGiftDetail.GiftCommentOne;
+                                        detail.CommentOneType = recGiftDetail.CommentOneType;
+                                        detail.GiftCommentTwo = recGiftDetail.GiftCommentTwo;
+                                        detail.CommentTwoType = recGiftDetail.CommentTwoType;
+                                        detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
+                                        detail.CommentThreeType = recGiftDetail.CommentThreeType;
+
+
+                                        GMainDS.AGiftDetail.Rows.Add(detail);
+                                    }
+                                }
+
+                                batch.BatchTotal = batchTotal;
                             }
                         }
                     }
                 }
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-                ok = true;
+                if (AGiftBatchAccess.SubmitChanges(GMainDS.AGiftBatch, Transaction, out AMessages))
+                {
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
+                    {
+                        if (AGiftAccess.SubmitChanges(GMainDS.AGift, Transaction, out AMessages))
+                        {
+                            if (AGiftDetailAccess.SubmitChanges(GMainDS.AGiftDetail, Transaction, out AMessages))
+                            {
+                                success = true;
+                            }
+                        }
+                    }
+                }
+
+                if (success)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    GMainDS.AcceptChanges();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    GMainDS.RejectChanges();
+                }
             }
             catch (Exception ex)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 throw new Exception("Error in SubmitRecurringGiftBatch", ex);
             }
-            finally
-            {
-            }
-            return ok;
+            return success;
         }
-
+        
         /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc

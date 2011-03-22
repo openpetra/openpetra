@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FBatchNumber = value;
-                txtExchangeRateToBase.Text="1";
+                txtExchangeRateToBase.Text = "1";
             }
         }
 
@@ -131,7 +131,7 @@ Found:
             requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
             requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date);
             TVerificationResultCollection AMessages;
-            Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch( requestParams, out AMessages);
+            Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out AMessages);
 
             if (submitOK)
             {
