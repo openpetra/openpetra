@@ -91,11 +91,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             newNode.Tag = ADetailRow;
 
-            FMainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
-            FMainDS.ACostCentre.DefaultView.RowFilter =
+            DataView view = new DataView(FMainDS.ACostCentre);
+            view.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+            view.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
 
-            foreach (DataRowView rowView in FMainDS.ACostCentre.DefaultView)
+            foreach (DataRowView rowView in view)
             {
                 InsertNodeIntoTreeView(newNode.Nodes, (ACostCentreRow)rowView.Row);
             }

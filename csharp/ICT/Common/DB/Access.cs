@@ -2458,12 +2458,11 @@ namespace Ict.Common.DB
                 "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
 
             TLogging.LogStackTrace(TLoggingType.ToLogfile);
-
+#endif
             if (AThrowExceptionAfterLogging)
             {
                 throw AException;
             }
-#endif
         }
     }
 

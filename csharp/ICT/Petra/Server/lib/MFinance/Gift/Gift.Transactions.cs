@@ -230,6 +230,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 if (gift.MethodOfGivingCode.Length ==0)
                                 	gift.SetMethodOfGivingCodeNull();
                                 gift.MethodOfPaymentCode = recGift.MethodOfPaymentCode;
+                                if (gift.MethodOfPaymentCode.Length ==0)
+                                	gift.SetMethodOfPaymentCodeNull();
                                 
                                 gift.Reference = recGift.Reference;
                                 gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
@@ -264,6 +266,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                         detail.TaxDeductable = recGiftDetail.TaxDeductable;
                                         detail.MailingCode = recGiftDetail.MailingCode;
+                                        if (detail.MailingCode.Length ==0)
+                                        	detail.SetMailingCodeNull();
+                                        
                                         // TODO convert with exchange rate to get the amount in base currency
                                         // detail.GiftAmount=
 
