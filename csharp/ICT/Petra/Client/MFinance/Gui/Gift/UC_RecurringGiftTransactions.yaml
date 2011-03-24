@@ -15,7 +15,7 @@ RootNode:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
             Width: 1000
-            Height: 700
+            Height: 800
             Dock: Fill
         pnlInfo:
             Controls:

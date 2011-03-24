@@ -6,7 +6,7 @@ RootNode:
     FormType: browse
     Template: windowTDS
     WindowWidth: 1000
-    WindowHeight: 700
+    WindowHeight: 800
 
     Events:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    

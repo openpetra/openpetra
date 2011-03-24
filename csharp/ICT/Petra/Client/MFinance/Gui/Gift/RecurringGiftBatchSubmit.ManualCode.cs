@@ -54,15 +54,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS FMainDS;
         private Int32 FLedgerNumber;
         private Int32 FBatchNumber;
+        private ARecurringGiftBatchRow batchRow;
 
         /// Batch number for the recurring batch to be submitted
-        public int BatchNumber
+        public ARecurringGiftBatchRow BatchRow
 
         {
             set
             {
-                FBatchNumber = value;
-                txtExchangeRateToBase.Text = "1";
+                batchRow = value;
+                FBatchNumber=batchRow.BatchNumber;
+                txtExchangeRateToBase.Text = "1";//1.0M;
+                txtCurrencyCodeFrom.Text = batchRow.CurrencyCode;
             }
         }
 
@@ -72,15 +75,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FMainDS = value;
-            }
-        }
-
-        /// the ledger that the user is currently working with
-        public Int32 LedgerNumber
-        {
-            set
-            {
-                FLedgerNumber = value;
+                
+                FLedgerNumber = FMainDS.ALedger[0].LedgerNumber;
+                txtCurrencyCodeTo.Text = FMainDS.ALedger[0].BaseCurrency;
                 DateTime StartDateCurrentPeriod;
                 DateTime EndDateLastForwardingPeriod;
                 DateTime DefaultDate;
@@ -92,6 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             }
         }
+
+  
 
 
         /// <summary>

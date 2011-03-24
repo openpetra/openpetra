@@ -15,8 +15,10 @@ RootNode:
             Controls:
                 Row0: [lblValidDateRange]
                 Row1: [dtpEffectiveDate]
-                Row2: [txtExchangeRateToBase, txtCurrencyCodeFrom, txtCurrencyCodeTo]
-                Row3: [pnlButtons]
+                Row2: [txtExchangeRateToBase]
+                Row3: [txtCurrencyCodeFrom]
+                Row4: [txtCurrencyCodeTo]
+                Row5: [pnlButtons]
             Dock: Fill
         pnlButtons:
             Dock:Top

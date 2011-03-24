@@ -490,11 +490,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
-        public static void GetRecipientData(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
             if (FKeyMinTable != null)
             {
-                if (FindAndSelect(ref AControl, APartnerKey))
+                if (FindAndSelect(ref cmbMinistry, APartnerKey))
                 {
                     return;
                 }
@@ -503,20 +503,20 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
-
+			txtField.Text = fieldNumber.ToString();
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
-            AControl.InitialiseUserControl(FKeyMinTable,
+            cmbMinistry.InitialiseUserControl(FKeyMinTable,
                 ValueMember,
                 DisplayMember,
                 null,
                 null);
-            AControl.AppearanceSetup(new int[] { 250 }, -1);
+            cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
 
-            if (!FindAndSelect(ref AControl, APartnerKey))
+            if (!FindAndSelect(ref cmbMinistry, APartnerKey))
             {
                 //Clear the combobox
-                AControl.SelectedValueCell = null;
+                cmbMinistry.SelectedValueCell = null;
             }
         }
 

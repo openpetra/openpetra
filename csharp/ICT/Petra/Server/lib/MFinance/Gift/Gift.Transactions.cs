@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ref LedgerTable,
                             ALedgerNumber,
                             AEffectiveDate);
-                        //batch.GlEffectiveDate=AEffectiveDate;
+                        batch.GlEffectiveDate=AEffectiveDate;
                         batch.BatchDescription = recBatch.BatchDescription;
                         batch.BankCostCentre = recBatch.BankCostCentre;
                         batch.BankAccountCode = recBatch.BankAccountCode;

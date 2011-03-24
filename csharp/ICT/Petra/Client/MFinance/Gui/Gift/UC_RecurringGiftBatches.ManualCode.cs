@@ -152,9 +152,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(this.Handle);
-            submitForm.LedgerNumber = FLedgerNumber;
-            submitForm.BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             submitForm.MainDS = FMainDS;
+            submitForm.BatchRow = FPreviouslySelectedDetailRow;
             submitForm.Show();
         }
 

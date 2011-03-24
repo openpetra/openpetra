@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!FInKeyMinistryChanging)
                 {
                     //...this does not work as expected, because the timer fires valuechanged event after this value is reset
-                    TFinanceControls.GetRecipientData(ref cmbMinistry, APartnerKey);
+                    TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
                 }
             }
             finally
@@ -527,8 +527,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //TFinanceControls.GetRecipientData(ref cmbMinistry, ARow.RecipientKey);
-            txtField.Text = TFinanceControls.FieldNumber.ToString();
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField,  ARow.RecipientKey);
             txtDetailDonorKey.Text = ((RecurringGiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
 
 
