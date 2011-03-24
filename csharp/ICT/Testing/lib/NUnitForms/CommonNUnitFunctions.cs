@@ -71,6 +71,8 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         public String lastMessageText;
 
+        public string rootPath;
+
         /// <summary>
         /// The delegate to handle the message box is installed.
         /// </summary>
@@ -110,13 +112,22 @@ namespace Ict.Testing.NUnitForms
                 strTrunkRoot = strTrunkRoot + strArr[i] + "/";
             }
 
+            rootPath = strTrunkRoot;
+
+            System.Diagnostics.Debug.WriteLine("strRootPath: " + rootPath);
+
             string strNameLog = strTrunkRoot + "log/TestServer.log";
             string strNameConfig = strTrunkRoot + "etc/TestServer.config";
 
             new TLogging(strNameLog);
             TPetraServerConnector.Connect(strNameConfig);
         }
-
+        
+        public void DisconnectServerConnection()
+        {
+        	TPetraServerConnector.Disconnect();
+        }
+        
         /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
@@ -125,7 +136,7 @@ namespace Ict.Testing.NUnitForms
         {
             nant("stopPetraServer", false);
             // csharp\\ICT\\Testing\\MFinance\\GiftForm\\TestData\\withpartners.sql"
-            nant("loadDatabase -D:LoadDB.file=" + strSqlFilePathFromCSharpName, true);
+            nant("loadDatabase -D:LoadDB.file=" + rootPath + strSqlFilePathFromCSharpName, true);
             nant("startPetraServer", true);
         }
 
@@ -154,7 +165,7 @@ namespace Ict.Testing.NUnitForms
             else
             {
                 NantProcess.WaitForExit(60000);
-                Debug.Print("OS says nant process ist finished");
+                Debug.Print("OS says nant process is finished");
             }
         }
     }
