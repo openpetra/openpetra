@@ -234,15 +234,18 @@
         </if>
     </target>
 
-    <target name="loadDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
+    <target name="loadDatabase" depends="init, createSQLStatements" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
     
         <if test="${DBMS.Type=='sqlite'}">
             <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
             <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
