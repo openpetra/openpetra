@@ -26,6 +26,9 @@ using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common;
 
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
+
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -43,6 +46,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //new TLogging("TestServer.log");
             //TPetraServerConnector.Connect("../../etc/TestServer.config");
             InitServerConnection();
+            LoadTestTata();
         }
 
         /// <summary>
@@ -53,6 +57,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void TearDown()
         {
             DisconnectServerConnection();
+        }
+        
+        public void LoadTestTata()
+        {
+            ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);
+            System.Diagnostics.Debug.WriteLine("currencyTable.Rows: " + currencyTable.Rows.Count.ToString());
+        	
+            if (currencyTable.Rows.Count == 0)
+            {
+        		LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+        		                 "test-sql\\gl-test-currency-data.sql");
+        	}
         }
 	}
 }

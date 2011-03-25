@@ -71,7 +71,15 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         public String lastMessageText;
 
+        /// <summary>
+        /// This is the central path of the complete tree
+        /// </summary>
         public string rootPath;
+        
+        /// <summary>
+        /// Actually this setting shall be done manually. 
+        /// </summary>
+        private string pathAndFileNameToNantExe = "\"C:\\Program Files (x86)\\nant-0.91-alpha2\\bin\\nant.exe\"";
 
         /// <summary>
         /// The delegate to handle the message box is installed.
@@ -131,13 +139,16 @@ namespace Ict.Testing.NUnitForms
         /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
-        /// <param name="strSqlFilePathFromCSharpName"></param>
+        /// <param name="strSqlFilePathFromCSharpName">A filename starting from the root.
+        /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
         public void LoadTestDataBase(string strSqlFilePathFromCSharpName)
         {
-            nant("stopPetraServer", false);
-            // csharp\\ICT\\Testing\\MFinance\\GiftForm\\TestData\\withpartners.sql"
-            nant("loadDatabase -D:LoadDB.file=" + rootPath + strSqlFilePathFromCSharpName, true);
-            nant("startPetraServer", true);
+        	System.Diagnostics.Debug.WriteLine("strSqlFilePathFromCSharpName: " + strSqlFilePathFromCSharpName);
+            //nant("stopPetraServer", true);
+            // csharp\\ICT\\Testing\\...\\filename.sql"
+            //  + " >C:\\report.txt"
+            nant("loadDatabaseIncrement -D:LoadDB.file=" + strSqlFilePathFromCSharpName, false);
+            //nant("startPetraServer", true);
         }
 
         /// <summary>
@@ -150,10 +161,10 @@ namespace Ict.Testing.NUnitForms
             Process NantProcess = new Process();
 
             NantProcess.EnableRaisingEvents = false;
-            NantProcess.StartInfo.FileName = "cmd"; //if you have trouble and want to check the dos box try with cmd and /k nant xxx as arguments
-            NantProcess.StartInfo.Arguments = "/c nant " + argument;
-            NantProcess.StartInfo.CreateNoWindow = false;
-            NantProcess.StartInfo.WorkingDirectory = "../../../../..";
+            NantProcess.StartInfo.FileName = "cmd"; 
+            NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
+            NantProcess.StartInfo.CreateNoWindow = true;
+            NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
             NantProcess.StartInfo.ErrorDialog = true;
@@ -165,7 +176,7 @@ namespace Ict.Testing.NUnitForms
             else
             {
                 NantProcess.WaitForExit(60000);
-                Debug.Print("OS says nant process is finished");
+                Debug.Print("OS says nant process is finished");   
             }
         }
     }

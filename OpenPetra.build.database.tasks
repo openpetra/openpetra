@@ -250,6 +250,20 @@
         </if>
     </target>
 
+    <target name="loadDatabaseIncrement" depends="init" description="load a test increment for the database from a DBMS specific file, eg. nant loadDatabaseIncrement -D:LoadDB.file=testmysql.sql">
+        <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
+    
+        <if test="${DBMS.Type=='sqlite'}">
+            <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
+            <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+        </if>
+    </target>
+
     <target name="createSQLiteDB" depends="init">
         <property name="DBMS.Type" value="sqlite"/>
         <property name="DBMS.Password" value="CHANGEME"/>
