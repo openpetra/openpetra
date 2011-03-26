@@ -8602,7 +8602,7 @@
                 notnull="yes"/>
     <tablefield name="a_effective_date_d"
                 type="date"
-                descr=""
+                descr="Deprecated - do not use any more"
                 format="99/99/9999"
                 label="Effective Date"
                 notnull="yes"

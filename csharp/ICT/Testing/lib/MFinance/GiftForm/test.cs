@@ -53,7 +53,7 @@ namespace Tests.MFinance.Client.Gift
         {
             new TLogging("TestClient.log");
             nant("stopPetraServer", false);
-            nant("loadDatabase -D:LoadDB.file=csharp\\ICT\\Testing\\MFinance\\GiftForm\\TestData\\withpartners.sql", true);
+            nant("loadDatabase -D:LoadDB.file=csharp\\ICT\\Testing\\lib\\MFinance\\GiftForm\\TestData\\withpartners.sql", true);
             nant("startPetraServer", true);
 
             TPetraConnector.Connect("../../../../../etc/TestClient.config");

@@ -74,7 +74,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         AFinancialPeriod = row.AccountingPeriodNumber;
 
-                        if ((AFinancialPeriod <= ACurrentPeriod) && (ACurrentPeriod <= AAllowedForwardPeriod))
+                        if ((AFinancialPeriod >= ACurrentPeriod) && (ACurrentPeriod <= AAllowedForwardPeriod))
                         {
                             AFinancialYear = LedgerTable[0].CurrentFinancialYear;
                             return true;

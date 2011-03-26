@@ -114,6 +114,7 @@ OpenPetra:
                     General:
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
+                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:

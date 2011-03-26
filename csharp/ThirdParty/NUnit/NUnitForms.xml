@@ -1,0 +1,2917 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NUnitForms</name>
+    </assembly>
+    <members>
+        <member name="T:NUnit.Extensions.Forms.OuterTest">
+            <summary>
+            Meant to be used as a member in a test class not derived from NUnitFormTest.
+            The member should be created by setup, and disposed by teardown, or usinged
+            in the test function itself.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.NUnitFormTest">
+             <summary>
+             One of three base classes for your NUnitForms tests.  This one can be
+             used by people who do not need or want "built-in" Assert functionality.
+            
+             This is the recommended base class for all unit tests that use NUnitForms.  
+             </summary>
+             <remarks>
+             You should probably extend this class to create all of your test fixtures.  The benefit is that
+             this class implements setup and teardown methods that clean up after your test.  Any forms that
+             are created and displayed during your test are cleaned up by the tear down method.  This base
+             class also provides easy access to keyboard and mouse controllers.  It has a method that allows
+             you to set up a handler for modal dialog boxes.  It allows your tests to run on a separate 
+             (usually hidden) desktop so that they are faster and do not interfere with your normal desktop
+             activity.  If you want custom setup and teardown behavior, you should override the virtual 
+             Setup and TearDown methods.  Do not use the setup and teardown attributes in your child class.
+             </remarks>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.NUnitFormTest.verified">
+            <summary>
+            True if the modal handlers for this test have been verified; else false.
+            </summary>
+            <remarks>
+            It would be better form to make this private and provide a protected getter property, though
+            that could break existing tests.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.init">
+            <summary>
+            This is the base classes setup method.  It will be called by NUnit before each test.
+            You should not have anything to do with it.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.EmulateSendKeys">
+            <summary>
+            A patch method to allow migration to an alternative SendKeys class instead
+            of the dot Net SendKeys class. Once the new class is completed this method
+            will be replaced by a method to allow use of the dot Net class.
+            
+            This method must only be called at the start of the test fixture's overriden
+            SetUp().
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.EmulateWindowSpecificSendKeys">
+            <summary>
+            A patch method to allow migration to an alternative SendKeys class instead
+            of the dot Net SendKeys class. Once the new class is completed this method
+            will be replaced by a method to allow use of the dot Net class.
+            
+            This method must only be called at the start of the test fixture's overriden
+            SetUp().
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.Setup">
+            <summary>
+            Override this Setup method if you have custom behavior to execute before each test
+            in your fixture.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.Verify">
+            <summary>
+            This method is called by NUnit after each test runs.  If you have custom
+            behavior to run after each test, then override the TearDown method and do
+            it there.  That method is called at the beginning of this one.
+            You should not need to do anything with it.  Do not call it.
+            If you do call it, call it as the last thing you do in your test.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.TearDown">
+            <summary>
+            Override this TearDown method if you have custom behavior to execute after each test
+            in your fixture.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectFileDialog(System.String)">
+            <summary>
+            Unreliable. Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectFileDialog(System.String,System.Boolean)">
+            <summary>
+            Unreliable. Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectFileDialog(NUnit.Extensions.Forms.ModalFormActivated)">
+            <summary>
+            Unreliable. Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectFileDialog(NUnit.Extensions.Forms.ModalFormActivated,System.Boolean)">
+            <summary>
+            Unreliable. Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectModal(System.String,NUnit.Extensions.Forms.ModalFormActivated)">
+            <summary>
+            Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectModal(System.String,NUnit.Extensions.Forms.ModalFormActivated,System.Boolean)">
+            <summary>
+            Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectModal(System.String,System.String,System.Boolean)">
+            <summary>
+            Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NUnitFormTest.ExpectModal(System.String,System.String)">
+            <summary>
+            Deprecated in favor of ModalFormHandler/ModalDialogHandler.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.DisplayHidden">
+            <summary>
+            This property controls whether the separate hidden desktop is displayed for the duration of
+            this test.  You will need to override and return true from this property if your test makes
+            use of the keyboard or mouse controllers.  (The hidden desktop cannot accept user input.)  For
+            tests that do not use the keyboard and mouse controller (most should not) you don't need to do
+            anything with this.  The default behavior is fine.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.UseHidden">
+            <summary>
+            This property controls whether a separate desktop is used at all. Tests on the separate desktop
+            are faster and safer (there is no danger of keyboard or mouse input going to your own separate 
+            running applications).  However, it fails on some systems; also, it is not possible to unlock 
+            by hand a blocked test (e.g. due to a modal form). In order to enable it, you can override
+            this method from your test class to return true. Or you can set an environment variable called
+            "UseHiddenDesktop" and set that to "true".
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.Mouse">
+            <summary>
+            Returns a reference to the current MouseController for doing Mouse tests.  I recommend
+            this only when you are writing your own custom controls and need to respond to actual
+            mouse input to test them properly.  In most other cases there is a better way to test
+            the form's logic.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.Keyboard">
+            <summary>
+            Returns a reference to the current KeyboardController for doing Keyboard tests.  I recommend
+            this only when you are writing your own custom controls and need to respond to actual
+            keyboard input to test them properly.  In most other cases there is a better way to test
+            for the form's logic.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.ModalFormHandler">
+            <summary>
+            Records a single shot modal form handler. The handler receives as arguments the title of the window,
+            its handle, and the corresponding form (null if it is not a form, i.e. a dialog box). The handler is
+            single shot: it is removed after being run; therefore, if it is expected to trigger a new modal form,
+            it should install a new handler before returning. The handler can work on dialog boxes by creating
+            a message box tester or file dialog tester, passing the handle of the box (its second argument) to the
+            tester's constructor. The tester constructors taking as argument the box title are unreliable and deprecated.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.NUnitFormTest.DialogBoxHandler">
+            <summary>
+            Shorter version of ModalFormHandler without the form argument; meant for dialogs.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.SendKey.SendKeys">
+            <summary>
+            Wrapper for the dot Net SendKeys class to allow reference by interface
+            for injection and unit testing.
+            
+            Microsoft documents the SendKeys class as unreliable. Only use this class
+            for implementation of ISendKeys if you must use the dot Net class.
+            
+            See: http://msdn2.microsoft.com/en-us/library/system.windows.forms.sendkeys.sendwait(VS.90).aspx
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ControlNotEnabledException">
+            <summary>
+            Exception is thrown when you attempt an action on a Control that is not
+            enabled.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ListBoxTester">
+            <summary>
+            A ControlTester for testing ListBoxes.  
+            </summary>
+            <remarks>
+            It includes helper methods for selecting items from the list
+            and for clearing those selections.</remarks>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ReflectionTester">
+            <summary>
+             Abstract base class for control and component testers that
+             handles getting and setting properties and fields via reflection.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ReflectionTester.DoAfterSetProperty(System.String)">
+            <summary>
+            Called after this[string] is used to set a property value.
+            Typically calls "EndCurrentEdit" on the object's data binding binding for that property.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ReflectionTester.FireEvent(System.String,System.Object[])">
+            <summary>
+            Simulates firing of an event by the control being tested.
+            </summary>
+            <param name="eventName">The name of the event to fire.</param>
+            <param name="args">The optional arguments required to construct the EventArgs for the specified event.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ReflectionTester.FireEvent(System.String,System.EventArgs)">
+            <summary>
+            Simulates firing of an event by the control being tested.
+            </summary>
+            <param name="eventName">The name of the event to fire.</param>
+            <param name="arg">The EventArgs object to pass as a parameter on the event.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ReflectionTester.FireEvent(System.String)">
+            <summary>
+            Simulates firing of an event by the control being tested.
+            </summary>
+            <param name="eventName">The name of the event to fire.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ReflectionTester.Invoke(System.String,System.Object[])">
+            <summary>
+            Convenience method invoker for any nonsupported method on a control to test
+            </summary>
+            <param name="methodName">the name of the method to invoke</param>
+            <param name="args">the arguments to pass into the method</param>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ReflectionTester.TheObject">
+            <summary>
+            Derived testers must overtide this method to provide the object being tested.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ReflectionTester.Item(System.String)">
+            <summary>
+            Convenience accessor / mutator for any nonsupported property on a control
+            to test.
+            </summary>
+            <example>
+            ControlTester t = new ControlTester("t");
+            t["Text"] = "a";
+            AssertEqual("a", t["Text"]);
+            </example>
+            
+        </member>
+        <member name="F:NUnit.Extensions.Forms.Tester`2.name">
+            <summary>
+            The name of the underlying test object (sometimes acontrol).
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tester`2.#ctor">
+            <summary>
+             Default constructor for generic support.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tester`2.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.Tester`2.Properties">
+            <summary>
+            The underlying <see cref="T:System.Windows.Forms.Control"/> for this tester.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.Tester`2.TheObject">
+            <summary>
+            The Control being tested.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlTester`2.Click">
+            <summary>
+            Convenience method "Clicks" on the control being tested if it is visible
+            and enabled.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlTester`2.DoubleClick">
+            <summary>
+            Convenience method "DoubleClicks" on the control being tested if it is visible.
+            </summary>
+            <exception>
+            ControlNotVisibleException is thrown if the Control is not Visible.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlTester`2.EnterText(System.String)">
+            <summary>
+            Default handler for entering text into a text control.
+            Must be exposed publically by testers that want to use it.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlTester`2.EndCurrentEdit(System.String)">
+            <summary>
+            Should call this method after editing something in order to trigger any
+            databinding done with the Databindings collection.  (ie text box to a data
+            set)
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlTester`2.DoAfterSetProperty(System.String)">
+            <summary>
+            Calls EndCurrentEdit on this control's data binding for the given property.
+            </summary>
+            <param name="propertyName"></param>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ControlTester`2.Text">
+            <summary>
+            Convenience method retrieves the Text property of the tested control.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListBoxTester.ClearSelected">
+            <summary>
+            Clears the selections from the list box.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListBoxTester.Select(System.Int32)">
+            <summary>
+            Selects an item in the ListBox according to its index.
+            </summary>
+            <param name="i">the index to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListBoxTester.Select(System.String)">
+            <summary>
+            Selects an item in the list according to its string value.
+            </summary>
+            <param name="text">The item to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListBoxTester.SetSelected(System.Int32,System.Boolean)">
+            <summary>
+            Sets the selected property of an item at an index.
+            </summary>
+            <param name="index">the index to select (or clear)</param>
+            <param name="value">true if you want to select, false to clear.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListBoxTester.SetSelected(System.String,System.Boolean)">
+            <summary>
+            Sets the selected property of an item with a specified string value.
+            </summary>
+            <param name="text">the item to select (or clear)</param>
+            <param name="value">true if you want to select, false to clear.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ListViewTester">
+            <summary>
+            A ControlTester for testing List Views.  
+            </summary>
+            <remarks>
+            It includes helper methods for selecting items from the list
+            and for clearing those selections.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListViewTester.ClearSelected">
+            <summary>
+            Clears the selections from the list box.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListViewTester.Select(System.Int32)">
+            <summary>
+            Selects an item in the ListBox according to its index.
+            </summary>
+            <param name="i">the index to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListViewTester.Select(System.String)">
+            <summary>
+            Selects an item in the list according to its string value.
+            </summary>
+            <param name="text">The item to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListViewTester.SelectItems(System.String[])">
+            <summary>
+            Multiple selection of a range of items
+            </summary>
+            <param name="items"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ListViewTester.SelectedItemsMatch(System.String[])">
+            <summary>
+            Test that only the indicated items are selected
+            </summary>
+            <param name="matches"></param>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ListViewTester.Items">
+            <summary>
+            Helper method to return the List View's Items property
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ListViewTester.Columns">
+            <summary>
+            Helper method to return the columns of the list view
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.RadioButtonTester">
+            <summary>
+            A ControlTester for testing RadioButtons.  
+            </summary>
+            <remarks>
+            This class provides a convenience property for determining
+            whether a RadioButton is checked.</remarks>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.RadioButtonTester.Checked">
+            <summary>
+             Gets the Checked property of the underlying radio button.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.RichTextBoxTester">
+            <summary>
+            A ControlTester for testing RichTextBoxes.
+            </summary>
+            <remarks>
+            There is a convenience method for entering text into a RichTextBox.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.RichTextBoxTester.Enter(System.String)">
+            <summary>
+            This method allows you to enter text into the text box.
+            </summary>
+            <param name="text">The text to enter into the text box.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.TabControlTester">
+            <summary>
+            A ControlTester for testing TabControls.
+            </summary>
+            <remarks>
+            There is a convenience method for selecting a specified tab.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.TabControlTester.SelectTab(System.Int32)">
+            <summary>
+            Selects the tab at the specified index.
+            </summary>
+            <param name="index">The tab to select.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.TextBoxTester">
+            <summary>
+            A ControlTester for testing TextBoxes.
+            </summary>
+            <remarks>
+            There is a convenience method for entering text into a text box.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.TextBoxTester.Enter(System.String)">
+            <summary>
+            This method allows you to enter text into the text box.
+            </summary>
+            <param name="text">The text to enter into the text box.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ToolBarTester">
+            <summary>
+            A ControlTester for testing Toolbars.  
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolBarTester.GetButton(System.String)">
+            <summary>
+            Get the toolbar with the specified text
+            </summary>
+            <param name="buttonText">The text of the ToolBarButton</param>
+            <returns>A ToolBarButtonTester containing the matching ToolBarButton</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolBarTester.GetButton(System.Int32)">
+            <summary>
+            Get the toolbar at the index
+            </summary>
+            <param name="index">The index of the button within the toolbar</param>
+            <returns>A ToolBarButtonTester containing the matching ToolBarButton</returns>
+            <remarks>We cannot use this[int index] here as used for ControlTester</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripItemTester`2.Click">
+            <summary>
+            Convenience method "Clicks" on the control being tested if it is visible.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripItemTester`2.DoubleClick">
+            <summary>
+            Convenience method "DoubleClicks" on the control being tested if it is visible.
+            </summary>
+            <exception>
+            ControlNotVisibleException is thrown if the Control is not Visible.
+            </exception>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ToolStripItemTester`2.Text">
+            <summary>
+            Convenience method retrieves the Text property of the tested control.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ToolStripComboBoxTester">
+            <summary>
+            A Component tester for testing ToolStripComboBoxes.
+            </summary>
+            <summary>
+            A Component tester for testing ToolStripComboBoxes.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripComboBoxTester.Enter(System.String)">
+            <summary>
+            Sets the text property of the ToolStripComboBox to the specified value.
+            </summary>
+            <remarks>
+            TODO: Also calls EndCurrentEdit() so that databinding will happen.
+            </remarks>
+            <param name="text">The specified value for the text property.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripComboBoxTester.Select(System.String)">
+            <summary>
+            Selects an entry in the ToolStripComboBox according to its string value.
+            </summary>
+            <remarks>
+            Sets the Selected Index property on the underlying control after calling
+            FindStringExact
+            </remarks>
+            <param name="text">The string value of the entry to select.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ToolStripDropDownButtonTester">
+            <summary>
+            A ToolStripItem tester for testing DropDownButtons.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripDropDownButtonTester.ClickDropDownItem(System.Int32)">
+            <summary>
+            Clickes the DropDownItem with the given index.
+            </summary>
+            <param name="index"></param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ToolStripSplitButtonTester">
+            <summary>
+            A ToolStripItem tester for testing ToolStripSplitButtons.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripSplitButtonTester.ClickDropDownItem(System.Int32)">
+            <summary>
+            Clicks the DropDownItem with the given index.
+            </summary>
+            <param name="index"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripSplitButtonTester.ButtonClick">
+            <summary>
+            Simulates that the "user" clicks on the button part of the
+            ToolStripSplitButton.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripSplitButtonTester.ButtonDoubleClick">
+            <summary>
+            Simulates that the "user" double clicks on the button part of the
+            ToolStripSplitButton.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolStripTextBoxTester.Enter(System.String)">
+            <summary>
+            This method allows you to enter text into the text box.
+            </summary>
+            <param name="text">The text to enter into the text box.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.TreeViewTester">
+            <summary>
+            A ControlTester for testing TreeViews.
+            </summary>
+            <remarks>
+            There is a convenience method for selecting a node in the tree.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.TreeViewTester.SelectNode(System.Int32[])">
+            <summary>
+            Selects a node in the tree.
+            </summary>
+            <param name="indices">an array of the indexes of the node to select</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Finder`1">
+            <summary>
+            Internal use only.  Finds controls, components, and menuitems
+            according to their name property.
+            </summary>
+            <remarks>
+            It is also used by the recorder application which is why it is not
+            internal.
+            </remarks>
+            the recorder application.
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Finder`1.#ctor(System.String,System.Windows.Forms.Form)">
+            <summary>
+            Creates a Finder that will find things on a specific Form according to their name.
+            </summary>
+            <param name="name">The name of the Control to find.</param>
+            <param name="form">The form to search for the control.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Finder`1.#ctor(System.String)">
+            <summary>
+            Creates a Finder that will find things according to their name.  
+            </summary>
+            <param name="name">The name of the thing to find.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Finder`1.Find">
+            <summary>
+            Finds a control.  
+            </summary>
+            <exception>
+            If there is more than one with the specified name, it will
+            throw an AmbiguousNameException.  If the Control does not exist, it will throw
+            a NoSuchControlException.
+            </exception>
+            <returns>The control if one is found.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Finder`1.Matches(System.String,System.Object,System.Object)">
+            <summary>
+            Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder 
+            so that we can find controls without the long list of generated panels and tablelayoutpanels, 
+            but for example "name of tab"."name of control"
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.CheckBoxTester">
+            <summary>
+            A ControlTester for testing CheckBoxes.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckBoxTester.Check(System.Boolean)">
+            <summary>
+            Sets the shouldCheck property to the specified value.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckBoxTester.Check">
+            <summary>
+            Sets the Checked property of the CheckBox to true
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckBoxTester.UnCheck">
+            <summary>
+            Sets the Checked property of the CheckBox to false
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.CheckBoxTester.Checked">
+            <summary>
+            Retrieves the Checked property of the CheckBox
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.CheckedListBoxTester">
+            <summary>
+            A ControlTester for testing CheckedListBoxes.  
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckedListBoxTester.CheckItem(System.String)">
+            <summary>
+            Checks the row that matches item in the list
+            </summary>
+            <param name="item">The list item to check</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckedListBoxTester.CheckItems(System.String[])">
+            <summary>
+            Check a range of items
+            </summary>
+            <param name="items"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckedListBoxTester.SetItemChecked(System.Int32,System.Boolean)">
+            <summary>
+            Check a specific item in a list.
+            </summary>
+            <param name="index">The index of the item to check</param>
+            <param name="selected">True to select the item, false to unselect it.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckedListBoxTester.ClearItem(System.String)">
+            <summary>
+            Clears the row that matches item in the list
+            </summary>
+            <param name="item">The list item to check</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.CheckedListBoxTester.CheckSelectedItems(System.Collections.ArrayList)">
+            <summary>
+             Check items matching those in the given list.
+            </summary>
+            <param name="matchList">The list of items to check.</param>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.CheckedListBoxTester.Items">
+            <summary>
+            Provides access to the list of items
+            </summary>
+            <returns>A CheckedListBox.ObjectCollection of all the items in the list</returns>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.CheckedListBoxTester.CheckedItems">
+            <summary>
+            Provides access to the list of checked items
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ComboBoxTester">
+            <summary>
+            A ControlTester for testing ComboBoxes.
+            </summary>
+            <remarks>
+            Has convenience methods for Selecting items and Entering text.
+            <para>
+            Fully supported by the recorder application
+            </para>
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ComboBoxTester.Enter(System.String)">
+            <summary>
+            Sets the text property of the ComboBox to the specified value.
+            </summary>
+            <remarks>
+            Also calls EndCurrentEdit() so that databinding will happen.
+            </remarks>
+            <param name="text">The specified value for the text property.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ComboBoxTester.Select(System.Int32)">
+            <summary>
+            Selects an entry in the ComboBox according to its index.
+            </summary>
+            <remarks>
+            Sets the SelectedIndex property on the underlying control.
+            </remarks>
+            <param name="i">The index of the ComboBox entry to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ComboBoxTester.Select(System.String)">
+            <summary>
+            Selects an entry in the ComboBox according to its string value.
+            </summary>
+            <remarks>
+            Sets the Selected Index property on the underlying control after calling
+            FindStringExact
+            </remarks>
+            <param name="text">The string value of the entry to select.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.LinkLabelTester.Click">
+            <summary>
+             Clicks the LinkLabel.
+             NOTE: Should this do "LinkClick" instead?
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ImageFormatHandler">
+            <summary>
+            Supplies some helpers methods used for image processing (file selection dialog, 
+            image format options selection etc.).
+            Here, this is just a fragment of the actual implementation !!!
+            
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.availableDecoders">
+            <summary>
+            All image decoders available.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.availableEncoders">
+            <summary>
+            All image encoders available.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.defaultFormat">
+            <summary>
+            This is the default format used for saving images.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.encodingColorDepth">
+            <summary>
+            The color depth for TIFF
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.encodingCompression">
+            <summary>
+            The TIFF compression type
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.encodingQuality">
+            <summary>
+            The quality for JPEG compresseion (0...100)
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.encodingRenderMethod">
+            <summary>
+            The rendering method for ????
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.encodingScanMethod">
+            <summary>
+            The scanning method for GIF
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.#ctor">
+            <summary>
+            Creator
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetImageFormat(NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Get the image format associated with that enum, if it does not exist, then return a 'null'.
+            </summary>
+            <param name="type">The image format enum type</param>
+            <returns>The windows image format type</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetMimeType(NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Get the MIME name of the image format associated with that enum, 
+            if it does not exist, then return a 'null'.
+            </summary>
+            <param name="type">The image format enum type</param>
+            <returns>The MIME name of the desired image format type or 'null' when none exists.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetImageFormat(System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Get the enum image format associated with that windows format, if it does not exist, then return a 'imgNone'.
+            </summary>
+            <param name="type">The windows image format type</param>
+            <returns>The image format enum type</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetCodecInfo(NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Search the codec for a given type, cycle through encoders and decoders until found. 
+            If no match is found, return 'null'.
+            </summary>
+            <param name="type">The graphic format</param>
+            <returns>The associated codec or 'null'.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetEncoderParameters(NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes,System.Drawing.Imaging.ImageCodecInfo@)">
+            <summary>
+            Get the encoder parameters used for saving a graphic into a file or stream.
+            </summary>
+            <param name="type">The desired format type.</param>
+            <param name="info">Returns the codec info.</param>
+            <returns>The encoder parameters or 'null' when not supported by the requested type.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ImageFormatHandler.GetDefaultFilenameExtension(NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Get the default filename extension for a given type
+            </summary>
+            <param name="type">The image type</param>
+            <returns>The extension string.</returns>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ImageFormatHandler.DefaultFormat">
+            <summary>
+            Get/Set the default image format used
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes">
+            <summary>
+            An enum which represents all supported graphic formats. These enum names are also used
+            to get a description from the resources.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgNone">
+            <summary>
+            Undefined format
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgBMP">
+            <summary>
+            Windows bitmap
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgEMF">
+            <summary>
+            Enhanced Windows metafile
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgEXIF">
+            <summary>
+            Exchangeable Image File
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgGIF">
+            <summary>
+            Graphics Interchange Format
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgICON">
+            <summary>
+            Windows icon
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgJPEG">
+            <summary>
+            Joint Photographic Experts Group
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgPNG">
+            <summary>
+            Portable Network Graphics
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgTIFF">
+            <summary>
+            Tag Image File
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes.imgWMF">
+            <summary>
+            Windows metafile
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.MainForm">
+            <summary>
+            Main form of screen capture application
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MainForm.capture">
+            <summary>
+            The class instance used to capture the screen
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MainForm.handlers">
+            <summary>
+            Helper to handle the file formats
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MainForm.pathName">
+            <summary>
+            The path of the executable, used to save the captured images.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MainForm.#ctor">
+            <summary>
+            Do it....
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MainForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MainForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MainForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.NativeMethods">
+            <summary>
+            Helper class which maps some WIN32 values
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NativeMethods.GetWindowRect(System.IntPtr,NUnit.Extensions.Forms.NativeMethods.RECT@)">
+            <summary>
+            Get a windows rectangle in a RECT structure
+            </summary>
+            <param name="hwnd">The window handle to look up</param>
+            <param name="rect">The rectangle</param>
+            <returns></returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NativeMethods.BringWindowToTop(System.IntPtr)">
+            <summary>
+            The BringWindowToTop function brings the specified window to the top of the Z order. 
+            If the window is a top-level window, it is activated. 
+            If the window is a child window, the top-level parent window associated 
+            with the child window is activated. 
+            </summary>
+            <param name="hWnd">Handle to the window to bring to the top of the Z order. </param>
+            <returns>If the function succeeds, the return value is nonzero.
+            If the function fails, the return value is zero. 
+            To get extended error information, call GetLastError. 
+            </returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NativeMethods.GetWindowRect(System.IntPtr)">
+            <summary>
+            Get a windows rectangle in a .NET structure
+            </summary>
+            <param name="hwnd">The window handle to look up</param>
+            <returns>The rectangle</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.CaptureHandleDelegateHandler">
+            <summary>
+             This delegate defines a method that takes a window handle
+             and generates a bitmap.
+            </summary>
+            <param name="handle">The window handle of the window to capture.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ScreenCapture">
+            <summary>
+            This class implements the capturing of a screen (form, complete desktop etc.).
+            The captured image(s) can be saved into a file in different formats, 
+            and it can be printed.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.doc">
+            <summary>
+            Used for printing the captured object
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.formatHandler">
+            <summary>
+            Handler for the different graphic formats
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.image">
+            <summary>
+            The actual image used in printing
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.images">
+            <summary>
+            These are all captured images.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.lastCapture">
+            <summary>
+            The reference to the file path of the last captured screen shot.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.#ctor">
+            <summary>
+            Creator
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.#ctor(NUnit.Extensions.Forms.ImageFormatHandler)">
+            <summary>
+            Creator, set format handler
+            </summary>
+            <param name="formatHandler">The format handler instance</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.Windows.Forms.Form,System.String)">
+            <summary>
+            Capture a screen shot of a <see cref="T:System.Windows.Forms.Form"/>.
+            </summary>
+            <returns>
+            A <see cref="T:System.Drawing.Bitmap"/> screen shot of <paramref name="form"/>
+            </returns>        
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.GenerateUniqueName(System.String,System.String)">
+            <summary>
+            Generate a unique name for a <c>PNG</c> file.
+            </summary>
+            <param name="formName">
+            The name of the form which is captured.
+            </param>
+            <param name="path">
+            The path where the capture of the form will be stored.
+            </param>
+            <returns>
+            A unique <c>PNG</c> file name : <c>path + formName + number + .png</c>
+            </returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.Windows.Forms.Form,System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Capture a specific form and save it into a file.
+            </summary>
+            <param name="window">This is the desired window which should be captured.</param>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.Windows.Forms.Form,System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes,System.Boolean)">
+            <summary>
+            Capture a specific form and save it into a file.
+            </summary>
+            <param name="window">This is the desired window which should be captured.</param>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <param name="onlyClient">When set to 'true' then only the client area of the form is captured,
+            otherwise the complete window with title bar, frame etc. is captured.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.IntPtr,System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Execute the capturing of window specified by it's windows handle.
+            </summary>
+            <param name="handle">The handle of the window to capture</param>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <returns>The image which has been captured.</returns>
+            <remarks>
+            This call uses the <i>Win32 API</i> and should therefore not be used in your
+            code if you don't want to depend on <i>Win32</i>. <c>internal</c> Takes care
+            of this issue.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.CaptureControl(System.Windows.Forms.Control,System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Capture a specific control in the client area of a form.
+            </summary>
+            <param name="window">This is a control which should be captured.</param>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.CaptureControl(System.Windows.Forms.Control)">
+            <summary>
+            Capture a specific control in the client area of a form.
+            </summary>
+            <param name="window">This is a control which should be captured.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.Windows.Forms.Form,System.Boolean)">
+            <summary>
+            Capture a specific form.
+            </summary>
+            <param name="window">This is the desired window which should be captured.</param>
+            <param name="onlyClient">When set to 'true' then only the client area of the form is captured,
+            otherwise the complete window with title bar, frame etc. is captured.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.Windows.Forms.Form)">
+            <summary>
+            Capture a specific form.
+            </summary>
+            <param name="window">This is the desired window which should be captured.</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.capture(System.Windows.Forms.Control,System.Drawing.Rectangle)">
+            <summary>
+            Execute the capturing of a specified rectangle in a given window.
+            </summary>
+            <param name="window">The window to capture</param>
+            <param name="rc">The rectangle used for capturing</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(System.IntPtr)">
+            <summary>
+            Execute the capturing of a window specified by it's windows handle.
+            The image which has been captured is saved to the 'images[0]' attribute in this class.
+            This method uses old API calls !!!!!!!
+            </summary>
+            <param name="handle">The handle of the window to capture</param>
+            <returns>The image which has been captured.</returns>
+            <remarks>
+            This call uses the <i>Win32 API</i> and should therefore not be used in your
+            code if you don't want to depend on <i>Win32</i>. <c>internal</c> Takes care
+            of this issue.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.CaptureHandle(System.IntPtr)">
+            <summary>
+            Execute the capturing of a window specified by it's windows handle.
+            This method uses old API calls !!!!!!!
+            </summary>
+            <param name="handle">The handle of the window to capture</param>
+            <returns>The image which has been captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(NUnit.Extensions.Forms.ScreenCapture.CaptureType,System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Capture the screen and save it into a file, which portion of the screen is captured
+            is defined by <paramref name="typeOfCapture"/>.
+            </summary>
+            <param name="typeOfCapture">Selects, what is actually captured, see <see cref="T:NUnit.Extensions.Forms.ScreenCapture.CaptureType"/>.</param>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <returns>An array of images captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Capture(NUnit.Extensions.Forms.ScreenCapture.CaptureType)">
+            <summary>
+            Capture the screen, which portion of the screen is captured
+            is defined by <paramref name="typeOfCapture"/>.
+            </summary>
+            <param name="typeOfCapture">Selects, what is actually captured, see <see cref="T:NUnit.Extensions.Forms.ScreenCapture.CaptureType"/>.</param>
+            <returns>An array of images captured.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Print">
+            <summary>
+            Print all captured screens.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.printPage(System.Object,System.Drawing.Printing.PrintPageEventArgs)">
+            <summary>
+            Event handler called from printing.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ScreenCapture.Save(System.String,NUnit.Extensions.Forms.ImageFormatHandler.ImageFormatTypes)">
+            <summary>
+            Save all captured screens into a file.
+            </summary>
+            <param name="filename">The name of the target file. The extension in there is ignored, 
+            it will replaced by an extension derived from the desired file format.</param>
+            <param name="format">The format of the file.</param>
+            <returns>An array of images captured.</returns>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ScreenCapture.FormatHandler">
+            <summary>
+            Define a format handler
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ScreenCapture.LastCapture">
+            <summary>
+            Gets the file path of the last captured screen shot.
+            </summary>
+            <value>
+            The path and file name of the last captured screen shot.
+            </value>
+            <exception cref="T:System.ArgumentException">
+            This exception is thrown if the value is not effective.
+            </exception>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ScreenCapture.CaptureType">
+            <summary>
+            Define the type of screen capture.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.CaptureType.VirtualScreen">
+            <summary>
+            Capture the complete virtual screen (on multi monitor applications all screens).
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.CaptureType.PrimaryScreen">
+            <summary>
+            Capture the complete primary screen, including the taskbar.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.CaptureType.WorkingArea">
+            <summary>
+            Capture only the working area of the primary screen, this excludes the taskbar.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ScreenCapture.CaptureType.AllScreens">
+            <summary>
+            On a multi monitor system capture all screens in different images.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolBarButtonTester.Click">
+            <summary>
+            Click a pushbutton
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ToolBarButtonTester.ClickDropDownMenuItem(System.String)">
+            <summary>
+            Click an item in a dropdown menu
+            </summary>
+            <param name="menuText">The name of the menu item to click</param>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ToolBarButtonTester.Bar">
+            <summary>
+            The toolbar that this button refers too
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ToolBarButtonTester.Button">
+            <summary>
+            The button that this tester encapsulates
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ToolBarButtonTester.DropDownMenu">
+            <summary>
+            Helper method to get the dropdown menu from a button
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.EventHelper">
+            <summary>
+             Methods for firing events via reflection.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.EventHelper.RaiseEvent(System.Object,System.String)">
+            <summary>
+             Fires the named event on the given object using the object's "OnEventName" method.
+            </summary>
+             <remarks>
+             <para>
+             By convention, an event named "MyEvent(object sender, MyEventArgs e)" should have a virtual protected
+             method "OnMyEvent(MyEventArgs e)" that actually calls any attached event handler.
+             </para>
+             <para>
+             This method assumes that the target event has been implemented with this pattern.
+             </para>
+             </remarks>
+            <param name="targetObject">The object raising the event.</param>
+            <param name="eventName">The name of the event to raise.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.EventHelper.RaiseEvent(System.Object,System.String,System.Object[])">
+            <summary>
+             Fires the named event on the given object using the object's "OnEventName" method.
+            </summary>
+             <remarks>
+             <para>
+             By convention, an event named "MyEvent(object sender, MyEventArgs e)" should have a virtual protected
+             method "OnMyEvent(MyEventArgs e)" that actually calls any attached event handler.
+             </para>
+             <para>
+             This method assumes that the target event has been implemented with this pattern.
+             </para>
+             </remarks>
+            <param name="targetObject">The object raising the event.</param>
+            <param name="eventName">The name of the event to raise.</param>
+            <param name="args">A list of arguments to pass to the EventArgs-derived parameter's constructor.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.EventHelper.RaiseEvent(System.Object,System.String,System.EventArgs)">
+            <summary>
+             Fires the named event on the given object using the object's "OnEventName" method.
+            </summary>
+             <remarks>
+             <para>
+             By convention, an event named "MyEvent(object sender, MyEventArgs e)" should have a virtual protected
+             method "OnMyEvent(MyEventArgs e)" that actually calls any attached event handler.
+             </para>
+             <para>
+             This method assumes that the target event has been implemented with this pattern.
+             </para>
+             </remarks>
+            <param name="targetObject">The object raising the event.</param>
+            <param name="eventName">The name of the event to raise.</param>
+            <param name="arg">The EventArgs-derived class to pass to this event.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.EventHelper.Call(System.Object,System.String,System.Object[])">
+            <summary>
+             Calls the given method on the target object with the specified arguments.
+            </summary>
+            <returns>The return value of the called method, if any.</returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.AmbiguousNameException">
+             <summary>
+             Exception is thrown when there is more than one control with the specified name.
+             </summary>
+             <remarks>
+             You should qualify the name according to the name property of the parent control in
+             a dot-delimited string.
+             <para>
+             If you have multiple dynamic controls with the same name, consider giving them unique
+             names or else access them using the indexer property on each ControlTester.
+             </para> 
+            </remarks>
+            <example>
+            grandparent.parent.child is a valid name string.. You can use the shortest name string
+            that uniquely identifies a control.
+            </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.AmbiguousNameException.#ctor(System.String)">
+            <summary>
+            Creates an AmbiguousNameException.
+            </summary>
+            <remarks>
+            The message string can be specified.
+            </remarks>
+            <param name="message">The messasge for the exception.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ExpectedModalResult">
+            <summary>
+            This class stores expected and unexpected dialog information.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ExpectedModalResult.ActualCaption">
+            <summary>
+            The actual caption of this window.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ExpectedModalResult.ActualName">
+            <summary>
+            The actual WinForms name of this window, if applicable.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ExpectedModalResult.ExpectedName">
+            <summary>
+            The expected key for this window.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ExpectedModalResult.WasExpected">
+            <summary>
+            True if this window was expected.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ExpectedModalResult.WasShown">
+            <summary>
+            True if this window was shown.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.ExpectedModalResult.Passed">
+            <summary>
+            True if this window was expected and shown, or unexpected and not shown.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ExpectedModalResultCollection">
+            <summary>
+            A collection of <see cref="T:NUnit.Extensions.Forms.ExpectedModalResult"/>s.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ExpectedModalResultCollection.GetFailures">
+            <summary>
+            Returns a list of all results in this list that did not pass.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FileAssert">
+            <summary>
+             Assertions for files.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileAssert.AreBinaryEqual(System.String,System.String)">
+            <summary>
+             Compare two files for binary equality.
+            </summary>
+            <param name="filePathOne">The path to the first file to compare.</param>
+            <param name="filePathTwo">The path to the second file to compare.</param>
+            <returns>True if the given files have the same contents.</returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FileDialogTester">
+            <summary>
+             A form tester for the <see cref="T:System.Windows.Forms.FileDialog"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.FileDialogTester.CancelButton">
+            <summary>
+            Control ID for the Cancel button.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.FileDialogTester.FileNameCheckBox">
+            <summary>
+            Control ID for the file name checkbox.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.FileDialogTester.OpenButton">
+            <summary>
+            Control ID for the Open or Save button.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileDialogTester.ClickCancel">
+            <summary>
+            Clicks the cancel button of a OpenFiledialog.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileDialogTester.ClickOpenSaveButton">
+            <summary>
+            Click the first button, usually "Open" or "Save".
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileDialogTester.SetFileName(System.String)">
+            <summary>
+            Sets the filename in the filename ComboBox and presses the OpenSave button.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileDialogTester.#cctor">
+            <summary>
+            Determines the initial name of the file dialog boxes, based on the locale.
+            Currently works for english, german and french only.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FileDialogTester.FindFileDialog">
+            <summary>
+            Finds the OpenFileDialog.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.FileDialogTester.InitialFileDialogName">
+            <summary>
+            Initial name of the file dialog boxes. They seem to change name after their creation.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FormsAssert">
+            <summary>
+             Additional assertion methods for NUnitForms.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormsAssert.AreEqual(System.Object,System.Object,System.String)">
+            <summary>
+             Asserts that the given objects are equal.
+            </summary>
+            <param name="o"></param>
+            <param name="o2"></param>
+            <param name="error"></param>
+            <exception cref="T:NUnit.Extensions.Forms.FormsTestAssertionException"></exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormsAssert.IsTrue(System.Boolean)">
+            <summary>
+             Asserts that the given value is true.
+            </summary>
+            <param name="val"></param>
+            <exception cref="T:NUnit.Extensions.Forms.FormsTestAssertionException"></exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormsAssert.IsTrue(System.Boolean,System.String)">
+            <summary>
+             Asserts that the given value is true.
+            </summary>
+            <param name="val"></param>
+            <param name="error"></param> 
+            <exception cref="T:NUnit.Extensions.Forms.FormsTestAssertionException"></exception>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ControlNotVisibleException">
+            <summary>
+            Exception is thrown when you attempt an action on a Control that is not
+            visible.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ControlNotVisibleException.#ctor(System.String)">
+            <summary>
+            Creates a ControlNotVisibleException.
+            </summary>
+            <remarks>
+            The message string can be specified.
+            </remarks>
+            <param name="message">The messasge for the exception.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FormsTestAssertionException">
+            <summary>
+            Defines a base class for exceptions generated when testing forms.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormsTestAssertionException.#ctor(System.String)">
+            <summary>
+             Constructs a new <see cref="T:NUnit.Extensions.Forms.FormsTestAssertionException"/> with the given message.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormsTestAssertionException.#ctor(System.String,System.Exception)">
+            <summary>
+             Constructs a new <see cref="T:NUnit.Extensions.Forms.FormsTestAssertionException"/> with the given message
+             and inner exception.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Desktop">
+             <summary>
+             Do not use directly.  Just use base test class and it takes care of it.
+             </summary>
+             <remarks>
+             	CreateWindowStation()
+                 SetProcessWindowStation()
+                 CreateDesktop()
+                 SetThreadDesktop()
+                 SwitchDesktop()
+             Then,
+                 CloseWindowStation()
+                 CloseDesktop()
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/createwindowstation.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/setprocesswindowstation.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/createdesktop.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/setthreaddesktop.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/switchdesktop.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/closewindowstation.asp
+            
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/closedesktop.asp
+             
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/createdesktop.asp
+             
+                 http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/window_station_and_desktop_creation.asp
+             
+             It does work.  I wrote a test to verify.
+             
+             The test, running from my login session, first enumerates all top level 
+             windows (EnumWindows).  It enumerated 1228 windows.  It then creates a new 
+             desktop (hNewDesk = CreateDesktop), changes the thread desktop to the new 
+             desktop (SetThreadDesktop(hNewDesk)), and then creates a new window (a 
+             button control).  It then enumerates windows again, and this time enumerates 
+             only 3 windows (my button plus two others the system must have created for 
+             the new desktop).
+             
+             One thing I found out - you cannot call SetThreadDesktop if the thread (or 
+             maybe even the process - not sure) owns a window.  I was creating the button 
+             and then calling SetThreadDesktop, but the SetThreadDesktop call failed with 
+             0xaa-  the resource is in use or something like that.  I changed the test to 
+             create the button *after* calling SetThreadDesktop and that worked fine.
+             
+             One other thing: your process may not have permission to switch to the other 
+             desktop.  I was at first trying to switch to the WinLogon desktop - I should 
+             have known better - access denied.  You may have to adjust your 
+             permissions/privileges for it to work.  Services can do it (that's primarly 
+             who the SetThreadDesktop API was created for), but I think they have to run 
+             under local system account to do it.
+             
+             http://vbaccelerator.com/home/VB/Code/Libraries/Windows/Creating_New_Desktops/article.asp
+             
+             Thread Connection to a Desktop
+             After a process connects to a window station, the system assigns a desktop to the thread making the connection. The 
+             system determines the desktop to assign to the thread according to the following rules:
+             
+             
+             If the thread has called the SetThreadDesktop function, it connects to the specified desktop. 
+             If the thread did not call SetThreadDesktop, it connects to the desktop inherited from the parent process. 
+             If the thread did not call SetThreadDesktop and did not inherit a desktop, the system attempts to open for MAXIMUM_ALLOWED access and connect to a desktop as follows: 
+             
+             If a desktop name was specified in the lpDesktop member of the STARTUPINFO structure that was passed to the CreateProcess function when the process was created, the thread connects to the specified desktop. 
+             Otherwise, the thread connects to the default desktop of the window station to which the process connected. 
+             The desktop assigned during this connection process cannot be closed by calling the CloseDesktop function.
+             
+             <b>
+             When a process is connecting to a desktop, the system searches the process's handle table for inherited 
+             handles. The system uses the first desktop handle it finds. If you want a child process to connect to 
+             a particular inherited desktop, you must ensure that the only the desired handle is marked inheritable. If a 
+             child process inherits multiple desktop handles, the results of the desktop connection are undefined.
+             
+             Handles to a desktop that the system opens while connecting a process to a desktop are not inheritable.
+             </b>
+             
+             </remarks>
+             <summary>
+             Do not use directly.  Just use base test class and it takes care of it.
+             </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Desktop.#ctor">
+            <summary>
+             Creates a new desktop for testing using the default settings.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Desktop.#ctor(System.String)">
+            <summary>
+            Creates a new hidden desktop for testing with the given name.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Desktop.#ctor(System.String,System.Boolean)">
+            <summary>
+             Creates a new desktop with the given name, and conditionally displays it.
+            </summary>
+            <param name="name">The name of the new desktop.</param>
+            <param name="display">True if the new desktop should be displayed.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Desktop.Dispose">
+            <summary>
+             Releases managed resources.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FormFinder">
+            <summary>
+            A class to help find a form according to its name.  NUnitForms users should not need to use
+            this class.  Consider it as internal.  
+            </summary>
+            <remarks>
+            It is also used by the recorder application.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormFinder.FindAll(System.String)">
+            <summary>
+            Finds all of the forms with a specified name and returns them in a FormCollection.
+            </summary>
+            <param name="formName">The name of the form to search for.</param>
+            <returns>the FormCollection of all found forms.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormFinder.Find(System.String)">
+            <summary>
+            Finds one form with the specified name.
+            </summary>
+            <param name="formName">The name of the form to search for.</param>
+            <returns>The form it finds.</returns>
+            <exception cref="T:NUnit.Extensions.Forms.NoSuchControlException">
+            Thrown if there are no forms with the specified name.
+            </exception>
+            <exception cref="T:NUnit.Extensions.Forms.AmbiguousNameException">
+            Thrown if there is more than one form with the specified name.</exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormFinder.FindAll">
+            <summary>
+            Finds all of the forms.
+            </summary>
+            <returns>FormCollection with all of the forms regardless of name.</returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.FormTester">
+            <summary>
+            A ControlTester for testing forms.
+            
+            This class implements a Close() helper method to close a form that you find.
+            </summary>
+            <remarks>
+            This class does not have all of the constructors because they don't make
+            sense in this context.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormTester.Dispose">
+            <summary>
+            Disposes the associated Form.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.FormTester.Close">
+            <summary>
+            Closes the associated Form.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.FormTester.DialogResult">
+            <summary>
+            Gets or sets the dialog result for the form.
+            </summary>
+            <returns>
+            A <c>System.Windows.Forms.DialogResult</c> that represents the result of the form when used as a dialog box.
+            </returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.IKeepAlive">
+            <summary>
+            This interface allows a Form to signal that it should not be disposed between tests.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.IKeepAlive.KeepAlive">
+            <summary>
+            Gets a value which determines if this object should be kept alive between tests.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.KeepAlive">
+            <summary>
+            Static helper class for <see cref="T:NUnit.Extensions.Forms.IKeepAlive"/> management.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeepAlive.ShouldKeepAlive(System.Object)">
+            <summary>
+             Tests if the given object should be kept alive.
+            </summary>
+            <param name="obj">The object to test.</param>
+            <returns>True if obj should be kept alive.</returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Key">
+            <summary>
+            Constant values for use with KeyboardController.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.KeyboardController">
+            <summary>
+            Provides testing control of the keyboard.
+            </summary>
+            <remarks>
+            KeyboardController lets you send key presses to your application.  You can
+            click, press, or release any key.  The UseOn() method allows you to assert
+            focus on a specific control before sending the keys.  It also initializes
+            the Keyboard controller for use by blocking user input.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.#ctor(NUnit.Extensions.Forms.ControlTester)">
+            <summary>
+            Creates a keyboard controller and sets the focus on the control
+            indicated by the supplied ControlTester.
+            </summary>
+            <param name="controlTester">The ControlTester to use the keyboard
+            on.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.Dispose">
+            <summary>
+            Implements the IDisposable interface.  This restores user input.
+            It should eventually return the keyboard to its pre-test state.
+            </summary>
+            <remarks>
+            If you are using the Keyboard controller through the base NUnitFormTest
+            class, then you should not need to call this method or use finally or using
+            blocks.  The base class handles this for you.</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.UseOn(NUnit.Extensions.Forms.ReflectionTester)">
+            <summary>
+            Initializes the KeyboardController, blocks user input, and sets
+            the focus on the specified control.
+            </summary>
+            <param name="control">The ControlTester to use the keyboard on.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.UseOn(System.String)">
+            <summary>
+            Overloaded.  Allows you to specify the control by name.
+            </summary>
+            <remarks>
+            You should probably use this one if you are not sure.</remarks>
+            <param name="name">The name of the control.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.UseOn(System.String,System.String)">
+            <summary>
+            Overloaded.  Allows you to specify the control by name and
+            qualified by a form name.
+            </summary>
+            <param name="name">The name of the control.</param>
+            <param name="formName">The name of the form.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.UseOn(System.String,System.Windows.Forms.Form)">
+            <summary>
+            Overloaded.  Allows you to specify the control by name and
+            qualified by a form instance.  This should be obsolete soon.
+            Do not use it unless necessary.
+            </summary>
+            <param name="name">The name of the control.</param>
+            <param name="form">The form instance to test on.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.Type(System.String)">
+            <summary>
+            This will send a string of key inputs.
+            </summary>
+            <remarks>
+            Use + for SHIFT
+            Use ^ for CONTROL
+            Use % for ALT
+            Use {} to escape or to group examples
+            ^a is Control A
+            +{abc} is SHIFT A SHIFT B SHIFT C
+            {%} is %
+            My goal is to support the strings as shown here: http://www.rutherfurd.net/python/sendkeys/
+            but it is not done yet
+            </remarks>
+            <param name="keyString">the keys to type</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.Click(System.String)">
+            <summary>
+            Press and release a key.
+            these constants.
+            </summary>
+            <remarks>
+            Use the Key class (in Key.cs) to find these constants.
+            </remarks>
+            <param name="key">The key to click.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.Press(System.String)">
+            <summary>
+            Press a key.
+            </summary>
+            <remarks>
+            Use the Key class (in Key.cs) to find these constants.
+            </remarks>
+            <param name="key">The key to press.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.KeyboardController.Release(System.String)">
+            <summary>
+            Release a key.  
+            </summary>
+            <remarks>
+            Use the Key class (in Key.cs) to find these constants.
+            </remarks>
+            <param name="key">The key to release.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.MenuItemTester">
+            <summary>
+            A ControlTester for MenuItems.
+            </summary>
+            <remarks>
+            It does not extend ControlTester because MenuItems are not Controls.  (sadly)</remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MenuItemTester.Click">
+            <summary>
+            Clicks the MenuItem (activates it)
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MenuItemTester.Popup">
+            <summary>
+            Pops up a menu.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MenuItemTester.Text">
+            <summary>
+            Gets the text of this MenuItem.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MenuItemTester.Properties">
+            <summary>
+            Allows you to access any properties of this MenuItem.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.MessageBoxTester">
+            <summary>
+            A ControlTester for MessageBoxes.  
+            Allows you to handle and test MessageBoxes by pressing any of the
+            buttons that ordinarily appear on them.
+            </summary>
+            <remarks>
+            It does not extend ControlTester because MessageBoxes are not controls.</remarks>
+            <code>
+            public void MessageBoxHandler
+            {
+            	MessageBoxTester messageBox = new MessageBoxTester( "MessageBoxName" );
+            	Assert.AreEqual( "MessageBoxText", messageBox.Text );
+              Assert.AreEqual( "MessageBoxTitle", messageBox.Title );
+            	messageBox.SendCommand( MessageBoxTester.Command.OK );
+            }
+            </code>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MessageBoxTester.#ctor(System.IntPtr)">
+            <summary>
+            Creates a MessageBoxTester with the specified handle.  NUnitForms
+            users probably won't use this directly.  Use the other constructor.
+            </summary>
+            <param name="handle">The handle of the MessageBox to test.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MessageBoxTester.#ctor(System.String)">
+            <summary>
+            Deprecated in favor of the constructor taking the box's handle as argument.
+            </summary>
+            <param name="name">The name of the MessageBox to test.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MessageBoxTester.SendCommand(NUnit.Extensions.Forms.MessageBoxTester.Command)">
+            <summary>
+            Sends a command to the MessageBox.
+            </summary>
+            <param name="cmd">The <see cref="T:NUnit.Extensions.Forms.MessageBoxTester.Command"/> to send to this <see cref="T:System.Windows.Forms.MessageBox"/>.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MessageBoxTester.ClickOk">
+            <summary>
+            Clicks the Ok button of a MessageBox.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MessageBoxTester.ClickCancel">
+            <summary>
+            Clicks the cancel button of a MessageBox.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MessageBoxTester.Title">
+            <summary>
+            Returns the caption on the message box we are testing.
+            </summary>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MessageBoxTester.Text">
+            <summary>
+            Returns the text of the message box we are testing.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.MessageBoxTester.Command">
+            <summary>
+            Available commands you can send to the MessageBox.
+            </summary>
+            <remarks>
+            There are convenience methods for OK and Cancel, so you should not need 
+            those.
+            </remarks>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.OK">
+            <summary>
+            Represents an OK button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Cancel">
+            <summary>
+            Represents a Cancel button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Abort">
+            <summary>
+            Represents an Abort button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Retry">
+            <summary>
+            Represents a Retry button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Ignore">
+            <summary>
+            Represents an Ignore button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Yes">
+            <summary>
+            Represents a Yes button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.No">
+            <summary>
+            Represents a No button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Close">
+            <summary>
+            Represents a Close button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.MessageBoxTester.Command.Help">
+            <summary>
+            Represents a Close button on a <see cref="T:System.Windows.Forms.MessageBox"/>.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ModalFormHandler">
+            <summary>
+            Used to specify a handler for a Modal form that is displayed during testing.
+            </summary>
+            <param name="name">Title of the form. Note that the titles of the file dialog boxes are not reliable.</param>
+            <param name="hWnd">Handle of the modal form. Can be passed to the constructors of the dialog box testers.</param>
+            <param name="form">Reference to the modal form. Null if it is a dialog box.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.DialogBoxHandler">
+            <summary>
+            Same as ModalFormHandler, without the form argument.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ModalFormTester">
+            <summary>
+             A class for testing Modal Forms.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ModalFormTester.hwndList">
+            <summary>
+            This list is used to keep track of which windows that have been created.
+            </summary>
+        </member>
+        <member name="F:NUnit.Extensions.Forms.ModalFormTester.listening">
+            <summary>
+            True if we have begun listening for CBT Activate events.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Dispose">
+            <summary>
+             Disposes any resources being managed.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Verify">
+            <summary>
+            Verifies that all expected handlers were invoked,
+            and that no unexpected ones were.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Callback_ModalListener(System.Int32,System.IntPtr,System.IntPtr)">
+            <summary>
+            CBT callback called when a form is activated.
+            If the newly activated form is modal, invoke the registered handler.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.ExpectModal(System.String,NUnit.Extensions.Forms.ModalFormActivated)">
+            <summary>
+             Registers an expected handler for the given form caption.
+            </summary>
+            <param name="name">The caption of the form to handle.</param>
+            <param name="handler">The handler.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.ExpectModal(System.String,NUnit.Extensions.Forms.ModalFormActivated,System.Boolean)">
+            <summary>
+             Registers an expected or unexpected handler for the given form caption.
+            </summary>
+            <param name="name">The caption of the form to handle.</param>
+            <param name="handler">The handler.</param>
+            <param name="expected">True if this handler is expected; false if this handler is not expected.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Add(System.String,NUnit.Extensions.Forms.ModalFormActivatedHwnd,System.Int32)">
+            <summary>
+             Registers an expected or unexpected handler for the given form caption.
+            </summary>
+            <param name="name">The caption of the form to handle.</param>
+            <param name="handler">The handler.</param>
+            <param name="expectedCount">number of times this handler is expected</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.UnexpectedModal(System.IntPtr)">
+             <summary>
+             A <see cref="T:NUnit.Extensions.Forms.ModalFormActivatedHwnd"/> that tries to click the OK button of the modal form.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ModalFormTester.Handler">
+            <summary>
+            This class encapsulates a event handler
+            along with information on whether it was
+            expected to be called, and if it was actually called.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Handler.#ctor(System.Delegate,System.Int32,System.String)">
+            <summary>
+            Constructs a new <see cref="T:NUnit.Extensions.Forms.ModalFormTester.Handler"/>.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Handler.Verify">
+            <summary>
+            Verify that this handler was either expected and invoked,
+            or not expected and not invoked.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.ModalFormTester.Handler.Invoke(System.IntPtr)">
+            <summary>
+            Invokes the wrapped event handler with the given window handle.
+            </summary>
+            <param name="hWnd"></param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseControl.Convert(System.Drawing.PointF,System.Drawing.PointF)">
+            <summary>
+              Translation between mouse position and screen position.
+            </summary>
+            <param name="p">
+              A <see cref="T:System.Drawing.PointF"/> mouse coordinate relative to
+              the origin control and specified in PositionUnit.
+            </param>
+            <param name="scale">
+            The scale to convert by.
+            </param>
+            <returns>
+              A <see cref="T:NUnit.Extensions.Forms.Win32.Point"/> mouse coordinate relative to
+              the screen and specified in pixels.
+            </returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.MouseController">
+             <summary>
+               Provides testing control over the mouse.
+             </summary>
+             <remarks>
+              <b>MouseController</b> allows you to control the mouse position 
+              and buttons and simulate dragging and clicking during a test.  It can be
+              used to test the behavior of a control.  For testing the behavior of an
+              application in reponse to a control's events, it is not necessary to use
+              the MouseControl.  I suggest you directly fire the appropriate events instead.
+              (You probably aren't using this class unless you are writing some custom
+              control and need to see its response to actual low level mouse movement, etc..)
+              <para>
+              The mouse Position can be relative to a <see cref="T:System.Windows.Forms.Form"/> or a <see cref="T:System.Windows.Forms.Control"/> 
+              on a <b>Form</b>.  The <b>Position</b> can be specified in pixels, inches or millimetres
+              </para>
+              <para>
+              The mouse buttons are controlled with the PressAndRelease and Release methods.  Both
+              methods allow a bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/>, for example 
+              <c>PressAndRelease(MouseButtons.Left | MouseButtons.Center)</c>.
+              Button modifiers, the Alt, Shift and Ctrl keys, are also controlled with the two methods.
+              </para>
+              <para>
+              The <b>XButtons</b> (<see cref="F:System.Windows.Forms.MouseButtons.XButton1"/> and <see cref="F:System.Windows.Forms.MouseButtons.XButton2"/>)
+              can only be simulated when a mouse with <see cref="P:System.Windows.Forms.SystemInformation.MouseButtons">5 buttons</see> is installed. 
+              The <b>PressAndRelease</b> and <b>Release</b> methods will throw <see cref="T:System.NotSupportedException"/> if the XButtons are used 
+              when a mouse does not have 4 or 5 button support.
+              </para>
+             </remarks>
+             <example>
+             <code>
+            [TestFixture] public class ATest : NUnitFormTest
+            {
+              // Gets the Form used for testing.
+              public override Type FormType
+              {
+                get {return typeof(MyTestForm);}
+              }
+              
+              [Test] public void Selecting()
+              {
+                ControlTester myControl = new ControlTester("myControl", CurrentForm);
+                using (MouseController mouse = myControl.MouseController())
+                {
+                  mouse.Drag (10,10, 20,20);
+                  AssertEquals (1, myControl.Properties.SelectedObjects.Count);
+                }
+              }
+             </code>
+             </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.#ctor">
+            <summary>
+              Creates and initialises a new instance of the class. 
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.#ctor(NUnit.Extensions.Forms.ReflectionTester)">
+            <summary>
+              Creates and initialises a new instance of the class for the specified tester.
+            </summary>
+            <remarks>
+              The <see cref="P:NUnit.Extensions.Forms.MouseController.Position">mouse position</see> is relative to the <see cref="T:System.Windows.Forms.Control"/> managed by
+              the <paramref name="controlTester"/>.
+              <para>
+              While the <b>MouseController</b> is active, user keyboard and mouse input is disabled.  For this
+              reason the <b>MouseController</b> should be disposed of when the testing is concluded.
+              </para>
+            </remarks>
+            <example>
+            <code>
+            using (MouseController mouse = new MouseControler(myTestControl))
+            {
+              mouse.Position = new PointF(1,1);
+              mouse.PressAndRelease(MouseButtons.Middle);
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.UseOn(NUnit.Extensions.Forms.ReflectionTester)">
+            <summary>
+            Specify which control or form we should use for the relative position.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.UseOn(System.String)">
+            <summary>
+            Overloaded.  Specifies control by name.
+            </summary>
+            <param name="name">The name of the control</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.UseOn(System.String,System.String)">
+            <summary>
+            Overloaded.  Specifies control by name and form name
+            </summary>
+            <param name="name">The name of the control.</param>
+            <param name="formName">The name of the form.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.UseOn(System.String,System.Windows.Forms.Form)">
+            <summary>
+            Overloaded.  Specifies control by name and form instance.
+            </summary>
+            <param name="name">The name of the control.</param>
+            <param name="form">The form instance.</param>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Dispose">
+            <summary>
+              Releases the resources used by the <see cref="T:NUnit.Extensions.Forms.MouseController"/>.
+            </summary>
+            <remarks>
+              <b>Dispose</b> releases any pressed mouse keys, restores the
+              mouse <see cref="P:NUnit.Extensions.Forms.MouseController.Position"/> and enables user input.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Hover">
+            <summary>
+              Simulate hovering over the control under test.
+            </summary>
+            <remarks>
+              <b>Hover</b> positions the mouse over the control under test for the
+              system defined mouse hover time and then <see cref="M:System.Windows.Forms.Application.DoEvents">processes</see> the events.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Hover(System.Single,System.Single)">
+            <summary>
+              Simulate hovering over the control under test at the specified x and y-coordinate.
+            </summary>
+            <param name="x">
+              The <see cref="T:System.Single"/> x-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <param name="y">
+              The <see cref="T:System.Single"/> y-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Hover</b> positions the mouse over the control under test 
+              at the specified point (<paramref name="x"/>, <paramref name="y"/>) for the system defined mouse hover 
+              time and then <see cref="M:System.Windows.Forms.Application.DoEvents">processes</see> the events.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Hover(System.Drawing.PointF)">
+            <summary>
+              Simulate hovering over the control under test at the specified <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="point">
+              A <see cref="T:System.Drawing.PointF"/>, relative to the control under test,
+               to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Hover</b> positions the mouse over the control under test 
+              at the specified <paramref name="point"/> for the system defined mouse hover 
+              time and then <see cref="M:System.Windows.Forms.Application.DoEvents">processes</see> the events.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Click">
+            <summary>
+              Simulate clicking on the control under test.
+            </summary>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              and then presses and releases the left mouse button.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Click(System.Single,System.Single)">
+            <summary>
+              Simulate clicking at the specified x and y-coordinate.
+            </summary>
+            <param name="x">
+              The <see cref="T:System.Single"/> x-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <param name="y">
+              The <see cref="T:System.Single"/> y-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              at the specified point (<paramref name="x"/>, <paramref name="y"/>)
+              and then presses and releases the left mouse button.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Click(System.Drawing.PointF)">
+            <summary>
+              Simulate clicking at the specified <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="point">
+              A <see cref="T:System.Drawing.PointF"/>, relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              at the specified <paramref name="point"/>
+              and then presses and releases the left mouse button.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.DoubleClick">
+            <summary>
+              Simulate double clicking on the control under test.
+            </summary>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              and then presses and releases the left mouse button twice.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.DoubleClick(System.Single,System.Single)">
+            <summary>
+              Simulate double clicking at the specified x and y-coordinate.
+            </summary>
+            <param name="x">
+              The <see cref="T:System.Single"/> x-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <param name="y">
+              The <see cref="T:System.Single"/> y-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              at the specified point (<paramref name="x"/>, <paramref name="y"/>)
+              and then presses and releases the left mouse button twice.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.DoubleClick(System.Drawing.PointF)">
+            <summary>
+              Simulate double clicking at the specified <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="point">
+              A <see cref="T:System.Drawing.PointF"/>, relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Click</b> positions the mouse over the control under test 
+              at the specified <paramref name="point"/>
+              and then presses and releases the left mouse button twice.
+            </remarks>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Press(System.Windows.Forms.MouseButtons)">
+            <summary>
+              Simulate pressing the mouse button(s).
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <remarks>
+              <b>PressAndRelease</b> positions the mouse over the control under test 
+              and then simulates pressing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Press(System.Windows.Forms.MouseButtons,System.Single,System.Single)">
+            <summary>
+              Simulate pressing the mouse button(s) at the specified  x and y-coordinate.
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <param name="x">
+              The <see cref="T:System.Single"/> x-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <param name="y">
+              The <see cref="T:System.Single"/> y-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>PressAndRelease</b> positions the mouse over the control under test 
+              at the specified point (<paramref name="x"/>, <paramref name="y"/>)
+              and then simulates pressing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Press(System.Windows.Forms.MouseButtons,System.Drawing.PointF)">
+            <summary>
+              Simulate pressing the mouse button(s) at the specified <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <param name="point">
+              A <see cref="T:System.Drawing.PointF"/>, relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>PressAndRelease</b> positions the mouse over the control under test 
+              at the specified <paramref name="point"/>
+              and then simulates pressing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Press(System.Windows.Forms.Keys)">
+             <overloads>
+               Simulates pressing the <see cref="T:System.Windows.Forms.MouseButtons"/> or modifier <see cref="T:System.Windows.Forms.Keys"/>.
+             </overloads>
+             <summary>
+               Simulate pressing the mouse modifier key(s) (Alt, Shift and Control).
+             </summary>
+             <param name="keys">
+               A bitwise combination of the <see cref="T:System.Windows.Forms.Keys"/> enumeration values. Only <b>Alt</b>, <b>Shift</b>
+               and <b>Control</b> are allowed.
+             </param>
+             <remarks>
+               <b>PressAndRelease</b> simulates pressing the specified <paramref name="keys"/>.
+             </remarks>
+             <exception cref="T:System.ArgumentOutOfRangeException">
+               When <paramref name="keys"/> contains a value that is not 
+               <b>Alt</b>, <b>Shift</b> or <b>Control</b>.
+             </exception>
+             <example>
+               The following example performs a "shift drag" and verifies that
+               two objects are selected.
+             <code>
+            [TestFixture] public class ATest : NUnitFormTest
+            {
+              // Gets the Form used for testing.
+              public override Type FormType
+              {
+                get {return typeof(MyTestForm);}
+              }
+              
+              [Test] public void Selecting()
+              {
+                ControlTester myControl = new ControlTester("myControl", CurrentForm);
+                using (MouseController mouse = myControl.MouseController())
+                {
+                  mouse.Drag (10,10, 20,20);
+                  AssertEquals (1, myControl.Properties.SelectedObjects.Count);
+                  
+                  mouse.PressAndRelease(Keys.Shift);
+                  mouse.Drag(100,100, 200,200);
+                  mouse.Release(Keys.Shift);
+                  AssertEquals (2, myControl.Properties.SelectedObjects.Count);
+                }
+              }
+             </code>
+             </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Release(System.Windows.Forms.MouseButtons)">
+            <summary>
+              Simulate releasing the mouse button(s).
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <remarks>
+              <b>Release</b> positions the mouse over the control under test 
+              and then simulates releasing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Release(System.Windows.Forms.MouseButtons,System.Single,System.Single)">
+            <summary>
+              Simulate release the mouse button(s) at the specified  x and y-coordinate.
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <param name="x">
+              The <see cref="T:System.Single"/> x-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <param name="y">
+              The <see cref="T:System.Single"/> y-coordinate,
+              relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Release</b> positions the mouse over the control under test 
+              at the specified point (<paramref name="x"/>, <paramref name="y"/>)
+              and then simulates releasing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Release(System.Windows.Forms.MouseButtons,System.Drawing.PointF)">
+            <summary>
+              Simulate releasing the mouse button(s) at the specified <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="buttons">
+              A bitwise combination of the <see cref="T:System.Windows.Forms.MouseButtons"/> enumeration values. 
+            </param>
+            <param name="point">
+              A <see cref="T:System.Drawing.PointF"/>, relative to the control under test,
+              to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see> the mouse to.
+            </param>
+            <remarks>
+              <b>Release</b> positions the mouse over the control under test 
+              at the specified <paramref name="point"/>
+              and then simulates releasing the specified <paramref name="buttons"/>.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When <paramref name="buttons"/> contains <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton1</see>
+              or <see cref="T:System.Windows.Forms.MouseButtons">MouseButtons.XButton2</see> and the installed mouse does have 4
+              or 5 buttons, respectively.
+            </exception>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Release(System.Windows.Forms.Keys)">
+             <overloads>
+               Simulates releasing the <see cref="T:System.Windows.Forms.MouseButtons"/> or modifier <see cref="T:System.Windows.Forms.Keys"/>.
+             </overloads>
+             <summary>
+               Simulate releasing the mouse modifier key(s) (Alt, Shift and Control).
+             </summary>
+             <param name="keys">
+               A bitwise combination of the <see cref="T:System.Windows.Forms.Keys"/> enumeration values. Only <b>Alt</b>, <b>Shift</b>
+               and <b>Control</b> are allowed.
+             </param>
+             <remarks>
+               <b>Release</b> simulates releasing the specified <paramref name="keys"/>.
+             </remarks>
+             <exception cref="T:System.ArgumentOutOfRangeException">
+               When <paramref name="keys"/> contains a value that is not 
+               <b>Alt</b>, <b>Shift</b> or <b>Control</b>.
+             </exception>
+             <example>
+               The following example performs a "shift drag" and verifies that
+               two objects are selected.
+             <code>
+            [TestFixture] public class ATest : NUnitFormTest
+            {
+              // Gets the Form used for testing.
+              public override Type FormType
+              {
+                get {return typeof(MyTestForm);}
+              }
+              
+              [Test] public void Selecting()
+              {
+                ControlTester myControl = new ControlTester("myControl", CurrentForm);
+                using (MouseController mouse = myControl.MouseController())
+                {
+                  mouse.Drag (10,10, 20,20);
+                  AssertEquals (1, myControl.Properties.SelectedObjects.Count);
+                  
+                  mouse.PressAndRelease(Keys.Shift);
+                  mouse.Drag(100,100, 200,200);
+                  mouse.Release(Keys.Shift);
+                  AssertEquals (2, myControl.Properties.SelectedObjects.Count);
+                }
+              }
+             </code>
+             </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Drag(System.Drawing.PointF,System.Drawing.PointF[])">
+            <summary>
+              Simulate dragging the mouse.
+            </summary>
+            <param name="startPoint">
+              A <see cref="T:System.Drawing.PointF"/> to start the drag operation at.
+            </param>
+            <param name="points">
+              Array of <see cref="T:System.Drawing.PointF"/> structures that represent the points to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see>&gt;
+              the mouse to.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+              When <paramref name="points"/> is <b>null</b>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+              When <paramref name="points"/> does not contain any elements.
+            </exception>
+            <remarks>
+              <b>Drag</b> positions the mouse over the control under test 
+              at the specified <paramref name="startPoint"/> and then presses the
+              left mouse button.  It then moves the mouse to each point specified in the <paramref name="points"/>
+              array.  Finally the left button is released.
+            </remarks>
+            <example>
+            <code>
+            using (MouseController mouse = new MouseControler(myTestControl))
+            {
+              mouse.Drag(new PointF(0,0), new Point(100, 100));
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.MouseController.Drag(System.Single,System.Single,System.Single[])">
+            <summary>
+              Simulate dragging the mouse.
+            </summary>
+            <param name="startX">
+              A <see cref="T:System.Single"/> x-coordinate to start the drag operation at.
+            </param>
+            <param name="startY">
+              A <see cref="T:System.Single"/> y-coordinate to start the drag operation at.
+            </param>
+            <param name="points">
+              Array of <see cref="T:System.Single"/> values that represent the x and y coordinates to <see cref="P:NUnit.Extensions.Forms.MouseController.Position">move</see>&gt;
+              the mouse to.
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+              When <paramref name="points"/> is <b>null</b>.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+              When <paramref name="points"/> does not contain at lease two values,
+              <br/><b>Or</b>, the number of elements is odd.
+            </exception>
+            <remarks>
+              <b>Drag</b> positions the mouse over the control under test 
+              at the specified <see cref="T:System.Drawing.PointF"/>(<paramref name="startX"/>, <paramref name="startY"/>)
+              and then presses the  left mouse button.  It then moves the mouse
+              to each point specified in the <paramref name="points"/> array.  Finally the left button is released.
+            </remarks>
+            <example>
+            <code>
+            using (MouseController mouse = new MouseControler(myTestControl))
+            {
+              mouse.Drag(0,0, 100,100);
+            }
+            </code>
+            </example>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MouseController.Position">
+            <summary>
+              Gets or sets the mouse position.
+            </summary>
+            <value>
+              A <see cref="T:System.Drawing.PointF"/> representing the mouse position in the <see cref="P:NUnit.Extensions.Forms.MouseController.PositionUnit"/> space.
+            </value>
+            <remarks>
+              <b>Position</b> is the position of the mouse, relative to the control under test
+              and specified in <see cref="P:NUnit.Extensions.Forms.MouseController.PositionUnit">position units</see>.
+            </remarks>
+        </member>
+        <member name="P:NUnit.Extensions.Forms.MouseController.PositionUnit">
+            <summary>
+              Gets or sets the unit of measure used for mouse coordinates.
+            </summary>
+            <value>
+              A member of the <see cref="T:System.Drawing.GraphicsUnit"/> enumeration.  The default
+              is <b>GraphicsUnit.Pixel</b>.
+            </value>
+            <remarks>
+              <b>PositionUnit</b> specifies how the mouse <see cref="P:NUnit.Extensions.Forms.MouseController.Position"/> coordinates
+              are interpreted.
+            </remarks>
+            <exception cref="T:System.NotSupportedException">
+              When value is <see cref="T:System.Drawing.GraphicsUnit">GraphicsUnit.World</see>.
+            </exception>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
+              When value is not a valid enumeration value.
+            </exception>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.NoSuchControlException">
+            <summary>
+            Exception is thrown when a control can not be found
+            by its specified name.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.NoSuchControlException.#ctor(System.String)">
+            <summary>
+            Creates a NoSuchControlException.
+            </summary>
+            <remarks>
+            The message string can be specified.
+            </remarks>
+            <param name="message">The messasge for the exception.</param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.NUnitFormsAssertionTest">
+            <summary>
+            One of three base classes for your NUnitForms tests.  This one can be
+            used by people who want "built-in" Assertion functionality and prefer
+            the older style "Assertion" syntax.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.NUnitFormsAssertTest">
+            <summary>
+            One of three base classes for your NUnitForms tests.  This one can be
+            used by people who want "built-in" Assert functionality and prefer
+            the newer style "Assert" syntax.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.OpenFileDialogTester">
+            <summary>
+            This class is used to test the built-in OpenFileDialog. This class is not meant to be
+            used directly. Instead you should use the ExpectOpenFileDialog and CancelOpenFileDialog functions
+            in the NUnitFormTest
+            class.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.OpenFileDialogTester.#ctor(System.IntPtr)">
+            <summary>
+            Constructs a new OpenFileDialogTester working on the dialog box having the given handle.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.OpenFileDialogTester.#ctor(System.String)">
+            <summary>
+            Unreliable, kept for compatibility. The title is not actually used.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.OpenFileDialogTester.OpenFile(System.String)">
+            <summary>
+             Inputs the give file name into the dialog box, and clicks the open button.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.SaveFileDialogTester">
+            <summary>
+            This class is used to test the built-in OpenFileDialog. This class is not meant to be
+            used directly. Instead you should use the ExpectOpenFileDialog and CancelOpenFileDialog functions
+            in the NUnitFormTest
+            class.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.SaveFileDialogTester.#ctor(System.IntPtr)">
+            <summary>
+            Constructs a new SaveFileDialogTester working on the dialog box having the given handle.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.SaveFileDialogTester.#ctor(System.String)">
+            <summary>
+            Unreliable, kept for compatibility. The title is not actually used.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.SaveFileDialogTester.SaveFile(System.String)">
+            <summary>
+            Inputs the give file name into the dialog box, and clicks the save button.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.SendKey.AlternateSendKeys">
+            <summary>
+            Alternative to the dot Net SendKeys class.
+            
+            SendWait method emulates the dot Net class method.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.SendKey.AlternateSendKeys.SendWait(System.String)">
+            <summary>
+            Send text to keyboard parsing text using .Net SendKeys.SendWait(...) method formatting.
+            See: http://msdn2.microsoft.com/en-us/library/system.windows.forms.sendkeys.sendwait(VS.90).aspx
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Util.GetMessageHook">
+            <summary>
+            Installs a GetMessageHook, and maintains a list of user supplied callbacks.
+            Every time the hook is run, all the callbacks are run, and those that returned true are discarded.
+            When a callback is recorded, or when the list of callbacks is not empy after a run, a message is
+            posted to the current thread to ensure that the recorded callbacks will be run. Of course one should
+            be wary of infinite loops.
+            
+            Due to the static design, this class will not work in the case of multiple UI threads,
+            each operating a message pump. If this is a concern, it should be feasible to modify it.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Util.GetMessageHook.RemoveHook">
+            <summary>
+            Called at test teardown by NUnitFormTest
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Strings">
+            <summary>
+             Additional methods for working with strings.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Strings.SafeRemoveSpaces(System.String)">
+            <summary>
+            Removes all spaces from a string.
+            </summary>
+            <param name="name">
+            Remove all spaces from this string.
+            </param>
+            <returns>
+            <list type="bullet">
+            <item><paramref name="name"/> without spaces.</item>
+            <item>if <paramref name="name"/> is not effective, returns an empty string</item>
+            </list>
+            </returns>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Tobor">
+            <summary>
+            Experimental "FIT" interface.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tobor.#ctor(NUnit.Extensions.Forms.FormTester)">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tobor.Type(System.String,System.String)">
+            <summary>
+             Types into the named control.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tobor.Click(System.String)">
+            <summary>
+             Clicks the named control.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Tobor.VerifyText(System.String,System.String)">
+            <summary>
+             Verifies the text of the named control matches the expected text.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.ToolStripItemTester">
+            <summary>
+             Base class for Tool Strip Item testers.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Types">
+            <summary>
+            Additional methods for working with Types and other Reflection objects.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Types.HasPublicProperties(System.Type)">
+            <summary>
+             Returns true if the given type has any declared public properties.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Types.GetEventNames(System.Type)">
+            <summary>
+             Retrives a list of names of events that the given type publishes.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Win32.BlockInput(System.Boolean)">
+            <summary>
+            Specifies the function's purpose. If this parameter is TRUE, keyboard and mouse input events are 
+            blocked. If this parameter is FALSE, keyboard and mouse events are unblocked. Note that only 
+            the thread that blocked input can successfully unblock input. 
+            </summary>
+            <param name="blockIt"></param>
+            <returns></returns>
+            <remarks>
+            When input is blocked, real physical input from the mouse or keyboard will not affect the input queue's 
+            synchronous key state (reported by GetKeyState and GetKeyboardState), nor will it affect the asynchronous 
+            key state (reported by GetAsyncKeyState). However, the thread that is blocking input can affect both of 
+            these key states by calling SendInput. No other thread can do this.
+            The system will unblock input in the following cases: 
+            The thread that blocked input unexpectedly exits without calling BlockUserInput with fBlock set to FALSE. 
+            In this case, the system cleans up properly and re-enables input. Windows 95/98/Me: The system displays the
+            Close Program/Fault dialog box. This can occur if the thread faults or if the user presses CTRL+ALT+DEL. 
+            Windows 2000/XP: The user presses CTRL+ALT+DEL or the system invokes the Hard System Error modal message
+            box (for example, when a program faults or a device fails). 
+            </remarks>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Win32.KEYBDINPUT">
+            <summary>
+            Another example can be found on http://www.pinvoke.net/default.aspx/user32/SendInput.html. Notice
+            that KEYBDINPUT on pinvoke.net is split in two structs : INPUT and KEYBDINPUT. The KEYBDINPUT that is
+            used here, contains both structs of pinvoke.net.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.Win32.MOUSEINPUT.#ctor(System.Int32)">
+            <summary>
+             
+             </summary>
+             <remarks>
+            dx
+            Specifies the absolute position of the mouse, or the amount of motion since the last mouse event was generated, depending on the value of the dwFlags member. Absolute data is specified as the x coordinate of the mouse; relative data is specified as the number of pixels moved. 
+            dy
+            Specifies the absolute position of the mouse, or the amount of motion since the last mouse event was generated, depending on the value of the dwFlags member. Absolute data is specified as the y coordinate of the mouse; relative data is specified as the number of pixels moved. 
+            mouseData
+            If dwFlags contains MOUSEEVENTF_WHEEL, then mouseData specifies the amount of wheel movement. A positive value indicates that the wheel was rotated forward, away from the user; a negative value indicates that the wheel was rotated backward, toward the user. One wheel click is defined as WHEEL_DELTA, which is 120. 
+            Windows 2000/XP: IfdwFlags does not contain MOUSEEVENTF_WHEEL, MOUSEEVENTF_XDOWN, or MOUSEEVENTF_XUP, then mouseData should be zero. 
+            
+            If dwFlags contains MOUSEEVENTF_XDOWN or MOUSEEVENTF_XUP, then mouseData specifies which X buttons were pressed or released. This value may be any combination of the following flags. 
+            
+            XBUTTON1
+            Set if the first X button is pressed or released.
+            XBUTTON2
+            Set if the second X button is pressed or released.
+            dwFlags
+            A set of bit flags that specify various aspects of mouse motion and button clicks. The bits in this member can be any reasonable combination of the following values. 
+            The bit flags that specify mouse button status are set to indicate changes in status, not ongoing conditions. For example, if the left mouse button is pressed and held down, MOUSEEVENTF_LEFTDOWN is set when the left button is first pressed, but not for subsequent motions. Similarly, MOUSEEVENTF_LEFTUP is set only when the button is first released. 
+            
+            You cannot specify both the MOUSEEVENTF_WHEEL flag and either MOUSEEVENTF_XDOWN or MOUSEEVENTF_XUP flags simultaneously in the dwFlags parameter, because they both require use of the mouseData field. 
+            
+            MOUSEEVENTF_ABSOLUTE
+            Specifies that the dx and dy members contain normalized absolute coordinates. If the flag is not set, dxand dy contain relative data (the change in position since the last reported position). This flag can be set, or not set, regardless of what kind of mouse or other pointing device, if any, is connected to the system. For further information about relative mouse motion, see the following Remarks section.
+            MOUSEEVENTF_MOVE
+            Specifies that movement occurred.
+            MOUSEEVENTF_LEFTDOWN
+            Specifies that the left button was pressed.
+            MOUSEEVENTF_LEFTUP
+            Specifies that the left button was released.
+            MOUSEEVENTF_RIGHTDOWN
+            Specifies that the right button was pressed.
+            MOUSEEVENTF_RIGHTUP
+            Specifies that the right button was released.
+            MOUSEEVENTF_MIDDLEDOWN
+            Specifies that the middle button was pressed.
+            MOUSEEVENTF_MIDDLEUP
+            Specifies that the middle button was released.
+            MOUSEEVENTF_VIRTUALDESK
+            Windows 2000/XP:Maps coordinates to the entire desktop. Must be used with MOUSEEVENTF_ABSOLUTE.
+            MOUSEEVENTF_WHEEL
+            Windows NT/2000/XP: Specifies that the wheel was moved, if the mouse has a wheel. The amount of movement is specified in mouseDataÃ‚Â .
+            MOUSEEVENTF_XDOWN
+            Windows 2000/XP: Specifies that an X button was pressed.
+            MOUSEEVENTF_XUP
+            Windows 2000/XP: Specifies that an X button was released.
+            time
+            Time stamp for the event, in milliseconds. If this parameter is 0, the system will provide its own time stamp. 
+            dwExtraInfo
+            </remarks>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.WindowHandle">
+            <summary>
+             Additional methods for working with Window Handles.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.WindowHandle.IsDialog(System.IntPtr)">
+            <summary>
+             Returns true if the given window handle references a Dialog.
+            </summary>
+            <param name="handle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.WindowHandle.GetText(System.IntPtr)">
+            <summary>
+             Returns the text of the references control.
+            </summary>
+            <param name="handle">A window handle to a control.</param>
+            <returns>The text of the control.</returns>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.WindowHandle.GetCaption(System.IntPtr)">
+            <summary>
+             Gets the caption of the referenced window.
+            </summary>
+        </member>
+        <member name="M:NUnit.Extensions.Forms.WindowHandle.GetClassName(System.IntPtr)">
+            <summary>
+             Returns the window class name for the referenced window.
+            </summary>
+        </member>
+        <member name="T:NUnit.Extensions.Forms.Win32Interop.VirtualKeyCodes">
+            <summary>
+            Microsft virtual key codes.
+            http://msdn2.microsoft.com/en-us/library/ms927175.aspx
+            
+            Constant values for use with KeyboardController.
+            Values from winuser.h
+            http://www.krugle.com/examples/p-dEfbRNANb0n1Aamr/Key.cs
+            </summary>
+        </member>
+    </members>
+</doc>

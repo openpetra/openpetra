@@ -91,6 +91,13 @@ namespace Ict.Petra.Client.MFinance.Logic
             return Filter;
         }
 
+        // Adapter for TClbVersatile-init ...
+        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting,
+            bool AActiveOnly, bool ABankAccountOnly)
+        {
+            return PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly, "");
+        }
+
         /// <summary>
         /// returns a filter for accounts cached table
         /// </summary>
@@ -98,7 +105,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
-        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ABankAccountOnly)
+        /// <param name="AForeignCurrencyName"></param>
+        /// <returns>The filter string which shall be used in the data view</returns>
+        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting,
+            bool AActiveOnly, bool ABankAccountOnly,
+            string AForeignCurrencyName)
         {
             string Filter = "";
 
@@ -130,6 +141,20 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 Filter += GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
+            }
+
+            // AForeignCurrencyName.Equals("") means use default or do nothing!
+            if (!AForeignCurrencyName.Equals(""))
+            {
+                Filter += " AND (";  // Bracket 1
+                Filter += AAccountTable.GetForeignCurrencyFlagDBName() + " = false";
+                Filter += " OR (";   // Bracket 2
+                Filter += AAccountTable.GetForeignCurrencyFlagDBName() + " = true";
+                Filter += " AND ";
+                Filter += AAccountTable.GetForeignCurrencyCodeDBName() +
+                          " = '" + AForeignCurrencyName + "'";
+                Filter += ")";       // Bracket 2
+                Filter += ")";       // Bracket 1
             }
 
             return Filter;
@@ -232,8 +257,22 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
         }
 
+        // Adapter for the modules which have been developed before multy currency support
+        // was required
+        public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly,
+            bool ABankAccountOnly)
+        {
+            InitialiseAccountList(
+                ref AControl, ALedgerNumber, APostingOnly,
+                AExcludePosting, AActiveOnly, ABankAccountOnly, "");
+        }
+
         /// <summary>
-        /// fill combobox values with account codes
+        /// Fill combobox values with account codes
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNumber"></param>
@@ -241,12 +280,15 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
+        /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the
+        /// defined currency are filtered</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ABankAccountOnly)
+            bool ABankAccountOnly,
+            string AForeignCurrencyName)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
 
@@ -256,7 +298,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
-            AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly, ABankAccountOnly);
+            AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly,
+                ABankAccountOnly, AForeignCurrencyName);
         }
 
         /// <summary>

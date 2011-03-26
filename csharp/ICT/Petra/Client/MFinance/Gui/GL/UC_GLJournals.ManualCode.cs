@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Drawing;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
@@ -31,6 +32,9 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -38,6 +42,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+
+        private string strCurrencySymbol;
+
+        private const string DEFAULT_CURRENCY_EXCHANGE = "1.00";
 
 
         /// <summary>
@@ -71,6 +79,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
             UpdateChangeableStatus();
+
+            txtDetailExchangeRateToBase.Enabled = false;
+        }
+
+        private void ResetExchangeCurrenyRate(object sender, EventArgs e)
+        {
+            if (!FPetraUtilsObject.SuppressChangeDetection)
+            {
+                txtDetailExchangeRateToBase.Text = DEFAULT_CURRENCY_EXCHANGE;
+                txtDetailExchangeRateToBase.BackColor = Color.LightPink;
+            }
+        }
+
+        public void WorkAroundInitialization()
+        {
+            btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
+            cmbDetailTransactionCurrency.SelectedValueChanged +=
+                new System.EventHandler(ResetExchangeCurrenyRate);
+        }
+
+        private void SetExchangeRateValue(Object sender, EventArgs e)
+        {
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(this.Handle);
+
+            setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
+            setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value,
+                cmbDetailTransactionCurrency.GetSelectedString(),
+                txtDetailExchangeRateToBase.Text);
+            setupDailyExchangeRate.ShowDialog(this);
+            txtDetailExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate;
+
+            if (!txtDetailExchangeRateToBase.Text.Equals(DEFAULT_CURRENCY_EXCHANGE))
+            {
+                txtDetailExchangeRateToBase.BackColor = Color.Empty;
+            }
         }
 
         /// <summary>
@@ -82,9 +126,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtBatchNumber.Text = FBatchNumber.ToString();
             ABatchRow batch = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
-            if (batch != null)
+            if (FPreviouslySelectedDetailRow != null)
             {
-                UpdateTotals(batch);
+                txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
+                txtCredit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalCreditTotal;
+                txtControl.NumberValueDecimal =
+                    FPreviouslySelectedDetailRow.JournalDebitTotal -
+                    FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
         }
 
@@ -94,10 +142,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="batch"></param>
         public void UpdateTotals(ABatchRow batch)
         {
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+
+                sumCredits += r.JournalCreditTotal;
+                sumDebits += r.JournalDebitTotal;
+            }
+
+            batch.BatchCreditTotal = sumCredits;
+            batch.BatchDebitTotal = sumDebits;
+            batch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+
             txtCurrentPeriod.Text = batch.BatchPeriod.ToString();
-            txtDebit.Text = batch.BatchDebitTotal.ToString();
-            txtCredit.Text = batch.BatchCreditTotal.ToString();
-            txtControl.Text = batch.BatchControlTotal.ToString();
+            txtDebit.NumberValueDecimal = batch.BatchDebitTotal;
+            txtCredit.NumberValueDecimal = batch.BatchCreditTotal;
+            txtControl.NumberValueDecimal = batch.BatchRunningTotal;
+        }
+
+        /// <summary>
+        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
+        /// In this case some "default"-Settings are to be done.
+        /// </summary>
+        public void FMainDS_ALedgerIsValidNow()
+        {
+            txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            strCurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
         }
 
         private void ShowDetailsManual(AJournalRow ARow)
@@ -113,8 +188,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).LoadTransactions(
                     ARow.LedgerNumber,
                     ARow.BatchNumber,
-                    ARow.JournalNumber
-                    );
+                    ARow.JournalNumber,
+                    ARow.TransactionCurrency);
+                bool help = ARow.JournalStatus.Equals(
+                    MFinanceConstants.BATCH_HAS_TRANSACTIONS);
+                cmbDetailTransactionTypeCode.Enabled = !help;
+                cmbDetailTransactionCurrency.Enabled = !help;
             }
         }
 
@@ -146,11 +225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.SubSystemCode = "GL";
             ANewRow.TransactionTypeCode = "STD";
 
-            // TODO: get base currency of ledger
-            ANewRow.TransactionCurrency = "EUR";
+            ALedgerRow ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            ANewRow.TransactionCurrency = ledger.BaseCurrency;
 
-            // TODO: get exchange rate from daily or corporate exchange rate table
-            // TODO: disable exchange rate if transaction currency equals base currency
             ANewRow.ExchangeRateToBase = 1;
             ANewRow.DateEffective = row.DateEffective;
             ANewRow.JournalPeriod = row.BatchPeriod;
@@ -226,6 +305,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FPetraUtilsObject.SetChangedFlag();
                 UpdateChangeableStatus();
             }
+        }
+
+        public decimal GetActualExchangeRateForeign()
+        {
+            return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
         }
     }
 }

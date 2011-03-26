@@ -20,50 +20,80 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+using System;
 using System.Windows.Forms;
 using NUnit.Extensions.Forms;
 using Ict.Common.Controls;
 using Ict.Testing.NUnitForms;
+using SourceGrid;
 
 namespace Ict.Testing.NUnitForms
 {
     /// <summary>
     /// test for SourceGrid
     /// </summary>
-    public class TSgrdDataGridPagedTester
+    public class TSgrdDataGridPagedTester : ControlTester
     {
-        private TSgrdDataGridPaged TheObject;
+        new private TSgrdDataGridPaged _TheObject;
+        private int OldSelectedRow = -1;
 
         /// constructor
         public TSgrdDataGridPagedTester(string name, Form form)
         {
             Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, form);
-            TheObject = finder.Find();
+            _TheObject = finder.Find();
         }
 
         /// constructor
         public TSgrdDataGridPagedTester(string name, string formName)
         {
             Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, new FormFinder().Find(formName));
-            TheObject = finder.Find();
+            _TheObject = finder.Find();
         }
 
         /// constructor
         public TSgrdDataGridPagedTester(string name)
         {
             Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name);
-            TheObject = finder.Find();
+            _TheObject = finder.Find();
         }
 
         /// <summary>
         /// access the properties of the source grid
         /// </summary>
-        public TSgrdDataGridPaged Properties
+        public new TSgrdDataGridPaged Properties
         {
             get
             {
-                return TheObject;
+                return _TheObject;
             }
+        }
+
+        public override object TheObject
+        {
+            get
+            {
+                return _TheObject;
+            }
+        }
+
+        public void SelectRow(int ARowNumber)
+        {
+            Properties.Selection.SelectRow(ARowNumber, true);
+            System.Console.WriteLine(Properties.Selection.GetSelectionRegion().ToString());
+
+            if (Properties.SelectedDataRowsAsDataRowView.Length == 0)
+            {
+                throw new System.Exception("Cannot select row " + ARowNumber + " because it is outside the available row numbers");
+            }
+
+//            FireEvent("SelectionChanged",
+//                       new RangeRegionChangedEventArgs(new RangeRegion(
+//                              new Position(ARowNumber, 0)),
+//                              new RangeRegion(new Position(OldSelectedRow,0))));
+            FireEvent("FocusRowEntered",
+                new RowEventArgs(ARowNumber));
+            OldSelectedRow = ARowNumber;
         }
     }
 }

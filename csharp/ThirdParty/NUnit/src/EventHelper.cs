@@ -30,38 +30,37 @@
 
 #endregion
 
-        /// <summary>
-        /// Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder 
-        /// so that we can find controls without the long list of generated panels and tablelayoutpanels, 
-        /// but for example "name of tab"."name of control"
-        /// </summary>
-        private bool Matches(string name, object control, object src)
+        ///<summary>
+        /// Fires the named event on the given object using the object's "OnEventName" method.
+        ///</summary>
+        /// <remarks>
+        /// <para>
+        /// By convention, an event named "MyEvent(object sender, MyEventArgs e)" should have a virtual protected
+        /// method "OnMyEvent(MyEventArgs e)" that actually calls any attached event handler.
+        /// </para>
+        /// <para>
+        /// This method assumes that the target event has been implemented with this pattern.
+        /// </para>
+        /// </remarks>
+        ///<param name="targetObject">The object raising the event.</param>
+        ///<param name="eventName">The name of the event to raise.</param>
+        ///<param name="arg">The EventArgs-derived class to pass to this event.</param>
+        public static void RaiseEvent(object targetObject, string eventName, EventArgs arg)
         {
-            object c = control;
-            string[] names = name.Split('.');
-            int i;
-
-            for (i = names.Length - 1; i >= 0 && c != null; i--)
+            MethodInfo minfo = targetObject.GetType().GetMethod("On" + eventName,
+                                                                BindingFlags.Instance | BindingFlags.Public |
+                                                                BindingFlags.NonPublic);
+            if (minfo == null)
             {
-                // if even the object name does not fit, then there is no match
-                if (i == names.Length - 1 && !names[i].Equals(Name(c)))
-                {
-                    return false;
-                }
+                PropertyInfo SelectionProperty = targetObject.GetType().GetProperty("Selection", BindingFlags.Instance | BindingFlags.Public |
+                                                                BindingFlags.NonPublic);
 
-                if (!names[i].Equals(Name(c)))
-                {
-                    // stay on the current name, see if we find that name higher up in the control tree
-                    i++;
-                }
-                
-                c = Parent(c);
+                targetObject = SelectionProperty.GetGetMethod().Invoke(targetObject, null);
 
-                if (c == null && src != null)
-                {
-                    c = src;
-                }
+                minfo = targetObject.GetType().GetMethod("On" + eventName,
+                                                                BindingFlags.Instance | BindingFlags.Public |
+                                                                BindingFlags.NonPublic);
             }
 
-            return i < 0;
+            minfo.Invoke(targetObject, new object[] {arg});
         }

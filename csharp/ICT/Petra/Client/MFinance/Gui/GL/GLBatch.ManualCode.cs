@@ -42,6 +42,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
                 ucoBatches.LoadBatches(FLedgerNumber);
+                ucoAttributes.LedgerNumber = value;
+
+                ucoBatches.FMainDS_ALedgerIsValidNow();
+                ucoTransactions.FMainDS_ALedgerIsValidNow();
+                ucoJournals.FMainDS_ALedgerIsValidNow();
+
+                ucoJournals.WorkAroundInitialization();
+                ucoTransactions.WorkAroundInitialization();
             }
         }
 
@@ -71,10 +79,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
         {
             this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber);
+            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
         }
 
         /// <summary>
@@ -106,7 +114,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgAttributes.Enabled = false;
         }
 
-        /// this window contains 3 tabs
+        /// <summary>
+        /// disable the journal tab if we have no active batch
+        /// </summary>
+        public void DisableJournals()
+        {
+            this.tpgJournals.Enabled = false;
+        }
+
+        /// this window contains 4 tabs
         public enum eGLTabs
         {
             /// list of batches
@@ -116,7 +132,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Journals,
 
             /// list of transactions
-            Transactions
+            Transactions,
+
+            /// list of attributes
+            Attributes
         };
 
         /// <summary>
@@ -141,6 +160,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
+                }
+            }
+            else if (ATab == eGLTabs.Attributes)
+            {
+                if (this.tpgAttributes.Enabled)
+                {
+                    this.tabGLBatch.SelectedTab = this.tpgAttributes;
                 }
             }
         }
