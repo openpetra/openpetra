@@ -34,11 +34,10 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-	[TestFixture]
-	public partial class TestGLRevaluation :CommonNUnitFunctions
-	{
-
-		/// <summary>
+    [TestFixture]
+    public partial class TestGLRevaluation : CommonNUnitFunctions
+    {
+        /// <summary>
         /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
         /// for all types of test. So I need a set of CommonNUnitFunctions
         /// </summary>
@@ -60,17 +59,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
-        
+
         public void LoadTestTata()
         {
             ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);
+
             System.Diagnostics.Debug.WriteLine("currencyTable.Rows: " + currencyTable.Rows.Count.ToString());
-        	
+
             if (currencyTable.Rows.Count == 0)
             {
-        		LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
-        		                 "test-sql\\gl-test-currency-data.sql");
-        	}
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                    "test-sql\\gl-test-currency-data.sql");
+            }
         }
-	}
+    }
 }

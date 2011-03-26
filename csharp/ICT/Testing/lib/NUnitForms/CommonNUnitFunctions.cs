@@ -75,9 +75,9 @@ namespace Ict.Testing.NUnitForms
         /// This is the central path of the complete tree
         /// </summary>
         public string rootPath;
-        
+
         /// <summary>
-        /// Actually this setting shall be done manually. 
+        /// Actually this setting shall be done manually.
         /// </summary>
         private string pathAndFileNameToNantExe = "\"C:\\Program Files (x86)\\nant-0.91-alpha2\\bin\\nant.exe\"";
 
@@ -130,12 +130,12 @@ namespace Ict.Testing.NUnitForms
             new TLogging(strNameLog);
             TPetraServerConnector.Connect(strNameConfig);
         }
-        
+
         public void DisconnectServerConnection()
         {
-        	TPetraServerConnector.Disconnect();
+            TPetraServerConnector.Disconnect();
         }
-        
+
         /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
@@ -143,7 +143,7 @@ namespace Ict.Testing.NUnitForms
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
         public void LoadTestDataBase(string strSqlFilePathFromCSharpName)
         {
-        	System.Diagnostics.Debug.WriteLine("strSqlFilePathFromCSharpName: " + strSqlFilePathFromCSharpName);
+            System.Diagnostics.Debug.WriteLine("strSqlFilePathFromCSharpName: " + strSqlFilePathFromCSharpName);
             //nant("stopPetraServer", true);
             // csharp\\ICT\\Testing\\...\\filename.sql"
             //  + " >C:\\report.txt"
@@ -161,7 +161,7 @@ namespace Ict.Testing.NUnitForms
             Process NantProcess = new Process();
 
             NantProcess.EnableRaisingEvents = false;
-            NantProcess.StartInfo.FileName = "cmd"; 
+            NantProcess.StartInfo.FileName = "cmd";
             NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
             NantProcess.StartInfo.CreateNoWindow = true;
             NantProcess.StartInfo.WorkingDirectory = rootPath;
@@ -176,7 +176,7 @@ namespace Ict.Testing.NUnitForms
             else
             {
                 NantProcess.WaitForExit(60000);
-                Debug.Print("OS says nant process is finished");   
+                Debug.Print("OS says nant process is finished");
             }
         }
     }

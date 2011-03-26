@@ -28,108 +28,118 @@ using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-	[TestFixture]
-	public partial class TestGLRevaluation :CommonNUnitFunctions
-	{
-		[Test]
-		/// <summary>
-		/// Test for the internal format converter.
-		/// </summary>
-		public void Test_01_FormatConverter()
-		{
-			Assert.AreEqual(2, new FormatConverter(",>>>,>>9.99").digits, "Number of digits: 2");
-			Assert.AreEqual(1, new FormatConverter(",>>>,>>9.9").digits, "Number of digits: 1");
-			Assert.AreEqual(0, new FormatConverter(",>>>,>>9").digits, "Number of digits: 0");
-			try 
-			{
-				decimal d = new FormatConverter("nonsens").digits;
-				Assert.Fail("No InternalException thrown");
-			}  catch (InternalException internalException)
-			{
-				Assert.AreEqual("GetCurrencyInfo.02",internalException.ErrorCode,"Wrong Error Code");
-			} catch (Exception)
-			{
-				Assert.Fail("Other than InternalException thrown");
-			}
-		}
-		
-		/// <summary>
-		/// Test of the internal routine GetCurrencyInfo 
-		/// </summary>
-		[Test]
-		public void Test_02_GetCurrencyInfo()
-		{
-			Assert.AreEqual(2, new GetCurrencyInfo("EUR").digits, "Number of digits: 2");
-			try 
-			{
-				decimal d = new GetCurrencyInfo("JPN").digits;
-				Assert.Fail("No InternalException thrown");
-			} catch (InternalException internalException)
-			{
-				Assert.AreEqual("GetCurrencyInfo.01",internalException.ErrorCode,"Wrong Error Code");
-			} catch (Exception)
-			{
-				Assert.Fail("Other than InternalException thrown");
-			}
-			
-			try 
-			{
-				decimal d = new GetCurrencyInfo("DMG").digits;
-				Assert.Fail("No InternalException thrown");
-			} catch (InternalException internalException)
-			{
-				if (internalException.ErrorCode.Equals("GetCurrencyInfo.01"))
-				{
-					Assert.Fail("Test Data are not loaded correctly");
-				} else if (internalException.ErrorCode.Equals("GetCurrencyInfo.02")) {
-					Assert.Pass("DMG-Test ok");
-				} else {
-					Assert.AreEqual("GetCurrencyInfo.02",
-					                internalException.ErrorCode,
-					                "Wrong Error Code");
-				}
-			} catch (Exception)
-			{
-				Assert.Fail("Other than InternalException thrown");
-			}
-		}
-		
-		[Test]
-		public void Test_03_GetLedgerInfo()
-		{
-			Assert.AreEqual("EUR", new GetLedgerInfo(43).BaseCurrency, 
-			                "Base Currency of 43 shall be EUR");
-			Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount, 
-			                "Revaluation Account of 43 shall be 5003");
-		}
-		
-		[Test]
-		public void Test_04_GetAccountingPeriodInfo()
-		{
-			GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(43);
-			Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(1), 
-			                "DateTime.MinValue is an error representative");
-			Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(1), 
-			                "DateTime.MinValue is an error representative");
-			Assert.AreNotEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(1), 
-			                "DateTime.MinValue is an error representative");
-		}
-		
-		[Test]
-		[TestCase(10, 100 , 2, 2, -40)]
-		// "-40" means: 40 Currency Units are missing for the correct ratio
-		[TestCase(200, 100 , 2, 2, 150)]
-		[TestCase(50, 100 , 2, 2, 0)]
-		[TestCase(50, 100 , 1.123456789, 2, -39.01)]
-		[TestCase(50, 100 , 1.123456789, 4, -39.011)]
-		[TestCase(50, 100 , 1.123456789, 6, -39.010989)]
-		public void Test_05_AccountDelta(decimal AAmountInBaseCurency,
+    [TestFixture]
+    public partial class TestGLRevaluation : CommonNUnitFunctions
+    {
+        [Test]
+        /// <summary>
+        /// Test for the internal format converter.
+        /// </summary>
+        public void Test_01_FormatConverter()
+        {
+            Assert.AreEqual(2, new FormatConverter(",>>>,>>9.99").digits, "Number of digits: 2");
+            Assert.AreEqual(1, new FormatConverter(",>>>,>>9.9").digits, "Number of digits: 1");
+            Assert.AreEqual(0, new FormatConverter(",>>>,>>9").digits, "Number of digits: 0");
+            try
+            {
+                decimal d = new FormatConverter("nonsens").digits;
+                Assert.Fail("No InternalException thrown");
+            }
+            catch (InternalException internalException)
+            {
+                Assert.AreEqual("GetCurrencyInfo.02", internalException.ErrorCode, "Wrong Error Code");
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Other than InternalException thrown");
+            }
+        }
+
+        /// <summary>
+        /// Test of the internal routine GetCurrencyInfo
+        /// </summary>
+        [Test]
+        public void Test_02_GetCurrencyInfo()
+        {
+            Assert.AreEqual(2, new GetCurrencyInfo("EUR").digits, "Number of digits: 2");
+            try
+            {
+                decimal d = new GetCurrencyInfo("JPN").digits;
+                Assert.Fail("No InternalException thrown");
+            }
+            catch (InternalException internalException)
+            {
+                Assert.AreEqual("GetCurrencyInfo.01", internalException.ErrorCode, "Wrong Error Code");
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Other than InternalException thrown");
+            }
+
+            try
+            {
+                decimal d = new GetCurrencyInfo("DMG").digits;
+                Assert.Fail("No InternalException thrown");
+            }
+            catch (InternalException internalException)
+            {
+                if (internalException.ErrorCode.Equals("GetCurrencyInfo.01"))
+                {
+                    Assert.Fail("Test Data are not loaded correctly");
+                }
+                else if (internalException.ErrorCode.Equals("GetCurrencyInfo.02"))
+                {
+                    Assert.Pass("DMG-Test ok");
+                }
+                else
+                {
+                    Assert.AreEqual("GetCurrencyInfo.02",
+                        internalException.ErrorCode,
+                        "Wrong Error Code");
+                }
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Other than InternalException thrown");
+            }
+        }
+
+        [Test]
+        public void Test_03_GetLedgerInfo()
+        {
+            Assert.AreEqual("EUR", new GetLedgerInfo(43).BaseCurrency,
+                "Base Currency of 43 shall be EUR");
+            Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount,
+                "Revaluation Account of 43 shall be 5003");
+        }
+
+        [Test]
+        public void Test_04_GetAccountingPeriodInfo()
+        {
+            GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(43);
+
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(1),
+                "DateTime.MinValue is an error representative");
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(1),
+                "DateTime.MinValue is an error representative");
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(1),
+                "DateTime.MinValue is an error representative");
+        }
+
+        [Test]
+        [TestCase(10, 100, 2, 2, -40)]
+        // "-40" means: 40 Currency Units are missing for the correct ratio
+        [TestCase(200, 100, 2, 2, 150)]
+        [TestCase(50, 100, 2, 2, 0)]
+        [TestCase(50, 100, 1.123456789, 2, -39.01)]
+        [TestCase(50, 100, 1.123456789, 4, -39.011)]
+        [TestCase(50, 100, 1.123456789, 6, -39.010989)]
+        public void Test_05_AccountDelta(decimal AAmountInBaseCurency,
             decimal AAmountInForeignCurrency,
             decimal AExchangeRate, int ACurrencyDigits, decimal AExpectedResult)
-		{
-			Assert.AreEqual(AExpectedResult, CLSRevaluation.AccountDelta(
-				AAmountInBaseCurency, AAmountInForeignCurrency, AExchangeRate, ACurrencyDigits));
-			
-		}
-	}
+        {
+            Assert.AreEqual(AExpectedResult, CLSRevaluation.AccountDelta(
+                    AAmountInBaseCurency, AAmountInForeignCurrency, AExchangeRate, ACurrencyDigits));
+        }
+    }
 }
