@@ -25,8 +25,6 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.lib.MFinance.GL;
 
 
-
-
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
@@ -47,31 +45,29 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 
-
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
-	public partial class TPeriodEnd
-	{
-		[RequireModulePermission("FINANCE-1")]
-		public bool TPeriodMonthEnd(
-				int ALedgerNum,
-				out TVerificationResultCollection AVerificationResult)
-		{
-			return new TMonthEnd().RunMontEnd(ALedgerNum, out AVerificationResult);
-		}
-	}
+    public partial class TPeriodEnd
+    {
+        [RequireModulePermission("FINANCE-1")]
+        public bool TPeriodMonthEnd(
+            int ALedgerNum,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return new TMonthEnd().RunMontEnd(ALedgerNum, out AVerificationResult);
+        }
+    }
 }
 
 namespace Ict.Petra.Server.lib.MFinance.GL
 {
-	public class TMonthEnd
-	{
-		
-		public bool RunMontEnd(int ALedgerNum, 
-		                       out TVerificationResultCollection AVerificationResult)
-		{
-			AVerificationResult = new TVerificationResultCollection();
-			return  false;
-		}
-	}
+    public class TMonthEnd
+    {
+        public bool RunMontEnd(int ALedgerNum,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            return false;
+        }
+    }
 }

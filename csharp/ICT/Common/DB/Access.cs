@@ -2459,6 +2459,7 @@ namespace Ict.Common.DB
 
             TLogging.LogStackTrace(TLoggingType.ToLogfile);
 #endif
+
             if (AThrowExceptionAfterLogging)
             {
                 throw AException;

@@ -481,13 +481,26 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        RecurringGiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        Boolean SubmitRecurringGiftBatch(Hashtable requestParams,
+                                         out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                       Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
+                                                        Int32 ABatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                               out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+                                                       out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         bool PostGiftBatch(Int32 ALedgerNumber,
                            Int32 ABatchNumber,
