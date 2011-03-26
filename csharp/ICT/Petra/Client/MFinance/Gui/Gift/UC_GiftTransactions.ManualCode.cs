@@ -526,8 +526,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField,  ARow.RecipientKey);
-        
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
+
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
             txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
 

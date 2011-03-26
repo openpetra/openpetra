@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ref LedgerTable,
                             ALedgerNumber,
                             AEffectiveDate);
-                        batch.GlEffectiveDate=AEffectiveDate;
+                        batch.GlEffectiveDate = AEffectiveDate;
                         batch.BatchDescription = recBatch.BatchDescription;
                         batch.BankCostCentre = recBatch.BankCostCentre;
                         batch.BankAccountCode = recBatch.BankAccountCode;
@@ -226,13 +226,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 gift.BatchNumber = batch.BatchNumber;
                                 gift.GiftTransactionNumber = batch.LastGiftNumber + 1;
                                 gift.DonorKey = recGift.DonorKey;
-                                gift.MethodOfGivingCode =  recGift.MethodOfGivingCode;
-                                if (gift.MethodOfGivingCode.Length ==0)
-                                	gift.SetMethodOfGivingCodeNull();
+                                gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
+
+                                if (gift.MethodOfGivingCode.Length == 0)
+                                {
+                                    gift.SetMethodOfGivingCodeNull();
+                                }
+
                                 gift.MethodOfPaymentCode = recGift.MethodOfPaymentCode;
-                                if (gift.MethodOfPaymentCode.Length ==0)
-                                	gift.SetMethodOfPaymentCodeNull();
-                                
+
+                                if (gift.MethodOfPaymentCode.Length == 0)
+                                {
+                                    gift.SetMethodOfPaymentCodeNull();
+                                }
+
                                 gift.Reference = recGift.Reference;
                                 gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
 
@@ -266,9 +273,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                         detail.TaxDeductable = recGiftDetail.TaxDeductable;
                                         detail.MailingCode = recGiftDetail.MailingCode;
-                                        if (detail.MailingCode.Length ==0)
-                                        	detail.SetMailingCodeNull();
-                                        
+
+                                        if (detail.MailingCode.Length == 0)
+                                        {
+                                            detail.SetMailingCodeNull();
+                                        }
+
                                         // TODO convert with exchange rate to get the amount in base currency
                                         // detail.GiftAmount=
 
@@ -324,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return success;
         }
-        
+
         /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc

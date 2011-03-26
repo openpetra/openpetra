@@ -63,8 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 batchRow = value;
-                FBatchNumber=batchRow.BatchNumber;
-                txtExchangeRateToBase.Text = "1";//1.0M;
+                FBatchNumber = batchRow.BatchNumber;
+                txtExchangeRateToBase.Text = "1"; //1.0M;
                 txtCurrencyCodeFrom.Text = batchRow.CurrencyCode;
             }
         }
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FMainDS = value;
-                
+
                 FLedgerNumber = FMainDS.ALedger[0].LedgerNumber;
                 txtCurrencyCodeTo.Text = FMainDS.ALedger[0].BaseCurrency;
                 DateTime StartDateCurrentPeriod;
@@ -89,8 +89,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             }
         }
-
-  
 
 
         /// <summary>

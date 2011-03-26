@@ -490,7 +490,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
-        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
             if (FKeyMinTable != null)
             {
@@ -503,7 +503,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
-			txtField.Text = fieldNumber.ToString();
+            txtField.Text = fieldNumber.ToString();
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
             cmbMinistry.InitialiseUserControl(FKeyMinTable,
