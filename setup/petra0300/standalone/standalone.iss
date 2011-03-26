@@ -20,7 +20,6 @@ Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
 Name: {app}/bin30
-Name: {app}/bin30/locale/de/LC_MESSAGES
 Name: {app}/manuals30
 Name: {app}/db30
 Name: {app}/reports30
@@ -36,6 +35,7 @@ Source: ..\..\..\delivery\bin\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: igno
 Source: ..\..\..\delivery\bin\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
 
 Source: ..\..\..\delivery\bin\Ict.Common*.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Plugin*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Server*.dll; DestDir: {app}/bin30; Flags: ignoreversion
@@ -44,7 +44,8 @@ Source: ..\..\..\delivery\bin\PetraServerAdminConsole.exe; DestDir: {app}/bin30;
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
-Source: ..\..\..\delivery\bin\OpenPetra.resources.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
+Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {app}/bin30/de-DE
+Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {app}/bin30/es-ES
 Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30

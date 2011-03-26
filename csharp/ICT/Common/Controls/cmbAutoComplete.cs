@@ -1520,6 +1520,12 @@ namespace Ict.Common.Controls
                 ColumnNumber = GetColumnNrOfValueMember();
             }
 
+            if (ColumnNumber == -1)
+            {
+                // combobox has not been initialised properly
+                return -1;
+            }
+
             if ((this.SelectedItem != null) && (this.SelectedItem != System.DBNull.Value))
             {
                 DataRowView rowView = this.GetSelectedRowView();

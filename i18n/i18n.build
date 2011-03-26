@@ -47,27 +47,27 @@ ENDLOCAL
       <if test="${file::exists(CustomLanguageFile)}">
           <!-- we want to merge the custom language file with the default language file, 
                overwriting the default language file where the custom file contains translations -->
-          <property name="currLanguageFile" value="${tempdir}/i18n/${TargetLanguage.PofileWithPath}"/>
+          <property name="currLanguageFile" value="&quot;${tempdir}/i18n/${TargetLanguage.PofileWithPath}&quot;"/>
           <exec program="${external.Poedit.msgcat}">
-            <arg value="${CustomLanguageFile}" />
-            <arg value="${TargetLanguage.PofileWithPath}" />
+            <arg value="&quot;${CustomLanguageFile}&quot;" />
+            <arg value="&quot;${TargetLanguage.PofileWithPath}&quot;" />
             <arg value="--use-first" />
             <arg value="-o" />
-            <arg value="${currLanguageFile}" />
+            <arg value="&quot;${currLanguageFile}&quot;" />
           </exec>
       </if>
       <!-- compiling for windows -->
       <exec program="${external.Poedit.msgfmt}" if="${platform::is-windows()}">
         <arg value="${currLanguageFile}" />
         <arg value="-d" />
-        <arg value="${dir.bin}" />
+        <arg value="&quot;${dir.bin}&quot;" />
         <arg value="--locale=${path::get-file-name-without-extension(TargetLanguage.PofileWithPath)}" />
         <arg value="--resource=OpenPetra" />
         <arg value="--csharp" />
         <environment>
           <variable name="Path" path="${tempdir}/i18n" />
           <variable name="GETTEXTCSHARPLIBDIR" value="${dir.bin}" />
-          <variable name="TMPDIR" value="${tempdir}" />
+          <variable name="TMPDIR" value="&quot;${tempdir}&quot;" />
         </environment>
       </exec>
       <!-- compiling for unix -->
