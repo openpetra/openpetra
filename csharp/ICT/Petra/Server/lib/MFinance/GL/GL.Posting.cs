@@ -1016,7 +1016,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 if (!glmMaster.IsYtdActualForeignNull())
                                 {
-                                    DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+                                    if (DBMasterRow.IsYtdActualForeignNull())
+                                    {
+                                        DBMasterRow.YtdActualForeign = glmMaster.YtdActualForeign;
+                                    }
+                                    else
+                                    {
+                                        DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+                                    }
                                 }
 
                                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
