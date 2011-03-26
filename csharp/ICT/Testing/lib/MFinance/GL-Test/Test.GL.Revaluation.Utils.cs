@@ -25,6 +25,8 @@ using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common;
+using Ict.Common.DB;
+using Ict.Common.Data;
 
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
