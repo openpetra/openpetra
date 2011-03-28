@@ -54,20 +54,63 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int ALedgerNum,
             out TVerificationResultCollection AVerificationResult)
         {
-            return new TMonthEnd().RunMontEnd(ALedgerNum, out AVerificationResult);
+            return new TMonthEnd().RunMonthEnd(ALedgerNum, out AVerificationResult);
         }
     }
 }
 
 namespace Ict.Petra.Server.lib.MFinance.GL
 {
-    public class TMonthEnd
-    {
-        public bool RunMontEnd(int ALedgerNum,
-            out TVerificationResultCollection AVerificationResult)
-        {
-            AVerificationResult = new TVerificationResultCollection();
-            return false;
-        }
-    }
+
+	public class TMonthEnd
+	{
+		
+		public bool RunMonthEndInfo(int ALedgerNum, 
+		                           out TVerificationResultCollection AVRCollection)
+		{
+			AVRCollection = new TVerificationResultCollection();
+			//TVerificationResult tvr = new TVerificationResult
+			return  false;
+		}
+
+		public bool RunMonthEnd(int ALedgerNum,
+		                       out TVerificationResultCollection AVRCollection)
+		{
+			AVRCollection = new TVerificationResultCollection();
+			
+			//bool lif = new LedgerInitFlags(42).StatusOfFlag(LedgerInitFlags.REVALUATION_FLAG);
+			//TVerificationResult tvr = new TVerificationResult(
+			return  false;
+		}
+	}
+	
+	public class LedgerInitFlags
+	{
+		public const string REVALUATION_FLAG = "Reval";  
+		
+		ALedgerInitFlagTable alifT;
+			
+		public LedgerInitFlags(int ALedgerNum)
+		{
+			alifT = ALedgerInitFlagAccess.LoadViaALedger(ALedgerNum, null);
+		}
+		
+		public bool StatusOfFlag(string AFlagName)
+		{
+			//alifT = ALedgerInitFlagAccess.LoadViaALedgerTemplate 
+			bool blnStatus = false;
+			
+			if (alifT.Rows.Count !=0) 
+			{
+				for (int i=0; i < alifT.Rows.Count; ++i)
+				{
+					
+				}
+			}
+			System.Diagnostics.Debug.WriteLine(alifT.Rows.Count.ToString());
+			
+			return true;
+		}
+		
+	}
 }
