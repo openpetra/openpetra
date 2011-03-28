@@ -84,33 +84,4 @@ namespace Ict.Petra.Server.lib.MFinance.GL
 		}
 	}
 	
-	public class LedgerInitFlags
-	{
-		public const string REVALUATION_FLAG = "Reval";  
-		
-		ALedgerInitFlagTable alifT;
-			
-		public LedgerInitFlags(int ALedgerNum)
-		{
-			alifT = ALedgerInitFlagAccess.LoadViaALedger(ALedgerNum, null);
-		}
-		
-		public bool StatusOfFlag(string AFlagName)
-		{
-			//alifT = ALedgerInitFlagAccess.LoadViaALedgerTemplate 
-			bool blnStatus = false;
-			
-			if (alifT.Rows.Count !=0) 
-			{
-				for (int i=0; i < alifT.Rows.Count; ++i)
-				{
-					
-				}
-			}
-			System.Diagnostics.Debug.WriteLine(alifT.Rows.Count.ToString());
-			
-			return true;
-		}
-		
-	}
 }

@@ -29,12 +29,8 @@ using Ict.Petra.Server.MFinance.GL;
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
     [TestFixture]
-    public partial class TestGLRevaluation : CommonNUnitFunctions
+    public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
-        [Test]
-        public void Test_01_FormatConverter()
-        {
-        }
 
     }
 }
