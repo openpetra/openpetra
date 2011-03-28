@@ -35,7 +35,6 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Printing;
-using Ict.Tools.CodeGeneration;
 using Ict.Petra.Shared.MReporting;
 using Ict.Testing.NUnitPetraClient;
 
@@ -63,8 +62,10 @@ namespace Tests.Reporting
             Thread.CurrentThread.CurrentCulture = OrigCulture;
             TPetraConnector.Connect("../../etc/TestClient.config");
             FCalculator = new TRptCalculator();
-            PathToTestData = TAppSettingsManager.GetValueStatic("Testing.Path") + "/lib/Reporting/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
-            PathToSettingsData = TAppSettingsManager.GetValueStatic("Reporting.PathReportSettings") + "/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToTestData = TAppSettingsManager.GetValueStatic("Testing.Path") + "/lib/Reporting/TestData/".Replace("/",
+                System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToSettingsData = TAppSettingsManager.GetValueStatic("Reporting.PathReportSettings") + "/".Replace("/",
+                System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
         [TearDown]

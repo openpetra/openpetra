@@ -630,16 +630,16 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         private DataTable GetLedgerDetailsTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
         {
 #region ManualCode
-            StringCollection FieldList = new StringCollection();
-            FieldList.Add(ALedgerTable.GetLedgerNumberDBName());
-            FieldList.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
-            FieldList.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
-            FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
-            FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
-            FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
-            FieldList.Add(ALedgerTable.GetBaseCurrencyDBName());
-            FieldList.Add(ALedgerTable.GetIntlCurrencyDBName());
-            return ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, FieldList, AReadTransaction);
+//            StringCollection FieldList = new StringCollection();
+//            FieldList.Add(ALedgerTable.GetLedgerNumberDBName());
+//            FieldList.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
+//            FieldList.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
+//            FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
+//            FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
+//            FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
+//            FieldList.Add(ALedgerTable.GetBaseCurrencyDBName());
+//            FieldList.Add(ALedgerTable.GetIntlCurrencyDBName());
+            return ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, AReadTransaction);
 #endregion ManualCode
         }
 
@@ -667,6 +667,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
             FieldList.Add(AAccountTable.GetPostingStatusDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyFlagDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyCodeDBName());
             GLSetupTDS TempDS = new GLSetupTDS();
             AAccountAccess.LoadViaALedger(TempDS, ALedgerNumber, FieldList, AReadTransaction);
 

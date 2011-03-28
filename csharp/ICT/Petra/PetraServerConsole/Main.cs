@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Services;
 using System.Threading;
@@ -31,6 +32,8 @@ using Ict.Common;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace PetraServerConsole
 {
@@ -116,7 +119,20 @@ public class TServer
                     RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName, false);
                 }
             }
-            catch (Exception)
+            catch (RemotingException rex)
+            {
+                if (rex.Message.IndexOf("SocketException") > 1)
+                {
+                    TLogging.Log("A SocketException has been thrown.");
+                    TLogging.Log("Most probably problem is that the adress port is used twice!");
+                    throw new ApplicationException();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            catch (Exception ex)
             {
                 throw;
             }
@@ -131,7 +147,14 @@ public class TServer
             {
                 TheServerManager.EstablishDBConnection();
             }
-            catch (Exception)
+            catch (FileNotFoundException ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log("Please check your OpenPetra.build.config file ...");
+                TLogging.Log("May be a nant initConfigFile helps ...");
+                throw new ApplicationException();
+            }
+            catch (Exception exp)
             {
                 throw;
             }
@@ -454,7 +477,12 @@ ReadClientTaskPriority:
         }
         catch (System.Runtime.Remoting.RemotingException exp)
         {
+            System.Diagnostics.Debug.WriteLine(exp.ToString());
             TLogging.Log(Environment.NewLine + "Exception occured while setting up Remoting Framework:" + Environment.NewLine + exp.ToString());
+        }
+        catch (ApplicationException)
+        {
+            // This Exception is used if no more messages shall be done ...
         }
         catch (Exception exp)
         {

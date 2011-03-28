@@ -25,9 +25,9 @@ RootNode:
         txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Currency}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Currency}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Currency}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -45,7 +45,13 @@ RootNode:
             RowFilter: AJournal.BatchNumber
         pnlDetails:
             Dock: Bottom
-            Controls: [txtDetailJournalDescription, cmbDetailSubSystemCode, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective, txtDetailExchangeRateToBase]
+            Controls: 
+                Row0: [txtDetailJournalDescription]
+                Row1: [cmbDetailSubSystemCode]
+                Row2: [cmbDetailTransactionTypeCode]
+                Row3: [cmbDetailTransactionCurrency]
+                Row4: [dtpDetailDateEffective]
+                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
         txtDetailJournalDescription: {Label=Journal Description, Width=350}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
@@ -53,4 +59,5 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, TODOSaveToDailyExchangeRateTableWithDialog=think}
+        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base}
+        btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
