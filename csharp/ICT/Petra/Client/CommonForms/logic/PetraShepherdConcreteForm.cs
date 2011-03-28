@@ -121,8 +121,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             FileElementData = XmlPages.LastChild.LastChild; 
             //For the following attributes, I'm not sure 	what to do with them quite yet-- they need to be assigned to something 
             TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
-            TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"]); // Can't print size because I don't know how to handle this YAML datatype
-            TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"]); // Can't print size because I don't know how to handle this YAML datatype
+            TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value); // Can't print size because I don't know how to handle this YAML datatype
+            TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); // Can't print size because I don't know how to handle this YAML datatype
             TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value); 
             return FileElementData; // returns only the attributes of the YAML file. 
             

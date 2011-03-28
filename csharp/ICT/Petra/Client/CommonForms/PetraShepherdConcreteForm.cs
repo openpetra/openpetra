@@ -55,7 +55,8 @@ namespace Ict.Petra.Client.CommonForms
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
 
             FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-
+            
+            UpdateShepherdFormProperties("ShepherdName", 700, 500); 
             // In implementing class: FYamlFile = "...";
 
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
@@ -144,7 +145,14 @@ namespace Ict.Petra.Client.CommonForms
         
         public void UpdateShepherdFormProperties(string AString, int width, int height) 
         {
-        	TLogging.Log("UpdateSHepherdFormProperties"); 
+        	TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui"); 
+        	TLogging.Log("Size before UpdateShepherdFormProperties: " + pnlContent.Width + ", height: " + pnlContent.Width); 
+        	TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height); 
+        	Size FormSize = new Size(width, height); 
+        	
+        	pnlContent.Size = FormSize; 
+        	
+        	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
         }
 
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
