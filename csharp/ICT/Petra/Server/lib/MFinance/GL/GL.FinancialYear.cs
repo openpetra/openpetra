@@ -58,23 +58,46 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             AFinancialPeriod = -1;
             AFinancialYear = -1;
+            AAccountingPeriodRow currentPeriodRow = null;
+            AAccountingPeriodRow lastAllowedPeriodRow = null;
             AAccountingPeriodTable table = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, ATransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
 
+            if (LedgerTable.Count < 1)
+            {
+                throw new Exception("Ledger " + ALedgerNumber + " not found");
+            }
+
+            int ACurrentPeriod = LedgerTable[0].CurrentPeriod;
+            int AAllowedForwardPeriod = ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
+
             foreach (AAccountingPeriodRow row in table.Rows)
             {
+                if (row.AccountingPeriodNumber == ACurrentPeriod)
+                {
+                    currentPeriodRow = row;
+                }
+
+                if (row.AccountingPeriodNumber == AAllowedForwardPeriod)
+                {
+                    lastAllowedPeriodRow = row;
+                }
+
                 if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
                 {
                     // check if this period is either the current period or one of the forward posting periods
                     if (LedgerTable.Count == 1)
                     {
-                        int ACurrentPeriod = LedgerTable[0].CurrentPeriod;
-                        int AAllowedForwardPeriod = ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
-
                         AFinancialPeriod = row.AccountingPeriodNumber;
 
-                        if ((AFinancialPeriod >= ACurrentPeriod) && (ACurrentPeriod <= AAllowedForwardPeriod))
+                        //This is the number of the period to which the "DateToTest" belongs
+                        //This can be
+                        // 1.) before the current period or in the last financial year
+                        //   =>  FIX Date to be the first day of the current period
+                        // 2.) greater oder eqal  currentperiod but within AllowedForwardperiod = no FIX required
+                        // 3.) after the allowed Forward period or even in a future financial year: = FIX Date to be the last day of the last allowed forward period
+                        if ((AFinancialPeriod >= ACurrentPeriod) && (AFinancialPeriod <= AAllowedForwardPeriod))
                         {
                             AFinancialYear = LedgerTable[0].CurrentFinancialYear;
                             return true;
@@ -85,17 +108,26 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (ADoFixDate)
             {
-                AAccountingPeriodRow ValidPeriodRow = table[0];
-                ADateToTest = ValidPeriodRow.PeriodStartDate;
-
-                if (ADateToTest > table[0].PeriodStartDate)
+                if (ADateToTest < currentPeriodRow.PeriodStartDate)
                 {
-                    ValidPeriodRow = table[table.Rows.Count - 1];
-                    ADateToTest = ValidPeriodRow.PeriodEndDate;
+                    ADateToTest = currentPeriodRow.PeriodStartDate;
+                    AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                    AFinancialPeriod = currentPeriodRow.AccountingPeriodNumber;
                 }
+                else
+                {
+                    if (lastAllowedPeriodRow == null)
+                    {
+                        lastAllowedPeriodRow = table[table.Rows.Count - 1];
+                    }
 
-                AFinancialYear = LedgerTable[0].CurrentFinancialYear;
-                AFinancialPeriod = ValidPeriodRow.AccountingPeriodNumber;
+                    if (ADateToTest > lastAllowedPeriodRow.PeriodEndDate)
+                    {
+                        ADateToTest = lastAllowedPeriodRow.PeriodEndDate;
+                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                        AFinancialPeriod = lastAllowedPeriodRow.AccountingPeriodNumber;
+                    }
+                }
             }
 
             return false;

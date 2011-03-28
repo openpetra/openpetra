@@ -62,4 +62,4 @@ RootNode:
             Label: &Recurring Gift Batch
             mniSubmit: {Action=actSubmit}
     Toolbar:
-      
+        tbbSubmitBatch: {Action=actSubmit}

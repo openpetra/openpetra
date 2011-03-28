@@ -68,7 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtCurrencyCodeFrom.Text = batchRow.CurrencyCode;
             }
         }
-
+        DateTime StartDateCurrentPeriod;
+        DateTime EndDateLastForwardingPeriod;
         /// dataset for the whole screen
         public Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS MainDS
         {
@@ -78,8 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FLedgerNumber = FMainDS.ALedger[0].LedgerNumber;
                 txtCurrencyCodeTo.Text = FMainDS.ALedger[0].BaseCurrency;
-                DateTime StartDateCurrentPeriod;
-                DateTime EndDateLastForwardingPeriod;
+
                 DateTime DefaultDate;
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                     out StartDateCurrentPeriod,
@@ -97,6 +97,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
+            //check the gift batch date
+            if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
+            {
+                dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                return;
+            }
+
+            if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+            {
+                dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                return;
+            }
+
             foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
             {
                 if ((gift.BatchNumber == FBatchNumber) && (gift.LedgerNumber == FLedgerNumber)
