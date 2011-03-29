@@ -143,7 +143,7 @@
     <csc output="${dir.bin}/${AssemblyName}" 
          doc="${dir.bin}/${Namespace}.xml"
          target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
-         noconfig="true">
+         noconfig="true" define="DEBUGMODE">
       <references refid="assemblyfileset-references" /> 
       <sources>
         <include name="${compilefiles}" />
