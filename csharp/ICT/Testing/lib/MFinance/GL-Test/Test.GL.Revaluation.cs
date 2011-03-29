@@ -105,15 +105,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         [Test]
-        public void Test_03_GetLedgerInfo()
-        {
-            Assert.AreEqual("EUR", new GetLedgerInfo(43).BaseCurrency,
-                "Base Currency of 43 shall be EUR");
-            Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount,
-                "Revaluation Account of 43 shall be 5003");
-        }
-
-        [Test]
         public void Test_04_GetAccountingPeriodInfo()
         {
             GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(43);

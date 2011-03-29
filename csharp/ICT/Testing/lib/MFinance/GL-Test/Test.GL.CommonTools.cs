@@ -30,6 +30,9 @@ using Ict.Petra.Server.MFinance.GL;
 using Ict.Common;
 
 
+
+
+
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
 	
@@ -63,6 +66,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = blnOld;
         }
         
+        [Test]
+        public void Test_02_GetLedgerInfo()
+        {
+            Assert.AreEqual("EUR", new GetLedgerInfo(43).BaseCurrency,
+                "Base Currency of 43 shall be EUR");
+            Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount,
+                "Revaluation Account of 43 shall be 5003");
+        }
+        
 
         [TestFixtureSetUp]
         public void Init()
@@ -75,5 +87,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
+        
     }
 }

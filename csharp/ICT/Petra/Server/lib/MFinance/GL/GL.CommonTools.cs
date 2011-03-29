@@ -31,6 +31,70 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+
+    /// <summary>
+    /// This routine reads the line of a_ledger defined by the ledger number
+    /// </summary>
+    public class GetLedgerInfo
+    {
+        int ledgerNumber;
+        private ALedgerTable ledger = null;
+
+        /// <summary>
+        /// Constructor to address the correct table line (relevant ledger number). The
+        /// constructor only will run the database accesses including a CommitTransaction
+        /// and so this object may be used to "store" the data and use the database connection
+        /// for something else. 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public GetLedgerInfo(int ALedgerNumber)
+        {
+			TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            ledgerNumber = ALedgerNumber;
+            ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+			DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        
+        /// <summary>
+        /// Property to read the value of the Revaluation account 
+        /// </summary>
+        public string RevaluationAccount
+        {
+            get
+            {
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.ForexGainsLossesAccount;
+            }
+        }
+
+        /// <summary>
+        /// Property to read the value of the base currency
+        /// </summary>
+        public string BaseCurrency
+        {
+            get
+            {
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.BaseCurrency;
+            }
+        }
+        
+        /// <summary>
+        /// Property to read the value of the ProvisionalYearEndFlag 
+        /// </summary>
+        public bool ProvisionalYearEndFlag
+        {
+        	get
+        	{
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.ProvisionalYearEndFlag;
+        	}
+        }
+        
+    }
+	
+    // -----------------------------------------------------------------------------
 	
 	/// <summary>
 	/// This is the list of vaild Ledger-Init-Flags 

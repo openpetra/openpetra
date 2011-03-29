@@ -579,38 +579,6 @@ namespace Ict.Petra.Server.MFinance.GL
     }
 
     /// <summary>
-    /// This routine reads the line of a_ledger defined by the ledger number
-    /// </summary>
-    public class GetLedgerInfo
-    {
-        int ledgerNumber;
-        private ALedgerTable ledger = null;
-
-        public GetLedgerInfo(int ALedgerNumber)
-        {
-            ledgerNumber = ALedgerNumber;
-            ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
-        }
-
-        public string RevaluationAccount
-        {
-            get
-            {
-                ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.ForexGainsLossesAccount;
-            }
-        }
-
-        public string BaseCurrency
-        {
-            get
-            {
-                ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.BaseCurrency;
-            }
-        }
-    }
-    /// <summary>
     /// Get currency info is intended to be used to get some some specific infos
     /// using the old petra data base entries. GetCurrencyInfon is designed to get
     /// a rough set of information which shall be used for foreign currency

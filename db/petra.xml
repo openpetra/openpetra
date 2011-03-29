@@ -7492,7 +7492,7 @@
                 label="PO G/L Accrual Account Code"/>
     <tablefield name="a_provisional_year_end_flag_l"
                 type="bit"
-                descr=""
+                descr="This flag is set between the completion of the last month of the year and the year itself. In this state some activities are disabled and some others are enabled."
                 format="Yes/No"
                 label="Provisional Year End Flag"
                 initial="no"/>
