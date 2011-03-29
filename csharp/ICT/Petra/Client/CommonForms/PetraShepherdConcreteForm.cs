@@ -150,6 +150,8 @@ namespace Ict.Petra.Client.CommonForms
         	TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height); 
         	Size FormSize = new Size(width, height); 
         	
+        	this.Size = FormSize; 
+        	
         	pnlContent.Size = FormSize; 
         	
         	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
