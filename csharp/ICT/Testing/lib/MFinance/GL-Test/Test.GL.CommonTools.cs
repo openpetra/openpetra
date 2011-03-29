@@ -32,30 +32,37 @@ using Ict.Common;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
+	
+	/// <summary>
+	/// Tests for some common Tools. 
+	/// </summary>
     [TestFixture]
     public partial class TestGLCommonTools : CommonNUnitFunctions
     {
+    	
+    	/// <summary>
+    	/// This routine tests the TLedgerInitFlagHandler completely. It's the routine 
+    	/// which writes "boolean" values to a data base table. 
+    	/// </summary>
         [Test]
         public void Test_01_TLedgerInitFlagHandler()
         {
-        	bool blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
-        	 blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
-        	 blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
-        	System.Diagnostics.Debug.WriteLine("--------------------");
-        	//new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = false;
-        	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = true;
-        	System.Diagnostics.Debug.WriteLine("--------------------");
+        	bool blnOld = new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag;
+        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = true;
         	Assert.IsTrue(new TLedgerInitFlagHandler(
-        		43,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was set a line before");
-        	System.Diagnostics.Debug.WriteLine("--------------------");
-        	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = false;
-        	System.Diagnostics.Debug.WriteLine("--------------------");
+        		43,LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = true;
+        	Assert.IsTrue(new TLedgerInitFlagHandler(
+        		43,LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = false;
         	Assert.IsFalse(new TLedgerInitFlagHandler(
-        		43,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was reset a line before");
-        	System.Diagnostics.Debug.WriteLine("--------------------");
-        	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = blnOld;
-        	System.Diagnostics.Debug.WriteLine("--------------------");
+        		43,LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = false;
+        	Assert.IsFalse(new TLedgerInitFlagHandler(
+        		43,LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = blnOld;
         }
+        
 
         [TestFixtureSetUp]
         public void Init()
