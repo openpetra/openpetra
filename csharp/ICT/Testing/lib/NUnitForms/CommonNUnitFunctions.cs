@@ -39,7 +39,7 @@ using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Testing.NUnitForms;
 using Ict.Testing.NUnitPetraClient;
 
-using Ict.Testing.NUnitPetraServer;
+using Ict.Testing.NUnitPetraServer; 
 
 namespace Ict.Testing.NUnitForms
 {
@@ -127,6 +127,7 @@ namespace Ict.Testing.NUnitForms
             string strNameLog = strTrunkRoot + "log/TestServer.log";
             string strNameConfig = strTrunkRoot + "etc/TestServer.config";
 
+            
             new TLogging(strNameLog);
             TPetraServerConnector.Connect(strNameConfig);
         }

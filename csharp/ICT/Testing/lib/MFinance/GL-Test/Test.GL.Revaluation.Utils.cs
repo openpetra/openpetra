@@ -44,8 +44,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            //new TLogging("TestServer.log");
-            //TPetraServerConnector.Connect("../../etc/TestServer.config");
             InitServerConnection();
             LoadTestTata();
         }

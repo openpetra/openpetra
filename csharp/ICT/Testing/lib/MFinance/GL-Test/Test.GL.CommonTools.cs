@@ -24,8 +24,11 @@
 using System; 
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
-//using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.GL;
+
+
+using Ict.Common;
+
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -35,20 +38,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_01_TLedgerInitFlagHandler()
         {
-        	bool blnOld = new TLedgerInitFlagHandler(46,TLedgerInitFlagHandler.REVALUATION).Flag;
-        	 blnOld = new TLedgerInitFlagHandler(46,TLedgerInitFlagHandler.REVALUATION).Flag;
-        	 blnOld = new TLedgerInitFlagHandler(46,TLedgerInitFlagHandler.REVALUATION).Flag;
+        	bool blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
+        	 blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
+        	 blnOld = new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag;
         	System.Diagnostics.Debug.WriteLine("--------------------");
         	//new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = false;
         	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = true;
         	System.Diagnostics.Debug.WriteLine("--------------------");
         	Assert.IsTrue(new TLedgerInitFlagHandler(
-        		46,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was set a line before");
+        		43,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was set a line before");
         	System.Diagnostics.Debug.WriteLine("--------------------");
         	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = false;
         	System.Diagnostics.Debug.WriteLine("--------------------");
         	Assert.IsFalse(new TLedgerInitFlagHandler(
-        		46,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was reset a line before");
+        		43,TLedgerInitFlagHandler.REVALUATION).Flag, "Flag was reset a line before");
         	System.Diagnostics.Debug.WriteLine("--------------------");
         	new TLedgerInitFlagHandler(43,TLedgerInitFlagHandler.REVALUATION).Flag = blnOld;
         	System.Diagnostics.Debug.WriteLine("--------------------");
@@ -57,7 +60,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            // new TLogging("TestServer.log");
             InitServerConnection();
         }
 

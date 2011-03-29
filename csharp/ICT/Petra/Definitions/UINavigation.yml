@@ -121,6 +121,8 @@ OpenPetra:
                         #EditTransactionsInPreviouslyUsedBatch:
                         #PostBatch:
                         #FindTransaction:
+                    PeriodEndReports: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                        MonthlyReports: {Description:Creates a month end report, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonthly}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -145,7 +147,6 @@ OpenPetra:
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
-                    #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
                 #Budgets:

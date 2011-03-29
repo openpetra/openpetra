@@ -71,21 +71,24 @@ namespace Ict.Petra.Server.MFinance.GL
 		public bool Flag
 		{
 			get {
+				System.Diagnostics.Debug.WriteLine("DL1:" + DBAccess.GDBAccessObj.DebugLevel.ToString());
+				DBAccess.GDBAccessObj.DebugLevel = 10; 
 				TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 				System.Diagnostics.Debug.WriteLine("intLedgerNumber " + intLedgerNumber.ToString());
 				System.Diagnostics.Debug.WriteLine("strFlagName " + strFlagName);
 				ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
 					intLedgerNumber, strFlagName, Transaction);
 				boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
-				DBAccess.GDBAccessObj.RollbackTransaction();
 				System.Diagnostics.Debug.WriteLine("g " + aLedgerInitFlagTable.Rows.Count.ToString());
 				System.Diagnostics.Debug.WriteLine("g-boolValue: " + boolValue.ToString());
+				System.Diagnostics.Debug.WriteLine("DL2:" + DBAccess.GDBAccessObj.DebugLevel.ToString());
+				DBAccess.GDBAccessObj.RollbackTransaction();
 				return boolValue;
 			}
 			set {
 				if (value) {
 					// Create if record does not exist 
-					if (!boolValue) {
+					if (boolValue) {
 						TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 						ALedgerInitFlagTable alift = ALedgerInitFlagAccess.LoadByPrimaryKey(
 							intLedgerNumber, strFlagName, Transaction);
