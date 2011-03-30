@@ -31,6 +31,169 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+	
+	public class Get_GLM_Info
+	{
+		public Get_GLM_Info(int ALedgerNum, string ASuspenseAccountCode, int ACurrentFinancialYear)
+		{
+			
+		}
+	}
+	
+    /// <summary>
+    /// Gets the specific date informations of an accounting intervall. This routine is either used by
+    /// GL.PeriodEnd.Month and GL.Revaluation but in different senses. On time the dataset holds exact
+    /// one row (Contructor with two parameters) and on time it holds a set of rows (Constructor with
+    /// one parameter.
+    /// </summary>
+    public class GetAccountingPeriodInfo
+    {
+        private AAccountingPeriodTable periodTable = null;
+
+        /// <summary>
+        /// Constructor needs a valid ledger number.
+        /// </summary>
+        /// <param name="ALedgerNumber">Ledger number</param>
+        public GetAccountingPeriodInfo(int ALedgerNumber)
+        {
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, null);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// <summary>
+        /// Constructor to adress a record by its primary key
+        /// </summary>
+        /// <param name="ALedgerNumber">the ledger number</param>
+        /// <param name="ACurrentPeriod">the current accounting period</param>
+
+        public GetAccountingPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
+        {
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            periodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ACurrentPeriod, transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// <summary>
+        /// Selects to correct AAccountingPeriodRow or - in case of an error -
+        /// it sets to null
+        /// </summary>
+        /// <param name="APeriodNum">Number of the requested period</param>
+        /// <returns></returns>
+        private AAccountingPeriodRow GetRowOfPeriod(int APeriodNum)
+        {
+            if (periodTable != null)
+            {
+                if (periodTable.Rows.Count != 0)
+                {
+                    for (int i = 0; i < periodTable.Rows.Count; ++i)
+                    {
+                        AAccountingPeriodRow periodRow =
+                            (AAccountingPeriodRow)periodTable[i];
+
+                        if (periodRow.AccountingPeriodNumber == APeriodNum)
+                        {
+                            return periodRow;
+                        }
+                    }
+
+                    return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Reads the effective date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
+        public DateTime GetEffectiveDateOfPeriod(int APeriodNum)
+        {
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow != null)
+            {
+                return periodRow.EffectiveDate;
+            }
+            else
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        /// <summary>
+        /// Reads the value of the first and hopefully only row.
+        /// </summary>
+        public DateTime EffectiveDate
+        {
+            get
+            {
+                AAccountingPeriodRow periodRow = (AAccountingPeriodRow)periodTable[0];
+                return periodRow.EffectiveDate;
+            }
+        }
+
+
+        /// <summary>
+        /// Reads the end date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
+        public DateTime GetDatePeriodEnd(int APeriodNum)
+        {
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow != null)
+            {
+                return periodRow.PeriodEndDate;
+            }
+            else
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        /// <summary>
+        /// Reads the start date of the period
+        /// </summary>
+        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
+        /// error value.</param>
+        /// <returns></returns>
+        public DateTime GetDatePeriodStart(int APeriodNum)
+        {
+            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
+
+            if (periodRow != null)
+            {
+                return periodRow.PeriodStartDate;
+            }
+            else
+            {
+                return DateTime.MinValue;
+            }
+        }
+
+        public int Rows
+        {
+            get
+            {
+                return periodTable.Rows.Count;
+            }
+        }
+    }
+
     /// <summary>
     /// This routine reads the line of a_ledger defined by the ledger number
     /// </summary>
@@ -90,13 +253,30 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.ProvisionalYearEndFlag;
             }
         }
-        
-        public int CurrentAccountingPeriod
+
+
+        public int CurrentPeriod
         {
-        	get 
+        	get
         	{
                 ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.CurrentAccountingPeriod;
+                return row.CurrentPeriod;
+        	}
+        }
+        public int NumberOfAccountingPeriods
+        {
+        	get
+        	{
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.NumberOfAccountingPeriods;
+        	}
+        }
+        public int CurrentFinancialYear
+        {
+        	get
+        	{
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.CurrentFinancialYear;
         	}
         }
     }

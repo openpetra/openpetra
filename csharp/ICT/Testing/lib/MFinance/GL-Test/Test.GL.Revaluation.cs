@@ -105,19 +105,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         [Test]
-        public void Test_04_GetAccountingPeriodInfo()
-        {
-            GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(43);
-
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(1),
-                "DateTime.MinValue is an error representative");
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(1),
-                "DateTime.MinValue is an error representative");
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(1),
-                "DateTime.MinValue is an error representative");
-        }
-
-        [Test]
         [TestCase(10, 100, 2, 2, -40)]
         // "-40" means: 40 Currency Units are missing for the correct ratio
         [TestCase(200, 100, 2, 2, 150)]

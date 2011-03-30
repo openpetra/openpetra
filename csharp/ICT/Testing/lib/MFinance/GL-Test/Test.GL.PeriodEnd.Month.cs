@@ -69,6 +69,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             UnloadTestData_GetBatchInfo();
         }
 
+        /// <summary>
+        /// The GetSuspenseAccountInfo is not done yet because
+        /// 1. it is a simple data base request
+        /// 2. there is no other routine whih uses this function
+        /// (may be later ...)
+        /// </summary>
+        // [Test]
+        public void Test_02_GetSuspenseAccountInfo()
+        {
+        }
+
         [TestFixtureSetUp]
         public void Init()
         {
@@ -81,8 +92,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             DisconnectServerConnection();
         }
 
-        private const string strTestDataBatchDescription ="TestGLPeriodicEndMonth-TESTDATA";
-        
+        private const string strTestDataBatchDescription = "TestGLPeriodicEndMonth-TESTDATA";
+
         private void LoadTestTata_GetBatchInfo()
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();

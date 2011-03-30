@@ -38,6 +38,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public partial class TestGLCommonTools : CommonNUnitFunctions
     {
+        int LedgerNumber = 43;
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
         /// which writes "boolean" values to a data base table.
@@ -47,28 +48,70 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             bool blnOld = new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag;
 
-            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = true;
+            new TLedgerInitFlagHandler(LedgerNumber, LegerInitFlag.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    43, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = true;
+                    LedgerNumber, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, LegerInitFlag.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    43, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = false;
+                    LedgerNumber, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, LegerInitFlag.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    43, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = false;
+                    LedgerNumber, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, LegerInitFlag.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    43, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = blnOld;
+                    LedgerNumber, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, LegerInitFlag.Revaluation).Flag = blnOld;
         }
 
+        /// <summary>
+        /// Test of the GetLedgerInfo Routine...
+        /// </summary>
         [Test]
         public void Test_02_GetLedgerInfo()
         {
-            Assert.AreEqual("EUR", new GetLedgerInfo(43).BaseCurrency,
-                "Base Currency of 43 shall be EUR");
-            Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount,
-                "Revaluation Account of 43 shall be 5003");
+            Assert.AreEqual("EUR", new GetLedgerInfo(LedgerNumber).BaseCurrency,
+                String.Format("Base Currency of {0} shall be EUR", LedgerNumber));
+            Assert.AreEqual("5003", new GetLedgerInfo(LedgerNumber).RevaluationAccount,
+                String.Format("Revaluation Account of {0} shall be 5003", LedgerNumber));
+        }
+
+        [Test]
+        public void Test_03_GetAccountingPeriodInfo()
+        {
+            GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(LedgerNumber);
+
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(1),
+                "DateTime.MinValue is an error representative");
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(1),
+                "DateTime.MinValue is an error representative");
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(1),
+                "DateTime.MinValue is an error representative");
+
+            Assert.AreEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(33),
+                "DateTime.MinValue is an error representative");
+            Assert.AreEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(33),
+                "DateTime.MinValue is an error representative");
+            Assert.AreEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(33),
+                "DateTime.MinValue is an error representative");
+
+            Assert.IsTrue(TryGetAccountPeriodInfo(LedgerNumber, 1),
+                "This request shall pass");
+            Assert.IsFalse(TryGetAccountPeriodInfo(LedgerNumber, 100),
+                "This request shall fail (period does not exist)");
+        }
+
+        private bool TryGetAccountPeriodInfo(int ALedgerNum, int APeriodNum)
+        {
+            try
+            {
+                GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(ALedgerNum, APeriodNum);
+                DateTime date = getAPI.EffectiveDate;
+                return date != null;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return false;
+            }
         }
 
         [TestFixtureSetUp]
