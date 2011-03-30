@@ -398,6 +398,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
         }
 
+        private void ReverseGift(System.Object sender, System.EventArgs e)
+        {
+            //TODO
+        }
+
+        private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
+        {
+            //TODO
+        }
+
+        private void AdjustGift(System.Object sender, System.EventArgs e)
+        {
+            //TODO
+        }
+
         /// <summary>
         /// add a new gift detail
         /// </summary>
@@ -525,7 +540,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-
+			
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
@@ -627,6 +642,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
+            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0) &&
+       		// taken from old petra
+            (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber !=0);
+            	
+            //	&& (ARow.ReceiptNumber) This is not   
+
         }
 
         private Boolean BatchHasMethodOfPayment()

@@ -244,6 +244,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             exportForm.Show();
         }
 
+        private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
+        {
+            //TODO
+        }
+
         /// <summary>
         /// enable or disable the buttons
         /// </summary>
