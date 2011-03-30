@@ -91,9 +91,9 @@ namespace Ict.Tools.NAntTasks
 </patternset>
 
 </project>
-";
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
         const string NANT_REFERENCE_PATTERNSET_TEMPLATE = @"
-  <patternset refid=""{0}"" />";
+  <patternset refid=""{0}"" />"                                                              ;
 
         const string NANT_REFERENCE_TEMPLATE =
             @"<property name=""OutputType"" value=""{4}"" overwrite=""false""/>
@@ -110,7 +110,7 @@ namespace Ict.Tools.NAntTasks
   <property name=""target"" value=""compile"" overwrite=""false"" />
   <call target=""${{target}}"" cascade=""false"" />
 </target>
-";
+"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
         const string NANT_FILE_REFERENCE_INC_TEMPLATE = @"
   <include name=""{0}.dll""/>"                                                            ;
 

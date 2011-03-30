@@ -1187,7 +1187,7 @@ namespace Ict.Common.DB
             }
             LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
 #endif
-            
+
             try
             {
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
@@ -1208,7 +1208,7 @@ namespace Ict.Common.DB
                 }
             }
 #endif
-			
+
             return ATypedDataTable;
         }
 

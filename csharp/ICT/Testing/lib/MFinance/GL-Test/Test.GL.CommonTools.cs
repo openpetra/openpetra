@@ -21,7 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
-using System; 
+using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
@@ -30,42 +30,38 @@ using Ict.Petra.Server.MFinance.GL;
 using Ict.Common;
 
 
-
-
-
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-	
-	/// <summary>
-	/// Tests for some common Tools. 
-	/// </summary>
+    /// <summary>
+    /// Tests for some common Tools.
+    /// </summary>
     [TestFixture]
     public partial class TestGLCommonTools : CommonNUnitFunctions
     {
-    	
-    	/// <summary>
-    	/// This routine tests the TLedgerInitFlagHandler completely. It's the routine 
-    	/// which writes "boolean" values to a data base table. 
-    	/// </summary>
+        /// <summary>
+        /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
+        /// which writes "boolean" values to a data base table.
+        /// </summary>
         [Test]
         public void Test_01_TLedgerInitFlagHandler()
         {
-        	bool blnOld = new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag;
-        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = true;
-        	Assert.IsTrue(new TLedgerInitFlagHandler(
-        		43,LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
-        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = true;
-        	Assert.IsTrue(new TLedgerInitFlagHandler(
-        		43,LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
-        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = false;
-        	Assert.IsFalse(new TLedgerInitFlagHandler(
-        		43,LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
-        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = false;
-        	Assert.IsFalse(new TLedgerInitFlagHandler(
-        		43,LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
-        	new TLedgerInitFlagHandler(43,LegerInitFlag.Revaluation).Flag = blnOld;
+            bool blnOld = new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag;
+
+            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = true;
+            Assert.IsTrue(new TLedgerInitFlagHandler(
+                    43, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = true;
+            Assert.IsTrue(new TLedgerInitFlagHandler(
+                    43, LegerInitFlag.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = false;
+            Assert.IsFalse(new TLedgerInitFlagHandler(
+                    43, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = false;
+            Assert.IsFalse(new TLedgerInitFlagHandler(
+                    43, LegerInitFlag.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(43, LegerInitFlag.Revaluation).Flag = blnOld;
         }
-        
+
         [Test]
         public void Test_02_GetLedgerInfo()
         {
@@ -74,7 +70,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual("5003", new GetLedgerInfo(43).RevaluationAccount,
                 "Revaluation Account of 43 shall be 5003");
         }
-        
 
         [TestFixtureSetUp]
         public void Init()
@@ -87,6 +82,5 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
-        
     }
 }

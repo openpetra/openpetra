@@ -21,7 +21,8 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
-using System; 
+using System;
+using System.Data.Odbc;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
@@ -48,26 +49,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
-    	
-    	private const int intLedgerNumber = 43;
-    	private const int intBatchPeriod = 1;
-    	
+        private const int intLedgerNumber = 43;
+        private const int intBatchPeriod = 1;
+
+        /// <summary>
+        /// The helper class GetBatchInfo is tested ...
+        /// This class requires the test data gl-test-batch-data.sql.
+        /// This data are loaded into data base and after the test they are deleted.
+        /// </summary>
         [Test]
         public void Test_01_GetBatchInfo()
         {
-        	UnloadTestData();
-        	System.Diagnostics.Debug.WriteLine(new GetBatchInfo(
-        		intLedgerNumber, intBatchPeriod).BatchList.ToString());
-        	Assert.AreEqual(0, new GetBatchInfo(
-        		intLedgerNumber, intBatchPeriod).NumberOfBatches, "No unposted batch shall be found");
-        	LoadTestTata();
-        	System.Diagnostics.Debug.WriteLine(new GetBatchInfo(
-        		intLedgerNumber, intBatchPeriod).BatchList.ToString());
-        	Assert.AreEqual(2, new GetBatchInfo(
-        		intLedgerNumber, intBatchPeriod).NumberOfBatches, "Two of the four batches shall be found");
-        	UnloadTestData();
+            UnloadTestData_GetBatchInfo();
+            Assert.AreEqual(0, new GetBatchInfo(
+                    intLedgerNumber, intBatchPeriod).NumberOfBatches, "No unposted batch shall be found");
+            LoadTestTata_GetBatchInfo();
+            Assert.AreEqual(2, new GetBatchInfo(
+                    intLedgerNumber, intBatchPeriod).NumberOfBatches, "Two of the four batches shall be found");
+            UnloadTestData_GetBatchInfo();
         }
-
 
         [TestFixtureSetUp]
         public void Init()
@@ -80,25 +80,38 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
-        private void LoadTestTata()
+
+        private const string strTestDataBatchDescription ="TestGLPeriodicEndMonth-TESTDATA";
+        
+        private void LoadTestTata_GetBatchInfo()
         {
-        	TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-        	ABatchRow template = new ABatchTable().NewRowTyped(false);
-        	template.BatchDescription = "TestGLPeriodicEndMonth-TESTDATA";
-        	ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
-        	DBAccess.GDBAccessObj.CommitTransaction();
-        	System.Diagnostics.Debug.WriteLine(batches.Rows.Count.ToString());
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            ABatchRow template = new ABatchTable().NewRowTyped(false);
+
+            template.BatchDescription = strTestDataBatchDescription;
+            ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+
             if (batches.Rows.Count == 0)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }
-        
-        private void UnloadTestData()
+
+        private void UnloadTestData_GetBatchInfo()
         {
-				//        	template.BatchDescription = "TestGLPeriodicEndMonth-TESTDATA";
-        	
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[1];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[0].Value = strTestDataBatchDescription;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
+            strSQL += "WHERE " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                strSQL, transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
 }

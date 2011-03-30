@@ -1,6 +1,9 @@
 --
 -- PostgreSQL database dump+
 -- Data to test GetBatchInfo in TestGLPeriodicEndMonth
+-- Be careful in case auf automatic test data creation:
+--
+-- ************* this data are loaded into data base and after the test they are deleted *********
 --
 
 -- Dumped from database version 9.0.1

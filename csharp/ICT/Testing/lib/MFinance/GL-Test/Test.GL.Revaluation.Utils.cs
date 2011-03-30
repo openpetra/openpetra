@@ -61,6 +61,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void LoadTestTata()
         {
             ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);
+
             if (currencyTable.Rows.Count == 0)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
