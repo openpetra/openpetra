@@ -153,7 +153,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             // ....
             CurrentPage = FShepherdPages.Pages[APage];
             TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID);
-
+            int tempNumber = EnumeratePages(); 
+            TLogging.Log("The current Total number of pages is = " + tempNumber);
             try
             {
                 FForm.ShowCurrentPage();
@@ -166,7 +167,20 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 TLogging.Log(e.Message);
             }
         }
-
+		
+        /// <summary>Returns the total number of pages in the Shepherd</summary>
+        /// <returns>Total Number of Shepherd Pages</returns>
+        protected int EnumeratePages()
+        {
+        	TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages."); 
+        	int PagesCount = 0; 
+        	foreach(KeyValuePair<string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+        	{
+        		PagesCount++; 
+        	}
+        	TLogging.Log("EnumeratePages in TPetraShepherdFormLogic -- Count of Pages = " + PagesCount);
+        	return PagesCount; 
+        }
         /// <summary>
         /// Switches to the first page
         /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
