@@ -34,7 +34,7 @@ namespace Ict.Petra.Client.CommonForms
     public partial class TPetraShepherdForm : Form
     {
         TPetraShepherdFormLogic FLogic;
-
+		
         /// <summary>
         /// Constructor
         /// </summary>
@@ -44,6 +44,18 @@ namespace Ict.Petra.Client.CommonForms
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+        }
+        
+        /// <summary>Returns the percentage at which the progress bar should currently be set.
+        /// Christian said that we were to implement this here, but it doesn't make sense that 
+        /// this method be implemented inside of the GUI..</summary>
+        public GetProgressBarPercentage()
+        {
+        	return ProgressPercentage;
+        	TPetraShepherdPage ProgressPage = null; 
+			int ProgressPagesTotal = 0; 
+			float ProgressPercentage = 0; 
+			return ProgressPercentage;
         }
 
         #region ButtonEvents

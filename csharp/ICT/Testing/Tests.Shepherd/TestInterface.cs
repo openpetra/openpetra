@@ -46,6 +46,10 @@ namespace Tests.Shepherd
 	        {
 	        	System.Console.WriteLine("Canceling the shepherd's GUI and logic.. ");
 	        }
+	        public void UpdateShepherdFormProperties(string AString, int width, int height)
+	        {
+	        	System.Console.WriteLine("The ShepherdFormProperties would have been updated if this wasn't a dummy interface."); 
+	        }
  
 		}
 	}
