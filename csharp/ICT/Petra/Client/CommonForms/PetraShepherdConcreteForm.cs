@@ -43,6 +43,9 @@ namespace Ict.Petra.Client.CommonForms
 
         ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall</summary>
         protected string FYamlFile = String.Empty;
+        
+        /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from </summary>
+        protected string ShepherdTitle = string.Empty; 
 
         ///<summary>Instance of base Shepherd Logic.</summary>
         protected TPetraShepherdFormLogic FLogic;
@@ -56,7 +59,6 @@ namespace Ict.Petra.Client.CommonForms
 
             FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
             
-            UpdateShepherdFormProperties("ShepherdName", 700, 500); 
             // In implementing class: FYamlFile = "...";
 
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
@@ -127,11 +129,8 @@ namespace Ict.Petra.Client.CommonForms
 
             FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
 
-            //instead of ShowCurrentPage();
-            //FLogic.SwitchToStartPage()
-            //this will do the initialization of the first pages
-            //Controls.Add() needs to be added to show current page
-
+            this.Text = ShepherdTitle; 
+            
             ShowCurrentPage();
 
             TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");
@@ -152,7 +151,7 @@ namespace Ict.Petra.Client.CommonForms
         	
         	this.Size = FormSize; 
         	
-        	pnlContent.Size = FormSize; 
+        	ShepherdTitle = AString;
         	
         	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
         }

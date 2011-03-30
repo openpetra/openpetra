@@ -88,8 +88,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             base.Form_Load(sender, e);
 
-            this.Text = "Add New Church Shepherd";   // this should come out of the YAML file and should have been set in the TPetraShepherdConcreteForm.Form_Load Method!
-
             if (FSkipLedgerSelectionPage)
             {
                 FSpecificLogic.SkipFirstShepherdPage();
@@ -99,7 +97,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
-                //testStatusMessage.Text = FLogic.CurrentPage.ID;
             }
             catch (Exception exception)
             {
