@@ -37,21 +37,83 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         int LedgerNumber = 43;
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
-        /// which writes "boolean" values to a data base table.
+        /// which writes "boolean" values to a data base table. The class Get_GLM_Info is 
+        /// tested indirect too.
         /// </summary>
         [Test]
-        public void Test_01_CommonAccountingTest()
+        public void Test_01_BaseCurrencyAccounting()
         {
-        	GetLedgerInfo getLedgerInfo = new GetLedgerInfo(LedgerNumber);
+        	string strAccountStart = "9800";
+        	string strAccountEnd = "6000";
+        	string strCostCentre = "4300";
+
+        	// Get the glm-values before and after the test and taking the differences enables 
+        	// to run the test several times
+        	Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber,strAccountStart,strCostCentre);
+        	Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber,strAccountEnd,strCostCentre);
+        	
         	CommonAccountingTool commonAccountingTool = 
-        		new CommonAccountingTool(LedgerNumber, getLedgerInfo.CurrentPeriod, 
-        		                         "Test-Description", DateTime.Now);
-        	commonAccountingTool.AddJournalInBaseCurrency("EUR", DateTime.Now, "TransactionType", "SuSystem");
-        	commonAccountingTool.AddATransactionInBaseCurrency("6000","4300", "Narrative", "Reference", true, 10);
-        	commonAccountingTool.AddATransactionInBaseCurrency("9800","4300", "Narrative", "Reference", false, 10);
+        		new CommonAccountingTool(LedgerNumber, "Test-Description");
+
+        	commonAccountingTool.AddBaseCurrencyJournal();
+
+        	commonAccountingTool.AddBaseCurrencyTransaction(
+        		strAccountStart, strCostCentre, "Narrative", "Reference", 
+        		CommonAccountingConstants.IS_CREDIT, 10);
+        	commonAccountingTool.AddBaseCurrencyTransaction(
+        		strAccountEnd, strCostCentre, "Narrative", "Reference", 
+        		CommonAccountingConstants.IS_DEBIT, 10);
         	int intBatchNumber = commonAccountingTool.CloseSaveAndPost();        	
+
+        	Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber,strAccountStart,strCostCentre);
+        	Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber,strAccountEnd,strCostCentre);
+
+        	// strAccountStart is a debit account -> in this case "-"
+        	Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual - 10, getGLM_InfoAfterStart.YtdActual,
+        	                "Check if 10 has been accounted");
+        	// strAccountEnd is a credit acount -> in this case "-" too!
+        	Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual - 10, getGLM_InfoAfterEnd.YtdActual, 
+        	                "Check if 10 has been accounted");
         }
 
+        [Test]
+        public void Test_02_ForeignCurrencyAccounting()
+        {
+        	string strAccountStart = "9800";
+        	string strAccountEnd = "6001";
+        	string strCostCentre = "4300";
+
+        	// Get the glm-values before and after the test and taking the differences enables 
+        	// to run the test several times
+        	Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber,strAccountStart,strCostCentre);
+        	Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber,strAccountEnd,strCostCentre);
+        	
+        	CommonAccountingTool commonAccountingTool = 
+        		new CommonAccountingTool(LedgerNumber, "Test-Description");
+
+        	commonAccountingTool.AddForeignCurrencyJournal("GBP", 2);
+
+        	commonAccountingTool.AddForeignCurrencyTransaction(
+        		strAccountStart, strCostCentre, "Narrative", "Reference", 
+        		CommonAccountingConstants.IS_CREDIT, 10);
+        	commonAccountingTool.AddForeignCurrencyTransaction(
+        		strAccountEnd, strCostCentre, "Narrative", "Reference", 
+        		CommonAccountingConstants.IS_DEBIT, 10);
+        	
+        	int intBatchNumber = commonAccountingTool.CloseSaveAndPost();        	
+
+        	Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber,strAccountStart,strCostCentre);
+        	Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber,strAccountEnd,strCostCentre);
+
+        	// strAccountStart is a debit account -> in this case "-"
+        	Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual - 10, getGLM_InfoAfterStart.YtdActual,
+        	                "Check if 10 has been accounted");
+        	// strAccountEnd is a credit acount -> in this case "-" too!
+        	Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual - 10, getGLM_InfoAfterEnd.YtdActual, 
+        	                "Check if 10 has been accounted");
+
+        }
+        
         [TestFixtureSetUp]
         public void Init()
         {

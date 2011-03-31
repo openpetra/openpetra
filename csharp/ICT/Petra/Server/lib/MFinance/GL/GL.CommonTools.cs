@@ -23,6 +23,7 @@
 
 using System;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -34,9 +35,40 @@ namespace Ict.Petra.Server.MFinance.GL
 	
 	public class Get_GLM_Info
 	{
-		public Get_GLM_Info(int ALedgerNum, string ASuspenseAccountCode, int ACurrentFinancialYear)
+		DataTable aGLM;
+		public Get_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
 		{
-			
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[3];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ALedgerNumber;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[1].Value = AAccountCode;
+            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[2].Value = ACostCentreCode;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
+            strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
+            strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
+            strSQL += "AND " + AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + " = ? ";
+            aGLM = DBAccess.GDBAccessObj.SelectDT(
+                strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+		}
+		
+		public decimal YtdActual
+		{
+			get 
+			{
+				try 
+				{
+					return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+				} catch (IndexOutOfRangeException)
+				{
+					return 0;
+				}
+			}
 		}
 	}
 	
@@ -277,6 +309,15 @@ namespace Ict.Petra.Server.MFinance.GL
         	{
                 ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.CurrentFinancialYear;
+        	}
+        }
+        
+        public int LedgerNumber
+        {
+        	get 
+        	{
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.LedgerNumber;
         	}
         }
     }

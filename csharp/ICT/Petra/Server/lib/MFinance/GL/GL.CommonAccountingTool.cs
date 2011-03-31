@@ -33,6 +33,23 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+    public partial class CommonAccountingConstants
+    {
+    	public const string SUB_SYSTEM_GL = "GL";
+    	public const string SUB_SYSTEM_AP = "AP";
+    	public const string SUB_SYSTEM_GR = "GR";
+    	
+    	public const string TRANSACTION_TYPE_ALLOC = "ALLOC";
+    	public const string TRANSACTION_TYPE_GR = "GR";
+    	public const string TRANSACTION_TYPE_INV = "INV";
+    	public const string TRANSACTION_TYPE_REALLOC = "REALLOC";
+    	public const string TRANSACTION_TYPE_REVAL = "REVAL";
+    	public const string TRANSACTION_TYPE_STD = "STD";
+    	
+    	public const bool IS_DEBIT = false;
+    	public const bool IS_CREDIT = true;
+    	
+    }
 	
 	/// <summary>
 	/// This Tool creates a batch enables to add a journal and to add transactions to a yournal
@@ -40,13 +57,22 @@ namespace Ict.Petra.Server.MFinance.GL
 	/// </summary>
     public partial class CommonAccountingTool
     {
-    	private int intLedgerNumber;
-    	private int intAccountingPeriod;
         private GLBatchTDS aBatchTable = null;
         private ABatchRow aBatchRow;
         private AJournalRow journal;
-	
+        
+        private GetLedgerInfo getLedgerInfo;
+        private GetCurrencyInfo getBaseCurrencyInfo;
+        private GetCurrencyInfo getForeignCurrencyInfo;
+        bool blnJournalIsInForeign;
+        
         private int intJournalCount;
+        
+        private bool blnReadyForTransaction;
+        
+        // The use of the default value requires an additional database request. So this is done in the 
+        // "last moment" and only if no other date value is used
+        private bool blnInitBatchDate;
         
 
         /// <summary>
@@ -54,73 +80,172 @@ namespace Ict.Petra.Server.MFinance.GL
         /// one batch to account. Use a new object to post another batch.
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
-        /// <param name="AAccountingPeriod">the accounting period</param>
         /// <param name="ABatchDescription">a batch description text</param>
-        /// <param name="ABatchDateEffective">and the "effective" date of batch and 
-        /// corresponding journals</param>
     	public CommonAccountingTool(int ALedgerNumber, 
-                                    int AAccountingPeriod,
-                                    string ABatchDescription,
-                                    DateTime ABatchDateEffective)
+                                    string ABatchDescription)
     	{
-    		intAccountingPeriod = AAccountingPeriod;
-    		intLedgerNumber = ALedgerNumber;
-    		aBatchTable = TTransactionWebConnector.CreateABatch(intLedgerNumber);
-    		aBatchRow = aBatchTable.ABatch[0];
-            aBatchRow.BatchDescription = ABatchDescription;
-            aBatchRow.DateEffective = ABatchDateEffective;
-            aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
-            intJournalCount = 0;
+        	getLedgerInfo = new GetLedgerInfo(ALedgerNumber);
+        	CommonAccountingTool_(ABatchDescription);
     	}
-    	
-
+        
         /// <summary>
-        /// A journal is added to a batch. This routine can be called multiple times. 
+        /// Internaly a GetLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary 
+        /// database requests and use this constructor ...
         /// </summary>
-        /// <param name="ACurrencyCode"></param>
-        /// <param name="AAccountingDate"></param>
-        /// <param name="ATransactionTypeCode"></param>
-        /// <param name="ASubSystemCode"></param>
-        /// <param name="AExchangeRateToBase"></param>
-        public void AddJournalInForeignCurrency(string ACurrencyCode,
-                                DateTime AAccountingDate,
-                                string ATransactionTypeCode, 
-                                string ASubSystemCode, 
-                                decimal AExchangeRateToBase)
+        /// <param name="ALedgerInfo">The ledger-info object</param>
+        /// <param name="ABatchDescription">the description text ...</param>
+        public CommonAccountingTool(GetLedgerInfo ALedgerInfo, string ABatchDescription)
         {
-        	AddAJournal(ACurrencyCode, AAccountingDate, ATransactionTypeCode, 
-        	            ASubSystemCode, AExchangeRateToBase);
-        }
-        public void AddJournalInBaseCurrency(string ACurrencyCode,
-                                DateTime AAccountingDate,
-                                string ATransactionTypeCode, 
-                                string ASubSystemCode)
-        {
-        	AddAJournal(ACurrencyCode, AAccountingDate, ATransactionTypeCode, 
-        	            ASubSystemCode, 1.0m);
+        	getLedgerInfo = ALedgerInfo;
+        	CommonAccountingTool_(ABatchDescription);
         }
         
-        private void AddAJournal(string ACurrencyCode,
-                                DateTime AAccountingDate,
-                                string ATransactionTypeCode, 
-                                string ASubSystemCode, 
-                                decimal AExchangeRateToBase)
+        private void CommonAccountingTool_(string ABatchDescription)
+        {
+    		aBatchTable = TTransactionWebConnector.CreateABatch(getLedgerInfo.LedgerNumber);
+    		aBatchRow = aBatchTable.ABatch[0];
+            aBatchRow.BatchDescription = ABatchDescription;
+            aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+            intJournalCount = 0;
+            blnReadyForTransaction = false;
+            blnInitBatchDate = true;
+        }
+        
+        /// <summary>
+        /// The default parameter for the date is the "effective date" of the accounting interval and the 
+        /// value is set in the constructor. Here you can change the value, if you need an other day ...
+        /// </summary>
+        public DateTime DateEffective
+        {
+        	set 
+        	{
+        		if (blnReadyForTransaction) {
+        			// This is a hint for the developer only ... !
+        			throw new ApplicationException("You cannot change the Date after you have created a journal!");
+        		}
+        		blnInitBatchDate = false; 
+        		aBatchRow.DateEffective = value;
+        	}
+        }
+    	
+        public void AddForeignCurrencyJournal(GetCurrencyInfo AGetCurrencyInfo, decimal AExchangeRateToBase) 
+        {
+        	blnJournalIsInForeign = true;
+        	getForeignCurrencyInfo = AGetCurrencyInfo;
+        	AddAJournal(AExchangeRateToBase);
+        }
+
+        public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
+        {
+        	blnJournalIsInForeign = true;
+        	getForeignCurrencyInfo =new GetCurrencyInfo(ACurrencyCode);
+        	AddAJournal(AExchangeRateToBase);
+        }
+
+        public void AddBaseCurrencyJournal(GetCurrencyInfo AGetCurrencyInfo)
+        {
+        	blnJournalIsInForeign = false;
+        	getBaseCurrencyInfo =AGetCurrencyInfo;
+        	AddAJournal(1.0m);
+        }
+        
+        /// <summary>
+        /// A standard-base currency journal does not need any more information
+        /// </summary>
+        public void AddBaseCurrencyJournal()
+        {
+        	blnJournalIsInForeign = false;
+        	getBaseCurrencyInfo =new GetCurrencyInfo(getLedgerInfo.BaseCurrency);
+        	AddAJournal(1.0m);
+        }
+        
+        /// <summary>
+        /// The journal description text is copied form the batch description text. Here you can change it on the 
+        /// last added journal.
+        /// </summary>
+        public string JournalDescription
+        {
+        	set
+        	{
+        		if (!blnReadyForTransaction)
+        		{
+        			// This is a hint for the developer only ... !
+        			throw new ApplicationException("You have to add a journal before you can change the description!");
+        		}
+        		journal.JournalDescription = value;
+        	}
+        }
+        
+        /// <summary>
+        /// Change the TransactionTypeCode from it's default value ...
+        /// </summary>
+        public string TransactionTypeCode
+        {
+        	set 
+        	{
+        		if (!blnReadyForTransaction)
+        		{
+        			// This is a hint for the developer only ... !
+        			throw new ApplicationException("You have to add a journal before you can change the description!");
+        		}
+        		journal.TransactionTypeCode = value;
+        	}
+        }
+        
+        /// <summary>
+        /// Change the SubSystemCode from it's default value ...
+        /// </summary>
+        public string SubSystemCode
+        {
+        	set 
+        	{
+        		if (!blnReadyForTransaction)
+        		{
+        			// This is a hint for the developer only ... !
+        			throw new ApplicationException("You have to add a journal before you can change the description!");
+        		}
+        		journal.SubSystemCode = value;
+        	}
+        }
+        
+        private void AddAJournal(decimal AExchangeRateToBase)
     	{
+        	if (blnInitBatchDate)
+        	{
+        		GetAccountingPeriodInfo getAccountingPeriodInfo =
+        			new GetAccountingPeriodInfo(getLedgerInfo.LedgerNumber, getLedgerInfo.CurrentPeriod);
+        		aBatchRow.DateEffective = getAccountingPeriodInfo.EffectiveDate;
+        		blnInitBatchDate = false;
+        	}
+        	if (intJournalCount != 0)
+        	{
+        		// The checksum of the "last journal" is used to update the checksum of the batch.
+        		aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
+        	}
     		++intJournalCount;
     		journal = aBatchTable.AJournal.NewRowTyped();
             journal.LedgerNumber = aBatchRow.LedgerNumber;
             journal.BatchNumber = aBatchRow.BatchNumber;
             journal.JournalNumber = intJournalCount;
             journal.DateEffective = aBatchRow.DateEffective;
-            journal.JournalPeriod = intAccountingPeriod;
-            journal.TransactionCurrency = ACurrencyCode;
+            journal.JournalPeriod = getLedgerInfo.CurrentPeriod;
+            if (blnJournalIsInForeign) 
+            {
+            	journal.TransactionCurrency = getForeignCurrencyInfo.CurrencyCode;
+            } else
+            {
+            	journal.TransactionCurrency = getBaseCurrencyInfo.CurrencyCode;
+            }
             journal.JournalDescription = aBatchRow.BatchDescription;
-            journal.TransactionTypeCode = ATransactionTypeCode;
-            journal.SubSystemCode = ASubSystemCode;
+            journal.TransactionTypeCode = CommonAccountingConstants.TRANSACTION_TYPE_STD;
+            journal.SubSystemCode = CommonAccountingConstants.SUB_SYSTEM_GL;
             journal.LastTransactionNumber = 0;
-            journal.DateOfEntry = AAccountingDate;
+            journal.DateOfEntry = DateTime.Now;
             journal.ExchangeRateToBase = AExchangeRateToBase;
+            journal.JournalCreditTotal = 0;
+            journal.JournalDebitTotal = 0;
     		aBatchTable.AJournal.Rows.Add(journal);
+            blnReadyForTransaction = true;
     	}
     	
         /// <summary>
@@ -133,7 +258,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AReferenceMessage"></param>
         /// <param name="AIsDebit"></param>
         /// <param name="AAmountBaseCurrency"></param>
-    	public void AddATransactionInBaseCurrency(string AAccount, 
+    	public void AddBaseCurrencyTransaction(string AAccount, 
                                     string ACostCenter,
                                     string ANarrativeMessage, 
                                     string AReferenceMessage, 
@@ -141,27 +266,40 @@ namespace Ict.Petra.Server.MFinance.GL
                                     decimal AAmountBaseCurrency)
         {
         	AddATransaction(AAccount, ACostCenter, ANarrativeMessage, 
-        	                AReferenceMessage, AIsDebit, AAmountBaseCurrency, 0);
+        	                AReferenceMessage, AIsDebit, AAmountBaseCurrency, 0, false);
         }
         
-    	public void AddATransactionInForeignCurrency(string AAccount, 
+    	public void AddForeignCurrencyTransaction(string AAccount, 
                                     string ACostCenter,
                                     string ANarrativeMessage, 
                                     string AReferenceMessage, 
                                     bool AIsDebit,
                                     decimal AAmountForeignCurrency)
         {
+        	if (!blnJournalIsInForeign)
+        	{
+        		// This is a hint for the developer only ... !
+        		throw new ApplicationException("You cannot account foreign currencies in a base journal!");
+        	}
         	AddATransaction(AAccount, ACostCenter, ANarrativeMessage, 
-        	                AReferenceMessage, AIsDebit, 0, AAmountForeignCurrency);
+        	                AReferenceMessage, AIsDebit, 0, AAmountForeignCurrency, true);
         }
+        
+        
     	private void AddATransaction(string AAccount, 
                                     string ACostCenter,
                                     string ANarrativeMessage, 
                                     string AReferenceMessage, 
                                     bool AIsDebit,
                                     decimal AAmountBaseCurrency,
-                                    decimal AAmountForeignCurrency)
+                                    decimal AAmountForeignCurrency, 
+                                    bool ATransActionIsInForeign)
     	{
+        	if (!blnReadyForTransaction) 
+        	{
+        		// This is a hint for the developer only ... !
+        		throw new ApplicationException("You have to add a journal before you can add a transaction!");
+        	}
             ATransactionRow transaction = null;
 
             transaction = aBatchTable.ATransaction.NewRowTyped();
@@ -174,11 +312,27 @@ namespace Ict.Petra.Server.MFinance.GL
             transaction.Narrative = ANarrativeMessage;
             transaction.Reference = AReferenceMessage;
             transaction.DebitCreditIndicator = AIsDebit;
-            transaction.AmountInBaseCurrency = AAmountBaseCurrency;
-            transaction.TransactionAmount = 2;
+            if (ATransActionIsInForeign)
+            {
+            	transaction.TransactionAmount = AAmountForeignCurrency;
+            	transaction.AmountInBaseCurrency = AAmountBaseCurrency;
+            } else
+            {
+            	transaction.TransactionAmount = AAmountBaseCurrency;
+            	transaction.AmountInBaseCurrency = AAmountBaseCurrency;
+            }
             transaction.TransactionDate = aBatchRow.DateEffective;
             aBatchTable.ATransaction.Rows.Add(transaction);
-    	}
+
+            if (AIsDebit) 
+            {
+            	journal.JournalDebitTotal += AAmountBaseCurrency;
+            	
+            } else 
+            {
+            	journal.JournalCreditTotal += AAmountBaseCurrency;
+            }
+        }
     		
 
         /// <summary>
@@ -206,12 +360,18 @@ namespace Ict.Petra.Server.MFinance.GL
     	
     	private int CloseSaveAndPost_(TVerificationResultCollection AVerifications)
     	{
+        	if (intJournalCount != 0)
+        	{
+        		// The checksum of the "last journal" is used to update the checksum of the batch.
+        		aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
+        	}
     		bool blnReturnValue =
     			(TTransactionWebConnector.SaveGLBatchTDS(
     				ref aBatchTable, out AVerifications) == TSubmitChangesResult.scrOK);
     		blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
     			aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications));    		 
     		int returnValue = aBatchRow.BatchNumber;
+    		// Make shure that this object cannot be used for another posting ...
     		aBatchTable = null;
     		aBatchRow = null;
     		journal = null;

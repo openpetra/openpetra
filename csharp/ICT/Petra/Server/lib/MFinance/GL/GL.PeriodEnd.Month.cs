@@ -169,9 +169,9 @@ namespace Ict.Petra.Server.MFinance.GL
             		for (int i=0; i < getSuspenseAccountInfo.Rows; ++i)
             		{
             			aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
-            			Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ALedgerNum,
-            			                                             aSuspenseAccountRow.SuspenseAccountCode,
-            			                                             ledgerInfo.CurrentPeriod);
+//            			Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ALedgerNum,
+//            			                                             aSuspenseAccountRow.SuspenseAccountCode,
+//            			                                             ledgerInfo.CurrentPeriod);
             			                                             
             			//Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence, 
             			//                                                ledgerInfo.p);

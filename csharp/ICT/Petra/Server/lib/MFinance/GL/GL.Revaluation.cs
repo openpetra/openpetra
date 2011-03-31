@@ -505,6 +505,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             ACurrencyCode)));
             }
         }
+        
+        public string CurrencyCode
+        {
+        	get 
+        	{
+        		return currencyRow.CurrencyCode;
+        	}
+        }
 
         /// <summary>
         /// Calculates the number of digits by reading the row.DisplayFormat
