@@ -23,9 +23,7 @@
 //
 using System;
 using System.Data;
-using System.Collections;
-using System.Collections.Specialized;
-
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -400,7 +398,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+                return;
+            }
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
+                return;
+            }
+
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            //revertForm.MainDS = FMainDS;
+            //revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
+            revertForm.Show();
         }
 
         private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
@@ -540,7 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-			
+
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
             dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
@@ -642,12 +656,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
-            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0) &&
-       		// taken from old petra
-            (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber !=0);
-            	
-            //	&& (ARow.ReceiptNumber) This is not   
+            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0)
+                                  && // taken from old petra
+                                  (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0);
 
+            //	&& (ARow.ReceiptNumber) This is not
         }
 
         private Boolean BatchHasMethodOfPayment()

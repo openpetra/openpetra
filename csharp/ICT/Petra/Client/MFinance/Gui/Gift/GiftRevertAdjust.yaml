@@ -1,0 +1,59 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Revert or adjust Gift
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DetailTable: AGiftBatch
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    FormType: browse
+    Template: windowSingleTable
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actOK: {Label=&OK, ActionClick=RevertAdjust}
+        actClose:  {Label=Close, ActionClick=BtnCloseClick}
+    Controls:
+        pnlContent:
+            Controls: [pnlSelect, pnlGrid, pnlDetails, pnlButtons]
+            Dock: Fill
+        pnlSelect:
+            Dock: Top
+            Controls:
+                Row0: [chkSelect]
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls:
+                Row0: [btnOK, btnClose]
+        btnOK:
+            Action: actNew
+        btnClose: 
+            Action: actClose
+        grdDetails:
+            TableName: AGiftBatch
+            Dock: Fill
+            Columns: [BatchNumber, GlEffectiveDate, BatchStatus, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Fill
+            Controls:
+                Row0: [txtReversalCommentOne, cmbReversalCommentOneType]
+                Row1: [txtReversalCommentTwo, cmbReversalCommentTwoType]
+                Row2: [txtReversalCommentThree, cmbReversalCommentThreeType]
+        chkSelect:
+            Label: Select Batch to Add Reversal/Adjustment into?
+            OnChange: SelectBatchChanged
+            
+        txtReversalCommentOne: {Label=Comment 1 for Reversal,Width=250}
+        txtReversalCommentTwo: {Label=Comment 2 for Reversal,Width=250}
+        txtReversalCommentThree: {Label=Comment 3 for Reversal,Width=250}
+        cmbReversalCommentOneType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        cmbReversalCommentTwoType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
+        cmbReversalCommentThreeType:
+            Label: for
+            OptionalValues: [Donor,Recipient,Both,Office]
