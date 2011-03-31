@@ -274,6 +274,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     string ANarrativeMessage, 
                                     string AReferenceMessage, 
                                     bool AIsDebit,
+                                    decimal AAmountBaseCurrency,
                                     decimal AAmountForeignCurrency)
         {
         	if (!blnJournalIsInForeign)
@@ -282,7 +283,7 @@ namespace Ict.Petra.Server.MFinance.GL
         		throw new ApplicationException("You cannot account foreign currencies in a base journal!");
         	}
         	AddATransaction(AAccount, ACostCenter, ANarrativeMessage, 
-        	                AReferenceMessage, AIsDebit, 0, AAmountForeignCurrency, true);
+        	                AReferenceMessage, AIsDebit, AAmountBaseCurrency, AAmountForeignCurrency, true);
         }
         
         
@@ -377,5 +378,129 @@ namespace Ict.Petra.Server.MFinance.GL
     		journal = null;
     		return returnValue;
        }
+    }
+    
+    public class CurrencyCalculator
+    {
+    	decimal baseCurrencyValue;
+    	GetCurrencyInfo baseCurrencyInfo;
+    	decimal exchangeRate;
+    	GetCurrencyInfo foreignCurrencyInfo;
+    	decimal foreignCurrencyValue;
+    	
+    	/// <summary>
+    	/// Foreign currency is calculated from base currency and exchange rate 
+    	/// </summary>
+    	/// <param name="ABaseCurrencyValue"></param>
+    	/// <param name="ABaseCurrencyInfo">CurrencyInfoObject</param>
+    	/// <param name="AExchangeRate"></param>
+    	/// <param name="AForeignCurrencyInfo"></param>
+    	public CurrencyCalculator(decimal ABaseCurrencyValue, 
+    	                          GetCurrencyInfo ABaseCurrencyInfo, 
+    	                          decimal AExchangeRate, 
+    	                          GetCurrencyInfo AForeignCurrencyInfo)
+    	{
+    		baseCurrencyValue = ABaseCurrencyValue;
+    		baseCurrencyInfo = ABaseCurrencyInfo;
+    		exchangeRate = AExchangeRate;
+    		foreignCurrencyInfo = AForeignCurrencyInfo;
+    		CalculateForeignCurrency();
+    	}
+
+    	/// <summary>
+    	/// Foreign currency is calculated from base currency and exchange rate 
+    	/// </summary>
+    	/// <param name="ABaseCurrencyValue"></param>
+    	/// <param name="ABaseCurrencyCode">String to load adress the database record</param>
+    	/// <param name="AExchangeRate"></param>
+    	public CurrencyCalculator(decimal ABaseCurrencyValue,
+    	                          string ABaseCurrencyCode, 
+    	                          decimal AExchangeRate)
+    	{
+    		baseCurrencyValue = ABaseCurrencyValue;
+    		baseCurrencyInfo = new GetCurrencyInfo(ABaseCurrencyCode);
+    		exchangeRate = AExchangeRate;
+    		CalculateForeignCurrency();
+    	}
+    	
+    	private void CalculateForeignCurrency()
+    	{
+    		
+    	}
+    	
+    	/// <summary>
+    	/// Exchange rate is calculated from base currency and foreign currency 
+    	/// </summary>
+    	/// <param name="ABaseCurrencyValue"></param>
+    	/// <param name="ABaseCurrencyInfo"></param>
+    	/// <param name="AForeignCurrencyInfo"></param>
+    	/// <param name="AForeigCurrencyValue"></param>
+    	public CurrencyCalculator(decimal ABaseCurrencyValue, 
+    	                          GetCurrencyInfo ABaseCurrencyInfo, 
+    	                          GetCurrencyInfo AForeignCurrencyInfo,
+    	                          decimal AForeigCurrencyValue)
+    	{
+    		baseCurrencyValue = ABaseCurrencyValue;
+    		baseCurrencyInfo = ABaseCurrencyInfo;
+    		foreignCurrencyValue = AForeigCurrencyValue;
+    		foreignCurrencyInfo = AForeignCurrencyInfo;
+    		CalculateExchangeRate();
+    	}
+    	
+    	private void CalculateExchangeRate()
+    	{
+    		
+    	}
+    	
+    	/// <summary>
+    	/// Base currency is calculated from foreign currency and exchange rate 
+    	/// </summary>
+    	/// <param name="AExchangeRate"></param>
+    	/// <param name="AForeignCurrencyInfo"></param>
+    	/// <param name="AForeigCurrencyValue"></param>
+    	public CurrencyCalculator(decimal AExchangeRate, 
+    	                          GetCurrencyInfo AForeignCurrencyInfo,
+    	                          decimal AForeigCurrencyValue)
+    	{
+    		
+    	}
+
+    	private void CalculateBaseCurrency()
+    	{
+    		
+    	}
+    	
+    	/// <summary>
+    	/// Calculation result: Base currency value
+    	/// </summary>
+    	public decimal BaseCurrencyValue
+    	{
+    		get 
+    		{
+    			return baseCurrencyValue;
+    		}
+    	}
+    	
+    	/// <summary>
+    	/// Calculation result: Foreign currency value
+    	/// </summary>
+    	public decimal ForeignCurrencyValue
+    	{
+    		get
+    		{
+    			return foreignCurrencyValue;
+    		}
+    	}
+    	
+    	/// <summary>
+    	/// Calculation result: Exchange rate
+    	/// </summary>
+    	public decimal ExchangeRate
+    	{
+    		get
+    		{
+    			return exchangeRate;
+    		}
+    	}
     }
 }

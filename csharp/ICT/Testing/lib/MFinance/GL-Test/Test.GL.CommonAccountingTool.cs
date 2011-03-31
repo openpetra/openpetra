@@ -35,6 +35,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     public partial class TestCommonAccountingTool : CommonNUnitFunctions
     {
         int LedgerNumber = 43;
+        
+        
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
         /// which writes "boolean" values to a data base table. The class Get_GLM_Info is 
@@ -76,12 +78,22 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         	                "Check if 10 has been accounted");
         }
 
+        
+        /// <summary>
+        /// Tests the foreign Currency part of the CommonAccountingTool
+        /// </summary>
         [Test]
         public void Test_02_ForeignCurrencyAccounting()
         {
         	string strAccountStart = "9800";
         	string strAccountEnd = "6001";
         	string strCostCentre = "4300";
+        	
+        	if (!new GetAccountInfo(LedgerNumber, strAccountEnd).IsValid)
+        	{
+        		LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                    "test-sql\\gl-test-account-data.sql");
+        	}
 
         	// Get the glm-values before and after the test and taking the differences enables 
         	// to run the test several times
@@ -95,10 +107,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         	commonAccountingTool.AddForeignCurrencyTransaction(
         		strAccountStart, strCostCentre, "Narrative", "Reference", 
-        		CommonAccountingConstants.IS_CREDIT, 10);
+        		CommonAccountingConstants.IS_CREDIT, 10, 5);
         	commonAccountingTool.AddForeignCurrencyTransaction(
         		strAccountEnd, strCostCentre, "Narrative", "Reference", 
-        		CommonAccountingConstants.IS_DEBIT, 10);
+        		CommonAccountingConstants.IS_DEBIT, 10, 5);
         	
         	int intBatchNumber = commonAccountingTool.CloseSaveAndPost();        	
 
@@ -112,6 +124,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         	Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual - 10, getGLM_InfoAfterEnd.YtdActual, 
         	                "Check if 10 has been accounted");
 
+        	
+        	// Nothing shall be accounted here because it is a base currency account ...
+        	Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign, getGLM_InfoAfterStart.YtdForeign,
+        	                "Check if 10 has been accounted");
+        	// strAccountEnd is a credit acount -> in this case "-" too!
+        	Assert.AreEqual(getGLM_InfoBeforeEnd.YtdForeign - 5, getGLM_InfoAfterEnd.YtdForeign, 
+        	                "Check if 10 has been accounted");
+        	
         }
         
         [TestFixtureSetUp]
@@ -125,5 +145,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
+
     }
 }

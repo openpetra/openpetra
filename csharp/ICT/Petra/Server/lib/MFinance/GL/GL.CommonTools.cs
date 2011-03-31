@@ -70,6 +70,50 @@ namespace Ict.Petra.Server.MFinance.GL
 				}
 			}
 		}
+		
+		public decimal YtdForeign
+		{
+			get
+			{
+				try 
+				{
+					return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()];
+				} catch (IndexOutOfRangeException)
+				{
+					return 0;
+				}
+				catch (InvalidCastException)
+				{
+					return 0;
+				}
+			}
+		}
+	}
+	
+	public class GetAccountInfo
+	{
+		AAccountTable accountTable;
+		AAccountRow accountRow;
+		
+		public GetAccountInfo(int ALedgerNumber, string AAccountCode)
+		{
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            accountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+            try {
+            	accountRow = (AAccountRow)accountTable.Rows[0];
+            }  catch (Exception) {}
+		}
+		
+		public bool IsValid
+		{
+			get 
+			{
+				return (accountTable.Rows.Count == 1);
+			}
+		}
+		
 	}
 	
     /// <summary>
@@ -90,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, null);
+            periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
