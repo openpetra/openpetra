@@ -53,11 +53,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 AGiftBatchTable.GetBatchStatusDBName(),
                 MFinanceConstants.BATCH_UNPOSTED);
+        	FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName()+" DESC";
+        	SelectBatchChanged(null,null);
         }
 
         private void SelectBatchChanged(System.Object sender, EventArgs e)
         {
             grdDetails.Enabled = chkSelect.Checked;
+            grdDetails.Visible = chkSelect.Checked;
         }
 
         private void BtnCloseClick(object sender, EventArgs e)

@@ -27,22 +27,10 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-{#IFDEF DATASETTYPE}
-    private {#DATASETTYPE} FMainDS;
-    public {#DATASETTYPE} MainDS
-    {
-        set
-        {
-            FMainDS = value;
-        }
-    }
-{#ENDIF DATASETTYPE}
-{#IFNDEF DATASETTYPE}
     private class FMainDS
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
-{#ENDIFN DATASETTYPE}
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
     {
@@ -60,17 +48,21 @@ namespace {#NAMESPACE}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
       {#INITUSERCONTROLS}
-{#IFNDEF DATASETTYPE}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
-{#ENDIFN DATASETTYPE}
       {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF DETAILTABLESORT}
+            myDataView.Sort = "{#DETAILTABLESORT}";
+{#ENDIF DETAILTABLESORT}
+{#IFDEF DETAILTABLEFILTER}
+            myDataView.RowFilter = {#DETAILTABLEFILTER};
+{#ENDIF DETAILTABLEFILTER}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
@@ -83,7 +75,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
         {#EXITMANUALCODE}
     }
     private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
