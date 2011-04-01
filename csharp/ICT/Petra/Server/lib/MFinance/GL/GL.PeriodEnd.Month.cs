@@ -159,25 +159,26 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods) 
+            if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
-            	// This means: The last accounting period of the year is running!
-            	if (getSuspenseAccountInfo.Rows > 0)
-            	{
-            		ASuspenseAccountRow aSuspenseAccountRow;
-            		decimal decAccountTotalSum = 0;
-            		for (int i=0; i < getSuspenseAccountInfo.Rows; ++i)
-            		{
-            			aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
-//            			Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ALedgerNum,
-//            			                                             aSuspenseAccountRow.SuspenseAccountCode,
-//            			                                             ledgerInfo.CurrentPeriod);
-            			                                             
-            			//Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence, 
-            			//                                                ledgerInfo.p);
-            			//decAccountTotalSum += get_GLMp_Info.ActualBase;
-            		} 
-            	}
+                // This means: The last accounting period of the year is running!
+                if (getSuspenseAccountInfo.Rows > 0)
+                {
+                    ASuspenseAccountRow aSuspenseAccountRow;
+                    decimal decAccountTotalSum = 0;
+
+                    for (int i = 0; i < getSuspenseAccountInfo.Rows; ++i)
+                    {
+                        aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
+//                              Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ALedgerNum,
+//                                                                           aSuspenseAccountRow.SuspenseAccountCode,
+//                                                                           ledgerInfo.CurrentPeriod);
+
+                        //Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence,
+                        //                                                ledgerInfo.p);
+                        //decAccountTotalSum += get_GLMp_Info.ActualBase;
+                    }
+                }
             }
 
 //        lv_account_total_n = 0.
@@ -201,7 +202,6 @@ namespace Ict.Petra.Server.MFinance.GL
 //                         "").
 //             RETURN.
 //        END.
-
         }
     }
 
@@ -281,13 +281,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 return table.Rows.Count;
             }
         }
-        
-      
+
+
         public ASuspenseAccountRow Row(int index)
         {
-        	return table[index];
+            return table[index];
         }
-        
     }
 
     /// <summary>

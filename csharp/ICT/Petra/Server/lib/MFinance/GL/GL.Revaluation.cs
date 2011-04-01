@@ -444,26 +444,6 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
-    /// <summary>
-    /// This exception shall handle the internal errors of type critcal.
-    /// </summary>
-    public class InternalException : SystemException
-    {
-        string strErrorCode;
-        public InternalException(string errorCode, string message)
-            : base(message)
-        {
-            strErrorCode = errorCode;
-        }
-
-        public string ErrorCode
-        {
-            get
-            {
-                return strErrorCode;
-            }
-        }
-    }
 
     /// <summary>
     /// Get currency info is intended to be used to get some some specific infos
@@ -505,13 +485,13 @@ namespace Ict.Petra.Server.MFinance.GL
                             ACurrencyCode)));
             }
         }
-        
+
         public string CurrencyCode
         {
-        	get 
-        	{
-        		return currencyRow.CurrencyCode;
-        	}
+            get
+            {
+                return currencyRow.CurrencyCode;
+            }
         }
 
         /// <summary>

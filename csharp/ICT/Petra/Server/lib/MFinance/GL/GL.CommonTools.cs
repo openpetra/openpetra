@@ -32,12 +32,11 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
-	
-	public class Get_GLM_Info
-	{
-		DataTable aGLM;
-		public Get_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
-		{
+    public class Get_GLM_Info
+    {
+        DataTable aGLM;
+        public Get_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
+        {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[3];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
@@ -55,67 +54,115 @@ namespace Ict.Petra.Server.MFinance.GL
             aGLM = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
             DBAccess.GDBAccessObj.CommitTransaction();
-		}
-		
-		public decimal YtdActual
-		{
-			get 
-			{
-				try 
-				{
-					return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
-				} catch (IndexOutOfRangeException)
-				{
-					return 0;
-				}
-			}
-		}
-		
-		public decimal YtdForeign
-		{
-			get
-			{
-				try 
-				{
-					return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()];
-				} catch (IndexOutOfRangeException)
-				{
-					return 0;
-				}
-				catch (InvalidCastException)
-				{
-					return 0;
-				}
-			}
-		}
-	}
-	
-	public class GetAccountInfo
-	{
-		AAccountTable accountTable;
-		AAccountRow accountRow;
-		
-		public GetAccountInfo(int ALedgerNumber, string AAccountCode)
-		{
+        }
+
+        public decimal YtdActual
+        {
+            get
+            {
+                try
+                {
+                    return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public decimal YtdForeign
+        {
+            get
+            {
+                try
+                {
+                    return (decimal)aGLM.Rows[0][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    return 0;
+                }
+                catch (InvalidCastException)
+                {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    public class GetCostCenterInfo
+    {
+        ACostCentreTable costCentreTable;
+        ACostCentreRow costCentreRow;
+        public GetCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
+        {
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            costCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCenterCode, transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+            try
+            {
+                costCentreRow = (ACostCentreRow)costCentreTable.Rows[0];
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return costCentreTable.Rows.Count == 1;
+            }
+        }
+    }
+
+    public class GetAccountInfo
+    {
+        AAccountTable accountTable;
+        AAccountRow accountRow;
+
+        public GetAccountInfo(int ALedgerNumber, string AAccountCode)
+        {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             accountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
-            try {
-            	accountRow = (AAccountRow)accountTable.Rows[0];
-            }  catch (Exception) {}
-		}
-		
-		public bool IsValid
-		{
-			get 
-			{
-				return (accountTable.Rows.Count == 1);
-			}
-		}
-		
-	}
-	
+            try
+            {
+                accountRow = (AAccountRow)accountTable.Rows[0];
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return accountTable.Rows.Count == 1;
+            }
+        }
+
+        public bool ForeignCurrencyFlag
+        {
+            get
+            {
+                return accountRow.ForeignCurrencyFlag;
+            }
+        }
+        public string ForeignCurrencyCode
+        {
+            get
+            {
+                return accountRow.ForeignCurrencyCode;
+            }
+        }
+    }
+
     /// <summary>
     /// Gets the specific date informations of an accounting intervall. This routine is either used by
     /// GL.PeriodEnd.Month and GL.Revaluation but in different senses. On time the dataset holds exact
@@ -333,36 +380,36 @@ namespace Ict.Petra.Server.MFinance.GL
 
         public int CurrentPeriod
         {
-        	get
-        	{
+            get
+            {
                 ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.CurrentPeriod;
-        	}
+            }
         }
         public int NumberOfAccountingPeriods
         {
-        	get
-        	{
+            get
+            {
                 ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.NumberOfAccountingPeriods;
-        	}
+            }
         }
         public int CurrentFinancialYear
         {
-        	get
-        	{
+            get
+            {
                 ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.CurrentFinancialYear;
-        	}
+            }
         }
-        
+
         public int LedgerNumber
         {
-        	get 
-        	{
+            get
+            {
                 ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.LedgerNumber;
-        	}
+            }
         }
     }
 
@@ -498,6 +545,44 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     throw new ApplicationException("TLedgerInitFlagHandler does not work");
                 }
+            }
+        }
+    }
+
+    public class InternalExceptionStati
+    {
+        public static string INTERNALS = "INTERNALS";
+    }
+    /// <summary>
+    /// This exception shall handle the internal errors of type critcal.
+    /// </summary>
+    public class InternalException : SystemException
+    {
+        string strErrorCode;
+
+        public InternalException(Exception innerException, string message)
+            : base(string.Empty, innerException)
+        {
+            strErrorCode = InternalExceptionStati.INTERNALS;
+        }
+
+        public InternalException(Exception innerException, string errorCode, string message)
+            : base(message, innerException)
+        {
+            strErrorCode = errorCode;
+        }
+
+        public InternalException(string errorCode, string message)
+            : base(message)
+        {
+            strErrorCode = errorCode;
+        }
+
+        public string ErrorCode
+        {
+            get
+            {
+                return strErrorCode;
             }
         }
     }
