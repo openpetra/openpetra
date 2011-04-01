@@ -34,7 +34,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
     public class TPetraShepherdFormLogic : object
     {
         private const string STARTPAGE_NAME = "|||START PAGE|||";
-        private const string FINISHPAGE_NAME = "|||FINISH PAGE|||";
+        private const string FINISHPAGE_NAME = "FINISHPAGE_MASTER";
 
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's</summary>
         private TPetraShepherdPagesList FShepherdPages;
@@ -181,13 +181,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	TLogging.Log("EnumeratePages in TPetraShepherdFormLogic -- Count of Pages = " + PagesCount);
         	return PagesCount; 
         }
+        
         /// <summary>
         /// Switches to the first page
         /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
         /// </summary>
-        protected void SwitchToStartPage()
+        public void SwitchToStartPage()
         {
-            //Should switch to start page set the isFirstPage attribute in the ShepherdPages dictionary to true?
             TLogging.Log("SwitchToStartPage (in TPetrashepherdFormLogic)");
 
             string startPage = "";             //temporary string to hold the key of the StartPage
@@ -216,9 +216,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         ///<summary>Switches the Finish page</summary>
-        protected void SwitchToFinishPage()
+        public void SwitchToFinishPage()
         {
-            TLogging.Log("SwitchToFinishPage (in TPetraShepherdFormLogic)");
+            TLogging.Log("SwitchToFinishPage (in TPetraShepherdFormLogic) called to: " + FINISHPAGE_NAME);
 
             SwitchToPage(FINISHPAGE_NAME);
         }
