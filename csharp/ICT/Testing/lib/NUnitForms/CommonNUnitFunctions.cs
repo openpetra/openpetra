@@ -137,6 +137,17 @@ namespace Ict.Testing.NUnitForms
             TPetraServerConnector.Disconnect();
         }
 
+        public string LoadCSVFileToString(string fileName)
+        {
+            using (FileStream fs = new FileStream(rootPath + "/" + fileName, FileMode.Open))
+            {
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+        }
+
         /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
