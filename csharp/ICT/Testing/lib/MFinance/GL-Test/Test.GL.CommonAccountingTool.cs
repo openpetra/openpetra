@@ -172,7 +172,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Check an spefic error ...
         /// </summary>
         [Test]
-        public void Test_03_ForeignCurrencyWrongForeignValue()
+        public void Test_03_ForeignCurrencyAccountingWithWrongForeignValue()
         {
             string strAccountStart = "6001";      // Use an foreign currency account in GBP only
             string strAccountEnd = "9800";        // Use a base currency account only
@@ -208,6 +208,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             catch (InternalException)
             {
                 Assert.Pass("Exception was thrown");
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine(exception.ToString());
+                Assert.Fail("Wrong exception thrown");
             }
         }
 

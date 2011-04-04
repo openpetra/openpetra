@@ -49,14 +49,14 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
-    public partial class TPeriodEnd
+    public partial class TPeriodMonthConnector
     {
         [RequireModulePermission("FINANCE-1")]
-        public bool TPeriodMonthEnd(
+        public static bool TPeriodMonthEndInfo(
             int ALedgerNum,
             out TVerificationResultCollection AVerificationResult)
         {
-            return new TMonthEnd().RunMonthEnd(ALedgerNum, out AVerificationResult);
+            return new TMonthEnd().RunMonthEndInfo(ALedgerNum, out AVerificationResult);
         }
     }
 }
@@ -65,28 +65,67 @@ namespace Ict.Petra.Server.MFinance.GL
 {
     public class TMonthEnd
     {
+        TVerificationResultCollection verificationResults;
         GetLedgerInfo ledgerInfo;
         bool blnCriticalErrors = false;
 
         public bool RunMonthEndInfo(int ALedgerNum,
             out TVerificationResultCollection AVRCollection)
         {
-            RunFirstChecks(ALedgerNum, out AVRCollection);
-            return blnCriticalErrors;
+            try
+            {
+                ledgerInfo = new GetLedgerInfo(ALedgerNum);
+                RunFirstChecks();
+                AVRCollection = verificationResults;
+                return blnCriticalErrors;
+            }
+            catch (TerminateException)
+            {
+                AVRCollection = verificationResults;
+                return true;
+            }
         }
 
         public bool RunMonthEnd(int ALedgerNum,
             out TVerificationResultCollection AVRCollection)
         {
-            RunFirstChecks(ALedgerNum, out AVRCollection);
-            return blnCriticalErrors;
+            try
+            {
+                ledgerInfo = new GetLedgerInfo(ALedgerNum);
+                RunFirstChecks();
+                AVRCollection = verificationResults;
+            }
+            catch (TerminateException)
+            {
+                AVRCollection = verificationResults;
+                return true;
+            }
+
+            if (verificationResults.Count != 0)
+            {
+                for (int i = 0; i < verificationResults.Count; ++i)
+                {
+                    if (verificationResults[i].ResultSeverity == TResultSeverity.Resv_Critical)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            try
+            {
+                MonthEndCalculations();
+                return false;
+            }
+            catch (TerminateException)
+            {
+                return true;
+            }
         }
 
-        private void RunFirstChecks(int ALedgerNum,
-            out TVerificationResultCollection AVRCollection)
+        private void RunFirstChecks()
         {
-            AVRCollection = new TVerificationResultCollection();
-            GetLedgerInfo ledgerInfo = new GetLedgerInfo(ALedgerNum);
+            verificationResults = new TVerificationResultCollection();
 
             if (ledgerInfo.ProvisionalYearEndFlag)
             {
@@ -94,28 +133,28 @@ namespace Ict.Petra.Server.MFinance.GL
                     Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                     String.Format(
                         Catalog.GetString("The year end processing for Ledger {0} needs to be run."),
-                        ALedgerNum.ToString()),
-                    "", "PYEF-01", TResultSeverity.Resv_Critical);
-                blnCriticalErrors = true;
+                        ledgerInfo.LedgerNumber.ToString()),
+                    "", "PYEF-01", TResultSeverity.Resv_Noncritical);
+                verificationResults.Add(tvr);
             }
 
             // Message is used two times ...
             string strErrorMessage1 = Catalog.GetString(
                 "Some {1} batches for ledger {0} have not yet been posted.");
 
-            GetBatchInfo getBatchInfo = new GetBatchInfo(ALedgerNum, ledgerInfo.CurrentPeriod);
+            GetBatchInfo getBatchInfo = new GetBatchInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
 
             if (getBatchInfo.NumberOfBatches > 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                     String.Format(strErrorMessage1,
-                        ALedgerNum.ToString(), getBatchInfo.BatchList),
-                    "", "PYEF-02", TResultSeverity.Resv_Critical);
-                blnCriticalErrors = true;
+                        ledgerInfo.LedgerNumber.ToString(), getBatchInfo.BatchList),
+                    "", "PYEF-02", TResultSeverity.Resv_Noncritical);
+                verificationResults.Add(tvr);
             }
 
-            GetSuspenseAccountInfo getSuspenseAccountInfo = new GetSuspenseAccountInfo(ALedgerNum);
+            GetSuspenseAccountInfo getSuspenseAccountInfo = new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
 
             if (getSuspenseAccountInfo.Rows != 0)
             {
@@ -123,13 +162,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                     String.Format(
                         Catalog.GetString("Do you want to print and check suspense account details before? ({0} recordsets found)"),
-                        ALedgerNum.ToString(), getSuspenseAccountInfo.Rows),
-                    "", "PYEF-03", TResultSeverity.Resv_Critical);
-                blnCriticalErrors = true;
+                        ledgerInfo.LedgerNumber.ToString(), getSuspenseAccountInfo.Rows),
+                    "", "PYEF-03", TResultSeverity.Resv_Status);
+                verificationResults.Add(tvr);
             }
 
             GetAccountingPeriodInfo getAccountingPeriodInfo =
-                new GetAccountingPeriodInfo(ALedgerNum, ledgerInfo.CurrentPeriod);
+                new GetAccountingPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
             GetUnpostedGiftInfo getUnpostedGiftInfo;
 
             if (getAccountingPeriodInfo.Rows != 1)
@@ -138,14 +177,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                     String.Format(
                         Catalog.GetString("Undefinded period"),
-                        ALedgerNum.ToString(), getSuspenseAccountInfo.Rows),
+                        ledgerInfo.LedgerNumber.ToString(), getSuspenseAccountInfo.Rows),
                     "", "PYEF-04", TResultSeverity.Resv_Critical);
-                blnCriticalErrors = true;
+                throw new TerminateException();
             }
             else
             {
                 getUnpostedGiftInfo = new GetUnpostedGiftInfo(
-                    ALedgerNum, getAccountingPeriodInfo.EffectiveDate);
+                    ledgerInfo.LedgerNumber, getAccountingPeriodInfo.EffectiveDate);
 
                 if (getUnpostedGiftInfo.Rows > 0)
                 {
@@ -153,7 +192,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                         String.Format(
                             strErrorMessage1,
-                            ALedgerNum.ToString(), getUnpostedGiftInfo.Rows),
+                            ledgerInfo.LedgerNumber.ToString(), getUnpostedGiftInfo.Rows),
                         "", "PYEF-05", TResultSeverity.Resv_Critical);
                     blnCriticalErrors = true;
                 }
@@ -203,6 +242,10 @@ namespace Ict.Petra.Server.MFinance.GL
 //             RETURN.
 //        END.
         }
+
+        void MonthEndCalculations()
+        {
+        }
     }
 
     /// <summary>
@@ -225,7 +268,7 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[0].Value = ALedgerNumber;
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
             ParametersArray[1].Value = ADateEffective;
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Date);
+            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();

@@ -317,6 +317,36 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    public class SetLedgerParameter
+    {
+        int ledgerNumber;
+        public SetLedgerParameter(int ALedgerNumber)
+        {
+            ledgerNumber = ALedgerNumber;
+        }
+
+        public bool ProvisionalYearEndFlag
+        {
+            set
+            {
+                OdbcParameter[] ParametersArray;
+                ParametersArray = new OdbcParameter[2];
+                ParametersArray[0] = new OdbcParameter("", OdbcType.Bit);
+                ParametersArray[0].Value = value;
+                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[1].Value = ledgerNumber;
+
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
+                strSQL += "SET " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
+                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    strSQL, transaction, ParametersArray);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+        }
+    }
+
     /// <summary>
     /// This routine reads the line of a_ledger defined by the ledger number
     /// </summary>
@@ -335,6 +365,9 @@ namespace Ict.Petra.Server.MFinance.GL
         public GetLedgerInfo(int ALedgerNumber)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+//            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+//              IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             ledgerNumber = ALedgerNumber;
             ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -546,6 +579,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     throw new ApplicationException("TLedgerInitFlagHandler does not work");
                 }
             }
+        }
+    }
+
+    public class TerminateException : SystemException
+    {
+        public TerminateException() : base()
+        {
         }
     }
 

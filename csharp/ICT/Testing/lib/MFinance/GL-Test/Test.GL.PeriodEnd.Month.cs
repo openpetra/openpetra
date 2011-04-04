@@ -26,10 +26,12 @@ using System.Data.Odbc;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Common.Verification;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
@@ -43,41 +45,100 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
     [TestFixture]
     public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
-        private const int intBatchPeriod = 1;
 
-        /// <summary>
-        /// The helper class GetBatchInfo is tested ...
-        /// This class requires the test data gl-test-batch-data.sql.
-        /// This data are loaded into data base and after the test they are deleted.
-        /// </summary>
+
         [Test]
-        public void Test_01_GetBatchInfo()
+        public void Test_PYEF_01()
         {
-            UnloadTestData_GetBatchInfo();
-            Assert.AreEqual(0, new GetBatchInfo(
-                    intLedgerNumber, intBatchPeriod).NumberOfBatches, "No unposted batch shall be found");
-            LoadTestTata_GetBatchInfo();
-            Assert.AreEqual(2, new GetBatchInfo(
-                    intLedgerNumber, intBatchPeriod).NumberOfBatches, "Two of the four batches shall be found");
-            UnloadTestData_GetBatchInfo();
+            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = true;
+            Assert.True(new GetLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
+                "Cannot start test because ProvisionalYearEndFlag cannot be changed");
+
+            TVerificationResultCollection verificationResult;
+            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnStatusArrived = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                if (verificationResult[i].ResultCode.Equals("PYEF-01"))
+                {
+                    blnStatusArrived = true;
+                }
+            }
+
+            Assert.IsTrue(blnStatusArrived, "Status message PYEF-01 is shown");
+            Assert.IsFalse(blnResult, "PYEF-01 is not a Critital Message");
+
+            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = false;
         }
 
         /// <summary>
-        /// The GetSuspenseAccountInfo is not done yet because
-        /// 1. it is a simple data base request
-        /// 2. there is no other routine whih uses this function
-        /// (may be later ...)
+        /// PYEF-02 is the status for a set of unpostetd batches. This error is non critical,
+        /// which means that further tests are done and this status is one of a set of different stati,
+        /// but a Period-End-Month calculation is not allowed in this case.
         /// </summary>
-        // [Test]
-        public void Test_02_GetSuspenseAccountInfo()
+        [Test]
+        public void Test_PYEF_02()
         {
+            GetLedgerInfo ledgerInfo = new GetLedgerInfo(intLedgerNumber);
+
+            // System.Diagnostics.Debug.WriteLine(
+            UnloadTestData_GetBatchInfo();
+            Assert.AreEqual(0, new GetBatchInfo(
+                    intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
+
+            LoadTestTata_GetBatchInfo();
+
+            Assert.AreEqual(2, new GetBatchInfo(
+                    intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
+            //UnloadTestData_GetBatchInfo();
+
+            TVerificationResultCollection verificationResult;
+            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnStatusArrived = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                if (verificationResult[i].ResultCode.Equals("PYEF-02"))
+                {
+                    blnStatusArrived = true;
+                }
+            }
+
+            Assert.IsTrue(blnStatusArrived, "Status message PYEF-02 is shown");
+            Assert.IsFalse(blnResult, "PYEF-02 is not a Critital Message");
+            UnloadTestData_GetBatchInfo();
+        }
+
+        [Test]
+        public void Test_PYEF_03()
+        {
+            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
+
+            TVerificationResultCollection verificationResult;
+            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnStatusArrived = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                if (verificationResult[i].ResultCode.Equals("PYEF-03"))
+                {
+                    blnStatusArrived = true;
+                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Status,
+                        "Value shall be status only ...");
+                }
+            }
+
+            Assert.IsTrue(blnStatusArrived, "Status message PYEF-03 is shown");
+            Assert.IsFalse(blnResult, "PYEF-03 is not a Critital Message");
+            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
         }
 
         [TestFixtureSetUp]
@@ -123,6 +184,69 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, transaction, ParametersArray);
             DBAccess.GDBAccessObj.CommitTransaction();
+        }
+    }
+
+
+    public class SetDeleteSuspenseAccount
+    {
+        int ledgerNumber;
+        string strAcount;
+        public SetDeleteSuspenseAccount(int ALedgerNumber, string AAccount)
+        {
+            ledgerNumber = ALedgerNumber;
+            strAcount = AAccount;
+        }
+
+        public void Suspense()
+        {
+            try
+            {
+                OdbcParameter[] ParametersArray;
+                ParametersArray = new OdbcParameter[2];
+                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[0].Value = ledgerNumber;
+                ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+                ParametersArray[1].Value = strAcount;
+
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+                strSQL += "(" + ASuspenseAccountTable.GetLedgerNumberDBName();
+                strSQL += "," + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + ") ";
+                strSQL += "VALUES ( ? , ? )";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception)
+            {
+            }
+            ;
+        }
+
+        public void Unsuspense()
+        {
+            try
+            {
+                OdbcParameter[] ParametersArray;
+                ParametersArray = new OdbcParameter[2];
+                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[0].Value = ledgerNumber;
+                ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+                ParametersArray[1].Value = strAcount;
+
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
+                strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
+                strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception)
+            {
+            }
+            ;
         }
     }
 }

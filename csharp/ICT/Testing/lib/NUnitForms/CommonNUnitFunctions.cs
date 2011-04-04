@@ -164,7 +164,6 @@ namespace Ict.Testing.NUnitForms
             NantProcess.EnableRaisingEvents = false;
             NantProcess.StartInfo.FileName = "cmd";
             NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
-            NantProcess.StartInfo.CreateNoWindow = true;
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
