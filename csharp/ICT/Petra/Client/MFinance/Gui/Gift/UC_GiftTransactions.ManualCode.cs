@@ -398,6 +398,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
         {
+            ShowRevertAdjustForm("Gift");
+        }
+
+        private void ShowRevertAdjustForm(String functionname)
+        {
             if (FPreviouslySelectedDetailRow == null)
             {
                 // saving failed, therefore do not try to post
@@ -412,19 +417,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            revertForm.LedgerNumber = FLedgerNumber;
+            revertForm.AddParam("Function", functionname);
+            revertForm.GiftDetailRow= FPreviouslySelectedDetailRow;
             //revertForm.MainDS = FMainDS;
             //revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
             revertForm.Show();
+            if (revertForm.Ok) 
+            {
+            	//refresh
+            	((TFrmGiftBatch)ParentForm).LedgerNumber = FLedgerNumber;
+            }
+            	
         }
 
         private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            ShowRevertAdjustForm("GiftDetail");
         }
 
         private void AdjustGift(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            ShowRevertAdjustForm("Adjust");
         }
 
         /// <summary>
@@ -689,17 +703,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             giftRow.DateEntered = dtpDateEntered.Date.Value;
 //
-//            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-//            {
-//                if (giftDetail.BatchNumber.Equals(FBatchNumber)
-//                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
-//                {
-//                    giftDetail.DateEntered = giftRow.DateEntered;
-//                    giftDetail.DonorKey = giftRow.DonorKey;
-//                    // this does not work
-//                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
-//                }
-//            }
+            //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+            //            {
+            //                if (giftDetail.BatchNumber.Equals(FBatchNumber)
+            //                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
+            //                {
+            //                    giftDetail.DateEntered = giftRow.DateEntered;
+            //                    giftDetail.DonorKey = giftRow.DonorKey;
+            //                    // this does not work
+            //                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
+            //                }
+            //            }
 
             //  join by hand
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)

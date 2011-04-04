@@ -2295,6 +2295,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
         }
+
+        /// generated method from connector
+        public bool GiftRevertAdjust(Hashtable requestParams,
+                                     out TVerificationResultCollection AMessages)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "GiftRevertAdjust", ";HASHTABLE;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.GiftRevertAdjust(requestParams, out AMessages);
+        }
     }
 }
 
@@ -2570,6 +2578,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TGLWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public bool TPeriodMonthEnd(int ALedgerNum,
+                                    out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodEnd), "TPeriodMonthEnd", ";INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodEnd.TPeriodMonthEnd(ALedgerNum, out AVerificationResult);
         }
 
         /// generated method from connector

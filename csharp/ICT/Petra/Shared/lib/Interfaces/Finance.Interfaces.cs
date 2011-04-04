@@ -519,6 +519,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
                                                                           out Int64 fieldNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        bool GiftRevertAdjust(Hashtable requestParams,
+                              out TVerificationResultCollection AMessages);
     }
 
 }
@@ -561,6 +564,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGLWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodEnd)</summary>
+        bool TPeriodMonthEnd(int ALedgerNum,
+                             out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,
                        int AAccoutingPeriod,

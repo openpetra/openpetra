@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     public partial class TPeriodEnd
     {
         [RequireModulePermission("FINANCE-1")]
-        public bool TPeriodMonthEnd(
+        public static bool TPeriodMonthEnd(
             int ALedgerNum,
             out TVerificationResultCollection AVerificationResult)
         {

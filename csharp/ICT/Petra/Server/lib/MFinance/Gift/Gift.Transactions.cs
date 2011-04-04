@@ -1085,5 +1085,76 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
         }
+
+        /// <summary>
+        /// Revert or Adjust a Gift, revert a Gift Detail , revert a gift batch
+        /// </summary>
+        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GiftRevertAdjust(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        {
+            bool success = false;
+            AMessages = new TVerificationResultCollection();
+
+        	Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            Boolean batchSelected = (Boolean)requestParams["NewBatchSelected"];
+            Int32 ANewBatchNumber=0;
+            if (batchSelected) ANewBatchNumber =(Int32)requestParams["NewBatchNumber"];
+            String Function=(String)requestParams["Function"];
+            Int32 AGiftDetailNumber=(Int32)requestParams["GiftDetailNumber"];
+            Int32 AGiftNumber=(Int32)requestParams["GiftNumber"];
+            Int32 ABatchNumber=(Int32)requestParams["BatchNumber"];
+           
+ 
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            if(!batchSelected)
+            {
+            	DateTime ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+
+            	TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+            	AGiftBatchRow theNewGiftbatchRow=MainDS.AGiftBatch[0];
+            	theNewGiftbatchRow.BatchDescription=Catalog.GetString("Reverse Gift");
+            }
+            else
+            {
+            	AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
+            }
+            //... do everything
+           	// TODO finally for transaction handling
+           // save everything at the end
+            if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
+            {
+                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
+                {
+                	if (AGiftAccess.SubmitChanges(MainDS.AGift, Transaction, out AMessages))
+                	{
+                		if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out AMessages))
+                		{
+                			success = true;
+                		}
+                	}
+                	
+                }
+            }
+
+            if (success)
+            {
+                MainDS.AGiftBatch.AcceptChanges();
+                DBAccess.GDBAccessObj.CommitTransaction();
+                return success;
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw new Exception("Error in GiftRevertAdjust");
+                //better return false???
+            }     
+        }
     }
 }

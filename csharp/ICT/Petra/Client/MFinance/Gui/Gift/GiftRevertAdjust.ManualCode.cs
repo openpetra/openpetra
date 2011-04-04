@@ -22,8 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Windows.Forms;
+
 using Ict.Common;
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -34,7 +39,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmGiftRevertAdjust
     {
-        //private FMainDS GiftBatchTDS=new GiftBatchTDS();
+        private Int32 FLedgerNumber;
+        private Hashtable requestParams = new Hashtable();
+        private AGiftDetailRow giftDetailRow=null;
+        private Boolean ok;
+        DateTime StartDateCurrentPeriod;
+        DateTime EndDateLastForwardingPeriod;
+        
+		public bool Ok {
+			get { return ok; }
+		}
+        
+		public AGiftDetailRow GiftDetailRow {
+			get { return giftDetailRow; }
+			set { giftDetailRow = value; }
+		}
+        
+        public int LedgerNumber {
+            set
+            {
+                FLedgerNumber = value;
+                requestParams.Add("ALedgerNumber", FLedgerNumber);
+                
+                DateTime DefaultDate;
+                TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
+                    out StartDateCurrentPeriod,
+                    out EndDateLastForwardingPeriod,
+                    out DefaultDate);
+                lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                    StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+            }
+        }
+        public void AddParam(String paramName, Object param)
+        {
+            requestParams.Add(paramName, param);
+        }
+
         private void RevertAdjust(System.Object sender, System.EventArgs e)
         {
             if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
@@ -42,6 +82,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // nothing seleted
                 MessageBox.Show(Catalog.GetString("Please select a Batch!."));
                 return;
+            }
+
+            Boolean ok;
+            TVerificationResultCollection AMessages;
+
+
+            requestParams.Add("NewBatchSelected", chkSelect.Checked);
+
+            if (chkSelect.Checked)
+            {
+                requestParams.Add("NewBatchNumber", FPreviouslySelectedDetailRow.BatchNumber);
+            }
+            else
+            {
+            	   //check the gift batch date to use
+	            if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
+	            {
+	                dtpEffectiveDate.Date = StartDateCurrentPeriod;
+	                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+	                return;
+	            }
+	
+	            if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+	            {
+	                dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+	                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+	                return;
+	            }
+            	requestParams.Add("GlEffectiveDate",dtpEffectiveDate.Date);
+            }
+            requestParams.Add("BatchNumber",giftDetailRow.BatchNumber);
+            requestParams.Add("GiftNumber",giftDetailRow.GiftTransactionNumber);
+            requestParams.Add("GiftDetailNumber",giftDetailRow.DetailNumber);
+            requestParams.Add("ReversalCommentOne",txtReversalCommentOne.Text);
+            requestParams.Add("ReversalCommentTwo",txtReversalCommentTwo.Text);
+            requestParams.Add("ReversalCommentThree",txtReversalCommentThree.Text);
+            requestParams.Add("ReversalCommentOneType",cmbReversalCommentOneType.Text);
+            requestParams.Add("ReversalCommentTwoType",cmbReversalCommentTwoType.Text);
+            requestParams.Add("ReversalCommentThreeType",cmbReversalCommentThreeType.Text);
+                                                                  
+
+            ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+
+            if (ok)
+            {
+                MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+				Form parent=ParentForm;
+                ((TFrmGiftBatch)parent).LedgerNumber = FLedgerNumber; //Load batches for refresh
+                //FPetraUtilsObject.DisableSaveButton();
+            }
+            else
+            {
+                ShowMessages(AMessages);
             }
 
             MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
@@ -53,14 +146,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 AGiftBatchTable.GetBatchStatusDBName(),
                 MFinanceConstants.BATCH_UNPOSTED);
-        	FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName()+" DESC";
-        	SelectBatchChanged(null,null);
+            FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName() + " DESC";
+            SelectBatchChanged(null, null);
         }
 
         private void SelectBatchChanged(System.Object sender, EventArgs e)
         {
             grdDetails.Enabled = chkSelect.Checked;
             grdDetails.Visible = chkSelect.Checked;
+            dtpEffectiveDate.Visible = !chkSelect.Checked;
+            lblEffectiveDate.Visible = !chkSelect.Checked;
+            lblValidDateRange.Visible = !chkSelect.Checked;
         }
 
         private void BtnCloseClick(object sender, EventArgs e)
@@ -71,6 +167,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BtnHelpClick(object sender, EventArgs e)
         {
             // TODO
+        }
+
+        private void ShowMessages(TVerificationResultCollection AMessages)
+        {
+            string ErrorMessages = String.Empty;
+
+            if (AMessages.Count > 0)
+            {
+                foreach (TVerificationResult message in AMessages)
+                {
+                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                }
+            }
+
+            if (ErrorMessages.Length > 0)
+            {
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

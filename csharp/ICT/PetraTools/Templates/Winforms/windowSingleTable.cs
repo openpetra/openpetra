@@ -57,12 +57,6 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
-{#IFDEF DETAILTABLESORT}
-            myDataView.Sort = "{#DETAILTABLESORT}";
-{#ENDIF DETAILTABLESORT}
-{#IFDEF DETAILTABLEFILTER}
-            myDataView.RowFilter = {#DETAILTABLEFILTER};
-{#ENDIF DETAILTABLEFILTER}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
