@@ -36,9 +36,62 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+    public class Get_GLMp_Info
+    {
+        DataTable aGLM;
+
+        public Get_GLMp_Info(int ASequence, int APeriod)
+        {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ASequence;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[1].Value = APeriod;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterPeriodTable.GetTableDBName() + " ";
+            strSQL += "WHERE " + AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + " = ? ";
+            strSQL += "AND " + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + " = ? ";
+            aGLM = DBAccess.GDBAccessObj.SelectDT(
+                strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        public decimal ActualBase
+        {
+            get
+            {
+                return (decimal)aGLM.Rows[0][AGeneralLedgerMasterPeriodTable.GetActualBaseDBName()];
+            }
+        }
+    }
+
     public class Get_GLM_Info
     {
         DataTable aGLM;
+
+        public Get_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
+        {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[3];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ALedgerNumber;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[1].Value = AAccountCode;
+            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[2].Value = ACurrentFinancialYear;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
+            strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
+            strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
+            strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
+            aGLM = DBAccess.GDBAccessObj.SelectDT(
+                strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
         public Get_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             OdbcParameter[] ParametersArray;
@@ -93,6 +146,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
         }
+        public int Sequence
+        {
+            get
+            {
+                return (int)aGLM.Rows[0][AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
+            }
+        }
     }
 
     public class GetCostCenterInfo
@@ -123,45 +183,134 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// Get AccountInfo uses a GetLedgerInfo a primilary references the LedgerNumber.
+    /// All Accounts are load in both contructors. You can define an inital account code in the
+    /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
+    /// Then you can read the values for the selected Account.
+    /// </summary>
     public class GetAccountInfo
     {
         AAccountTable accountTable;
-        AAccountRow accountRow;
+        AAccountRow accountRow = null;
+        GetLedgerInfo ledgerInfo;
+        TVerificationResultCollection tvr;
 
-        public GetAccountInfo(int ALedgerNumber, string AAccountCode)
+        /// <summary>
+        /// This mininmal constructor defines the result collection for the error messages and
+        /// Ledger Info to select the ledger ...
+        /// </summary>
+        /// <param name="ATvr">null = Only Logfile resuls will be messaged ...</param>
+        /// <param name="ALedgerInfo"></param>
+        public GetAccountInfo(TVerificationResultCollection ATvr, GetLedgerInfo ALedgerInfo)
+        {
+            ledgerInfo = ALedgerInfo;
+            tvr = ATvr;
+            LoadData();
+        }
+
+        /// <summary>
+        /// The Constructor defines a first value of a specific accounting code too.
+        /// </summary>
+        /// <param name="ATvr"></param>
+        /// <param name="ALedgerInfo"></param>
+        /// <param name="AAccountCode"></param>
+        public GetAccountInfo(TVerificationResultCollection ATvr, GetLedgerInfo ALedgerInfo, string AAccountCode)
+        {
+            ledgerInfo = ALedgerInfo;
+            tvr = ATvr;
+            LoadData();
+            AccountCode = AAccountCode;
+        }
+
+        private void LoadData()
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            accountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, transaction);
+            accountTable = AAccountAccess.LoadViaALedger(ledgerInfo.LedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
-            try
+
+            if (accountTable.Rows.Count == 0)
             {
-                accountRow = (AAccountRow)accountTable.Rows[0];
-            }
-            catch (Exception)
-            {
+                // TODO: Error Message ...
             }
         }
 
+        /// <summary>
+        /// The Account code can be read - that ist a value of the just selected table row
+        /// and can be write - that is a routine which changes the selection.
+        /// </summary>
+        public string AccountCode
+        {
+            get
+            {
+                return accountRow.AccountCode;
+            }
+            set
+            {
+                if (value.Equals(String.Empty))
+                {
+                    accountRow = null;
+                }
+                else
+                {
+                    for (int i = 0; i < accountTable.Rows.Count; ++i)
+                    {
+                        if (value.Equals(((AAccountRow)accountTable[i]).AccountCode))
+                        {
+                            accountRow = (AAccountRow)accountTable[i];
+                        }
+
+                        if (accountRow == null)
+                        {
+                            // TODO: Error Message ...
+                        }
+                    }
+                }
+            }
+        }
+
+        private void HandleInvalidRow(string AFunctionName)
+        {
+            if (accountRow == null)
+            {
+                // TODO: Error Message ...
+            }
+        }
+
+        /// <summary>
+        /// Informs that a row selection is valid and the row properties will not produce
+        /// an exception.
+        /// </summary>
         public bool IsValid
         {
             get
             {
-                return accountTable.Rows.Count == 1;
+                return !(accountRow == null);
             }
         }
 
+        /// <summary>
+        /// Standard property of an AAccountRow
+        /// </summary>
         public bool ForeignCurrencyFlag
         {
             get
             {
+                HandleInvalidRow("ForeignCurrencyFlag");
                 return accountRow.ForeignCurrencyFlag;
             }
         }
+
+        /// <summary>
+        /// Standard property of an AAccountRow
+        /// </summary>
         public string ForeignCurrencyCode
         {
             get
             {
+                HandleInvalidRow("ForeignCurrencyCode");
                 return accountRow.ForeignCurrencyCode;
             }
         }
@@ -456,7 +605,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// This is the list of vaild Ledger-Init-Flags
     /// (the TLedgerInitFlagHandler has an internal information of the flag)
     /// </summary>
-    public enum LegerInitFlag
+    public enum LedgerInitFlagEnum
     {
         /// <summary>
         /// Revaluation is a process which has to be done once each month. So the value
@@ -486,14 +635,14 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
         /// <param name="AFlagNum">A valid LegerInitFlag entry</param>
-        public TLedgerInitFlagHandler(int ALedgerNumber, LegerInitFlag AFlagNum)
+        public TLedgerInitFlagHandler(int ALedgerNumber, LedgerInitFlagEnum AFlagNum)
         {
             intLedgerNumber = ALedgerNumber;
             strFlagName = String.Empty;
 
-            if (AFlagNum == LegerInitFlag.Revaluation)
+            if (AFlagNum == LedgerInitFlagEnum.Revaluation)
             {
-                strFlagName = "REVAL";
+                strFlagName = "REVALUATION-RUN";
             }
 
             if (strFlagName.Equals(String.Empty))

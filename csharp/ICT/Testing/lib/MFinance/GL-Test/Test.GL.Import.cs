@@ -61,9 +61,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Hashtable requestParams = new Hashtable();
 
             requestParams.Add("ALedgerNumber", intLedgerNumber);
-            requestParams.Add("Delimiter", ",");
-            requestParams.Add("DateFormatString", "dd.mm.yyyy");
-            requestParams.Add("NumberFormat", "American");
+            requestParams.Add("Delimiter", ";");
+            requestParams.Add("DateFormatString", "dd/mm/yyyy");
+            requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
             string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
@@ -73,9 +73,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             System.Diagnostics.Debug.WriteLine(strContent);
             TVerificationResultCollection verificationResult;
 
-            Assert.IsTrue(
-                TTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult),
-                "Import glbatch-import.csv done well ....");
+            //Assert.IsTrue(
+            TTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
+
+            //,
+            //"Import glbatch-import.csv done well ....");
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                System.Diagnostics.Debug.WriteLine(i + " : " + verificationResult[i].ResultText);
+            }
         }
 
         [TestFixtureSetUp]

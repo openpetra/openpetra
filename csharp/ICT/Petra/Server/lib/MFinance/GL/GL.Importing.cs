@@ -122,6 +122,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "B")
                         {
+                            System.Diagnostics.Debug.WriteLine("B");
                             NewBatch = FMainDS.ABatch.NewRowTyped(true);
                             NewBatch.LedgerNumber = FLedgerNumber;
                             FMainDS.ALedger[0].LastBatchNumber++;
@@ -135,6 +136,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch  effective date"));
                             FImportMessage = Catalog.GetString("Saving GL batch:");
+                            System.Diagnostics.Debug.WriteLine("B");
 
                             if (!ABatchAccess.SubmitChanges(FMainDS.ABatch, FTransaction, out AMessages))
                             {
@@ -425,9 +427,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private DateTime ImportDate(String message)
         {
+            System.Diagnostics.Debug.WriteLine("1");
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            System.Diagnostics.Debug.WriteLine(dtReturn.ToLongDateString());
             return dtReturn;
         }
     }

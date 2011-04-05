@@ -317,7 +317,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (ATransActionIsInForeign)
                 {
-                    GetAccountInfo accountCheck = new GetAccountInfo(journal.LedgerNumber, AAccount);
+                    GetAccountInfo accountCheck =
+                        new GetAccountInfo(null, getLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {

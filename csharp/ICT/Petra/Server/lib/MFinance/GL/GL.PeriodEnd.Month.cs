@@ -67,6 +67,9 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TVerificationResultCollection verificationResults;
         GetLedgerInfo ledgerInfo;
+
+        // Set this value true means: Continue the checks and report but never
+        // calculate ...
         bool blnCriticalErrors = false;
 
         public bool RunMonthEndInfo(int ALedgerNum,
@@ -94,6 +97,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 ledgerInfo = new GetLedgerInfo(ALedgerNum);
                 RunFirstChecks();
                 AVRCollection = verificationResults;
+
+                if (blnCriticalErrors)
+                {
+                    return true;
+                }
             }
             catch (TerminateException)
             {
@@ -114,6 +122,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             try
             {
+                RunAndAccountAdminFees();
                 MonthEndCalculations();
                 return false;
             }
@@ -134,8 +143,9 @@ namespace Ict.Petra.Server.MFinance.GL
                     String.Format(
                         Catalog.GetString("The year end processing for Ledger {0} needs to be run."),
                         ledgerInfo.LedgerNumber.ToString()),
-                    "", "PYEF-01", TResultSeverity.Resv_Noncritical);
+                    "", "PYEF-01", TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
+                blnCriticalErrors = true;
             }
 
             // Message is used two times ...
@@ -150,8 +160,9 @@ namespace Ict.Petra.Server.MFinance.GL
                     Catalog.GetString("ProvisionalYearEndFlag-Problem"),
                     String.Format(strErrorMessage1,
                         ledgerInfo.LedgerNumber.ToString(), getBatchInfo.BatchList),
-                    "", "PYEF-02", TResultSeverity.Resv_Noncritical);
+                    "", "PYEF-02", TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
+                blnCriticalErrors = true;
             }
 
             GetSuspenseAccountInfo getSuspenseAccountInfo = new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
@@ -205,42 +216,39 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     ASuspenseAccountRow aSuspenseAccountRow;
                     decimal decAccountTotalSum = 0;
+                    string strMessage = Catalog.GetString("Suspense account {0} has the balance value {1}, " +
+                        "which is required to be zero.");
 
                     for (int i = 0; i < getSuspenseAccountInfo.Rows; ++i)
                     {
                         aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
-//                              Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ALedgerNum,
-//                                                                           aSuspenseAccountRow.SuspenseAccountCode,
-//                                                                           ledgerInfo.CurrentPeriod);
+                        Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ledgerInfo.LedgerNumber,
+                            aSuspenseAccountRow.SuspenseAccountCode,
+                            ledgerInfo.CurrentFinancialYear);
 
-                        //Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence,
-                        //                                                ledgerInfo.p);
-                        //decAccountTotalSum += get_GLMp_Info.ActualBase;
+                        Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence,
+                            ledgerInfo.CurrentPeriod);
+                        decAccountTotalSum += get_GLMp_Info.ActualBase;
+
+                        if (get_GLMp_Info.ActualBase != 0)
+                        {
+                            TVerificationResult tvr = new TVerificationResult(
+                                Catalog.GetString("ProvisionalYearEndFlag-Problem"),
+                                String.Format(strMessage, ledgerInfo.LedgerNumber, get_GLMp_Info.ActualBase), "",
+                                "GL.CAT.08", TResultSeverity.Resv_Critical);
+                            blnCriticalErrors = true;
+                        }
                     }
                 }
             }
 
-//        lv_account_total_n = 0.
-//        FOR EACH a_general_ledger_master
-//            WHERE a_general_ledger_master.a_ledger_number_i = pv_ledger_number_i
-//            AND a_suspense_account.a_suspense_account_code_c = a_general_ledger_master.a_account_code_c
-//            AND a_general_ledger_master.a_year_i = a_ledger.a_current_financial_year_i
-//            ,FIRST a_general_ledger_master_period
-//            WHERE a_general_ledger_master_period.a_glm_sequence_i = a_general_ledger_master.a_glm_sequence_i
-//            AND a_general_ledger_master_period.a_period_number_i = a_ledger.a_current_period_i
-//            NO-LOCK
-//            :
-//            lv_account_total_n = lv_account_total_n + a_general_ledger_master_period.a_actual_base_n.
-//        END.
-//
-//        IF lv_account_total_n NE 0
-//        THEN DO:
-//             RUN s_errmsg.p ("GL0089":U,
-//                         PROGRAM-NAME(1),
-//                         a_suspense_account.a_suspense_account_code_c,
-//                         "").
-//             RETURN.
-//        END.
+            //TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(ledgerInfo, );
+        }
+
+        void RunAndAccountAdminFees()
+        {
+            // TODO: Admin Fees and ICH stewadship ...
+            // CommonAccountingTool cat = new CommonAccountingTool(ledgerInfo, "Batch Description");
         }
 
         void MonthEndCalculations()
