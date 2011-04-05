@@ -171,7 +171,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		
         /// <summary>Returns the total number of pages in the Shepherd</summary>
         /// <returns>Total Number of Shepherd Pages</returns>
-        protected int EnumeratePages()
+        public int EnumeratePages()
         {
         	TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages."); 
         	int PagesCount = 0; 
@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
         /// <summary>Iterates through the list of pages to find out which page number the current page is.</summary>
         /// <returns>Page Number</returns>
-        protected int GetCurrentPageNumber()
+        public int GetCurrentPageNumber()
         {
         	TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. "); 
         	int pageCounter = 1;

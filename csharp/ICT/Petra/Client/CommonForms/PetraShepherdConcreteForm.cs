@@ -58,10 +58,7 @@ namespace Ict.Petra.Client.CommonForms
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
 
             FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
-            this.prbPageProgress.Value = 0; 
             
-            // In implementing class: FYamlFile = "...";
-
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
 

@@ -715,11 +715,6 @@
             Constructor
             </summary>
         </member>
-        <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdForm.GetProgressBarPercentage(System.Int32)">
-            <summary>Returns the percentage at which the progress bar should currently be set.
-            Christian said that we were to implement this here, but it doesn't make sense that 
-            this method be implemented inside of the GUI..</summary>
-        </member>
         <member name="M:Ict.Petra.Client.CommonForms.TPetraShepherdForm.BtnFinishClick(System.Object,System.EventArgs)">
             <summary>
             Virtual function: implementor should handle action for Finish button click
