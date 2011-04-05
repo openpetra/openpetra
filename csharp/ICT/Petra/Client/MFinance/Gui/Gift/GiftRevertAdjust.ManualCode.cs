@@ -41,26 +41,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
-        private AGiftDetailRow giftDetailRow=null;
-        private Boolean ok;
+        private AGiftDetailRow giftDetailRow = null;
+        private Boolean ok = false;
         DateTime StartDateCurrentPeriod;
         DateTime EndDateLastForwardingPeriod;
-        
-		public bool Ok {
-			get { return ok; }
-		}
-        
-		public AGiftDetailRow GiftDetailRow {
-			get { return giftDetailRow; }
-			set { giftDetailRow = value; }
-		}
-        
+
+        public bool Ok {
+            get
+            {
+                return ok;
+            }
+        }
+
+        public AGiftDetailRow GiftDetailRow {
+            get
+            {
+                return giftDetailRow;
+            }
+            set
+            {
+                giftDetailRow = value;
+                txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
+                txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
+                txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
+                cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
+                cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
+                cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+            }
+        }
+
         public int LedgerNumber {
             set
             {
                 FLedgerNumber = value;
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
-                
+
                 DateTime DefaultDate;
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                     out StartDateCurrentPeriod,
@@ -96,48 +111,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	   //check the gift batch date to use
-	            if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
-	            {
-	                dtpEffectiveDate.Date = StartDateCurrentPeriod;
-	                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
-	                return;
-	            }
-	
-	            if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
-	            {
-	                dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
-	                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
-	                return;
-	            }
-            	requestParams.Add("GlEffectiveDate",dtpEffectiveDate.Date);
+                //check the gift batch date to use
+                if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
+                {
+                    dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                    MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                    return;
+                }
+
+                if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+                {
+                    dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
+                    MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                    return;
+                }
+
+                requestParams.Add("GlEffectiveDate", dtpEffectiveDate.Date);
             }
-            requestParams.Add("BatchNumber",giftDetailRow.BatchNumber);
-            requestParams.Add("GiftNumber",giftDetailRow.GiftTransactionNumber);
-            requestParams.Add("GiftDetailNumber",giftDetailRow.DetailNumber);
-            requestParams.Add("ReversalCommentOne",txtReversalCommentOne.Text);
-            requestParams.Add("ReversalCommentTwo",txtReversalCommentTwo.Text);
-            requestParams.Add("ReversalCommentThree",txtReversalCommentThree.Text);
-            requestParams.Add("ReversalCommentOneType",cmbReversalCommentOneType.Text);
-            requestParams.Add("ReversalCommentTwoType",cmbReversalCommentTwoType.Text);
-            requestParams.Add("ReversalCommentThreeType",cmbReversalCommentThreeType.Text);
-                                                                  
+
+            requestParams.Add("BatchNumber", giftDetailRow.BatchNumber);
+            requestParams.Add("GiftNumber", giftDetailRow.GiftTransactionNumber);
+            requestParams.Add("GiftDetailNumber", giftDetailRow.DetailNumber);
+            requestParams.Add("ReversalCommentOne", txtReversalCommentOne.Text);
+            requestParams.Add("ReversalCommentTwo", txtReversalCommentTwo.Text);
+            requestParams.Add("ReversalCommentThree", txtReversalCommentThree.Text);
+            requestParams.Add("ReversalCommentOneType", cmbReversalCommentOneType.Text);
+            requestParams.Add("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
+            requestParams.Add("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
+
 
             ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
 
             if (ok)
             {
                 MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
-				Form parent=ParentForm;
-                ((TFrmGiftBatch)parent).LedgerNumber = FLedgerNumber; //Load batches for refresh
-                //FPetraUtilsObject.DisableSaveButton();
+                Close();
             }
             else
             {
                 ShowMessages(AMessages);
             }
 
-            MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
             return;
         }
 

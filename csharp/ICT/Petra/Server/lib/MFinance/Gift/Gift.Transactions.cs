@@ -1096,65 +1096,189 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool GiftRevertAdjust(Hashtable requestParams, out TVerificationResultCollection AMessages)
         {
             bool success = false;
+
             AMessages = new TVerificationResultCollection();
 
-        	Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Boolean batchSelected = (Boolean)requestParams["NewBatchSelected"];
-            Int32 ANewBatchNumber=0;
-            if (batchSelected) ANewBatchNumber =(Int32)requestParams["NewBatchNumber"];
-            String Function=(String)requestParams["Function"];
-            Int32 AGiftDetailNumber=(Int32)requestParams["GiftDetailNumber"];
-            Int32 AGiftNumber=(Int32)requestParams["GiftNumber"];
-            Int32 ABatchNumber=(Int32)requestParams["BatchNumber"];
-           
- 
+            Int32 ANewBatchNumber = 0;
+
+            if (batchSelected)
+            {
+                ANewBatchNumber = (Int32)requestParams["NewBatchNumber"];
+            }
+
+            String Function = (String)requestParams["Function"];
+            Int32 AGiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
+            Int32 AGiftNumber = (Int32)requestParams["GiftNumber"];
+            Int32 ABatchNumber = (Int32)requestParams["BatchNumber"];
+
+
             GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            if(!batchSelected)
+            TDBTransaction Transaction = null;
+            try
             {
-            	DateTime ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                AGiftBatchRow giftBatch;
 
-            	TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-            	AGiftBatchRow theNewGiftbatchRow=MainDS.AGiftBatch[0];
-            	theNewGiftbatchRow.BatchDescription=Catalog.GetString("Reverse Gift");
-            }
-            else
-            {
-            	AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
-            }
-            //... do everything
-           	// TODO finally for transaction handling
-           // save everything at the end
-            if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
-            {
-                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
+                if (!batchSelected)
                 {
-                	if (AGiftAccess.SubmitChanges(MainDS.AGift, Transaction, out AMessages))
-                	{
-                		if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out AMessages))
-                		{
-                			success = true;
-                		}
-                	}
-                	
+                    DateTime ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+
+                    TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+                    giftBatch = MainDS.AGiftBatch[0];
+                    giftBatch.BatchDescription = Catalog.GetString("Reverse Gift");
+                }
+                else
+                {
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
+                    giftBatch = MainDS.AGiftBatch[0];
+                }
+
+                if (Function.Equals("ReverseGiftBatch"))
+                {
+                    AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                }
+                else
+                {
+                    AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
+                }
+
+                int countGifts = MainDS.AGift.Rows.Count;
+
+                for (int i = 0; (i < countGifts); i++)
+                {
+                    AGiftRow oldGift = MainDS.AGift[i];
+
+                    if ((oldGift.BatchNumber == ABatchNumber) && (oldGift.LedgerNumber == ALedgerNumber)
+                        && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
+                    {
+                        AGiftRow gift = MainDS.AGift.NewRowTyped(true);
+                        gift.LedgerNumber = giftBatch.LedgerNumber;
+                        gift.BatchNumber = giftBatch.BatchNumber;
+                        gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
+                        giftBatch.LastGiftNumber++;
+                        gift.LastDetailNumber = 1;
+                        gift.MethodOfGivingCode = oldGift.MethodOfGivingCode;
+
+                        if (gift.MethodOfGivingCode.Length == 0)
+                        {
+                            gift.SetMethodOfGivingCodeNull();
+                        }
+
+                        gift.MethodOfPaymentCode = oldGift.MethodOfPaymentCode;
+
+                        if (gift.MethodOfPaymentCode.Length == 0)
+                        {
+                            gift.SetMethodOfPaymentCodeNull();
+                        }
+
+                        gift.AdminCharge = oldGift.AdminCharge;
+                        gift.DonorKey = oldGift.DonorKey;
+                        gift.ReceiptLetterCode = oldGift.ReceiptLetterCode;
+                        gift.Reference = oldGift.Reference;
+                        gift.BankingDetailsKey = oldGift.BankingDetailsKey;
+                        gift.Restricted = oldGift.Restricted;
+                        gift.FirstTimeGift = oldGift.FirstTimeGift;
+                        gift.GiftStatus = oldGift.GiftStatus;     // unknown status is copied?
+                        MainDS.AGift.Rows.Add(gift);
+
+                        if (Function.Equals("ReverseGiftDetail"))
+                        {
+                            AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, AGiftDetailNumber, Transaction);
+                        }
+                        else
+                        {
+                            AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
+                        }
+
+                        int countGiftsDetail = MainDS.AGiftDetail.Rows.Count;
+
+                        for (int j = 0; (j < countGifts); j++)
+                        {
+                            AGiftDetailRow oldGiftDetail = MainDS.AGiftDetail[j];
+
+                            if ((oldGiftDetail.GiftTransactionNumber == AGiftNumber)
+                                && (oldGiftDetail.BatchNumber == ABatchNumber)
+                                && (oldGiftDetail.LedgerNumber == ALedgerNumber)
+                                && (!Function.Equals("ReverseGiftDetail") || (oldGiftDetail.DetailNumber == AGiftDetailNumber)))
+                            {
+                                AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped(true);
+                                giftDetail.DetailNumber = gift.LastDetailNumber++;
+                                giftDetail.LedgerNumber = gift.LedgerNumber;
+                                giftDetail.BatchNumber = giftBatch.BatchNumber;
+                                giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
+                                giftDetail.RecipientLedgerNumber = oldGiftDetail.RecipientLedgerNumber;
+                                giftDetail.GiftTransactionAmount = -oldGiftDetail.GiftTransactionAmount;
+                                giftDetail.GiftAmount = -oldGiftDetail.GiftAmount;
+                                giftDetail.GiftAmountIntl = -oldGiftDetail.GiftAmountIntl;
+                                giftDetail.MotivationGroupCode = oldGiftDetail.MotivationGroupCode;
+                                giftDetail.MotivationDetailCode = oldGiftDetail.MotivationDetailCode;
+                                giftDetail.ConfidentialGiftFlag = oldGiftDetail.ConfidentialGiftFlag;
+                                giftDetail.TaxDeductable = oldGiftDetail.TaxDeductable;
+                                giftDetail.RecipientKey = oldGiftDetail.RecipientKey;
+                                giftDetail.MailingCode = oldGiftDetail.MailingCode;
+
+                                if (giftDetail.MailingCode.Length == 0)
+                                {
+                                    giftDetail.SetMailingCodeNull();
+                                }
+
+                                giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];
+                                giftDetail.GiftCommentTwo = (String)requestParams["ReversalCommentTwo"];
+                                giftDetail.GiftCommentThree = (String)requestParams["ReversalCommentThree"];
+                                giftDetail.CommentOneType = (String)requestParams["ReversalCommentOneType"];
+                                giftDetail.CommentTwoType = (String)requestParams["ReversalCommentTwoType"];
+                                giftDetail.CommentThreeType = (String)requestParams["ReversalCommentThreeType"];
+
+                                // This is used to mark both as a Reverted giftDetails
+                                giftDetail.ModifiedDetail = true;
+                                oldGiftDetail.ModifiedDetail = true;
+                                MainDS.AGiftDetail.Rows.Add(giftDetail);
+                            }
+                        }
+                    }
+                }
+
+                //... do everything
+                // TODO finally for transaction handling
+                // save everything at the end
+                if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
+                {
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
+                    {
+                        if (AGiftAccess.SubmitChanges(MainDS.AGift, Transaction, out AMessages))
+                        {
+                            if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out AMessages))
+                            {
+                                success = true;
+                            }
+                        }
+                    }
+                }
+
+                if (success)
+                {
+                    MainDS.AGiftBatch.AcceptChanges();
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    return success;
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
                 }
             }
+            catch (Exception ex)
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
-            if (success)
-            {
-                MainDS.AGiftBatch.AcceptChanges();
-                DBAccess.GDBAccessObj.CommitTransaction();
-                return success;
+                throw ex;
             }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in GiftRevertAdjust");
-                //better return false???
-            }     
         }
     }
 }

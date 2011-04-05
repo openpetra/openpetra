@@ -246,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ShowRevertAdjustForm("ReverseGiftBatch");
         }
 
         /// <summary>
