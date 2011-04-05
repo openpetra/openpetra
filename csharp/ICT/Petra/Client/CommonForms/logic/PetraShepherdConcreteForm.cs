@@ -153,8 +153,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             // ....
             CurrentPage = FShepherdPages.Pages[APage];
             TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID);
-            int tempNumber = EnumeratePages(); 
-            TLogging.Log("The current Total number of pages is = " + tempNumber);
+            TLogging.Log("The current Total number of pages is = " + EnumeratePages());
+            TLogging.Log("The percentage of pages = " + GetProgressBarPercentage());
+            
             try
             {
                 FForm.ShowCurrentPage();
@@ -181,6 +182,43 @@ namespace Ict.Petra.Client.CommonForms.Logic
         	TLogging.Log("EnumeratePages in TPetraShepherdFormLogic -- Count of Pages = " + PagesCount);
         	return PagesCount; 
         }
+        
+        /// <summary>Iterates through the list of pages to find out which page number the current page is.</summary>
+        /// <returns>Page Number</returns>
+        protected int GetCurrentPageNumber()
+        {
+        	TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. "); 
+        	int pageCounter = 1;
+        	foreach(KeyValuePair<string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+        	{
+        		TLogging.Log("GetCurrentPageNumber loop. Pair.key: " + pair.Key); 
+        		TLogging.Log("GetCurrentPageNumber loop. CurrentPage.ID: " + CurrentPage.ID);
+                if (pair.Value.Visible && pair.Value.Enabled && pair.Key == CurrentPage.ID)
+                {
+                    TLogging.Log("GetCurrentPageNumber Found the current page: " + pair.Key);    
+                    break;
+                }
+				pageCounter++; 
+        	}
+        	TLogging.Log("GetCurrentPageNumber() -- Returning the following value." + pageCounter); 
+        	return pageCounter; 
+        }
+        
+        /// <summary>
+        /// Calculates the percentage of all of the pages that have been passed in the Shepherd.
+        /// </summary>
+        /// <returns>Percentage of Pages</returns>
+        public float GetProgressBarPercentage()
+        {
+        	TPetraShepherdPage ProgressPage = null;
+			float ProgressPercentage = 0;
+			ProgressPercentage = ((float)GetCurrentPageNumber()/(float)EnumeratePages() * 100);
+			TLogging.Log("GetProgredsBarPercentage returns the following: " + ProgressPercentage); 
+			FForm.UpdateProgressBar((int)ProgressPercentage);
+			return ProgressPercentage;
+        }
+        
+        
         
         /// <summary>
         /// Switches to the first page

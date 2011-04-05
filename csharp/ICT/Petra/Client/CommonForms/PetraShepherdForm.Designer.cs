@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.prbPageProgress.Name = "prbPageProgress";
         	this.prbPageProgress.Size = new System.Drawing.Size(64, 15);
         	this.prbPageProgress.TabIndex = 1;
-        	this.prbPageProgress.Value = 14;
+        	this.prbPageProgress.Value = 0;
         	// 
         	// lblPageProgress
         	// 
@@ -290,7 +290,7 @@ namespace Ict.Petra.Client.CommonForms
 
         protected Ict.Common.Controls.TExtStatusBarHelp stbMain;
         private System.Windows.Forms.Label lblPageProgress;
-        private System.Windows.Forms.ProgressBar prbPageProgress;
+        protected System.Windows.Forms.ProgressBar prbPageProgress;
         private System.Windows.Forms.Panel pnlHeadings;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel1;

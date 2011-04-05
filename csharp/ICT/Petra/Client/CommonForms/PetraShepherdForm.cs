@@ -49,12 +49,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Returns the percentage at which the progress bar should currently be set.
         /// Christian said that we were to implement this here, but it doesn't make sense that 
         /// this method be implemented inside of the GUI..</summary>
-        public float GetProgressBarPercentage(int ProgressPagesTotal)
-        {        
-        	TPetraShepherdPage ProgressPage = null; 
-			float ProgressPercentage = 0; 
-			return ProgressPercentage;
-        }
 
         #region ButtonEvents
         /// <summary>
