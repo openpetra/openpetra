@@ -46,18 +46,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         DateTime StartDateCurrentPeriod;
         DateTime EndDateLastForwardingPeriod;
 
+        /// <summary>
+        /// Return if the revert/adjust action was Ok (then a refresh is needed; otherwise rollback was done)
+        /// </summary>
         public bool Ok {
             get
             {
                 return ok;
             }
         }
-
+        /// <summary>
+        /// A Gift Detail Row is injected
+        /// </summary>
         public AGiftDetailRow GiftDetailRow {
-            get
-            {
-                return giftDetailRow;
-            }
             set
             {
                 giftDetailRow = value;
@@ -69,7 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
             }
         }
-
+        /// <summary>
+        /// Ledger Number is injected
+        /// </summary>
         public int LedgerNumber {
             set
             {
@@ -85,6 +88,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             }
         }
+
+        /// <summary>
+        /// Some params for the server function are injected
+        /// </summary>
         public void AddParam(String paramName, Object param)
         {
             requestParams.Add(paramName, param);
@@ -96,6 +103,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // nothing seleted
                 MessageBox.Show(Catalog.GetString("Please select a Batch!."));
+                return;
+            }
+
+            if ((giftDetailRow != null) && giftDetailRow.ModifiedDetail)
+            {
+                MessageBox.Show(Catalog.GetString("A Gift can only be reverted once!"));
                 return;
             }
 
