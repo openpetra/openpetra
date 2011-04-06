@@ -120,6 +120,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.btnCancel.Size = new System.Drawing.Size(102, 23);
         	this.btnCancel.TabIndex = 3;
         	this.btnCancel.Text = "&Cancel";
+       		this.btnCancel.Enabled = true; 
         	this.btnCancel.UseVisualStyleBackColor = true;
         	this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
         	// 
@@ -298,10 +299,10 @@ namespace Ict.Petra.Client.CommonForms
 
         protected System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;
-        private System.Windows.Forms.Button btnFinish;
-        private System.Windows.Forms.Button btnNext;
-        private System.Windows.Forms.Button btnBack;
-        private System.Windows.Forms.Button btnCancel;
+        protected System.Windows.Forms.Button btnFinish;
+        protected System.Windows.Forms.Button btnNext;
+        protected System.Windows.Forms.Button btnBack;
+        protected System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.Label lblHeading2;

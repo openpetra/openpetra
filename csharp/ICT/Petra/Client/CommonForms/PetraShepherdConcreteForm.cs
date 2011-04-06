@@ -137,6 +137,27 @@ namespace Ict.Petra.Client.CommonForms
         ///<summary>Update navigation buttons and navigation panel</summary>
         public void UpdateNavigation()
         {
+        	TLogging.Log("Updating Navigation Buttons."); 
+        	if(FLogic.CurrentPage.IsFirstPage)
+        	{
+        		this.btnBack.Enabled = false; 
+        	}
+        	else
+        	{
+        		this.btnBack.Enabled = true; 
+        	}
+        	
+        	if(FLogic.CurrentPage.IsLastPage)
+        	{
+        		this.btnNext.Enabled = false; 
+        		this.btnFinish.Enabled = true; 
+        	}
+        	else
+        	{
+        		this.btnNext.Enabled = true; 
+        		this.btnFinish.Enabled = false; 
+        	}
+        	
             TLogging.Log("UpdateNavigation");
         }
         
