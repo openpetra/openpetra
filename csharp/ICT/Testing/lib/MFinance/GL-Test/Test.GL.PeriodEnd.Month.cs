@@ -188,7 +188,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     }
 
 
-    public class SetDeleteSuspenseAccount
+    class SetDeleteSuspenseAccount
     {
         int ledgerNumber;
         string strAcount;

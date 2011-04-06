@@ -24,29 +24,64 @@
 using System;
 using Ict.Common;
 using Ict.Common.Verification;
-
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
+    /// Sub-System.
+    /// (The enum.toString() is used for the database entry so you must not change the
+    /// values if you do not want to change the entries.)
+    /// </summary>
+    public enum CommonAccountingSubSystemsEnum
+    {
+        /// <summary>
+        /// Default - resp Standard value
+        /// </summary>
+        GL,
+        AP,
+        GR
+    }
+
+    /// <summary>
+    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
+    /// Transaction Type.
+    /// (The enum.toString() is used for the database entry so you must not change the
+    /// values if you do not want to change the entries.)
+    /// </summary>
+    public enum CommonAccountingTransactionTypesEnum
+    {
+        /// <summary>
+        /// Default - resp Standard value
+        /// </summary>
+        STD,
+            ALLOC,
+            GR,
+            INV,
+            REALLOC,
+
+        /// <summary>
+        /// Used in a revaluation only ...
+        /// </summary>
+            REVAL
+    }
+
+    /// <summary>
+    /// Some constants for the journal values to rember that IS_Debit ist true.
+    /// </summary>
     public partial class CommonAccountingConstants
     {
-        public const string SUB_SYSTEM_GL = "GL";
-        public const string SUB_SYSTEM_AP = "AP";
-        public const string SUB_SYSTEM_GR = "GR";
-
-        public const string TRANSACTION_TYPE_ALLOC = "ALLOC";
-        public const string TRANSACTION_TYPE_GR = "GR";
-        public const string TRANSACTION_TYPE_INV = "INV";
-        public const string TRANSACTION_TYPE_REALLOC = "REALLOC";
-        public const string TRANSACTION_TYPE_REVAL = "REVAL";
-        public const string TRANSACTION_TYPE_STD = "STD";
-
+        /// <summary>
+        /// Sets the transaction to a debit transaction
+        /// </summary>
         public const bool IS_DEBIT = true;
+        /// <summary>
+        /// Sets the transaction to a credit transaction
+        /// </summary>
         public const bool IS_CREDIT = false;
     }
 
@@ -178,7 +213,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Change the TransactionTypeCode from it's default value ...
         /// </summary>
-        public string TransactionTypeCode
+        public CommonAccountingTransactionTypesEnum TransactionTypeCode
         {
             set
             {
@@ -190,14 +225,14 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("You have to add a journal before you can change the TransactionTypeCode!"));
                 }
 
-                journal.TransactionTypeCode = value;
+                journal.TransactionTypeCode = value.ToString();
             }
         }
 
         /// <summary>
         /// Change the SubSystemCode from it's default value ...
         /// </summary>
-        public string SubSystemCode
+        public CommonAccountingSubSystemsEnum SubSystemCode
         {
             set
             {
@@ -208,7 +243,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         "GL.CAT.04", "You have to add a journal before you can change the SubSystemCode!");
                 }
 
-                journal.SubSystemCode = value;
+                journal.SubSystemCode = value.ToString();
             }
         }
 
@@ -218,7 +253,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 GetAccountingPeriodInfo getAccountingPeriodInfo =
                     new GetAccountingPeriodInfo(getLedgerInfo.LedgerNumber, getLedgerInfo.CurrentPeriod);
-                aBatchRow.DateEffective = getAccountingPeriodInfo.EffectiveDate;
+                aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
 
@@ -246,8 +281,8 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             journal.JournalDescription = aBatchRow.BatchDescription;
-            journal.TransactionTypeCode = CommonAccountingConstants.TRANSACTION_TYPE_STD;
-            journal.SubSystemCode = CommonAccountingConstants.SUB_SYSTEM_GL;
+            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
             journal.ExchangeRateToBase = AExchangeRateToBase;
@@ -421,126 +456,6 @@ namespace Ict.Petra.Server.MFinance.GL
             aBatchRow = null;
             journal = null;
             return returnValue;
-        }
-    }
-
-    public class CurrencyCalculator
-    {
-        decimal baseCurrencyValue;
-        GetCurrencyInfo baseCurrencyInfo;
-        decimal exchangeRate;
-        GetCurrencyInfo foreignCurrencyInfo;
-        decimal foreignCurrencyValue;
-
-        /// <summary>
-        /// Foreign currency is calculated from base currency and exchange rate
-        /// </summary>
-        /// <param name="ABaseCurrencyValue"></param>
-        /// <param name="ABaseCurrencyInfo">CurrencyInfoObject</param>
-        /// <param name="AExchangeRate"></param>
-        /// <param name="AForeignCurrencyInfo"></param>
-        public CurrencyCalculator(decimal ABaseCurrencyValue,
-            GetCurrencyInfo ABaseCurrencyInfo,
-            decimal AExchangeRate,
-            GetCurrencyInfo AForeignCurrencyInfo)
-        {
-            baseCurrencyValue = ABaseCurrencyValue;
-            baseCurrencyInfo = ABaseCurrencyInfo;
-            exchangeRate = AExchangeRate;
-            foreignCurrencyInfo = AForeignCurrencyInfo;
-            CalculateForeignCurrency();
-        }
-
-        /// <summary>
-        /// Foreign currency is calculated from base currency and exchange rate
-        /// </summary>
-        /// <param name="ABaseCurrencyValue"></param>
-        /// <param name="ABaseCurrencyCode">String to load adress the database record</param>
-        /// <param name="AExchangeRate"></param>
-        public CurrencyCalculator(decimal ABaseCurrencyValue,
-            string ABaseCurrencyCode,
-            decimal AExchangeRate)
-        {
-            baseCurrencyValue = ABaseCurrencyValue;
-            baseCurrencyInfo = new GetCurrencyInfo(ABaseCurrencyCode);
-            exchangeRate = AExchangeRate;
-            CalculateForeignCurrency();
-        }
-
-        private void CalculateForeignCurrency()
-        {
-        }
-
-        /// <summary>
-        /// Exchange rate is calculated from base currency and foreign currency
-        /// </summary>
-        /// <param name="ABaseCurrencyValue"></param>
-        /// <param name="ABaseCurrencyInfo"></param>
-        /// <param name="AForeignCurrencyInfo"></param>
-        /// <param name="AForeigCurrencyValue"></param>
-        public CurrencyCalculator(decimal ABaseCurrencyValue,
-            GetCurrencyInfo ABaseCurrencyInfo,
-            GetCurrencyInfo AForeignCurrencyInfo,
-            decimal AForeigCurrencyValue)
-        {
-            baseCurrencyValue = ABaseCurrencyValue;
-            baseCurrencyInfo = ABaseCurrencyInfo;
-            foreignCurrencyValue = AForeigCurrencyValue;
-            foreignCurrencyInfo = AForeignCurrencyInfo;
-            CalculateExchangeRate();
-        }
-
-        private void CalculateExchangeRate()
-        {
-        }
-
-        /// <summary>
-        /// Base currency is calculated from foreign currency and exchange rate
-        /// </summary>
-        /// <param name="AExchangeRate"></param>
-        /// <param name="AForeignCurrencyInfo"></param>
-        /// <param name="AForeigCurrencyValue"></param>
-        public CurrencyCalculator(decimal AExchangeRate,
-            GetCurrencyInfo AForeignCurrencyInfo,
-            decimal AForeigCurrencyValue)
-        {
-        }
-
-        private void CalculateBaseCurrency()
-        {
-        }
-
-        /// <summary>
-        /// Calculation result: Base currency value
-        /// </summary>
-        public decimal BaseCurrencyValue
-        {
-            get
-            {
-                return baseCurrencyValue;
-            }
-        }
-
-        /// <summary>
-        /// Calculation result: Foreign currency value
-        /// </summary>
-        public decimal ForeignCurrencyValue
-        {
-            get
-            {
-                return foreignCurrencyValue;
-            }
-        }
-
-        /// <summary>
-        /// Calculation result: Exchange rate
-        /// </summary>
-        public decimal ExchangeRate
-        {
-            get
-            {
-                return exchangeRate;
-            }
         }
     }
 }

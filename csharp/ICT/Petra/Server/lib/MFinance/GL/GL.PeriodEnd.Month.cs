@@ -195,7 +195,7 @@ namespace Ict.Petra.Server.MFinance.GL
             else
             {
                 getUnpostedGiftInfo = new GetUnpostedGiftInfo(
-                    ledgerInfo.LedgerNumber, getAccountingPeriodInfo.EffectiveDate);
+                    ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
 
                 if (getUnpostedGiftInfo.Rows > 0)
                 {

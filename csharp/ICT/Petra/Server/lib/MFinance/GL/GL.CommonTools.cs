@@ -389,34 +389,14 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Reads the effective date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetEffectiveDateOfPeriod(int APeriodNum)
-        {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
-            {
-                return periodRow.EffectiveDate;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        /// <summary>
         /// Reads the value of the first and hopefully only row.
         /// </summary>
-        public DateTime EffectiveDate
+        public DateTime PeriodEndDate
         {
             get
             {
                 AAccountingPeriodRow periodRow = (AAccountingPeriodRow)periodTable[0];
-                return periodRow.EffectiveDate;
+                return periodRow.PeriodEndDate;
             }
         }
 
@@ -427,7 +407,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
         /// error value.</param>
         /// <returns></returns>
-        public DateTime GetDatePeriodEnd(int APeriodNum)
+        public DateTime GetPeriodEndDate(int APeriodNum)
         {
             AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
 
@@ -447,7 +427,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
         /// error value.</param>
         /// <returns></returns>
-        public DateTime GetDatePeriodStart(int APeriodNum)
+        public DateTime GetPeriodStartDate(int APeriodNum)
         {
             AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
 
@@ -614,7 +594,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// c) is used bevor the month end process to remember the user for the outstanding
         /// revaluation.
         /// </summary>
-        Revaluation
+        Revaluation,
+        DatabaseAllocation
     }
 
     /// <summary>
@@ -635,19 +616,18 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
         /// <param name="AFlagNum">A valid LegerInitFlag entry</param>
-        public TLedgerInitFlagHandler(int ALedgerNumber, LedgerInitFlagEnum AFlagNum)
+        public TLedgerInitFlagHandler(int ALedgerNumber, LedgerInitFlagEnum AFlagEnum)
         {
             intLedgerNumber = ALedgerNumber;
             strFlagName = String.Empty;
 
-            if (AFlagNum == LedgerInitFlagEnum.Revaluation)
+            if (AFlagEnum.Equals(LedgerInitFlagEnum.Revaluation))
             {
                 strFlagName = "REVALUATION-RUN";
             }
-
-            if (strFlagName.Equals(String.Empty))
+            else
             {
-                throw new ApplicationException("Please define a value for the selected enum");
+                strFlagName = AFlagEnum.ToString();
             }
         }
 
@@ -677,6 +657,22 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
+        }
+
+        public void SetFlagAndName(string AName)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                intLedgerNumber, strFlagName, Transaction);
+            ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+
+            aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
+            aLedgerInitFlagRow.InitOptionName = strFlagName;
+            aLedgerInitFlagRow.CreatedBy = AName;
+            aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+            ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out VerificationResult);
+            DBAccess.GDBAccessObj.CommitTransaction();
+            HandleVerificationResuls();
         }
 
         private bool FindRecord()

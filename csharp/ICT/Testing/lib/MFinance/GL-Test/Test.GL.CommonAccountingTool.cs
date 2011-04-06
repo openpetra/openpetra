@@ -216,6 +216,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
+        [Test]
+        public void Test_04_ENum()
+        {
+            string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+            System.Diagnostics.Debug.WriteLine(username);
+
+            TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(
+                LedgerNumber, LedgerInitFlagEnum.DatabaseAllocation);
+            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
+            tifh.SetFlagAndName(username);
+            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
+        }
+
         [TestFixtureSetUp]
         public void Init()
         {

@@ -80,20 +80,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(LedgerNumber);
 
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(1),
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(1),
                 "DateTime.MinValue is an error representative");
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(1),
-                "DateTime.MinValue is an error representative");
-            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(1),
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodStartDate(1),
                 "DateTime.MinValue is an error representative");
 
-            Assert.AreEqual(DateTime.MinValue, getAPI.GetDatePeriodEnd(33),
+            Assert.AreEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(33),
                 "DateTime.MinValue is an error representative");
-            Assert.AreEqual(DateTime.MinValue, getAPI.GetDatePeriodStart(33),
+            Assert.AreEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(33),
                 "DateTime.MinValue is an error representative");
-            Assert.AreEqual(DateTime.MinValue, getAPI.GetEffectiveDateOfPeriod(33),
-                "DateTime.MinValue is an error representative");
-
             Assert.IsTrue(TryGetAccountPeriodInfo(LedgerNumber, 1),
                 "This request shall pass");
             Assert.IsFalse(TryGetAccountPeriodInfo(LedgerNumber, 100),
@@ -208,7 +203,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             try
             {
                 GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(ALedgerNum, APeriodNum);
-                DateTime date = getAPI.EffectiveDate;
+                DateTime date = getAPI.PeriodEndDate;
                 return date != null;
             }
             catch (IndexOutOfRangeException)
