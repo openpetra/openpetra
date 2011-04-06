@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using Ict.Petra.Client.MReporting.Logic;
@@ -316,10 +317,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FCalculator.GenerateResultRemoteClient())
                 {
-#if DEBUGMODE
-                    FCalculator.GetParameters().Save("debugParameterReturn.xml", true);
-                    FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), "debugResultReturn.csv");
-#endif
+                    if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                    {
+                        FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
+                        FCalculator.GetResults().WriteCSV(
+                            FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+                    }
 
                     FPreviewForm.Cursor = Cursors.Default;
                     object[] Args = new object[1];

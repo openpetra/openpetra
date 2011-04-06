@@ -19,6 +19,7 @@ list of available commands:
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  quickClean: cleans all generated files and the delivery directory
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
@@ -78,6 +79,19 @@ not supported
   </delete>
   <property name="target" value="clean" />
   <call target="translationCompilePOFile" />    
+</target>
+
+<target name="quickClean" description="cleans all generated files and the delivery directory">
+  <delete dir="${dir.delivery}"/>
+  <mkdir dir="${dir.delivery}"/>
+  <delete>
+    <fileset basedir="${dir.root}">
+      <include name="**/*-generated.build" />
+      <include name="**/*-generated.cs" />
+      <include name="**/*-generated.resx" />
+      <include name="**/*-generated.Designer.cs" />
+    </fileset>
+  </delete>
 </target>
 
 <target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
