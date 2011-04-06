@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -385,9 +385,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-#if DEBUGMODE
-                FCalculator.GetParameters().Save("debugParameter.xml", true);
-#endif
+                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                {
+                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+                }
+
                 this.FWinForm.Cursor = Cursors.WaitCursor;
                 TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
@@ -395,10 +397,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                 // TODO : should the server know the user name and password? what about user permissions? does not know about the database
                 if (FCalculator.GenerateResultRemoteClient())
                 {
-#if DEBUGMODE
-                    FCalculator.GetParameters().Save("debugParameterReturn.xml", true);
-                    FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), "debugResultReturn.csv");
-#endif
+                    if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+                    {
+                        FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
+                        FCalculator.GetResults().WriteCSV(
+                            FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+                    }
+
                     this.FWinForm.Cursor = Cursors.Default;
 
                     if (FCalculator.GetParameters().Exists("SaveCSVFilename")
