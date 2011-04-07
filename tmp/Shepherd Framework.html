@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Shepherd Framework</title>
+</head>
+<body
+ style="margin-left: 68px; width: 897px; margin-top: 42px; height: 700px;">
+<span
+ style="font-weight: bold; text-decoration: underline; font-family: Times New Roman;">Introduction
+to OpenPetra Shepherd Framework</span><span
+ style="font-family: Times New Roman;"> </span><br
+ style="font-family: Times New Roman;">
+<br style="font-family: Times New Roman;">
+<span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium; font-family: Times New Roman;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">
+<p
+ style="margin: 0.4em 0px 0.5em 30px; line-height: 1.5em; width: 867px;">The
+Shepherds Framework will be a support in creating individual instances
+of 'Shepherds' for openPETRA. 'Shepherds' are Installer-like Dialogs
+with Next-Back-Finish buttons. They have several steps/pages and
+through that offer a 'guided walk' to the openPETRA user on what key
+data to enter (or review) for a specific purpose.</p>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">Example
+Screenshots of an existing PETRA (<i>not</i><span
+ class="Apple-converted-space">&nbsp;</span>openPETRA) Shepherd can be
+found<span class="Apple-converted-space">&nbsp;</span><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Example_Screenshots_of_an_existing_PETRA_Shepherd"
+ title="Example Screenshots of an existing PETRA Shepherd"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;">here</a>.</p>
+</span></span>
+<ul style="font-family: Times New Roman;">
+  <li><span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">&nbsp;&nbsp;&nbsp;</span></span><span
+ class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">The
+corresponding Bug (=Feature Request) is<span
+ class="Apple-converted-space">&nbsp;</span><a
+ href="https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=206"
+ class="external text"
+ title="https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=206"
+ rel="nofollow"
+ style="padding: 0px 16px 0px 0px; text-decoration: none; color: rgb(51, 102, 187); background-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/lock_icon.gif); background-position: 100% 50%;">Bug
+#206</a><span class="Apple-converted-space">&nbsp;</span>(shared with
+the related Project<span class="Apple-converted-space">&nbsp;</span><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Base_Class_with_universal_logic_for_%27Shepherd_Framework%27_%28design_and_start_of_implementation%29"
+ title="Base Class with universal logic for 'Shepherd Framework' (design and start of implementation)"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;">Base
+Class with universal logic for 'Shepherd Framework' (design and start
+of implementation)</a>).</span></span></li>
+</ul>
+<ul style="font-family: Times New Roman;">
+  <li><span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">
+    <p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;"><span
+ class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">The
+Bazaar Branch in which the development is to happen is called
+'dev_0000206_studentsJ2011_shepherdframework' (again shared with
+related Project).</span></span></p>
+    </span></span></li>
+</ul>
+<span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium; font-family: Times New Roman;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;"></p>
+</span><span class="Apple-style-span"
+ style="font-size: 13px; line-height: 19px;">
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">.NET WinForms
+supports 'Visual Inheritance', that is, a Form can be a 'Base Form'
+from which other Forms can inherit. Like with Class Inheritance, with
+Visual Inheritance the ancestor's functionality, eg. public Methods and
+Properties, are inherited to the inheritor. In addition to that, the<span
+ class="Apple-converted-space">&nbsp;</span><i>layout is inherited as
+well</i>!</p>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">The creation of
+a Base Form</p>
+</span></span>
+<ul style="font-family: Times New Roman;">
+  <li><span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">avoids
+code duplication</span></span></li>
+  <li style="margin-bottom: 0.1em;">guarantees a standard look-and-feel
+for the user</li>
+  <li style="margin-bottom: 0.1em;">means that once a software engineer
+has done one Shepherd using the Base Form he will know how to do the
+next one(s), as the methods for doing things are standardised.</li>
+</ul>
+<span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium; font-family: Times New Roman;"><span
+ class="Apple-style-span" style="font-size: 13px; line-height: 19px;">
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;"><br>
+A short introduction article on Visual Inheritance can be found<span
+ class="Apple-converted-space">&nbsp;</span><a
+ href="http://www.codeproject.com/KB/dotnet/visualForm.aspx"
+ class="external text"
+ title="http://www.codeproject.com/KB/dotnet/visualForm.aspx"
+ rel="nofollow"
+ style="padding: 0px 13px 0px 0px; text-decoration: none; color: rgb(51, 102, 187); background-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/external.png); background-position: 100% 50%;">here</a><span
+ class="Apple-converted-space">&nbsp;</span>(Examples are given in
+VB.NET, but they can be understood easy enough to 'get' what they do
+and do likewise in C# code.)</p>
+</span></span><br style="font-family: Times New Roman;"
+ class="Apple-interchange-newline">
+<span class="Apple-style-span"
+ style="border-collapse: separate; color: rgb(0, 0, 0); font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium;"><span
+ class="Apple-style-span"
+ style="font-family: sans-serif; font-size: 13px; line-height: 19px;">
+<h2
+ style="border-bottom: 1px solid rgb(170, 170, 170); margin: 0px 0px 0.6em; color: black; background-image: none; font-weight: bold; padding-top: 0.5em; padding-bottom: 0.17em; font-size: 19px;"><span
+ class="mw-headline">Desired Outcome</span></h2>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">A Base Form is
+to be created that has the basic layout features of a Shepherd and some
+Methods and Properties that can be used by inheritors.</p>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">To illustrate
+the layout that should be achieved a screenshot from PETRA (not
+openPETRA) is shown here:</p>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;"><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=File:Shepherds_Person_APS-3.png"
+ class="image" title="Partner PERSON Shepherd - Page 3"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;"><img
+ alt="Partner PERSON Shepherd - Page 3"
+ src="http://sourceforge.net/apps/mediawiki/openpetraorg/nfs/project/o/op/openpetraorg/c/cb/Shepherds_Person_APS-3.png"
+ style="border-style: none; margin: 0px; vertical-align: middle; width: 519px; height: 380px;"
+ border="0"></a></p>
+<h3
+ style="margin: 0px 0px 0.3em; color: black; background-image: none; font-weight: normal; padding-top: 0.5em; padding-bottom: 0.17em; border-bottom-style: none; font-size: 17px;"><span
+ class="mw-headline">Layout Features</span></h3>
+<ul
+ style="margin: 0.3em 0px 0px 1.5em; padding: 0px; line-height: 1.5em; list-style-type: square; list-style-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/bullet.gif);">
+  <li style="margin-bottom: 0.1em;"><b>Top Panel</b><span
+ class="Apple-converted-space">&nbsp;</span>which contains a heading
+and some optional instructions (individual for each 'Shepherd Page').</li>
+</ul>
+<ul
+ style="margin: 0.3em 0px 0px 1.5em; padding: 0px; line-height: 1.5em; list-style-type: square; list-style-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/bullet.gif);">
+  <li style="margin-bottom: 0.1em;"><b>Content Panel</b><span
+ class="Apple-converted-space">&nbsp;</span>which contains data entry
+fields and possibly other Controls (individual for each 'Shepherd
+Page').</li>
+</ul>
+<ul
+ style="margin: 0.3em 0px 0px 1.5em; padding: 0px; line-height: 1.5em; list-style-type: square; list-style-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/bullet.gif);">
+  <li style="margin-bottom: 0.1em;"><b>Buttons Panel</b><span
+ class="Apple-converted-space">&nbsp;</span>which contains 'Help',
+'Cancel', 'Back', 'Next' and 'Finish' Buttons (global for all 'Shepherd
+Pages')</li>
+</ul>
+<ul
+ style="margin: 0.3em 0px 0px 1.5em; padding: 0px; line-height: 1.5em; list-style-type: square; list-style-image: url(http://sourceforge.net/apps/mediawiki/openpetraorg/skins/sourceforge/bullet.gif);">
+  <li style="margin-bottom: 0.1em;"><b>Navigation Panel</b><span
+ class="Apple-converted-space">&nbsp;</span>(proposed, shown on the
+following screenshot). Will allow the user to 'jump' at any time to any
+'Shepherd Page' that is 'enabled'.</li>
+</ul>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;"><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=File:Task_Panel_Sample_4_-_Shepherd_Page_Panel.png"
+ class="image" title="Proposed Shepherd Navigation Panel"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;"><img
+ alt="Proposed Shepherd Navigation Panel"
+ src="http://sourceforge.net/apps/mediawiki/openpetraorg/nfs/project/o/op/openpetraorg/a/a7/Task_Panel_Sample_4_-_Shepherd_Page_Panel.png"
+ style="border-style: none; margin: 0px; vertical-align: middle;"
+ border="0" height="475" width="217"></a></p>
+<p style="margin: 0.4em 0px 0.5em; line-height: 1.5em;">The Navigation
+Panel will consist of a<span class="Apple-converted-space">&nbsp;</span><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Creation_of_a_UserControl:_Collapsible_Panel"
+ title="Creation of a UserControl: Collapsible Panel"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;">Collapsible
+Panel</a><span class="Apple-converted-space">&nbsp;</span>which will
+host a<span class="Apple-converted-space">&nbsp;</span><a
+ href="http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Creation_of_a_UserControl:_Task_List"
+ title="Creation of a UserControl: Task List"
+ style="text-decoration: none; color: rgb(0, 43, 184); background-image: none;">Task
+List</a>.</p>
+</span></span><br style="font-family: Times New Roman;">
+<br style="font-family: Times New Roman;">
+<span style="font-weight: bold; font-family: Times New Roman;">Class
+Descriptions: </span><br
+ style="font-weight: bold; font-family: Times New Roman;">
+<br style="font-family: Times New Roman;">
+<span style="font-family: Times New Roman;">Interface Descriptions: </span><br
+ style="font-family: Times New Roman;">
+<span style="font-family: Times New Roman;">&lt;!--- Explain
+interactions between classes and interfaces in the interface
+description --&gt; </span><br style="font-family: Times New Roman;">
+<br style="font-family: Times New Roman;">
+<span
+ style="font-weight: bold; text-decoration: underline; font-family: Times New Roman;">Appendix
+A: YAML Structure<br>
+<br>
+</span><span style="font-family: Times New Roman;">&lt;! -- Give a
+description of how the YAML files work --&gt; <br>
+<br>
+&lt;! -- write comments on each of the fields below and how they should
+work -- &gt; </span><span
+ style="text-decoration: underline; font-family: Times New Roman;"><span
+ style="text-decoration: underline;"></span><br>
+</span><span
+ style="font-weight: bold; text-decoration: underline; font-family: Times New Roman;"><br>
+</span><span style="font-family: Times New Roman;">Shepherd:<br>
+&nbsp;&nbsp;&nbsp; Title:&nbsp;<br>
+&nbsp;&nbsp;&nbsp; Width:&nbsp;<br>
+&nbsp;&nbsp;&nbsp; Height:&nbsp;<br>
+&nbsp;&nbsp;&nbsp; Testelement: <br>
+<br>
+&nbsp;&nbsp;&nbsp; ShepherdPages:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PartnerDetailsChurch:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ID:&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Title:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Note:&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Visible: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Enabled: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+UserControlNamespace: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+UserControlClassName:&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+HelpContext: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SubShepherd.ShepherdFamily:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ShepherdYAMLFile:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ImportPages:</span>
+</body>
+</html>
