@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
+
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -127,6 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FinRecipientKeyChanging = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
@@ -421,17 +424,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
-            revertForm.LedgerNumber = FLedgerNumber;
-            revertForm.AddParam("Function", functionname);
-            revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
-            //revertForm.MainDS = FMainDS;
-            //revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
-            revertForm.Show();
-
-            if (revertForm.Ok)
+            try
             {
-                //refresh
-                ((TFrmGiftBatch)ParentForm).LedgerNumber = FLedgerNumber;
+                ParentForm.ShowInTaskbar = false;
+                revertForm.LedgerNumber = FLedgerNumber;
+                revertForm.AddParam("Function", functionname);
+                revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
+
+                if (revertForm.ShowDialog() == DialogResult.OK)
+                {
+                    // refresh the whole window
+                    ((TFrmGiftBatch)ParentForm).LedgerNumber = FLedgerNumber;
+                }
+            }
+            finally
+            {
+                revertForm.Dispose();
+                ParentForm.ShowInTaskbar = true;
             }
         }
 

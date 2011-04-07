@@ -1222,6 +1222,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.ConfidentialGiftFlag = oldGiftDetail.ConfidentialGiftFlag;
                                     giftDetail.TaxDeductable = oldGiftDetail.TaxDeductable;
                                     giftDetail.RecipientKey = oldGiftDetail.RecipientKey;
+
+                                    giftDetail.ChargeFlag = oldGiftDetail.ChargeFlag;
+                                    giftDetail.CostCentreCode = oldGiftDetail.CostCentreCode;
+
+                                    if (giftDetail.CostCentreCode.Length == 0)
+                                    {
+                                        giftDetail.SetCostCentreCodeNull();
+                                    }
+
+                                    giftDetail.IchNumber = oldGiftDetail.IchNumber;
+
                                     giftDetail.MailingCode = oldGiftDetail.MailingCode;
 
                                     if (giftDetail.MailingCode.Length == 0)
@@ -1236,7 +1247,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.CommentTwoType = (String)requestParams["ReversalCommentTwoType"];
                                     giftDetail.CommentThreeType = (String)requestParams["ReversalCommentThreeType"];
 
-                                    // This is used to mark both as a Reverted giftDetails
+                                    // This is used to mark both as a Reverted giftDetails, except the adjusted (new) gift
 
                                     giftDetail.ModifiedDetail = (cycle == 0);
                                     oldGiftDetail.ModifiedDetail = (cycle == 0);

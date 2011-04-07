@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public int LedgerNumber {
             set
             {
+                DialogResult = System.Windows.Forms.DialogResult.Abort;
                 FLedgerNumber = value;
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
 
@@ -158,6 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ok)
             {
                 MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+                DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
             }
             else

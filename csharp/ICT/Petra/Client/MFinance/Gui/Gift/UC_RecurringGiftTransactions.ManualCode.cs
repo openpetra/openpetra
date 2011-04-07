@@ -106,6 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -129,6 +130,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FinRecipientKeyChanging = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
