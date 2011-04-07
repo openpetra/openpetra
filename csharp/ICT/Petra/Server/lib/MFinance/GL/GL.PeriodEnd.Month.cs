@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 RunAndAccountAdminFees();
-                MonthEndCalculations();
+                CarryForward();
                 return false;
             }
             catch (TerminateException)
@@ -241,20 +241,75 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
-
-            //TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(ledgerInfo, );
         }
 
         void RunAndAccountAdminFees()
         {
-            // TODO: Admin Fees and ICH stewadship ...
+            // TODO: Admin Fees and ICH stewardship ...
             // CommonAccountingTool cat = new CommonAccountingTool(ledgerInfo, "Batch Description");
         }
 
-        void MonthEndCalculations()
+        void CarryForward()
+        {
+            CreateNewAccountingPeriod();
+
+            if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
+            {
+                SetProvisionalYearEndFlag(true);
+            }
+            else
+            {
+                SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
+            }
+
+            new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+                TLedgerInitFlagEnum.Revaluation).Flag = false;
+        }
+
+        void SetProvisionalYearEndFlag(bool AFlagValue)
+        {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[3];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Binary);
+            ParametersArray[0].Value = AFlagValue;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Binary);
+            ParametersArray[1].Value = !AFlagValue;
+            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[2].Value = ledgerInfo.LedgerNumber;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
+            strSQL += "SET " + ALedgerTable.GetYearEndFlagDBName() + " = ? ";
+            strSQL += ", " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
+            strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                strSQL, transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        void SetNewFwdPeriodValue(int ANewPeriodNum)
+        {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ANewPeriodNum;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[1].Value = ledgerInfo.LedgerNumber;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
+            strSQL += "SET " + ALedgerTable.GetCurrentPeriodDBName() + " = ? ";
+            strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                strSQL, transaction, ParametersArray);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        void CreateNewAccountingPeriod()
         {
         }
     }
+
 
     /// <summary>
     /// Routine to finde unposted gifts batches.

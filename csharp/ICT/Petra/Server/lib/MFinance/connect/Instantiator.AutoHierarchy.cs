@@ -2573,6 +2573,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool TPeriodMonthEndInfo(int ALedgerNum,
+                                        out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEndInfo", ";INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEndInfo(ALedgerNum, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public bool Revaluate(int ALedgerNum,
                               int AAccoutingPeriod,
                               string ARevaluationCostCenter,
@@ -2582,6 +2590,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING[];DECIMAL[];TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public int TTestInfo_1(int AInput)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TSingletonConnector), "TTestInfo_1", ";INT;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TSingletonConnector.TTestInfo_1(AInput);
         }
 
         /// generated method from connector

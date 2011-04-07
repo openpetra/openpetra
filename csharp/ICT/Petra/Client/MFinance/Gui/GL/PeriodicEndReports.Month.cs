@@ -31,5 +31,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TPeriodEndMonthly : Form
     {
+        public TPeriodEndMonthly(IntPtr AParentFormHandle) : base()
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+
+
+            this.btnCancel.Click += new EventHandler(CancelMonthEnd);
+            this.btnMonthEnd.Click += new EventHandler(RunMonthEnd);
+        }
     }
 }

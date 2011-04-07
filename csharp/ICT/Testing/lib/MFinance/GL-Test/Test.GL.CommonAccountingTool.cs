@@ -224,7 +224,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             System.Diagnostics.Debug.WriteLine(username);
 
             TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(
-                LedgerNumber, LedgerInitFlagEnum.DatabaseAllocation);
+                LedgerNumber, TLedgerInitFlagEnum.DatabaseAllocation);
             System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
             tifh.SetFlagAndName(username);
             System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());

@@ -46,21 +46,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_01_TLedgerInitFlagHandler()
         {
-            bool blnOld = new TLedgerInitFlagHandler(43, LedgerInitFlagEnum.Revaluation).Flag;
+            bool blnOld = new TLedgerInitFlagHandler(43, TLedgerInitFlagEnum.Revaluation).Flag;
 
-            new TLedgerInitFlagHandler(LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag = true;
+            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag = true;
+                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag = false;
+                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag = false;
+                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, LedgerInitFlagEnum.Revaluation).Flag = blnOld;
+                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = blnOld;
         }
 
         /// <summary>

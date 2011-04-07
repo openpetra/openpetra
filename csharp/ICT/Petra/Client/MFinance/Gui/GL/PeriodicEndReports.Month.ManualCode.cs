@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -31,5 +32,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TPeriodEndMonthly
     {
+        private void CancelMonthEnd(object btn, EventArgs e)
+        {
+            int ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(3);
+
+            MessageBox.Show(ih.ToString());
+            ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(4);
+            ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(12);
+            MessageBox.Show(ih.ToString());
+            this.Close();
+        }
+
+        private void RunMonthEnd(object btn, EventArgs e)
+        {
+            TRemote.MFinance.GL.WebConnectors.TTestInfo_1(3);
+            int ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(5);
+            ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(4);
+            ih = TRemote.MFinance.GL.WebConnectors.TTestInfo_1(12);
+            this.Close();
+        }
     }
 }

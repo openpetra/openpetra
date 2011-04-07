@@ -60,6 +60,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void InitializeComponent()
         {
+            this.btnMonthEnd = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+
+            int leftColStart = 32;
+            int leftColWidth = 240;
+            int colSpace = 15;
+            int rowY = 5;
+            int rowHeight = 25;
+            int rightColWidth = 350;
+
+            int buttonTop = 210;
+            int buttonLeft = 140;
+
+
+            this.ClientSize = new System.Drawing.Size(600, rowY + 50);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnMonthEnd);
+
+            //this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+
+            this.Name = "GLMonthEnd";
+            this.Text = "Periodic End - Month ...";
+            this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnMonthEnd;
     }
 }

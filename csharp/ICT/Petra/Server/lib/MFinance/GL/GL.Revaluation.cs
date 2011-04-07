@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Description of GL_Revaluation.
     /// </summary>
-    public class TRevaluationWebConnector
+    public partial class TRevaluationWebConnector
     {
         /// <summary>
         /// Main Revalutate Routine!

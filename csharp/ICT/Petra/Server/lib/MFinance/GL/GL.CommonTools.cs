@@ -585,7 +585,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// This is the list of vaild Ledger-Init-Flags
     /// (the TLedgerInitFlagHandler has an internal information of the flag)
     /// </summary>
-    public enum LedgerInitFlagEnum
+    public enum TLedgerInitFlagEnum
     {
         /// <summary>
         /// Revaluation is a process which has to be done once each month. So the value
@@ -615,13 +615,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Database request is done by this routine.
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
-        /// <param name="AFlagNum">A valid LegerInitFlag entry</param>
-        public TLedgerInitFlagHandler(int ALedgerNumber, LedgerInitFlagEnum AFlagEnum)
+        /// <param name="AFlagEnum">A valid LegerInitFlag entry</param>
+        public TLedgerInitFlagHandler(int ALedgerNumber, TLedgerInitFlagEnum AFlagEnum)
         {
             intLedgerNumber = ALedgerNumber;
             strFlagName = String.Empty;
 
-            if (AFlagEnum.Equals(LedgerInitFlagEnum.Revaluation))
+            if (AFlagEnum.Equals(TLedgerInitFlagEnum.Revaluation))
             {
                 strFlagName = "REVALUATION-RUN";
             }
