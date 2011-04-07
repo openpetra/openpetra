@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -524,6 +525,51 @@ namespace Ict.Petra.Server.App.Main
             }
 
             return ReturnValue;
+        }
+
+        private List <TDataBase>FDBConnections = new List <TDataBase>();
+
+        /// <summary>
+        /// manage database connections for the ASP webclient
+        /// </summary>
+        /// <param name="ADatabaseConnection"></param>
+        public void AddDBConnection(TDataBase ADatabaseConnection)
+        {
+            if (!FDBConnections.Contains(ADatabaseConnection))
+            {
+                FDBConnections.Add(ADatabaseConnection);
+            }
+        }
+
+        /// <summary>
+        /// disconnect database connections that are older than the given timeout in seconds.
+        /// This is useful for the ASP webclient
+        /// </summary>
+        /// <param name="ATimeoutInSeconds"></param>
+        /// <param name="AUserID">can limit to one specific username, eg. ANONYMOUS for online registration, or leave empty for all users</param>
+        /// <returns></returns>
+        public bool DisconnectTimedoutDatabaseConnections(Int32 ATimeoutInSeconds, string AUserID)
+        {
+            List <TDataBase>DBsToDisconnect = new List <TDataBase>();
+
+            foreach (TDataBase db in FDBConnections)
+            {
+                if ((AUserID == null) || (AUserID.Length == 0) || (AUserID == db.UserID))
+                {
+                    if (db.LastDBAction.AddSeconds(ATimeoutInSeconds) < DateTime.Now)
+                    {
+                        DBsToDisconnect.Add(db);
+                    }
+                }
+            }
+
+            foreach (TDataBase dbToDisconnect in DBsToDisconnect)
+            {
+                dbToDisconnect.CloseDBConnection();
+                FDBConnections.Remove(dbToDisconnect);
+            }
+
+            return DBsToDisconnect.Count > 0;
         }
 
         /// <summary>
