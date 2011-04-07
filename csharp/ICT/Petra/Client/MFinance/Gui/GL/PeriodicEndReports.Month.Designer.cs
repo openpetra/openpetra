@@ -23,23 +23,17 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     /// <summary>
-    /// Description of GLRevaluation.
+    /// Month-End dialog
     /// </summary>
     public partial class TPeriodEndMonthly
     {
-        /// <summary>
-        /// Designer variable used to keep track of non-visual components.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Disposes resources used by the form.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -60,33 +54,53 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPeriodEndMonthly));
+
             this.btnMonthEnd = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.tbxMessage = new TextBox();
             this.SuspendLayout();
 
-            int leftColStart = 32;
-            int leftColWidth = 240;
-            int colSpace = 15;
-            int rowY = 5;
-            int rowHeight = 25;
-            int rightColWidth = 350;
-
-            int buttonTop = 210;
-            int buttonLeft = 140;
+            tbxMessage.Location = new System.Drawing.Point(15, 15);
+            tbxMessage.Name = "tbxMessage";
+            tbxMessage.Multiline = true;
+            tbxMessage.Size = new Size(this.Width - 30, this.Height - 100);
+            tbxMessage.ScrollBars = ScrollBars.Vertical;
+            tbxMessage.ReadOnly = true;
 
 
-            this.ClientSize = new System.Drawing.Size(600, rowY + 50);
+            //
+            // btnMonthEnd
+            //
+            this.btnMonthEnd.Name = "btnMonthEnd";
+            this.btnMonthEnd.Size = new System.Drawing.Size(144, 23);
+            this.btnMonthEnd.TabIndex = 2;
+            this.btnMonthEnd.Text = Catalog.GetString("Month End");
+            this.btnMonthEnd.UseVisualStyleBackColor = true;
+            //
+            // btnCancel
+            //
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(137, 23);
+            this.btnCancel.TabIndex = 3;
+            this.btnCancel.Text = Catalog.GetString("Cancel");
+            this.btnCancel.UseVisualStyleBackColor = true;
+
+
+            this.ClientSize = new System.Drawing.Size(600, 500);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnMonthEnd);
+            this.Controls.Add(this.tbxMessage);
 
-            //this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "GLMonthEnd";
-            this.Text = "Periodic End - Month ...";
+            this.Text = Catalog.GetString("Periodic End - Month ...");
             this.ResumeLayout(false);
         }
 
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnMonthEnd;
+        private System.Windows.Forms.TextBox tbxMessage;
     }
 }

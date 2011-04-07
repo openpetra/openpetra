@@ -41,6 +41,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.btnCancel.Click += new EventHandler(CancelMonthEnd);
             this.btnMonthEnd.Click += new EventHandler(RunMonthEnd);
+
+            this.ResizeEnd += new EventHandler(ResizeForm);
         }
     }
 }
