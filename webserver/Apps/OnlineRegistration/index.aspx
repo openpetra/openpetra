@@ -1,7 +1,9 @@
 <%@ Page Language="C#" %>
 <%@ Assembly Name="Ict.Common" %>
-<%@ Import Namespace="Ict.Common" %>
+<%@ Assembly Name="Ict.Petra.Server.app.WebService" %>
 
+<%@ Import Namespace="Ict.Common" %>
+<%@ Import Namespace="PetraWebService" %>
 <%@ Import Namespace="System.IO" %>
 
 <script runat="server">
@@ -32,8 +34,21 @@ private void CalculatePreferredLanguage()
     {
         FSelectedLanguage = FSelectedLanguage.Substring(0, FSelectedLanguage.IndexOf("-"));
     }
-}
 
+    /// check whether we can get a connection to the database. otherwise the people should not enter all the data for nothing
+    try
+    {
+
+        TOpenPetraOrg server = new TOpenPetraOrg();
+        server.InitServer();
+        server.Logout();
+    }
+    catch (Exception e)
+    {
+        TLogging.Log("Cannot access website, " + e.Message);
+        Response.Redirect(CountrySelectionPage);
+    }
+}
 
 </script>
 
@@ -42,6 +57,7 @@ private void CalculatePreferredLanguage()
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>Sample Registration</title>
 
@@ -62,7 +78,7 @@ private void CalculatePreferredLanguage()
     <link rel="stylesheet" type="text/css" href="../../css/fileuploadfield.css"/>
     <script type="text/javascript" src="../../js/FileUploadField.js"></script>
 
-    <script type="text/javascript" src="http://extjs.cachefly.net/ext-3.2.1/src/locale/ext-lang-<%Response.Write(FSelectedLanguage);%>.js"></script>
+    <script type="text/javascript" src="../../js/lang/ext-lang-<%Response.Write(FSelectedLanguage);%>.js"></script>
 
     <script type="text/javascript" src="gen/main.<%Response.Write(FSelectedCountry + "." + FSelectedRole);%>.js"></script>
     <script type="text/javascript" src="main.<%Response.Write(FSelectedCountry);%>-lang.js"></script>
@@ -86,7 +102,7 @@ private void CalculatePreferredLanguage()
         // this is required for smaller screens, otherwise the scrollbars don't work properly
         MainForm.setPosition(0,0);
         
-        document.title = MainForm.pnlContentFORMCAPTION;
+        document.title = MainForm.pnlContentFORMCAPTION.replace("&apos;", "'");
         
         UploadForm = new TUploadForm();
         UploadForm.render('uploadDiv');
@@ -97,7 +113,7 @@ private void CalculatePreferredLanguage()
 </head>
 
 <body>
-<div style="height:805px;"/> <!-- this div helps with the background color for smaller screens -->
+<div style="height:1200px;"/> <!-- this div helps with the background color for smaller screens -->
 <div id="mainFormDiv"></div>
 <div id="uploadDiv" style="visibility:hidden"></div>
 </body>
