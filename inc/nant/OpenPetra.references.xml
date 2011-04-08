@@ -42,6 +42,7 @@
   <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
   <include name="ICSharpCode.SharpZipLib.dll"/>
+  <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
   <include name="CMicroParser.dll" /> <!-- Winforms Generator -->
 </patternset>

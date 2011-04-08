@@ -22,12 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Xml;
+using System.IO;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -375,6 +378,93 @@ namespace Ict.Petra.Server.MConference.Applications
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
                 return String.Empty;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
+
+        /// <summary>
+        /// export accepted applications to an Excel file
+        /// </summary>
+        /// <returns></returns>
+        public static bool DownloadApplications(string AEventCode, ref ConferenceApplicationTDS AMainDS, MemoryStream AStream)
+        {
+            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
+                    PmShortTermApplicationRow TemplateRow = AMainDS.PmShortTermApplication.NewRowTyped(false);
+
+                    // one person is only registered once for the same event. each registration is a new partner key
+                    TemplateRow.PartnerKey = row.PartnerKey;
+                    TemplateRow.ConfirmedOptionCode = AEventCode;
+                    PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
+
+                    PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
+                    PLocationRow LocationRow = PLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+                    PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+
+                    PmGeneralApplicationRow GeneralApplicationRow =
+                        PmGeneralApplicationAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey,
+                            ShortTermApplicationRow.ApplicationKey,
+                            ShortTermApplicationRow.RegistrationOffice,
+                            Transaction)[0];
+
+                    XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
+                    myDoc.DocumentElement.AppendChild(newNode);
+                    XmlAttribute attr;
+
+                    attr = myDoc.CreateAttribute("PartnerKey");
+                    attr.Value = PersonRow.PartnerKey.ToString();
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("FamilyName");
+                    attr.Value = PersonRow.FamilyName;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("FirstName");
+                    attr.Value = PersonRow.FirstName;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("TelephoneNumber");
+                    attr.Value = PartnerLocationRow.TelephoneNumber;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("MobileNumber");
+                    attr.Value = PartnerLocationRow.MobileNumber;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("EmailAddress");
+                    attr.Value = PartnerLocationRow.EmailAddress;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("DateOfBirth");
+                    attr.Value = PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy");
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("Gender");
+                    attr.Value = PersonRow.Gender;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("Role");
+                    attr.Value = ShortTermApplicationRow.StCongressCode;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("ApplicationDate");
+                    attr.Value = GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy");
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("ApplicationStatus");
+                    attr.Value = GeneralApplicationRow.GenApplicationStatus;
+                    newNode.Attributes.Append(attr);
+
+                    // now add all the values from the json data
+                    TJsonTools.DataToXml(GeneralApplicationRow.RawApplicationData, ref newNode, myDoc, false);
+                }
+
+                return TCsv2Xml.Xml2ExcelStream(myDoc, AStream);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                return false;
             }
             finally
             {

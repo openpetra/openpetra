@@ -293,56 +293,6 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
-    private string parseJSonValues(JsonObject ARoot)
-    {
-        string result = "";
-
-        foreach (string key in ARoot.Names)
-        {
-            if (key.ToString().StartsWith("ext-comp"))
-            {
-                string content = parseJSonValues((JsonObject)ARoot[key]);
-
-                if (content.Length > 0)
-                {
-                    if (result.Length > 0)
-                    {
-                        result += ",";
-                    }
-
-                    result += content;
-                }
-            }
-            else
-            {
-                if (result.Length > 0)
-                {
-                    result += ",";
-                }
-
-                if (key.EndsWith("CountryCode"))
-                {
-                    // we need this so that we can parse the dates correctly from json
-                    Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
-                }
-
-                result += "\"" + key + "\":\"" + ARoot[key].ToString().Replace("\n", "<br/>").Replace("\"", "&quot;") + "\"";
-            }
-        }
-
-        return result;
-    }
-
-    /// remove ext-comp controls, for multi-page forms
-    private string RemoveContainerControls(string AJSONFormData)
-    {
-        JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
-
-        string result = "{" + parseJSonValues(root) + "}";
-
-        return result;
-    }
-
     /// <summary>
     /// import data from a web form, ie partners are entering their own data
     /// </summary>
@@ -373,7 +323,7 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = RemoveContainerControls(AJSONFormData);
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").

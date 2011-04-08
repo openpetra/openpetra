@@ -291,7 +291,7 @@ namespace Ict.Petra.Server.MPartner.Import
                 HTMLText = regex.Replace(HTMLText, "");
             }
 
-            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
+            HTMLText = TJsonTools.ReplaceKeywordsWithData(AData.RawData, HTMLText);
 
             HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
             HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValueStatic("Formletters.Path"));
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MPartner.Import
                 Path.DirectorySeparatorChar + "photos" +
                 Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
 
-            HTMLText = HTMLText.Replace("#HTMLRAWDATA", DataToHTMLTable(AData.RawData));
+            HTMLText = HTMLText.Replace("#HTMLRAWDATA", TJsonTools.DataToHTMLTable(AData.RawData));
 
             PrintDocument doc = new PrintDocument();
 
@@ -339,39 +339,6 @@ namespace Ict.Petra.Server.MPartner.Import
             sw.Close();
 
             return pdfFilename;
-        }
-
-        /// <summary>
-        /// print all data from the submitted form into an HTML table;
-        /// unfortunately the variables are in no specific order
-        /// </summary>
-        /// <param name="AJsonData"></param>
-        /// <returns></returns>
-        private static string DataToHTMLTable(string AJsonData)
-        {
-            string Result = "<table cellspacing=\"2\">";
-            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
-
-            foreach (string key in list.Names)
-            {
-                Result += String.Format("<tr><td>{0}</td><td>{1}</td></tr>", key, list[key]);
-            }
-
-            Result += "</table>";
-
-            return Result;
-        }
-
-        private static string ReplaceKeywordsWithData(string AJsonData, string ATemplate)
-        {
-            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
-
-            foreach (DictionaryEntry entry in list)
-            {
-                ATemplate = ATemplate.Replace("#" + entry.Key.ToString().ToUpper(), entry.Value.ToString());
-            }
-
-            return ATemplate;
         }
 
         /// send an email to the applicant and the registration office
@@ -424,8 +391,8 @@ namespace Ict.Petra.Server.MPartner.Import
             BCCAddress = BCCAddress.Substring("BCC: ".Length);
             EmailSubject = EmailSubject.Substring("Subject: ".Length);
 
-            HTMLText = ReplaceKeywordsWithData(AData.RawData, HTMLText);
-            HTMLText = HTMLText.Replace("#HTMLRAWDATA", DataToHTMLTable(AData.RawData));
+            HTMLText = TJsonTools.ReplaceKeywordsWithData(AData.RawData, HTMLText);
+            HTMLText = HTMLText.Replace("#HTMLRAWDATA", TJsonTools.DataToHTMLTable(AData.RawData));
 
             // load the language file for the specific country
             Catalog.Init(ACountryCode, ACountryCode);
@@ -462,7 +429,7 @@ namespace Ict.Petra.Server.MPartner.Import
             {
                 // This is a test for printing to PDF and sending an email, no partner is created in the database.
                 // make sure you have a photo with name data\photos\815.jpg for the photo to appear in the pdf
-                TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
+                TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
                     AJSONFormData);
                 data.RawData = AJSONFormData;
 
@@ -492,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
             if (AFormID == "RegisterPerson")
             {
-                TApplicationFormData data = (TApplicationFormData)Jayrock.Json.Conversion.JsonConvert.Import(typeof(TApplicationFormData),
+                TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
                     AJSONFormData);
                 data.RawData = AJSONFormData;
 
