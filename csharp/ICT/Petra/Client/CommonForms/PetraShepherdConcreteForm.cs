@@ -158,6 +158,10 @@ namespace Ict.Petra.Client.CommonForms
         		this.btnFinish.Enabled = false; 
         	}
         	
+        	this.lblPageProgress.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages(); 
+        	this.lblHeading1.Text = FLogic.CurrentPage.Title; 
+        	this.lblHeading2.Text = FLogic.CurrentPage.Note;
+        	
             TLogging.Log("UpdateNavigation");
         }
         

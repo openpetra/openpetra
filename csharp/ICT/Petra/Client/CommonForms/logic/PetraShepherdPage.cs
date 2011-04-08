@@ -412,6 +412,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
             base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
             base.FTitle = "Here is a summary of the information you have provided:";
+            base.Note = "Choose \'Finish\' to commit the data."; 
             base.HelpContext = "Choose \'Finish\' to commit the data."; 
         }
     }

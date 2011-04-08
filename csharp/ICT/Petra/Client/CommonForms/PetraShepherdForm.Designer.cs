@@ -290,7 +290,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         protected Ict.Common.Controls.TExtStatusBarHelp stbMain;
-        private System.Windows.Forms.Label lblPageProgress;
+        protected System.Windows.Forms.Label lblPageProgress;
         protected System.Windows.Forms.ProgressBar prbPageProgress;
         private System.Windows.Forms.Panel pnlHeadings;
         private System.Windows.Forms.Panel panel3;
@@ -305,8 +305,8 @@ namespace Ict.Petra.Client.CommonForms
         protected System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Panel pnlButtons;
-        private System.Windows.Forms.Label lblHeading2;
-        private System.Windows.Forms.Label lblHeading1;
+        protected System.Windows.Forms.Label lblHeading2;
+        protected System.Windows.Forms.Label lblHeading1;
         private System.Windows.Forms.Panel pnlTop;
     }
 }
