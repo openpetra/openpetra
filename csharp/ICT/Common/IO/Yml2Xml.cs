@@ -663,7 +663,7 @@ namespace Ict.Common.IO
                                             newElement.RemoveChild(childFound);
                                         }
                                     }
-                                    else
+                                    else if (!negated)
                                     {
                                         XmlElement sequenceElement = myDoc.CreateElement("", "Element", "");
                                         newElement.AppendChild(sequenceElement);
@@ -1131,7 +1131,7 @@ namespace Ict.Common.IO
                             result.Remove(value);
                         }
                     }
-                    else
+                    else if (!negate)
                     {
                         result.Add(child.Attributes[0].Value);
                     }
