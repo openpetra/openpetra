@@ -539,7 +539,10 @@ namespace Ict.Common.DB
         /// already/still closed connection.</exception>
         public void CloseDBConnection()
         {
-            CloseDBConnectionInternal(FDbType);
+            if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
+            {
+                CloseDBConnectionInternal(FDbType);
+            }
         }
 
         /// <summary>
