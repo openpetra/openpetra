@@ -352,6 +352,41 @@ public class TOpenPetraOrg : WebService
     }
 
     /// <summary>
+    /// testing function for web forms
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AJSONFormData"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string TestingForms(string AFormID, string AJSONFormData)
+    {
+        // remove ext-comp controls, for multi-page forms
+        TLogging.Log(AJSONFormData);
+
+        try
+        {
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+            return "{\"failure\":true, \"data\":{\"result\":\"Nothing happened, just a test\"}}";
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
+        }
+    }
+
+    /// <summary>
     /// for the partner that wants to edit/update his/her own data.
     /// this also allows to enter new forms (eg. during application process) without having to reenter some data
     /// </summary>
