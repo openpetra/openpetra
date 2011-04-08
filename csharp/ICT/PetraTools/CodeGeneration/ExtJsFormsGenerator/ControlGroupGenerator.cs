@@ -100,7 +100,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             else
             {
                 // used for GroupBox, and Composite
-                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", writer);
+                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", "HiddenValues", writer);
+                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", "Controls", writer);
             }
 
             return snippetRowDefinition;

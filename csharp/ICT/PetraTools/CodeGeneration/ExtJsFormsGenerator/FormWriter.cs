@@ -239,9 +239,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ACtrlSnippet.SetCodelet("ANCHOR", Anchor);
         }
 
-        public static void InsertControl(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
+        public static void InsertControl(TControlDef ACtrl,
+            ProcessTemplate ATemplate,
+            string AItemsPlaceholder,
+            string ANodeName,
+            TFormWriter AWriter)
         {
-            XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, "Controls");
+            XmlNode controlsNode = TXMLParser.GetChild(ACtrl.xmlNode, ANodeName);
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 
@@ -284,11 +288,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 {
                     string child = TYml2Xml.GetElementName(childNode);
                     TControlDef childCtrl = AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName);
+
+                    if ((ANodeName != "HiddenValues") && (childCtrl.controlTypePrefix == "hid"))
+                    {
+                        // somehow, hidden values get into the controls list as well. we don't want them there
+                        continue;
+                    }
+
                     IControlGenerator ctrlGen = AWriter.FindControlGenerator(childCtrl);
 
                     if (ctrlGen is FieldSetGenerator)
                     {
-                        InsertControl(AWriter.FCodeStorage.FindOrCreateControl(child, ACtrl.controlName), ATemplate, AItemsPlaceholder, AWriter);
+                        InsertControl(AWriter.FCodeStorage.FindOrCreateControl(child,
+                                ACtrl.controlName), ATemplate, AItemsPlaceholder, ANodeName, AWriter);
                     }
                     else
                     {
@@ -329,7 +341,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             AddResourceString(FTemplate, "FORMCAPTION", ctrl, FCodeStorage.FFormTitle);
 
-            InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", this);
+            InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", "Controls", this);
 
             InsertButtons(ctrl, FTemplate, "BUTTONS", this);
         }
