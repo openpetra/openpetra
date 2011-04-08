@@ -564,6 +564,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector)</summary>
         bool TPeriodMonthEndInfo(int ALedgerNum,
                                  out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector)</summary>
+        bool TPeriodMonthEnd(int ALedgerNum,
+                             out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,
                        int AAccoutingPeriod,

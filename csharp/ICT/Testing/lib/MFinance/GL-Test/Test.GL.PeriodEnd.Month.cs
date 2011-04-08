@@ -61,7 +61,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Cannot start test because ProvisionalYearEndFlag cannot be changed");
 
             TVerificationResultCollection verificationResult;
-            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            	intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -73,7 +74,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message PYEF-01 is shown");
-            Assert.IsFalse(blnResult, "PYEF-01 is not a Critital Message");
+            Assert.IsTrue(blnHaseErrors, "PYEF-01 is not a Critital Message");
 
             new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = false;
         }
@@ -100,7 +101,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            	intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -112,7 +114,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message PYEF-02 is shown");
-            Assert.IsFalse(blnResult, "PYEF-02 is not a Critital Message");
+            Assert.IsTrue(blnHaseErrors, "PYEF-02 is not a Critital Message");
             UnloadTestData_GetBatchInfo();
         }
 
@@ -123,7 +125,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnResult = TPeriodMonthConnector.TPeriodMonthEndInfo(intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            	intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -133,12 +136,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Status,
                         "Value shall be status only ...");
-                }
+                } 
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message PYEF-03 is shown");
-            Assert.IsFalse(blnResult, "PYEF-03 is not a Critital Message");
+            Assert.IsFalse(blnHaseErrors, "PYEF-03 is not a Critital Message");
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+        }
+
+        [Test]
+        public void Test_PYEF_10()
+        {
+            TVerificationResultCollection verificationResult;
+            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEnd(
+            	intLedgerNumber, out verificationResult);
+        	
         }
 
         [TestFixtureSetUp]

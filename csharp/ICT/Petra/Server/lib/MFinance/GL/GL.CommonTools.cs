@@ -228,7 +228,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            accountTable = AAccountAccess.LoadViaALedger(ledgerInfo.LedgerNumber, transaction);
+            accountTable = AAccountAccess.LoadViaALedger(
+            	ledgerInfo.LedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
 
             if (accountTable.Rows.Count == 0)
@@ -497,11 +498,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber"></param>
         public GetLedgerInfo(int ALedgerNumber)
         {
+
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-//            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-//              IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
             ledgerNumber = ALedgerNumber;
             ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
@@ -733,11 +731,23 @@ namespace Ict.Petra.Server.MFinance.GL
 
     public class TerminateException : SystemException
     {
-        public TerminateException() : base()
+        public TerminateException(Exception innerException, string message)
+            : base(message, innerException)
         {
         }
+        public TerminateException(string message)
+            : base(message)
+        {
+        }
+        
+        public string ErrorCode = String.Empty;
+        public string Context = String.Empty;
     }
 
+
+    
+    
+    
     public class InternalExceptionStati
     {
         public static string INTERNALS = "INTERNALS";

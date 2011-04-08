@@ -49,14 +49,38 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
+	/// <summary>
+	/// Routines for running the period month end check.
+	/// </summary>
     public partial class TPeriodMonthConnector
     {
+    	/// <summary>
+    	/// Routine to initialize the "Hello" Message if you want to start the 
+    	/// periodic month end. 
+    	/// </summary>
+    	/// <param name="ALedgerNum"></param>
+    	/// <param name="AVerificationResult"></param>
+    	/// <returns>True if critical values appeared otherwise false</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEndInfo(
             int ALedgerNum,
             out TVerificationResultCollection AVerificationResult)
         {
             return new TMonthEnd().RunMonthEndInfo(ALedgerNum, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// Routine to run the finally month end ...
+        /// </summary>
+        /// <param name="ALedgerNum"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TPeriodMonthEnd(
+            int ALedgerNum,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return new TMonthEnd().RunMonthEnd(ALedgerNum, out AVerificationResult);
         }
     }
 }
@@ -66,15 +90,20 @@ namespace Ict.Petra.Server.MFinance.GL
     public class TMonthEnd
     {
         TVerificationResultCollection verificationResults;
+        GetSuspenseAccountInfo getSuspenseAccountInfo = null;
         GetLedgerInfo ledgerInfo;
 
         // Set this value true means: Continue the checks and report but never
         // calculate ...
         bool blnCriticalErrors = false;
+        bool blnZerorValueSuspenseAccountsFound = false;
+
 
         public bool RunMonthEndInfo(int ALedgerNum,
             out TVerificationResultCollection AVRCollection)
         {
+            DBAccess.GDBAccessObj.CommitTransaction();
+            verificationResults = new TVerificationResultCollection();
             try
             {
                 ledgerInfo = new GetLedgerInfo(ALedgerNum);
@@ -82,9 +111,27 @@ namespace Ict.Petra.Server.MFinance.GL
                 AVRCollection = verificationResults;
                 return blnCriticalErrors;
             }
-            catch (TerminateException)
+            catch (TerminateException terminate)
             {
-                AVRCollection = verificationResults;
+            	AVRCollection = new TVerificationResultCollection();
+            	TVerificationResult avrEntry;
+                avrEntry = new TVerificationResult(terminate.Context,
+            	                                   terminate.Message, "",
+            	                                   terminate.ErrorCode,
+            	                                   TResultSeverity.Resv_Critical);
+            	AVRCollection.Add(avrEntry);
+            	avrEntry =new TVerificationResult(Catalog.GetString("Exception has been thrown"),
+            	                                  terminate.ToString(), "",
+            	                                  terminate.ErrorCode,
+            	                                  TResultSeverity.Resv_Critical);
+            	AVRCollection.Add(avrEntry);
+            	if (terminate.InnerException != null)
+            	{
+            		avrEntry =new TVerificationResult(Catalog.GetString("Inner Exception"),
+            		                                  terminate.InnerException.ToString(),
+            		                                  TResultSeverity.Resv_Critical);
+            		AVRCollection.Add(avrEntry);
+            	}
                 return true;
             }
         }
@@ -92,6 +139,8 @@ namespace Ict.Petra.Server.MFinance.GL
         public bool RunMonthEnd(int ALedgerNum,
             out TVerificationResultCollection AVRCollection)
         {
+            DBAccess.GDBAccessObj.CommitTransaction();
+            verificationResults = new TVerificationResultCollection();
             try
             {
                 ledgerInfo = new GetLedgerInfo(ALedgerNum);
@@ -134,89 +183,103 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void RunFirstChecks()
         {
-            verificationResults = new TVerificationResultCollection();
+            YearEndProcessingCheck();
+            CheckForUnpostedBatches();
+            CheckForUnpostedGiftBatches();
+            CheckForSuspenseAcountsZero();
+            if (!blnZerorValueSuspenseAccountsFound) 
+            	CheckForSuspenseAcounts();
+        }
 
+
+        private void YearEndProcessingCheck()
+        {
             if (ledgerInfo.ProvisionalYearEndFlag)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("ProvisionalYearEndFlag-Problem"),
+                    Catalog.GetString("Peridic Year End Processing shall be done first"),
                     String.Format(
-                        Catalog.GetString("The year end processing for Ledger {0} needs to be run."),
+                        Catalog.GetString("Please run the year end processing for Ledger {0} first."),
                         ledgerInfo.LedgerNumber.ToString()),
                     "", "PYEF-01", TResultSeverity.Resv_Critical);
+            	// Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
                 blnCriticalErrors = true;
-            }
+            }        	
+        }
+        
+        private void CheckForUnpostedBatches()
+        {
+            GetBatchInfo getBatchInfo = new GetBatchInfo(
+        		ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
 
-            // Message is used two times ...
-            string strErrorMessage1 = Catalog.GetString(
-                "Some {1} batches for ledger {0} have not yet been posted.");
-
-            GetBatchInfo getBatchInfo = new GetBatchInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
 
             if (getBatchInfo.NumberOfBatches > 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("ProvisionalYearEndFlag-Problem"),
-                    String.Format(strErrorMessage1,
-                        ledgerInfo.LedgerNumber.ToString(), getBatchInfo.BatchList),
+                    Catalog.GetString("Unposted Batches found"),
+                    String.Format(Catalog.GetString(
+                    	"Please post or cancel the batches {0} first!"),
+                    	getBatchInfo.ToString()),
                     "", "PYEF-02", TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
                 blnCriticalErrors = true;
             }
-
-            GetSuspenseAccountInfo getSuspenseAccountInfo = new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
+        }
+        
+        private void CheckForSuspenseAcounts()
+        {
+        	if (getSuspenseAccountInfo == null){
+        		getSuspenseAccountInfo =
+        			new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
+        	}
 
             if (getSuspenseAccountInfo.Rows != 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("ProvisionalYearEndFlag-Problem"),
+                    Catalog.GetString("Suspended Accounts found ..."),
                     String.Format(
-                        Catalog.GetString("Do you want to print and check suspense account details before? ({0} recordsets found)"),
-                        ledgerInfo.LedgerNumber.ToString(), getSuspenseAccountInfo.Rows),
+                        Catalog.GetString(
+                    		"You have checked the suspense account details of {0} before?"),
+                    	getSuspenseAccountInfo.ToString()),
                     "", "PYEF-03", TResultSeverity.Resv_Status);
                 verificationResults.Add(tvr);
             }
-
+        }
+        
+        private void CheckForUnpostedGiftBatches()
+        {
             GetAccountingPeriodInfo getAccountingPeriodInfo =
                 new GetAccountingPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
-            GetUnpostedGiftInfo getUnpostedGiftInfo;
+            GetUnpostedGiftInfo getUnpostedGiftInfo = new GetUnpostedGiftInfo(
+            	ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
 
-            if (getAccountingPeriodInfo.Rows != 1)
+            if (getUnpostedGiftInfo.Rows > 0)
             {
-                TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("ProvisionalYearEndFlag-Problem"),
-                    String.Format(
-                        Catalog.GetString("Undefinded period"),
-                        ledgerInfo.LedgerNumber.ToString(), getSuspenseAccountInfo.Rows),
-                    "", "PYEF-04", TResultSeverity.Resv_Critical);
-                throw new TerminateException();
+            	TVerificationResult tvr = new TVerificationResult(
+            		Catalog.GetString("Unposted Gift Batches found ..."),
+            		String.Format(
+            			"Please post or cancel the gift batches {0} first!",
+            			getUnpostedGiftInfo.ToString()),
+            		"", "PYEF-05", TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvr);
+                blnCriticalErrors = true;
             }
-            else
-            {
-                getUnpostedGiftInfo = new GetUnpostedGiftInfo(
-                    ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
-
-                if (getUnpostedGiftInfo.Rows > 0)
-                {
-                    TVerificationResult tvr = new TVerificationResult(
-                        Catalog.GetString("ProvisionalYearEndFlag-Problem"),
-                        String.Format(
-                            strErrorMessage1,
-                            ledgerInfo.LedgerNumber.ToString(), getUnpostedGiftInfo.Rows),
-                        "", "PYEF-05", TResultSeverity.Resv_Critical);
-                    blnCriticalErrors = true;
-                }
-            }
-
+        }
+        
+        private void CheckForSuspenseAcountsZero()
+        {
             if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
                 // This means: The last accounting period of the year is running!
                 if (getSuspenseAccountInfo.Rows > 0)
                 {
+                	// blnZerorValueSuspenseAccountsFound = true;
+                	
                     ASuspenseAccountRow aSuspenseAccountRow;
                     decimal decAccountTotalSum = 0;
-                    string strMessage = Catalog.GetString("Suspense account {0} has the balance value {1}, " +
+                    string strMessage = Catalog.GetString(
+                    	"Suspense account {0} has the balance value {1}, " +
                         "which is required to be zero.");
 
                     for (int i = 0; i < getSuspenseAccountInfo.Rows; ++i)
@@ -233,26 +296,28 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (get_GLMp_Info.ActualBase != 0)
                         {
                             TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("ProvisionalYearEndFlag-Problem"),
-                                String.Format(strMessage, ledgerInfo.LedgerNumber, get_GLMp_Info.ActualBase), "",
+                                Catalog.GetString("Non Zero Suspense Account found ..."),
+                                String.Format(strMessage, ledgerInfo.LedgerNumber, 
+                                              get_GLMp_Info.ActualBase), "",
                                 "GL.CAT.08", TResultSeverity.Resv_Critical);
                             blnCriticalErrors = true;
+                            verificationResults.Add(tvr);
                         }
                     }
                 }
             }
+        	
         }
-
+        
         void RunAndAccountAdminFees()
         {
-            // TODO: Admin Fees and ICH stewardship ...
+            // TODO: Admin Fees and 
+            // TODO: ICH stewardship ...
             // CommonAccountingTool cat = new CommonAccountingTool(ledgerInfo, "Batch Description");
         }
 
         void CarryForward()
         {
-            CreateNewAccountingPeriod();
-
             if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
                 SetProvisionalYearEndFlag(true);
@@ -305,9 +370,6 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
-        void CreateNewAccountingPeriod()
-        {
-        }
     }
 
 
@@ -354,6 +416,27 @@ namespace Ict.Petra.Server.MFinance.GL
                 return dataTable.Rows.Count;
             }
         }
+        
+		public override string ToString()
+		{
+			string strH;
+			if (Rows ==0)
+			{
+				strH = "-";
+			} else
+			{
+				strH = (string)dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()];
+				if (Rows > 1)
+				{
+					for (int i=1; i < Rows; ++i)
+					{
+						strH += ", " + 
+							(string)dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()];
+					}
+				}
+			}
+			return "(" + strH + ")";
+		}
     }
 
     /// <summary>
@@ -393,6 +476,27 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             return table[index];
         }
+        
+		public override string ToString()
+		{
+			string strH;
+			if (Rows ==0)
+			{
+				strH = "-";
+			} else
+			{
+				strH = table[0].SuspenseAccountCode;
+				if (Rows > 1)
+				{
+					for (int i=1; i < Rows; ++i)
+					{
+						strH += ", " + table[i].SuspenseAccountCode;
+					}
+				}
+			}
+			return "(" + strH + ")";
+		}
+        
     }
 
     /// <summary>
@@ -447,9 +551,9 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// In case of an error you can create a string for the error message ...
         /// </summary>
-        public string BatchList
+        public override string ToString()
         {
-            get
+            //get
             {
                 string strList = " - ";
 
