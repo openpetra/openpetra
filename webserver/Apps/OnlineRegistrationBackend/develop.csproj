@@ -40,6 +40,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\delivery\bin\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\delivery\bin\Ict.Common.Verification.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Server.app.WebService">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.app.WebService.dll</HintPath>
     </Reference>
@@ -51,6 +54,9 @@
     </Reference>
     <Reference Include="Ict.Petra.Server.lib.MReporting">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MReporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MSysMan">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MSysMan.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Shared.dll</HintPath>
@@ -69,8 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Desktop.aspx">
-    </Compile>
+    <None Include="Desktop.aspx" />
     <Compile Include="Desktop.aspx.cs">
       <DependentUpon>Desktop.aspx</DependentUpon>
     </Compile>
