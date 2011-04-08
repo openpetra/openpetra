@@ -234,6 +234,21 @@ namespace Ict.Petra.Server.MPartner.Import
         {
             // the webform prevents adding empty addresses
 
+            // for children and staff, we do not require to enter an address
+            if (APartnerData.street == null)
+            {
+                PPartnerLocationRow emptyPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+                emptyPartnerLocation.SiteKey = 0;
+                emptyPartnerLocation.LocationKey = 0;
+                emptyPartnerLocation.PartnerKey = ANewPartnerKey;
+                emptyPartnerLocation.SendMail = false;
+                emptyPartnerLocation.DateEffective = DateTime.Now;
+                emptyPartnerLocation.LocationType = "HOME";
+                emptyPartnerLocation.EmailAddress = APartnerData.email;
+                AMainDS.PPartnerLocation.Rows.Add(emptyPartnerLocation);
+                return;
+            }
+
             // TODO: avoid duplicate addresses, reuse existing locations
             PLocationRow location = AMainDS.PLocation.NewRowTyped(true);
 

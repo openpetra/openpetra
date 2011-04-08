@@ -15894,6 +15894,16 @@
                 type="varchar"
                 descr="stores the plain data received from the browser in JSON format"
                 format="x(15000)"/>
+    <tablefield name="p_local_partner_key_n"
+                type="number"
+                length="10"
+                descr="the person partner key of the applicant in the local database of the registration office. no foreign key since the person partner is in another database"
+                format="9999999999"/>
+    <tablefield name="p_imported_local_petra_l"
+                type="bit"
+                descr="true if the applicant has already been imported into the local database of the registration office."
+                format="Yes/No"
+                initial="no"/>
     <!-- Constraints on table pm_general_application -->
     <primarykey name="pm_general_application_pk"
                 descr=""
