@@ -11,7 +11,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Desktop - Ext.NET Examples</title>    
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <title>Desktop - Ext.NET Examples</title>
     
     <script runat="server">
         protected void Button1_Click(object sender, DirectEventArgs e)
