@@ -485,6 +485,12 @@ namespace Ict.Common.Printing
                         break;
                     }
 
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
+                        break;
+                    }
+
                     // reset font
                     FPrinter.CurrentRelativeFontSize = previousFontSize;
                     curNode = curNode.NextSibling;
@@ -502,6 +508,12 @@ namespace Ict.Common.Printing
                         break;
                     }
 
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
+                        break;
+                    }
+
                     FPrinter.CurrentFont = previousFont;
                     curNode = curNode.NextSibling;
                 }
@@ -510,6 +522,18 @@ namespace Ict.Common.Printing
                     // todo italic; similar to bold
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
+                        break;
+                    }
+
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "br")
@@ -548,6 +572,18 @@ namespace Ict.Common.Printing
                 {
                     XmlNode child = curNode.FirstChild;
                     RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
+                        break;
+                    }
+
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "p")
@@ -571,6 +607,18 @@ namespace Ict.Common.Printing
                     FPrinter.LineFeed();
                     FPrinter.CurrentXPos = AXPos;
                     RenderContent(AXPos, AWidthAvailable, ref child);
+
+                    if (FContinueNextPageNode != null)
+                    {
+                        break;
+                    }
+
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
+                        break;
+                    }
+
                     FPrinter.LineFeed();
                     FPrinter.CurrentXPos = AXPos;
                     curNode = curNode.NextSibling;
@@ -597,6 +645,12 @@ namespace Ict.Common.Printing
 
                     if (FContinueNextPageNode != null)
                     {
+                        break;
+                    }
+
+                    if (!FPrinter.ValidYPos())
+                    {
+                        curNode = child;
                         break;
                     }
 
@@ -633,7 +687,7 @@ namespace Ict.Common.Printing
                 // todo: header div style with tray information; config file with local tray names???
             }
 
-            if ((origNode == curNode) && (curNode != null))
+            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos())
             {
                 throw new Exception("page too small, at " + curNode.Name);
             }
