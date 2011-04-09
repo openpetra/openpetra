@@ -32,6 +32,8 @@
   <copy file="SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${not platform::is-windows()}" />
 </target>
 
+<target name="prepareProjects"/>
+
 <target name="generateCsproject" />
 
 <target name="generateCsprojectNoCompile" />
