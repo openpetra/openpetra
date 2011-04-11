@@ -177,6 +177,9 @@ namespace Ict.Petra.Client.CommonForms
         	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
         }
         
+        /// <summary>Updates the Progress bar with the new percentage. Interfaces through to 
+        /// PetraShepherdConcreteForm</summary>
+        /// <param name="ProgressPercentage"></param>
         public void UpdateProgressBar(int ProgressPercentage)
         {
         	this.prbPageProgress.Value = ProgressPercentage; 

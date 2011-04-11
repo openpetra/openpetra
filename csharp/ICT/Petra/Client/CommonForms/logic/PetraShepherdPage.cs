@@ -388,7 +388,15 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
 			
             
-            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(); 
+            XmlNode FileElementData = XmlPages.DocumentElement;
+            string FinishPageNote = ""; 
+            
+            if(FileElementData.Attributes["FinishPageNote"] != null)
+            {
+            	FinishPageNote = FileElementData.Attributes["FinishPageNote"].Value;
+            }
+            
+            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(FinishPageNote); 
             TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID); 
             FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage); 
             
@@ -403,7 +411,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Constructor for TPetraShepherdFinish page creation.
         /// </summary>
-        public TPetraShepherdFinishPage()
+        public TPetraShepherdFinishPage(string FinishPageName)
         {
         	base.ID = "FINISHPAGE_MASTER"; 
         	base.Enabled = true;
@@ -412,8 +420,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
             base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
             base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
             base.FTitle = "Here is a summary of the information you have provided:";
-            base.Note = "Choose \'Finish\' to commit the data."; 
-            base.HelpContext = "Choose \'Finish\' to commit the data."; 
+            if(!(FinishPageName.Equals("")))
+            {
+            	base.Note = "Choose \'Finish\' to commit the data.";
+            }
+            else
+            {
+            	base.Note = FinishPageName; 
+            }
         }
     }
 }

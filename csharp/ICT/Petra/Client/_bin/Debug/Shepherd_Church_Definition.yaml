@@ -1,8 +1,7 @@
 Shepherd:
     Title: Add New Church Shepherd
     Width: 700
-    Height: 400
-    Testelement: This is a test, this is only a test.
+    Height: 500
     ShepherdPages:
         PartnerDetailsChurch:
             ID: 5

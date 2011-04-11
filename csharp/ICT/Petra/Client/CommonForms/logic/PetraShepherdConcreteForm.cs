@@ -120,14 +120,58 @@ namespace Ict.Petra.Client.CommonForms.Logic
 		
             FileElementData = XmlPages.LastChild.LastChild; 
             
-            TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
-            TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value); // Can't print size because I don't know how to handle this YAML datatype
-            TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); // Can't print size because I don't know how to handle this YAML datatype
-            TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value); 
+            string ShepherdHeight = "";
+            string ShepherdWidth = ""; 
+            string ShepherdTitle = ""; 
+            string TestElement = ""; 
+            
+            #region YAML Attributes Input
+            if(FileElementData.Attributes["Testelement"] != null)
+            {
+            	TLogging.Log("FOUND TEST ELEMENT"); 
+            	TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
+            	TestElement = FileElementData.Attributes["Testelement"].Value; 
+            }
+            else
+            {
+            	TLogging.Log("Did not find a test element for this shepherd."); 
+            }
+            
+            if(FileElementData.Attributes["Width"] != null)
+            {
+            	TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value); // Can't print size because I don't know how to handle this YAML datatype
+            	ShepherdWidth = FileElementData.Attributes["Width"].Value; 
+            }
+            else
+            {
+            	TLogging.Log("Did not find a width for this shepherd."); 
+            }
+            
+            if(FileElementData.Attributes["Height"] != null)
+            {
+            	TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); // Can't print size because I don't know how to handle this YAML datatype            	
+            	ShepherdHeight = FileElementData.Attributes["Height"].Value; 
+            }
+            else
+            {
+            	TLogging.Log("Did not find a height for this shepherd."); 
+            }
+            
+            if(FileElementData.Attributes["Title"] != null)
+            {
+            	TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value); 
+            	ShepherdTitle = FileElementData.Attributes["Title"].Value;
+            }
+            else
+            {
+            	TLogging.Log("Did not find a title for this shepherd."); 
+            }
+			#endregion
+            
             try{
-            		FForm.UpdateShepherdFormProperties(FileElementData.Attributes["Title"].Value,
-                                               Convert.ToInt32(FileElementData.Attributes["Width"].Value),
-                                               Convert.ToInt32(FileElementData.Attributes["Height"].Value));
+            		FForm.UpdateShepherdFormProperties(ShepherdTitle, 
+            	                                   Convert.ToInt32(ShepherdWidth),
+            	                                   Convert.ToInt32(ShepherdHeight));
             }
             catch(FormatException e)
             {
