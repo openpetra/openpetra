@@ -164,6 +164,7 @@
       <call target="nant-subcall" cascade="false" />
     </if>
     <if test="${dontCompile == 'true'}">
+      <call target="generateCsprojectNoCompile"/>
       <property name="target" value="prepareProjects" />
       <call target="nant-subcall" cascade="false" />
     </if>
@@ -177,7 +178,6 @@
 <target name="prepareProjects">
   <property name="dontCompile" value="true"/>
   <call target="compileInternal"/>
-  <call target="generateCsprojectNoCompile"/>
 </target>
 
 <target name="generateCsproject" depends="compile">
@@ -220,7 +220,7 @@
     </in>
     <do>  
       <!-- Extract reference name from the reference path-->
-      <echo level="Debug">reference-path=${reference-path}</echo>
+      <echo >reference-path=${reference-path}</echo>
       <property name="reference-name" 
                 value="${path::get-file-name-without-extension(reference-path)}" />
       <property name="reference-project-file"

@@ -15,6 +15,7 @@ list of available commands:
   compile: compiles OpenPetra including testing
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. compile should already be executed
+  quickGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
   quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
@@ -115,6 +116,11 @@ useful parameters
         depends="csharp,nanttasks" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
+  <call target="generateCsprojectNoCompile" />
+  <call target="generate-solution-all-internal" />
+</target>
+
+<target name="quickGenerateSolution" description="generates code, the references, the project and solution files">
   <!-- we need to compile Ict.Tools.NAntTasks.dll, Ict.Common and Ict.PetraTools to get tools like Ict.Tools.GenerateORM.exe -->
   <call target="nanttasks"/>
   <nant inheritall="false" target="compile" 
