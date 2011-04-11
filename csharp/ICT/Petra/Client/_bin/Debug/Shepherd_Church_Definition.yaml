@@ -2,6 +2,7 @@ Shepherd:
     Title: Add New Church Shepherd
     Width: 700
     Height: 500
+    FinishPageNote: Don't forget to click the finish button!
     ShepherdPages:
         PartnerDetailsChurch:
             ID: 5

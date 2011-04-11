@@ -387,19 +387,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 counter++;
             }
 			
-            
-            XmlNode FileElementData = XmlPages.DocumentElement;
-            string FinishPageNote = ""; 
-            
-            if(FileElementData.Attributes["FinishPageNote"] != null)
-            {
-            	FinishPageNote = FileElementData.Attributes["FinishPageNote"].Value;
-            }
-            
-            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(FinishPageNote); 
+            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(XmlPages); 
             TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID); 
             FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage); 
             
+            TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd"); 
+            TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID); 
+            FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage); 
+
             
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");
         }
@@ -411,23 +406,43 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Constructor for TPetraShepherdFinish page creation.
         /// </summary>
-        public TPetraShepherdFinishPage(string FinishPageName)
+        public TPetraShepherdFinishPage(XmlDocument XmlPages)
         {
         	base.ID = "FINISHPAGE_MASTER"; 
         	base.Enabled = true;
         	base.Visible = true; 
-            base.FIsLastPage = true;
+            base.FIsLastPage = false;
             base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
             base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
             base.FTitle = "Here is a summary of the information you have provided:";
-            if(!(FinishPageName.Equals("")))
+            base.Note = GetFinishPageNote(XmlPages); 
+        }
+       	public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
+        {
+       		base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
+        	base.Enabled = true;
+        	base.Visible = true; 
+            base.FIsLastPage = false;
+            base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
+            base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
+            base.FTitle = "Here is a summary of the information you have provided:" + base.ID;
+            base.Note = GetFinishPageNote(XmlPages); 
+       	
+        }
+       	protected string GetFinishPageNote(XmlDocument XmlPages)
+       	{
+       		XmlNode FileElementData = XmlPages.DocumentElement;
+            FileElementData = XmlPages.LastChild.LastChild; 
+            
+            if(FileElementData.Attributes["FinishPageNote"] != null)
             {
-            	base.Note = "Choose \'Finish\' to commit the data.";
+            	TLogging.Log("VALUE OF FINISH PAGE NOTE: " + FileElementData.Attributes["FinishPageNote"].Value);
+            	return FileElementData.Attributes["FinishPageNote"].Value;
             }
             else
             {
-            	base.Note = FinishPageName; 
+            	return "Choose \'Finish\' to commit the data.";
             }
-        }
+       	}
     }
 }

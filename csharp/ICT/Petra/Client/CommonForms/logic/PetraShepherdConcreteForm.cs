@@ -124,8 +124,19 @@ namespace Ict.Petra.Client.CommonForms.Logic
             string ShepherdWidth = ""; 
             string ShepherdTitle = ""; 
             string TestElement = ""; 
+            string FinishPageNote = ""; 
             
             #region YAML Attributes Input
+            
+            if(FileElementData.Attributes["FinishPageNote"] != null)
+            {
+            	FinishPageNote = FileElementData.Attributes["FinishPageNote"].Value;
+            }
+            else
+            {
+            	TLogging.Log("DID NOT FIND FINISH PAGE");
+            }
+            
             if(FileElementData.Attributes["Testelement"] != null)
             {
             	TLogging.Log("FOUND TEST ELEMENT"); 
@@ -139,7 +150,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             if(FileElementData.Attributes["Width"] != null)
             {
-            	TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value); // Can't print size because I don't know how to handle this YAML datatype
+            	TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value);
             	ShepherdWidth = FileElementData.Attributes["Width"].Value; 
             }
             else
@@ -149,7 +160,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             
             if(FileElementData.Attributes["Height"] != null)
             {
-            	TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); // Can't print size because I don't know how to handle this YAML datatype            	
+            	TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); 
             	ShepherdHeight = FileElementData.Attributes["Height"].Value; 
             }
             else
