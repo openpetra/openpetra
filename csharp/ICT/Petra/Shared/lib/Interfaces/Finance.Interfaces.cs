@@ -452,6 +452,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     Int64 AOldField,
                                     DateTime ADateCorrection,
                                     bool AWithReceipt);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
+        bool GiftRevertAdjust(Hashtable requestParams,
+                              out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
         Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                             ref String motivationGroup,
@@ -519,9 +522,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
                                                                           out Int64 fieldNumber);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        bool GiftRevertAdjust(Hashtable requestParams,
-                              out TVerificationResultCollection AMessages);
     }
 
 }

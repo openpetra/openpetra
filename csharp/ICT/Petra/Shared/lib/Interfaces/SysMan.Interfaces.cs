@@ -268,6 +268,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         bool SetUserPassword(string AUsername,
                              string APassword);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool CheckPasswordQuality(string APassword,
+                                  out TVerificationResultCollection AVerification);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         bool SetUserPassword(string AUsername,
                              string APassword,
                              string AOldPassword);

@@ -95,7 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void AddParam(String paramName, Object param)
         {
-            requestParams.Add(paramName, param);
+       		requestParams.Remove(paramName);
+        	requestParams.Add(paramName, param);
         }
 
         private void RevertAdjust(System.Object sender, System.EventArgs e)
@@ -117,11 +118,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection AMessages;
 
 
-            requestParams.Add("NewBatchSelected", chkSelect.Checked);
+            AddParam("NewBatchSelected", chkSelect.Checked);
 
             if (chkSelect.Checked)
             {
-                requestParams.Add("NewBatchNumber", FPreviouslySelectedDetailRow.BatchNumber);
+                AddParam("NewBatchNumber", FPreviouslySelectedDetailRow.BatchNumber);
             }
             else
             {
@@ -140,31 +141,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                requestParams.Add("GlEffectiveDate", dtpEffectiveDate.Date);
+                AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
             }
 
-            requestParams.Add("BatchNumber", giftDetailRow.BatchNumber);
-            requestParams.Add("GiftNumber", giftDetailRow.GiftTransactionNumber);
-            requestParams.Add("GiftDetailNumber", giftDetailRow.DetailNumber);
-            requestParams.Add("ReversalCommentOne", txtReversalCommentOne.Text);
-            requestParams.Add("ReversalCommentTwo", txtReversalCommentTwo.Text);
-            requestParams.Add("ReversalCommentThree", txtReversalCommentThree.Text);
-            requestParams.Add("ReversalCommentOneType", cmbReversalCommentOneType.Text);
-            requestParams.Add("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
-            requestParams.Add("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
+            AddParam("BatchNumber", giftDetailRow.BatchNumber);
+            AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
+            AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
+            AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
+            AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
+           	AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
+            AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
+            AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
+            AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
 
 
             ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
 
             if (ok)
             {
-                MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+            	String function=(String)requestParams["Function"];
+            	switch (function) {
+            		case "ReverseGiftBatch":
+            			MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+            			break;
+            		case "ReverseGiftDetail":
+            			MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reverted"));
+            			break;
+            		case "ReverseGift":
+            			MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reverted"));
+            			break;
+            		case "AdjustGift":
+            			MessageBox.Show(Catalog.GetString("Your gift has been sucessfully adjusted"));	      			
+            			break;
+            	}
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
             }
             else
             {
                 ShowMessages(AMessages);
+                DialogResult = System.Windows.Forms.DialogResult.Abort;
+                Close();
             }
 
             return;
