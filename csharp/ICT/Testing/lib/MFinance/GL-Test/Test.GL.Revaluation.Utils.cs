@@ -44,9 +44,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            //new TLogging("TestServer.log");
-            //TPetraServerConnector.Connect("../../etc/TestServer.config");
             InitServerConnection();
+            ResetDatabase();
             LoadTestTata();
         }
 
@@ -63,8 +62,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void LoadTestTata()
         {
             ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);
-
-            System.Diagnostics.Debug.WriteLine("currencyTable.Rows: " + currencyTable.Rows.Count.ToString());
 
             if (currencyTable.Rows.Count == 0)
             {

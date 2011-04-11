@@ -2573,6 +2573,22 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public bool TPeriodMonthEndInfo(int ALedgerNum,
+                                        out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEndInfo", ";INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEndInfo(ALedgerNum, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public bool TPeriodMonthEnd(int ALedgerNum,
+                                    out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEnd", ";INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEnd(ALedgerNum, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public bool Revaluate(int ALedgerNum,
                               int AAccoutingPeriod,
                               string ARevaluationCostCenter,

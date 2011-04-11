@@ -136,6 +136,25 @@ namespace Ict.Testing.NUnitForms
             TPetraServerConnector.Disconnect();
         }
 
+        public string LoadCSVFileToString(string fileName)
+        {
+            using (FileStream fs = new FileStream(rootPath + "/" + fileName, FileMode.Open))
+            {
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resets the data base to its initial value ...
+        /// </summary>
+        public void ResetDatabase()
+        {
+            nant("resetDatabase", false);
+        }
+
         /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
@@ -163,7 +182,6 @@ namespace Ict.Testing.NUnitForms
             NantProcess.EnableRaisingEvents = false;
             NantProcess.StartInfo.FileName = "cmd";
             NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
-            NantProcess.StartInfo.CreateNoWindow = true;
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
