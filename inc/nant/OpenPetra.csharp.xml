@@ -19,7 +19,7 @@
 <property name="compilefiles" value="*.cs"  overwrite="false"/>
 <property name="csdependfiles" value="**/*.cs"  overwrite="false"/>
 <property name="excludecsfiles" value=".doc"  overwrite="false"/>
-
+<property name="DebugStartArguments" value="" overwrite="false"/>
 
 
 <target name="uncrustify" depends="indent" 

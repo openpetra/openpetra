@@ -149,15 +149,11 @@ useful parameters
   </foreach>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <property name="includepaths" value="Common,Petra/Shared,Petra/Server,Petra/ServerPlugins,Petra/PetraServerConsole"/>
-    <property name="startupproject" value="PetraServerConsole"/>
-    <property name="startuparguments" value="-C:${ServerConfigFile}"/>
     <property name="solution-name" value="OpenPetra.Server.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/PetraClient"/>
-    <property name="startupproject" value="PetraClient"/>
-    <property name="startuparguments" value="-C:${ClientConfigFile}"/>
     <property name="solution-name" value="OpenPetra.Client.sln"/>
     <call target="generate-solution-internal" />
   </foreach>
@@ -179,15 +175,12 @@ useful parameters
   <property name="TemplateProject" value="" />
   <property name="TemplateConfiguration" value="" />
   <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
-  <property name="startupproject" value="" overwrite="false"/>
-
-  <!-- collect all project files, but without the startup project, so we can add that at the last position -->
+  <!-- collect all project files -->
   <property name="projectfiles" value="^"/>
   <foreach item="File" property="ProjectFile">
     <in>
       <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
         <include name="*.csproj"/>
-        <exclude name="${startupproject}.csproj"/>
       </items>
     </in>
     <do>
@@ -195,12 +188,6 @@ useful parameters
     </do>
   </foreach>
   <property name="projectfiles" value="${string::replace(projectfiles,'^,','')}"/>
-  <if test="${string::get-length(startupproject) > 0}">
-    <property name="startupproject" value="${path::combine(path::combine(dir.projectfiles, devenv-name),startupproject+'.csproj')}"/>
-    <property name="temp" value="${script::ReplaceInFile(startupproject, '&lt;/Optimize&gt;', '&lt;/Optimize&gt;&lt;StartArguments&gt;'+startuparguments+'&lt;/StartArguments&gt;')}"/>
-    <property name="projectfiles" value="${projectfiles},${startupproject}"/>
-  </if>
-  <property name="startupproject" value="" overwrite="true"/>
   <foreach item="String" property="ProjectFile" delim="," in="${projectfiles}">
     <do>
       <!-- do we need to remove the xmlns="http://schemas.microsoft.com/developer/msbuild/2003" from the project file so that xmlpeek works? -->

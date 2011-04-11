@@ -33,4 +33,6 @@
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
 
+<property name="DebugStartArguments" value="-C:${ClientConfigFile}" overwrite="true"/>
+
 </project>
