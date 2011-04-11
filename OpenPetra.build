@@ -15,10 +15,12 @@ list of available commands:
   compile: compiles OpenPetra including testing
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. compile should already be executed
+  quickGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
   quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  quickClean: cleans all generated files and the delivery directory
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
@@ -53,6 +55,9 @@ not supported
   setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
   createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
   packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
+  
+useful parameters
+  -logfile:test.log
 </echo>
 </target>
 
@@ -80,6 +85,21 @@ not supported
   <call target="translationCompilePOFile" />    
 </target>
 
+<target name="quickClean" description="cleans all generated files and the delivery directory">
+  <delete dir="${dir.delivery}"/>
+  <mkdir dir="${dir.delivery}"/>
+  <delete>
+    <fileset basedir="${dir.root}">
+      <include name="**/*-generated.build" />
+      <include name="**/*-generated.cs" />
+      <include name="**/*-generated.resx" />
+      <include name="**/*-generated.Designer.cs" />
+      <include name="**/*.generated.refs" />
+      <include name="tmp/**/AssemblyInfo.cs" />
+    </fileset>
+  </delete>
+</target>
+
 <target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
@@ -97,6 +117,28 @@ not supported
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
   <call target="generateCsprojectNoCompile" />
+  <call target="generate-solution-all-internal" />
+</target>
+
+<target name="quickGenerateSolution" description="generates code, the references, the project and solution files">
+  <!-- we need to compile Ict.Tools.NAntTasks.dll, Ict.Common and Ict.PetraTools to get tools like Ict.Tools.GenerateORM.exe -->
+  <call target="nanttasks"/>
+  <nant inheritall="false" target="compile" 
+        buildfile="csharp/ThirdParty/ThirdParty.build" />
+  <nant inheritall="false" target="compile" 
+        buildfile="csharp/ICT/Common/ICT.Common.build" />
+  <nant inheritall="false" target="generateCsprojectNoCompile" 
+        buildfile="csharp/ICT/Common/ICT.Common.build" />
+  <nant inheritall="false" target="compile" 
+        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
+  <nant inheritall="false" target="generateCsprojectNoCompile" 
+        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
+
+  <nant inheritall="false" target="prepareProjects"
+        buildfile="csharp/ICT/Petra/Petra.build" />
+  <nant inheritall="false" target="prepareProjects"
+        buildfile="csharp/ICT/Testing/ICT.Testing.build" />
+
   <call target="generate-solution-all-internal" />
 </target>
 

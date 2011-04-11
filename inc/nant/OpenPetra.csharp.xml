@@ -92,6 +92,7 @@
     <CsDepend ns-default="${Namespace}" ns-map-dir="${dir.namespace.map}" 
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
+      templatefile="${path::combine(dir.root,'inc/nanttasks/CsDependTemplates.txt')}" 
       additionalRefs="${CsDependAdditionalLibReferences}" outputtpye="${OutputType}" >
       <sources>
         <include name="${csdependfiles}" />
@@ -115,7 +116,8 @@
   </assemblyfileset>
 </target>
 
-<target name="compile" depends="depend">
+<target name="compileInternal" depends="depend">
+  <property name="dontCompile" value="false" overwrite="false"/>
   <!-- Create assembly info -->
   <if test="${bool::parse(RunCsDepend)!=true}">
     <mkdir dir="${namespace-temp-dir}" />
@@ -139,26 +141,43 @@
         <attribute type="AssemblyVersion" value='"${ReleaseID}"' asis="true" /> 
       </attributes>
     </asminfo>
-    <!-- filealign="4096"  for csc not supported on mono -->
-    <csc output="${dir.bin}/${AssemblyName}" 
-         doc="${dir.bin}/${Namespace}.xml"
-         target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
-         noconfig="true">
-      <references refid="assemblyfileset-references" /> 
-      <sources>
-        <include name="${compilefiles}" />
-        <include name="${AssemblyNameInfo.cs}" />
-      </sources>
-      <resources>
-        <include name="${resourcefiles}" />
-      </resources>
-    </csc>
+    <if test="${dontCompile != 'true'}">
+      <!-- filealign="4096"  for csc not supported on mono -->
+      <csc output="${dir.bin}/${AssemblyName}" 
+           doc="${dir.bin}/${Namespace}.xml"
+           target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
+           noconfig="true" define="DEBUGMODE">
+        <references refid="assemblyfileset-references" /> 
+        <sources>
+          <include name="${compilefiles}" />
+          <include name="${AssemblyNameInfo.cs}" />
+        </sources>
+        <resources>
+          <include name="${resourcefiles}" />
+        </resources>
+      </csc>
+    </if>
   </if>
   <if test="${bool::parse(RunCsDepend)==true}">
-    <property name="target" value="compile" />
-    <call target="nant-subcall" cascade="false" />
+    <if test="${dontCompile != 'true'}">
+      <property name="target" value="compile" />
+      <call target="nant-subcall" cascade="false" />
+    </if>
+    <if test="${dontCompile == 'true'}">
+      <call target="generateCsprojectNoCompile"/>
+      <property name="target" value="prepareProjects" />
+      <call target="nant-subcall" cascade="false" />
+    </if>
   </if>
-  
+</target>
+
+<target name="compile">
+  <call target="compileInternal"/>
+</target>
+
+<target name="prepareProjects">
+  <property name="dontCompile" value="true"/>
+  <call target="compileInternal"/>
 </target>
 
 <target name="generateCsproject" depends="compile">
@@ -201,7 +220,7 @@
     </in>
     <do>  
       <!-- Extract reference name from the reference path-->
-      <echo level="Debug">reference-path=${reference-path}</echo>
+      <echo >reference-path=${reference-path}</echo>
       <property name="reference-name" 
                 value="${path::get-file-name-without-extension(reference-path)}" />
       <property name="reference-project-file"

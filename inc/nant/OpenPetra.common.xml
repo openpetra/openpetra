@@ -44,7 +44,7 @@
       StreamReader sr = new StreamReader(filename.Replace("\"", ""));
       string line = sr.ReadLine();
       sr.Close();
-      return line.ToLower().IndexOf("auto generated with nant") != -1;
+      return line == null || line.ToLower().IndexOf("auto generated with nant") != -1;
     }        
 ]]>
     </code>
@@ -145,10 +145,7 @@
           overwrite="false"/>
 <property name="DBMS.Password" value="petra"
           overwrite="false" />
-<if test="${'sqlite'==DBMS.Type}" >
-  <!-- SQLite does not work well with encryption (at least on Windows), therefore it is best to disable the password -->
-  <property name="DBMS.Password" value="" overwrite="true" />
-</if>
+
 
 <!-- Set correct .NET platform -->
 <property name="NETframework-version" value ="2.0" overwrite="false" />

@@ -26,9 +26,11 @@ using System.IO;
 using System.Web.Services;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
@@ -92,6 +94,12 @@ public class TOpenPetraOrg : WebService
         // create a database connection for each user
         if (Ict.Common.DB.DBAccess.GDBAccessObj == null)
         {
+            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
+            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
+
+            // disconnect normal users after 3 hours of inactivity
+            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
+
             TheServerManager.EstablishDBConnection();
         }
 
@@ -109,8 +117,13 @@ public class TOpenPetraOrg : WebService
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
             TPetraPrincipal userData = TClientManager.PerformLoginChecks(
-                username.ToUpper(), password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
+                username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
+
+            DBAccess.GDBAccessObj.UserID = username.ToUpper();
+
+            TheServerManager.AddDBConnection(DBAccess.GDBAccessObj);
+
             return true;
         }
         catch (Exception e)
@@ -119,6 +132,7 @@ public class TOpenPetraOrg : WebService
             TLogging.Log(e.StackTrace);
             Session["LoggedIn"] = false;
             Ict.Common.DB.DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.CloseDBConnection();
             return false;
         }
     }
@@ -151,7 +165,12 @@ public class TOpenPetraOrg : WebService
     public void Logout()
     {
         TLogging.Log("Logout from a session", TLoggingType.ToLogfile | TLoggingType.ToConsole);
-        DBAccess.GDBAccessObj.CloseDBConnection();
+
+        if (DBAccess.GDBAccessObj != null)
+        {
+            DBAccess.GDBAccessObj.CloseDBConnection();
+        }
+
         Session.Abandon();
     }
 
@@ -274,56 +293,6 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
-    private string parseJSonValues(JsonObject ARoot)
-    {
-        string result = "";
-
-        foreach (string key in ARoot.Names)
-        {
-            if (key.ToString().StartsWith("ext-comp"))
-            {
-                string content = parseJSonValues((JsonObject)ARoot[key]);
-
-                if (content.Length > 0)
-                {
-                    if (result.Length > 0)
-                    {
-                        result += ",";
-                    }
-
-                    result += content;
-                }
-            }
-            else
-            {
-                if (result.Length > 0)
-                {
-                    result += ",";
-                }
-
-                if (key.EndsWith("CountryCode"))
-                {
-                    // we need this so that we can parse the dates correctly from json
-                    Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
-                }
-
-                result += "\"" + key + "\":\"" + ARoot[key].ToString().Replace("\n", "<br/>").Replace("\"", "&quot;") + "\"";
-            }
-        }
-
-        return result;
-    }
-
-    /// remove ext-comp controls, for multi-page forms
-    private string RemoveContainerControls(string AJSONFormData)
-    {
-        JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
-
-        string result = "{" + parseJSonValues(root) + "}";
-
-        return result;
-    }
-
     /// <summary>
     /// import data from a web form, ie partners are entering their own data
     /// </summary>
@@ -342,11 +311,8 @@ public class TOpenPetraOrg : WebService
                     "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
                 TLogging.Log(message);
 
-#if DEBUGMODE
-#else
                 // do not disclose errors on production version
-                message = "";
-#endif
+                message = "There is a problem on the Server";
 
                 return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
@@ -357,7 +323,7 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = RemoveContainerControls(AJSONFormData);
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -368,7 +334,49 @@ public class TOpenPetraOrg : WebService
                             Replace("\n", " ").Replace("\r", "");
 
             TLogging.Log(AJSONFormData);
-            return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
+            string result = Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
+
+            Logout();
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+
+            Logout();
+
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
+        }
+    }
+
+    /// <summary>
+    /// testing function for web forms
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AJSONFormData"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string TestingForms(string AFormID, string AJSONFormData)
+    {
+        // remove ext-comp controls, for multi-page forms
+        TLogging.Log(AJSONFormData);
+
+        try
+        {
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+            return "{\"failure\":true, \"data\":{\"result\":\"Nothing happened, just a test\"}}";
         }
         catch (Exception e)
         {

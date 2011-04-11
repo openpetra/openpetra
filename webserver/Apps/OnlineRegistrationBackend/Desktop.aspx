@@ -9,7 +9,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Online Registration Backend</title>    
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <title>Online Registration Backend</title>
     
     <style type="text/css">        
         .start-button {
@@ -63,10 +64,14 @@
                 <ext:DesktopModule ModuleID="DesktopModule2" WindowID="winApplications" AutoRun="true">
                     <Launcher ID="Launcher2" runat="server" Text="Applications" Icon="Lorry" />
                 </ext:DesktopModule>
+                <ext:DesktopModule ModuleID="ChangePassword" WindowID="winChangePassword" AutoRun="false">
+                    <Launcher ID="Launcher3" runat="server" Text="Change Password"/>
+                </ext:DesktopModule>
             </Modules>  
             
             <Shortcuts>
                 <ext:DesktopShortcut ModuleID="DesktopModule2" Text="Applications" IconCls="shortcut-icon icon-grid48" />
+                <ext:DesktopShortcut ModuleID="ChangePassword" Text="Change Password" IconCls="shortcut-icon icon-grid48" />
             </Shortcuts>
             
             <StartMenu Width="400" Height="400" ToolsWidth="227" Title="Start Menu">
@@ -114,6 +119,8 @@
                         <ext:RecordField Name="ApplicationDate" Type="Date"/>
                         <ext:RecordField Name="ApplicationStatus" /> 
                         <ext:RecordField Name="Role" />
+                        <ext:RecordField Name="StFgCode" />
+                        <ext:RecordField Name="StFgLeader" />
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -141,7 +148,7 @@
         </ext:Store>
 
         <ext:DesktopWindow 
-            ID="winUpload" 
+            ID="winUploadPhoto" 
             runat="server" 
             Title="Upload another photo" 
             Width="500"
@@ -187,7 +194,7 @@
                                             OnEvent="UploadClick"
                                             Before="if (!#{UploadForm}.getForm().isValid()) { return false; } 
                                                 Ext.Msg.wait('Uploading your photo...', 'Uploading');"
-                                            Success="#{winUpload}.hide(); #{UploadForm}.getForm().reset();"
+                                            Success="#{winUploadPhoto}.hide(); #{UploadForm}.getForm().reset();"
                                             Failure="Ext.Msg.show({ 
                                                 title   : 'Error', 
                                                 msg     : 'Error during uploading', 
@@ -204,7 +211,79 @@
                                 </ext:Button>
                                 <ext:Button runat="server" Text="Cancel">
                                     <Listeners>
-                                        <Click Handler="#{winUpload}.hide();#{UploadForm}.getForm().reset();" />
+                                        <Click Handler="#{winUploadPhoto}.hide();#{UploadForm}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
+        
+            </Items>
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
+            ID="winUploadPetraFile" 
+            runat="server" 
+            Title="Upload the result of the Petra import" 
+            Width="500"
+            Height="120"
+            PageX="200" 
+            PageY="125"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="PetraUploadForm" 
+                            runat="server"
+                            Region="Center"
+                            Width="300"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="50">                
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:FileUploadField 
+                                    ID="FileUploadField2" 
+                                    runat="server" 
+                                    EmptyText="Select a Petra file"
+                                    FieldLabel="Petra File"
+                                    ButtonText=""
+                                    Icon="ImageAdd"
+                                    />
+                            </Items>
+                            <Listeners>
+                                <ClientValidation Handler="#{UploadPetraFileButton}.setDisabled(!valid);" />
+                            </Listeners>
+                            <Buttons>
+                                <ext:Button ID="UploadPetraFileButton" runat="server" Text="Upload">
+                                    <DirectEvents>
+                                        <Click 
+                                            OnEvent="UploadPetraImportClick"
+                                            Before="if (!#{PetraUploadForm}.getForm().isValid()) { return false; } 
+                                                Ext.Msg.wait('Uploading your file...', 'Uploading');"
+                                            Success="#{winUploadPetraFile}.hide(); #{PetraUploadForm}.getForm().reset();"
+                                            Failure="Ext.Msg.show({ 
+                                                title   : 'Error', 
+                                                msg     : 'Error during uploading', 
+                                                minWidth: 200, 
+                                                modal   : true, 
+                                                icon    : Ext.Msg.ERROR, 
+                                                buttons : Ext.Msg.OK 
+                                            });">
+                                            <ExtraParams>
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winUploadPetraFile}.hide();#{PetraUploadForm}.getForm().reset();" />
                                     </Listeners>
                                 </ext:Button>
                             </Buttons>
@@ -273,6 +352,60 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winChangePassword" 
+            runat="server" 
+            Title="Change your Password" 
+            Width="500"
+            Height="300"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="ChangePasswordForm" 
+                            runat="server"
+                            Region="Center"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="150">                
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:TextField ID="OldPassword" DataIndex="OldPassword" runat="server" FieldLabel="Old Password" InputType="Password"/>
+                                <ext:TextField ID="NewPassword1" DataIndex="NewPassword1" runat="server" FieldLabel="New Password" InputType="Password"/>
+                                <ext:TextField ID="NewPassword2" DataIndex="NewPassword2" runat="server" FieldLabel="New Password (second time)" InputType="Password"/>
+                                <ext:Label runat="server" Text="Please use a secure password. At least 8 characters, and a mix of digits and letters."/>
+                            </Items>
+                            <Buttons>
+                                <ext:Button ID="ChangePasswordButton" runat="server" Text="Change Password">
+                                    <DirectEvents>
+                                        <Click OnEvent="ChangePassword">
+                                            <EventMask ShowMask="true" />
+                                            <ExtraParams>
+                                                <ext:Parameter Name="Values" Value="#{ChangePasswordForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winChangePassword}.hide();#{winChangePassword}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
+        
+            </Items>
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winApplications" 
             runat="server" 
             InitCenter="false"
@@ -287,7 +420,7 @@
             <TopBar>
             </TopBar>           
             <Items>
-                <ext:FormPanel 
+                <ext:Panel 
                     ID="FormPanelTop" 
                     runat="server" 
                     Region="North"
@@ -295,7 +428,9 @@
                     Margins="0 5 5 5"
                     Title="" 
                     Height="120">
-                    <Items>
+                    <Content>
+                        <table>
+                            <tr><td colspan="3">
                         <ext:ComboBox 
                             ID="FilterStatus"
                             runat="server" 
@@ -304,6 +439,8 @@
                             ForceSelection="true"
                             EmptyText="Filter by..."
                             Mode="Local"
+                            Width="260"
+                            LabelWidth="150"
                             SelectOnFocus="true"
                             SelectedIndex = "2">
                             <Items>
@@ -316,18 +453,42 @@
                                 <Select OnEvent="ChangeFilter"/>
                             </DirectEvents>
                         </ext:ComboBox>
-                        <ext:Button ID="btnDownloadPetra" runat="server" Text="Download for Petra" Icon="PageAttach">
+                        </td>
+                        <td><ext:TextField ID="txtSearchApplicant" runat="server" FieldLabel="Search for Applicant">
+                            <DirectEvents>
+                                <Change OnEvent="SearchApplicant"/>
+                            </DirectEvents>
+                        </ext:TextField>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td><ext:Button ID="btnDownloadPetra" runat="server" Text="Download for Petra" Icon="PageAttach">
                             <Listeners>
                                 <Click Handler="submitValue(#{GridPanel1});" />
                             </Listeners>
                         </ext:Button>
+                        </td>
+                        <td><ext:Button ID="btnDownloadExcel" runat="server" Text="Export to Excel/Calc" Icon="PageAttach">
+                            <DirectEvents>
+                                <Click OnEvent="DownloadExcel"/>
+                            </DirectEvents>
+                        </ext:Button>
+                        </td>
+                        <td>
                         <ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
                             <Listeners>
                                 <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
                             </Listeners>
                         </ext:Button>
-                    </Items>
-                </ext:FormPanel>
+                        </td><td>
+                        <ext:Button ID="btnUploadPetraFile" runat="server" Text="Upload imported Petra File" Icon="Disk">
+                            <Listeners>
+                                <Click Handler="#{winUploadPetraFile}.show();" />
+                            </Listeners>
+                        </ext:Button>
+                        </td></tr></table>
+                    </Content>
+                </ext:Panel>
                 <ext:GridPanel 
                     ID="GridPanel1" 
                     runat="server" 
@@ -347,6 +508,8 @@
                             <ext:DateColumn Header="Date Applied" Width="100" DataIndex="ApplicationDate" Format="dd-MMM-yyyy"/>
                             <ext:Column Header="Application Status" Width="100" DataIndex="ApplicationStatus"/>
                             <ext:Column Header="Role" Width="120" DataIndex="Role"/>
+                            <ext:Column Header="FGroup" Width="120" DataIndex="StFgCode"/>
+                            <ext:Column Header="FGLeader" Width="120" DataIndex="StFgLeader"/>
                         </Columns>
                     </ColumnModel>
                     <SelectionModel>
@@ -362,6 +525,15 @@
                         </ext:RowSelectionModel>
                     </SelectionModel>
                     <LoadMask ShowMask="true" />
+                    <Plugins>
+                        <ext:GridFilters runat="server" ID="GridFilters1" Local="true">
+                            <Filters>
+                                <ext:NumericFilter DataIndex="PartnerKey" />
+                                <ext:StringFilter DataIndex="FamilyName" />
+                                <ext:StringFilter DataIndex="FirstName" />
+                            </Filters>
+                        </ext:GridFilters>
+                    </Plugins>
                     <BottomBar>
                         <ext:PagingToolbar ID="PagingToolBar2" runat="server" PageSize="100" StoreID="Store1" />
                     </BottomBar>
@@ -390,88 +562,120 @@
                                 </ext:Button>
                             </Items>
                         </ext:Toolbar>
-                        <ext:Container runat="server" Layout="Column" Height="400">
-                        <Items>
-                        <ext:Container runat="server" LabelAlign="Left" Layout="Form" ColumnWidth=".7">
-                            <Items>
-                                <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Partner Key" DataIndex="PartnerKey" ReadOnly="true"/>
-                        <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
-                        <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
-                        <ext:ComboBox 
-                            ID="Gender"
-                            runat="server" 
-                            FieldLabel="Gender" 
-                            DataIndex="Gender"
-                            Editable="false"
-                            TypeAhead="true" 
-                            ForceSelection="true"
-                            EmptyText="Select a gender..."
-                            Mode="Local"
-                            Resizable="true"
-                            SelectOnFocus="true">
-                            <Items>
-                                <ext:ListItem Text="Male" Value="Male" />
-                                <ext:ListItem Text="Female" Value="Female" />
-                                <ext:ListItem Text="Unknown" Value="Unknown" />
-                            </Items>                        
-                        </ext:ComboBox>
-                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
-                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
-                        <ext:ComboBox 
-                            ID="GenApplicationStatus"
-                            runat="server" 
-                            FieldLabel="Application Status" 
-                            DataIndex="GenApplicationStatus"
-                            StoreID="StoreApplicationStatus"
-                            Editable="false"
-                            TypeAhead="true" 
-                            ForceSelection="true"
-                            EmptyText="Select a status..."
-                            DisplayField="StatusDescription"
-                            ValueField="StatusCode"
-                            Mode="Local"
-                            Width="300"
-                            Resizable="true"
-                            SelectOnFocus="true"                            
-                        />
-                        <ext:ComboBox 
-                            ID="StCongressCode"
-                            runat="server" 
-                            FieldLabel="Role" 
-                            DataIndex="StCongressCode"
-                            StoreID="StoreRole"
-                            Editable="false"
-                            TypeAhead="true" 
-                            ForceSelection="true"
-                            EmptyText="Select a role..."
-                            DisplayField="RoleCode"
-                            ValueField="RoleCode"
-                            Mode="Local"
-                            Resizable="true"
-                            SelectOnFocus="true"                            
-                        />
-                            </Items>
-                        </ext:Container>
-                        <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">
-                            <Items>
-                                <ext:Image ID="Image1" runat="server"
-                                        Width="100"
-                                        ImageUrl="../../img/default_blank.gif"
-                                    >
-                                    <Listeners>
-                                    </Listeners>
-                                </ext:Image>   
-                                <ext:Button ID="btnUpload" runat="server" Text="Upload new Photo" Icon="Disk">
-                                    <Listeners>
-                                        <Click Handler="#{winUpload}.show();" />
-                                    </Listeners>
-                                </ext:Button>
-                            </Items>
+                        <ext:Container runat="server" Height="400" Width="800">
+                          <Items>
+                            <ext:TabPanel ID="TabPanelApplication" runat="server" Height="500" Width="800" EnableTabScroll="true">   
+                              <Items>
+                                <ext:Panel ID="TabApplicantDetails" runat="server" Title="Applicant Details" Padding="5">
+                                  <Items>
+                                    <ext:Container runat="server" Layout="Column" Height="400">
+                                      <Items>
+                                        <ext:Container runat="server" LabelAlign="Left" Layout="Form" ColumnWidth=".7">
+                                            <Items>
+                                              <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
+                                              <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
+                                              <ext:ComboBox 
+                                                  ID="Gender"
+                                                  runat="server" 
+                                                  FieldLabel="Gender" 
+                                                  DataIndex="Gender"
+                                                  Editable="false"
+                                                  TypeAhead="true" 
+                                                  ForceSelection="true"
+                                                  EmptyText="Select a gender..."
+                                                  Mode="Local"
+                                                  Resizable="true"
+                                                  SelectOnFocus="true">
+                                                  <Items>
+                                                      <ext:ListItem Text="Male" Value="Male" />
+                                                      <ext:ListItem Text="Female" Value="Female" />
+                                                      <ext:ListItem Text="Unknown" Value="Unknown" />
+                                                  </Items>                        
+                                              </ext:ComboBox>
+                                              <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
+                                              <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
+                                              <ext:ComboBox 
+                                                  ID="GenApplicationStatus"
+                                                  runat="server" 
+                                                  FieldLabel="Application Status" 
+                                                  DataIndex="GenApplicationStatus"
+                                                  StoreID="StoreApplicationStatus"
+                                                  Editable="false"
+                                                  TypeAhead="true" 
+                                                  ForceSelection="true"
+                                                  EmptyText="Select a status..."
+                                                  DisplayField="StatusDescription"
+                                                  ValueField="StatusCode"
+                                                  Mode="Local"
+                                                  Width="300"
+                                                  Resizable="true"
+                                                  SelectOnFocus="true"                            
+                                              />
+                                              <ext:ComboBox 
+                                                  ID="StCongressCode"
+                                                  runat="server" 
+                                                  FieldLabel="Role" 
+                                                  DataIndex="StCongressCode"
+                                                  StoreID="StoreRole"
+                                                  Editable="false"
+                                                  TypeAhead="true" 
+                                                  ForceSelection="true"
+                                                  EmptyText="Select a role..."
+                                                  DisplayField="RoleCode"
+                                                  ValueField="RoleCode"
+                                                  Mode="Local"
+                                                  Resizable="true"
+                                                  SelectOnFocus="true"                            
+                                              />
+                                              <ext:TextArea
+                                                  ID="Comment"
+                                                  runat="Server"
+                                                  Width="300"
+                                                  FieldLabel="Comment By Registration Office"
+                                                  />
+                                              <ext:CheckBox
+                                                  ID="StFgLeader"
+                                                  runat="Server"
+                                                  FieldLabel="Fellowship Group Leader"
+                                                  />
+                                              <ext:TextField
+                                                  ID="StFgCode"
+                                                  runat="Server"
+                                                  FieldLabel="Fellowship Group Code"
+                                                  />
+                                            </Items>
+                                        </ext:Container>
+                                        <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">
+                                            <Items>
+                                                <ext:Image ID="Image1" runat="server"
+                                                        Width="100"
+                                                        ImageUrl="../../img/default_blank.gif"
+                                                    >
+                                                    <Listeners>
+                                                    </Listeners>
+                                                </ext:Image>   
+                                                <ext:Button ID="btnUpload" runat="server" Text="Upload new Photo" Icon="Disk">
+                                                    <Listeners>
+                                                        <Click Handler="#{winUploadPhoto}.show();" />
+                                                    </Listeners>
+                                                </ext:Button>
+                                            </Items>
+                                        </ext:Container>
+                                      </Items>
+                                    </ext:Container>
+                                  </Items>
+                                </ext:Panel>
+                                <ext:Panel ID="TabRawApplicationData" runat="server" Title="Data Entered" Padding="5" AutoScroll="true">
+                                  <DirectEvents>
+                                      <Show OnEvent="ShowRawApplicationData"/>
+                                  </DirectEvents>
+                                </ext:Panel>
+                              </Items>
+                            </ext:TabPanel>
+                          </Items>
                         </ext:Container>
                         
-                            </Items>
-                        </ext:Container>
-                    </Items>
+                     </Items>
                 </ext:FormPanel>
             </Items>
         </ext:DesktopWindow>

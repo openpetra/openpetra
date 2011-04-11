@@ -305,7 +305,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-            FLogging = new TLogging(TClientSettings.GetPathTemp() + Path.DirectorySeparatorChar + "PetraClient.log");
+            FLogging = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
 
             Catalog.Init();
 

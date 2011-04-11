@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,20 +52,8 @@ namespace Ict.Petra.Server.App.Core.Security
         /// </summary>
         public const String StrAccessDeniedLogPrefix = "DB ACCESS DENIED: ";
 
-        /// <summary>set by EstablishDBConnection; used for access security</summary>
-        private String FUsername;
         private TSQLCache FCache;
         private bool FRetrievingTablePermissions;
-
-        // private TDelegateAddErrorLogEntry FAddErrorLogEntryDelegate;
-        /// <summary>Returns the name of the current petra user, without the sql in the beginning or the end</summary>
-        public String PetraUserName
-        {
-            get
-            {
-                return FUsername;
-            }
-        }
 
         /// <summary>
         /// </summary>
@@ -99,7 +87,7 @@ namespace Ict.Petra.Server.App.Core.Security
             String AConnectionString,
             String APetraUserName)
         {
-            FUsername = APetraUserName;
+            UserID = APetraUserName;
             FCache.Invalidate();
 
             // inherited
@@ -154,7 +142,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         this,
                         "SELECT s_can_create_l, s_can_modify_l, s_can_delete_l, s_can_inquire_l, s_table_name_c FROM PUB_s_user_table_access_permission WHERE s_user_id_c = '"
                         +
-                        FUsername + "'");
+                        UserID + "'");
 
                     FRetrievingTablePermissions = false;
                     RequiredAccessPermission = "";
