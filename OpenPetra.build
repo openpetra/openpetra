@@ -15,7 +15,7 @@ list of available commands:
   compile: compiles OpenPetra including testing
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. compile should already be executed
-  quickGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
+  minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
   quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
@@ -120,26 +120,20 @@ useful parameters
   <call target="generate-solution-all-internal" />
 </target>
 
-<target name="quickGenerateSolution" description="generates code, the references, the project and solution files">
-  <!-- we need to compile Ict.Tools.NAntTasks.dll, Ict.Common and Ict.PetraTools to get tools like Ict.Tools.GenerateORM.exe -->
+<target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
+  <!-- compile minimal needed tools -->
   <call target="nanttasks"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <nant inheritall="false" target="generateCsprojectNoCompile" 
-        buildfile="csharp/ICT/Common/ICT.Common.build" />
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
-  <nant inheritall="false" target="generateCsprojectNoCompile" 
-        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
-
-  <nant inheritall="false" target="prepareProjects"
-        buildfile="csharp/ICT/Petra/Petra.build" />
-  <nant inheritall="false" target="prepareProjects"
-        buildfile="csharp/ICT/Testing/ICT.Testing.build" />
-
-  <call target="generate-solution-all-internal" />
+  <!-- Find all dependencies -->
+  <nant inheritall="false" target="depend" 
+        buildfile="csharp/csharp.build" />
+  <!-- Generate the project/solution files -->
+  <call target="generateSolutionNoCompile" />
 </target>
 
 <target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
