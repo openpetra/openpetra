@@ -401,8 +401,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Direct access to the unposted gifts
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ADateEffective"></param>
-        public GetUnpostedGiftInfo(int ALedgerNumber, DateTime ADateEffective)
+        /// <param name="ADateEndOfPeriod"></param>
+        public GetUnpostedGiftInfo(int ALedgerNumber, DateTime ADateEndOfPeriod)
         {
             //IF CAN-FIND (FIRST a_gift_batch WHERE
             //    a_gift_batch.a_ledger_number_i EQ pv_ledger_number_i AND
@@ -415,7 +415,7 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ALedgerNumber;
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = ADateEffective;
+            ParametersArray[1].Value = ADateEndOfPeriod;
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
@@ -454,7 +454,8 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                strH = (string)dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()];
+                int ih = (int)dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()];
+                strH = ih.ToString();
 
                 if (Rows > 1)
                 {

@@ -45,6 +45,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             InitServerConnection();
+            ResetDatabase();
             LoadTestTata();
         }
 
