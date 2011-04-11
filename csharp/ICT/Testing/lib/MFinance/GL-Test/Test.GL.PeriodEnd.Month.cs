@@ -31,7 +31,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
@@ -47,14 +46,20 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// Test of the GL.PeriodEnd.Month routines ...
+    /// </summary>
     [TestFixture]
     public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
 
 
+        /// <summary>
+        /// Tests if the status flag for the ProvisionalYearEndFlag appears correctly
+        /// </summary>
         [Test]
-        public void Test_PYEF_01()
+        public void Test_PEMM_01()
         {
             new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = true;
             Assert.True(new GetLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
@@ -62,30 +67,31 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
             bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-            	intLedgerNumber, out verificationResult);
+                intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
-                if (verificationResult[i].ResultCode.Equals("PYEF-01"))
+                if (verificationResult[i].ResultCode.Equals(
+                        PeriodEndMonthStatus.PEMM_01.ToString()))
                 {
                     blnStatusArrived = true;
+                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
+                        "Value shall be of type critical ...");
                 }
             }
 
-            Assert.IsTrue(blnStatusArrived, "Status message PYEF-01 is shown");
-            Assert.IsTrue(blnHaseErrors, "PYEF-01 is not a Critital Message");
+            Assert.IsTrue(blnStatusArrived, "Correc status message has been shown");
+            Assert.IsTrue(blnHaseErrors, "This is not a Critital Message");
 
             new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = false;
         }
 
         /// <summary>
-        /// PYEF-02 is the status for a set of unpostetd batches. This error is non critical,
-        /// which means that further tests are done and this status is one of a set of different stati,
-        /// but a Period-End-Month calculation is not allowed in this case.
+        /// Tests if unposted batches are detected correctly
         /// </summary>
         [Test]
-        public void Test_PYEF_02()
+        public void Test_PEMM_02()
         {
             GetLedgerInfo ledgerInfo = new GetLedgerInfo(intLedgerNumber);
 
@@ -102,55 +108,118 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
             bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-            	intLedgerNumber, out verificationResult);
+                intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
-                if (verificationResult[i].ResultCode.Equals("PYEF-02"))
+                if (verificationResult[i].ResultCode.Equals(
+                        PeriodEndMonthStatus.PEMM_02.ToString()))
                 {
                     blnStatusArrived = true;
+                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
+                        "Value shall be of type critical ...");
                 }
             }
 
-            Assert.IsTrue(blnStatusArrived, "Status message PYEF-02 is shown");
-            Assert.IsTrue(blnHaseErrors, "PYEF-02 is not a Critital Message");
+            Assert.IsTrue(blnStatusArrived, "Status message hase been shown");
+            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
             UnloadTestData_GetBatchInfo();
         }
 
+        /// <summary>
+        /// Tests if suspended accounts are detected correctly
+        /// </summary>
         [Test]
-        public void Test_PYEF_03()
+        public void Test_PEMM_03()
         {
-            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
             bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-            	intLedgerNumber, out verificationResult);
+                intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
-                if (verificationResult[i].ResultCode.Equals("PYEF-03"))
+                if (verificationResult[i].ResultCode.Equals(
+                        PeriodEndMonthStatus.PEMM_03.ToString()))
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Status,
                         "Value shall be status only ...");
-                } 
+                }
             }
 
-            Assert.IsTrue(blnStatusArrived, "Status message PYEF-03 is shown");
-            Assert.IsFalse(blnHaseErrors, "PYEF-03 is not a Critital Message");
+            Assert.IsTrue(blnStatusArrived, "Status message has been shown");
+            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
         }
 
+        /// <summary>
+        /// Check for the revaluation status ...
+        /// </summary>
         [Test]
-        public void Test_PYEF_10()
+        public void Test_PEMM_05()
         {
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEnd(
-            	intLedgerNumber, out verificationResult);
-        	
+            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+                intLedgerNumber, out verificationResult);
+            bool blnStatusArrived = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                if (verificationResult[i].ResultCode.Equals(
+                        PeriodEndMonthStatus.PEMM_05.ToString()))
+                {
+                    blnStatusArrived = true;
+                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
+                        "Value shall be of type critical ...");
+                }
+            }
+
+            Assert.IsTrue(blnStatusArrived, "Status message has been shown");
+            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
+            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+        }
+
+        /// <summary>
+        /// Move to the next month
+        /// </summary>
+        [Test]
+        public void Test_SwitchToNextMonth()
+        {
+            GetLedgerInfo ledgerInfo1;
+            GetLedgerInfo ledgerInfo2;
+            int counter = 0;
+
+            do
+            {
+                ++counter;
+                Assert.Greater(20, counter, "To many loops");
+
+                // Set revaluation flag ...
+                new TLedgerInitFlagHandler(intLedgerNumber,
+                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+
+                ledgerInfo1 = new GetLedgerInfo(intLedgerNumber);
+                // Period end now shall run ...
+                TVerificationResultCollection verificationResult;
+                bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEnd(
+                    intLedgerNumber, out verificationResult);
+
+                ledgerInfo2 = new GetLedgerInfo(intLedgerNumber);
+
+                if (!ledgerInfo2.ProvisionalYearEndFlag)
+                {
+                    Assert.AreEqual(ledgerInfo1.CurrentPeriod + 1,
+                        ledgerInfo2.CurrentPeriod, "counter ok");
+                }
+
+                Assert.IsFalse(blnHaseErrors, "Month end without any error");
+            } while (!ledgerInfo2.ProvisionalYearEndFlag);
+
+            ResetDatabase();
         }
 
         [TestFixtureSetUp]
@@ -232,8 +301,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (Exception)
             {
+                Assert.Fail("No database access to run the test");
             }
-            ;
         }
 
         public void Unsuspense()
@@ -257,8 +326,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (Exception)
             {
+                Assert.Fail("No database access to run the test");
             }
-            ;
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 bool blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEndInfo(
                     value, out verificationResult);
                 tbxMessage.Text = verificationResult.BuildVerificationResultString();
-                //btnMonthEnd.Enabled = !blnErrorStatus;
+                btnMonthEnd.Enabled = !blnErrorStatus;
                 this.OnResizeEnd(new EventArgs());
             }
         }

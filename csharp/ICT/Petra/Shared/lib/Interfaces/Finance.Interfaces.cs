@@ -574,8 +574,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                        string[] AForeignCurrency,
                        decimal[] ANewExchangeRate,
                        out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TSingletonConnector)</summary>
-        int TTestInfo_1(int AInput);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                    out DateTime AStartDate,

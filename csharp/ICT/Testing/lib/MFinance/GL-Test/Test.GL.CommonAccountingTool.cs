@@ -205,7 +205,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     CommonAccountingConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
-            catch (InternalException)
+            catch (TerminateException)
             {
                 Assert.Pass("Exception was thrown");
             }

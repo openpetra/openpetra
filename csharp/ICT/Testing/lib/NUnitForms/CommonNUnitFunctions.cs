@@ -149,6 +149,14 @@ namespace Ict.Testing.NUnitForms
         }
 
         /// <summary>
+        /// Resets the data base to its initial value ...
+        /// </summary>
+        public void ResetDatabase()
+        {
+            nant("resetDatabase", false);
+        }
+
+        /// <summary>
         /// Routine to load a test specific data base.
         /// </summary>
         /// <param name="strSqlFilePathFromCSharpName">A filename starting from the root.

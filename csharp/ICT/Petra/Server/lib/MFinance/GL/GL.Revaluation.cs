@@ -161,11 +161,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
             }
-            catch (InternalException ex)
+            catch (TerminateException terminate)
             {
-                AddVerificationResultMessage("LedgerInfo invalid",
-                    ex.Message, "REVAL.02",
-                    TResultSeverity.Resv_Critical);
+                verificationCollection = terminate.ResultCollection();
             }
             return resultSeverity == TResultSeverity.Resv_Critical;
         }
@@ -179,8 +177,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (accountTable.Rows.Count == 0)
             {
-                throw new InternalException("001", Catalog.GetString(
-                        "No Entries in GeneralLedgerMasterTable"));
+                TerminateException terminate = new TerminateException(
+                    Catalog.GetString(Catalog.GetString(
+                            "No Entries in GeneralLedgerMasterTable")));
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "001";
+                throw terminate;
             }
 
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
@@ -281,15 +283,9 @@ namespace Ict.Petra.Server.MFinance.GL
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
                 }
-                catch (InternalException internalException)
+                catch (TerminateException terminate)
                 {
-                    string strMessage = "{0}:[{1}:{2}] {3}";
-                    strMessage = String.Format(strMessage, internalException.ErrorCode,
-                        ARelevantAccount,
-                        generalLedgerMasterRow.CostCentreCode,
-                        internalException.Message);
-                    verificationCollection.Add(new TVerificationResult(
-                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    verificationCollection = terminate.ResultCollection();
                 }
                 catch (DivideByZeroException)
                 {

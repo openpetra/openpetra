@@ -67,6 +67,10 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// Object to handle the read only glm-infos ...
+    /// </summary>
     public class Get_GLM_Info
     {
         DataTable aGLM;
@@ -155,30 +159,79 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    /// <summary>
+    /// Object to handle the cost center table ...
+    /// </summary>
     public class GetCostCenterInfo
     {
         ACostCentreTable costCentreTable;
         ACostCentreRow costCentreRow;
+        bool blnCostCenterValid;
+
+        /// <summary>
+        /// Constructor to select ledger and cost center directly
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCenterCode"></param>
         public GetCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
+        {
+            GetCostCenterInfo_(ALedgerNumber);
+            blnCostCenterValid = SetCostCenterRow_(ACostCenterCode);
+        }
+
+        /// <summary>
+        /// This constructor only loads a cc list. The row remains invalid
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public GetCostCenterInfo(int ALedgerNumber)
+        {
+            GetCostCenterInfo_(ALedgerNumber);
+            blnCostCenterValid = false;
+        }
+
+        private void GetCostCenterInfo_(int ALedgerNumber)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            costCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCenterCode, transaction);
+            costCentreTable = ACostCentreAccess.LoadViaALedger(ALedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
-            try
-            {
-                costCentreRow = (ACostCentreRow)costCentreTable.Rows[0];
-            }
-            catch (Exception)
-            {
-            }
         }
 
+        /// <summary>
+        /// Select an other data row ...
+        /// </summary>
+        /// <param name="ACostCenterCode"></param>
+        public void SetCostCenterRow(string ACostCenterCode)
+        {
+            SetCostCenterRow_(ACostCenterCode);
+        }
+
+        private bool SetCostCenterRow_(string ACostCenterCode)
+        {
+            if (costCentreTable.Rows.Count > 0)
+            {
+                for (int i = 0; i < costCentreTable.Rows.Count; ++i)
+                {
+                    costCentreRow = (ACostCentreRow)costCentreTable[i];
+
+                    if (costCentreRow.CostCentreCode.Equals(ACostCenterCode))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True means that the row the object holds a valid data row.
+        /// </summary>
         public bool IsValid
         {
             get
             {
-                return costCentreTable.Rows.Count == 1;
+                return blnCostCenterValid;
             }
         }
     }
@@ -229,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             accountTable = AAccountAccess.LoadViaALedger(
-            	ledgerInfo.LedgerNumber, transaction);
+                ledgerInfo.LedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
 
             if (accountTable.Rows.Count == 0)
@@ -498,8 +551,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber"></param>
         public GetLedgerInfo(int ALedgerNumber)
         {
-
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
             ledgerNumber = ALedgerNumber;
             ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
@@ -729,63 +782,76 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    /// <summary>
+    /// This exception transports the error message and if the reason was an other exception
+    /// to the end of the routine. ResultCollection unpackst this data into a
+    /// TVerificationResultCollection object, so that the user gets this message on the
+    /// "normal" message box.
+    /// </summary>
     public class TerminateException : SystemException
     {
+        /// <summary>
+        /// Constructor with inner exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
         public TerminateException(Exception innerException, string message)
             : base(message, innerException)
         {
         }
+
+        /// <summary>
+        /// Constructor without inner exception
+        /// </summary>
+        /// <param name="message"></param>
         public TerminateException(string message)
             : base(message)
         {
         }
-        
+
+        /// <summary>
+        /// Property to handle (transport) the error code
+        /// </summary>
         public string ErrorCode = String.Empty;
+
+        /// <summary>
+        /// Property to handle (transport) the error context
+        /// </summary>
         public string Context = String.Empty;
-    }
 
-
-    
-    
-    
-    public class InternalExceptionStati
-    {
-        public static string INTERNALS = "INTERNALS";
-    }
-    /// <summary>
-    /// This exception shall handle the internal errors of type critcal.
-    /// </summary>
-    public class InternalException : SystemException
-    {
-        string strErrorCode;
-
-        public InternalException(Exception innerException, string message)
-            : base(string.Empty, innerException)
+        /// <summary>
+        /// A Method to transform the exception message(s) into a
+        /// TVerificationResultCollection
+        /// </summary>
+        /// <returns></returns>
+        public TVerificationResultCollection ResultCollection()
         {
-            strErrorCode = InternalExceptionStati.INTERNALS;
-        }
+            TVerificationResultCollection collection =
+                new TVerificationResultCollection();
+            TVerificationResult avrEntry;
 
-        public InternalException(Exception innerException, string errorCode, string message)
-            : base(message, innerException)
-        {
-            strErrorCode = errorCode;
-        }
+            avrEntry = new TVerificationResult(this.Context,
+                this.Message, "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
+            collection.Add(avrEntry);
+            avrEntry = new TVerificationResult(Catalog.GetString("Exception has been thrown"),
+                this.ToString(), "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
+            collection.Add(avrEntry);
 
-        public InternalException(string errorCode, string message)
-            : base(message)
-        {
-            strErrorCode = errorCode;
-        }
-
-        public string ErrorCode
-        {
-            get
+            if (this.InnerException != null)
             {
-                return strErrorCode;
+                avrEntry = new TVerificationResult(Catalog.GetString("Inner Exception"),
+                    this.InnerException.ToString(),
+                    TResultSeverity.Resv_Critical);
+                collection.Add(avrEntry);
             }
+
+            return collection;
         }
     }
-
 
     /// <summary>
     /// Base on the idea to reduce the number of database request to it's minimum, this object reads
@@ -843,9 +909,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (currencyTable.Rows.Count == 0)
             {
-                throw new InternalException("GetCurrencyInfo.01",
-                    Catalog.GetString(
-                        "The table a_currency is empty!"));
+                TerminateException terminate = new TerminateException(
+                    Catalog.GetString("The table a_currency is empty!"));
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "GetCurrencyInfo.01";
+                throw terminate;
             }
         }
 
@@ -864,9 +932,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            throw new InternalException("GetCurrencyInfo.02",
+            TerminateException terminate = new TerminateException(
                 Catalog.GetString(String.Format(
                         "No Data for curency {0} found", ACurrencyCode)));
+            terminate.Context = "Common Accountig";
+            terminate.ErrorCode = "GetCurrencyInfo.02";
+            throw terminate;
         }
 
         /// <summary>
@@ -996,9 +1067,13 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (matchCollection.Count != 1)
             {
-                throw new InternalException("GetCurrencyInfo.03",
-                    String.Format("The regular expression {0} does not fit for a match in {1}",
+                TerminateException terminate = new TerminateException(
+                    String.Format(Catalog.GetString("The regular expression {0} does not fit for a match in {1}"),
                         sRegex, strFormat));
+
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "GetCurrencyInfo.03";
+                throw terminate;
             }
 
             intDigits = (matchCollection[0].Value).Length - 3;

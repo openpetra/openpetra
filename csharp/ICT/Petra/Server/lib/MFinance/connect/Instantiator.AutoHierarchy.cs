@@ -2601,13 +2601,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public int TTestInfo_1(int AInput)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TSingletonConnector), "TTestInfo_1", ";INT;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TSingletonConnector.TTestInfo_1(AInput);
-        }
-
-        /// generated method from connector
         public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
                                           out DateTime AStartDate,
                                           out DateTime AEndDate)

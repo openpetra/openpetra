@@ -109,7 +109,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 decimal d = new FormatConverter("nonsens").digits;
                 Assert.Fail("No InternalException thrown");
             }
-            catch (InternalException internalException)
+            catch (TerminateException internalException)
             {
                 Assert.AreEqual("GetCurrencyInfo.03", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -131,7 +131,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 decimal d = new GetCurrencyInfo("JPN").digits;
                 Assert.Fail("No InternalException thrown");
             }
-            catch (InternalException internalException)
+            catch (TerminateException internalException)
             {
                 Assert.AreEqual("GetCurrencyInfo.02", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -145,7 +145,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 decimal d = new GetCurrencyInfo("DMG").digits;
                 Assert.Fail("No InternalException thrown");
             }
-            catch (InternalException internalException)
+            catch (TerminateException internalException)
             {
                 if (internalException.ErrorCode.Equals("GetCurrencyInfo.01"))
                 {

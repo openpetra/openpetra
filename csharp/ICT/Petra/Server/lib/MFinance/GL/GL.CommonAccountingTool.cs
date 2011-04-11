@@ -157,9 +157,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (blnReadyForTransaction)
                 {
-                    throw new InternalException(
-                        "GL.CAT.01",
-                        Catalog.GetString("You cannot change the Date after you have created a journal!"));
+                    TerminateException terminate = new TerminateException(
+                        "You cannot change the Date after you have created a journal!");
+                    terminate.Context = "Common Accountig";
+                    terminate.ErrorCode = "GL.CAT.01";
+                    throw terminate;
                 }
 
                 blnInitBatchDate = false;
@@ -200,10 +202,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!blnReadyForTransaction)
                 {
-                    // This is a hint for the developer only ... !
-                    throw new InternalException(
-                        "GL.CAT.02",
-                        Catalog.GetString("You have to add a journal before you can change the JournalDescription!"));
+                    TerminateException terminate = new TerminateException(
+                        "You have to add a journal before you can change the JournalDescription!");
+                    terminate.Context = "Common Accountig";
+                    terminate.ErrorCode = "GL.CAT.02";
+                    throw terminate;
                 }
 
                 journal.JournalDescription = value;
@@ -219,10 +222,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!blnReadyForTransaction)
                 {
-                    // This is a hint for the developer only ... !
-                    throw new InternalException(
-                        "GL.CAT.03",
-                        Catalog.GetString("You have to add a journal before you can change the TransactionTypeCode!"));
+                    TerminateException terminate = new TerminateException(
+                        "You have to add a journal before you can change the TransactionTypeCode!");
+                    terminate.Context = "Common Accountig";
+                    terminate.ErrorCode = "GL.CAT.03";
+                    throw terminate;
                 }
 
                 journal.TransactionTypeCode = value.ToString();
@@ -238,9 +242,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!blnReadyForTransaction)
                 {
-                    // This is a hint for the developer only ... !
-                    throw new InternalException(
-                        "GL.CAT.04", "You have to add a journal before you can change the SubSystemCode!");
+                    TerminateException terminate = new TerminateException(
+                        "You have to add a journal before you can change the SubSystemCode!");
+                    terminate.Context = "Common Accountig";
+                    terminate.ErrorCode = "GL.CAT.04";
+                    throw terminate;
                 }
 
                 journal.SubSystemCode = value.ToString();
@@ -323,9 +329,11 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (!blnJournalIsInForeign)
             {
-                // This is a hint for the developer only ... !
-                throw new InternalException(
-                    "GL.CAT.05", Catalog.GetString("You cannot account foreign currencies in a base journal!"));
+                TerminateException terminate = new TerminateException(
+                    Catalog.GetString("You cannot account foreign currencies in a base journal!"));
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "GL.CAT.05";
+                throw terminate;
             }
 
             AddATransaction(AAccount, ACostCenter, ANarrativeMessage,
@@ -343,9 +351,11 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (!blnReadyForTransaction)
             {
-                // This is a hint for the developer only ... !
-                throw new InternalException(
-                    "GL.CAT.06", Catalog.GetString("You have to add a journal before you can add a transaction!"));
+                TerminateException terminate = new TerminateException(
+                    Catalog.GetString("You have to add a journal before you can add a transaction!"));
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "GL.CAT.06";
+                throw terminate;
             }
 
             if (blnJournalIsInForeign)
@@ -370,7 +380,10 @@ namespace Ict.Petra.Server.MFinance.GL
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
-                                throw new InternalException("GL.CAT.07", strMessage);
+                                TerminateException terminate = new TerminateException(strMessage);
+                                terminate.Context = "Common Accountig";
+                                terminate.ErrorCode = "GL.CAT.07";
+                                throw terminate;
                             }
                         }
                     }
