@@ -48,7 +48,7 @@ namespace Tests.Common.Printing
     /// </summary>
     public partial class MainForm : Form
     {
-        const string FileName = "../../Common/Printing/test.html";
+        const string FileName = "../../csharp/ICT/Testing/exe/Printing/test.html";
 
         public MainForm()
         {

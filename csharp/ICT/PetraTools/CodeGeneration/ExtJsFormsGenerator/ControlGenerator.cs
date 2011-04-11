@@ -329,6 +329,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
             ctrlSnippet.SetCodelet("LABEL", "strEmpty");
+            ctrlSnippet.SetCodelet("INPUTVALUE", ctrl.controlName.Substring(3));
 
             return ctrlSnippet;
         }
