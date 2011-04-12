@@ -198,6 +198,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Conversion from 100 EUR to 88.01 GBP");
         }
 
+        /// <summary>
+        /// Test of the Lock-System for ledgers ...
+        /// </summary>
+        [Test]
+        public void Test_06_TLegerLock()
+        {
+        	TLegerLock tLegerLock1 = new TLegerLock(LedgerNumber);
+        	tLegerLock1.UnLock();  // Reset if it is locked somewhere else ...
+        	Assert.IsTrue(tLegerLock1.Lock(), "Leger can be locked");
+        	TLegerLock tLegerLock2 = new TLegerLock(LedgerNumber);
+        	Assert.IsFalse(tLegerLock2.Lock(), "Leger cannot be locked");
+        	System.Diagnostics.Debug.WriteLine(tLegerLock2.LockInfo());
+        	tLegerLock2.UnLock();
+        }
+
         private bool TryGetAccountPeriodInfo(int ALedgerNum, int APeriodNum)
         {
             try

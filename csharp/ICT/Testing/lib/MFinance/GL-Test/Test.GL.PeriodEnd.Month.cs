@@ -66,7 +66,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Cannot start test because ProvisionalYearEndFlag cannot be changed");
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors =  TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -107,7 +107,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -136,7 +136,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -166,7 +166,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "test-sql\\gl-test-gift-batch-data.sql");
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -192,7 +192,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_PEMM_05_Revaluation()
         {
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -235,7 +235,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ledgerInfo1 = new GetLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
-                bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEnd(
+                bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                     intLedgerNumber, out verificationResult);
 
                 ledgerInfo2 = new GetLedgerInfo(intLedgerNumber);

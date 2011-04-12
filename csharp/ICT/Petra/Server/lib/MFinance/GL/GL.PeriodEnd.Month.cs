@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Routines for running the period month end check.
     /// </summary>
-    public partial class TPeriodMonthConnector
+    public partial class TPeriodIntervallConnector
     {
         /// <summary>
         /// Routine to initialize the "Hello" Message if you want to start the

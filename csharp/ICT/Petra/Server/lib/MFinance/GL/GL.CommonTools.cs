@@ -628,8 +628,75 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.LedgerNumber;
             }
         }
+        
+        public bool YearEndFlag
+        {
+        	get 
+        	{
+                ALedgerRow row = (ALedgerRow)ledger[0];
+                return row.YearEndFlag;
+        	}
+        }
     }
 
+    public class TLegerLock
+    {
+    	int intLegerNumber;
+    	public TLegerLock(int ALedgerNum)
+    	{
+    		intLegerNumber = ALedgerNum;
+    	}
+    	
+    	public bool Lock()
+    	{
+    		bool blnResult;
+    		TVerificationResultCollection tvr;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+            	intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
+            ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+            aLedgerInitFlagRow.LedgerNumber = intLegerNumber;
+            aLedgerInitFlagRow.InitOptionName = TLedgerInitFlagEnum.LedgerLock.ToString();
+            try {
+            	aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+            	ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out tvr);
+            	blnResult = true;
+            	DBAccess.GDBAccessObj.CommitTransaction();
+            } catch (System.Data.ConstraintException)
+            {
+            	DBAccess.GDBAccessObj.CommitTransaction();
+            	blnResult = false;            	
+            }
+            return blnResult;
+    	}
+    	
+    	public void UnLock()
+    	{
+    		TLedgerInitFlagHandler tifh = 
+    			new TLedgerInitFlagHandler(intLegerNumber,TLedgerInitFlagEnum.LedgerLock);
+    		tifh.Flag = false;
+    	}
+
+    	public string LockInfo()
+    	{
+    		try 
+    		{
+    			TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+    			ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+    				intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
+    			ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0];
+    			string strAnswer = aLedgerInitFlagRow.CreatedBy + " - " + 
+    				DateTime.Parse(aLedgerInitFlagRow.DateCreated.ToString()).ToLongDateString();
+    			DBAccess.GDBAccessObj.CommitTransaction();
+    			return strAnswer;
+    		} catch (Exception)
+    		{
+    			return Catalog.GetString("Free Again");
+    		}
+    	}
+    }
+    
+    
     // -----------------------------------------------------------------------------
 
     /// <summary>
@@ -646,6 +713,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// revaluation.
         /// </summary>
         Revaluation,
+        
+        /// <summary>
+        /// Property to lock a ledger ...
+        /// Not implemented in petra 
+        /// </summary>
+        LedgerLock,
+        
         DatabaseAllocation
     }
 
@@ -719,7 +793,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
             aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
             aLedgerInitFlagRow.InitOptionName = strFlagName;
-            aLedgerInitFlagRow.CreatedBy = AName;
             aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
             ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out VerificationResult);
             DBAccess.GDBAccessObj.CommitTransaction();
