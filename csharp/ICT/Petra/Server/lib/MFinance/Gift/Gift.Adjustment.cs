@@ -309,10 +309,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (!batchSelected)
                 {
                     DateTime ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
-
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                    AGiftBatchRow oldGiftBatch = MainDS.AGiftBatch[0];
                     TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-                    giftBatch = MainDS.AGiftBatch[0]; 
-                    giftBatch.BatchDescription = Catalog.GetString("Reverse Gift");
+                    giftBatch = MainDS.AGiftBatch[1];
+                    giftBatch.BankAccountCode = oldGiftBatch.BankAccountCode;
+                    giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
+                    giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
+                    giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
+
+                    if (giftBatch.MethodOfPaymentCode.Length == 0)
+                    {
+                        giftBatch.SetMethodOfPaymentCodeNull();
+                    }
+
+                    giftBatch.BankCostCentre = oldGiftBatch.BankCostCentre;
+                    giftBatch.GiftType = oldGiftBatch.GiftType;
+
+                    if (Function.Equals("AdjustGift"))
+                    {
+                        giftBatch.BatchDescription = Catalog.GetString("Gift Adjustment");
+                    }
+                    else
+                    {
+                        giftBatch.BatchDescription = Catalog.GetString("Reverse Gift");
+                    }
                 }
                 else
                 {
@@ -323,28 +344,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (Function.Equals("ReverseGiftBatch"))
                 {
                     AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
                     foreach (AGiftRow gift in MainDS.AGift.Rows)
                     {
-                    	AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, gift.GiftTransactionNumber, Transaction);
+                        AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, gift.GiftTransactionNumber, Transaction);
                     }
                 }
                 else
                 {
                     AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
-               		if (Function.Equals("ReverseGiftDetail"))
+
+                    if (Function.Equals("ReverseGiftDetail"))
                     {
-                       	AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, AGiftDetailNumber, Transaction);
+                        AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, AGiftDetailNumber, Transaction);
                     }
                     else
                     {
                         AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftNumber, Transaction);
                     }
                 }
+
                 int countGifts = MainDS.AGift.Rows.Count;
                 int countGiftsDetail = MainDS.AGiftDetail.Rows.Count;
-               
+
                 //assuming new elements are added after these static borders
-                
+
                 int cycle = 0;
 
                 do
@@ -357,64 +381,61 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
                         {
                             AGiftRow gift = MainDS.AGift.NewRowTyped(true);
-                            DataUtilities.CopyAllColumnValues(oldGift, gift);
+                            DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                             gift.LedgerNumber = giftBatch.LedgerNumber;
                             gift.BatchNumber = giftBatch.BatchNumber;
                             gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                             giftBatch.LastGiftNumber++;
                             gift.LastDetailNumber = 1;
+
                             /*
-                            gift.MethodOfGivingCode = oldGift.MethodOfGivingCode;
-
-                            if (gift.MethodOfGivingCode.Length == 0)
-                            {
-                                gift.SetMethodOfGivingCodeNull();
-                            }
-
-                            gift.MethodOfPaymentCode = oldGift.MethodOfPaymentCode;
-
-                            if (gift.MethodOfPaymentCode.Length == 0)
-                            {
-                                gift.SetMethodOfPaymentCodeNull();
-                            }
-
-                            gift.AdminCharge = oldGift.AdminCharge;
-                            gift.DonorKey = oldGift.DonorKey;
-                            gift.ReceiptLetterCode = oldGift.ReceiptLetterCode;
-                            gift.Reference = oldGift.Reference;
-                            gift.BankingDetailsKey = oldGift.BankingDetailsKey;
-                            gift.Restricted = oldGift.Restricted;
-                            gift.FirstTimeGift = oldGift.FirstTimeGift;
-                            gift.GiftStatus = oldGift.GiftStatus;         // unknown status is copied?
-                            */
+                             * gift.MethodOfGivingCode = oldGift.MethodOfGivingCode;
+                             *
+                             * if (gift.MethodOfGivingCode.Length == 0)
+                             * {
+                             *  gift.SetMethodOfGivingCodeNull();
+                             * }
+                             *
+                             * gift.MethodOfPaymentCode = oldGift.MethodOfPaymentCode;
+                             *
+                             * if (gift.MethodOfPaymentCode.Length == 0)
+                             * {
+                             *  gift.SetMethodOfPaymentCodeNull();
+                             * }
+                             *
+                             * gift.AdminCharge = oldGift.AdminCharge;
+                             * gift.DonorKey = oldGift.DonorKey;
+                             * gift.ReceiptLetterCode = oldGift.ReceiptLetterCode;
+                             * gift.Reference = oldGift.Reference;
+                             * gift.BankingDetailsKey = oldGift.BankingDetailsKey;
+                             * gift.Restricted = oldGift.Restricted;
+                             * gift.FirstTimeGift = oldGift.FirstTimeGift;
+                             * gift.GiftStatus = oldGift.GiftStatus;         // unknown status is copied?
+                             */
                             MainDS.AGift.Rows.Add(gift);
-
-                         
-
-                           
 
                             for (int j = 0; (j < countGiftsDetail); j++)
                             {
                                 AGiftDetailRow oldGiftDetail = MainDS.AGiftDetail[j];
 
-                                if ((oldGiftDetail.GiftTransactionNumber == AGiftNumber)
+                                if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                     && (oldGiftDetail.BatchNumber == ABatchNumber)
                                     && (oldGiftDetail.LedgerNumber == ALedgerNumber)
                                     && (!Function.Equals("ReverseGiftDetail") || (oldGiftDetail.DetailNumber == AGiftDetailNumber)))
                                 {
-                                	if (oldGiftDetail.ModifiedDetail)
-                                	{
-                                		AMessages.Add(new TVerificationResult(
-				                        String.Format(Catalog.GetString("Cannot revert or adjust Gift{0} with Detail {1} in Batch {2}"), oldGiftDetail.GiftTransactionNumber,oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
-				                        String.Format(Catalog.GetString("It was already adjusted or reverted.")),
-				                        TResultSeverity.Resv_Critical));
-                                   		DBAccess.GDBAccessObj.RollbackTransaction();
-                                   		return false;
-                                	}
-                                	
-                                	
-                                	AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped(true);
-                                	DataUtilities.CopyAllColumnValues(oldGiftDetail, giftDetail);
+                                    if ((cycle == 0) && oldGiftDetail.ModifiedDetail)
+                                    {
+                                        AMessages.Add(new TVerificationResult(
+                                                String.Format(Catalog.GetString("Cannot revert or adjust Gift{0} with Detail {1} in Batch {2}"),
+                                                    oldGiftDetail.GiftTransactionNumber, oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
+                                                String.Format(Catalog.GetString("It was already adjusted or reverted.")),
+                                                TResultSeverity.Resv_Critical));
+                                        DBAccess.GDBAccessObj.RollbackTransaction();
+                                        return false;
+                                    }
+
+                                    AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped(true);
+                                    DataUtilities.CopyAllColumnValuesWithoutPK(oldGiftDetail, giftDetail);
                                     giftDetail.DetailNumber = gift.LastDetailNumber++;
                                     giftDetail.LedgerNumber = gift.LedgerNumber;
                                     giftDetail.BatchNumber = giftBatch.BatchNumber;
@@ -424,31 +445,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;
                                     giftDetail.GiftAmount = signum * oldGiftDetail.GiftAmount;
                                     giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
+
                                     /*
-                                    giftDetail.RecipientLedgerNumber = oldGiftDetail.RecipientLedgerNumber;
-                                    giftDetail.MotivationGroupCode = oldGiftDetail.MotivationGroupCode;
-                                    giftDetail.MotivationDetailCode = oldGiftDetail.MotivationDetailCode;
-                                    giftDetail.ConfidentialGiftFlag = oldGiftDetail.ConfidentialGiftFlag;
-                                    giftDetail.TaxDeductable = oldGiftDetail.TaxDeductable;
-                                    giftDetail.RecipientKey = oldGiftDetail.RecipientKey;
-
-                                    giftDetail.ChargeFlag = oldGiftDetail.ChargeFlag;
-                                    giftDetail.CostCentreCode = oldGiftDetail.CostCentreCode;
-
-                                    if (giftDetail.CostCentreCode.Length == 0)
-                                    {
-                                        giftDetail.SetCostCentreCodeNull();
-                                    }
-                                    
-                                    giftDetail.IchNumber = oldGiftDetail.IchNumber;
-
-                                    giftDetail.MailingCode = oldGiftDetail.MailingCode;
-
-                                    if (giftDetail.MailingCode.Length == 0)
-                                    {
-                                        giftDetail.SetMailingCodeNull();
-                                    }
-									*/					
+                                     * giftDetail.RecipientLedgerNumber = oldGiftDetail.RecipientLedgerNumber;
+                                     * giftDetail.MotivationGroupCode = oldGiftDetail.MotivationGroupCode;
+                                     * giftDetail.MotivationDetailCode = oldGiftDetail.MotivationDetailCode;
+                                     * giftDetail.ConfidentialGiftFlag = oldGiftDetail.ConfidentialGiftFlag;
+                                     * giftDetail.TaxDeductable = oldGiftDetail.TaxDeductable;
+                                     * giftDetail.RecipientKey = oldGiftDetail.RecipientKey;
+                                     *
+                                     * giftDetail.ChargeFlag = oldGiftDetail.ChargeFlag;
+                                     * giftDetail.CostCentreCode = oldGiftDetail.CostCentreCode;
+                                     *
+                                     * if (giftDetail.CostCentreCode.Length == 0)
+                                     * {
+                                     *  giftDetail.SetCostCentreCodeNull();
+                                     * }
+                                     *
+                                     * giftDetail.IchNumber = oldGiftDetail.IchNumber;
+                                     *
+                                     * giftDetail.MailingCode = oldGiftDetail.MailingCode;
+                                     *
+                                     * if (giftDetail.MailingCode.Length == 0)
+                                     * {
+                                     *  giftDetail.SetMailingCodeNull();
+                                     * }
+                                     */
                                     giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];
                                     giftDetail.GiftCommentTwo = (String)requestParams["ReversalCommentTwo"];
                                     giftDetail.GiftCommentThree = (String)requestParams["ReversalCommentThree"];
@@ -468,7 +490,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     cycle++;
                 } while ((cycle < 2) && Function.Equals("AdjustGift"));
-
 
                 // save everything at the end
                 if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
@@ -504,7 +525,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
-                throw new Exception(Catalog.GetString("Gift Revert/Adjust failed."),ex);
+                throw new Exception(Catalog.GetString("Gift Revert/Adjust failed."), ex);
             }
         }
     }

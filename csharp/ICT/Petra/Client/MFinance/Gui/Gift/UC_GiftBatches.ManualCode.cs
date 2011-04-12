@@ -40,6 +40,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        public void refresh()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+            LoadBatches(FLedgerNumber);
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
 
         /// <summary>
         /// load the batches into the grid

@@ -44,6 +44,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
+        /// <summary>
+        /// show the actual data of the database after server has changed data
+        /// </summary>
+        public void refresh()
+        {
+            ucoBatches.refresh();
+        }
 
         private void InitializeManualCode()
         {

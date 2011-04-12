@@ -433,8 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {
-                    // refresh the whole window
-                    ((TFrmGiftBatch)ParentForm).LedgerNumber = FLedgerNumber;
+                    ((TFrmGiftBatch)ParentForm).refresh();
                 }
             }
             finally

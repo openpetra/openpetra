@@ -95,8 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void AddParam(String paramName, Object param)
         {
-       		requestParams.Remove(paramName);
-        	requestParams.Add(paramName, param);
+            requestParams.Remove(paramName);
+            requestParams.Add(paramName, param);
         }
 
         private void RevertAdjust(System.Object sender, System.EventArgs e)
@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
             AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
             AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
-           	AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
+            AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
             AddParam("ReversalCommentOneType", cmbReversalCommentOneType.Text);
             AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
             AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
@@ -159,21 +159,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ok)
             {
-            	String function=(String)requestParams["Function"];
-            	switch (function) {
-            		case "ReverseGiftBatch":
-            			MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
-            			break;
-            		case "ReverseGiftDetail":
-            			MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reverted"));
-            			break;
-            		case "ReverseGift":
-            			MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reverted"));
-            			break;
-            		case "AdjustGift":
-            			MessageBox.Show(Catalog.GetString("Your gift has been sucessfully adjusted"));	      			
-            			break;
-            	}
+                String function = (String)requestParams["Function"];
+
+                switch (function)
+                {
+                    case "ReverseGiftBatch":
+                        MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+                        break;
+
+                    case "ReverseGiftDetail":
+                        MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reverted"));
+                        break;
+
+                    case "ReverseGift":
+                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reverted"));
+                        break;
+
+                    case "AdjustGift":
+                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully adjusted"));
+                        break;
+                }
+
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
             }
