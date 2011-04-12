@@ -71,7 +71,7 @@ useful parameters
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
       <fileset basedir="${path::combine(dir.projectfiles,devenv-name)}">
-        <include name="OpenPetra.sln" />
+        <include name="OpenPetra*.sln" />
         <include name="*.csproj" />
       </fileset>
     </delete>
