@@ -122,7 +122,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(null, new GetLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new GetAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");
@@ -179,7 +179,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(null, new GetLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new GetAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");

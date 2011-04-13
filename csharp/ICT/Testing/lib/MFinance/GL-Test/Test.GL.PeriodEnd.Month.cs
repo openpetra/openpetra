@@ -61,12 +61,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_01_ProvisionalYearEndFlag()
         {
-            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = true;
-            Assert.True(new GetLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
+            new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = true;
+            Assert.True(new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
                 "Cannot start test because ProvisionalYearEndFlag cannot be changed");
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors =  TPeriodIntervallConnector.TPeriodMonthEndInfo(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEndInfo(
                 intLedgerNumber, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -84,7 +84,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(blnStatusArrived, "Correc status message has been shown");
             Assert.IsTrue(blnHaseErrors, "This is not a Critital Message");
 
-            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = false;
+            new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = false;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
-            GetLedgerInfo ledgerInfo = new GetLedgerInfo(intLedgerNumber);
+            THandleLedgerInfo ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
 
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
@@ -219,8 +219,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_SwitchToNextMonth()
         {
             ResetDatabase();
-            GetLedgerInfo ledgerInfo1;
-            GetLedgerInfo ledgerInfo2;
+            THandleLedgerInfo ledgerInfo1;
+            THandleLedgerInfo ledgerInfo2;
             int counter = 0;
 
             do
@@ -232,13 +232,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new TLedgerInitFlagHandler(intLedgerNumber,
                     TLedgerInitFlagEnum.Revaluation).Flag = true;
 
-                ledgerInfo1 = new GetLedgerInfo(intLedgerNumber);
+                ledgerInfo1 = new THandleLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
                 bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                     intLedgerNumber, out verificationResult);
 
-                ledgerInfo2 = new GetLedgerInfo(intLedgerNumber);
+                ledgerInfo2 = new THandleLedgerInfo(intLedgerNumber);
 
                 if (!ledgerInfo2.ProvisionalYearEndFlag)
                 {
@@ -247,6 +247,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
 
                 Assert.IsFalse(blnHaseErrors, "Month end without any error");
+                System.Diagnostics.Debug.WriteLine("Counter: " + counter.ToString());
             } while (!ledgerInfo2.ProvisionalYearEndFlag);
         }
 

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
@@ -64,14 +65,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Test of the GetLedgerInfo Routine...
+        /// Test of the THandleLedgerInfo Routine...
         /// </summary>
         [Test]
-        public void Test_02_GetLedgerInfo()
+        public void Test_02_THandleLedgerInfo()
         {
-            Assert.AreEqual("EUR", new GetLedgerInfo(LedgerNumber).BaseCurrency,
+            Assert.AreEqual("EUR", new THandleLedgerInfo(LedgerNumber).BaseCurrency,
                 String.Format("Base Currency of {0} shall be EUR", LedgerNumber));
-            Assert.AreEqual("5003", new GetLedgerInfo(LedgerNumber).RevaluationAccount,
+            Assert.AreEqual("5003", new THandleLedgerInfo(LedgerNumber).RevaluationAccount,
                 String.Format("Revaluation Account of {0} shall be 5003", LedgerNumber));
         }
 
@@ -202,15 +203,47 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Test of the Lock-System for ledgers ...
         /// </summary>
         [Test]
-        public void Test_06_TLegerLock()
+        public void Test_06_TLedgerLock()
         {
-        	TLegerLock tLegerLock1 = new TLegerLock(LedgerNumber);
-        	tLegerLock1.UnLock();  // Reset if it is locked somewhere else ...
-        	Assert.IsTrue(tLegerLock1.Lock(), "Leger can be locked");
-        	TLegerLock tLegerLock2 = new TLegerLock(LedgerNumber);
-        	Assert.IsFalse(tLegerLock2.Lock(), "Leger cannot be locked");
-        	System.Diagnostics.Debug.WriteLine(tLegerLock2.LockInfo());
-        	tLegerLock2.UnLock();
+            TLedgerLock tLegerLock1 = new TLedgerLock(LedgerNumber);
+
+            Assert.IsTrue(tLegerLock1.IsLocked, "Leger can be locked");
+            TLedgerLock tLegerLock2 = new TLedgerLock(LedgerNumber);
+            Assert.IsFalse(tLegerLock2.IsLocked, "Leger cannot be locked");
+            System.Diagnostics.Debug.WriteLine(tLegerLock2.LockInfo());
+            tLegerLock2.UnLock();
+        }
+
+        [Test]
+        public void Test_07_ProcessStatus()
+        {
+            THandleLedgerInfo ledgerInfo = new THandleLedgerInfo(LedgerNumber);
+
+            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.ACCOUNT_CLOSED_OUT;
+            Assert.AreEqual((int)YearEndProcessStatus.ACCOUNT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+                "OK");
+            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.GIFT_CLOSED_OUT;
+            Assert.AreEqual((int)YearEndProcessStatus.GIFT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+                "OK");
+        }
+
+        /// <summary>
+        /// Test of the Routines HasNoChilds and ChildList
+        /// of GetAccountHierarchyDetailInfo
+        /// </summary>
+        [Test]
+        public void Test_08_GetAccountHierarchyDetailInfo()
+        {
+            GetAccountHierarchyDetailInfo gahdi = new GetAccountHierarchyDetailInfo(
+                new THandleLedgerInfo(LedgerNumber));
+
+            Assert.IsTrue(gahdi.HasNoChilds("6800"), "Base Account without childs");
+            Assert.IsFalse(gahdi.HasNoChilds("6800S"), "Root Account");
+            IList <String>list = gahdi.ChildList("7000S");
+            Assert.AreEqual(2, list.Count, "Two entries ...");
+            Assert.AreEqual("7000", list[0], "7000 is the first account");
+            Assert.AreEqual("7010", list[1], "7010 is the second account");
+            Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
         }
 
         private bool TryGetAccountPeriodInfo(int ALedgerNum, int APeriodNum)

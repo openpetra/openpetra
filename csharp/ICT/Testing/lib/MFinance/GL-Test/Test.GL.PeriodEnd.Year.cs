@@ -56,21 +56,59 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
 
         [Test]
-        public void Test_empty()
+        public void Test_YearEndFlagStatus()
         {
-        	TYearEnd tye = TYearEndSingleton.Instance;
-        	System.Diagnostics.Debug.WriteLine(tye.OldValue(22).ToString());
-        	System.Diagnostics.Debug.WriteLine(tye.OldValue(252).ToString());
-        	System.Diagnostics.Debug.WriteLine(tye.OldValue(262).ToString());
-        	System.Diagnostics.Debug.WriteLine(tye.OldValue(2232).ToString());
-        }
+            ResetDatabase();
+            THandleLedgerInfo ledgerInfo;
+            int counter = 0;
 
+            TVerificationResultCollection verificationResult;
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
+                intLedgerNumber, out verificationResult);
+
+            bool messageHasBeenShown;
+
+            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
+            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
+            messageHasBeenShown = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
+
+                if (verificationResult[i].ResultCode.Equals(PeriodEndYearStatus.PEYM_02.ToString()))
+                {
+                    messageHasBeenShown = true;
+                }
+            }
+
+            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
+
+            do
+            {
+                ++counter;
+                Assert.Greater(20, counter, "To many loops");
+
+                // Set revaluation flag ...
+                new TLedgerInitFlagHandler(intLedgerNumber,
+                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                    intLedgerNumber, out verificationResult);
+                ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
+            } while (!ledgerInfo.ProvisionalYearEndFlag);
+
+            blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
+                intLedgerNumber, out verificationResult);
+
+            Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
+            Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
+        }
 
         [TestFixtureSetUp]
         public void Init()
         {
             InitServerConnection();
-            ResetDatabase();
+            //ResetDatabase();
         }
 
         [TestFixtureTearDown]
@@ -111,7 +149,5 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 strSQL, transaction, ParametersArray);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
-
-
     }
 }

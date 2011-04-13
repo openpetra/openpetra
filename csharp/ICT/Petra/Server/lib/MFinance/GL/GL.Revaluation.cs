@@ -156,7 +156,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             try
             {
-                GetLedgerInfo gli = new GetLedgerInfo(intLedgerNum);
+                THandleLedgerInfo gli = new THandleLedgerInfo(intLedgerNum);
                 strBaseCurrencyType = gli.BaseCurrency;
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();

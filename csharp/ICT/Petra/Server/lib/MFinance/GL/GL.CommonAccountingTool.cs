@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private ABatchRow aBatchRow;
         private AJournalRow journal;
 
-        private GetLedgerInfo getLedgerInfo;
+        private THandleLedgerInfo THandleLedgerInfo;
         private GetCurrencyInfo getBaseCurrencyInfo;
         private GetCurrencyInfo getForeignCurrencyInfo = null;
         bool blnJournalIsInForeign;
@@ -119,26 +119,26 @@ namespace Ict.Petra.Server.MFinance.GL
         public CommonAccountingTool(int ALedgerNumber,
             string ABatchDescription)
         {
-            getLedgerInfo = new GetLedgerInfo(ALedgerNumber);
+            THandleLedgerInfo = new THandleLedgerInfo(ALedgerNumber);
             CommonAccountingTool_(ABatchDescription);
         }
 
         /// <summary>
-        /// Internaly a GetLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
+        /// Internaly a THandleLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
         /// database requests and use this constructor ...
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public CommonAccountingTool(GetLedgerInfo ALedgerInfo, string ABatchDescription)
+        public CommonAccountingTool(THandleLedgerInfo ALedgerInfo, string ABatchDescription)
         {
-            getLedgerInfo = ALedgerInfo;
+            THandleLedgerInfo = ALedgerInfo;
             CommonAccountingTool_(ABatchDescription);
         }
 
         private void CommonAccountingTool_(string ABatchDescription)
         {
-            aBatchTable = TTransactionWebConnector.CreateABatch(getLedgerInfo.LedgerNumber);
-            getBaseCurrencyInfo = new GetCurrencyInfo(getLedgerInfo.BaseCurrency);
+            aBatchTable = TTransactionWebConnector.CreateABatch(THandleLedgerInfo.LedgerNumber);
+            getBaseCurrencyInfo = new GetCurrencyInfo(THandleLedgerInfo.BaseCurrency);
             aBatchRow = aBatchTable.ABatch[0];
             aBatchRow.BatchDescription = ABatchDescription;
             aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
@@ -258,7 +258,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (blnInitBatchDate)
             {
                 GetAccountingPeriodInfo getAccountingPeriodInfo =
-                    new GetAccountingPeriodInfo(getLedgerInfo.LedgerNumber, getLedgerInfo.CurrentPeriod);
+                    new GetAccountingPeriodInfo(THandleLedgerInfo.LedgerNumber, THandleLedgerInfo.CurrentPeriod);
                 aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
@@ -275,7 +275,7 @@ namespace Ict.Petra.Server.MFinance.GL
             journal.BatchNumber = aBatchRow.BatchNumber;
             journal.JournalNumber = intJournalCount;
             journal.DateEffective = aBatchRow.DateEffective;
-            journal.JournalPeriod = getLedgerInfo.CurrentPeriod;
+            journal.JournalPeriod = THandleLedgerInfo.CurrentPeriod;
 
             if (blnJournalIsInForeign)
             {
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (ATransActionIsInForeign)
                 {
                     GetAccountInfo accountCheck =
-                        new GetAccountInfo(null, getLedgerInfo, AAccount);
+                        new GetAccountInfo(THandleLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {
@@ -376,7 +376,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 string strMessage = Catalog.GetString("The ledger is defined in {0}, the account {1} is defined in " +
                                     "{2} and you want to account something in {3}?");
                                 strMessage = String.Format(strMessage,
-                                    getLedgerInfo.BaseCurrency,
+                                    THandleLedgerInfo.BaseCurrency,
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
