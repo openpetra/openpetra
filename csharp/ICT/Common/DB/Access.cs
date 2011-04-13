@@ -1205,6 +1205,14 @@ namespace Ict.Common.DB
                 throw new Exception("Security Violation: Access Permission failed");
             }
 
+#if DEBUGMODE
+            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Entering " + this.GetType().FullName + ".SelectDT()...");
+            }
+            LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
+#endif
+
             try
             {
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
@@ -1215,6 +1223,16 @@ namespace Ict.Common.DB
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
+
+#if DEBUGMODE
+            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                if (ATypedDataTable != null)
+                {
+                    LogTable(ATypedDataTable);
+                }
+            }
+#endif
 
             return ATypedDataTable;
         }
