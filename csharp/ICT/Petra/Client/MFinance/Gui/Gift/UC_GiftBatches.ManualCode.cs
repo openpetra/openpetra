@@ -40,7 +40,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
-        public void refresh()
+        /// <summary>
+        /// Refresh the data in the grid and the details after the database content was changed on the server
+        /// </summary>
+        public void RefreshAll()
         {
             FPetraUtilsObject.DisableDataChangedEvent();
             LoadBatches(FLedgerNumber);
@@ -201,11 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-
-                // TODO: refresh the grid, to reflect that the batch has been posted
-                LoadBatches(FLedgerNumber);
-
-                FPetraUtilsObject.DisableSaveButton();
+                RefreshAll();
             }
         }
 

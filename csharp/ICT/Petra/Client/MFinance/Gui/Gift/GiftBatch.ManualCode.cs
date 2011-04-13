@@ -47,9 +47,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void refresh()
+        public void RefreshAll()
         {
-            ucoBatches.refresh();
+            ucoBatches.RefreshAll();
         }
 
         private void InitializeManualCode()

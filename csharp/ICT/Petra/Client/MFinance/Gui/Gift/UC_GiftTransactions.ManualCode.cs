@@ -410,9 +410,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="functionname">Which function shall be called on the server</param>
         public void ShowRevertAdjustForm(String functionname)
         {
+            AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+
+            if (giftBatch == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a Gift Batch."));
+                return;
+            }
+
+            if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
+            {
+                MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
+                return;
+            }
+
             if (FPreviouslySelectedDetailRow == null)
             {
-                // saving failed, therefore do not try to post
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
                 return;
             }
@@ -433,7 +446,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {
-                    ((TFrmGiftBatch)ParentForm).refresh();
+                    ((TFrmGiftBatch)ParentForm).RefreshAll();
                 }
             }
             finally
