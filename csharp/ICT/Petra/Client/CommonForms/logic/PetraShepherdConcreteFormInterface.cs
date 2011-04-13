@@ -35,8 +35,5 @@ namespace Ict.Petra.Client.CommonForms.Logic
         void CancelShepherd(); 
         ///<summary>Defines the attributes of each individual Shepherd at run time</summary>
         void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight); 
-        /// <summary>Updates progress percentage.</summary>
-        /// <param name="ProgressPercentage"></param>
-        void UpdateProgressBar(int ProgressPercentage); 
     }
 }

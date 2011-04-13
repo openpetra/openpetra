@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
 
-        ///<summary>Constructor</summary>
+        ///<summary>Constructor for the default logic behind all Shepherds.</summary>
         public TPetraShepherdFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm)
         {
             TLogging.Log(
@@ -269,7 +269,6 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			float ProgressPercentage = 0;
 			ProgressPercentage = ((float)GetCurrentPageNumber()/(float)EnumeratePages() * 100);
 			TLogging.Log("GetProgredsBarPercentage returns the following: " + ProgressPercentage); 
-			FForm.UpdateProgressBar((int)ProgressPercentage);
 			return ProgressPercentage;
         }
         

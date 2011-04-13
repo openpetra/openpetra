@@ -159,8 +159,11 @@ namespace Ict.Petra.Client.CommonForms
         	}
         	
         	this.lblPageProgress.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages(); 
+        	this.prbPageProgress.Value = ((int)FLogic.GetProgressBarPercentage());
+        	
         	this.lblHeading1.Text = FLogic.CurrentPage.Title; 
         	this.lblHeading2.Text = FLogic.CurrentPage.Note;
+        	
         	
             TLogging.Log("UpdateNavigation");
         }
@@ -175,14 +178,6 @@ namespace Ict.Petra.Client.CommonForms
         	ShepherdTitle = AString;
         	
         	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
-        }
-        
-        /// <summary>Updates the Progress bar with the new percentage. Interfaces through to 
-        /// PetraShepherdConcreteForm</summary>
-        /// <param name="ProgressPercentage"></param>
-        public void UpdateProgressBar(int ProgressPercentage)
-        {
-        	this.prbPageProgress.Value = ProgressPercentage; 
         }
 
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>

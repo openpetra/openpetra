@@ -391,6 +391,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID); 
             FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage); 
             
+            //Temporary Statement to add a subshepherd finish page in addition to the Finish page above
             TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd"); 
             TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID); 
             FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage); 
@@ -409,26 +410,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
         public TPetraShepherdFinishPage(XmlDocument XmlPages)
         {
         	base.ID = "FINISHPAGE_MASTER"; 
-        	base.Enabled = true;
-        	base.Visible = true; 
-            base.FIsLastPage = false;
-            base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
-            base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
-            base.FTitle = "Here is a summary of the information you have provided:";
-            base.Note = GetFinishPageNote(XmlPages); 
+        	Init(XmlPages);
         }
        	public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
         {
-       		base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
-        	base.Enabled = true;
+       		base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper(); 
+       		Init(XmlPages); 
+        }
+       	private void Init(XmlDocument XmlPages)
+       	{
+       		base.Enabled = true;
         	base.Visible = true; 
             base.FIsLastPage = false;
             base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
             base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
             base.FTitle = "Here is a summary of the information you have provided:" + base.ID;
             base.Note = GetFinishPageNote(XmlPages); 
-       	
-        }
+       	}
        	protected string GetFinishPageNote(XmlDocument XmlPages)
        	{
        		XmlNode FileElementData = XmlPages.DocumentElement;
