@@ -73,7 +73,7 @@ class Program
                 "");
             DBAccess.GDBAccessObj = db;
 
-            db.DebugLevel = 10;
+            TLogging.DebugLevel = 10;
 
             string sqlText = "";
 

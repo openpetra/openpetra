@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
         public TMReportingNamespaceLoader()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             Byte[] rndbytes = new Byte[5];
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMReportingNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMReporting.URI: " + FRemotedObject.URI);
             }
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
         public TMReporting()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -172,7 +172,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
         public TLogicConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -283,7 +283,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -294,7 +294,7 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }

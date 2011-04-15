@@ -63,6 +63,21 @@ namespace Ict.Common
         public const int DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
+        /// some log messages will be only displayed at a certain DebugLevel
+        /// </summary>
+        public static int DebugLevel = 0;
+
+        /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
+        public static int DL
+        {
+            get
+            {
+                return DebugLevel;
+            }
+        }
+
+
+        /// <summary>
         /// this is the default prefix for the username
         /// </summary>
         public const string DEFAULTUSERNAMEPREFIX = "MiB";

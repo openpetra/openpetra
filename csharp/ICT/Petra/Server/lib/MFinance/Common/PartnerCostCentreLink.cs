@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("HasPartnerCostCentreLink: committed own transaction.");
                     }

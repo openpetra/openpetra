@@ -52,7 +52,7 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connecting to Database...");
 
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = settings.GetInt16("Server.DebugLevel", 10);
+            TLogging.DebugLevel = settings.GetInt16("Server.DebugLevel", 10);
             try
             {
                 DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType")),

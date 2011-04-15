@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TSystemDefaultsCache() : base()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ': created. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ': created. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FTableCached = false;
             FReadWriteLock = new System.Threading.ReaderWriterLock();
         }
@@ -106,10 +106,10 @@ namespace Ict.Petra.Server.App.Core
         {
             SSystemDefaultsTable ReturnValue;
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             **/
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FTableCached: ' + FTableCached.ToString); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FTableCached: ' + FTableCached.ToString); $ENDIF
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefault called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefault called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.App.Core
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.LoadSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.LoadSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             **/
 #if DEBUGMODE
             try
@@ -431,8 +431,8 @@ namespace Ict.Petra.Server.App.Core
                 {
                     if (FSystemDefaultsDT != null)
                     {
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT <> nil'); $ENDIF
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT.Rows.Count: ' + FSystemDefaultsDT.Rows.Count.ToString); $ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT <> nil'); $ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT.Rows.Count: ' + FSystemDefaultsDT.Rows.Count.ToString); $ENDIF
                         FSystemDefaultsDT.Clear();
                     }
 
@@ -449,7 +449,7 @@ namespace Ict.Petra.Server.App.Core
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".LoadSystemDefaultsTable: commited own transaction.");
                             }
@@ -458,7 +458,7 @@ namespace Ict.Petra.Server.App.Core
                     }
 
                     // Thread.Sleep(5000);     uncomment this for debugging. This allows checking whether read access to FSystemDefaultsDT actually waits until we release the WriterLock in the finally block.
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('TSystemDefaultsCache: SystemDefaults (re)loaded!');$ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('TSystemDefaultsCache: SystemDefaults (re)loaded!');$ENDIF
                 }
                 finally
                 {
@@ -484,7 +484,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>void</returns>
         public void ReloadSystemDefaultsTable()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             LoadSystemDefaultsTable();
 
             // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + GetSystemDefault('LocalisedCountyLabel'));$ENDIF
@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.App.Core
             //
             // if (ASystemDefaultsDataTable <> nil) and (ASystemDefaultsDataTable.Rows.Count > 0) then
             // begin
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Saving ' + (ASystemDefaultsDataTable.Rows.Count).ToString + ' System Defaults...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Saving ' + (ASystemDefaultsDataTable.Rows.Count).ToString + ' System Defaults...'); $ENDIF
             //
             // Transaction := DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             //
@@ -547,7 +547,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running count query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running count query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;
@@ -557,7 +557,7 @@ namespace Ict.Petra.Server.App.Core
             // begin
             // System Default doesn't exist yet > create it
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Inserting SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Inserting SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
              *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
 
             // SetLength(ParametersArray, 3);
@@ -577,7 +577,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running insert query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running insert query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;
@@ -587,7 +587,7 @@ namespace Ict.Petra.Server.App.Core
             // begin
             // System Default exists > update it
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Updating SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Updating SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
              *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
 
             // SetLength(ParametersArray, 3);
@@ -607,7 +607,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error runing insert query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error runing insert query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;

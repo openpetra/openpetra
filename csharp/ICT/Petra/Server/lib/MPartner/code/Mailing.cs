@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPartner
             if (APartnerKey > 0)
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("TMailing.GetPartnerLocations: Checking access to Partner.");
                 }
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.MPartner
                             ParametersArray);
 
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("TMailing.GetPartnerLocations:  FillDataSet.Tables.Count: " + FillDataSet.Tables.Count.ToString());
                         }
@@ -148,7 +148,7 @@ namespace Ict.Petra.Server.MPartner
                         if (APartnerLocations.Rows.Count > 0)
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     "TMailing.GetPartnerLocations: Found " + APartnerLocations.Rows.Count.ToString() +
@@ -164,7 +164,7 @@ namespace Ict.Petra.Server.MPartner
                              * PartnerKey passed in) we return an empty Typed DataTable.
                              */
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     "TMailing.GetPartnerLocations: No PartnerLocations found for Partner " + APartnerKey.ToString() + "!");
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MPartner
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("TMailing.GetPartnerLocations: committed own transaction.");
                             }
@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.MPartner
                 else
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TMailing.GetPartnerLocations: Access to Partner DENIED!");
                     }
@@ -250,7 +250,7 @@ namespace Ict.Petra.Server.MPartner
                             true, true, true, out PartnerLocationDT))
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(
                                 "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");
@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MPartner
                         }
 
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(
                                 "TMailing.GetPartnersBestLocationData: BestAddressPK: " + ABestAddressPK.SiteKey.ToString() + ", " +
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MPartner
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("TMailing.GetPartnersBestLocationData: committed own transaction.");
                         }

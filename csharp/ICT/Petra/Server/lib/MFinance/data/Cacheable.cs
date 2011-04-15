@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         public TCacheable() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         /// destructor
         ~TCacheable()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             String TableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
@@ -214,7 +214,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         {
             string TableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
         #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(
                     this.GetType().FullName + ".GetCacheableTable called with ATableName='" + TableName + "' and ALedgerNumber=" +
@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         #if DEBUGMODE
             if (DomainManager.GCacheableTablesManager.IsTableCached(TableName))
             {
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Cached DataTable has currently " +
                         DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
@@ -358,7 +358,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
         #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }

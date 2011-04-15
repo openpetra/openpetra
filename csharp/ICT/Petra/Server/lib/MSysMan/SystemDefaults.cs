@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         public TSystemDefaults() : base()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FStartTime = DateTime.Now;
         }
 
@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </returns>
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
 
             return DomainManager.GSystemDefaultsCache.GetSystemDefaultsTable();
 
@@ -137,10 +137,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <returns>void</returns>
         public void ReloadSystemDefaultsTable()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
             DomainManager.GSystemDefaultsCache.ReloadSystemDefaultsTable();
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
             Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(-1,
                 SharedConstants.CLIENTTASKGROUP_SYSTEMDEFAULTSREFRESH,
                 "",

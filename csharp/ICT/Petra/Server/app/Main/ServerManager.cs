@@ -579,7 +579,6 @@ namespace Ict.Petra.Server.App.Main
         public void EstablishDBConnection()
         {
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
             try
             {
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,

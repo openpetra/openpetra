@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AClientID,
                 ATaskGroup,
                 ATaskCode,
@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AUserID,
                 ATaskGroup,
                 ATaskCode,
@@ -448,7 +448,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 4)
+            if (TLogging.DL >= 4)
             {
                 Console.WriteLine("Application domain: " + Thread.GetDomain().FriendlyName + " @ Port " + ARemotingPort);
                 Console.WriteLine("  for User: " + FUserID);
@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void StopClientAppDomain()
         {
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=9; this was removed to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: calling StopClientStillAliveCheckThread...",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -481,12 +481,12 @@ namespace Ict.Petra.Server.App.ClientDomain
             ClientStillAliveCheck.TClientStillAliveCheck.StopClientStillAliveCheckThread();
 
             // this can get the server to a halt and prevent people to logon again. see email from Moray "Server Crash" 22/08/2007
-            // if TSrvSetting.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: before ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
+            // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: before ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
             // ChannelServices.UnregisterChannel(FTcpChannel);
-            // if TSrvSetting.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: after ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
+            // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: after ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
             DomainManager.UClientManagerCallForwarderRef = null;
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: after UClientManagerCallForwarderRef := nil",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -551,7 +551,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             String ADBUsername,
             String ADBPassword,
             System.Int16 AIPBasePort,
-            System.Int16 ADebugLevel,
+            System.Int32 ADebugLevel,
             String AServerLogFile,
             String AHostName,
             String AHostIPAddresses,
@@ -627,7 +627,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     if (AToken == FRandomAppDomainTearDownToken)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
+                        if (TLogging.DL >= 9)
                         {
                             Console.WriteLine("TearDownAppDomain: Tearing down ClientDomain!!! Reason: " + AReason);
                         }
@@ -665,25 +665,19 @@ namespace Ict.Petra.Server.App.ClientDomain
 #if  TESTMODE_WITHOUT_ODBC
 #else
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("  Connecting to Database...");
             }
 #endif
             DBAccess.GDBAccessObj = new TDataBasePetra();
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("DBAccessObj object created.");
             }
 #endif
-            DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("DebugLevel set.");
-            }
-#endif
+
             ((TDataBasePetra)DBAccess.GDBAccessObj).AddErrorLogEntryCallback += new TDelegateAddErrorLogEntry(this.AddErrorLogEntry);
             try
             {
@@ -696,7 +690,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     "",
                     UserInfo.GUserInfo.UserID);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     Console.WriteLine("  Connected to Database.");
                 }
@@ -727,7 +721,7 @@ namespace Ict.Petra.Server.App.ClientDomain
 #if  TESTMODE_WITHOUT_ODBC
 #else
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.CloseDBConnection: before calling GDBAccessObj.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -740,7 +734,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             catch (EDBConnectionNotAvailableException)
             {
                 // The DB connection was never opened  since this is no problem here, ignore this Exception.
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log("TClientDomainManager.CloseDBConnection: Info: DB Connection was never opened, therefore no need to close it.",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -751,7 +745,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 throw;
             }
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -799,7 +793,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IRemoteFactory));
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TRemoteFactory.URI: " + FRemotedObject.URI);
             }
@@ -856,14 +850,14 @@ namespace Ict.Petra.Server.App.ClientDomain
             new ClientStillAliveCheck.TClientStillAliveCheck(FClientServerConnectionType, new TDelegateTearDownAppDomain(
                     TearDownAppDomain), FRandomAppDomainTearDownToken);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: created TClientStillAliveCheck.");
             }
 #endif
             ReturnValue = RemoteAtURI;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: RemoteAtURI: " + RemoteAtURI);
             }
@@ -973,7 +967,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public TMyVanishingRemotedObject()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Created without constructor. Instance hash is " + this.GetHashCode().ToString());
             }
@@ -995,14 +989,14 @@ namespace Ict.Petra.Server.App.ClientDomain
             object MyObject2;
             MyObject = new System.Object();
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject: Getting collected after " + (new TimeSpan(
                                                                                                DateTime.Now.Ticks -
                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject: Now performing some longer-running stuff...");
             }
@@ -1013,7 +1007,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject: Finalizer has run.");
             }
@@ -1074,7 +1068,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public TMyVanishingRemotedObject2() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Created without constructor. Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1096,14 +1090,14 @@ namespace Ict.Petra.Server.App.ClientDomain
             object MyObject2;
             MyObject = new object();
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject2: Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
                                                                                                 FStartTime.Ticks)).ToString() + " seconds.");
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject2: Now performing some longer-running stuff...");
             }
@@ -1114,7 +1108,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyVanishingRemotedObject2: Finalizer has run.");
             }
@@ -1177,7 +1171,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public TMyRemotedObject() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " Created without constructor. Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1199,14 +1193,14 @@ namespace Ict.Petra.Server.App.ClientDomain
             object MyObject2;
             MyObject = new System.Object();
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyRemotedObject: Getting collected after " + (new TimeSpan(
                                                                                       DateTime.Now.Ticks -
                                                                                       FStartTime.Ticks)).ToString() + " seconds.");
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyRemotedObject: Now performing some longer-running stuff...");
             }
@@ -1217,7 +1211,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyRemotedObject: Finalizer has run.");
             }

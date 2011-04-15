@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetCampaignOptions called!");
             }
@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetCampaignOptions: committed own transaction.");
                     }
@@ -145,7 +145,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetConferences called!");
             }
@@ -180,7 +180,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetConferences: committed own transaction.");
                     }
@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetEarliestAndLatestDates called!");
             }
@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetEarliestAndLatestDates: committed own transaction.");
                     }
@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetCampaignOptions called!");
             }
@@ -384,7 +384,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetCampaignOptions: committed own transaction.");
                     }
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetFieldUnits called!");
             }
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetFieldUnits: committed own transaction.");
                     }
@@ -633,7 +633,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetSendingFieldsForOneConference called!");
             }
@@ -692,7 +692,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetSendingFieldsForOneConference: committed own transaction.");
                     }
@@ -712,7 +712,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetAllSendingFields called!");
             }
@@ -771,7 +771,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetAllSendingFields: committed own transaction.");
                     }
@@ -797,7 +797,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldsForOneConference called!");
             }
@@ -828,7 +828,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldsForOneConference: committed own transaction.");
                     }
@@ -844,7 +844,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFields called!");
             }
@@ -894,7 +894,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFields: committed own transaction.");
                     }
@@ -917,7 +917,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldFromPartnerTable called!");
             }
@@ -961,7 +961,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldFromPartnerTable: committed own transaction.");
                     }
@@ -984,7 +984,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldFromShortTermTable called!");
             }
@@ -1013,7 +1013,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldFromShortTermTable: committed own transaction.");
                     }
@@ -1083,7 +1083,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("GetCampaignPrefix: called.");
             }
@@ -1113,7 +1113,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetCampaignPrefix: committed own transaction.");
                     }

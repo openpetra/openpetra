@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
         public TSysManServerLookups() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
         /// </summary>
         ~TSysManServerLookups()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             APetraDBVersion = "Can not retrieve DB version";
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetDatabaseVersion called!");
             }
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("GetDatabaseVersion: committed own transaction.");
                 }
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetInstalledPatches called!");
             }
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetInstalledPatches: committed own transaction.");
                     }
@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             for (int Counter = 0; Counter < TmpTable.DefaultView.Count; ++Counter)
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Patch: " + TmpTable.DefaultView[Counter][0]);
                 }
