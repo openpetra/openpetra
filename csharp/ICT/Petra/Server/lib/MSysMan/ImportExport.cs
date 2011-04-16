@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,18 +55,20 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             XmlNode rootNode = OpenPetraData.FirstChild.NextSibling;
 
-            ExportTables(rootNode, "MSysMan", "");
-            ExportTables(rootNode, "MCommon", "");
-            ExportTables(rootNode, "MPartner", "Partner");
-            ExportTables(rootNode, "MPartner", "Mailroom");
-            ExportTables(rootNode, "MFinance", "Account");
-            ExportTables(rootNode, "MFinance", "Gift");
-            ExportTables(rootNode, "MFinance", "AP");
-            ExportTables(rootNode, "MFinance", "AR");
-            ExportTables(rootNode, "MPersonnel", "Personnel");
-            ExportTables(rootNode, "MPersonnel", "Units");
-            ExportTables(rootNode, "MConference", "");
-            ExportTables(rootNode, "MHospitality", "");
+            Assembly TypedTablesAssembly = Assembly.LoadFrom("Ict.Petra.Shared.lib.data.dll");
+
+            ExportTables(rootNode, "MSysMan", "", TypedTablesAssembly);
+            ExportTables(rootNode, "MCommon", "", TypedTablesAssembly);
+            ExportTables(rootNode, "MPartner", "Partner", TypedTablesAssembly);
+            ExportTables(rootNode, "MPartner", "Mailroom", TypedTablesAssembly);
+            ExportTables(rootNode, "MFinance", "Account", TypedTablesAssembly);
+            ExportTables(rootNode, "MFinance", "Gift", TypedTablesAssembly);
+            ExportTables(rootNode, "MFinance", "AP", TypedTablesAssembly);
+            ExportTables(rootNode, "MFinance", "AR", TypedTablesAssembly);
+            ExportTables(rootNode, "MPersonnel", "Personnel", TypedTablesAssembly);
+            ExportTables(rootNode, "MPersonnel", "Units", TypedTablesAssembly);
+            ExportTables(rootNode, "MConference", "", TypedTablesAssembly);
+            ExportTables(rootNode, "MHospitality", "", TypedTablesAssembly);
             ExportSequences(rootNode);
             return TYml2Xml.Xml2YmlGz(OpenPetraData);
         }
@@ -77,7 +79,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// <param name="ARootNode"></param>
         /// <param name="AModuleName"></param>
         /// <param name="ASubModuleName">can be empty if there is no submodule</param>
-        private static void ExportTables(XmlNode ARootNode, string AModuleName, string ASubModuleName)
+        /// <param name="ATypedTablesAssembly">the assembly with all types of the tables in the database</param>
+        private static void ExportTables(XmlNode ARootNode, string AModuleName, string ASubModuleName, Assembly ATypedTablesAssembly)
         {
             XmlElement moduleNode = ARootNode.OwnerDocument.CreateElement(AModuleName + ASubModuleName);
 
@@ -91,16 +94,23 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             }
 
             namespaceName += ".Data";
-            Assembly asm = Assembly.LoadFrom("Ict.Petra.Shared." + AModuleName + ".DataTables.dll");
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            foreach (Type type in asm.GetTypes())
+            SortedList <string, Type>SortedTypes = new SortedList <string, Type>();
+
+            foreach (Type type in ATypedTablesAssembly.GetTypes())
             {
                 if ((type.Namespace == namespaceName) && type.Name.EndsWith("Table"))
                 {
-                    ExportTable(moduleNode, asm, type, Transaction);
+                    SortedTypes.Add(type.Name, type);
                 }
+            }
+
+            // export the tables, ordered by name
+            foreach (string typeName in SortedTypes.Keys)
+            {
+                ExportTable(moduleNode, ATypedTablesAssembly, SortedTypes[typeName], Transaction);
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -108,6 +118,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
         private static void ExportTable(XmlNode AModuleNode, Assembly AAsm, Type ATableType, TDBTransaction ATransaction)
         {
+            if (ATableType.Name.Contains("TDS"))
+            {
+                // this is probably a table in a typed dataset
+                return;
+            }
+
             MethodInfo mi = ATableType.GetMethod("GetTableDBName", BindingFlags.Static | BindingFlags.Public);
             string TableDBName = mi.Invoke(null, null).ToString();
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + TableDBName, TableDBName, ATransaction);
