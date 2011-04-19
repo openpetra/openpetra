@@ -24,6 +24,7 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections;
+using System.Collections.Generic;
 using Ict.Petra.Server.App.Core.Security;
 
 
@@ -89,14 +90,20 @@ namespace Ict.Petra.Server.MFinance.GL
         bool blnReentranceMode;
         bool blnCriticalErrors;
         TVerificationResultCollection verificationResults;
-        THandleLedgerInfo ledgerInfo;
+        THandleLedgerInfo tHandleLedgerInfo;
         TLedgerLock ledgerLock;
+        List <String>accountList;
+        THandleGlmInfo tHandleGlmInfo;
+        THandleGlmpInfo tHandleGlmpInfo;
+        THandleAccountInfo tHandleAccountInfo;
+        THandleCostCenterInfo tHandleCostCenterInfo;
+
+        TCommonAccountingTool tCommonAccountingTool;
 
         public bool RunYearEndInfo(int ALedgerNum,
             out TVerificationResultCollection AVRCollection)
         {
             blnReentranceMode = false;
-            DBAccess.GDBAccessObj.CommitTransaction();
             verificationResults = new TVerificationResultCollection();
             try
             {
@@ -104,14 +111,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 YearEndMainInfo(ALedgerNum);
                 AVRCollection = verificationResults;
                 ledgerLock.UnLock();
-                System.Diagnostics.Debug.WriteLine("try blnCriticalErrors: " + blnCriticalErrors.ToString());
                 return blnCriticalErrors;
             }
             catch (TerminateException terminate)
             {
                 AVRCollection = terminate.ResultCollection();
                 ledgerLock.UnLock();
-                System.Diagnostics.Debug.WriteLine("cath blnCriticalErrors: ");
                 return true;
             }
         }
@@ -120,7 +125,6 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AVRCollection)
         {
             blnReentranceMode = AReentrance;
-            DBAccess.GDBAccessObj.CommitTransaction();
             verificationResults = new TVerificationResultCollection();
             try
             {
@@ -140,53 +144,57 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void YearEndMainInfo(int ALedgerNum)
         {
-            ledgerInfo = new THandleLedgerInfo(ALedgerNum);
+            tHandleLedgerInfo = new THandleLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
             CheckLedger();
         }
 
         private void YearEndMain(int ALedgerNum)
         {
+            tHandleLedgerInfo = new THandleLedgerInfo(ALedgerNum);
+            verificationResults = new TVerificationResultCollection();
+
             if (!blnReentranceMode)
             {
-                ledgerInfo.YearEndProcessStatus = int.Parse(YearEndProcessStatus.RESET_STATUS.ToString());
+                tHandleLedgerInfo.TYearEndProcessStatus = GetStatusCode(TYearEndProcessStatus.RESET_STATUS);
             }
 
-            ledgerInfo = new THandleLedgerInfo(ALedgerNum);
+            tHandleLedgerInfo = new THandleLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
             CheckLedger();
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.GIFT_CLOSED_OUT.ToString()))
+            //(int)Enum.Parse(typeof(Direction), direction)
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.GIFT_CLOSED_OUT))
             {
                 CloseGifts();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.ACCOUNT_CLOSED_OUT.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.ACCOUNT_CLOSED_OUT))
             {
                 CloseAccounts();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.GLMASTER_CLOSED_OUT.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.GLMASTER_CLOSED_OUT))
             {
                 CloseGLMaster();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.BUDGET_CLOSED_OUT.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.BUDGET_CLOSED_OUT))
             {
                 CloseBudget();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.PERIODS_UPDATED.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.PERIODS_UPDATED))
             {
                 UpdatePeriods();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.SET_NEW_YEAR.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.SET_NEW_YEAR))
             {
                 SetNewYear();
             }
 
-            if (ledgerInfo.YearEndProcessStatus < int.Parse(YearEndProcessStatus.LEDGER_UPDATED.ToString()))
+            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.LEDGER_UPDATED))
             {
                 Finish();
             }
@@ -200,22 +208,21 @@ namespace Ict.Petra.Server.MFinance.GL
                     new TVerificationResult(Catalog.GetString("Leger is locked ..."),
                         String.Format(Catalog.GetString("Ledger is locked by the user {0}"),
                             ledgerLock.LockInfo()), "",
-                        PeriodEndYearStatus.PEYM_01.ToString(),
+                        TYearEndErrorStatus.PEYM_01.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
             }
 
-            if (!ledgerInfo.ProvisionalYearEndFlag)
+            if (!tHandleLedgerInfo.ProvisionalYearEndFlag)
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("YearEndFlag is set "),
                         Catalog.GetString("In this situation you cannot run a year end routine"), "",
-                        PeriodEndYearStatus.PEYM_02.ToString(),
+                        TYearEndErrorStatus.PEYM_02.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
-                System.Diagnostics.Debug.WriteLine("CheckLedger");
             }
         }
 
@@ -224,7 +231,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         private void CloseGifts()
         {
-            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.GIFT_CLOSED_OUT;
+            tHandleLedgerInfo.TYearEndProcessStatus = GetStatusCode(TYearEndProcessStatus.GIFT_CLOSED_OUT);
         }
 
         /// <summary>
@@ -232,21 +239,79 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         private void CloseAccounts()
         {
-            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.ACCOUNT_CLOSED_OUT;
+            tHandleLedgerInfo.TYearEndProcessStatus = GetStatusCode(TYearEndProcessStatus.ACCOUNT_CLOSED_OUT);
         }
 
         private void CloseGLMaster()
         {
-            GetAccountInfo accountInfo = new GetAccountInfo(ledgerInfo);
+            tHandleAccountInfo = new THandleAccountInfo(tHandleLedgerInfo);
+            bool blnIncomeFound = false;
+            bool blnExpenseFound = false;
 
-            accountInfo.Reset();
+            tHandleAccountInfo.Reset();
+            accountList = new List <String>();
 
-            while (accountInfo.MoveNext())
+            while (tHandleAccountInfo.MoveNext())
             {
-                if (accountInfo.PostingStatus)
+                if (tHandleAccountInfo.PostingStatus)
                 {
+                    if (tHandleAccountInfo.AccountType.Equals(TAccountTypeEnum.Income.ToString()))
+                    {
+                        accountList.Add(tHandleAccountInfo.AccountCode);
+                        blnIncomeFound = true;
+                    }
+
+                    if (tHandleAccountInfo.AccountType.Equals(TAccountTypeEnum.Expense.ToString()))
+                    {
+                        accountList.Add(tHandleAccountInfo.AccountCode);
+                        blnExpenseFound = true;
+                    }
                 }
             }
+
+            if (!blnIncomeFound)
+            {
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("No Income Account found"),
+                        Catalog.GetString("You shall have at least one income"), "",
+                        TYearEndErrorStatus.PEYM_03.ToString(),
+                        TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvt);
+                blnCriticalErrors = true;
+            }
+
+            if (!blnExpenseFound)
+            {
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("No Expense Account found"),
+                        Catalog.GetString("You shall have at least one expense"), "",
+                        TYearEndErrorStatus.PEYM_04.ToString(),
+                        TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvt);
+                blnCriticalErrors = true;
+            }
+
+            tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+
+            if (tHandleAccountInfo.IsValid)
+            {
+                accountList.Add(tHandleAccountInfo.AccountCode);
+            }
+            else
+            {
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
+                        Catalog.GetString("You need to define this account"), "",
+                        TYearEndErrorStatus.PEYM_05.ToString(),
+                        TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvt);
+                blnCriticalErrors = true;
+            }
+
+            tHandleCostCenterInfo = new THandleCostCenterInfo(tHandleLedgerInfo.LedgerNumber);
+
+
+            Create_Reallocation();
         }
 
         private void CloseBudget()
@@ -264,10 +329,184 @@ namespace Ict.Petra.Server.MFinance.GL
         private void Finish()
         {
         }
+
+        private void Create_Reallocation()
+        {
+            TCommonAccountingTool tCommonAccountingTool =
+                new TCommonAccountingTool(tHandleLedgerInfo,
+                    Catalog.GetString("Financial year end processing"));
+
+            // tCommonAccountingTool.DateEffective =""; Default is "End of actual period ..."
+
+            // Loop with all account codes
+            accountList.ForEach(delegate(String accountCode)
+                {
+                    tHandleGlmInfo = new THandleGlmInfo(tHandleLedgerInfo.LedgerNumber,
+                        tHandleLedgerInfo.CurrentFinancialYear,
+                        accountCode);
+
+                    tCommonAccountingTool.StandardTransactionReset();
+                    // Loop with all cost centres
+                    tHandleGlmInfo.Reset();
+
+                    while (tHandleGlmInfo.MoveNext())
+                    {
+                        tHandleCostCenterInfo.SetCostCenterRow(tHandleGlmInfo.CostCentreCode);
+
+                        if (tHandleCostCenterInfo.IsValid)
+                        {
+                            if (tHandleCostCenterInfo.PostingCostCentreFlag)
+                            {
+                                if (tHandleGlmpInfo.SetToRow(
+                                        tHandleGlmInfo.GlmSequence,
+                                        tHandleLedgerInfo.NumberOfAccountingPeriods))
+                                {
+                                    if (tHandleGlmpInfo.ActualBase != 0)
+                                    {
+                                        Create_Reallocation3(accountCode,
+                                            tHandleGlmInfo.CostCentreCode);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            tCommonAccountingTool.CloseSaveAndPost();
+        }
+
+        // Reserved for my strange operation (forum)
+        private void Create_Reallocation2(String AAccountCode, String ACostCentreCode)
+        {
+            if (!tHandleGlmInfo.CostCentreCode.Equals(GetStandardCostCentre()))
+            {
+                Create_Reallocation3(AAccountCode, ACostCentreCode);
+            }
+        }
+
+        private void Create_Reallocation3(String AAccountCode, string ACostCentreCode)
+        {
+            bool blnDebitCredit;
+
+            // tHandleCostCenterInfo.SetCostCenterRow(tHandleGlmInfo.CostCentreCode); done before ...
+            tHandleAccountInfo.AccountCode = tHandleGlmInfo.AccountCode;
+
+            // Statusinfo here?
+
+            blnDebitCredit = tHandleAccountInfo.DebitCreditIndicator;
+
+            if (tHandleGlmpInfo.ActualBase > 0)
+            {
+                blnDebitCredit = !blnDebitCredit;
+            }
+
+            // string strDebitAccountCode = string.Empty;
+            // string strCreditAccountCode = string.Empty;
+
+            if (blnDebitCredit = CommonAccountingConstants.IS_DEBIT)
+            {
+                // strDebitAccountCode = AAccountCode;
+            }
+            else
+            {
+                // strCreditAccountCode = AAccountCode;
+            }
+
+            // Carry Forward ...
+
+            bool blnCarryForward = false;
+            string strCostCentreTo;
+            string strAccountTo;
+
+            string strCCAccoutType = tHandleAccountInfo.SetCarryForwardAccount();
+
+            if (tHandleAccountInfo.IsValid)
+            {
+                strAccountTo = AAccountCode;
+
+                if (strCCAccoutType.Equals("SAMECC"))
+                {
+                    strCostCentreTo = tHandleGlmInfo.CostCentreCode;
+                    blnCarryForward = true;
+                }
+                else
+                {
+                    strCostCentreTo = GetStandardCostCentre();
+                }
+            }
+            else
+            {
+                tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
+                strAccountTo = AAccountCode;
+                strCostCentreTo = GetStandardCostCentre();
+            }
+
+            if (tHandleLedgerInfo.IltAccountFlag)
+            {
+                tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+                strAccountTo = tHandleAccountInfo.AccountCode;
+            }
+
+            if (tHandleLedgerInfo.BranchProcessing)
+            {
+                strAccountTo = AAccountCode;
+            }
+
+            tCommonAccountingTool.AddBaseCurrencyJournal();
+            tCommonAccountingTool.JournalDescription =
+                Catalog.GetString("Period end revaluations");
+            tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
+
+            string strNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
+            string strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
+
+            tCommonAccountingTool.AddBaseCurrencyTransaction(
+                AAccountCode, ACostCentreCode, strBuildNarrative,
+                "YEAR-END", blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+
+            if (tHandleLedgerInfo.IltProcessingCentre || tHandleLedgerInfo.BranchProcessing || blnCarryForward)
+            {
+                strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
+                tCommonAccountingTool.AddBaseCurrencyTransaction(
+                    strAccountTo, strCostCentreTo, strBuildNarrative,
+                    "YEAR-END", !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+            }
+            else
+            {
+                if (tCommonAccountingTool.StandardTransactionIsValid)
+                {
+                    tCommonAccountingTool.StandardTransactionAddAccountingPart(
+                        !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+                }
+
+                {
+                    strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
+                    tCommonAccountingTool.AddBaseCurrencyTransaction(
+                        strAccountTo, GetStandardCostCentre(),
+                        strBuildNarrative,
+                        "YEAR-END", !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+                    tCommonAccountingTool.StandardTransactionSelect();
+                }
+            }
+        }
+
+        private int GetStatusCode(TYearEndProcessStatus status)
+        {
+            //Type typeHelp = typeof(TYearEndProcessStatus);
+
+            return int.Parse(
+                Enum.Format(typeof(TYearEndProcessStatus),
+                    Enum.Parse(typeof(TYearEndProcessStatus),
+                        status.ToString()), "d"));
+        }
+
+        private string GetStandardCostCentre()
+        {
+            return tHandleLedgerInfo.LedgerNumber.ToString() + "00";
+        }
     }
 
 
-    public enum PeriodEndYearStatus
+    public enum TYearEndErrorStatus
     {
         /// <summary>
         /// The Leger is locked ...
@@ -275,9 +514,23 @@ namespace Ict.Petra.Server.MFinance.GL
         PEYM_01,
         /// <summary>
         /// Openpetra is not in the modus to run a year end procedure.
-        /// This is only allowed if you have run the last mont end period of the year
+        /// This is only allowed if you have run the last month end period of the year
         /// </summary>
-        PEYM_02
+        PEYM_02,
+        /// <summary>
+        /// No income account in this ledger
+        /// </summary>
+        PEYM_03,
+
+        /// <summary>
+        /// No expense account in this ledger
+        /// </summary>
+        PEYM_04,
+
+        /// <summary>
+        /// No ICH account in this ledger
+        /// </summary>
+        PEYM_05
     }
 
     /// <summary>
@@ -285,7 +538,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// copied from petra. The status begins by counting from RESET_Status up to LEDGER_UPDATED
     /// and each higher level status includes the lower level ones.
     /// </summary>
-    public enum YearEndProcessStatus
+    public enum TYearEndProcessStatus
     {
         /// <summary>
         /// Value the status counter is initialized with

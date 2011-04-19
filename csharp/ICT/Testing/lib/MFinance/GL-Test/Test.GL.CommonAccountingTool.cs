@@ -65,8 +65,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddBaseCurrencyJournal();
 
@@ -89,7 +89,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Check if 10 has been accounted");
 
             commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddBaseCurrencyJournal();
 
@@ -112,7 +112,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Tests the foreign Currency part of the CommonAccountingTool.
+        /// Tests the foreign Currency part of the TCommonAccountingTool.
         /// </summary>
         [Test]
         public void Test_02_ForeignCurrencyAccounting()
@@ -122,14 +122,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new THandleAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new THandleCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
@@ -140,8 +140,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddForeignCurrencyJournal("GBP", 0.3m);
 
@@ -179,21 +179,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new THandleAccountInfo(new THandleLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new THandleCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
             try
             {
                 commonAccountingTool.AddForeignCurrencyJournal("JPY", 0.3m);

@@ -37,33 +37,65 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
-    public class Get_GLMp_Info
+    public class THandleGlmpInfo
     {
-        DataTable aGLM;
+        AGeneralLedgerMasterPeriodTable aGLMp;
+        AGeneralLedgerMasterPeriodRow aGLMpRow;
 
-        public Get_GLMp_Info(int ASequence, int APeriod)
+        public THandleGlmpInfo()
         {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ASequence;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = APeriod;
+            LoadAll();
+            aGLMpRow = null;
+        }
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterPeriodTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + " = ? ";
-            strSQL += "AND " + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + " = ? ";
-            aGLM = DBAccess.GDBAccessObj.SelectDT(
-                strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+        public THandleGlmpInfo(int ASequence, int APeriod)
+        {
+            LoadAll();
+            SetToRow(ASequence, APeriod);
+        }
+
+        private void LoadAll()
+        {
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                aGLMp = AGeneralLedgerMasterPeriodAccess.LoadAll(transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+        }
+
+        public bool SetToRow(int ASequence, int APeriod)
+        {
+            if (aGLMp.Rows.Count > 0)
+            {
+                for (int i = 0; i < aGLMp.Rows.Count; ++i)
+                {
+                    aGLMpRow = aGLMp[i];
+
+                    if (aGLMpRow.GlmSequence == ASequence)
+                    {
+                        if (aGLMpRow.PeriodNumber == APeriod)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            aGLMpRow = null;
+            return false;
         }
 
         public decimal ActualBase
         {
             get
             {
-                return (decimal)aGLM.Rows[0][AGeneralLedgerMasterPeriodTable.GetActualBaseDBName()];
+                return aGLMpRow.ActualBase;
             }
         }
     }
@@ -159,12 +191,105 @@ namespace Ict.Petra.Server.MFinance.GL
                 return (int)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
             }
         }
+        public string CostCentreCode
+        {
+            get
+            {
+                return (string)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
+            }
+        }
     }
+
+    public class THandleGlmInfo
+    {
+        AGeneralLedgerMasterTable glmTable;
+        AGeneralLedgerMasterRow glmRow;
+        int iPtr;
+
+        public THandleGlmInfo(int ALedgerNumber, int AYear, string AAccountCode)
+        {
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = ALedgerNumber;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[1].Value = AYear;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[1].Value = AAccountCode;
+
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
+                strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
+                strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
+                strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
+                glmTable = (AGeneralLedgerMasterTable)DBAccess.GDBAccessObj.SelectDT(
+                    strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+        }
+
+        public void Reset()
+        {
+            iPtr = -1;
+        }
+
+        public bool MoveNext()
+        {
+            ++iPtr;
+            try
+            {
+                glmRow = (AGeneralLedgerMasterRow)glmTable.Rows[iPtr];
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public string AccountCode
+        {
+            get
+            {
+                return glmRow.AccountCode;
+            }
+        }
+        public string CostCentreCode
+        {
+            get
+            {
+                return glmRow.CostCentreCode;
+            }
+        }
+
+        public int GlmSequence
+        {
+            get
+            {
+                return glmRow.GlmSequence;
+            }
+        }
+        public decimal YtdActualBase
+        {
+            get
+            {
+                return glmRow.YtdActualBase;
+            }
+        }
+    }
+
 
     /// <summary>
     /// Object to handle the cost center table ...
     /// </summary>
-    public class GetCostCenterInfo
+    public class THandleCostCenterInfo
     {
         ACostCentreTable costCentreTable;
         ACostCentreRow costCentreRow;
@@ -175,9 +300,9 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACostCenterCode"></param>
-        public GetCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
+        public THandleCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
         {
-            GetCostCenterInfo_(ALedgerNumber);
+            THandleCostCenterInfo_(ALedgerNumber);
             blnCostCenterValid = SetCostCenterRow_(ACostCenterCode);
         }
 
@@ -185,13 +310,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// This constructor only loads a cc list. The row remains invalid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public GetCostCenterInfo(int ALedgerNumber)
+        public THandleCostCenterInfo(int ALedgerNumber)
         {
-            GetCostCenterInfo_(ALedgerNumber);
+            THandleCostCenterInfo_(ALedgerNumber);
             blnCostCenterValid = false;
         }
 
-        private void GetCostCenterInfo_(int ALedgerNumber)
+        private void THandleCostCenterInfo_(int ALedgerNumber)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -236,6 +361,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 return blnCostCenterValid;
             }
         }
+
+        public bool PostingCostCentreFlag
+        {
+            get
+            {
+                return costCentreRow.PostingCostCentreFlag;
+            }
+        }
     }
 
     /// <summary>
@@ -244,6 +377,12 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class GetAccountHierarchyDetailInfo
     {
+        /// <summary>
+        /// A AChildLevel value which defines to serach the childs and all subchilds of a
+        /// given parent.
+        /// </summary>
+        public const int GET_ALL_LEVELS = -1;
+
         private const string STANDARD = "STANDARD";
         AAccountHierarchyDetailTable accountTable;
         AAccountHierarchyDetailRow accountRow = null;
@@ -264,13 +403,33 @@ namespace Ict.Petra.Server.MFinance.GL
         /// The idea of this routine is given by x_clist.i
         /// of course the data are read only one time (Constructor) and the results are put
         /// into a list for a more specific use.
+        /// All childs and sub childs are listed ...
         /// </summary>
         /// <param name="AAccountCode"></param>
         /// <returns></returns>
         public IList <String>ChildList(string AAccountCode)
         {
             IList <String>help = new List <String>();
+            ChildListIntern(help, AAccountCode, GET_ALL_LEVELS);
+            return help;
+        }
 
+        /// <summary>
+        /// See ChildList definition without AChildLevel, here you can define your own
+        /// ChildLevel.
+        /// </summary>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AChildLevel">Level counting starts with 1</param>
+        /// <returns></returns>
+        public IList <String>ChildList(string AAccountCode, int AChildLevel)
+        {
+            IList <String>help = new List <String>();
+            ChildListIntern(help, AAccountCode, --AChildLevel);
+            return help;
+        }
+
+        private void ChildListIntern(IList <String>help, string AAccountCode, int AChildLevel)
+        {
             if (accountTable.Rows.Count > 0)
             {
                 for (int i = 0; i < accountTable.Rows.Count; ++i)
@@ -282,12 +441,15 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (accountRow.AccountHierarchyCode.Equals(STANDARD))
                         {
                             help.Add(accountRow.ReportingAccountCode);
+
+                            if (AChildLevel != 0)
+                            {
+                                ChildListIntern(help, accountRow.ReportingAccountCode, --AChildLevel);
+                            }
                         }
                     }
                 }
             }
-
-            return help;
         }
 
         /// <summary>
@@ -344,18 +506,133 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    /// <summary>
+    /// A Enum-list of some special account codes ...
+    /// </summary>
+    public enum TAccountPropertyEnum
+    {
+        GIFT_HEADING,               // GIFT
+        INTER_LEDGER_HEADING,       // ILT
+        BANK_HEADING,               // CASH
+        BALANCE_SHEET_HEADING,      // BAL
+
+        /// <summary>
+        /// See: https://sourceforge.net/apps/phpbb/openpetraorg/viewtopic.php?f=14&t=117&start=0
+        /// And
+        /// https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Data_Conversion_from_Petra_to_Openpetra
+        /// </summary>
+        //PROFIT_AND_LOSS_HEADING,    // PL
+        //INCOME_HEADING,             // INC
+        //EXPENSE_HEADING,            // EXP
+        DEBTOR_HEADING,             // DRS
+        CREDITOR_HEADING,           // CRS
+        TOTAL_ASSET_HEADING,        // ASSETS
+        TOTAL_LIABILITY_HEADING,    // LIABS
+        EQUITY_HEADING,             // RET EARN
+
+        EARNINGS_BF_ACCT,           // 9700
+        DIRECT_XFER_ACCT,           // 5501
+        ICH_SETTLEMENT_ACCT,        // 5601
+        ICH_ACCT,                   // 8500
+        INTERNAL_XFER_ACCT,         // 9800
+        ADMIN_FEE_INCOME_ACCT,      // 3400
+        ADMIN_FEE_EXPENSE_ACCT,     // 4900
+        FUND_TRANSFER_INCOME_ACCT,  // 3300
+        FUND_TRANSFER_EXPENSE_ACCT, // 4800
+    }
 
     /// <summary>
-    /// Get AccountInfo uses a THandleLedgerInfo a primilary references the LedgerNumber.
+    /// A handler to the special accounts in TAccountPropertyEnum
+    /// </summary>
+    public class THandleAccountPropertyInfo
+    {
+        AAccountPropertyTable propertyCodeTable;
+        /// <summary>
+        /// The constructor needs a lederinfo (for the ledger number)
+        /// </summary>
+        /// <param name="ledgerInfo"></param>
+        public THandleAccountPropertyInfo(THandleLedgerInfo ledgerInfo)
+        {
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(
+                    ledgerInfo.LedgerNumber, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+        }
+
+        /// <summary>
+        /// Get access on a special account ...
+        /// </summary>
+        /// <param name="AEnum"></param>
+        /// <returns></returns>
+        public string GetAccountCode(TAccountPropertyEnum AEnum)
+        {
+            try
+            {
+                AAccountPropertyRow row;
+
+                for (int i = 0; i < propertyCodeTable.Rows.Count; ++i)
+                {
+                    row = (AAccountPropertyRow)propertyCodeTable[i];
+
+                    if (row.PropertyCode.Equals("Is_Special_Account"))
+                    {
+                        if (row.PropertyValue.Equals(AEnum.ToString()))
+                        {
+                            return row.AccountCode;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return String.Empty;
+        }
+
+        public string GetAccountCode(string APropertyCode)
+        {
+            try
+            {
+                AAccountPropertyRow row;
+
+                for (int i = 0; i < propertyCodeTable.Rows.Count; ++i)
+                {
+                    row = (AAccountPropertyRow)propertyCodeTable[i];
+
+                    if (row.PropertyCode.Equals(APropertyCode))
+                    {
+                        return row.PropertyValue;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return String.Empty;
+        }
+    }
+
+
+    /// <summary>
+    /// THandleAccountInfo uses a THandleLedgerInfo a primilary references the LedgerNumber.
     /// All Accounts are load in both contructors. You can define an inital account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
     /// </summary>
-    public class GetAccountInfo
+    public class THandleAccountInfo
     {
         AAccountTable accountTable;
         AAccountRow accountRow = null;
         THandleLedgerInfo ledgerInfo;
+        THandleAccountPropertyInfo tAccountPropertyHandler = null;
 
         int iPtr;
 
@@ -364,7 +641,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Ledger Info to select the ledger ...
         /// </summary>
         /// <param name="ALedgerInfo"></param>
-        public GetAccountInfo(THandleLedgerInfo ALedgerInfo)
+        public THandleAccountInfo(THandleLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -375,7 +652,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerInfo"></param>
         /// <param name="AAccountCode"></param>
-        public GetAccountInfo(THandleLedgerInfo ALedgerInfo, string AAccountCode)
+        public THandleAccountInfo(THandleLedgerInfo ALedgerInfo, string AAccountCode)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -384,21 +661,66 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void LoadData()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            accountTable = AAccountAccess.LoadViaALedger(
-                ledgerInfo.LedgerNumber, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            if (accountTable.Rows.Count == 0)
+            try
             {
-                // TODO: Error Message ...
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                accountTable = AAccountAccess.LoadViaALedger(
+                    ledgerInfo.LedgerNumber, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+            accountRow = null;
+        }
+
+        public void SetSpecialAccountCode(TAccountPropertyEnum AENum)
+        {
+            accountRow = null;
+
+            if (tAccountPropertyHandler == null)
+            {
+                tAccountPropertyHandler = new THandleAccountPropertyInfo(ledgerInfo);
+            }
+
+            string account = tAccountPropertyHandler.GetAccountCode(AENum);
+
+            if (!account.Equals(string.Empty))
+            {
+                AccountCode = account;
+            }
+        }
+
+        public string SetCarryForwardAccount()
+        {
+            accountRow = null;
+
+            if (tAccountPropertyHandler == null)
+            {
+                tAccountPropertyHandler = new THandleAccountPropertyInfo(ledgerInfo);
+            }
+
+            string result = tAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
+
+            if (!result.Equals(string.Empty))
+            {
+                string[] arrStrHelp = result.Split(new Char[] { ',' });
+                AccountCode = arrStrHelp[0];
+                return arrStrHelp[1];
+            }
+            else
+            {
+                return string.Empty;
             }
         }
 
         /// <summary>
-        /// The Account code can be read - that ist a value of the just selected table row
-        /// and can be write - that is a routine which changes the selection.
+        /// The Account code can be read and the result is the account code of the row
+        /// which was selected before. </br>
+        /// The Account can be written and this will change the selected row without any
+        /// database request. The result may be invalid.
         /// </summary>
         public string AccountCode
         {
@@ -424,6 +746,14 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                     }
                 }
+            }
+        }
+
+        public string AccountType
+        {
+            get
+            {
+                return accountRow.AccountType;
             }
         }
 
@@ -487,6 +817,13 @@ namespace Ict.Petra.Server.MFinance.GL
             get
             {
                 return accountRow.PostingStatus;
+            }
+        }
+        public bool DebitCreditIndicator
+        {
+            get
+            {
+                return accountRow.DebitCreditIndicator;
             }
         }
     }
@@ -625,6 +962,15 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    public enum TAccountTypeEnum
+    {
+        Income,
+        Expense,
+        Asset,
+        Equity,
+        Liability
+    }
+
     /// <summary>
     /// This routine reads the line of a_ledger defined by the ledger number
     /// </summary>
@@ -632,6 +978,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         int ledgerNumber;
         private ALedgerTable ledger = null;
+        ALedgerRow row;
 
         /// <summary>
         /// Constructor to address the correct table line (relevant ledger number). The
@@ -648,10 +995,18 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void LoadInfoLine()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+                row = (ALedgerRow)ledger[0];
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
         }
 
         /// <summary>
@@ -661,7 +1016,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.ForexGainsLossesAccount;
             }
         }
@@ -673,7 +1027,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.BaseCurrency;
             }
         }
@@ -685,7 +1038,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.ProvisionalYearEndFlag;
             }
             set
@@ -713,7 +1065,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.CurrentPeriod;
             }
         }
@@ -721,7 +1072,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.NumberOfAccountingPeriods;
             }
         }
@@ -729,7 +1079,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.CurrentFinancialYear;
             }
         }
@@ -738,7 +1087,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.LedgerNumber;
             }
         }
@@ -747,16 +1095,14 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
                 return row.YearEndFlag;
             }
         }
-        public int YearEndProcessStatus
+        public int TYearEndProcessStatus
         {
             get
             {
-                ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.YearEndProcessStatus;
+                return row.TYearEndProcessStatus;
             }
             set
             {
@@ -775,6 +1121,29 @@ namespace Ict.Petra.Server.MFinance.GL
                     strSQL, transaction, ParametersArray);
                 DBAccess.GDBAccessObj.CommitTransaction();
                 LoadInfoLine();
+            }
+        }
+
+        public bool IltAccountFlag
+        {
+            get
+            {
+                return row.IltAccountFlag;
+            }
+        }
+        public bool BranchProcessing
+        {
+            get
+            {
+                return row.BranchProcessing;
+            }
+        }
+
+        public bool IltProcessingCentre
+        {
+            get
+            {
+                return row.IltProcessingCentre;
             }
         }
     }

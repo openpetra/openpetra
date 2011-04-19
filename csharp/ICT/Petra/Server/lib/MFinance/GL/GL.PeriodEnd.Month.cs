@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             aSuspenseAccountRow.SuspenseAccountCode,
                             ledgerInfo.CurrentFinancialYear);
 
-                        Get_GLMp_Info get_GLMp_Info = new Get_GLMp_Info(get_GLM_Info.Sequence,
+                        THandleGlmpInfo get_GLMp_Info = new THandleGlmpInfo(get_GLM_Info.Sequence,
                             ledgerInfo.CurrentPeriod);
                         decAccountTotalSum += get_GLMp_Info.ActualBase;
 
@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             // TODO: Admin Fees and
             // TODO: ICH stewardship ...
-            // CommonAccountingTool cat = new CommonAccountingTool(ledgerInfo, "Batch Description");
+            // TCommonAccountingTool cat = new TCommonAccountingTool(ledgerInfo, "Batch Description");
         }
 
         void CarryForward()

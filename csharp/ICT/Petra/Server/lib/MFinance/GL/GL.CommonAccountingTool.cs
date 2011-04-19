@@ -32,7 +32,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 namespace Ict.Petra.Server.MFinance.GL
 {
     /// <summary>
-    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
+    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
     /// Sub-System.
     /// (The enum.toString() is used for the database entry so you must not change the
     /// values if you do not want to change the entries.)
@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.GL
     }
 
     /// <summary>
-    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
+    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
     /// Transaction Type.
     /// (The enum.toString() is used for the database entry so you must not change the
     /// values if you do not want to change the entries.)
@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Some constants for the journal values to rember that IS_Debit ist true.
     /// </summary>
-    public partial class CommonAccountingConstants
+    public class CommonAccountingConstants
     {
         /// <summary>
         /// Sets the transaction to a debit transaction
@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// This Tool creates a batch enables to add a journal and to add transactions to a yournal
     /// All internal "pointers" and control data are set internal and the structure is "read to post".
     /// </summary>
-    public partial class CommonAccountingTool
+    public class TCommonAccountingTool
     {
         private GLBatchTDS aBatchTable = null;
         private ABatchRow aBatchRow;
@@ -104,6 +104,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private bool blnReadyForTransaction;
 
+        private ATransactionRow standardTransaction = null;
+        private ATransactionRow lastTransaction = null;
 
         // The use of the default value requires an additional database request. So this is done in the
         // "last moment" and only if no other date value is used
@@ -116,11 +118,11 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ABatchDescription">a batch description text</param>
-        public CommonAccountingTool(int ALedgerNumber,
+        public TCommonAccountingTool(int ALedgerNumber,
             string ABatchDescription)
         {
             THandleLedgerInfo = new THandleLedgerInfo(ALedgerNumber);
-            CommonAccountingTool_(ABatchDescription);
+            TCommonAccountingTool_(ABatchDescription);
         }
 
         /// <summary>
@@ -129,13 +131,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public CommonAccountingTool(THandleLedgerInfo ALedgerInfo, string ABatchDescription)
+        public TCommonAccountingTool(THandleLedgerInfo ALedgerInfo, string ABatchDescription)
         {
             THandleLedgerInfo = ALedgerInfo;
-            CommonAccountingTool_(ABatchDescription);
+            TCommonAccountingTool_(ABatchDescription);
         }
 
-        private void CommonAccountingTool_(string ABatchDescription)
+        private void TCommonAccountingTool_(string ABatchDescription)
         {
             aBatchTable = TTransactionWebConnector.CreateABatch(THandleLedgerInfo.LedgerNumber);
             getBaseCurrencyInfo = new GetCurrencyInfo(THandleLedgerInfo.BaseCurrency);
@@ -362,8 +364,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (ATransActionIsInForeign)
                 {
-                    GetAccountInfo accountCheck =
-                        new GetAccountInfo(THandleLedgerInfo, AAccount);
+                    THandleAccountInfo accountCheck =
+                        new THandleAccountInfo(THandleLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {
@@ -425,6 +427,30 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 journal.JournalCreditTotal += AAmountBaseCurrency;
             }
+
+            lastTransaction = transaction;
+        }
+
+        public void StandardTransactionSelect()
+        {
+            standardTransaction = lastTransaction;
+        }
+
+        public void StandardTransactionReset()
+        {
+            standardTransaction = null;
+        }
+
+        public bool StandardTransactionIsValid
+        {
+            get
+            {
+                return standardTransaction != null;
+            }
+        }
+
+        public void StandardTransactionAddAccountingPart(bool ADebitCreditFlag, decimal AAmount)
+        {
         }
 
         /// <summary>

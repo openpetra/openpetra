@@ -76,7 +76,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
                 System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
 
-                if (verificationResult[i].ResultCode.Equals(PeriodEndYearStatus.PEYM_02.ToString()))
+                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
                 {
                     messageHasBeenShown = true;
                 }
@@ -99,6 +99,65 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
                 intLedgerNumber, out verificationResult);
+
+            Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
+            Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
+        }
+
+        [Test]
+        public void Test_xxx()
+        {
+//            ResetDatabase();
+//            THandleLedgerInfo ledgerInfo;
+//            int counter = 0;
+//
+//            TVerificationResultCollection verificationResult;
+//            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
+//                intLedgerNumber, out verificationResult);
+//
+//            bool messageHasBeenShown;
+//
+//            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
+//            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
+//            messageHasBeenShown = false;
+//
+//            for (int i = 0; i < verificationResult.Count; ++i)
+//            {
+//                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
+//
+//                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
+//                {
+//                    messageHasBeenShown = true;
+//                }
+//            }
+//
+//            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
+//
+//            do
+//            {
+//                ++counter;
+//                Assert.Greater(20, counter, "To many loops");
+//
+//                // Set revaluation flag ...
+//                new TLedgerInitFlagHandler(intLedgerNumber,
+//                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+//                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+//                    intLedgerNumber, out verificationResult);
+//                ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
+//            } while (!ledgerInfo.ProvisionalYearEndFlag);
+
+
+            TVerificationResultCollection verificationResult;
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEnd(
+                intLedgerNumber, out verificationResult);
+
+            if (verificationResult.Count > 0)
+            {
+                for (int i = 0; i < verificationResult.Count; ++i)
+                {
+                    System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode);
+                }
+            }
 
             Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
             Assert.IsFalse(blnHaseErrors, "Year End allowed ...");

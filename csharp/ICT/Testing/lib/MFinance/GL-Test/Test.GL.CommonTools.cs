@@ -219,11 +219,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             THandleLedgerInfo ledgerInfo = new THandleLedgerInfo(LedgerNumber);
 
-            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.ACCOUNT_CLOSED_OUT;
-            Assert.AreEqual((int)YearEndProcessStatus.ACCOUNT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+            ledgerInfo.TYearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
+            Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, ledgerInfo.TYearEndProcessStatus,
                 "OK");
-            ledgerInfo.YearEndProcessStatus = (int)YearEndProcessStatus.GIFT_CLOSED_OUT;
-            Assert.AreEqual((int)YearEndProcessStatus.GIFT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+            ledgerInfo.TYearEndProcessStatus = (int)TYearEndProcessStatus.GIFT_CLOSED_OUT;
+            Assert.AreEqual((int)TYearEndProcessStatus.GIFT_CLOSED_OUT, ledgerInfo.TYearEndProcessStatus,
                 "OK");
         }
 
@@ -244,6 +244,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual("7000", list[0], "7000 is the first account");
             Assert.AreEqual("7010", list[1], "7010 is the second account");
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
+
+            IList <String>list2 = gahdi.ChildList("ASSETS");
+            Assert.AreEqual(40, list2.Count, "Atually 40 chield entries ...");
+        }
+
+        [Test]
+        public void Test_09_TAccountPropertyHandler()
+        {
+            THandleLedgerInfo tHandleLedgerInfo = new THandleLedgerInfo(LedgerNumber);
+            THandleAccountInfo tHandleAccountInfo = new THandleAccountInfo(tHandleLedgerInfo);
+
+            tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+            Assert.IsTrue(tHandleAccountInfo.IsValid, "ICH_ACCT shall exist");
+            Assert.AreEqual("8500", tHandleAccountInfo.AccountCode);
         }
 
         private bool TryGetAccountPeriodInfo(int ALedgerNum, int APeriodNum)
