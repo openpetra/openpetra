@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraEditForm.yaml
+    FormTitle: Enter Staff Data
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DetailTable: PmStaffData
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.PersonnelTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Height: 200
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailPartnerKey, DetailStartOfCommitment, DetailEndOfCommitment]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailPPartnerKey]
+                Row1: [txtDetailPmStartOfCommitment]
+                Row2: [txtDetailPmEndOfCommitment]              
+        txtDetailPmStartOfCommitment: {Label=&Start of Commitment}
+        txtDetailPmEndOfCommitment: {Label=&End of Commitment}
+        txtDetailPPartnerKey: {Label=Partner Key, ReadOnly=true}
+    Toolbar:
+        tbbNew:
+            Label: New Commitment
+

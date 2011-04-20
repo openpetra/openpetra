@@ -34,6 +34,7 @@ using Ict.Petra.Client.CommonControls;
 using GNU.Gettext;
 using Ict.Common;
 
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerEdit_TopPart
@@ -582,8 +583,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
-
+            //this may be temporary used to have an access point for this dialog
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(this.Handle);
+            staffDataForm.PartnerKey = ((TFrmPartnerEdit)ParentForm).PartnerKey;
+            staffDataForm.Show();
+            
+/*
 #if TODO
             if (this.FDelegateMaintainWorkerField != null)
             {
@@ -597,6 +602,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 #endif
+*/
         }
 
         #endregion
