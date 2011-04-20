@@ -103,5 +103,14 @@ namespace ControlTestBench
 	
             new TestCollapsible.MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
 		}
+		
+		void Button3Click(object sender, EventArgs e)
+		{
+		    String yamlFile = txtYaml.Text.ToString();
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();            
+	
+            new TestCollapsible.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+		}		
 	}
 }

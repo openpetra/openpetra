@@ -53,6 +53,7 @@ namespace ControlTestBench
 			this.cmbVisualStyle = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+			this.button3 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -121,14 +122,25 @@ namespace ControlTestBench
 			this.linkLabel1.TabIndex = 6;
 			this.linkLabel1.TabStop = true;
 			this.linkLabel1.Text = "linkLabel1";
-			this.linkLabel1.MouseHover += new System.EventHandler(this.LinkLabelMouseHover);
 			this.linkLabel1.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
+			this.linkLabel1.MouseHover += new System.EventHandler(this.LinkLabelMouseHover);
+			// 
+			// button3
+			// 
+			this.button3.Location = new System.Drawing.Point(52, 180);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(182, 23);
+			this.button3.TabIndex = 7;
+			this.button3.Text = "Shepherd Test";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.Button3Click);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.Controls.Add(this.button3);
 			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.cmbVisualStyle);
@@ -141,6 +153,7 @@ namespace ControlTestBench
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Button button3;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.ComboBox cmbVisualStyle;
 		private System.Windows.Forms.Label label2;
@@ -159,6 +172,6 @@ namespace ControlTestBench
 		{
 			LinkLabel lbl = (LinkLabel)sender;
 			lbl.BackColor = Color.Transparent;
-		}
+		}		
 	}
 }
