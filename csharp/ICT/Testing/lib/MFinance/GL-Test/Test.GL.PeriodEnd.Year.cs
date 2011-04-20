@@ -53,13 +53,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     public partial class TestGLPeriodicEndYear : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
+        THandleLedgerInfo ledgerInfo;
 
 
         [Test]
         public void Test_YearEndFlagStatus()
         {
             ResetDatabase();
-            THandleLedgerInfo ledgerInfo;
+
             int counter = 0;
 
             TVerificationResultCollection verificationResult;
@@ -102,62 +103,100 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
             Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
+            ResetDatabase();
         }
 
         [Test]
-        public void Test_xxx()
+        public void Test_YearEnd()
         {
-//            ResetDatabase();
-//            THandleLedgerInfo ledgerInfo;
-//            int counter = 0;
-//
-//            TVerificationResultCollection verificationResult;
-//            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
-//                intLedgerNumber, out verificationResult);
-//
-//            bool messageHasBeenShown;
-//
-//            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
-//            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
-//            messageHasBeenShown = false;
-//
-//            for (int i = 0; i < verificationResult.Count; ++i)
-//            {
-//                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
-//
-//                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
-//                {
-//                    messageHasBeenShown = true;
-//                }
-//            }
-//
-//            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
-//
-//            do
-//            {
-//                ++counter;
-//                Assert.Greater(20, counter, "To many loops");
-//
-//                // Set revaluation flag ...
-//                new TLedgerInitFlagHandler(intLedgerNumber,
-//                    TLedgerInitFlagEnum.Revaluation).Flag = true;
-//                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-//                    intLedgerNumber, out verificationResult);
-//                ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
-//            } while (!ledgerInfo.ProvisionalYearEndFlag);
+            ResetDatabase();
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                "test-sql\\gl-test-year-end.sql");
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                "test-sql\\gl-test-year-end-account-property.sql");
 
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+            commonAccountingTool.AddBaseCurrencyJournal();
+            commonAccountingTool.JournalDescription = "Test Data accounts";
+            string strAccountGift = "0200";
+            string strAccountBank = "6200";
+            string strAccountExpense = "4100";
+
+            // Accounting of some gifts ...
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4301", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 100);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4302", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 200);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4303", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 300);
+
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountGift, "4301", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 100);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountGift, "4302", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 200);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountGift, "4303", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 300);
+
+
+            // Accounting of some expenses ...
+
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountExpense, "4301", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 150);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountExpense, "4302", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 150);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountExpense, "4303", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 200);
+
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4301", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 150);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4302", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 150);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "4303", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 200);
+
+            commonAccountingTool.CloseSaveAndPost();
+
+
+            int counter = 0;
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEnd(
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
                 intLedgerNumber, out verificationResult);
 
-            if (verificationResult.Count > 0)
+            bool messageHasBeenShown;
+
+            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
+            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
+            messageHasBeenShown = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
             {
-                for (int i = 0; i < verificationResult.Count; ++i)
+                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
+
+                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
                 {
-                    System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode);
+                    messageHasBeenShown = true;
                 }
             }
+
+            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
+
+            do
+            {
+                ++counter;
+                Assert.Greater(20, counter, "To many loops");
+
+                // Set revaluation flag ...
+                new TLedgerInitFlagHandler(intLedgerNumber,
+                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                    intLedgerNumber, out verificationResult);
+                ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
+            } while (!ledgerInfo.ProvisionalYearEndFlag);
+
+            blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEnd(
+                intLedgerNumber, out verificationResult);
 
             Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
             Assert.IsFalse(blnHaseErrors, "Year End allowed ...");

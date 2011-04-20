@@ -1028,6 +1028,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                                 {
+                                    System.Diagnostics.Debug.WriteLine(
+                                        "ProvisionalYearEndFlag:" + glmMaster.ClosingPeriodActualBase.ToString());
                                     DBMasterRow.ClosingPeriodActualBase += glmMaster.ClosingPeriodActualBase;
                                 }
 

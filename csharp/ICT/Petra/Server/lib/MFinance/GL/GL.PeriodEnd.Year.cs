@@ -244,6 +244,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CloseGLMaster()
         {
+            System.Diagnostics.Debug.WriteLine("CloseGLMaster");
             tHandleAccountInfo = new THandleAccountInfo(tHandleLedgerInfo);
             bool blnIncomeFound = false;
             bool blnExpenseFound = false;
@@ -296,6 +297,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (tHandleAccountInfo.IsValid)
             {
                 accountList.Add(tHandleAccountInfo.AccountCode);
+                System.Diagnostics.Debug.WriteLine("##: " + tHandleAccountInfo.AccountCode);
             }
             else
             {
@@ -332,18 +334,30 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void Create_Reallocation()
         {
-            TCommonAccountingTool tCommonAccountingTool =
+            tCommonAccountingTool =
                 new TCommonAccountingTool(tHandleLedgerInfo,
                     Catalog.GetString("Financial year end processing"));
+            tHandleGlmpInfo = new THandleGlmpInfo();
+
+            tCommonAccountingTool.AddBaseCurrencyJournal();
+            tCommonAccountingTool.JournalDescription =
+                Catalog.GetString("Period end revaluations");
+            tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
 
             // tCommonAccountingTool.DateEffective =""; Default is "End of actual period ..."
 
             // Loop with all account codes
-            accountList.ForEach(delegate(String accountCode)
+
+            if (accountList.Count > 0)
+            {
+                string strAccountCode;
+
+                for (int i = 0; i < accountList.Count; ++i)
                 {
+                    strAccountCode = accountList[i];
                     tHandleGlmInfo = new THandleGlmInfo(tHandleLedgerInfo.LedgerNumber,
                         tHandleLedgerInfo.CurrentFinancialYear,
-                        accountCode);
+                        strAccountCode);
 
                     tCommonAccountingTool.StandardTransactionReset();
                     // Loop with all cost centres
@@ -363,15 +377,17 @@ namespace Ict.Petra.Server.MFinance.GL
                                 {
                                     if (tHandleGlmpInfo.ActualBase != 0)
                                     {
-                                        Create_Reallocation3(accountCode,
+                                        Create_Reallocation3(strAccountCode,
                                             tHandleGlmInfo.CostCentreCode);
                                     }
                                 }
                             }
                         }
                     }
-                });
-            tCommonAccountingTool.CloseSaveAndPost();
+                }
+
+                tCommonAccountingTool.CloseSaveAndPost();
+            }
         }
 
         // Reserved for my strange operation (forum)
@@ -385,6 +401,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void Create_Reallocation3(String AAccountCode, string ACostCentreCode)
         {
+            System.Diagnostics.Debug.WriteLine(AAccountCode.ToString() + ":" + ACostCentreCode.ToString());
             bool blnDebitCredit;
 
             // tHandleCostCenterInfo.SetCostCenterRow(tHandleGlmInfo.CostCentreCode); done before ...
@@ -393,11 +410,15 @@ namespace Ict.Petra.Server.MFinance.GL
             // Statusinfo here?
 
             blnDebitCredit = tHandleAccountInfo.DebitCreditIndicator;
+            blnDebitCredit = false;
+            System.Diagnostics.Debug.WriteLine(blnDebitCredit.ToString());
 
             if (tHandleGlmpInfo.ActualBase > 0)
             {
                 blnDebitCredit = !blnDebitCredit;
             }
+
+            System.Diagnostics.Debug.WriteLine(blnDebitCredit.ToString());
 
             // string strDebitAccountCode = string.Empty;
             // string strCreditAccountCode = string.Empty;
@@ -436,7 +457,7 @@ namespace Ict.Petra.Server.MFinance.GL
             else
             {
                 tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
-                strAccountTo = AAccountCode;
+                strAccountTo = tHandleAccountInfo.AccountCode;
                 strCostCentreTo = GetStandardCostCentre();
             }
 
@@ -451,39 +472,37 @@ namespace Ict.Petra.Server.MFinance.GL
                 strAccountTo = AAccountCode;
             }
 
-            tCommonAccountingTool.AddBaseCurrencyJournal();
-            tCommonAccountingTool.JournalDescription =
-                Catalog.GetString("Period end revaluations");
-            tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
-
+            string strYearEnd = Catalog.GetString("YEAR-END");
             string strNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
             string strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
 
             tCommonAccountingTool.AddBaseCurrencyTransaction(
                 AAccountCode, ACostCentreCode, strBuildNarrative,
-                "YEAR-END", blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+                strYearEnd, blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
 
             if (tHandleLedgerInfo.IltProcessingCentre || tHandleLedgerInfo.BranchProcessing || blnCarryForward)
             {
                 strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
                 tCommonAccountingTool.AddBaseCurrencyTransaction(
                     strAccountTo, strCostCentreTo, strBuildNarrative,
-                    "YEAR-END", !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+                    strYearEnd, blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
             }
             else
             {
-                if (tCommonAccountingTool.StandardTransactionIsValid)
-                {
-                    tCommonAccountingTool.StandardTransactionAddAccountingPart(
-                        !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
-                }
+                System.Diagnostics.Debug.WriteLine("###");
+//                if (tCommonAccountingTool.StandardTransactionIsValid)
+//                {
+//              System.Diagnostics.Debug.WriteLine("###---");
+//                    tCommonAccountingTool.StandardTransactionAddAccountingPart(
+//                        blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+//                }
 
                 {
                     strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
                     tCommonAccountingTool.AddBaseCurrencyTransaction(
-                        strAccountTo, GetStandardCostCentre(),
+                        strAccountTo, strCostCentreTo,
                         strBuildNarrative,
-                        "YEAR-END", !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
+                        strYearEnd, !blnDebitCredit, Math.Abs(tHandleGlmInfo.YtdActualBase));
                     tCommonAccountingTool.StandardTransactionSelect();
                 }
             }

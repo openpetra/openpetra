@@ -202,20 +202,20 @@ namespace Ict.Petra.Server.MFinance.GL
 
     public class THandleGlmInfo
     {
-        AGeneralLedgerMasterTable glmTable;
-        AGeneralLedgerMasterRow glmRow;
+        DataTable glmTable;
+        DataRow glmRow;
         int iPtr;
 
         public THandleGlmInfo(int ALedgerNumber, int AYear, string AAccountCode)
         {
             OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[2];
+            ParametersArray = new OdbcParameter[3];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ALedgerNumber;
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = AYear;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
-            ParametersArray[1].Value = AAccountCode;
+            ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[2].Value = AAccountCode;
 
             try
             {
@@ -224,7 +224,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
                 strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
                 strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
-                glmTable = (AGeneralLedgerMasterTable)DBAccess.GDBAccessObj.SelectDT(
+                glmTable = DBAccess.GDBAccessObj.SelectDT(
                     strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
@@ -245,10 +245,10 @@ namespace Ict.Petra.Server.MFinance.GL
             ++iPtr;
             try
             {
-                glmRow = (AGeneralLedgerMasterRow)glmTable.Rows[iPtr];
+                glmRow = glmTable.Rows[iPtr];
                 return true;
             }
-            catch (Exception)
+            catch (IndexOutOfRangeException)
             {
                 return false;
             }
@@ -258,14 +258,14 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                return glmRow.AccountCode;
+                return (string)glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()];
             }
         }
         public string CostCentreCode
         {
             get
             {
-                return glmRow.CostCentreCode;
+                return (string)glmRow[AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
             }
         }
 
@@ -273,14 +273,14 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                return glmRow.GlmSequence;
+                return (int)glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
             }
         }
         public decimal YtdActualBase
         {
             get
             {
-                return glmRow.YtdActualBase;
+                return (decimal)glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
             }
         }
     }
@@ -330,11 +330,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ACostCenterCode"></param>
         public void SetCostCenterRow(string ACostCenterCode)
         {
-            SetCostCenterRow_(ACostCenterCode);
+            blnCostCenterValid = SetCostCenterRow_(ACostCenterCode);
         }
 
         private bool SetCostCenterRow_(string ACostCenterCode)
         {
+            System.Diagnostics.Debug.WriteLine("CCTR" + costCentreTable.Rows.Count);
+
             if (costCentreTable.Rows.Count > 0)
             {
                 for (int i = 0; i < costCentreTable.Rows.Count; ++i)
@@ -343,6 +345,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (costCentreRow.CostCentreCode.Equals(ACostCenterCode))
                     {
+                        System.Diagnostics.Debug.WriteLine("found");
                         return true;
                     }
                 }
@@ -367,6 +370,13 @@ namespace Ict.Petra.Server.MFinance.GL
             get
             {
                 return costCentreRow.PostingCostCentreFlag;
+            }
+        }
+        public string CostCentreCode
+        {
+            get
+            {
+                return costCentreRow.CostCentreCode;
             }
         }
     }
@@ -1075,6 +1085,13 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.NumberOfAccountingPeriods;
             }
         }
+        public int NumberFwdPostingPeriods
+        {
+            get
+            {
+                return row.NumberFwdPostingPeriods;
+            }
+        }
         public int CurrentFinancialYear
         {
             get
@@ -1699,6 +1716,169 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 return intDigits;
             }
+        }
+    }
+
+
+    /// <summary>
+    /// The THandleBudgetInfo was primilary written for the year end calculation(s).
+    /// </summary>
+    public class THandleBudgetInfo
+    {
+        THandleLedgerInfo tHandleLedgerInfo;
+        ABudgetTable aBudgetTable;
+        ABudgetRow aBudgetRow;
+
+        List <THandleBudgetPeriodInfo>budgetPeriodInfoList;
+
+        /// <summary>
+        /// The constructor internally reads in all a_budget-Table entries which belong to the
+        /// ledger
+        /// </summary>
+        /// <param name="ATHandleLedgerInfo">For LedgerNumber only</param>
+        public THandleBudgetInfo(THandleLedgerInfo ATHandleLedgerInfo)
+        {
+            tHandleLedgerInfo = ATHandleLedgerInfo;
+
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                aBudgetTable = ABudgetAccess.LoadViaALedger(tHandleLedgerInfo.LedgerNumber, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+            budgetPeriodInfoList = new List <THandleBudgetPeriodInfo>();
+        }
+
+        /// <summary>
+        /// Preparation of the Close-Budget-Operation(s). The relevant THandleBudgetPeriodInfo
+        /// data sets are sorted out and added to a list.
+        /// </summary>
+        public void ReadCloseBudgetListYearEnd()
+        {
+            if (aBudgetTable.Rows.Count > 0)
+            {
+                for (int iBgt = 0; iBgt < aBudgetTable.Rows.Count; ++iBgt)        // FOR EACH a_budget
+                {
+                    aBudgetRow = aBudgetTable[iBgt];
+                    int iHelp = tHandleLedgerInfo.NumberOfAccountingPeriods +
+                                tHandleLedgerInfo.NumberFwdPostingPeriods;
+
+                    // iBgtPrd start with 1 because the first period of a year has the
+                    // number 1
+                    for (int iBgtPrd = 1; iBgtPrd < iHelp; ++iBgtPrd)
+                    {
+                        THandleBudgetPeriodInfo tHandleBudgetPeriodInfo =
+                            new THandleBudgetPeriodInfo(aBudgetRow.BudgetSequence, iBgtPrd);
+
+                        if (tHandleBudgetPeriodInfo.IsValid)
+                        {
+                            budgetPeriodInfoList.Add(tHandleBudgetPeriodInfo);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Running the close procedure by using a Transation which is defined outside
+        /// of the object. The transaction is required in order to create a
+        /// complete task transaction for the complete year end.
+        /// </summary>
+        /// <param name="ATransaction"></param>
+        public void CloseBudgetListYearEnd(TDBTransaction ATransaction)
+        {
+            if (budgetPeriodInfoList.Count > 0)
+            {
+                for (int i = 0; i < budgetPeriodInfoList.Count; ++i)
+                {
+                    budgetPeriodInfoList[i].ClosePeriodYearEnd(ATransaction);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// An object which mainly shall be used by THandleBudgetInfo.
+    /// </summary>
+    public class THandleBudgetPeriodInfo
+    {
+        ABudgetPeriodTable aBudgetPeriodTable;
+        ABudgetPeriodRow aBudgetPeriodRow;
+
+        /// <summary>
+        /// One cudget period info record will be loaded - if exists
+        /// </summary>
+        /// <param name="ABudgetSequence">1st. Primary key parameter</param>
+        /// <param name="ABudgetPeriod">2nd. Primary key parameter</param>
+        public THandleBudgetPeriodInfo(int ABudgetSequence, int ABudgetPeriod)
+        {
+            try
+            {
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                aBudgetPeriodTable = ABudgetPeriodAccess.LoadByPrimaryKey(
+                    ABudgetSequence, ABudgetPeriod, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
+
+            if (aBudgetPeriodTable.Rows.Count > 0)
+            {
+                aBudgetPeriodRow = aBudgetPeriodTable[0];
+            }
+        }
+
+        /// <summary>
+        /// Returns true if a record has been found
+        /// </summary>
+        public bool IsValid
+        {
+            get
+            {
+                return aBudgetPeriodRow != null;
+            }
+        }
+
+        /// <summary>
+        /// Runs a year end closing on the budget record
+        /// </summary>
+        /// <param name="ATransaction">A required transaction to synchronize with all
+        /// other year end operations.</param>
+        public void ClosePeriodYearEnd(TDBTransaction ATransaction)
+        {
+            aBudgetPeriodRow.BudgetLastYear = aBudgetPeriodRow.BudgetThisYear;
+            aBudgetPeriodRow.BudgetThisYear = aBudgetPeriodRow.BudgetNextYear;
+            aBudgetPeriodRow.BudgetNextYear = 0;
+
+            OdbcParameter[] ParametersArray;
+            ParametersArray = new OdbcParameter[5];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal);
+            ParametersArray[0].Value = aBudgetPeriodRow.BudgetThisYear;;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal);
+            ParametersArray[1].Value = aBudgetPeriodRow.BudgetNextYear;
+            ParametersArray[2] = new OdbcParameter("", OdbcType.Decimal);
+            ParametersArray[2].Value = 0;
+            ParametersArray[3] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[3].Value = aBudgetPeriodRow.BudgetSequence;
+            ParametersArray[4] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[4].Value = aBudgetPeriodRow.PeriodNumber;
+
+            string strSQL = "UPDATE PUB_" + ABudgetPeriodTable.GetTableDBName() + " ";
+            strSQL += "SET " + ABudgetPeriodTable.GetBudgetLastYearDBName() + " = ? ";
+            strSQL += ", " + ABudgetPeriodTable.GetBudgetThisYearDBName() + " = ? ";
+            strSQL += ", " + ABudgetPeriodTable.GetBudgetNextYearDBName() + " = ? ";
+            strSQL += "WHERE " + ABudgetPeriodTable.GetBudgetSequenceDBName() + " = ? ";
+            strSQL += "AND " + ABudgetPeriodTable.GetPeriodNumberDBName() + " = ? ";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                strSQL, ATransaction, ParametersArray);
         }
     }
 }
