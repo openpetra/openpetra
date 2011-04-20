@@ -83,8 +83,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     ctrlSnippet.SetCodelet("COLUMNWIDTH", "");
 
                     ctrlSnippet.SetCodelet("ITEMNAME", ctrl.controlName);
+                    ctrlSnippet.SetCodelet("ITEMID", childCtrl.controlName);
 
-                    if (ChildControlName == Controls[0])
+                    if (ctrl.GetAttribute("hideLabel") == "true")
+                    {
+                        ctrlSnippet.SetCodelet("HIDELABEL", "true");
+                    }
+                    else if (ChildControlName == Controls[0])
                     {
                         ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "LABEL", ctrl, ctrl.Label);
                     }
@@ -95,7 +100,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             else
             {
                 // used for GroupBox, and Composite
-                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", writer);
+                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", "HiddenValues", writer);
+                TExtJsFormsWriter.InsertControl(ctrl, snippetRowDefinition, "ITEMS", "Controls", writer);
             }
 
             return snippetRowDefinition;

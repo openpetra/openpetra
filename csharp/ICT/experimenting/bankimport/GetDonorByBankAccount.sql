@@ -1,7 +1,0 @@
-SELECT DISTINCT PUB_p_partner.p_partner_short_name_c AS DonorShortName, PUB_p_partner.p_partner_key_n AS DonorKey
-FROM PUB_p_banking_details, PUB_p_partner_banking_details, PUB_p_partner
-WHERE PUB_p_partner_banking_details.p_partner_key_n = PUB_p_partner.p_partner_key_n
-AND PUB_p_partner_banking_details.p_banking_details_key_i = PUB_p_banking_details.p_banking_details_key_i
-AND PUB_p_banking_details.p_bank_account_number_c = ?
-
- 

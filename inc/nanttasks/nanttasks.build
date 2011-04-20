@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="inc-nanttasks-Build">
+
+<property name="Namespace" value="Ict.Tools.NAntTasks" />
+<property name="ProjectGuid" value="{A5090592-78DD-4F41-9B96-8F02F61A6CDE}" />
+
+<property name="RunCsDepend" value="false" />
+
+
+
+<include buildfile="../nant/OpenPetra.csharp.xml"/> 
+
+<patternset id="references">
+  <!-- Add NAnt.Core.dll -->
+  <include name="${assembly::get-location(task::get-assembly('echo'))}" />
+</patternset>
+
+</project>

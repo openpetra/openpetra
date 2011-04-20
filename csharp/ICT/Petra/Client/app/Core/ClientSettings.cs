@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,8 @@ namespace Ict.Petra.Client.App.Core
     {
         private static String UConfigurationFile = "";
         private static String UPathTemp = "";
+        private static String UPathLog = "";
+        private static Int16 UDebugLevel = 0;
         private static String UBehaviourSeveralClients = "";
         private static Boolean UDelayedDataLoading = false;
         private static String UReportingPathReportSettings = "";
@@ -60,6 +62,12 @@ namespace Ict.Petra.Client.App.Core
         private static String UPostgreSql_DataDir = "";
         private static String UPetraWebsite_Link = "";
         private static String UPetraPatches_Link = "";
+        private static String UPetraSupportTeamEmail = "";
+
+        /// <summary>
+        /// DebugLevel for writing an xml file of reporting parameters and results to the log directory
+        /// </summary>
+        public static Int16 DEBUGLEVEL_REPORTINGDATA = 4;
 
         /// <summary>Name of .NET Configuration File, if specified via command line options</summary>
         public static String ConfigurationFile
@@ -70,12 +78,30 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>Temp Path (eg. for storing the Log File)</summary>
+        /// <summary>Temp Path</summary>
         public static String PathTemp
         {
             get
             {
                 return UPathTemp;
+            }
+        }
+
+        /// <summary>Log Path (eg. for storing the Log File)</summary>
+        public static String PathLog
+        {
+            get
+            {
+                return UPathLog;
+            }
+        }
+
+        /// <summary>DebugLevel for TLogging</summary>
+        public static Int16 DebugLevel
+        {
+            get
+            {
+                return UDebugLevel;
             }
         }
 
@@ -274,36 +300,47 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// get temp path in the user directory. this is called from PetraClientMain directly
-        public static string GetPathTemp()
+        /// <summary>Email address of the openPETRA support team of an organisation</summary>
+        public static string PetraSupportTeamEmail
         {
-            UPathTemp = TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp", Path.GetTempPath());
+            get
+            {
+                return UPetraSupportTeamEmail;
+            }
+        }
 
-            if (UPathTemp.Contains("{userappdata}"))
+        private static string GetUserPath(string AVariableName, string ADefaultValue)
+        {
+            string result = TAppSettingsManager.GetValueStatic(AVariableName, ADefaultValue);
+
+            if (result.Contains("{userappdata}"))
             {
                 // on Windows, we cannot store the database in userappdata during installation, because
                 // the setup has to be run as administrator.
                 // therefore the first time the user starts Petra, we need to prepare his environment
                 // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-                UPathTemp = UPathTemp.Replace("{userappdata}",
+                result = result.Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
-                if (!Directory.Exists(UPathTemp))
+                if (!Directory.Exists(result))
                 {
-                    Directory.CreateDirectory(UPathTemp);
-                }
-
-                string userSettingsPath = TAppSettingsManager.GetValueStatic("Reporting.PathReportUserSettings", String.Empty);
-                userSettingsPath = userSettingsPath.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-                if (!Directory.Exists(userSettingsPath))
-                {
-                    Directory.CreateDirectory(userSettingsPath);
+                    Directory.CreateDirectory(result);
                 }
             }
 
-            return UPathTemp;
+            return result;
+        }
+
+        /// get temp path in the user directory. this is called from PetraClientMain directly
+        public static string GetPathLog()
+        {
+            UPathTemp = GetUserPath("OpenPetra.PathTemp", Path.GetTempPath());
+
+            string userSettingsPath = GetUserPath("Reporting.PathReportUserSettings", String.Empty);
+
+            UPathLog = GetUserPath("OpenPetra.PathLog", Path.GetTempPath());
+
+            return UPathLog;
         }
 
         /// get export path in the user directory. used eg. by GL Batch or Gift Batch export
@@ -346,7 +383,9 @@ namespace Ict.Petra.Client.App.Core
             //
             // Parse settings from the Application Configuration File
             //
-            UPathTemp = GetPathTemp();
+            UPathLog = GetPathLog();
+
+            UDebugLevel = FAppSettings.GetInt16("Client.DebugLevel", 0);
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 
@@ -375,6 +414,7 @@ namespace Ict.Petra.Client.App.Core
             UPetra_Path_Patches = "";
             UPetraWebsite_Link = FAppSettings.GetValue("OpenPetra.Website", "http://www.openpetra.org");
             UPetraPatches_Link = FAppSettings.GetValue("OpenPetra.Path.RemotePatches", "http://www.example.org/index.php?page=OpenPetraPatches");
+            UPetraSupportTeamEmail = FAppSettings.GetValue("OpenPetra.SupportTeamEmail", String.Empty);
 
             if (URunAsStandalone == true)
             {

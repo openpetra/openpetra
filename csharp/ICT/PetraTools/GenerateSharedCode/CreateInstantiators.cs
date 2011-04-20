@@ -284,25 +284,18 @@ class CreateInstantiators : AutoGenerationWriter
         // e.g. ConnectorNamespace: Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
         string ConnectorNamespace = AFullNamespace.Replace("Instantiator.", "");
 
-        List <CSParser>CSFiles = new List <CSParser>();
+        List <CSParser>CSFiles = null;
         string module = AFullNamespace.Split('.')[3];
 
         if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/" + module))
         {
             // any class in the module can contain a webconnector
-            string[] filePaths = Directory.GetFiles(CSParser.ICTPath + "/Petra/Server/lib/" + module, "*.csproj",
+            CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/" + module,
                 SearchOption.AllDirectories);
-
-            Array.Sort(filePaths);
-
-            foreach (string filePath in filePaths)
-            {
-                // excluding the data directory
-                if (!filePath.Replace("\\", "/").Contains("/data/"))
-                {
-                    CSParser.GetCSFilesInProject(filePath, ref CSFiles);
-                }
-            }
+        }
+        else
+        {
+            CSFiles = new List <CSParser>();
         }
 
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
@@ -574,8 +567,8 @@ class CreateInstantiators : AutoGenerationWriter
     public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         // get the appropriate cs file
-        CSFiles = new List <CSParser>();
-        CSParser.GetCSFilesInProject(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces/Ict.Petra.Shared.Interfaces.csproj", ref CSFiles);
+        CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces",
+            SearchOption.TopDirectoryOnly);
 
         foreach (TNamespace tn in ANamespaces)
         {

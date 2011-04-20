@@ -678,7 +678,7 @@
 <dia:object type="UML - Association" version="0" id="p_partner_p_partner_fk7">
 	<dia:attribute name="obj_pos"><dia:point val="2.45,-12.9" /></dia:attribute>	<dia:attribute name="obj_bb"><dia:rectangle val="2.4,-12.95;28.25,6.4" /> </dia:attribute>
 <dia:attribute name="orth_points">
-<dia:point val="21.05,-13.00" /> 
+<dia:point val="21.04,-13.00" /> 
 <dia:point val="23.15,-13.00" /> 
 <dia:point val="23.15,4.80" /> 
 <dia:point val="28.20,4.80" /> 

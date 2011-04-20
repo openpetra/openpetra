@@ -7,7 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
  
-using Ict.Petra.Client.MPartner.Gui;
+//using Ict.Petra.Client.MPartner.Gui;
 namespace TestCollapsible
 {
 	partial class MainForm
@@ -89,8 +89,8 @@ namespace TestCollapsible
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
-		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible2;
+//		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible2;
 		private System.Windows.Forms.Button button1;
-		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible1;
+//		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible1;
 	}
 }

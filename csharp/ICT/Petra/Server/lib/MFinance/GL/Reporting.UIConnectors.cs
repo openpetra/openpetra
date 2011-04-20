@@ -26,7 +26,6 @@ using System.Data;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;

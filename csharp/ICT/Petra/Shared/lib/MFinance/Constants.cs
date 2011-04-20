@@ -40,6 +40,12 @@ namespace Ict.Petra.Shared.MFinance
         public const String BATCH_CANCELLED = "Cancelled";
 
         /// <summary>GL Batch</summary>
+        public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
+
+        /// <summary>GL Batch</summary>
+        public const String TRANSACTION_REVAL = "REVAL";
+
+        /// <summary>GL Batch</summary>
         public const String TRANSACTION_FX_REVAL = "FX REVAL";
 
         /// <summary>GL Batch</summary>

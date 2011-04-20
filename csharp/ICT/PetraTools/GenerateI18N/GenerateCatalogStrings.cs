@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,6 +53,13 @@ public class TGenerateCatalogStrings
 
         if (AMainFilename.EndsWith(".Designer.cs") || AMainFilename.EndsWith("AssemblyInfo.cs"))
         {
+            return false;
+        }
+
+        if (File.Exists(Path.GetDirectoryName(AMainFilename) + Path.DirectorySeparatorChar +
+                System.IO.Path.GetFileNameWithoutExtension(AMainFilename) + ".yaml"))
+        {
+            // do not generate translation code for already generated files
             return false;
         }
 
@@ -201,7 +208,7 @@ public class TGenerateCatalogStrings
         writer.Close();
         readerMainFile.Close();
 
-        TTextFile.UpdateFile(AMainFilename);
+        TTextFile.UpdateFile(AMainFilename, true);
 
         return true;
     }

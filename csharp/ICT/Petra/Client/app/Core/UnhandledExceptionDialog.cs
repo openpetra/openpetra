@@ -29,6 +29,7 @@ using System.Data;
 using System.Resources;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
+
 using Ict.Common;
 
 namespace Ict.Petra.Client.App.Core
@@ -36,7 +37,8 @@ namespace Ict.Petra.Client.App.Core
     /// <summary>
     /// Dialog for displaying information to the user that a severe error occured in
     /// the PetraClient application.
-    ///
+    /// </summary>
+    /// <description>
     /// Mimics Windows' own 'application crash window', but allows
     ///   (1) different texts to be displayed (eg. depending on the situation, the
     ///       error, etc.)
@@ -49,17 +51,326 @@ namespace Ict.Petra.Client.App.Core
     ///   (5) e-mailing the Exception text to the Petra Team using the 'Bugreport'
     ///       feature (only enabled if Progress 4GL didn't crash)
     ///
-    /// @Comment This Form is intended to be called from Unit
-    ///   Ict.Petra.Client.App.Core.ExceptionHandling.
-    /// </summary>
-    public class TUnhandledExceptionForm : System.Windows.Forms.Form
+    /// This Form is intended to be called from Ict.Petra.Client.App.Core.ExceptionHandling.
+    /// </description>
+    public partial class TUnhandledExceptionForm : System.Windows.Forms.Form
     {
+        readonly String StrNonRecoverableHeading = Catalog.GetString("OpenPetra Client Has Encountered An Error And Needs To Close");
+        readonly String StrRecoverableHeading = Catalog.GetString("OpenPetra Client Has Encountered An Error");
+        readonly String StrNonRecoverableInfo1 = Catalog.GetString(
+            "The OpenPetra Client application has encountered an internal error from which it cannot recover.");
+        readonly String StrRecoverableInfo1 = Catalog.GetString(
+            "The OpenPetra Client application has encountered an internal error which it cannot handle properly.");
+        readonly String StrNonRecoverableInfo2 = Catalog.GetString(
+            "Any data that has not been saved will be lost. We are sorry for any inconvenience caused.");
+        readonly String StrRecoverableInfo2 = Catalog.GetString(
+            "You may be able to continue working with OpenPetra, but we recommend closing OpenPetra and starting over again. We are sorry for any inconvenience caused.");
+        readonly String StrRecoverableInfo3 = Catalog.GetString("Choose 'OK' to close this error information. ");
+        readonly String StrNonRecoverableInfo3 = Catalog.GetString("Choose 'Close OpenPetra' to close the OpenPetra application. ");
+        readonly String StrRecoverableInfo3Email = Catalog.GetString(
+            "Choose 'Report Error' to send an error report in an e-mail to your OpenPetra Support Team.");
+        readonly String StrErrorDetailsInfo = Catalog.GetString("Choose 'Error Details...' to see detailed information. ");
+        readonly String StrRecoverableInfo3NoEmail = Catalog.GetString(
+            "If you want to send this information to your OpenPetra Support Team, copy the information to the Clipboard and paste it into an e-mail. The e-mail address is: {0}.");
+        readonly String StrConnectionBrokenInfo1 = Catalog.GetString(
+            "The OpenPetra Client application has lost its connection to the OpenPetra Server. The broken connection cannot be recovered.");
+        readonly String StrConnectionBrokenInfo2 = Catalog.GetString(
+            "Try to save any data that has not been saved, then close OpenPetra and start over again. We are sorry for any inconvenience caused.");
+        readonly String StrConnectionBrokenInfo3 = "";
+        readonly String StrConnectionBrokenHeading = Catalog.GetString("OpenPetra Client Has Lost Its Connection To The OpenPetra Server");
+
+        private Exception FException;
+        private String FErrorDetails;
+        private Boolean FNonRecoverable;
+        private String FFormTitle = "",
+                       FInfo2Text = "",
+                       FInfo3Text = "",
+                       FInfo1Text = "",
+                       FHeadingText = "";
+
+        /// <summary>The Exception that is handled by this screen.</summary>
+        public Exception TheException
+        {
+            get
+            {
+                return FException;
+            }
+
+            set
+            {
+                string ApplicationVersion = String.Empty;
+
+                FException = value;
+
+                if (TClientInfo.ClientAssemblyVersion != null)
+                {
+                    ApplicationVersion =
+                        (new Version(TClientInfo.ClientAssemblyVersion)).ToString();
+                }
+
+                /* Build error details String */
+                FErrorDetails = FException.ToString() + Environment.NewLine + Environment.NewLine + "--------------------------------------" +
+                                Environment.NewLine;
+
+                if (ApplicationVersion != String.Empty)
+                {
+                    FErrorDetails = FErrorDetails + "OpenPetra Version " + ApplicationVersion + Environment.NewLine;
+                }
+
+                FErrorDetails = FErrorDetails + "Date/Time: " + DateTime.Now.ToString() + " (UTC: " + DateTime.UtcNow.ToString("r") + ")";
+            }
+        }
+
+        /// <summary>True if the Exception handled by this screen is non-recoverable, false if it is recoverable.</summary>
+        public Boolean NonRecoverable
+        {
+            get
+            {
+                return FNonRecoverable;
+            }
+
+            set
+            {
+                FNonRecoverable = value;
+            }
+        }
+
+        /// <summary>Set this to set a non-default Title for this Form.</summary>
+        public String FormTitle
+        {
+            get
+            {
+                return FFormTitle;
+            }
+
+            set
+            {
+                FFormTitle = value;
+            }
+        }
+
+        /// <summary>Set this to set a non-default heading.</summary>
+        public String HeadingText
+        {
+            get
+            {
+                return FHeadingText;
+            }
+
+            set
+            {
+                FHeadingText = value;
+            }
+        }
+
+        /// <summary>Set this to set a non-default Info 1 text (shown in the header part of the Form).</summary>
+        public String Info1Text
+        {
+            get
+            {
+                return FInfo1Text;
+            }
+
+            set
+            {
+                FInfo1Text = value;
+            }
+        }
+
+        /// <summary>Set this to set a non-default Info 2 text (shown in the lower part of the Form).</summary>
+        public String Info2Text
+        {
+            get
+            {
+                return FInfo2Text;
+            }
+
+            set
+            {
+                FInfo2Text = value;
+            }
+        }
+
+        /// <summary>Set this to set a non-default Info 3 text (shown in the lower part of the Form).</summary>
+        public String Info3Text
+        {
+            get
+            {
+                return FInfo3Text;
+            }
+
+            set
+            {
+                FInfo3Text = value;
+            }
+        }
+
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
         public TUnhandledExceptionForm() : base()
         {
-            // TODO TUnhandledExceptionForm
+            /*  */
+            /* Required for Windows Form Designer support */
+            /*  */
+            InitializeComponent();
+
+            /*  */
+            /* TODO: Add any constructor code after InitializeComponent call */
+            /*  */
+        }
+
+        private void BtnSend_Click(System.Object sender, System.EventArgs e)
+        {
+            // TODO Send content of FErrorDetails via email!
+        }
+
+        private void BtnErrorDetails_Click(System.Object sender, System.EventArgs e)
+        {
+            TFrmUnhandledExceptionDetailsDialog UHEDDialogue;
+
+            UHEDDialogue = new TFrmUnhandledExceptionDetailsDialog(this.Handle);
+            UHEDDialogue.ErrorDetails = FErrorDetails;
+            UHEDDialogue.ShowDialog();
+
+            /* get UnhandledExceptionDetails Dialogue out of memory */
+            UHEDDialogue.Dispose();
+        }
+
+        private void TUnhandledExceptionForm_Load(System.Object sender, System.EventArgs e)
+        {
+            if ((FException is System.Net.Sockets.SocketException
+                 || FException is System.Runtime.Remoting.RemotingException)
+                || FException.InnerException is System.Net.Sockets.SocketException
+                || FException.InnerException is System.Runtime.Remoting.RemotingException)
+            {
+                FNonRecoverable = false;
+                FHeadingText = StrConnectionBrokenHeading;
+                FInfo1Text = StrConnectionBrokenInfo1;
+                FInfo2Text = StrConnectionBrokenInfo2;
+                FInfo3Text = StrConnectionBrokenInfo3 + StrRecoverableInfo3;
+
+                /* Adjust Icon */
+                picIcon.Image = imlIcons.Images[2];
+            }
+            else
+            {
+                if (!FNonRecoverable)
+                {
+                    if (FHeadingText == "")
+                    {
+                        lblHeading.Text = StrRecoverableHeading;
+                    }
+
+                    if (FInfo1Text == "")
+                    {
+                        lblInfo1.Text = StrRecoverableInfo1;
+                    }
+
+                    if (FInfo2Text == "")
+                    {
+                        lblInfo2.Text = StrRecoverableInfo2;
+                    }
+
+                    if (FInfo3Text == "")
+                    {
+                        lblInfo3.Text = StrRecoverableInfo3;
+                    }
+
+                    /* Adjust Icon */
+                    picIcon.Image = imlIcons.Images[1];
+                }
+                else
+                {
+                    if (FHeadingText == "")
+                    {
+                        lblHeading.Text = StrNonRecoverableHeading;
+                    }
+
+                    if (FInfo1Text == "")
+                    {
+                        lblInfo1.Text = StrNonRecoverableInfo1;
+                    }
+
+                    if (FInfo2Text == "")
+                    {
+                        lblInfo2.Text = StrNonRecoverableInfo2;
+                    }
+                }
+            }
+
+            if (!FNonRecoverable)
+            {
+                btnClose.Text = "&OK";
+            }
+            else
+            {
+                FInfo3Text = StrNonRecoverableInfo3;
+            }
+
+            FInfo3Text = FInfo3Text + StrErrorDetailsInfo;
+
+            if (TClientSettings.PetraSupportTeamEmail != String.Empty)
+            {
+                FInfo3Text = FInfo3Text + String.Format(StrRecoverableInfo3NoEmail, TClientSettings.PetraSupportTeamEmail);   // TODO Replace with StrRecoverableInfo3Email once emailing of exception details works!
+            }
+
+            if (FFormTitle != "")
+            {
+                this.Text = FFormTitle;
+            }
+            else
+            {
+                if (TClientInfo.ClientAssemblyVersion != null)
+                {
+                    this.Text = "OpenPetra.org " +
+                                (new Version(TClientInfo.ClientAssemblyVersion)).ToString() + ' ' + Catalog.GetString("Application Error");
+                }
+                else
+                {
+                    this.Text = "OpenPetra.org " + Catalog.GetString("Application Error");
+                }
+            }
+
+            if (FHeadingText != "")
+            {
+                lblHeading.Text = FHeadingText;
+            }
+
+            if (FInfo1Text != "")
+            {
+                lblInfo1.Text = FInfo1Text;
+            }
+
+            if (FInfo2Text != "")
+            {
+                lblInfo2.Text = FInfo2Text;
+            }
+
+            if (FInfo3Text != "")
+            {
+                lblInfo3.Text = FInfo3Text;
+            }
+
+            /* btnSend_Click(Self, nil); */
+        }
+
+        private void BtnClose_Click(System.Object sender, System.EventArgs e)
+        {
+            this.Close();
+
+            if (FNonRecoverable)
+            {
+                // APPLICATION STOPS HERE !!!
+                if (ExceptionHandling.GApplicationShutdownCallback != null)
+                {
+                    ExceptionHandling.GApplicationShutdownCallback();
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+            }
         }
     }
 }

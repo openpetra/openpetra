@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-subdirs-internal">
+
+<target name="internal-subdirs">
+   <foreach item="File" property="filename">
+     <in>
+       <items>
+          <include name="*/*.build" />
+        </items>
+      </in>
+      <do>
+        <nant inheritall="false" target="${target}" buildfile="${filename}" verbose="${verbose}"/>
+      </do>
+   </foreach>
+</target>
+
+</project>

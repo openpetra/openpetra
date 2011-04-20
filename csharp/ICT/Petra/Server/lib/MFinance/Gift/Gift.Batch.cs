@@ -47,8 +47,9 @@ namespace Ict.Petra.Server.MFinance.Gift
     public class TGiftBatchFunctions
     {
         /// <summary>
-        /// create a new batch with a consecutive batch number in the ledger,
-        /// and immediately store the batch and the new number in the database
+        /// create a new batch with a consecutive batch number in the ledger
+        /// for call inside a server function
+        /// for performance reasons submitting (save the data in the database) is done later (not here)
         /// </summary>
         /// <param name="MainDS"></param>
         /// <param name="Transaction"></param>
@@ -102,6 +103,59 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
             NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.AGiftBatch.Rows.Add(NewRow);
+            return NewRow;
+        }
+
+        /// <summary>
+        /// create a new batch with a consecutive batch number in the ledger
+        /// for call inside a server function
+        /// for performance reasons submitting (save the data in the database) is done later (not here)
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="Transaction"></param>
+        /// <param name="LedgerTable"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>the new gift batch row</returns>
+        public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref RecurringGiftBatchTDS MainDS,
+            ref TDBTransaction Transaction,
+            ref ALedgerTable LedgerTable,
+            Int32 ALedgerNumber)
+        {
+            ARecurringGiftBatchRow NewRow = MainDS.ARecurringGiftBatch.NewRowTyped(true);
+
+            NewRow.LedgerNumber = ALedgerNumber;
+            LedgerTable[0].LastRecGiftBatchNumber++;
+            NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
+
+
+            // TODO: bank account as a parameter, set on the gift matching screen, etc
+            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
+                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
+
+            if (NewRow.BankAccountCode.Length == 0)
+            {
+                // use the first bank account
+                AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
+                                                          MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
+                                                          AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
+
+                if (accountProperties.DefaultView.Count > 0)
+                {
+                    NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
+                }
+                else
+                {
+                    // needed for old Petra 2.x database
+                    NewRow.BankAccountCode = "6000";
+                }
+
+                // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
+            }
+
+            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+            NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
+            MainDS.ARecurringGiftBatch.Rows.Add(NewRow);
             return NewRow;
         }
     }

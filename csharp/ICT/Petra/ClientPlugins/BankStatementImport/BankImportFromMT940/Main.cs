@@ -26,6 +26,7 @@ using System.IO;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;

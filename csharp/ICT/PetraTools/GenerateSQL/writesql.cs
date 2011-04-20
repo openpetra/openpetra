@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.IO;
 using Ict.Common;
+using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
 
 namespace GenerateSQL
@@ -102,6 +103,26 @@ public class TWriteSQL
 
         sw.Close();
         System.Console.WriteLine("Success: file written: {0}", AOutputFile);
+
+        string createTablesWithoutConstraints =
+            Path.GetDirectoryName(AOutputFile) + Path.DirectorySeparatorChar +
+            Path.GetFileNameWithoutExtension(AOutputFile) + "_withoutConstraints.sql";
+        outPutFileStream = new FileStream(
+            createTablesWithoutConstraints,
+            FileMode.Create, FileAccess.Write);
+        sw = new StreamWriter(outPutFileStream);
+
+        foreach (TTable Table in Tables)
+        {
+            if (!WriteTable(ATargetDatabase, sw, Table))
+            {
+                Environment.Exit(1);
+            }
+        }
+
+        WriteSequences(sw, ATargetDatabase, AStore, true);
+        sw.Close();
+        System.Console.WriteLine("Success: file written: {0}", createTablesWithoutConstraints);
 
         string removeAllTablesFile =
             Path.GetDirectoryName(AOutputFile) + Path.DirectorySeparatorChar +

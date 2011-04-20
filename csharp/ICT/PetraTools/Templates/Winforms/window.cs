@@ -18,6 +18,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {

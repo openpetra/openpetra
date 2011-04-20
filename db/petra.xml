@@ -6,7 +6,7 @@
          area="Petra Data"
          label="Language"
          dumpname="p_langua"
-         group="main">
+         group="common">
     <tablefield name="p_language_code_c"
                 type="varchar"
                 descr="This is the code used to identify a language."
@@ -53,7 +53,7 @@
          area="Petra Data"
          label="Frequency"
          dumpname="a_freque"
-         group="main">
+         group="common">
     <tablefield name="a_frequency_code_c"
                 type="varchar"
                 descr=""
@@ -116,7 +116,7 @@
          area="Petra Data"
          label="International Postal Type"
          dumpname="p_intern"
-         group="main">
+         group="common">
     <tablefield name="p_internat_postal_type_code_c"
                 type="varchar"
                 descr=""
@@ -155,7 +155,7 @@
          area=""
          label="Country"
          dumpname="p_countr"
-         group="main">
+         group="common">
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
@@ -275,7 +275,7 @@
          area="Petra Data"
          label="Currency"
          dumpname="a_curren"
-         group="main">
+         group="common">
     <tablefield name="a_currency_code_c"
                 type="varchar"
                 descr="This defines which currency is being used"
@@ -3029,8 +3029,7 @@
                 format="9999999999"
                 label="Partner Key"
                 help="Enter the partner key (SiteID + Number)"
-                notnull="yes"
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="p_unit_name_c"
                 type="varchar"
                 descr=""
@@ -7493,7 +7492,7 @@
                 label="PO G/L Accrual Account Code"/>
     <tablefield name="a_provisional_year_end_flag_l"
                 type="bit"
-                descr=""
+                descr="This flag is set between the completion of the last month of the year and the year itself. In this state some activities are disabled and some others are enabled."
                 format="Yes/No"
                 label="Provisional Year End Flag"
                 initial="no"/>
@@ -8603,7 +8602,7 @@
                 notnull="yes"/>
     <tablefield name="a_effective_date_d"
                 type="date"
-                descr=""
+                descr="Deprecated - do not use any more"
                 format="99/99/9999"
                 label="Effective Date"
                 notnull="yes"
@@ -9959,7 +9958,7 @@
     <!-- Explicit Indexes on table a_method_of_giving  -->
   </table>
   <table name="a_method_of_payment"
-         descr="Media&quot;&quot; types of money received.  Eg: Cash, Check Credit Card."
+         descr="Media types of money received. Eg: Cash, Check Credit Card"
          area="Petra Data"
          label="Method of Payment"
          dumpname="a_metpay"
@@ -12666,7 +12665,7 @@
                 type="number"
                 length="24"
                 decimals="10"
-                descr="This is a number of currency units"
+                descr="This is the amount in transaction currency. This field should be renamed to a_gift_transaction_amount_n, to be in analogy to a_gift_detail.a_gift_transaction_amount_n"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Gift Amount"
                 help="Enter the amount"
@@ -15720,8 +15719,7 @@
                 notnull="yes"/>
     <tablefield name="pm_old_link_c"
                 type="varchar"
-                descr="Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-&lt;br/&gt;yearly conference."
+                descr="TODO: this field is a combination of registration office and application number. might not be needed???"
                 format="X(16)"
                 label="Xyz_tbd"
                 columnlabel="Xyz_tbd"
@@ -15734,8 +15732,7 @@
                 format="9999999999"
                 label="Possible Fld."
                 columnlabel="Possible Fld."
-                help="This is the possible field or team of service."
-                initial="0"/>
+                help="This is the possible field or team of service."/>
     <tablefield name="pm_gen_app_delete_flag_l"
                 type="bit"
                 descr="This field will not appear on the screen but will be updated when someone chooses to delete a record. Rather that an actual deletion, the record will be &apos;marked&apos; for deletion after an agreed upon interval."
@@ -15892,8 +15889,21 @@
                 format="9999999999"
                 label="Placement Person"
                 columnlabel="Placement Person"
-                help="This is the placement person handling this application"
-                initial="0"/>
+                help="This is the placement person handling this application"/>
+    <tablefield name="pm_raw_application_data_c"
+                type="varchar"
+                descr="stores the plain data received from the browser in JSON format"
+                format="x(15000)"/>
+    <tablefield name="p_local_partner_key_n"
+                type="number"
+                length="10"
+                descr="the person partner key of the applicant in the local database of the registration office. no foreign key since the person partner is in another database"
+                format="9999999999"/>
+    <tablefield name="p_imported_local_petra_l"
+                type="bit"
+                descr="true if the applicant has already been imported into the local database of the registration office."
+                format="Yes/No"
+                initial="no"/>
     <!-- Constraints on table pm_general_application -->
     <primarykey name="pm_general_application_pk"
                 descr=""
@@ -16000,7 +16010,7 @@
                 label="Registration Office"
                 columnlabel="Office"
                 help="Key of office by which this application was entered"
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_status_code_c"
                 type="varchar"
                 descr="Indicates the status of the application."
@@ -16492,8 +16502,7 @@
                 notnull="yes"/>
     <tablefield name="pm_st_basic_xyz_tbd_identifier_c"
                 type="varchar"
-                descr="Describes the timeframe for the xyz_tbd, e.g. Easter, Winter,
-&lt;br/&gt;yearly conference."
+                descr="TODO: this field is a combination of registration office and application number. might not be needed???"
                 format="X(16)"
                 label="Xyz_tbd"
                 columnlabel="Xyz_tbd"
@@ -16609,8 +16618,7 @@
                 format="9999999999"
                 label="Event"
                 columnlabel="Event"
-                help="Indicates the confirmed xyz_tbd option."
-                initial="0"/>
+                help="Indicates the confirmed xyz_tbd option."/>
     <tablefield name="pm_st_option1_n"
                 type="number"
                 length="10"
@@ -16618,8 +16626,7 @@
                 format="9999999999"
                 label="Alternative 1"
                 columnlabel="Alternative 1"
-                help="Indicates the first xyz_tbd choice."
-                initial="0"/>
+                help="Indicates the first xyz_tbd choice."/>
     <tablefield name="pm_st_option2_n"
                 type="number"
                 length="10"
@@ -16627,8 +16634,7 @@
                 format="9999999999"
                 label="Alternative 2"
                 columnlabel="Alternative 2"
-                help="Indicates the second xyz_tbd choice."
-                initial="0"/>
+                help="Indicates the second xyz_tbd choice."/>
     <tablefield name="pm_st_current_field_n"
                 type="number"
                 length="10"
@@ -16636,8 +16642,7 @@
                 format="9999999999"
                 label="Current Field"
                 columnlabel="Current Field"
-                help="Indicates the current field."
-                initial="0"/>
+                help="Indicates the current field."/>
     <tablefield name="pm_arrival_details_status_c"
                 type="varchar"
                 descr="Indicates the status of given arrival details (not known, being planned,...)."
@@ -16862,8 +16867,7 @@
                 format="9999999999"
                 label="Party Contact"
                 columnlabel="Party Contact"
-                help="This field is the partner key of the party contact person."
-                initial="0"/>
+                help="This field is the partner key of the party contact person."/>
     <tablefield name="pm_st_party_together_c"
                 type="varchar"
                 descr="Indicates what parts of the xyz_tbd the party stays together."
@@ -16910,7 +16914,7 @@
                 label="Field Charged"
                 columnlabel="Field Charged"
                 help="This field idenifies the field to be charged for the costs."
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_st_congress_language_c"
                 type="varchar"
                 charlength="10"
@@ -17444,8 +17448,7 @@
                 format="9999999999"
                 label="Reference Partner"
                 columnlabel="Reference Partner"
-                help="This is the Reference Partner for this Application"
-                initial="0"/>
+                help="This is the Reference Partner for this Application"/>
     <tablefield name="pm_comment_c"
                 type="varchar"
                 format="X(500)"
@@ -20237,7 +20240,7 @@
                 label="Registration Office"
                 columnlabel="Office"
                 help="Key of office by which this application was entered"
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="p_data_label_key_i"
                 type="integer"
                 descr="A sequence key for data labels."
@@ -20878,7 +20881,7 @@
                 label="Recruiting Office"
                 columnlabel="Recruiting Office"
                 help="The office that recruited the partner"
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_home_office_n"
                 type="number"
                 length="10"
@@ -20887,7 +20890,7 @@
                 label="Home Office"
                 columnlabel="Home Office"
                 help="The home office of the person."
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_receiving_field_n"
                 type="number"
                 length="10"
@@ -20896,7 +20899,7 @@
                 label="Receiving Field"
                 columnlabel="Field Office"
                 help="The person&apos;s is serving for that field."
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_receiving_field_office_n"
                 type="number"
                 length="10"
@@ -20904,8 +20907,7 @@
                 format="9999999999"
                 label="Receiving Field Office"
                 columnlabel="Field Office"
-                help="The office they work at in the receiving field."
-                initial="0"/>
+                help="The office they work at in the receiving field."/>
     <tablefield name="pm_staff_data_comments_c"
                 type="varchar"
                 descr="Comments on commitment record."
@@ -23307,8 +23309,7 @@
                 length="10"
                 descr="The room can be reserved for a conference"
                 format="9999999999"
-                help="The room can be reserved for a conference"
-                initial="0"/>
+                help="The room can be reserved for a conference"/>
     <tablefield name="p_partner_key_n"
                 type="number"
                 length="10"

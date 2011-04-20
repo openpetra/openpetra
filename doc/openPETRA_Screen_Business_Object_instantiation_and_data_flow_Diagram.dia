@@ -13,22 +13,22 @@
           <dia:string>#A3#</dia:string>
         </dia:attribute>
         <dia:attribute name="tmargin">
-          <dia:real val="1.5"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="bmargin">
-          <dia:real val="1.5"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="lmargin">
-          <dia:real val="1.5"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="rmargin">
-          <dia:real val="1.5"/>
+          <dia:real val="1"/>
         </dia:attribute>
         <dia:attribute name="is_portrait">
           <dia:boolean val="false"/>
         </dia:attribute>
         <dia:attribute name="scaling">
-          <dia:real val="0.57999998331069946"/>
+          <dia:real val="0.62000000476837158"/>
         </dia:attribute>
         <dia:attribute name="fitto">
           <dia:boolean val="false"/>
@@ -947,7 +947,7 @@ for the Screen#</dia:string>
         <dia:point val="59.2685,19.9"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="59.2185,19.85;63.6857,21.65"/>
+        <dia:rectangle val="59.2185,19.85;63.6856,21.65"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="59.2685,19.9"/>
@@ -2122,7 +2122,7 @@ Layer#</dia:string>
             <dia:real val="0.80000000000000004"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="4.575,18.9738"/>
+            <dia:point val="4.575,18.9737"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -2171,7 +2171,7 @@ Layer#</dia:string>
         <dia:point val="4.5,15.3"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4.5,14.7819;37.5706,23.8537"/>
+        <dia:rectangle val="4.5,14.7975;37.555,23.8225"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -2654,7 +2654,7 @@ Note: The UIConnector might use central Business Logic Objects for fulfilling of
         <dia:point val="44.8125,11.2725"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="44.7501,11.2374;44.8476,25.3552"/>
+        <dia:rectangle val="44.7501,11.2374;44.8476,25.3553"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="44.8125,11.2725"/>
@@ -2754,7 +2754,7 @@ Note: The UIConnector might use central Business Logic Objects for fulfilling of
         <dia:point val="44.1198,11.4425"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="44.0848,11.4074;44.1702,26.1302"/>
+        <dia:rectangle val="44.0848,11.4075;44.1702,26.1302"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="44.1198,11.4425"/>

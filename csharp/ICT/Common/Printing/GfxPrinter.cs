@@ -521,10 +521,7 @@ namespace Ict.Common.Printing
                         PrintString(toPrint, AFont, AXPos, AWidth, AAlign);
                     }
 
-                    if (AAlign == eAlignment.eRight)
-                    {
-                        CurrentXPos += GetWidthString(toPrint, AFont);
-                    }
+                    CurrentXPos += GetWidthString(toPrint, AFont);
 
                     if (ATxt.Length > 0)
                     {
@@ -668,10 +665,15 @@ namespace Ict.Common.Printing
         /// <summary>
         /// draw a bitmap at the given position;
         /// the current position is moved
+        ///
+        /// Either Width or WidthPercentage should be unequals 0, but only one should have a value.
+        /// Same applies to Height
         /// </summary>
         public override void DrawBitmap(string APath,
             float AXPos,
             float AYPos,
+            float AWidth,
+            float AHeight,
             float AWidthPercentage,
             float AHeightPercentage)
         {
@@ -681,8 +683,27 @@ namespace Ict.Common.Printing
             }
 
             Bitmap img = new System.Drawing.Bitmap(APath);
-            float Height = img.Size.Height / img.VerticalResolution * AHeightPercentage;
-            float Width = img.Size.Width / img.HorizontalResolution * AWidthPercentage;
+            float Height = img.Size.Height;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Height = Height / img.VerticalResolution * AHeightPercentage;
+            }
+            else
+            {
+                Height = AHeight;
+            }
+
+            float Width = img.Size.Width;
+
+            if (AHeightPercentage != 0.0f)
+            {
+                Width = Width / img.HorizontalResolution * AWidthPercentage;
+            }
+            else
+            {
+                Width = AWidth;
+            }
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -914,25 +935,30 @@ namespace Ict.Common.Printing
             {
                 if (FMarginType == eMarginType.ePrintableArea)
                 {
-                    // margin is set by the printing program, eg. HTML Renderer
+                    // if no printer is installed, use default values
+                    FLeftMargin = 0;
+                    FTopMargin = 0.1f;
+                    FRightMargin = -0.00333374f;
+                    FBottomMargin = 0.00166687f;
+                    FWidth = 8.268333f;
+                    FHeight = 11.69333f;
+
                     try
                     {
-                        FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
-                        FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
-                        FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
-                        FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
-                        FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
-                        FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                        // margin is set by the printing program, eg. HTML Renderer
+                        if (FEv.PageSettings.PrintableArea.Width != 0)
+                        {
+                            FLeftMargin = FEv.PageSettings.PrintableArea.Left / 100.0f;
+                            FTopMargin = FEv.PageSettings.PrintableArea.Top / 100.0f;
+                            FRightMargin = (FEv.PageSettings.PaperSize.Width - FEv.PageSettings.PrintableArea.Right) / 100.0f;
+                            FBottomMargin = (FEv.PageSettings.PaperSize.Height - FEv.PageSettings.PrintableArea.Bottom) / 100.0f;
+                            FWidth = FEv.PageSettings.PrintableArea.Width / 100.0f;
+                            FHeight = FEv.PageSettings.PrintableArea.Height / 100.0f;
+                        }
                     }
                     catch (Exception)
                     {
-                        // if no printer is installed, use default values
-                        FLeftMargin = 0;
-                        FTopMargin = 0;
-                        FRightMargin = -0.00333374f;
-                        FBottomMargin = 0.00166687f;
-                        FWidth = 11.69333f;
-                        FHeight = 8.268333f;
+                        TLogging.Log("no printer");
                     }
                 }
                 else if (FMarginType == eMarginType.eDefaultMargins)

@@ -26,6 +26,7 @@ using System.Xml;
 using System.Collections.Specialized;
 using System.IO;
 using Ict.Common;
+using Ict.Common.IO; // Implicit referemce
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.ExtJs;
@@ -36,11 +37,60 @@ class Program
 {
     private static void ProcessFile(string filename, string ASelectedLocalisation)
     {
+        if (ASelectedLocalisation == null)
+        {
+            // check for all existing localisations
+            foreach (string file in System.IO.Directory.GetFiles(
+                         Path.GetDirectoryName(filename),
+                         "*.yaml"))
+            {
+                if (!file.EndsWith(Path.GetFileName(filename))
+                    && Path.GetFileName(file).StartsWith(Path.GetFileNameWithoutExtension(filename)))
+                {
+                    ASelectedLocalisation = Path.GetExtension(Path.GetFileNameWithoutExtension(file)).Substring(1);
+
+                    TProcessYAMLForms processorLocalized = new TProcessYAMLForms(file, null);
+
+                    processorLocalized.AddWriter("SubmitForm", typeof(TExtJsFormsWriter));
+
+                    processorLocalized.ProcessDocument();
+                }
+            }
+
+            if (ASelectedLocalisation != null)
+            {
+                // do not generate the root yaml file
+                return;
+            }
+        }
+
+        // by default, just generate the form for one (or default) localisation
         TProcessYAMLForms processor = new TProcessYAMLForms(filename, ASelectedLocalisation);
 
         processor.AddWriter("SubmitForm", typeof(TExtJsFormsWriter));
 
         processor.ProcessDocument();
+    }
+
+    private static void ProcessDirectory(string ADirName, string ASelectedLocalisation)
+    {
+        foreach (string file in System.IO.Directory.GetFiles(ADirName, "*.yaml"))
+        {
+            // reset the dataset each time to force reload
+            TDataBinding.FDatasetTables = null;
+
+            // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
+            if ((file[file.Length - 8] != '.') && (file[file.Length - 8] != '-'))
+            {
+                Console.WriteLine("working on " + file);
+                ProcessFile(file, ASelectedLocalisation);
+            }
+        }
+
+        foreach (string subdir in System.IO.Directory.GetDirectories(ADirName))
+        {
+            ProcessDirectory(subdir, ASelectedLocalisation);
+        }
     }
 
     public static void Main(string[] args)
@@ -102,18 +152,7 @@ class Program
             }
             else if (System.IO.Directory.Exists(ymlfileParam))
             {
-                foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml"))
-                {
-                    // reset the dataset each time to force reload
-                    TDataBinding.FDatasetTables = null;
-
-                    // only look for main files, not language specific files (*.XY.yaml)
-                    if (file[file.Length - 8] != '.')
-                    {
-                        Console.WriteLine("working on " + file);
-                        ProcessFile(file, SelectedLocalisation);
-                    }
-                }
+                ProcessDirectory(ymlfileParam, SelectedLocalisation);
             }
             else
             {

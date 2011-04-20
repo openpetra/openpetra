@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: GL Cost Centre Hierarchy
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    DetailTable: ACostCentre
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    FormType: edit
+    Template: windowTDS
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actAddNewCostCentre: {Label=Add Cost Centre, ActionClick=AddNewCostCentre}
+        actExportHierarchy: {ActionClick=ExportHierarchy}
+        actImportHierarchy: {ActionClick=ImportHierarchy}
+    Controls:
+        pnlContent:
+            Controls: [sptSplitter]
+            Dock: Fill
+        sptSplitter:
+            Panel1: trvCostCentres
+            Panel2: pnlDetails
+            SplitterDistance: 50
+            SplitterOrientation: vertical
+            Dock: Fill
+        trvCostCentres: {Dock=Fill}
+        pnlDetails: {Dock=Fill}
+            Controls: 
+                Row0: [txtDetailCostCentreCode]
+                Row1: [cmbDetailCostCentreType]
+                Row2: [txtDetailCostCentreName]
+                Row3: [chkDetailCostCentreActiveFlag]
+        txtDetailCostCentreCode:
+        cmbDetailCostCentreType:
+            OptionalValues: [Local, Foreign]
+        txtDetailCostCentreName:
+        cmbDetailValidCcCombo: {Label=Valid Cost Centres}
+            OptionalValues: [All, Foreign, Local]
+        # TODO: system cost centre
+        chkDetailCostCentreActiveFlag: {Label=Active}
+    Toolbar:
+        tbbAddNewCostCentre:
+        tbbExportHierarchy:
+        tbbImportHierarchy:

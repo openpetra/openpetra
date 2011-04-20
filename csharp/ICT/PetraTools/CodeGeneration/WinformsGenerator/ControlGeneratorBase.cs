@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -272,10 +272,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Location", "new System.Drawing.Point(2,2)");
+                writer.SetControlProperty(ctrl, "Location", "new System.Drawing.Point(2,2)");
             }
 
-            writer.SetControlProperty(ctrl.controlName, "Name", "\"" + ctrl.controlName + "\"");
+            writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
 
 
             #region Aligning and stretching
@@ -286,52 +286,52 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((ctrl.GetAttribute("Align").ToLower() == "right")
                     || (ctrl.GetAttribute("Align").ToLower() == "top-right"))
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "middle-right")
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Right))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "bottom-right")
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "center")
                          || (ctrl.GetAttribute("Align").ToLower() == "top-center"))
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "middle-center")
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.None))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "bottom-center")
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "bottom")
                          || (ctrl.GetAttribute("Align").ToLower() == "bottom-left"))
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Bottom)))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "middle")
                          || (ctrl.GetAttribute("Align").ToLower() == "middle-left"))
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Left))");
                 }
@@ -362,7 +362,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         // Horizontally stretched, top aligned (=default)
                         writer.SetControlProperty(
-                            ctrl.controlName,
+                            ctrl,
                             "Anchor",
                             "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)))");
                     }
@@ -372,7 +372,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             // Horizontally stretched, bottom aligned
                             writer.SetControlProperty(
-                                ctrl.controlName,
+                                ctrl,
                                 "Anchor",
                                 "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)))");
                         }
@@ -380,7 +380,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             // Horizontally stretched, vertically centered
                             writer.SetControlProperty(
-                                ctrl.controlName,
+                                ctrl,
                                 "Anchor",
                                 "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)))");
                         }
@@ -401,7 +401,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         // Vertically stretched, left aligned (=default)
                         writer.SetControlProperty(
-                            ctrl.controlName,
+                            ctrl,
                             "Anchor",
                             "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Bottom)))");
                     }
@@ -411,7 +411,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             // Vertically stretched, right aligned
                             writer.SetControlProperty(
-                                ctrl.controlName,
+                                ctrl,
                                 "Anchor",
                                 "((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom)))");
                         }
@@ -419,7 +419,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             // Vertically stretched, horizontally centered
                             writer.SetControlProperty(
-                                ctrl.controlName,
+                                ctrl,
                                 "Anchor",
                                 "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)))");
                         }
@@ -437,7 +437,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // Fully stretched
                     writer.SetControlProperty(
-                        ctrl.controlName,
+                        ctrl,
                         "Anchor",
                         "((System.Windows.Forms.AnchorStyles)(((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right) | System.Windows.Forms.AnchorStyles.Bottom))))");
 
@@ -472,13 +472,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("Visible")
                 && (ctrl.GetAttribute("Visible").ToLower() == "false"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Visible", "false");
+                writer.SetControlProperty(ctrl, "Visible", "false");
             }
 
             if (ctrl.HasAttribute("Enabled")
                 && (ctrl.GetAttribute("Enabled").ToLower() == "false"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Enabled", "false");
+                writer.SetControlProperty(ctrl, "Enabled", "false");
             }
             else if ((ctrl.GetAction() != null) && (TYml2Xml.GetAttribute(ctrl.GetAction().actionNode, "InitiallyEnabled").ToLower() == "false"))
             {
@@ -489,37 +489,37 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("TabStop")
                 && (ctrl.GetAttribute("TabStop").ToLower() == "false"))
             {
-                writer.SetControlProperty(ctrl.controlName, "TabStop", "false");
+                writer.SetControlProperty(ctrl, "TabStop", "false");
             }
 
             if (ctrl.HasAttribute("TabIndex"))
             {
-                writer.SetControlProperty(ctrl.controlName, "TabIndex", ctrl.GetAttribute("TabIndex"));
+                writer.SetControlProperty(ctrl, "TabIndex", ctrl.GetAttribute("TabIndex"));
             }
 
             if (ctrl.HasAttribute("BorderStyle"))
             {
-                writer.SetControlProperty(ctrl.controlName, "BorderStyle", "System.Windows.Forms.BorderStyle." + ctrl.GetAttribute("BorderStyle"));
+                writer.SetControlProperty(ctrl, "BorderStyle", "System.Windows.Forms.BorderStyle." + ctrl.GetAttribute("BorderStyle"));
 
                 if (ctrl.GetAttribute("BorderStyle").ToLower() == "none")
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
                 }
             }
 
             if (ctrl.HasAttribute("Padding"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Padding", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Padding") + ")");
+                writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Padding") + ")");
             }
 
             if (ctrl.HasAttribute("Margin"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Margin", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Margin") + ")");
+                writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Margin") + ")");
             }
 
             if (ctrl.HasAttribute("BackColor"))
             {
-                writer.SetControlProperty(ctrl.controlName, "BackColor", ctrl.GetAttribute("BackColor"));
+                writer.SetControlProperty(ctrl, "BackColor", ctrl.GetAttribute("BackColor"));
             }
 
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
@@ -534,7 +534,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if ((ctrl.GetAttribute("Dock") == "Left") || (ctrl.GetAttribute("Dock") == "Right"))
                     {
                         // this is useful for AP Payments, left dock list of suppliers
-                        writer.SetControlProperty(ctrl.controlName, "Width", ctrl.GetAttribute("Width"));
+                        writer.SetControlProperty(ctrl, "Width", ctrl.GetAttribute("Width"));
                     }
                     else
                     {
@@ -544,7 +544,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Size", "new System.Drawing.Size(" +
+                    writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
                         ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
                 }
             }
@@ -557,27 +557,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
                     if (writer.CodeStorage.FTargetWinforms == "net-2.0")
                     {
-                        writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                        writer.SetControlProperty(ctrl, "AutoSize", "true");
                     }
                 }
             }
             else if (FAutoSize)
             {
-                writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                writer.SetControlProperty(ctrl, "AutoSize", "true");
             }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() != "fill"))
             {
-                writer.SetControlProperty(ctrl.controlName, "AutoSize", "true");
+                writer.SetControlProperty(ctrl, "AutoSize", "true");
             }
             else
             {
-                writer.SetControlProperty(ctrl.controlName, "Size",
+                writer.SetControlProperty(ctrl, "Size",
                     "new System.Drawing.Size(" + FDefaultWidth.ToString() + ", " + FDefaultHeight.ToString() + ")");
             }
 
             if (ctrl.HasAttribute("SuppressChangeDetection") && (ctrl.GetAttribute("SuppressChangeDetection").ToLower() == "true"))
             {
-                writer.SetControlProperty(ctrl.controlName, "Tag", "\"SuppressChangeDetection\"");
+                writer.SetControlProperty(ctrl, "Tag", "\"SuppressChangeDetection\"");
             }
 
             if (ctrl.GetAction() != null)
@@ -695,7 +695,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
-                if (!(this is LabelGenerator || this is GroupBoxGenerator))
+                if (!(this is LabelGenerator))
                 {
                     bool IsDetailNotMaster;
                     TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
@@ -730,16 +730,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (FHasReadOnlyProperty)
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "ReadOnly",
                         "true");
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "TabStop",
                         "false");
                 }
                 else
                 {
-                    writer.SetControlProperty(ctrl.controlName,
+                    writer.SetControlProperty(ctrl,
                         "Enabled",
                         "false");
                 }
@@ -917,14 +917,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                  * and put it into the resources.
                  * The images must be in the directory specified by the ResourceDir command line parameter
                  */
-                writer.SetControlProperty(ctrl.controlName, "Image",
+                writer.SetControlProperty(ctrl, "Image",
                     "((System.Drawing.Bitmap)resources" + ctrl.controlType + ".GetObject(\"" + ctrl.controlName + ".Glyph\"))");
                 writer.AddImageToResource(ctrl.controlName, AActionHandler.actionImage, "Bitmap");
             }
 
             if (AActionHandler.actionTooltip.Length > 0)
             {
-                writer.SetControlProperty(ctrl.controlName, "ToolTipText", "\"" + AActionHandler.actionTooltip + "\"");
+                writer.SetControlProperty(ctrl, "ToolTipText", "\"" + AActionHandler.actionTooltip + "\"");
             }
         }
 
@@ -1003,6 +1003,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
     public class ContainerGenerator : TControlGenerator
     {
+        List <TControlDef>FChildren = new List <TControlDef>();
+        bool FCreateControlsAddStatements = true;
+
+        public List <TControlDef>Children
+        {
+            get
+            {
+                return FChildren;
+            }
+        }
+
+        public bool CreateControlsAddStatements
+        {
+            get
+            {
+                return FCreateControlsAddStatements;
+            }
+
+            set
+            {
+                FCreateControlsAddStatements = value;
+            }
+        }
+
         public ContainerGenerator(string prefix, System.Type type)
             : base(prefix, type)
         {
@@ -1021,26 +1045,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
         {
-            base.SetControlProperties(writer, container);
+            FChildren = new List <TControlDef>();
 
             // add all the children
-            List <TControlDef>children = new List <TControlDef>();
-
             foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
             {
                 if (child.parentName == container.controlName)
                 {
-                    children.Add(child);
+                    FChildren.Add(child);
                 }
             }
 
-            children.Sort(new CtrlItemOrderComparer());
+            FChildren.Sort(new CtrlItemOrderComparer());
 
-            foreach (TControlDef child in children)
+            base.SetControlProperties(writer, container);
+
+            if (FCreateControlsAddStatements)
             {
-                writer.CallControlFunction(container.controlName,
-                    "Controls.Add(this." +
-                    child.controlName + ")");
+                foreach (TControlDef child in FChildren)
+                {
+                    writer.CallControlFunction(container.controlName,
+                        "Controls.Add(this." +
+                        child.controlName + ")");
+                }
             }
 
             return writer.FTemplate;

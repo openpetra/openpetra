@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using Ict.Tools.CodeGeneration;
@@ -59,6 +60,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             : base("txt", "textarea")
         {
             FDefaultWidth = -1;
+            FControlDefinitionSnippetName = "TEXTAREADEFINITION";
         }
 
         public override bool ControlFitsNode(XmlNode curNode)
@@ -74,6 +76,28 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
     }
+    public class HiddenFieldGenerator : TControlGenerator
+    {
+        public HiddenFieldGenerator()
+            : base("hid", "hidden")
+        {
+            FControlDefinitionSnippetName = "HIDDENFIELDDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "VALUE",
+                ctrl,
+                TYml2Xml.GetAttribute(ctrl.xmlNode, "value"));
+
+            ctrlSnippet.SetCodelet("VALUE", "this." + ctrl.controlName + "VALUE");
+
+            return ctrlSnippet;
+        }
+    }
 
     public class UploadGenerator : TControlGenerator
     {
@@ -87,7 +111,30 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
-            writer.FTemplate.SetCodelet("CONTAINSFILEUPLOAD", "true");
+            ProcessTemplate uploadCheckAssistantSnippet = writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADVALID");
+
+            ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADTITLE", ctrl,
+                ctrl.GetAttribute("MissingUploadTitle"));
+            ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "MISSINGUPLOADMESSAGE", ctrl,
+                ctrl.GetAttribute("MissingUploadMessage"));
+
+            writer.FTemplate.InsertSnippet("ISVALID", uploadCheckAssistantSnippet);
+            writer.FTemplate.InsertSnippet("ONSHOW", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADSHOW"));
+            writer.FTemplate.InsertSnippet("ONHIDE", writer.FTemplate.GetSnippet("ASSISTANTPAGEWITHUPLOADHIDE"));
+
+            ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
+
+            if (ctrl.HasAttribute("UploadButtonLabel"))
+            {
+                ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "UPLOADBUTTONLABEL", ctrl,
+                    ctrl.GetAttribute("UploadButtonLabel"));
+                uploadSnippet.SetCodelet("UPLOADBUTTONLABEL", ctrl.controlName + "UPLOADBUTTONLABEL");
+            }
+
+            writer.FTemplate.InsertSnippet("UPLOADFORM", uploadSnippet);
+
+            ProcessTemplate uploadCheckSnippet = writer.FTemplate.GetSnippet("VALIDUPLOADCHECK");
+            writer.FTemplate.InsertSnippet("CHECKFORVALIDUPLOAD", uploadCheckSnippet);
 
             return ctrlSnippet;
         }
@@ -107,6 +154,23 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
         }
     }
+    public class GridGenerator : TControlGenerator
+    {
+        public GridGenerator()
+            : base("grd", "")
+        {
+            FControlDefinitionSnippetName = "GRIDDEFINITION";
+        }
+
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
+
+            writer.FTemplate.SetCodelet("DATAGRID", "true");
+
+            return ctrlSnippet;
+        }
+    }
     public class ButtonGenerator : TControlGenerator
     {
         public ButtonGenerator()
@@ -119,19 +183,41 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
+            if (ctrlSnippet.FTemplateCode.Contains("{#REDIRECTONSUCCESS}"))
+            {
+                ProcessTemplate redirectSnippet = writer.FTemplate.GetSnippet("REDIRECTONSUCCESS");
+
+                ctrlSnippet.SetCodelet("REDIRECTONSUCCESS", redirectSnippet.FTemplateCode);
+            }
+
             if (ctrl.HasAttribute("AjaxRequestUrl"))
             {
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORTITLE", ctrl, ctrl.GetAttribute("ValidationErrorTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "VALIDATIONERRORMESSAGE", ctrl, ctrl.GetAttribute("ValidationErrorMessage"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATATITLE", ctrl, ctrl.GetAttribute("SendingMessageTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "SENDINGDATAMESSAGE", ctrl, ctrl.GetAttribute("SendingMessage"));
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSTITLE", ctrl, ctrl.GetAttribute("SuccessMessageTitle"));
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSMESSAGE", ctrl, ctrl.GetAttribute("SuccessMessage"));
+
+                if (ctrl.HasAttribute("SuccessMessage"))
+                {
+                    ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSTITLE", ctrl, ctrl.GetAttribute("SuccessMessageTitle"));
+                    ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTSUCCESSMESSAGE", ctrl, ctrl.GetAttribute("SuccessMessage"));
+                }
+
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILURETITLE", ctrl, ctrl.GetAttribute("FailureMessageTitle"));
                 ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REQUESTFAILUREMESSAGE", ctrl, ctrl.GetAttribute("FailureMessage"));
             }
 
             ctrlSnippet.SetCodelet("REQUESTURL", ctrl.GetAttribute("AjaxRequestUrl"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONSUCCESS", ctrl, ctrl.GetAttribute("RedirectURLOnSuccess"));
+
+            if (ctrl.GetAttribute("DownloadOnSuccess").StartsWith("jsonData"))
+            {
+                ctrlSnippet.SetCodelet("REDIRECTDOWNLOAD", ctrl.GetAttribute("DownloadOnSuccess"));
+            }
+
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "REDIRECTURLONCANCEL", ctrl, ctrl.GetAttribute("RedirectURLOnCancel"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONTITLE", ctrl, ctrl.GetAttribute("CancelQuestionTitle"));
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "CANCELQUESTIONMESSAGE", ctrl, ctrl.GetAttribute("CancelQuestionMessage"));
 
             XmlNode AjaxParametersNode = TYml2Xml.GetChild(ctrl.xmlNode, "AjaxRequestParameters");
 
@@ -159,6 +245,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public ComboboxGenerator()
             : base("cmb", "checkbox")
         {
+            FDefaultWidth = 190;
             FControlDefinitionSnippetName = "COMBOBOXDEFINITION";
         }
 
@@ -167,15 +254,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
 
             string valuesArray = "[";
-            StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
+
+            List <XmlNode>optionalValues =
+                TYml2Xml.GetChildren(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"), true);
 
             // DefaultValue with = sign before control name
             for (int counter = 0; counter < optionalValues.Count; counter++)
             {
-                if (optionalValues[counter].StartsWith("="))
+                string loopValue = TYml2Xml.GetElementName(optionalValues[counter]);
+
+                if (loopValue.StartsWith("="))
                 {
-                    optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
+                    loopValue = loopValue.Substring(1).Trim();
+                    ctrlSnippet.SetCodelet("VALUE", loopValue);
                 }
 
                 if (counter > 0)
@@ -183,16 +274,21 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                     valuesArray += ", ";
                 }
 
-                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, optionalValues[counter]);
+                ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet, "OPTION" + counter.ToString(), ctrl, loopValue);
 
                 string strName = "this." + ctrl.controlName + "OPTION" + counter.ToString();
 
-                valuesArray += "[" + strName + ", " + strName + "]";
+                valuesArray += "['" + loopValue + "', " + strName + "]";
             }
 
             valuesArray += "]";
 
             ctrlSnippet.SetCodelet("OPTIONALVALUESARRAY", valuesArray);
+
+            if (ctrl.HasAttribute("width"))
+            {
+                ctrlSnippet.SetCodelet("WIDTH", ctrl.GetAttribute("width"));
+            }
 
             return ctrlSnippet;
         }
@@ -233,6 +329,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
             ctrlSnippet.SetCodelet("LABEL", "strEmpty");
+            ctrlSnippet.SetCodelet("INPUTVALUE", ctrl.controlName.Substring(3));
 
             return ctrlSnippet;
         }
@@ -249,10 +346,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
-            // TODO: adjust date format to localisation? see http://dev.sencha.com/deploy/dev/docs/?class=Date
-            ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", "format: 'd.m.Y'," +
-                Environment.NewLine +
-                "boxMaxWidth: 175,");
+            string customAttributes = "boxMaxWidth: 175,";
+
+            ctrlSnippet.SetCodelet("CUSTOMATTRIBUTES", customAttributes);
 
             return ctrlSnippet;
         }
@@ -263,6 +359,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public InlineGenerator()
             : base("inl", "displayfield")
         {
+            FControlDefinitionSnippetName = "INLINEDEFINITION";
         }
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
@@ -270,23 +367,24 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
-                "DESCRIPTIONDOCUMENT",
-                ACtrl,
-                TYml2Xml.GetAttribute(ACtrl.xmlNode, "description"));
-            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
                 "URL",
                 ACtrl,
                 TYml2Xml.GetAttribute(ACtrl.xmlNode, "url"));
             ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
                 "BROWSERMISSINGIFRAMESUPPORT",
-                ACtrl,
+                null,
                 "Your browser is not able to display embedded documents. Please click on the following link to read the text: ");
+            ((TExtJsFormsWriter)writer).AddResourceString(ctrlSnippet,
+                "IFRAMEINBIGGERWINDOW",
+                null,
+                "Open this document in a bigger window");
 
-            ctrlSnippet.SetCodelet("HTML",
-                String.Format("<iframe src=\"' + {0} + '\" width=\"100%\" height=\"250\"><p>{1}<a href=\"' + {0} + '\">' + {2} + '</a></p></iframe>",
-                    "this." + ACtrl.controlName + "URL",
-                    "' + this." + ACtrl.controlName + "BROWSERMISSINGIFRAMESUPPORT + '",
-                    "this." + ACtrl.controlName + "DESCRIPTIONDOCUMENT"));
+            ctrlSnippet.SetCodelet("HEIGHT", "250");
+
+            if (ACtrl.HasAttribute("Height"))
+            {
+                ctrlSnippet.SetCodelet("HEIGHT", ACtrl.GetAttribute("Height"));
+            }
 
             return ctrlSnippet;
         }
@@ -352,6 +450,45 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
 
             ctrlSnippet.SetCodelet("PAGENUMBER", PageCounter.ToString());
+
+            if (writer.FTemplate.FCodelets.Contains("CUSTOMFUNCTIONS"))
+            {
+                ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", writer.FTemplate.FCodelets["CUSTOMFUNCTIONS"].ToString());
+                writer.FTemplate.FCodelets.Remove("CUSTOMFUNCTIONS");
+            }
+            else
+            {
+                ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", String.Empty);
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONSHOW"))
+            {
+                ctrlSnippet.SetCodelet("ONSHOW", writer.FTemplate.FCodelets["ONSHOW"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONSHOW");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ISVALID"))
+            {
+                ctrlSnippet.SetCodelet("ISVALID", writer.FTemplate.FCodelets["ISVALID"].ToString());
+                writer.FTemplate.FCodelets.Remove("ISVALID");
+            }
+
+            if (writer.FTemplate.FCodelets.Contains("ONHIDE"))
+            {
+                ctrlSnippet.SetCodelet("ONHIDE", writer.FTemplate.FCodelets["ONHIDE"].ToString());
+                writer.FTemplate.FCodelets.Remove("ONHIDE");
+            }
+
+            if (ACtrl.HasAttribute("Height"))
+            {
+                ctrlSnippet.AddToCodelet("ONSHOW", String.Format("MainForm.setHeight({0});", ACtrl.GetAttribute("Height")));
+            }
+
+            if (ACtrl.HasAttribute("LabelWidth"))
+            {
+                ctrlSnippet.SetCodelet("LABELWIDTH", ACtrl.GetAttribute("LabelWidth"));
+            }
+
             PageCounter++;
 
             return ctrlSnippet;
@@ -420,6 +557,55 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 }
 
                 Controls.Add(radioButtonName);
+            }
+
+            return Controls;
+        }
+    }
+
+    // this is for radiogroup with all sorts of sub controls
+    public class RadioGroupComplexGenerator : GroupBoxBaseGenerator
+    {
+        public RadioGroupComplexGenerator()
+            : base("rgr")
+        {
+            FControlDefinitionSnippetName = "RADIOGROUPDEFINITION";
+        }
+
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                return TXMLParser.GetChild(curNode, "Controls") != null;
+            }
+
+            return false;
+        }
+
+        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        {
+            StringCollection Controls =
+                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+            string DefaultValue = Controls[0];
+
+            if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
+            {
+                DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
+            }
+
+            foreach (string controlName in Controls)
+            {
+                TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
+
+                if (radioButton == null)
+                {
+                    throw new Exception("cannot find control " + controlName + " used in RadioGroup " + curNode.Name);
+                }
+
+                if (StringHelper.IsSame(DefaultValue, controlName))
+                {
+                    radioButton.SetAttribute("RadioChecked", "true");
+                }
             }
 
             return Controls;

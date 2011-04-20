@@ -26,6 +26,7 @@ using System.Xml;
 using System.Collections.Specialized;
 using System.IO;
 using Ict.Common;
+using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.Winforms;
