@@ -27,7 +27,9 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.MFinance.GL;
+
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -139,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            aBatchTable = TTransactionWebConnector.CreateABatch(THandleLedgerInfo.LedgerNumber);
+            aBatchTable = TGLPosting.CreateABatch(THandleLedgerInfo.LedgerNumber);
             getBaseCurrencyInfo = new GetCurrencyInfo(THandleLedgerInfo.BaseCurrency);
             aBatchRow = aBatchTable.ABatch[0];
             aBatchRow.BatchDescription = ABatchDescription;
@@ -483,12 +485,18 @@ namespace Ict.Petra.Server.MFinance.GL
                 // The checksum of the "last journal" is used to update the checksum of the batch.
                 aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
             }
+            
+            TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
+            	aBatchTable, out AVerifications);
 
-            bool blnReturnValue =
-                (TTransactionWebConnector.SaveGLBatchTDS(
-                     ref aBatchTable, out AVerifications) == TSubmitChangesResult.scrOK);
-            blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
-                                  aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications));
+            if (submissionResult != TSubmitChangesResult.scrOK)
+            {
+            	throw new ApplicationException("Batch could not be saved!");
+            }
+            
+            TGLPosting.PostGLBatch(
+            	aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);
+            
             int returnValue = aBatchRow.BatchNumber;
             // Make shure that this object cannot be used for another posting ...
             aBatchTable = null;

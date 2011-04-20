@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using System.Diagnostics;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -1205,6 +1205,33 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
             return true;
+        }
+
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        {
+        	
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+            NewRow.LedgerNumber = ALedgerNumber;
+            MainDS.ALedger[0].LastBatchNumber++;
+            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+            MainDS.ABatch.Rows.Add(NewRow);
+
+            TVerificationResultCollection VerificationResult;
+
+            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+            {
+                MainDS.AcceptChanges();
+            }
+
+            return MainDS;
         }
     }
 }
