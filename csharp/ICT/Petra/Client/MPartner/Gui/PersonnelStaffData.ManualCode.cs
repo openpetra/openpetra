@@ -31,12 +31,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TFrmPersonnelStaffData
     {
-      
-        private void NewRow(System.Object sender, EventArgs e)
+		/// <summary>The new button was pressed;create a new row</summary></summary>      
+        public void NewRow(System.Object sender, EventArgs e)
         {
-           
+        	CreateNewPmStaffData();
+        	
+        	txtDetailPartnerKey.Text = Convert.ToString(FPartnerKey);
         }
-
+		public void NewRowManual(ref PmStaffDataRow ANewRow)	
+        {
+				ANewRow.SiteKey=0; // TODO where to get from
+				ANewRow.Key=-1; //Hope that this will be inserted by submitchanges
+				ANewRow.PartnerKey=FPartnerKey;
+		}
      	private Int64 FPartnerKey;
      	
 		/// <summary>Partnerkey is the part of the "real" primary key for this table</summary>

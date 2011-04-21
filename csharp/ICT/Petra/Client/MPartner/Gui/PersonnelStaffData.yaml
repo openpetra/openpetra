@@ -34,12 +34,20 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailPPartnerKey]
-                Row1: [txtDetailPmStartOfCommitment]
-                Row2: [txtDetailPmEndOfCommitment]              
-        txtDetailPmStartOfCommitment: {Label=&Start of Commitment}
-        txtDetailPmEndOfCommitment: {Label=&End of Commitment}
-        txtDetailPPartnerKey: {Label=Partner Key, ReadOnly=true}
+                Row0: [txtDetailPartnerKey]
+                Row1: [dtpDetailStartOfCommitment]
+                Row2: [dtpDetailEndOfCommitment]
+                Row3: [txtDetailOfficeRecruitedBy]
+                Row4: [txtDetailHomeOffice] 
+                Row5: [txtDetailReceivingField]
+                Row6: [txtDetailReceivingFieldOffice]
+        dtpDetailStartOfCommitment: {Label=&Start of Commitment}
+        dtpDetailEndOfCommitment: {Label=&End of Commitment}
+        txtDetailPartnerKey: {Label=Partner Key, ReadOnly=true}
+        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey, ColSpan=3}
+        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey, ColSpan=3}
+        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey, ColSpan=3}
+        txtDetailReceivingFieldOffice: {Label=Receiving Field Office, Type=PartnerKey, ColSpan=3}
     Toolbar:
         tbbNew:
             Label: New Commitment
