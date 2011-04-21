@@ -40,7 +40,6 @@ CachedTables:
                 PMethodOfContact:
                 PMergeForm:
                 PMergeField:
-                PMailing:                
             CalculatedLists:
                 PostCodeRegionList:
         Subscriptions:
@@ -99,8 +98,6 @@ CachedTables:
                 ABudgetType:
                 ACostCentreTypes:
                 AMethodOfGiving: {Comment="Special payment programs the donor may give money through. (ie, Gift Aid in the UK)"}
-                AMethodOfPayment:
-                AMotivationGroup: {Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes"}
                 AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
                 
             CalculatedLists: {DependsOnLedger=true}
