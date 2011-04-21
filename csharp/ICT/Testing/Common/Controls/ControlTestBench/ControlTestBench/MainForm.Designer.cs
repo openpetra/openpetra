@@ -46,15 +46,36 @@ namespace ControlTestBench
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.DisableItemButton = new System.Windows.Forms.Button();
+			this.HideItemButton = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
 			this.txtYaml = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.cmbVisualStyle = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
+			// 
+			// DisableItemButton
+			// 
+			this.DisableItemButton.Location = new System.Drawing.Point(52, 119);
+			this.DisableItemButton.Name = "DisableItemButton";
+			this.DisableItemButton.Size = new System.Drawing.Size(75, 23);
+			this.DisableItemButton.TabIndex = 1;
+			this.DisableItemButton.Text = "DisableItemButton";
+			this.DisableItemButton.UseVisualStyleBackColor = true;
+			this.DisableItemButton.Click += new System.EventHandler(this.DisableItemButtonClick);
+			// 
+			// HideItemButton
+			// 
+			this.HideItemButton.Location = new System.Drawing.Point(159, 119);
+			this.HideItemButton.Name = "HideItemButton";
+			this.HideItemButton.Size = new System.Drawing.Size(75, 23);
+			this.HideItemButton.TabIndex = 1;
+			this.HideItemButton.Text = "HideItemButton";
+			this.HideItemButton.UseVisualStyleBackColor = true;
+			this.HideItemButton.Click += new System.EventHandler(this.HideItemButtonClick);
 			// 
 			// button1
 			// 
@@ -65,16 +86,6 @@ namespace ControlTestBench
 			this.button1.Text = "TaskList Test";
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.Button1Click);
-			// 
-			// button2
-			// 
-			this.button2.Location = new System.Drawing.Point(52, 151);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(182, 23);
-			this.button2.TabIndex = 1;
-			this.button2.Text = "TPnlCollapsible Test";
-			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.Button2Click);
 			// 
 			// txtYaml
 			// 
@@ -114,23 +125,22 @@ namespace ControlTestBench
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Visual Style";
 			// 
-			// linkLabel1
+			// button2
 			// 
-			this.linkLabel1.Location = new System.Drawing.Point(117, 206);
-			this.linkLabel1.Name = "linkLabel1";
-			this.linkLabel1.Size = new System.Drawing.Size(100, 23);
-			this.linkLabel1.TabIndex = 6;
-			this.linkLabel1.TabStop = true;
-			this.linkLabel1.Text = "linkLabel1";
-			this.linkLabel1.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
-			this.linkLabel1.MouseHover += new System.EventHandler(this.LinkLabelMouseHover);
+			this.button2.Location = new System.Drawing.Point(52, 168);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(182, 23);
+			this.button2.TabIndex = 6;
+			this.button2.Text = "TPnlCollapsible Test";
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.Button2Click);
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(52, 180);
+			this.button3.Location = new System.Drawing.Point(52, 197);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(182, 23);
-			this.button3.TabIndex = 7;
+			this.button3.TabIndex = 8;
 			this.button3.Text = "Shepherd Test";
 			this.button3.UseVisualStyleBackColor = true;
 			this.button3.Click += new System.EventHandler(this.Button3Click);
@@ -139,39 +149,64 @@ namespace ControlTestBench
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.AutoSize = true;
+			this.ClientSize = new System.Drawing.Size(700, 273);
 			this.Controls.Add(this.button3);
-			this.Controls.Add(this.linkLabel1);
+			this.Controls.Add(this.button2);
+			this.Controls.Add(this.DisableItemButton);
+			this.Controls.Add(this.HideItemButton);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.cmbVisualStyle);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.txtYaml);
-			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
 			this.Name = "MainForm";
+			this.Padding = new System.Windows.Forms.Padding(10);
 			this.Text = "ControlTestBench";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
 		private System.Windows.Forms.Button button3;
-		private System.Windows.Forms.LinkLabel linkLabel1;
+		private System.Windows.Forms.Button button2;
+		private Ict.Common.Controls.TTaskList taskList1;
 		private System.Windows.Forms.ComboBox cmbVisualStyle;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox txtYaml;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button1;
-
+		private System.Windows.Forms.Button DisableItemButton;
+		private System.Windows.Forms.Button HideItemButton;	
 		
-		void LinkLabelMouseHover(object sender, System.EventArgs e)
+
+		void DisableItemButtonClick(object sender, EventArgs e)
 		{
-			LinkLabel lbl = (LinkLabel)sender;
-			lbl.BackColor = Color.Red;
+			XmlNode temp = this.taskList1.GetTaskByName("Task7");
+			if(temp != null){
+				if(this.taskList1.IsDisabled(temp)){
+					this.taskList1.EnableTaskItem(temp);
+				}
+				else{
+					this.taskList1.DisableTaskItem(temp);
+				}
+			}
+
 		}
-		void LinkLabelMouseLeave(object sender, System.EventArgs e)
+		
+		void HideItemButtonClick(object sender, EventArgs e)
 		{
-			LinkLabel lbl = (LinkLabel)sender;
-			lbl.BackColor = Color.Transparent;
-		}		
+			XmlNode temp = this.taskList1.GetTaskByName("Task4c");
+			if(temp != null){
+				if(this.taskList1.IsHidden(temp)){
+					this.taskList1.ShowTaskItem(temp);
+				}
+				else{
+					this.taskList1.HideTaskItem(temp);
+				}
+			}
+//			temp = this.taskList1.GetTaskByNumber("3");
+//			if(temp != null){
+//				this.taskList1.ShowTaskItem(temp);
+//			}
+		}
 	}
 }

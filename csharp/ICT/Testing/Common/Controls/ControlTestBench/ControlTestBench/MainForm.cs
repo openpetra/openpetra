@@ -68,8 +68,26 @@ namespace ControlTestBench
             	                      
             }
 
-			
-            //using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
+			// 
+			// taskList1
+			//
+
+			this.Controls.Remove(taskList1);
+//			if(this.taskList1 == null){
+				this.taskList1 = new Ict.Common.Controls.TTaskList(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle);
+//			}
+//			else{
+//				this.taskList1 = new Ict.Common.Controls.TTaskList(this.taskList1.MasterXmlNode,EnumStyle);
+//			}
+		//	this.taskList1.AutomaticNumbering = false;
+			this.taskList1.Location = new System.Drawing.Point(333, 29);
+		//	this.taskList1.MasterXmlNode = null;
+			this.taskList1.Name = "taskList1";
+			this.taskList1.Size = new System.Drawing.Size(322, 213);
+			this.taskList1.TabIndex = 6;
+			this.Controls.Add(taskList1);
+		//	this.taskList1.VisualStyle = null;
+//            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
 			//newForm.Controls.Add(
 		}
 

@@ -3,6 +3,8 @@
 //
 // @Authors:
 //       timop
+//		 chadds
+//		 ashleyc
 //
 // Copyright 2004-2010 by OM International
 //
