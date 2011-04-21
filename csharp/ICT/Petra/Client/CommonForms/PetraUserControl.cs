@@ -135,13 +135,6 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// todoComment
         /// </summary>
-        public void InitialiseUserControl()
-        {
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         public void DataSavingStartedEventFired()
         {
         }
@@ -170,6 +163,8 @@ namespace Ict.Petra.Client.CommonForms
             get;
             set;
         }
+
+        void InitUserControl();
     }
 
     /// <summary>
@@ -186,5 +181,7 @@ namespace Ict.Petra.Client.CommonForms
             get;
             set;
         }
+
+        void InitUserControl();
     }
 }

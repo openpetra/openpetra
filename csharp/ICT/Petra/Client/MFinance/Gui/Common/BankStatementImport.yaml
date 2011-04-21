@@ -1,0 +1,114 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Import Bank Statements
+    Namespace: Ict.Petra.Client.MFinance.Gui.Common
+    FormType: browse
+    Template: window
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actImportNewStatement:
+            Label: &Import new statement
+            ActionClick: ImportNewStatement
+        actDeleteStatement:
+            ActionClick: DeleteStatement
+        actAddGiftDetail:
+            Label: &Add
+            ActionClick: AddGiftDetail
+        actRemoveGiftDetail:
+            Label: &Delete
+            ActionClick: RemoveGiftDetail
+        actSaveMatches:
+            ActionClick: SaveMatches
+        actCreateGiftBatch:
+            ActionClick: CreateGiftBatch
+        actCreateGLBatch:
+            ActionClick: CreateGLBatch
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [cmbSelectBankAccount, pnlFilter, sptTransactionDetails]
+            # add to Controls: pnlStatementInfo
+        cmbSelectBankAccount: {List=UserDefinedList}
+        pnlFilter:
+            Dock: Top
+            Controls:
+                Row0: [rgrSelectTransaction, pnlSum]
+        pnlSum:
+            Controls:
+                Row0: [txtCreditSum]
+                Row1: [txtDebitSum]
+        rgrSelectTransaction:
+            OptionalValues: [ListAll, ListUnmatched, ListGift, ListGL, ListIgnored]
+            ControlsOrientation: horizontal
+            NoLabel: true
+            OnChange: TransactionFilterChanged
+        txtCreditSum: {Format=Currency, ReadOnly=true}
+        txtDebitSum: {Format=Currency, ReadOnly=true}
+        pnlStatementInfo:
+            # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
+        sptTransactionDetails:
+            Panel1: grdAllTransactions
+            Panel2: pnlDetails
+            SplitterDistance: 50
+            SplitterOrientation: horizontal
+            Dock: Fill
+        grdAllTransactions:
+            Dock: Fill
+            ActionFocusRow: AllTransactionsFocusedRowChanged
+        pnlDetails:
+            Dock: Fill
+            Visible: false
+            Controls: [rgrTransactionCategory, pnlHostCategorySpecificEdit]
+        rgrTransactionCategory:
+            OptionalValues: [Unmatched, Gift, GL, Ignored]
+            ControlsOrientation: vertical
+            NoLabel: true
+            OnChange: NewTransactionCategory
+            Dock: Left
+        pnlHostCategorySpecificEdit:
+            Controls: [pnlGiftEdit, pnlGLEdit]
+            Dock: Fill
+        pnlGiftEdit:
+            Dock: Fill
+            Visible: true
+            Controls: [txtDonorKey, pnlDetailGrid, pnlEditGiftDetail]
+        txtDonorKey: {Label=Donor, Type=PartnerKey, Dock=Top}
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdGiftDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnAddGiftDetail, btnRemoveGiftDetail]
+        grdGiftDetails:
+            Dock: Fill
+            ActionFocusRow: GiftDetailsFocusedRowChanged
+        pnlEditGiftDetail: 
+            Dock:Bottom
+            Controls: [txtAmount, cmbMotivationDetail, cmbGiftAccount, cmbGiftCostCentre]
+        btnAddGiftDetail:
+        btnRemoveGiftDetail:
+        txtAmount: {Format=Currency}
+        cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
+        cmbGiftAccount: {Label=Account, List=UserDefinedList, ReadOnly=true}
+        cmbGiftCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        pnlGLEdit:
+            Dock: Fill
+            Visible: false
+            Controls: [txtGLNarrative, txtGLReference, cmbGLAccount, cmbGLCostCentre]
+        cmbGLAccount: {Label=Account, List=UserDefinedList}
+        cmbGLCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        txtGLNarrative: {Label=Narrative}
+        txtGLReference: {Label=Reference}
+    Menu:
+        mniFile:
+            mniImportNewStatement:
+    Toolbar:
+        tbbImportNewStatement:
+        tbbSeparator:
+        cmbSelectStatement: {Width=250}
+        tbbDeleteStatement:
+        tbbSeparator:
+        tbbSaveMatches:
+        tbbCreateGiftBatch:
+        tbbCreateGLBatch:

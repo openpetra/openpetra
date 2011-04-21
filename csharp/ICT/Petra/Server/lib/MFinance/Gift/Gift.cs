@@ -38,7 +38,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.App.ClientDomain;
 
-namespace Ict.Petra.Server.MFinance
+namespace Ict.Petra.Server.MFinance.Gift
 {
     /// <summary>
     /// Business functions for Gift sub system of Finance

@@ -1,0 +1,83 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{62041597-B10A-4A4B-9E78-1F8BC269ACB6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>test</RootNamespace>
+    <AssemblyName>Ict.Petra.WebServer.MConference</AssemblyName>
+    <OutputPath>bin\</OutputPath>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21}%3b{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Ext.Net">
+      <HintPath>..\..\..\csharp\ThirdParty\ext.net\Ext.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\delivery\bin\Ict.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Data">
+      <HintPath>..\..\..\delivery\bin\Ict.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.IO">
+      <HintPath>..\..\..\delivery\bin\Ict.Common.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Common.Verification">
+      <HintPath>..\..\..\delivery\bin\Ict.Common.Verification.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.app.WebService">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.app.WebService.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MConference">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MConference.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MPersonnel">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MPersonnel.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MReporting">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MReporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MSysMan">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MSysMan.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.lib.data">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Shared.lib.data.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Shared.lib.MPersonnel">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Shared.lib.MPersonnel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Desktop.aspx" />
+    <Compile Include="Desktop.aspx.cs">
+      <DependentUpon>Desktop.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

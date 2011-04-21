@@ -52,7 +52,12 @@ namespace Ict.Common.Verification
         /// <summary>
         /// verification warning
         /// </summary>
-        Resv_Noncritical
+        Resv_Noncritical,
+
+        /// <summary>
+        /// only a status message ...
+        /// </summary>
+        Resv_Status
     };
 
 

@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -180,6 +180,18 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                         {
                             DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.MethodOfPaymentList:
+                        {
+                            DataTable TmpTable = AMethodOfPaymentAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        {
+                            DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -443,6 +455,20 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
                             break;
+                        case TCacheableFinanceTablesEnum.MethodOfPaymentList:
+                            if (AMethodOfPaymentAccess.SubmitChanges((AMethodOfPaymentTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                            if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
                         default:
 
                             throw new Exception(
@@ -604,16 +630,16 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         private DataTable GetLedgerDetailsTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
         {
 #region ManualCode
-            StringCollection FieldList = new StringCollection();
-            FieldList.Add(ALedgerTable.GetLedgerNumberDBName());
-            FieldList.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
-            FieldList.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
-            FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
-            FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
-            FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
-            FieldList.Add(ALedgerTable.GetBaseCurrencyDBName());
-            FieldList.Add(ALedgerTable.GetIntlCurrencyDBName());
-            return ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, FieldList, AReadTransaction);
+//            StringCollection FieldList = new StringCollection();
+//            FieldList.Add(ALedgerTable.GetLedgerNumberDBName());
+//            FieldList.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
+//            FieldList.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
+//            FieldList.Add(ALedgerTable.GetCurrentPeriodDBName());
+//            FieldList.Add(ALedgerTable.GetCurrentFinancialYearDBName());
+//            FieldList.Add(ALedgerTable.GetBranchProcessingDBName());
+//            FieldList.Add(ALedgerTable.GetBaseCurrencyDBName());
+//            FieldList.Add(ALedgerTable.GetIntlCurrencyDBName());
+            return ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, AReadTransaction);
 #endregion ManualCode
         }
 
@@ -641,6 +667,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(AAccountTable.GetAccountCodeShortDescDBName());
             FieldList.Add(AAccountTable.GetAccountActiveFlagDBName());
             FieldList.Add(AAccountTable.GetPostingStatusDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyFlagDBName());
+            FieldList.Add(AAccountTable.GetForeignCurrencyCodeDBName());
             GLSetupTDS TempDS = new GLSetupTDS();
             AAccountAccess.LoadViaALedger(TempDS, ALedgerNumber, FieldList, AReadTransaction);
 

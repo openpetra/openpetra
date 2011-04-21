@@ -1,0 +1,37 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Reason Subscription Given List
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PReasonSubscriptionGiven
+    CacheableTable: ReasonSubscriptionGivenList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 410
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCode, DetailDescription]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCode, txtDetailDescription]
+        txtDetailCode: {Label=Reason Given Code, CharacterCasing=Upper}
+        txtDetailDescription: {Width=206}
+    Toolbar:
+        tbbNew:
+            Label: New Reason Given Code

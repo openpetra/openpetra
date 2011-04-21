@@ -30,9 +30,11 @@
 
 #endregion
 
-        /// Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder<T> 
+        /// <summary>
+        /// Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder 
         /// so that we can find controls without the long list of generated panels and tablelayoutpanels, 
-        /// but for example <name of tab>.<name of control>
+        /// but for example "name of tab"."name of control"
+        /// </summary>
         private bool Matches(string name, object control, object src)
         {
             object c = control;

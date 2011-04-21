@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,9 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Web.Services;
 using System.Data;
+using System.Collections;
+using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.Data; // Implicit reference
+using Ict.Common.DB;
+using Ict.Common.IO;
+using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.ClientDomain;
@@ -57,7 +64,7 @@ public class TOpenPetraOrg : WebService
     static TServerManager TheServerManager = null;
 
     // make sure the correct config file is used
-    static TAppSettingsManager opts = new TAppSettingsManager("web.config");
+    static TAppSettingsManager opts = new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
 
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>
@@ -66,6 +73,8 @@ public class TOpenPetraOrg : WebService
     {
         if (TheServerManager == null)
         {
+            Catalog.Init();
+
             TheServerManager = new TServerManager();
             try
             {
@@ -77,8 +86,21 @@ public class TOpenPetraOrg : WebService
             catch (Exception e)
             {
                 TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
                 throw;
             }
+        }
+
+        // create a database connection for each user
+        if (Ict.Common.DB.DBAccess.GDBAccessObj == null)
+        {
+            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
+            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
+
+            // disconnect normal users after 3 hours of inactivity
+            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
+
+            TheServerManager.EstablishDBConnection();
         }
 
         return true;
@@ -94,15 +116,23 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = TClientManager.PerformLoginChecks(username, password, "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
+            TPetraPrincipal userData = TClientManager.PerformLoginChecks(
+                username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
+
+            DBAccess.GDBAccessObj.UserID = username.ToUpper();
+
+            TheServerManager.AddDBConnection(DBAccess.GDBAccessObj);
+
             return true;
         }
         catch (Exception e)
         {
             TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
             Session["LoggedIn"] = false;
             Ict.Common.DB.DBAccess.GDBAccessObj.RollbackTransaction();
+            DBAccess.GDBAccessObj.CloseDBConnection();
             return false;
         }
     }
@@ -128,6 +158,20 @@ public class TOpenPetraOrg : WebService
         }
 
         return false;
+    }
+
+    /// <summary>log the user out</summary>
+    [WebMethod(EnableSession = true)]
+    public void Logout()
+    {
+        TLogging.Log("Logout from a session", TLoggingType.ToLogfile | TLoggingType.ToConsole);
+
+        if (DBAccess.GDBAccessObj != null)
+        {
+            DBAccess.GDBAccessObj.CloseDBConnection();
+        }
+
+        Session.Abandon();
     }
 
     /// <summary>
@@ -261,25 +305,85 @@ public class TOpenPetraOrg : WebService
         // user ANONYMOUS, can only write, not read
         if (!IsUserLoggedIn())
         {
-            if (!LoginInternal("ANONYMOUS", ""))
+            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValueStatic("AnonymousUserPasswd")))
             {
                 string message =
                     "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
                 TLogging.Log(message);
 
-#if DEBUGMODE
-#else
                 // do not disclose errors on production version
-                message = "";
-#endif
+                message = "There is a problem on the Server";
 
                 return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
             }
         }
 
-        AJSONFormData = AJSONFormData.Replace("\"txt", "\"").Replace("\"chk", "\"").Replace("\"rbt", "\"").Replace("\"cmb", "\"");
+        // remove ext-comp controls, for multi-page forms
+        TLogging.Log(AJSONFormData);
 
-        return Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
+        try
+        {
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+            string result = Ict.Petra.Server.MPartner.Import.TImportPartnerForm.DataImportFromForm(AFormID, AJSONFormData);
+
+            Logout();
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+
+            Logout();
+
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
+        }
+    }
+
+    /// <summary>
+    /// testing function for web forms
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AJSONFormData"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string TestingForms(string AFormID, string AJSONFormData)
+    {
+        // remove ext-comp controls, for multi-page forms
+        TLogging.Log(AJSONFormData);
+
+        try
+        {
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+            return "{\"failure\":true, \"data\":{\"result\":\"Nothing happened, just a test\"}}";
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
+        }
     }
 
     /// <summary>

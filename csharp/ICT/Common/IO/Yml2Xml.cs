@@ -599,7 +599,34 @@ namespace Ict.Common.IO
 
                                 // sequence
                                 // first get the list without brackets
-                                string list = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
+                                string backupList = nodeContent.Substring(1, nodeContent.Length - 2).Trim();
+
+                                string list = backupList;
+                                List <XmlNode>children = TYml2Xml.GetChildren(newElement, true);
+                                XmlNode childFound = null;
+
+                                // now use getNextCSV which is able to deal with quoted strings
+                                while (list.Length > 0 && childFound == null)
+                                {
+                                    // if we find one value that is already part of the base list, then we want to overwrite the whole list
+                                    string value = StripQuotes(StringHelper.GetNextCSV(ref list, ",").Trim());
+
+                                    foreach (XmlNode childNode in children)
+                                    {
+                                        if (childNode.Attributes["name"].Value == value)
+                                        {
+                                            childFound = childNode;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (childFound != null)
+                                {
+                                    newElement.RemoveAll();
+                                }
+
+                                list = backupList;
 
                                 // now use getNextCSV which is able to deal with quoted strings
                                 while (list.Length > 0)
@@ -616,8 +643,8 @@ namespace Ict.Common.IO
                                         value = value.Substring(1);
                                     }
 
-                                    List <XmlNode>children = TYml2Xml.GetChildren(newElement, false);
-                                    XmlNode childFound = null;
+                                    children = TYml2Xml.GetChildren(newElement, false);
+                                    childFound = null;
 
                                     foreach (XmlNode childNode in children)
                                     {
@@ -636,7 +663,7 @@ namespace Ict.Common.IO
                                             newElement.RemoveChild(childFound);
                                         }
                                     }
-                                    else
+                                    else if (!negated)
                                     {
                                         XmlElement sequenceElement = myDoc.CreateElement("", "Element", "");
                                         newElement.AppendChild(sequenceElement);
@@ -1104,7 +1131,7 @@ namespace Ict.Common.IO
                             result.Remove(value);
                         }
                     }
-                    else
+                    else if (!negate)
                     {
                         result.Add(child.Attributes[0].Value);
                     }

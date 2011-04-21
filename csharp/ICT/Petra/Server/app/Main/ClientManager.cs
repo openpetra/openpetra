@@ -107,6 +107,7 @@ namespace Ict.Petra.Server.App.Main
         {
             TCacheableTablesManager.InitializeUnit();
             TClientManager.UCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
+            DomainManager.GCacheableTablesManager = TClientManager.UCacheableTablesManager;
         }
     }
 
@@ -696,6 +697,12 @@ namespace Ict.Petra.Server.App.Main
             IDictionaryEnumerator ClientEnum;
 
             ReturnValue = -2;
+
+            if (UClientObjects == null)
+            {
+                // this happens for the webserver with ext.net
+                return ReturnValue;
+            }
 
             if ((AClientID == -1) || (UClientObjects.Contains((object)AClientID)))
             {
@@ -2026,7 +2033,7 @@ namespace Ict.Petra.Server.App.Main
             Int16 LowestAvailableRemotingPort;
 
             FreeRemotingPort = -1;
-            LowestAvailableRemotingPort = (short)(TSrvSetting.BaseIPAddress + 1);
+            LowestAvailableRemotingPort = (short)(TSrvSetting.IPBasePort + 1);
             ClientEnum = UClientObjects.GetEnumerator();
 
             if (UClientObjects.Count != 0)

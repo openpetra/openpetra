@@ -1,0 +1,389 @@
+﻿**************************************************************************
+*                       Version 1.0.0 CHANGELOG                          *
+**************************************************************************
+
+1.   Renamed Coolite.Ext.Web project to Ext.Net
+
+2.   Renamed Coolite.Examples project to Ext.Net.Examples
+
+3.   Renamed Coolite.Ext.UX project to Ext.Net.UX
+
+4.   Renamed Coolite.EmbeddedResourceBuilder project to Ext.Net.ERB
+
+5.   Renamed Coolite.Utilities project to Ext.Net.Utilities
+
+6.   Renamed Coolite.Sandbox project to Ext.Net.Sandbox
+
+7.   Renamed Coolite.Toolkit.sln Visual Studio Solution file to 
+	 Ext.Net.sln.
+
+8.   Renamed Coolite.Ext.Web Namespace to Ext.Net
+
+9.   Renamed Coolite.Utilities Namespace to Ext.Net.Utilities
+
+10.  Renamed Coolite.Ext.UX Namespace to Ext.Net.UX
+
+11.  Renamed root singleton "Ext" class to "X". 
+
+	 Example (Old)
+	 
+	 if (!Ext.IsAjaxRequest) { }
+	 
+	 Ext.Msg.Alert("Title", "Message").Show();
+	 
+	 
+	 Example (New)
+	 
+	 if (!X.IsAjaxRequest) { }
+	 
+	 X.Msg.Alert("Title", "Message").Show();
+
+12.  Added new feature to get server-side Property values from client id 
+     Token strings.
+	 
+	 Example
+	 
+	 <ext:Window runat="server" Title="#{TextField1.Text}" />
+	 
+13.  Renamed WebControl class to ExtControl. As well, renamed 
+     Coolite.Ext.Web.WebControl.cs file to Ext.Net.ExtControl.cs.
+	 
+14.  Removed <ext:ToolbarButton>. Please use <ext:Button>.	 
+
+15.  Removed <ext:ToolbarSplitButton>. Please use <ext:SplitButton>.
+
+16.  Renamed AjaxMethod class to DirectMethod.
+
+17.  Renamed AjaxMethodAttribute to DirectMethodAttribute.
+
+	 Example (Old)
+	 
+	 [AjaxMethod]
+	 public void DoSomthing() { }
+	 
+	 Example (New)
+	 
+	 [DirectMethod]
+	 public void DoSomthing() { }
+	 
+18.  Renamed <AjaxEvents> property to <DirectEvents>.	 
+
+19.  Removed <ext:ToolbarSplitButton>. Please use <ext:SplitButton>.
+
+20.  Removed Adapter class
+
+21.  Removed ColorMenuItem class
+
+22.  Removed ComboMenuItem class
+
+23.  Removed DateFieldMenuItem class
+
+24.  Removed DateMenuItem class
+
+25.  Removed EditMenuItem class
+
+26.  Renamed ElementMenuItem class to ComponentMenuItem
+
+27.  Renamed <ext:Accordion> to <ext:AccordionLayout>
+	 
+28.  Removed DataReader class .ReaderID property.
+
+29.  JsonReader: added IDProperty (instead of ReaderID)	 
+
+30.  XmlReader: added IDPath (instead of ReaderID)
+
+31.  ArrayReader: added IDProperty and IDIndex (instead of ReaderID)
+
+32.  Renamed StoreResponseData class .TotalCount property to .Total.
+
+33.  Renamed StoreRefreshDataEventArgs class .TotalCount propterty to 
+	 .Total.
+
+34.  Renamed DataSourceProxy class .TotalCount property to .Total.
+	 
+35.  Renamed DataSourceProxy class to PageProxy.
+
+36.  Layout collection property is now required in markup if using a 
+     Layout Control within <Content> or <Items>.
+	
+	 <Items>
+		AccordionLayout
+		ContainerLayout
+		CardLayout
+		CenterLayout
+		FitLayout
+     
+     <Anchors>
+		AbsoluteLayout
+		AnchorLayout
+		FormLayout
+	 
+	 <BoxItems>
+		HBoxLayout
+		VBoxLayout
+	 
+	 <Rows>
+		RowLayout
+	 
+	 <Columns>
+		ColumnLayout
+	 
+	 <Cells>
+		TableLayout
+	
+37.  Removed [XType] Attribute and replaced with XType readonly property.
+ 	
+	 Example (Old)
+	
+	 [Xtype("window")]
+	
+	
+	 Example (New)
+	
+	 protected override string XType
+     {
+         get
+         {
+             return "window";
+         }
+     }	
+	
+38.  Removed [InstanceOf] Attribute and replaced with InstanceOf readonly 
+	 property.
+ 	 
+	 Example (Old)
+	
+ 	 [InstanceOf("Ext.Window")]
+	
+	
+	 Example (New)
+	
+	 public override string InstanceOf
+     {
+         get
+         {
+             return "Ext.Window";
+         }
+     }
+	
+39.  Removed [Layout] Attribute and replaced with new .LayoutType readonly
+	 property
+
+40.  Removed [ClientStyle] and [ClientScripts] Attributes and replaced 
+	 with new .Resources property.
+
+41.  Renamed AjaxRequestModule to DirectRequestModule
+
+42.  Renamed <ext:ScriptManager> to <ext:ResourceManager>
+
+43.  Removed <ext:ResourcePlaceHolder> and <ext:StyleContainer> controls.
+	 
+	 Please use <ext:ResourcePlaceHolder> with new Mode property which can
+	 determine if .js or .css resources are rendered. The Mode property is
+	 not required and if not defined, both .js and .css resource files are
+	 rendered into the location of the ResourcePlaceHolder. 
+	 
+	 Example (New)
+	 
+	 <ext:ResourcePlaceHolder runat="server" Mode="Script" />
+
+44.  Renamed <ext:ViewPort> to <ext:Viewport>. Change to lowercase "p".
+
+45.  Renamed <Body> inner property to <Content>.
+
+	 Affects all ContentPanel type controls including Panel, Window, Viewport
+	 Renaming to <Content> also solves <Body> rendering bug in VS 2005.
+	 
+	 Renaming all <Body> tags in a project to <Content> can be easily 
+	 accomplished with a case-sensitive search and replace within Visual 
+	 Studio. Please search for the following (remove double quotes) and 
+	 ensure you have the "Match case" option checked.
+
+	 Find what: "Body>"
+	 Replace with: "Content>"
+
+46.  Renamed .BodyControls property to .ContentControls. 
+	 Affects all ContentPanel type controls including Panel, Window, Viewport
+
+47.  Renamed .BodyContainer property to .ContentContainer.
+	 Affects all ContentPanel type controls including Panel, Window, Viewport
+
+48.  Removed .UpdateBody() Method. Please use .Update().
+
+49.  Removed <ext:Window> .ShowOnLoad property.
+     Please use .Hidden property.
+	 
+	 Example (Old)
+	 
+	 // Will show Window on initial Page_Load
+	 this.Window1.ShowOnLoad = true;
+	 
+	 
+	 Example (New)
+	 
+	 // Will show Window on initial Page_Load
+	 this.Window.Hidden = false; // 'false' is the default value
+	 
+50.  Renamed the <ext:Window> .CenterOnLoad property to .InitCenter.
+	 Default value is unchanged as "true".
+	 
+	 Example (Old)
+	 
+	 // Will center Window on initial Page_Load
+	 this.Window1.CenterOnLoad = true;
+	 
+	 
+	 Example (New)
+	 
+	 // Will center Window on initial Page_Load
+	 this.Window.InitCenter = true;
+	 
+51.  Renamed TextMenuItem control to the MenuTextItem
+
+52.  GridPanel client API: submitData, getRowsValues has 1 argument only,
+     config object
+
+53.  GenericPlugin: renamed InstanceOf to InstanceName.
+
+54.  Renamed TabPanel <Tabs> Collection to <Items>.
+
+	 Example (Old)
+	 
+	 <ext:TabPanel runat="server">
+         <Tabs>
+             <ext:Tab runat="server" Title="Tab 1" />
+	 
+	 
+	 Example (New)
+	 
+	 <ext:TabPanel runat="server">
+         <Items>
+             <ext:Panel runat="server" Title="Tab 1" />
+             
+55.  Removed <ext:Tab> Control. Now any Ext.Net.PanelBase Component can be
+     added to the TabPanel's .Items Collection. 
+     
+56.  XTemplate: renamed Text to Html
+
+57.  XTemplate: Html property is required in markup
+     <Template>
+	     <Html>
+	         ....
+	     </Html>
+	   
+58.  To disable a Field, the .Disabled property should be used instead of 
+	 the native ASP.NET .Enabled property. 
+	 
+	 See http://forums.ext.net/showthread.php?5080#post22850
+	 
+59.  Removed the static Instance method from Ext.Net.MessageBox class. The
+     MessageBox class was changed from an Singleton to just a standard 
+     (non-singleton) class.
+     
+     Using the X.Msg Helper is recommended method of instantiating a
+     MessageBox class. 
+     
+     Be sure to checkout the new X.Msg.Notify Method.
+     
+     Example
+     
+     X.Msg.Notify("Alert", "A Message from the Server-Side").Show();
+
+60.  Renamed Coolite.Ext.Web.MessageBox.Config to Ext.Net.MessageBoxConfig	 
+
+61.  XmlReader: rename TotalRecords to the TotalProperty
+
+62.  Added new .After property to DirectEvents. 
+
+	 The .After handler is called immediately after the DirectEvent is fired 
+	 and before the response is returned from the server.
+      
+     See more, http://forums.ext.net/showthread.php?6600	
+	 
+63.  The <ext:TokenScript> component has been renamed to <ext:XScript>
+
+	 Example (Old)
+	 
+	 <ext:TokenScript runat="server" />
+	 
+	 Example (New)
+	 
+	 <ext:XScript runat="server" />
+	 
+64.  Renamed AjaxEventArgs property to DirectEventArgs
+
+65.  Renamed AjaxMethodProxyID property to DirectMethodProxyID
+
+66.  Renamed ComboBox and DropDownField .Icon property to .TriggerIcon. 
+
+	 Example (Old)
+	 
+	 <ext:DropDownField runat="server" Icon="Search" />
+	 
+	 Example (New)
+	 
+	 <ext:DropDownField runat="server" TriggerIcon="Search" />
+	 
+67.  The <ext:MultiField> has been replaced with the new 
+	 <ext:CompositeField>.
+	 
+	 The old inner <Fields> property of <ext:MultiField> should now be 
+	 configured in the <Items> property of <ext:CompositeField>.
+	 
+68.  ColumnLayout: FitHeight property is true by default (it was false by 
+     default for the 0.8.2)
+ 
+69.  Tip.cs, changed .MinWidth and .MaxWidth property type from "int" to 
+     "Unit". Default value remains the same at "40". 
+
+70.  GridPanel, changed .MaxHeight property type from "int" to "Unit".
+	 Default value remains the same at "400".
+
+71.  GridPanel, changed .MinColumnWidth property type from "int" to "Unit"
+	 Default value remains the same at "25".
+	 
+72.  The .HiddenId property of ComboBox was renamed to .HiddenID.
+	 Functionality remains the same.
+	 
+73.  Renamed the Field.cs property .IsNull to .IsEmpty.
+
+74.  Renamed the Field.cs property .NullValue to .EmptyValue.
+
+75.  Renamed the standard first parameter of Component Listener arguments 
+     to "item". Previous parameter name was "el". 
+     
+     The argument "item" is automatically passed as the first argument of 
+     the Listener function Handler. 
+        
+     The scope of "this" is an instance of the Component which fired the
+     event. 
+        
+     Both "item" and "this" will refer to the same Component instance.
+     
+     It is recommended that developers refer to the Component instance as 
+     "this", instead of "item", although both will work. 
+     
+     Using "this" instead of "item" will avoid any future breaking 
+     changes.
+     
+     Example
+     
+     <ext:Panel runat="server" Title="Example">
+	    <Listeners>
+		    // Old
+			<Hide Handler="alert(el);" />
+	        
+			// New
+			<Hide Handler="alert(item);" />
+	        
+			// Recommended
+			<Hide Handler="alert(this);" />
+		</Listeners>
+	 </ext:Panel>
+
+76.  GroupName property of Radio widget is removed. Please use Name property.
+     Please note that GroupName property of RadioGroup still exists (RadioGroup's GroupName is applied to each child Radio if AutomaticGrouping is true)
+	
+77.  LowerCase of RendererFormat enum is renamed to Lowercase (to correct name serialization)
+
+--------------------------------------------------------------------------

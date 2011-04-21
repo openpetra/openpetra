@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Partner Interests
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PInterest
+    CacheableTable: InterestList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 713
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailInterest, DetailCategory, DetailDescription]
+            CustomColumns:
+                DetailInterest: {Label=Partner Interest, Type=String}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlInterest]
+                Row1: [pnlDescription]            
+        pnlInterest:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailInterest, cmbDetailCategory]                
+            Margin: 22,0,0,0
+        pnlDescription:
+            Controls:
+                Row0: [txtDetailDescription]
+            ColSpan: 3
+        txtDetailInterest: {Label=Interest}
+        cmbDetailCategory: {Label=Category, List=InterestCategoryList}
+        txtDetailDescription: {Width=357}
+    Toolbar:
+        tbbNew: 
+            Label: New Partner Interest

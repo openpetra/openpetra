@@ -58,6 +58,9 @@ namespace Ict.Common
             }
 
             IPAddresses = IPAddresses.Substring(0, IPAddresses.Length - 2); // remove last '; '
+
+            // on virtual servers, we have to tell the IP address manually, iptables forwarding hides the IP address
+            IPAddresses = TAppSettingsManager.GetValueStatic("ListenOnIPAddress", IPAddresses, false);
         }
     }
 }

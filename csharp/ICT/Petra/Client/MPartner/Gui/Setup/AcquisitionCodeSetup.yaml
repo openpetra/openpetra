@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Acquisition Codes
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PAcquisition
+    CacheableTable: AcquisitionCodeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 786
+    WindowHeight: 650
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailAcquisitionCode, DetailAcquisitionDescription, DetailValidAcquisition, DetailDeletable, DetailRecruitingEffort]
+            CustomColumns: 
+               DetailRecruitingEffort: {Label=Recruiting Mission, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailAcquisitionCode, txtDetailAcquisitionDescription]
+                Row1: [chkDetailValidAcquisition, chkDetailRecruitingEffort]
+                Row2: [chkDetailDeletable]
+        txtDetailAcquisitionCode: {Label=Acquisition Code, CharacterCasing=Upper}
+        txtDetailAcquisitionDescription: {Width=275}
+        chkDetailValidAcquisition: {Label=Assignable}
+        chkDetailDeletable:
+        chkDetailRecruitingEffort: {Label=Recruiting Mission}
+    Toolbar:
+        tbbNew:
+            Label: New Acquisition Code

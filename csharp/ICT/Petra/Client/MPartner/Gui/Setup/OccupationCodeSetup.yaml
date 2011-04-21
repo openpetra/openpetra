@@ -1,0 +1,41 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Occupation Codes
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: POccupation
+    CacheableTable: OccupationList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailOccupationCode, DetailOccupationDescription, DetailValidOccupation, DetailDeletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailOccupationCode, txtDetailOccupationDescription]
+                Row1: [chkDetailValidOccupation]
+                Row2: [chkDetailDeletable]
+        txtDetailOccupationCode: {Label=Occupation Code, CharacterCasing=Upper}
+        txtDetailOccupationDescription: {Width=155}
+        chkDetailValidOccupation: {Label=Assignable}
+        chkDetailDeletable:
+    Toolbar:
+        tbbNew:
+            Label: New Occupation Code

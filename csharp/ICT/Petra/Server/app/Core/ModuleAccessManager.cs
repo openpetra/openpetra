@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// </summary>
         /// <param name="AModuleExpression">is in uppercase</param>
         /// <returns>true if the user has access permissions</returns>
-        static private bool CheckUserModulePermissions(string AModuleExpression)
+        static public bool CheckUserModulePermissions(string AModuleExpression)
         {
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
             {
@@ -209,6 +209,7 @@ namespace Ict.Petra.Server.App.Core.Security
             MethodInfo[] methods = AConnectorType.GetMethods();
 
             MethodInfo MethodToTest = null;
+            AParameterTypes = AParameterTypes.Replace("[]", ".ARRAY");
 
             foreach (MethodInfo method in methods)
             {
@@ -229,6 +230,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         ParameterName = ParameterName.Replace("Boolean", "bool");
                         ParameterName = ParameterName.Replace("Int32", "int");
                         ParameterName = ParameterName.Replace("Int64", "long");
+                        ParameterName = ParameterName.Replace("[]", ".Array");
                         ParameterName = ParameterName.Replace("]", "?");
 
                         ParameterTypes += ParameterName + ";";

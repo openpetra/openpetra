@@ -25,11 +25,7 @@ using System;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
-#if GTK
-using Ict.Common.GTK;
-#else
 using System.Windows.Forms;
-#endif
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 using Ict.Petra.Client.App.Core.RemoteObjects;
