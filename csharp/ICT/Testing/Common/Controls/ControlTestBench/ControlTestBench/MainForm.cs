@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
-using GNU.Gettext;
+//using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
@@ -90,8 +90,45 @@ namespace ControlTestBench
 //            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
 			//newForm.Controls.Add(
 		}
-	
-		
 
+		void Button2Click(object sender, EventArgs e)
+		{
+		    String yamlFile = txtYaml.Text.ToString();
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();
+            
+            String VisualStyle = cmbVisualStyle.Text.ToString();
+            TVisualStylesEnum EnumStyle;
+            switch (VisualStyle)
+            {
+            	case "AccordionPanel":
+                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            	    break;
+            	case "TaskPanel":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+            	    break;
+            	case "Dashboard":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+            	    break;
+            	case "Shepherd":
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+            	    break;
+            	case "HorizontalCollapse":
+                default:
+            	    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+            	    break;
+            }
+	
+            new TestCollapsible.MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+		}
+		
+		void Button3Click(object sender, EventArgs e)
+		{
+		    String yamlFile = txtYaml.Text.ToString();
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();            
+	
+            new TestCollapsible.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+		}		
 	}
 }

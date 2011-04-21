@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
-using GNU.Gettext;
+//using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
@@ -53,11 +53,13 @@ namespace ControlTestBench
 			this.label1 = new System.Windows.Forms.Label();
 			this.cmbVisualStyle = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.button2 = new System.Windows.Forms.Button();
+			this.button3 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// DisableItemButton
 			// 
-			this.DisableItemButton.Location = new System.Drawing.Point(92, 147);
+			this.DisableItemButton.Location = new System.Drawing.Point(52, 119);
 			this.DisableItemButton.Name = "DisableItemButton";
 			this.DisableItemButton.Size = new System.Drawing.Size(75, 23);
 			this.DisableItemButton.TabIndex = 1;
@@ -67,7 +69,7 @@ namespace ControlTestBench
 			// 
 			// HideItemButton
 			// 
-			this.HideItemButton.Location = new System.Drawing.Point(92, 202);
+			this.HideItemButton.Location = new System.Drawing.Point(159, 119);
 			this.HideItemButton.Name = "HideItemButton";
 			this.HideItemButton.Size = new System.Drawing.Size(75, 23);
 			this.HideItemButton.TabIndex = 1;
@@ -123,12 +125,34 @@ namespace ControlTestBench
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Visual Style";
 			// 
+			// button2
+			// 
+			this.button2.Location = new System.Drawing.Point(52, 168);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(182, 23);
+			this.button2.TabIndex = 6;
+			this.button2.Text = "TPnlCollapsible Test";
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.Button2Click);
+			// 
+			// button3
+			// 
+			this.button3.Location = new System.Drawing.Point(52, 197);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(182, 23);
+			this.button3.TabIndex = 8;
+			this.button3.Text = "Shepherd Test";
+			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.Button3Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(700, 273);
+			this.Controls.Add(this.button3);
+			this.Controls.Add(this.button2);
 			this.Controls.Add(this.DisableItemButton);
 			this.Controls.Add(this.HideItemButton);
 			this.Controls.Add(this.label2);
@@ -142,6 +166,8 @@ namespace ControlTestBench
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
+		private System.Windows.Forms.Button button3;
+		private System.Windows.Forms.Button button2;
 		private Ict.Common.Controls.TTaskList taskList1;
 		private System.Windows.Forms.ComboBox cmbVisualStyle;
 		private System.Windows.Forms.Label label2;
@@ -149,12 +175,7 @@ namespace ControlTestBench
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button DisableItemButton;
-		private System.Windows.Forms.Button HideItemButton;
-		
-		void Button2Click(object sender, System.EventArgs e)
-		{
-			
-		}
+		private System.Windows.Forms.Button HideItemButton;	
 		
 
 		void DisableItemButtonClick(object sender, EventArgs e)

@@ -1,11 +1,11 @@
 ﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{70D5AFED-96B8-4D47-BC2F-1A511E05E338}</ProjectGuid>
+    <ProjectGuid>{129CF613-CED1-41AF-82FB-8BC083190133}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ControlTestBench</RootNamespace>
-    <AssemblyName>ControlTestBench</AssemblyName>
+    <RootNamespace>TestCollapsible</RootNamespace>
+    <AssemblyName>TestCollapsible</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
@@ -30,14 +30,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="Ict.Common">
-      <HintPath>..\..\..\..\..\..\..\delivery\bin\Ict.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Common.Controls">
-      <HintPath>..\..\..\..\..\..\..\delivery\bin\Ict.Common.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Ict.Common.IO">
-      <HintPath>..\..\..\..\..\..\..\delivery\bin\Ict.Common.IO.dll</HintPath>
+    <Reference Include="Ict.Common.Controls, Version=0.0.9.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\Common\_bin\Debug\Ict.Common.Controls.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -55,35 +49,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainForm.cs" />
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainForm2.cs" />
     <Compile Include="MainForm2.Designer.cs">
       <DependentUpon>MainForm2.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskListCheck.cs" />
-    <Compile Include="TaskListCheck.Designer.cs">
-      <DependentUpon>TaskListCheck.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ShepherdTest.cs" />
-    <Compile Include="ShepherdTest.Designer.cs">
-      <DependentUpon>ShepherdTest.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="MainForm2.resx">
       <DependentUpon>MainForm2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ShepherdTest.resx">
-      <DependentUpon>ShepherdTest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TaskListCheck.resx">
-      <DependentUpon>TaskListCheck.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
