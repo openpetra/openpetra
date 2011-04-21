@@ -1,0 +1,47 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Contact Methods
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PMethodOfContact
+    CacheableTable: MethodOfContactList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailMethodOfContactCode, DetailDescription, DetailContactType, DetailValidMethod, DetailDeletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMethodOfContactCode, txtDetailDescription]
+                Row1: [pnlTypeAndCheck]            
+        pnlTypeAndCheck:
+            Controls: 
+                Row0: [txtDetailContactType, chkDetailValidMethod]
+                Row1: [chkDetailDeletable]
+            Margin: 30,0,0,0
+            ColSpan: 3
+        txtDetailMethodOfContactCode: {Label=Method Of Contact}
+        txtDetailDescription:{Width=210}
+        txtDetailContactType:
+        chkDetailValidMethod:
+        chkDetailDeletable:
+    Toolbar:
+        tbbNew:
+            Label: New Contact Method
