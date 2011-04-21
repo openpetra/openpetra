@@ -16,7 +16,8 @@ RootNode:
         aspWelcome:
             Height: 300
             Label: Welcome
-            Controls: [lblWelcome, lblWelcome2, lblWelcome3, hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole]
+            HiddenValues: [hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole, hidFormsId]
+            Controls: [lblWelcome, lblWelcome2, lblWelcome3]
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
         lblWelcome2: {Label="You will need to have a photo of yourself ready to upload for this application, so before you start make sure you have got one at hand."}
         lblWelcome3: {Label="Please click on &quot;next&quot; to start your application!"}
@@ -33,6 +34,7 @@ RootNode:
         grpPersonalQuestions:
             Controls: [txtFirstName, txtLastName, txtStreet, txtPostcode, txtCity, cmbCountry, txtPhone, txtMobile, txtEmail, dtpDateOfBirth, cmbGender]
         aspConferenceDetails:
+            Height: 800
             Controls: [grpMedicalQuestions, grpEmergencyContact, grpConferenceDetails]
         grpConferenceDetails:
             Controls: [cmbNumberPrevConf, lblExistingPartnerKey, txtExistingPartnerKey, txtGroupWish, grpTShirt]
@@ -114,6 +116,7 @@ RootNode:
             width: 100
             OptionalValues: [0,1,2,3,4 or more]
         aspMotivation:
+            Height: 800
             Controls: [grpMotivation, grpChurch, grpReferencePerson]
         grpMotivation:
             Controls: [txtWhat, txtWhy, txtDaily]
@@ -147,6 +150,7 @@ RootNode:
         txtReferencePhone: {Label: Phone}
         txtReferenceRole: {Label: Role in church, allowBlank: true}
         aspAgreements:
+            Height: 800
             Controls: [inlCLS, chkCLS, inlDresscode, chkDresscode, inlLegalImprint, chkLegalImprint]
         inlCLS:
             Label: "Community Life Style Agreement"
@@ -173,12 +177,14 @@ RootNode:
             hideLabel: true
             vtype: forcetick
         aspPaymentDetails:
+            Height: 800
             Controls: [lblPayment, txtBankAccountName, txtBankAccountNumber, txtBankBranchName, txtBankSortCode]
         lblPayment:
             Label: explain the costs for the conference and the application
         aspLastPage:
+            Height: 400
             Label: Nearly done
-            Controls: [lblLastPage1, lblLastPage2, lblLastPage3, hidLastPageDummy]
+            Controls: [lblLastPage1, lblLastPage2, lblLastPage3]
         lblLastPage1:
             Label: You have entered all the data necessary for the application!
         lblLastPage2:

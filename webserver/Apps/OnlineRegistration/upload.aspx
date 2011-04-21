@@ -48,18 +48,25 @@ private void UploadFile()
     
     string md5SumFileName = TAppSettingsManager.GetValueStatic("Server.PathTemp") + 
         Path.DirectorySeparatorChar +
-        TPatchTools.GetMd5Sum(Filename) + Path.GetExtension(MyFile.FileName);
-    
-    if (!File.Exists(md5SumFileName))
+        TPatchTools.GetMd5Sum(Filename) + ".jpg";
+    try
     {
-        File.Move(Filename, md5SumFileName);
+        if (!File.Exists(md5SumFileName))
+        {
+            File.Move(Filename, md5SumFileName);
+        }
+        else
+        {
+            File.Delete(Filename);
+        }
+        
+        Response.Write(String.Format("{{success:true, file:'{0}'}}", Path.GetFileName(md5SumFileName)));
     }
-    else
+    catch (Exception e)
     {
-        File.Delete(Filename);
+      TLogging.Log(e.Message);
+      Response.Write(String.Format("{{success:false, msg:'{0}'}}", "some problem with uploading the photo"));
     }
-    
-    Response.Write(String.Format("{{success:true, file:'{0}'}}", Path.GetFileName(md5SumFileName)));
     return;
 }
 

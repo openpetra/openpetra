@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -128,7 +129,7 @@ namespace Ict.Petra.Server.App.Main
         {
             get
             {
-                return TSrvSetting.BaseIPAddress;
+                return TSrvSetting.IPBasePort;
             }
         }
 
@@ -154,7 +155,7 @@ namespace Ict.Petra.Server.App.Main
             get
             {
                 return String.Format(Catalog.GetString("PETRAServer is running and listening @ {0}:{1}"),
-                    TSrvSetting.HostIPAddresses, TSrvSetting.BaseIPAddress);
+                    TSrvSetting.HostIPAddresses, TSrvSetting.IPBasePort);
             }
         }
 
@@ -335,7 +336,7 @@ namespace Ict.Petra.Server.App.Main
             String ServerIPAddresses;
             String ODBCDsnAppSetting;
             TDBType RDBMSTypeAppSetting;
-            Int16 ServerBaseIPAddress;
+            Int16 ServerIPBasePort;
             Int16 ServerDebugLevel;
             Int16 ClientIdleStatusAfterXMinutes;
             Int16 ClientKeepAliveCheckIntervalInSeconds;
@@ -384,7 +385,7 @@ namespace Ict.Petra.Server.App.Main
             }
 
             // Server.IPBasePort
-            ServerBaseIPAddress = AppSettingsManager.GetInt16("Server.IPBasePort", 9000);
+            ServerIPBasePort = AppSettingsManager.GetInt16("Server.IPBasePort", 9000);
 
             // Server.DebugLevel
             ServerDebugLevel = AppSettingsManager.GetInt16("Server.DebugLevel", 0);
@@ -471,7 +472,7 @@ namespace Ict.Petra.Server.App.Main
                 PostgreSQLDatabaseName,
                 PostgreSQLUserName,
                 ServerCredentials,
-                ServerBaseIPAddress,
+                ServerIPBasePort,
                 ServerDebugLevel,
                 ServerLogFile,
                 ServerName,
@@ -524,6 +525,51 @@ namespace Ict.Petra.Server.App.Main
             }
 
             return ReturnValue;
+        }
+
+        private List <TDataBase>FDBConnections = new List <TDataBase>();
+
+        /// <summary>
+        /// manage database connections for the ASP webclient
+        /// </summary>
+        /// <param name="ADatabaseConnection"></param>
+        public void AddDBConnection(TDataBase ADatabaseConnection)
+        {
+            if (!FDBConnections.Contains(ADatabaseConnection))
+            {
+                FDBConnections.Add(ADatabaseConnection);
+            }
+        }
+
+        /// <summary>
+        /// disconnect database connections that are older than the given timeout in seconds.
+        /// This is useful for the ASP webclient
+        /// </summary>
+        /// <param name="ATimeoutInSeconds"></param>
+        /// <param name="AUserID">can limit to one specific username, eg. ANONYMOUS for online registration, or leave empty for all users</param>
+        /// <returns></returns>
+        public bool DisconnectTimedoutDatabaseConnections(Int32 ATimeoutInSeconds, string AUserID)
+        {
+            List <TDataBase>DBsToDisconnect = new List <TDataBase>();
+
+            foreach (TDataBase db in FDBConnections)
+            {
+                if ((AUserID == null) || (AUserID.Length == 0) || (AUserID == db.UserID))
+                {
+                    if (db.LastDBAction.AddSeconds(ATimeoutInSeconds) < DateTime.Now)
+                    {
+                        DBsToDisconnect.Add(db);
+                    }
+                }
+            }
+
+            foreach (TDataBase dbToDisconnect in DBsToDisconnect)
+            {
+                dbToDisconnect.CloseDBConnection();
+                FDBConnections.Remove(dbToDisconnect);
+            }
+
+            return DBsToDisconnect.Count > 0;
         }
 
         /// <summary>

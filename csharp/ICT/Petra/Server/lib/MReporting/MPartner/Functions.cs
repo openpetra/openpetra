@@ -26,7 +26,9 @@ using System;
 
 using Ict.Common;
 using Ict.Common.Conversion;
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
+using Ict.Common.IO; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -301,6 +301,11 @@ namespace Ict.Common.DB
         /// <remarks>Automatically reset to -1 once the Command has been executed against the DB!</remarks>
         private int FTimeoutForNextCommand = -1;
 
+        /// <summary>
+        /// this is different from the SQL user name, which is usually the same for the whole server.
+        /// This is specific for the user id from table s_user
+        /// </summary>
+        private string FUserID = string.Empty;
 
         #region Constructors
 
@@ -403,6 +408,23 @@ namespace Ict.Common.DB
                 {
                     return new TDBTransaction(FTransaction, FSqlConnection);
                 }
+            }
+        }
+
+        /// <summary>
+        /// store the value of the current s_user.
+        /// not to be confused with the sql user
+        /// </summary>
+        public string UserID
+        {
+            get
+            {
+                return FUserID;
+            }
+
+            set
+            {
+                FUserID = value;
             }
         }
 
@@ -517,7 +539,10 @@ namespace Ict.Common.DB
         /// already/still closed connection.</exception>
         public void CloseDBConnection()
         {
-            CloseDBConnectionInternal(FDbType);
+            if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
+            {
+                CloseDBConnectionInternal(FDbType);
+            }
         }
 
         /// <summary>
@@ -1180,6 +1205,14 @@ namespace Ict.Common.DB
                 throw new Exception("Security Violation: Access Permission failed");
             }
 
+#if DEBUGMODE
+            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Entering " + this.GetType().FullName + ".SelectDT()...");
+            }
+            LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
+#endif
+
             try
             {
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
@@ -1190,6 +1223,16 @@ namespace Ict.Common.DB
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
+
+#if DEBUGMODE
+            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                if (ATypedDataTable != null)
+                {
+                    LogTable(ATypedDataTable);
+                }
+            }
+#endif
 
             return ATypedDataTable;
         }
@@ -1300,6 +1343,11 @@ namespace Ict.Common.DB
         {
             TDBTransaction ReturnValue;
 
+            if (FDataBaseRDBMS == null)
+            {
+                throw new Exception("DBAccess BeginTransaction: FDataBaseRDBMS is null");
+            }
+
             FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
 
             try
@@ -1321,6 +1369,9 @@ namespace Ict.Common.DB
                     TLogging.Log(
                         "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
                         AppDomain.CurrentDomain.ToString() + " ).");
+                    TLogging.Log("Start of stack trace.->");
+                    TLogging.Log(Environment.StackTrace);
+                    TLogging.Log("<- End of stack trace");
                 }
 #endif
             }
@@ -1347,19 +1398,37 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                if ((FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
+                if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken) || (FSqlConnection.State == ConnectionState.Closed))
                 {
                     // reconnect to the database
                     TLogging.Log(exp.Message);
-                    TLogging.Log("Connection State: " + FSqlConnection.State.ToString("G"));
 
-                    if (FSqlConnection.State == ConnectionState.Broken)
+                    if (FSqlConnection == null)
                     {
-                        FSqlConnection.Close();
+                        TLogging.Log("FSqlConnection is null");
+                    }
+                    else
+                    {
+                        TLogging.Log("Connection State: " + FSqlConnection.State.ToString("G"));
+
+                        if (FSqlConnection.State == ConnectionState.Broken)
+                        {
+                            FSqlConnection.Close();
+                        }
+
+                        FSqlConnection = null;
                     }
 
-                    FSqlConnection = null;
-                    EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                    try
+                    {
+                        EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword, FConnectionString);
+                    }
+                    catch (Exception e2)
+                    {
+                        TLogging.Log("Another Exception while trying to establish the connection: " + e2.Message);
+                        throw e2;
+                    }
+
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
                 }
 

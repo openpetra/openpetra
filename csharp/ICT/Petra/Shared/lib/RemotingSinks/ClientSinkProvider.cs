@@ -51,11 +51,20 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
             // do not use property, but create local symmetric key, and send to the server, encrypted with the public key of the server
             try
             {
+                XmlDocument doc = new XmlDocument();
+
                 // get the public key from the server, from a secure site. if the SSL certificate is self signed or not valid, this will fail.
                 // publicKeyXml will contain: <RSAKeyValue><Modulus>w7/g+...+sU=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>
-                string publicKeyXml = THTTPUtils.ReadWebsite((string)properties["HttpsPublicKeyXml"]);
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(publicKeyXml);
+                if (properties["HttpsPublicKeyXml"] != null)
+                {
+                    string publicKeyXml = THTTPUtils.ReadWebsite((string)properties["HttpsPublicKeyXml"]);
+                    doc.LoadXml(publicKeyXml);
+                }
+                else
+                {
+                    string publicKeyXml = (string)properties["FilePublicKeyXml"];
+                    doc.Load(publicKeyXml);
+                }
 
                 try
                 {

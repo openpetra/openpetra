@@ -43,8 +43,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)/Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Ict.Common">
+      <HintPath>..\..\..\..\..\..\delivery\bin\Ict.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common.IO">
-      <HintPath>../../../../Common/_bin/Debug/Ict.Common.IO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\delivery\bin\Ict.Common.IO.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Shared.UserInfo">
       <HintPath>../../../Shared/_bin/Server_Client/Debug/Ict.Petra.Shared.UserInfo.dll</HintPath>
@@ -55,10 +58,6 @@
     </Reference>
     <Reference Include="SourceGrid">
       <HintPath>../../../../../ThirdParty/DevAge/SourceGrid.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Ict.Common">
-      <HintPath>../../../../Common/_bin/Debug/Ict.Common.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Ict.Common.Data">
@@ -94,8 +93,6 @@
     <Compile Include="PetraShepherdNavigationHelper.cs" />
     <Compile Include="PetraShepherdPage.cs" />
     <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
-    <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
-    <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../app/Core/Ict.Petra.Client.App.Core.csproj">
@@ -118,8 +115,5 @@
       <Project>{7B102B6E-0873-45EE-85D7-BD37126EAE21}</Project>
       <Name>Ict.Petra.Client.CommonControls.Gui</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Ict.Petra.Client.CommonForms.Logic.cd" />
   </ItemGroup>
 </Project>

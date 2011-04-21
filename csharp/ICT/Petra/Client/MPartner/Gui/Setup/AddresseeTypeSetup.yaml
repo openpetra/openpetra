@@ -1,0 +1,39 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Addressee Types
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PAddresseeType
+    CacheableTable: AddresseeTypeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 430
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailAddresseeTypeCode, DetailDescription, DetailDeletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailAddresseeTypeCode, txtDetailDescription]
+                Row1: [chkDetailDeletable]
+        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=150, CharacterCasing=Upper}
+        txtDetailDescription: {Width=194}
+        chkDetailDeletable:
+    Toolbar:
+        tbbNew:
+            Label: New Addressee Type

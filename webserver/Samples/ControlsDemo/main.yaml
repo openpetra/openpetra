@@ -77,7 +77,7 @@ RootNode:
             vtype: forcetick
         btnConfirm:
             Label: Submit registration
-            AjaxRequestUrl: InvalidForm
+            AjaxRequestUrl: TestingForms
             AjaxRequestParameters:
                     AFormID: DoNothing
             ValidationErrorTitle: "Input Error"

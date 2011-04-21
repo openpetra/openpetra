@@ -1,0 +1,3 @@
+    <Compile Include="${filename}">
+      <DependentUpon>${DependentUpon}</DependentUpon>
+    </Compile>

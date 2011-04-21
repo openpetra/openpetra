@@ -79,6 +79,9 @@ namespace Ict.Common.Printing
 
         /// <summary>todoComment</summary>
         public float contentWidth = -1;
+
+        /// <summary> span over several columns </summary>
+        public Int16 colSpan = 1;
     }
 
     /// <summary>todoComment</summary>

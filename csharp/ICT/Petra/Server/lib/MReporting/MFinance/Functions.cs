@@ -25,6 +25,8 @@ using System;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Common;
+using Ict.Common.IO; // Implicit reference
+using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB.DBCaching;
 using System.Data;
 using System.Collections;

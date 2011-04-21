@@ -32,7 +32,6 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Printing;
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;

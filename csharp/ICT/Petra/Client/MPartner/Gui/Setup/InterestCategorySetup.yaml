@@ -1,0 +1,54 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Interest Categories
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PInterestCategory
+    CacheableTable: InterestCategoryList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 713
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCategory, DetailDescription, DetailLevelDescriptions, DetailLevelRangeLow, DetailLevelRangeHigh]
+            CustomColumns:
+                DetailLevelRangeLow: {Label=Level Range Lower, Type=String}
+                DetailLevelRangeHigh: {Label=Level Range Upper, Type=String}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlCategory]
+                Row1: [pnlLevels]
+        pnlCategory:
+            Controls: 
+                Row0: [txtDetailCategory, txtDetailDescription]            
+            Margin: 55,0,0,0
+        pnlLevels:
+            Controls: 
+                Row0: [txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
+            ColWidths: [3=Fixed:60]
+            ColSpan: 3
+        txtDetailCategory: {Label=Category}
+        txtDetailDescription: {Label=Description, Width=260}
+        txtDetailLevelDescriptions:
+        txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}
+        txtDetailLevelRangeHigh: {Format=Integer, Label=Level Range Upper, Width=30}
+
+    Toolbar:
+        tbbNew: 
+            Label: New Interest Category

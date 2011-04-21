@@ -61,6 +61,7 @@ namespace Ict.Tools.CodeGeneration
         /// <returns>a list of paths of the projects that are part of this solution</returns>
         public StringCollection LoadGUIDsFromSolution(string ASolutionFile)
         {
+            throw new NotImplementedException();
             StringCollection result = new StringCollection();
             StreamReader reader = new StreamReader(ASolutionFile);
             StringCollection lines = new StringCollection();
@@ -131,6 +132,7 @@ namespace Ict.Tools.CodeGeneration
         /// <returns>list of full paths to the code files</returns>
         public static StringCollection LoadCodeFilesFromProject(string AProjectFilename)
         {
+            throw new NotImplementedException();
             StringCollection result = new StringCollection();
 
             XmlDocument doc = new XmlDocument();

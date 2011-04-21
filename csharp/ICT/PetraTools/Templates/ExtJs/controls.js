@@ -129,10 +129,10 @@
     xtype: 'displayfield',
     hideLabel: true,
 {#IFDEF ALLOWBLANK}
-    value: this.{#LABEL},
+    value: this.{#LABEL}
 {#ENDIF ALLOWBLANK}
 {#IFNDEF ALLOWBLANK}
-    value: this.{#LABEL}+' *',
+    value: this.{#LABEL}+' *'
 {#ENDIFN ALLOWBLANK}
 },
 {
@@ -201,10 +201,15 @@
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
+{#IFNDEF HIDELABEL}
     fieldLabel: this.{#LABEL},
+{#ENDIFN HIDELABEL}
 {#IFDEF COLUMNWIDTH}
     columnWidth: {#COLUMNWIDTH},
 {#ENDIF COLUMNWIDTH}
+{#IFDEF INPUTVALUE}
+    inputValue: '{#INPUTVALUE}',
+{#ENDIF INPUTVALUE}
     name: '{#ITEMNAME}',
     id: '{#ITEMID}',
     anchor: '{#ANCHOR}'

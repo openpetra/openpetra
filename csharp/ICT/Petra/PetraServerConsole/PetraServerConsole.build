@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-csharp-PetraServerConsole-build">
+<property name="Namespace" value="PetraServerConsole" />
+
+<property name="OutputType" value="exe" overwrite="false"/>
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>

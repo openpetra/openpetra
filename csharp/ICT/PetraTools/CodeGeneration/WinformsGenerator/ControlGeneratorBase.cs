@@ -695,7 +695,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
-                if (!(this is LabelGenerator || this is GroupBoxGenerator))
+                if (!(this is LabelGenerator))
                 {
                     bool IsDetailNotMaster;
                     TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
@@ -1003,6 +1003,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
     public class ContainerGenerator : TControlGenerator
     {
+        List <TControlDef>FChildren = new List <TControlDef>();
+        bool FCreateControlsAddStatements = true;
+
+        public List <TControlDef>Children
+        {
+            get
+            {
+                return FChildren;
+            }
+        }
+
+        public bool CreateControlsAddStatements
+        {
+            get
+            {
+                return FCreateControlsAddStatements;
+            }
+
+            set
+            {
+                FCreateControlsAddStatements = value;
+            }
+        }
+
         public ContainerGenerator(string prefix, System.Type type)
             : base(prefix, type)
         {
@@ -1021,26 +1045,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
         {
-            base.SetControlProperties(writer, container);
+            FChildren = new List <TControlDef>();
 
             // add all the children
-            List <TControlDef>children = new List <TControlDef>();
-
             foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
             {
                 if (child.parentName == container.controlName)
                 {
-                    children.Add(child);
+                    FChildren.Add(child);
                 }
             }
 
-            children.Sort(new CtrlItemOrderComparer());
+            FChildren.Sort(new CtrlItemOrderComparer());
 
-            foreach (TControlDef child in children)
+            base.SetControlProperties(writer, container);
+
+            if (FCreateControlsAddStatements)
             {
-                writer.CallControlFunction(container.controlName,
-                    "Controls.Add(this." +
-                    child.controlName + ")");
+                foreach (TControlDef child in FChildren)
+                {
+                    writer.CallControlFunction(container.controlName,
+                        "Controls.Add(this." +
+                        child.controlName + ")");
+                }
             }
 
             return writer.FTemplate;

@@ -95,6 +95,7 @@ OpenPetra:
                     GiftEntry:
                         ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=TFrmGiftBatch}
+                        RecurringGiftBatches: {Description:Manually enter Recurring Gift batches, ActionOpenScreen=TFrmRecurringGiftBatch}
                         #AddGifts:
                         #ImportGifts:
                         #EditExistingGifts:
@@ -115,12 +116,15 @@ OpenPetra:
                     General:
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
+                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
                         #EditTransactionsInPreviouslyUsedBatch:
                         #PostBatch:
                         #FindTransaction:
+                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonthly}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -145,7 +149,6 @@ OpenPetra:
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
-                    #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
                 #Budgets:
@@ -200,6 +203,7 @@ OpenPetra:
                         VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
                     Application-related:
                         ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
+                        ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
 
                     
@@ -298,7 +302,7 @@ OpenPetra:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                AnalysisTypes: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:

@@ -6,7 +6,7 @@
          area="Petra Data"
          label="Language"
          dumpname="p_langua"
-         group="main">
+         group="common">
     <tablefield name="p_language_code_c"
                 type="varchar"
                 descr="This is the code used to identify a language."
@@ -53,7 +53,7 @@
          area="Petra Data"
          label="Frequency"
          dumpname="a_freque"
-         group="main">
+         group="common">
     <tablefield name="a_frequency_code_c"
                 type="varchar"
                 descr=""
@@ -116,7 +116,7 @@
          area="Petra Data"
          label="International Postal Type"
          dumpname="p_intern"
-         group="main">
+         group="common">
     <tablefield name="p_internat_postal_type_code_c"
                 type="varchar"
                 descr=""
@@ -155,7 +155,7 @@
          area=""
          label="Country"
          dumpname="p_countr"
-         group="main">
+         group="common">
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
@@ -275,7 +275,7 @@
          area="Petra Data"
          label="Currency"
          dumpname="a_curren"
-         group="main">
+         group="common">
     <tablefield name="a_currency_code_c"
                 type="varchar"
                 descr="This defines which currency is being used"
@@ -7492,7 +7492,7 @@
                 label="PO G/L Accrual Account Code"/>
     <tablefield name="a_provisional_year_end_flag_l"
                 type="bit"
-                descr=""
+                descr="This flag is set between the completion of the last month of the year and the year itself. In this state some activities are disabled and some others are enabled."
                 format="Yes/No"
                 label="Provisional Year End Flag"
                 initial="no"/>
@@ -8602,7 +8602,7 @@
                 notnull="yes"/>
     <tablefield name="a_effective_date_d"
                 type="date"
-                descr=""
+                descr="Deprecated - do not use any more"
                 format="99/99/9999"
                 label="Effective Date"
                 notnull="yes"
@@ -9958,7 +9958,7 @@
     <!-- Explicit Indexes on table a_method_of_giving  -->
   </table>
   <table name="a_method_of_payment"
-         descr="Media&quot;&quot; types of money received.  Eg: Cash, Check Credit Card."
+         descr="Media types of money received. Eg: Cash, Check Credit Card"
          area="Petra Data"
          label="Method of Payment"
          dumpname="a_metpay"
@@ -12665,7 +12665,7 @@
                 type="number"
                 length="24"
                 decimals="10"
-                descr="This is a number of currency units"
+                descr="This is the amount in transaction currency. This field should be renamed to a_gift_transaction_amount_n, to be in analogy to a_gift_detail.a_gift_transaction_amount_n"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Gift Amount"
                 help="Enter the amount"
@@ -15894,6 +15894,16 @@
                 type="varchar"
                 descr="stores the plain data received from the browser in JSON format"
                 format="x(15000)"/>
+    <tablefield name="p_local_partner_key_n"
+                type="number"
+                length="10"
+                descr="the person partner key of the applicant in the local database of the registration office. no foreign key since the person partner is in another database"
+                format="9999999999"/>
+    <tablefield name="p_imported_local_petra_l"
+                type="bit"
+                descr="true if the applicant has already been imported into the local database of the registration office."
+                format="Yes/No"
+                initial="no"/>
     <!-- Constraints on table pm_general_application -->
     <primarykey name="pm_general_application_pk"
                 descr=""

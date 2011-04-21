@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.btnNext = new System.Windows.Forms.Button();
         	this.btnFinish = new System.Windows.Forms.Button();
         	this.pnlNavigation = new System.Windows.Forms.Panel();
+        	this.pnlCollapsibleNavigation = new Ict.Common.Controls.TPnlCollapsible();
         	this.pnlContent = new System.Windows.Forms.Panel();
         	this.lblHeading2 = new System.Windows.Forms.Label();
         	this.lblHeading1 = new System.Windows.Forms.Label();
@@ -71,6 +72,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.lblPageProgress = new System.Windows.Forms.Label();
         	this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
         	this.pnlButtons.SuspendLayout();
+        	this.pnlNavigation.SuspendLayout();
         	this.pnlHeadings.SuspendLayout();
         	this.pnlTop.SuspendLayout();
         	this.panel3.SuspendLayout();
@@ -120,7 +122,6 @@ namespace Ict.Petra.Client.CommonForms
         	this.btnCancel.Size = new System.Drawing.Size(102, 23);
         	this.btnCancel.TabIndex = 3;
         	this.btnCancel.Text = "&Cancel";
-       		this.btnCancel.Enabled = true; 
         	this.btnCancel.UseVisualStyleBackColor = true;
         	this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
         	// 
@@ -159,23 +160,44 @@ namespace Ict.Petra.Client.CommonForms
         	// 
         	// pnlNavigation
         	// 
+        	this.pnlNavigation.AutoSize = true;
+        	this.pnlNavigation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         	this.pnlNavigation.BackColor = System.Drawing.Color.White;
+        	this.pnlNavigation.Controls.Add(this.pnlCollapsibleNavigation);
         	this.pnlNavigation.Dock = System.Windows.Forms.DockStyle.Left;
         	this.pnlNavigation.Location = new System.Drawing.Point(0, 0);
         	this.pnlNavigation.Name = "pnlNavigation";
         	this.pnlNavigation.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-        	this.pnlNavigation.Size = new System.Drawing.Size(157, 335);
+        	this.pnlNavigation.Size = new System.Drawing.Size(184, 335);
         	this.pnlNavigation.TabIndex = 2;
+        	// 
+        	// pnlCollapsibleNavigation
+        	// 
+        	this.pnlCollapsibleNavigation.AutoSize = true;
+        	this.pnlCollapsibleNavigation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        	this.pnlCollapsibleNavigation.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
+        	this.pnlCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
+        	this.pnlCollapsibleNavigation.IsCollapsed = false;
+        	this.pnlCollapsibleNavigation.Location = new System.Drawing.Point(5, 0);
+        	this.pnlCollapsibleNavigation.Margin = new System.Windows.Forms.Padding(0);
+        	this.pnlCollapsibleNavigation.Name = "pnlCollapsibleNavigation";
+        	this.pnlCollapsibleNavigation.Size = new System.Drawing.Size(179, 335);
+        	this.pnlCollapsibleNavigation.TabIndex = 0;
+        	this.pnlCollapsibleNavigation.TaskListInstance = null;
+        	this.pnlCollapsibleNavigation.TaskListNode = null;
+        	this.pnlCollapsibleNavigation.UserControlClass = "";
+        	this.pnlCollapsibleNavigation.UserControlNamespace = "";
+        	this.pnlCollapsibleNavigation.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
         	// 
         	// pnlContent
         	// 
         	this.pnlContent.AutoSize = true;
         	this.pnlContent.BackColor = System.Drawing.SystemColors.Control;
         	this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-        	this.pnlContent.Location = new System.Drawing.Point(157, 40);
+        	this.pnlContent.Location = new System.Drawing.Point(184, 40);
         	this.pnlContent.Name = "pnlContent";
         	this.pnlContent.Padding = new System.Windows.Forms.Padding(5);
-        	this.pnlContent.Size = new System.Drawing.Size(435, 295);
+        	this.pnlContent.Size = new System.Drawing.Size(408, 295);
         	this.pnlContent.TabIndex = 3;
         	// 
         	// lblHeading2
@@ -213,7 +235,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlHeadings.Location = new System.Drawing.Point(0, 0);
         	this.pnlHeadings.Name = "pnlHeadings";
         	this.pnlHeadings.Padding = new System.Windows.Forms.Padding(5, 8, 8, 0);
-        	this.pnlHeadings.Size = new System.Drawing.Size(356, 40);
+        	this.pnlHeadings.Size = new System.Drawing.Size(329, 40);
         	this.pnlHeadings.TabIndex = 4;
         	// 
         	// pnlTop
@@ -222,9 +244,9 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlTop.Controls.Add(this.pnlHeadings);
         	this.pnlTop.Controls.Add(this.panel3);
         	this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-        	this.pnlTop.Location = new System.Drawing.Point(157, 0);
+        	this.pnlTop.Location = new System.Drawing.Point(184, 0);
         	this.pnlTop.Name = "pnlTop";
-        	this.pnlTop.Size = new System.Drawing.Size(435, 40);
+        	this.pnlTop.Size = new System.Drawing.Size(408, 40);
         	this.pnlTop.TabIndex = 5;
         	// 
         	// panel3
@@ -232,7 +254,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.panel3.Controls.Add(this.prbPageProgress);
         	this.panel3.Controls.Add(this.lblPageProgress);
         	this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-        	this.panel3.Location = new System.Drawing.Point(356, 0);
+        	this.panel3.Location = new System.Drawing.Point(329, 0);
         	this.panel3.Name = "panel3";
         	this.panel3.Size = new System.Drawing.Size(79, 40);
         	this.panel3.TabIndex = 5;
@@ -245,7 +267,6 @@ namespace Ict.Petra.Client.CommonForms
         	this.prbPageProgress.Name = "prbPageProgress";
         	this.prbPageProgress.Size = new System.Drawing.Size(64, 15);
         	this.prbPageProgress.TabIndex = 1;
-        	this.prbPageProgress.Value = 0;
         	// 
         	// lblPageProgress
         	// 
@@ -280,6 +301,8 @@ namespace Ict.Petra.Client.CommonForms
         	this.Text = "TPetraShepherdForm";
         	this.Load += new System.EventHandler(this.Form_Load);
         	this.pnlButtons.ResumeLayout(false);
+        	this.pnlNavigation.ResumeLayout(false);
+        	this.pnlNavigation.PerformLayout();
         	this.pnlHeadings.ResumeLayout(false);
         	this.pnlHeadings.PerformLayout();
         	this.pnlTop.ResumeLayout(false);
@@ -288,6 +311,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.ResumeLayout(false);
         	this.PerformLayout();
         }
+        private Ict.Common.Controls.TPnlCollapsible pnlCollapsibleNavigation;
 
         protected Ict.Common.Controls.TExtStatusBarHelp stbMain;
         protected System.Windows.Forms.Label lblPageProgress;

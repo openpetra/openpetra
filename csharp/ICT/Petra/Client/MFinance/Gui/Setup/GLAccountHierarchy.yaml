@@ -1,0 +1,75 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: GL Account Hierarchy
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    DetailTable: AAccount
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.GL.Data]
+    FormType: edit
+    Template: windowTDS
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
+        actDeleteUnusedAccount: {Label=Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
+        actImportHierarchy: {Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
+        actExportHierarchy: {ActionClick=ExportHierarchy}
+    Controls:
+        pnlContent:
+            Controls: [sptAccountSplitter]
+            Dock: Fill
+        sptAccountSplitter:
+            Panel1: trvAccounts
+            Panel2: pnlDetails
+            SplitterDistance: 50
+            SplitterOrientation: vertical
+            Dock: Fill
+        trvAccounts: {Dock=Fill}
+        pnlDetails: {Dock=Fill}
+            Controls: 
+                Row0: [txtDetailAccountCode]
+                Row1: [cmbDetailAccountType]
+                Row2a: [txtDetailEngAccountCodeLongDesc]
+                Row2: [txtDetailEngAccountCodeShortDesc]
+                Row3: [txtDetailAccountCodeLongDesc]
+                Row4: [txtDetailAccountCodeShortDesc]
+                Row5: [cmbDetailValidCcCombo]
+                Row6: [chkDetailBankAccountFlag]
+                Row7: [chkDetailAccountActiveFlag]
+                Row7a: [chkDetailForeignCurrencyFlag]
+                Row8: [ucoAccountAnalysisAttributes]
+        txtDetailAccountCode: {OnLeave=ChangeAccountCodeValue}
+        cmbDetailAccountType:
+            OptionalValues: [Income, Expense, Asset, Equity, Liability]
+        # TODO: still need english and local description? easier to use different account hierarchies?
+        txtDetailEngAccountCodeLongDesc: {Label=Description Long English}
+        txtDetailEngAccountCodeShortDesc: {Label=Description Short English}
+        txtDetailAccountCodeLongDesc: {Label=Description Long Local}
+        txtDetailAccountCodeShortDesc: {Label=Description Short Local}
+        cmbDetailValidCcCombo: {Label=Valid Cost Centres}
+            OptionalValues: [All, Foreign, Local]
+        # TODO: budget type, budget control
+        # TODO: analysis attributes
+        # TODO: which bank account (pbankingdetail) is this account linked to
+        chkDetailBankAccountFlag: {Label=Bank Account}
+        # TODO: system account, standard account
+        chkDetailAccountActiveFlag: {Label=Active}
+        chkDetailForeignCurrencyFlag:
+            CheckBoxAttachedLabel: right
+            Controls: [cmbDetailForeignCurrencyCode]
+        cmbDetailForeignCurrencyCode: {Label=Foreign Currency, List=CurrencyCodeList}		
+        ucoAccountAnalysisAttributes:
+            Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
+            Dock: Fill
+    Menu:
+        mniAccounts:
+            mniAddNewAccount:
+            mniDeleteUnusedAccount:
+            mniSeparator:
+            mniExportHierarchy:
+            mniImportHierarchy:
+    Toolbar:
+        tbbAddNewAccount:
+        tbbDeleteUnusedAccount:
+        tbbExportHierarchy:
+        tbbImportHierarchy:

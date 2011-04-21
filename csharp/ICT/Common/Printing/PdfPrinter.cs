@@ -43,6 +43,7 @@ namespace Ict.Common.Printing
     public class TPdfPrinter : TGfxPrinter
     {
         private XGraphics FXGraphics;
+        private PdfDocument FPdfDocument;
 
         /// todoComment
         public XFont FXDefaultFont;
@@ -389,6 +390,24 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// prints into the current line, into the given column
+        /// </summary>
+        /// <param name="ATxt"></param>
+        /// <param name="AFont"></param>
+        /// <returns>Return the width of the string, if it was printed in one line, using the given Font</returns>
+        public override float GetWidthString(String ATxt, eFont AFont)
+        {
+            // somehow, on Linux we need to use base.GetWidthString.
+            // on Windows, base.GetWidthString is too long.
+            if (Environment.OSVersion.ToString().StartsWith("Unix"))
+            {
+                return base.GetWidthString(ATxt, AFont);;
+            }
+
+            return (float)FXGraphics.MeasureString(ATxt, GetXFont(AFont), XStringFormats.Default).Width;
+        }
+
+        /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
         /// <returns>the new current line
@@ -456,6 +475,23 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// insert another pdf into the current PDF
+        /// </summary>
+        /// <param name="AFilename"></param>
+        public override void InsertDocument(string AFilename)
+        {
+            if (PrintingMode == ePrintingMode.eDoPrint)
+            {
+                PdfDocument inputDocument = PdfReader.Open(AFilename, PdfDocumentOpenMode.Import);
+
+                foreach (PdfPage pageToInsert in inputDocument.Pages)
+                {
+                    FPdfDocument.AddPage(pageToInsert);
+                }
+            }
+        }
+
+        /// <summary>
         /// store a pdf to a file. will call PrintPage automatically
         /// </summary>
         /// <param name="AFilename"></param>
@@ -473,11 +509,11 @@ namespace Ict.Common.Printing
                 throw new Exception("Mono bug: CurrentRegion is still null, invariant culture. Please set LANG environment variable");
             }
 
-            PdfDocument pdfDocument = new PdfDocument();
+            FPdfDocument = new PdfDocument();
 
             do
             {
-                PdfPage page = pdfDocument.AddPage();
+                PdfPage page = FPdfDocument.AddPage();
                 page.Size = PageSize.A4;
                 FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
 
@@ -512,8 +548,8 @@ namespace Ict.Common.Printing
             } while (HasMorePages());
 
             // should we catch an exception if document cannot be written?
-            pdfDocument.Save(AFilename);
-            pdfDocument.Close();
+            FPdfDocument.Save(AFilename);
+            FPdfDocument.Close();
         }
     }
 }

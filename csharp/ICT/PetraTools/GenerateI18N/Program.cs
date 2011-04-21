@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -83,32 +83,29 @@ class Program
             {
                 TGenerateCatalogStrings.Execute(settings.GetValue("file"), null, null);
             }
-            else if (settings.HasValue("solution"))
+            else if (settings.HasValue("filelist"))
             {
                 TDataDefinitionStore store = new TDataDefinitionStore();
                 Console.WriteLine("parsing " + settings.GetValue("petraxml", true));
                 TDataDefinitionParser parser = new TDataDefinitionParser(settings.GetValue("petraxml", true));
                 parser.ParseDocument(ref store, true, true);
 
-                string solutionFilename = settings.GetValue("solution");
                 string CollectedStringsFilename = settings.GetValue("tmpPath") +
                                                   Path.DirectorySeparatorChar +
-                                                  Path.GetFileNameWithoutExtension(solutionFilename) +
-                                                  ".CollectedGettext.cs";
+                                                  "GenerateI18N.CollectedGettext.cs";
                 StreamWriter writerCollectedStringsFile = new StreamWriter(CollectedStringsFilename);
 
-                TCSProjTools projTools = new TCSProjTools();
-                StringCollection pathsProjectFiles = projTools.LoadGUIDsFromSolution(solutionFilename);
                 string GettextApp = settings.GetValue("gettext");
 
-                foreach (string pathProjectFile in pathsProjectFiles)
+                string filesToParseWithGettext = string.Empty;
+                StreamReader readerFilelist = new StreamReader(settings.GetValue("filelist"));
+
+                while (!readerFilelist.EndOfStream)
                 {
-                    Console.WriteLine(Path.GetFileName(pathProjectFile));
-                    StringCollection codeFilePaths = TCSProjTools.LoadCodeFilesFromProject(pathProjectFile);
+                    string pathCodeFile = readerFilelist.ReadLine().Trim();
+                    string ext = Path.GetExtension(pathCodeFile);
 
-                    string filesToParseWithGettext = string.Empty;
-
-                    foreach (string pathCodeFile in codeFilePaths)
+                    if (".cs" == ext)
                     {
                         if (TGenerateCatalogStrings.Execute(pathCodeFile, store, writerCollectedStringsFile))
                         {
@@ -121,16 +118,19 @@ class Program
                             }
                         }
                     }
-
-                    if (filesToParseWithGettext.Length > 0)
+                    else if (".yml" == ext)
                     {
-                        ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
+                        TGenerateCatalogStrings.AddTranslationUINavigation(pathCodeFile, writerCollectedStringsFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine("the file " + pathCodeFile + " has an unknown extension! File ignored!");
                     }
                 }
 
-                if (settings.GetValue("solution").Contains("Client.sln"))
+                if (filesToParseWithGettext.Length > 0)
                 {
-                    TGenerateCatalogStrings.AddTranslationUINavigation(settings.GetValue("UINavigation.File"), writerCollectedStringsFile);
+                    ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
                 }
 
                 writerCollectedStringsFile.Close();

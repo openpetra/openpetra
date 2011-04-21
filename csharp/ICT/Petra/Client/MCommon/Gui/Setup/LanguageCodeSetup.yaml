@@ -1,0 +1,41 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Language Codes
+    Namespace: Ict.Petra.Client.MCommon.Gui.Setup
+    DetailTable: PLanguage
+    CacheableTable: LanguageCodeList
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailLanguageCode, DetailLanguageDescription, DetailCongressLanguage, DetailDeletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailLanguageCode, txtDetailLanguageDescription]
+                Row1: [chkDetailCongressLanguage]
+                Row2: [chkDetailDeletable]
+        txtDetailLanguageCode: {Label=Language Code}
+        txtDetailLanguageDescription: {Width=145}
+        chkDetailCongressLanguage: 
+        chkDetailDeletable:
+    Toolbar:
+        tbbNew:
+            Label: New Language Code

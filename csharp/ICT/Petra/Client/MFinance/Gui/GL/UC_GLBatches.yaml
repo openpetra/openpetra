@@ -1,0 +1,71 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    DetailTable: ABatch
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
+        actCancel: {Label=&Cancel, ActionClick=CancelRow}
+        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
+        actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+        pnlInfo: 
+            Controls: [pnlLedgerInfo, rgrShowBatches]
+            Dock: Top
+        rgrShowBatches: 
+            Label: Show batches available for
+            ControlsOrientation: horizontal
+            SuppressChangeDetection: true
+            OptionalValues: [Posting, =Editing, All]
+            OnChange: ChangeBatchFilter
+        pnlLedgerInfo:
+            Controls: [txtLedgerNumber]
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnCancel, btnPostBatch]
+        btnNew: {Action=actNew}
+        btnCancel: {Action=actCancel}
+        btnPostBatch: {Action=actPostBatch}
+        grdDetails:
+            Dock: Fill
+            Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
+            ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ShowJournalTab
+            SortOrder: ABatch.BatchNumber DESC
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailBatchDescription]
+                Row1: [txtDetailBatchControlTotal]
+                Row2: [dtpDetailDateEffective, lblValidDateRange]
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency, Format=Currency}
+        lblValidDateRange:
+        dtpDetailDateEffective: {Label=Effective Date}
+        tbrTabPage: {NoAttribute=true}
+        mnuTabPage: {NoAttribute=true}
+    Menu:
+        mniBatch:
+            Label: &Batch
+            mniPost: {Action=actPostBatch}
+            mniImportFromSpreadSheet:
+            mniImportBatches:
+            mniExportBatches:
+    Toolbar:
+        tbbPostBatch:
+        tbbImportFromSpreadSheet:
+        tbbImportBatches:
+        tbbExportBatches:

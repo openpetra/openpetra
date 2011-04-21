@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.IO;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Data;
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 
@@ -76,7 +77,16 @@ namespace Ict.Tools.PatchTool
                 }
             }
 
-            StatusWindow.AddLine(s);
+            if (!StatusWindow.IsHandleCreated || StatusWindow.IsDisposed)
+            {
+                return;
+            }
+
+            // avoid exception: Cross thread operation not valid
+            StatusWindow.Invoke((MethodInvoker) delegate
+                {
+                    StatusWindow.AddLine(s);
+                });
         }
 
         /// <summary>
@@ -270,6 +280,14 @@ namespace Ict.Tools.PatchTool
                 if ((!GetMatch(filename.Substring(APatchRootDirectory.Length + 1), out action, out TargetFile)))
                 {
                     throw new Exception("cannot find a destination path for file " + filename.Substring(APatchRootDirectory.Length + 1));
+                }
+
+                // make sure that the path exists
+                string TargetPath = Path.GetDirectoryName(TargetFile);
+
+                if (!Directory.Exists(TargetPath))
+                {
+                    Directory.CreateDirectory(TargetPath);
                 }
 
                 // Console.WriteLine(filename + ' ' + TargetFile);
@@ -654,6 +672,13 @@ namespace Ict.Tools.PatchTool
 
             // create temp directory
             TempPath = Path.GetFullPath(Path.GetTempPath() + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(APatchFile));
+
+            if (Directory.Exists(TempPath))
+            {
+                //  remove old temp directory: for testing patches, otherwise we are using the old version
+                Directory.Delete(TempPath, true);
+            }
+
             Directory.CreateDirectory(TempPath);
 
             // extract the tar patch file into the temp directory

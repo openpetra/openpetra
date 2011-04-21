@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
+using Ict.Common.DB; // Implicit reference
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MHospitality.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;

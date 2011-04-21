@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 using System.Xml;
@@ -1948,10 +1949,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     " must have both Width and Height attributes, or just Height, but not Width alone");
             }
 
+            StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
+
+            base.CreateControlsAddStatements = false;
             base.SetControlProperties(writer, ctrl);
+
             string ControlName = ctrl.controlName;
 
-            StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
             bool UseTableLayout = false;
 
             // don't use a tablelayout for controls where all children have the Dock property set
@@ -2046,6 +2050,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     // this is for radiogroup just with several strings in OptionalValues
     public class RadioGroupSimpleGenerator : GroupBoxGenerator
     {
+        string FDefaultValueRadioButton = String.Empty;
+        bool FNoDefaultValue = false;
+
         public RadioGroupSimpleGenerator()
             : base("rgr")
         {
@@ -2076,7 +2083,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             StringCollection optionalValues =
                 TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "OptionalValues"));
-            string DefaultValue = optionalValues[0];
+            string DefaultValue;
+
+            if ((TXMLParser.HasAttribute(curNode, "NoDefaultValue")
+                 && ((TXMLParser.GetAttribute(curNode, "NoDefaultValue")) == "true")))
+            {
+                DefaultValue = String.Empty;
+                FNoDefaultValue = true;
+            }
+            else
+            {
+                DefaultValue = optionalValues[0];
+            }
 
             if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
             {
@@ -2110,6 +2128,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (StringHelper.IsSame(DefaultValue, optionalValue))
                 {
                     newCtrl.SetAttribute("RadioChecked", "true");
+                    FDefaultValueRadioButton = radioButtonName;
                 }
 
                 if (TYml2Xml.HasAttribute(curNode, "SuppressChangeDetection"))
@@ -2123,9 +2142,97 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 Controls.Add(radioButtonName);
+                this.Children.Add(newCtrl);
             }
 
             return Controls;
+        }
+
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            string IfStatement = String.Empty;
+            bool FirstIfStatement = true;
+
+            if (AFieldOrNull == null)
+            {
+                if (!FNoDefaultValue)
+                {
+                    IfStatement += "if(ARow.RowState == DataRowState.Added)" + Environment.NewLine + "{" + Environment.NewLine;
+
+                    foreach (TControlDef optBtn in this.Children)
+                    {
+                        IfStatement += "    " + optBtn.controlName + ".Checked = ";
+                        IfStatement += optBtn.controlName == FDefaultValueRadioButton ? "true" : "false";
+                        IfStatement += ";" + Environment.NewLine;
+                    }
+
+                    IfStatement += "}" + Environment.NewLine + "else" + Environment.NewLine + "{" + Environment.NewLine;
+
+                    foreach (TControlDef optBtn in this.Children)
+                    {
+                        IfStatement += "    " + optBtn.controlName + ".Checked = false;" + Environment.NewLine;
+                    }
+
+                    IfStatement += "}" + Environment.NewLine;
+                }
+                else
+                {
+                    foreach (TControlDef optBtn in this.Children)
+                    {
+                        IfStatement += optBtn.controlName + ".Checked = false;" + Environment.NewLine;
+                    }
+                }
+
+                return IfStatement;
+            }
+
+            foreach (TControlDef optBtn in this.Children)
+            {
+                if (!FirstIfStatement)
+                {
+                    IfStatement += Environment.NewLine + "else ";
+                }
+
+                IfStatement += "if(" + AFieldOrNull + " == \"" + optBtn.Label + "\")" + Environment.NewLine + "{" + Environment.NewLine;
+
+                foreach (TControlDef optBtnInner in this.Children)
+                {
+                    IfStatement += "    " + optBtnInner.controlName + ".Checked = ";
+                    IfStatement += optBtnInner.controlName == optBtn.controlName ? "true" : "false";
+                    IfStatement += ";" + Environment.NewLine;
+                }
+
+                IfStatement += "}";
+
+                FirstIfStatement = false;
+            }
+
+            return IfStatement;
+        }
+
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            string IfStatement = String.Empty;
+            bool FirstIfStatement = true;
+
+            if (AFieldTypeDotNet == null)
+            {
+                return null;
+            }
+
+            foreach (TControlDef optBtn in this.Children)
+            {
+                if (!FirstIfStatement)
+                {
+                    IfStatement += " : ";
+                }
+
+                IfStatement += optBtn.controlName + ".Checked ? " + optBtn.controlName + ".Text";
+
+                FirstIfStatement = false;
+            }
+
+            return IfStatement + " : null";
         }
     }
 
@@ -2141,6 +2248,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (SimplePrefixMatch(curNode))
             {
+                if (TYml2Xml.HasAttribute(curNode, "Label"))
+                {
+                    base.FGenerateLabel = true;
+                }
+
                 if (TXMLParser.GetChild(curNode, "Controls") == null)
                 {
                     return TYml2Xml.HasAttribute(curNode,

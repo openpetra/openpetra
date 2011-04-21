@@ -115,9 +115,35 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_UNIT = "UNIT";
 
-        /// <summary>Unit-Type is key-min</summary>
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_AREA = "A";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_COUNTRY = "C";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_CONFERENCE = "CONF";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_FUND = "D";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_FIELD = "F";
+
+        /// <summary>Unit-Type</summary>
         public const String UNIT_TYPE_KEYMIN = "KEY-MIN";
 
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_OTHER = "O";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_ROOT = "R";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_TEAM = "T";
+
+        /// <summary>Unit-Type</summary>
+        public const String UNIT_TYPE_WORKING_GROUP = "W";
 
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_BANK = "BANK";

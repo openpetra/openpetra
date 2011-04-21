@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="ThirdParty-Build">
+
+<include buildfile="../../inc/nant/OpenPetra.references.xml"/> 
+
+<target name="clean" >
+  <delete>
+    <fileset basedir="${dir.bin}">
+      <patternset refid="3rdPartyPattern" />
+      <patternset refid="NunitPattern" />
+    </fileset>
+  </delete>
+</target>
+
+<target name="uncrustify">
+  <!-- nothing to do here -->
+</target>
+
+<target name="compile" description="Copy Thirdparty DLLs to bin directory">
+  <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
+    <copy todir="${dir.bin}">
+      <fileset basedir="${foldername}">
+        <patternset refid="3rdPartyPattern" />
+        <patternset refid="NunitPattern" />
+        <!-- for mono we need to take the managed only version -->        
+        <exclude name="System.Data.SQLite.dll" />
+      </fileset>
+    </copy>
+  </foreach>
+  <!-- copy SQLite depending on the platform -->
+  <copy file="SQLite/System.Data.SQLite.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${platform::is-windows()}" />
+  <copy file="SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${not platform::is-windows()}" />
+</target>
+
+<target name="prepareProjects"/>
+
+<target name="generateCsproject" />
+
+<target name="generateCsprojectNoCompile" />
+
+
+</project>

@@ -18,7 +18,7 @@ try
         Console.WriteLine("Serving " + Filename);
         if (!File.Exists(Filename))
         {
-            Filename = "OpenPetraOrg.ext/img/default_blank.gif";
+            Filename = "img/default_blank.gif";
         }
         Response.Buffer = true;
         Response.Clear();

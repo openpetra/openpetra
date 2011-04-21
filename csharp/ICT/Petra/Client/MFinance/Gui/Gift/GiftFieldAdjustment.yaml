@@ -1,0 +1,30 @@
+﻿RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Field Change Adjustment
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    FormType: browse
+    Template: window
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actFieldChangeAdjustment: {Label=&Adjust gifts after field change, ActionClick=FieldChangeAdjustment}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlParameters]
+        pnlParameters:
+            Controls:
+                Row0: [dtpStartDate, dtpEndDate]
+                Row1: [dtpDateEffective]
+                Row2: [txtRecipientKey]
+                Row3: [txtOldFieldKey]
+                Row4: [chkNoReceipt]
+        dtpStartDate: {Tooltip=Fix Gifts from this date onwards}
+        dtpEndDate: {Tooltip=Fix Gifts till this date (inclusive)}
+        dtpDateEffective: {Tooltip=Date for adjusted Gift batch}
+        txtRecipientKey: {Type=PartnerKey}
+        txtOldFieldKey: {Type=PartnerKey}
+        chkNoReceipt: {Tooltip=tick this if the gift was already receipted last year, CheckBoxAttachedLabel=right}
+    Menu:
+    Toolbar:
+        tbbFieldChangeAdjustment:

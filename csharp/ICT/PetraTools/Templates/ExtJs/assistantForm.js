@@ -46,12 +46,13 @@ var {#FORMNAME} = null;
 new Ext.ux.Wiz.Card({
     title : this.{#LABEL},
     monitorValid : true,
-{#IFDEF ONSHOW}
     onShow: function() {
         Ext.ux.Wiz.Card.superclass.onShow.call(this);
+{#IFDEF ONSHOW}
         {#ONSHOW}
-    },
 {#ENDIF ONSHOW}
+        window.scrollTo(0,0);
+    },
 {#IFDEF ISVALID}
     isValid: function() {
         {#ISVALID}

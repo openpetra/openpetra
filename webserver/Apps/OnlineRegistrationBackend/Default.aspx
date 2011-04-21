@@ -2,7 +2,7 @@
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
 <%@ Assembly Name="Ict.Common" %>
-<%@ Assembly Name="PetraServerWebService" %>
+<%@ Assembly Name="Ict.Petra.Server.app.WebService" %>
 <%@ Import Namespace="Ict.Common" %>
 <%@ Import Namespace="PetraWebService" %>
 
@@ -11,7 +11,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Desktop - Ext.NET Examples</title>    
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <title>Desktop - Ext.NET Examples</title>
     
     <script runat="server">
         protected void Button1_Click(object sender, DirectEventArgs e)

@@ -6,6 +6,24 @@
     <property name="DBMS.DBName" value="openpetra" unless="${property::exists('DBMS.DBName')}"/>
     <property name="psqlversion" value="9" unless="${property::exists('psqlversion')}"/>
 
+    <target name="patchDatabase" depends="init" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
+
+        <if test="${DBMS.Type=='sqlite'}">
+            <fail message="patchDatabase does not support sqlite. please use postgresql or mysql. otherwise please run nant resetDatabase"/>
+        </if>
+
+        <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
+              tofile="${ServerConfigFile}">
+          <filterchain>
+            <expandproperties />
+          </filterchain>
+        </copy>
+
+         <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.PatchTool.exe" 
+            commandline="-action:patchDatabase -C:${ServerConfigFile} -DBPatches.Path:${OpenPetraRoot.dir}/db/patches -Server.LogFile:${Tmp.dir}/dbpatch.log -OpenPetra.PathTemp:${Tmp.dir}"
+            failonerror="true"/>
+    </target>
+    
     <target name="createSQLStatements" depends="init" description="Create the SQL files.">
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
@@ -54,8 +72,7 @@
                 </items>
             </in>
             <do>
-                <property name="filenameWithoutExtension" value="${script::GetFilenameWithoutExtension(filename)}"/>
-                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${filenameWithoutExtension}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
             </do>
         </foreach>
     </target>
@@ -217,18 +234,35 @@
         </if>
     </target>
 
-    <target name="loadDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
+    <target name="loadDatabase" depends="init, createSQLStatements" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
     
         <if test="${DBMS.Type=='sqlite'}">
             <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
             <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+        </if>
+    </target>
+
+    <target name="loadDatabaseIncrement" depends="init" description="load a test increment for the database from a DBMS specific file, eg. nant loadDatabaseIncrement -D:LoadDB.file=testmysql.sql">
+        <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
+    
+        <if test="${DBMS.Type=='sqlite'}">
+            <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
+        </if>
+        <if test="${DBMS.Type=='postgresql'}">
+            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+        </if>
+        <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
         </if>
     </target>

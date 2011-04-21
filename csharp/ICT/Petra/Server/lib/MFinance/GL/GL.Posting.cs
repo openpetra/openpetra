@@ -251,10 +251,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else if (Batch.BatchCreditTotal == 0)
             {
-                AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
-                        TResultSeverity.Resv_Critical));
+//                AVerifications.Add(new TVerificationResult(
+//                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+//                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
+//                        TResultSeverity.Resv_Critical));
             }
             else if ((Batch.BatchControlTotal != 0) && (Convert.ToDecimal(Batch.BatchControlTotal) != Convert.ToDecimal(Batch.BatchCreditTotal)))
             {
@@ -282,8 +282,6 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 // just make sure that the correct BatchPeriod is used
                 Batch.BatchPeriod = DateEffectivePeriodNumber;
-
-                // TODO: BatchYear?
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -294,8 +292,6 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 journal.DateEffective = Batch.DateEffective;
                 journal.JournalPeriod = Batch.BatchPeriod;
-
-                // TODO: JournalYear?
 
                 journal.JournalCreditTotal = 0.0M;
                 journal.JournalDebitTotal = 0.0M;
@@ -335,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
                     if (!((transaction.Reference == MFinanceConstants.TRANSACTION_FX_REVAL)
-                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_FX_REVAL)))
+                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_REVAL)))
                     {
                         // get the account that this transaction is writing to
                         accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = '" + transaction.AccountCode + "'";
@@ -350,14 +346,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
-                            AVerifications.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                    String.Format(Catalog.GetString(
-                                            "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
-                                        transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
-                                        Account.ForeignCurrencyCode,
-                                        transaction.AccountCode),
-                                    TResultSeverity.Resv_Critical));
+                            if (false)
+                            {
+                                AVerifications.Add(new TVerificationResult(
+                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                        String.Format(Catalog.GetString(
+                                                "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
+                                            transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
+                                            Account.ForeignCurrencyCode,
+                                            transaction.AccountCode),
+                                        TResultSeverity.Resv_Critical));
+                            }
                         }
                     }
 
@@ -905,13 +904,20 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (isForeignAccount)
                 {
-                    GlmRow.YtdActualForeign += PostingLevelElement.transAmount;
+                    if (GlmRow.IsYtdActualForeignNull())
+                    {
+                        GlmRow.YtdActualForeign = PostingLevelElement.transAmount;
+                    }
+                    else
+                    {
+                        GlmRow.YtdActualForeign += PostingLevelElement.transAmount;
+                    }
                 }
 
                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
                 {
                     GlmRow.ClosingPeriodActualBase += PostingLevelElement.baseAmount;
-                }
+                } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
                 for (Int32 PeriodCount = FromPeriod;
@@ -939,7 +945,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (isForeignAccount)
                     {
-                        GlmPeriodRow.ActualForeign += PostingLevelElement.transAmount;
+                        if (GlmPeriodRow.IsActualForeignNull())
+                        {
+                            GlmPeriodRow.ActualForeign = PostingLevelElement.transAmount;
+                        }
+                        else
+                        {
+                            GlmPeriodRow.ActualForeign += PostingLevelElement.transAmount;
+                        }
                     }
                 }
             }
@@ -1003,7 +1016,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 if (!glmMaster.IsYtdActualForeignNull())
                                 {
-                                    DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+                                    if (DBMasterRow.IsYtdActualForeignNull())
+                                    {
+                                        DBMasterRow.YtdActualForeign = glmMaster.YtdActualForeign;
+                                    }
+                                    else
+                                    {
+                                        DBMasterRow.YtdActualForeign += glmMaster.YtdActualForeign;
+                                    }
                                 }
 
                                 if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
@@ -1036,7 +1056,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (!glmPeriodRow.IsActualForeignNull())
                                     {
-                                        DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+                                        if (DBPeriodRow.IsActualForeignNull())
+                                        {
+                                            DBPeriodRow.ActualForeign = glmPeriodRow.ActualForeign;
+                                        }
+                                        else
+                                        {
+                                            DBPeriodRow.ActualForeign += glmPeriodRow.ActualForeign;
+                                        }
                                     }
 
                                     AGeneralLedgerMasterPeriodAccess.SubmitChanges(DBPeriodTable, Transaction, out AVerifications);
@@ -1058,7 +1085,11 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AVerifications = new TVerificationResultCollection();
 
-                AVerifications.Add(new TVerificationResult("error during posting", e.Message, TResultSeverity.Resv_Critical));
+                AVerifications.Add(new TVerificationResult("Exception in GL.Posting.cs " + Environment.NewLine +
+                        "[" + e.Source +
+                        "]" + Environment.NewLine + e.ToString(),
+                        "Message: " + e.Message,
+                        TResultSeverity.Resv_Critical));
 
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);

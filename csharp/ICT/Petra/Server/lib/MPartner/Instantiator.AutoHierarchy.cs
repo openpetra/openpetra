@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 //
 // Contains a remotable class that instantiates an Object which gives access to
 // the MPartner Namespace (from the Client's perspective).
@@ -99,10 +100,10 @@ using Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors;
 using Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.WebConnectors;
 using Ict.Petra.Server.MPartner.Extracts;
 //using Ict.Petra.Server.MPartner.ImportExport;
-using Ict.Petra.Server.MPartner.Mailing;
+// using Ict.Petra.Server.MPartner.Mailing;
 using Ict.Petra.Server.MPartner.Partner;
 //using Ict.Petra.Server.MPartner.PartnerMerge;
-using Ict.Petra.Server.MPartner.Subscriptions;
+//using Ict.Petra.Server.MPartner.Subscriptions;
 //using Ict.Petra.Server.MPartner.TableMaintenance;
 using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
 //using Ict.Petra.Server.MPartner.Extracts.WebConnectors;

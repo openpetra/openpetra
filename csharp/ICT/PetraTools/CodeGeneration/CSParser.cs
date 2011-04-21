@@ -23,9 +23,10 @@
 //
 using System;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
 using System.Text;
@@ -415,6 +416,8 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public static void GetCSFilesInProject(string AProjName, ref List <CSParser>ACSFiles)
         {
+            throw new NotImplementedException();
+
             if (!File.Exists(AProjName))
             {
                 return;
@@ -525,6 +528,89 @@ namespace Ict.Tools.CodeGeneration
         /// </summary>
         public static string ICTPath;
 
+        private static Hashtable _nsmap = null;
+        private static Regex exceptionRegex = new Regex("^\\s*([a-zA-Z.]+)\\s*=\\s*([a-zA-Z.]+)");
+
+        /// <summary>
+        /// Reads in the name space maps for all other assemblies
+        /// </summary>
+        private static void ReadNamespaceMaps()
+        {
+            if (null == _nsmap)       // singelton
+            {
+                _nsmap = new Hashtable();
+                // TODO: The directory should not be hardcoded!!
+                string[] filePaths = Directory.GetFiles(ICTPath + "/../../delivery/nsMap", "*.namespace-map");
+
+                foreach (string filename in filePaths)
+                {
+                    // Read in the file
+                    StreamReader sr = new StreamReader(filename);
+
+                    while (sr.Peek() >= 0)
+                    {
+                        string line = sr.ReadLine();
+                        Match match = exceptionRegex.Match(line);
+
+                        if (match.Success && (match.Groups.Count > 2))
+                        {
+                            string key = match.Groups[1].ToString();
+                            string val = match.Groups[2].ToString();
+
+                            if (!_nsmap.Contains(key))
+                            {
+                                _nsmap.Add(key, new List <string>());
+                            }
+
+                            // Add value as directory name TODO: Convention of "Ict." only once in name!!
+                            ((List <string> )_nsmap[key]).Add(ICTPath + val.Replace("Ict.", "/").Replace('.', '/'));
+                        }
+                    }
+
+                    sr.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads the nsmap generated from csdepend and searches for all directories
+        /// including this namespace
+        /// </summary>
+        /// <param name="ns"></param>
+        /// <returns></returns>
+        public static List <string>GetSourceDirectory(string ns)
+        {
+            ReadNamespaceMaps();
+            return (List <string> )_nsmap[ns];
+        }
+
+        private static Hashtable _CSFilesPerDir = new Hashtable();
+
+        /// <summary>
+        /// Returns CSParser instances for the cs files in the given directory.
+        /// If you get the list more then one time, then you will get a cached copy
+        /// </summary>
+        /// <param name="dir">string with the directory to parse</param>
+        /// <returns>List of CSParser instances</returns>
+        public static List <CSParser>GetCSFilesForDirectory(string dir, SearchOption option)
+        {
+            string dirfull = Path.GetFullPath(dir);
+
+            if (!_CSFilesPerDir.Contains(dirfull))
+            {
+                List <CSParser>CSFiles = new List <CSParser>();
+
+                foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
+                {
+                    CSFiles.Add(new CSParser(filename));
+                }
+
+                _CSFilesPerDir.Add(dirfull, CSFiles);
+            }
+
+            return (List <CSParser> )_CSFilesPerDir[dirfull];
+        }
+
         /// <summary>
         /// get the web connector classes that fit the server namespace
         /// </summary>
@@ -532,42 +618,25 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public static List <ClassNode>GetWebConnectorClasses(string AServerNamespace)
         {
-            if (AServerNamespace.Split('.').Length < 4)
+            // Look up in nsmap for directory
+            List <string>dirList = GetSourceDirectory(AServerNamespace);
+
+            if (null == dirList)
             {
                 return null;
             }
 
-            string ModuleName = AServerNamespace.Split('.')[3];
-
             List <CSParser>CSFiles = new List <CSParser>();
 
-            if (!File.Exists(ICTPath + "/Petra/Server/lib/" +
-                    ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj")
-                && Directory.Exists(ICTPath + "/Petra/Server/lib/" + ModuleName))
+            foreach (string dir in dirList)
             {
-                // any class in the module can contain a webconnector
-                string[] filePaths = Directory.GetFiles(ICTPath + "/Petra/Server/lib/" +
-                    ModuleName, "*.csproj",
-                    SearchOption.AllDirectories);
+                Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + dir + "'\n");
 
-                foreach (string filePath in filePaths)
+                foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly))
                 {
-                    // excluding the directories data and connect
-                    if (!filePath.Replace("\\", "/").Contains("/data/")
-                        && !filePath.Replace("\\", "/").Contains("/connect/"))
-                    {
-                        CSParser.GetCSFilesInProject(filePath, ref CSFiles);
-                    }
+                    // Copy the list, because namespace could be in more then one directory
+                    CSFiles.Add(tempCSFile);
                 }
-            }
-            else
-            {
-                CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
-                    ModuleName + "/Ict.Petra.Server." + ModuleName + ".WebConnectors.csproj",
-                    ref CSFiles);
-                CSParser.GetCSFilesInProject(ICTPath + "/Petra/Server/lib/" +
-                    ModuleName + "/setup/Ict.Petra.Server." + ModuleName + ".Setup.WebConnectors.csproj",
-                    ref CSFiles);
             }
 
             return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);
@@ -604,7 +673,7 @@ namespace Ict.Tools.CodeGeneration
             return null;
         }
 
-        /**
+        /*
          * todo: function that returns the lines of a method, including the line numbers???
          */
 

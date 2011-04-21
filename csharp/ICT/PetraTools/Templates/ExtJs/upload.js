@@ -5,7 +5,12 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
     initComponent : function(config) {
         Ext.apply(this, {
             fileUpload: true,
+{#IFNDEF UPLOADBUTTONLABEL}
             width: 24,
+{#ENDIFN UPLOADBUTTONLABEL}
+{#IFDEF UPLOADBUTTONLABEL}
+            width: 200,
+{#ENDIF UPLOADBUTTONLABEL}
             height: 22,
             frame: false,
             header: false,
@@ -24,10 +29,14 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
                 buttonOnly: true,
                 fieldLabel: 'TODO',
                 name: 'photo-path',
-                buttonText: 'Click here to upload photo',
+{#IFDEF UPLOADBUTTONLABEL}
+                buttonText: MainForm.{#UPLOADBUTTONLABEL},
+{#ENDIF UPLOADBUTTONLABEL}
+{#IFNDEF UPLOADBUTTONLABEL}                
                 buttonCfg: {
                     iconCls: 'upload-icon'
                 },
+{#ENDIFN UPLOADBUTTONLABEL}
                 listeners: {
                             'fileselected': function(fb, v){
                                 if(UploadForm.getForm().isValid()){
@@ -41,7 +50,6 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
                                             imgID.set({value: o.result.file});
                                         },
                                         failure: function(fp, o){
-                                            console.log("failure");
                                                 Ext.Msg.show({
                                                     title: 'Problems with upload',
                                                     msg: o.result.msg,

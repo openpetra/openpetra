@@ -124,6 +124,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ProcessTemplate uploadSnippet = writer.FTemplate.GetSnippet("UPLOADFORMDEFINITION");
 
+            if (ctrl.HasAttribute("UploadButtonLabel"))
+            {
+                ((TExtJsFormsWriter)writer).AddResourceString(uploadCheckAssistantSnippet, "UPLOADBUTTONLABEL", ctrl,
+                    ctrl.GetAttribute("UploadButtonLabel"));
+                uploadSnippet.SetCodelet("UPLOADBUTTONLABEL", ctrl.controlName + "UPLOADBUTTONLABEL");
+            }
+
             writer.FTemplate.InsertSnippet("UPLOADFORM", uploadSnippet);
 
             ProcessTemplate uploadCheckSnippet = writer.FTemplate.GetSnippet("VALIDUPLOADCHECK");
@@ -322,6 +329,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ctrlSnippet.SetCodelet("BOXLABEL", ctrlSnippet.FCodelets["LABEL"].ToString());
             ctrlSnippet.SetCodelet("LABEL", "strEmpty");
+            ctrlSnippet.SetCodelet("INPUTVALUE", ctrl.controlName.Substring(3));
 
             return ctrlSnippet;
         }
@@ -474,6 +482,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             if (ACtrl.HasAttribute("Height"))
             {
                 ctrlSnippet.AddToCodelet("ONSHOW", String.Format("MainForm.setHeight({0});", ACtrl.GetAttribute("Height")));
+            }
+
+            if (ACtrl.HasAttribute("LabelWidth"))
+            {
+                ctrlSnippet.SetCodelet("LABELWIDTH", ACtrl.GetAttribute("LabelWidth"));
             }
 
             PageCounter++;
