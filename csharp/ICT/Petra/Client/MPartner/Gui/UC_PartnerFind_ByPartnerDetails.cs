@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int32 FSplitterDistFindByDetails;
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
-
+        private TUC_PartnerInfo FPartnerInfoUC;
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -236,8 +236,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// needed for generated code
         /// </summary>
-        public void InitUserControl()
+        public void InitUserControl()            
         {
+            ucoPartnerInfo.HostedControlKind = THostedControlKind.hckUserControl;
+		    ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
+		    ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";            
         }
 
         /// <summary>
@@ -778,12 +781,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                             && FLastSearchWasDetailedSearch))
                     {
                         // We have Location data available
-                        ucoPartnerInfo.PassPartnerDataPartialWithLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
+                        FPartnerInfoUC.PassPartnerDataPartialWithLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
                     }
                     else
                     {
                         // We don't have Location data available
-                        ucoPartnerInfo.PassPartnerDataPartialWithoutLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
+                        FPartnerInfoUC.PassPartnerDataPartialWithoutLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
                     }
                 }
             }
@@ -819,7 +822,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnPartnerInfoPaneExpanded();
 
             ucoPartnerInfo.Expand();
-
+            
+            if (FPartnerInfoUC == null)
+            {
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));    
+            }            
+            
             UpdatePartnerInfoPanel();
 
             //            MessageBox.Show("FCurrentGridRow: " + FCurrentGridRow.ToString());
@@ -1013,6 +1021,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FKeepUpSearchFinishedCheck)
             {
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));                
+                
                 // get the data from the currently edited control;
                 // otherwise there are not the right search criteria when hitting the enter key
                 ucoPartnerFindCriteria.CompleteBindings();
@@ -1033,7 +1043,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Update UI
                 grdResult.SendToBack();
                 grpResult.Text = Resourcestrings.StrSearchResult;
-                ucoPartnerInfo.ClearControls();
+                
+                if (FPartnerInfoUC != null)
+                {
+                    FPartnerInfoUC.ClearControls();    
+                }
+                
                 lblSearchInfo.Text = Resourcestrings.StrSearching;
                 FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearching);
 
@@ -1090,7 +1105,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
         {
             ucoPartnerFindCriteria.ResetSearchCriteriaValuesToDefault();
-            ucoPartnerInfo.ClearControls();
+            FPartnerInfoUC.ClearControls();
             lblSearchInfo.Text = "";
             grpResult.Text = Resourcestrings.StrSearchResult;
             grdResult.SendToBack();
@@ -1734,7 +1749,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void StopTimer()
         {
-            ucoPartnerInfo.StopTimer();
+            if (FPartnerInfoUC != null)
+            {            
+                FPartnerInfoUC.StopTimer();
+            }
         }
 
         /// <summary>
