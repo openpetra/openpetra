@@ -34,8 +34,7 @@ compat:
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
-  generateORM: generates Object Relational Mapping routines from petra.xml
-     sub items: generateORMCachedTables, generateORMData, generateORMAccess
+  generateORM: generates the cacheable tables Object Relational Mapping routines from petra.xml
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
