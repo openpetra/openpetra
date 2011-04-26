@@ -86,8 +86,12 @@ useful parameters
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
-  <delete dir="${dir.delivery}"/>
-  <mkdir dir="${dir.delivery}"/>
+  <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
+  <delete dir="${dir.bin}"/>
+  <delete dir="${dir.namespace.map}"/>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <delete dir="${path::combine(dir.projectfiles,devenv-name)}" />
+  </foreach>
   <delete>
     <fileset basedir="${dir.root}">
       <include name="**/*-generated.build" />

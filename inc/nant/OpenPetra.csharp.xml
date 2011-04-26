@@ -108,7 +108,7 @@
   <if test="${true==bool::parse(RunCsDepend)}">
     <include buildfile="${referencesFile}" />
   </if>
-  <assemblyfileset id="assemblyfileset-references">
+  <assemblyfileset id="assemblyfileset-references" basedir="${dir.bin}">
     <lib>
       <include name="${dir.bin}"/>
     </lib>
