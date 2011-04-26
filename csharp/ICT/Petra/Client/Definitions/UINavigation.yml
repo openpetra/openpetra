@@ -93,7 +93,6 @@ OpenPetra:
                     GiftEntry:
                         ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=TFrmGiftBatch}
-                        RecurringGiftBatches: {Description:Manually enter Recurring Gift batches, ActionOpenScreen=TFrmRecurringGiftBatch}
                         #AddGifts:
                         #ImportGifts:
                         #EditExistingGifts:
@@ -114,15 +113,12 @@ OpenPetra:
                     General:
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
-                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
                         #EditTransactionsInPreviouslyUsedBatch:
                         #PostBatch:
                         #FindTransaction:
-                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonthly}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -147,6 +143,7 @@ OpenPetra:
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
+                    #PeriodEnd:
                     #YearEnd:
                     #ICHProcessing:
                 #Budgets:
@@ -186,24 +183,8 @@ OpenPetra:
                 # Sub Module
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
-                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
-                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}                           
-                        DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}   
-                        DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
-                        LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
-                        LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
-                        PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 
-                        Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
-                        ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}   
-                        QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup} 						
-                        ValuableItem: {Label=Setup Valuable Items, Description=Maintain Valuable Items, ActionOpenScreen=TFrmValuableItemSetup}
-                        VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
-                        VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
+                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}   
                     Application-related:
-                        ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
-                        ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
-                        Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
-
                     
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
@@ -282,17 +263,12 @@ OpenPetra:
                     Language:
                         SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
-            Security:
-                Users:
-                    Maintenance:
-                        MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
-                        #DeleteUser:
-                        #ModifyUserPermissions:
-                        #ImportUserPermissions:
-                    Activity:
-                        #ViewCurrentUsers:
-                        #ViewLoginLog:
-                Setup:
+            Users:
+                Functions:
+                    MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
+                    #DeleteUser:
+                    #ModifyUserPermissions:
+                    #ImportUserPermissions:
             Finance:
                 #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
@@ -300,21 +276,9 @@ OpenPetra:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                AnalysisTypes: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
                     ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
-            Auditing:
-                Logs:
-                    #ErrorLog
-                    #SystemStatusLog
-                Reports:
-                    #PartnerFullReport
-            SystemSettings:
-                Setup:
-                    #SystemParameters
-                    #Sites
-                    #Purging
-                
