@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 try
                 {
-                    int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
+                    int intNoOfForeignDigts = new TCurrencyInfo(strBaseCurrencyType).digits;
                     decDelta = AccountDelta(generalLedgerMasterRow.YtdActualBase,
                         generalLedgerMasterRow.YtdActualForeign,
                         decArrExchangeRate[intPtrToForeignData],
@@ -348,7 +348,7 @@ namespace Ict.Petra.Server.MFinance.GL
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
             batch.DateEffective = new
-                                  GetAccountingPeriodInfo(intLedgerNum).GetPeriodEndDate(intAccountingPeriod);
+                                  TGetAccountingPeriodInfo(intLedgerNum).GetPeriodEndDate(intAccountingPeriod);
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             journal = GLDataset.AJournal.NewRowTyped();

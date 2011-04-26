@@ -162,41 +162,19 @@ namespace Ict.Petra.Server.MFinance.GL
             tHandleLedgerInfo = new THandleLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
             CheckLedger();
-
-            //(int)Enum.Parse(typeof(Direction), direction)
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.GIFT_CLOSED_OUT))
+            
+            try 
             {
                 CloseGifts();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.ACCOUNT_CLOSED_OUT))
-            {
                 CloseAccounts();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.GLMASTER_CLOSED_OUT))
-            {
                 CloseGLMaster();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.BUDGET_CLOSED_OUT))
-            {
                 CloseBudget();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.PERIODS_UPDATED))
-            {
                 UpdatePeriods();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.SET_NEW_YEAR))
-            {
                 SetNewYear();
-            }
-
-            if (tHandleLedgerInfo.TYearEndProcessStatus < GetStatusCode(TYearEndProcessStatus.LEDGER_UPDATED))
-            {
                 Finish();
+            } catch (TerminateException ex)
+            {
+            	throw ex;
             }
         }
 

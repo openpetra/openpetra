@@ -262,8 +262,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckForUnpostedGiftBatches()
         {
-            GetAccountingPeriodInfo getAccountingPeriodInfo =
-                new GetAccountingPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
+            TGetAccountingPeriodInfo getAccountingPeriodInfo =
+                new TGetAccountingPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
             GetUnpostedGiftInfo getUnpostedGiftInfo = new GetUnpostedGiftInfo(
                 ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
 
@@ -304,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     for (int i = 0; i < getSuspenseAccountInfo.Rows; ++i)
                     {
                         aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
-                        Get_GLM_Info get_GLM_Info = new Get_GLM_Info(ledgerInfo.LedgerNumber,
+                        TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(ledgerInfo.LedgerNumber,
                             aSuspenseAccountRow.SuspenseAccountCode,
                             ledgerInfo.CurrentFinancialYear);
 

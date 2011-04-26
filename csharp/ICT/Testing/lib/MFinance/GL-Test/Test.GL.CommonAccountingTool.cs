@@ -39,7 +39,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
-        /// which writes "boolean" values to a data base table. The class Get_GLM_Info is
+        /// which writes "boolean" values to a data base table. The class TGet_GLM_Info is
         /// tested indirect too.
         ///
         /// Be careful by changing this routine. The behaviour has been compared to this of
@@ -62,8 +62,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
-            Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
@@ -78,8 +78,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 CommonAccountingConstants.IS_CREDIT, 10);
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             // strAccountStart is a debit account -> in this case "+"
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 10, getGLM_InfoAfterStart.YtdActual,
@@ -101,8 +101,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 CommonAccountingConstants.IS_DEBIT, 5);
             intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
             // now both directions are "-" and so the difference is reduced to 5
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 5, getGLM_InfoAfterStart.YtdActual,
                 "Check if 10 has been accounted");
@@ -137,8 +137,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
-            Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
@@ -154,8 +154,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 100, getGLM_InfoAfterStart.YtdActual,
                 "Check if 100 has been accounted");

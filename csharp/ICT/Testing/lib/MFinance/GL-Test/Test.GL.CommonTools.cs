@@ -77,9 +77,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         [Test]
-        public void Test_03_GetAccountingPeriodInfo()
+        public void Test_03_TGetAccountingPeriodInfo()
         {
-            GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(LedgerNumber);
+            TGetAccountingPeriodInfo getAPI = new TGetAccountingPeriodInfo(LedgerNumber);
 
             Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(1),
                 "DateTime.MinValue is an error representative");
@@ -112,7 +112,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TerminateException internalException)
             {
-                Assert.AreEqual("GetCurrencyInfo.03", internalException.ErrorCode, "Wrong Error Code");
+                Assert.AreEqual("TCurrencyInfo.03", internalException.ErrorCode, "Wrong Error Code");
             }
             catch (Exception)
             {
@@ -121,20 +121,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Test of the internal routine GetCurrencyInfo
+        /// Test of the internal routine TCurrencyInfo
         /// </summary>
         [Test]
-        public void Test_05_GetCurrencyInfo()
+        public void Test_05_TCurrencyInfo()
         {
-            Assert.AreEqual(2, new GetCurrencyInfo("EUR").digits, "Number of digits: 2");
+            Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
             try
             {
-                decimal d = new GetCurrencyInfo("JPN").digits;
+                decimal d = new TCurrencyInfo("JPN").digits;
                 Assert.Fail("No InternalException thrown");
             }
             catch (TerminateException internalException)
             {
-                Assert.AreEqual("GetCurrencyInfo.02", internalException.ErrorCode, "Wrong Error Code");
+                Assert.AreEqual("TCurrencyInfo.02", internalException.ErrorCode, "Wrong Error Code");
             }
             catch (Exception)
             {
@@ -143,22 +143,22 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             try
             {
-                decimal d = new GetCurrencyInfo("DMG").digits;
+                decimal d = new TCurrencyInfo("DMG").digits;
                 Assert.Fail("No InternalException thrown");
             }
             catch (TerminateException internalException)
             {
-                if (internalException.ErrorCode.Equals("GetCurrencyInfo.01"))
+                if (internalException.ErrorCode.Equals("TCurrencyInfo.01"))
                 {
                     Assert.Fail("Test Data are not loaded correctly");
                 }
-                else if (internalException.ErrorCode.Equals("GetCurrencyInfo.02"))
+                else if (internalException.ErrorCode.Equals("TCurrencyInfo.02"))
                 {
                     Assert.Pass("DMG-Test ok");
                 }
                 else
                 {
-                    Assert.AreEqual("GetCurrencyInfo.02",
+                    Assert.AreEqual("TCurrencyInfo.02",
                         internalException.ErrorCode,
                         "Wrong Error Code");
                 }
@@ -174,9 +174,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// rouding based on
         /// </summary>
         [Test]
-        public void Test_05_GetCurrencyInfo_2()
+        public void Test_05_TCurrencyInfo_2()
         {
-            GetCurrencyInfo getCurrencyInfo = new GetCurrencyInfo("EUR", "JPY");
+            TCurrencyInfo getCurrencyInfo = new TCurrencyInfo("EUR", "JPY");
 
             Assert.AreEqual(1.23m, getCurrencyInfo.RoundBaseCurrencyValue(1.23456m), "Round to 2 digits");
             Assert.AreEqual(1.0m, getCurrencyInfo.RoundForeignCurrencyValue(1.23456m), "Round to 0 digits");
@@ -229,12 +229,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         /// <summary>
         /// Test of the Routines HasNoChilds and ChildList
-        /// of GetAccountHierarchyDetailInfo
+        /// of TGetAccountHierarchyDetailInfo
         /// </summary>
         [Test]
-        public void Test_08_GetAccountHierarchyDetailInfo()
+        public void Test_08_TGetAccountHierarchyDetailInfo()
         {
-            GetAccountHierarchyDetailInfo gahdi = new GetAccountHierarchyDetailInfo(
+            TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(
                 new THandleLedgerInfo(LedgerNumber));
 
             Assert.IsTrue(gahdi.HasNoChilds("6800"), "Base Account without childs");
@@ -264,7 +264,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             try
             {
-                GetAccountingPeriodInfo getAPI = new GetAccountingPeriodInfo(ALedgerNum, APeriodNum);
+                TGetAccountingPeriodInfo getAPI = new TGetAccountingPeriodInfo(ALedgerNum, APeriodNum);
                 DateTime date = getAPI.PeriodEndDate;
                 return date != null;
             }

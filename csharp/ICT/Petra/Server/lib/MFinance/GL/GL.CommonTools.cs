@@ -104,12 +104,12 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Object to handle the read only glm-infos ...
     /// </summary>
-    public class Get_GLM_Info
+    public class TGet_GLM_Info
     {
         DataTable aGLM;
         int iPtr = 0;
 
-        public Get_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
+        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[3];
@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
-        public Get_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
+        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[3];
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// This object handles the table AccountHierarchyDetailInfo and provides some standard
     /// procedures.
     /// </summary>
-    public class GetAccountHierarchyDetailInfo
+    public class TGetAccountHierarchyDetailInfo
     {
         /// <summary>
         /// A AChildLevel value which defines to serach the childs and all subchilds of a
@@ -400,7 +400,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         int iPtr;
 
-        public GetAccountHierarchyDetailInfo(THandleLedgerInfo ALedgerInfo)
+        public TGetAccountHierarchyDetailInfo(THandleLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
@@ -844,7 +844,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// one row (Contructor with two parameters) and on time it holds a set of rows (Constructor with
     /// one parameter.
     /// </summary>
-    public class GetAccountingPeriodInfo
+    public class TGetAccountingPeriodInfo
     {
         private AAccountingPeriodTable periodTable = null;
 
@@ -852,7 +852,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Constructor needs a valid ledger number.
         /// </summary>
         /// <param name="ALedgerNumber">Ledger number</param>
-        public GetAccountingPeriodInfo(int ALedgerNumber)
+        public TGetAccountingPeriodInfo(int ALedgerNumber)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -866,7 +866,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ACurrentPeriod">the current accounting period</param>
 
-        public GetAccountingPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
+        public TGetAccountingPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -1483,7 +1483,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// Furthermore there are some servic routines base on this information.
     /// </summary>
 
-    public class GetCurrencyInfo
+    public class TCurrencyInfo
     {
         private ACurrencyTable currencyTable = null;
         private ACurrencyRow baseCurrencyRow = null;
@@ -1498,7 +1498,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ACurrencyCode">Three digit description to define the
         /// base currency.</param>
-        public GetCurrencyInfo(string ACurrencyCode)
+        public TCurrencyInfo(string ACurrencyCode)
         {
             LoadDatabase();
             baseCurrencyRow = SetRowToCode(ACurrencyCode);
@@ -1510,7 +1510,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ABaseCurrencyCode">Base currency code</param>
         /// <param name="AForeignCurrencyCode">foreign Currency Code</param>
-        public GetCurrencyInfo(string ABaseCurrencyCode, string AForeignCurrencyCode)
+        public TCurrencyInfo(string ABaseCurrencyCode, string AForeignCurrencyCode)
         {
             LoadDatabase();
             baseCurrencyRow = SetRowToCode(ABaseCurrencyCode);
@@ -1530,7 +1530,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TerminateException terminate = new TerminateException(
                     Catalog.GetString("The table a_currency is empty!"));
                 terminate.Context = "Common Accountig";
-                terminate.ErrorCode = "GetCurrencyInfo.01";
+                terminate.ErrorCode = "TCurrencyInfo01";
                 throw terminate;
             }
         }
@@ -1554,7 +1554,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 Catalog.GetString(String.Format(
                         "No Data for curency {0} found", ACurrencyCode)));
             terminate.Context = "Common Accountig";
-            terminate.ErrorCode = "GetCurrencyInfo.02";
+            terminate.ErrorCode = "TCurrencyInfo02";
             throw terminate;
         }
 
@@ -1690,7 +1690,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         sRegex, strFormat));
 
                 terminate.Context = "Common Accountig";
-                terminate.ErrorCode = "GetCurrencyInfo.03";
+                terminate.ErrorCode = "TCurrencyInfo03";
                 throw terminate;
             }
 

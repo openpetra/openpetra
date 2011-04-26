@@ -98,8 +98,8 @@ namespace Ict.Petra.Server.MFinance.GL
         private AJournalRow journal;
 
         private THandleLedgerInfo THandleLedgerInfo;
-        private GetCurrencyInfo getBaseCurrencyInfo;
-        private GetCurrencyInfo getForeignCurrencyInfo = null;
+        private TCurrencyInfo getBaseCurrencyInfo;
+        private TCurrencyInfo getForeignCurrencyInfo = null;
         bool blnJournalIsInForeign;
 
         private int intJournalCount;
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private void TCommonAccountingTool_(string ABatchDescription)
         {
             aBatchTable = TGLPosting.CreateABatch(THandleLedgerInfo.LedgerNumber);
-            getBaseCurrencyInfo = new GetCurrencyInfo(THandleLedgerInfo.BaseCurrency);
+            getBaseCurrencyInfo = new TCurrencyInfo(THandleLedgerInfo.BaseCurrency);
             aBatchRow = aBatchTable.ABatch[0];
             aBatchRow.BatchDescription = ABatchDescription;
             aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
@@ -173,17 +173,17 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        public void AddForeignCurrencyJournal(GetCurrencyInfo AGetCurrencyInfo, decimal AExchangeRateToBase)
+        public void AddForeignCurrencyJournal(TCurrencyInfo ATCurrencyInfo, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = AGetCurrencyInfo;
+            getForeignCurrencyInfo = ATCurrencyInfo;
             AddAJournal(AExchangeRateToBase);
         }
 
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = new GetCurrencyInfo(ACurrencyCode);
+            getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
             AddAJournal(AExchangeRateToBase);
         }
 
@@ -261,8 +261,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (blnInitBatchDate)
             {
-                GetAccountingPeriodInfo getAccountingPeriodInfo =
-                    new GetAccountingPeriodInfo(THandleLedgerInfo.LedgerNumber, THandleLedgerInfo.CurrentPeriod);
+                TGetAccountingPeriodInfo getAccountingPeriodInfo =
+                    new TGetAccountingPeriodInfo(THandleLedgerInfo.LedgerNumber, THandleLedgerInfo.CurrentPeriod);
                 aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
