@@ -97,7 +97,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </code>
 </script>             
 
-<target name="cleanPetra" depends="clean" />
+<target name="cleanPetra" depends="clean,quickClean" />
 <target name="compilePetra" depends="compile" />
 
 <target name="generateORMCachedTables" depends="" description="Generates the cached tables">
@@ -105,19 +105,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
 </target>
-
-<target name="generateORMDatasets" depends="" description="Generates the Datasets">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MCommon.Data -outputFilename:Common.DataSets -StartTableId:5000 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data -outputFilename:Partner.DataSets -StartTableId:5100 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data -outputFilename:Personnel.DataSets -StartTableId:5200 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MHospitality.Data -outputFilename:Hospitality.DataSets -StartTableId:5300 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data -outputFilename:Finance.AP.DataSets -StartTableId:5400 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data -outputFilename:Finance.GL.DataSets -StartTableId:5500 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.Gift.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.Gift.Data -outputFilename:Finance.Gift.DataSets -StartTableId:5600 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MSysMan.Data -outputFilename:SysMan.DataSets -StartTableId:5700 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MConference.Data -outputFilename:Conference.DataSets -StartTableId:5800 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-</target> 
 
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 

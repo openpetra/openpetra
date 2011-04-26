@@ -37,7 +37,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public static TDataDefinitionStore store;
         public static TCmdOpts cmdLine;
 
-        void run()
+        int run()
         {
             cmdLine = new TCmdOpts();
 
@@ -64,7 +64,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
                 System.Console.WriteLine(
                     "       e.g. GenerateORM -do:dataset -petraxml:U:/sql/datadefinition/petra.xml -input:U:/sql/datadefinition/dataset.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.Dataset");
-                return;
+                return 100;
             }
 
             try
@@ -227,16 +227,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 System.Console.WriteLine(E.Message);
                 System.Console.WriteLine(E.StackTrace);
-
+                return 100;
                 // System.Console.ReadLine();
             }
+            return 0;
         }
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             generateTypedTables myApp = new generateTypedTables();
 
-            myApp.run();
+            return myApp.run();
         }
     }
 }
