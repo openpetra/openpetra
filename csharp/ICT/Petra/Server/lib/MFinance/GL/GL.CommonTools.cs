@@ -396,11 +396,11 @@ namespace Ict.Petra.Server.MFinance.GL
         private const string STANDARD = "STANDARD";
         AAccountHierarchyDetailTable accountTable;
         AAccountHierarchyDetailRow accountRow = null;
-        THandleLedgerInfo ledgerInfo;
+        TLedgerInfo ledgerInfo;
 
         int iPtr;
 
-        public TGetAccountHierarchyDetailInfo(THandleLedgerInfo ALedgerInfo)
+        public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
@@ -561,7 +561,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// The constructor needs a lederinfo (for the ledger number)
         /// </summary>
         /// <param name="ledgerInfo"></param>
-        public THandleAccountPropertyInfo(THandleLedgerInfo ledgerInfo)
+        public THandleAccountPropertyInfo(TLedgerInfo ledgerInfo)
         {
             try
             {
@@ -632,7 +632,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
     /// <summary>
-    /// THandleAccountInfo uses a THandleLedgerInfo a primilary references the LedgerNumber.
+    /// THandleAccountInfo uses a TLedgerInfo a primilary references the LedgerNumber.
     /// All Accounts are load in both contructors. You can define an inital account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
@@ -641,7 +641,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         AAccountTable accountTable;
         AAccountRow accountRow = null;
-        THandleLedgerInfo ledgerInfo;
+        TLedgerInfo ledgerInfo;
         THandleAccountPropertyInfo tAccountPropertyHandler = null;
 
         int iPtr;
@@ -651,7 +651,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Ledger Info to select the ledger ...
         /// </summary>
         /// <param name="ALedgerInfo"></param>
-        public THandleAccountInfo(THandleLedgerInfo ALedgerInfo)
+        public THandleAccountInfo(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -662,7 +662,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerInfo"></param>
         /// <param name="AAccountCode"></param>
-        public THandleAccountInfo(THandleLedgerInfo ALedgerInfo, string AAccountCode)
+        public THandleAccountInfo(TLedgerInfo ALedgerInfo, string AAccountCode)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -984,7 +984,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// This routine reads the line of a_ledger defined by the ledger number
     /// </summary>
-    public class THandleLedgerInfo
+    public class TLedgerInfo
     {
         int ledgerNumber;
         private ALedgerTable ledger = null;
@@ -997,7 +997,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// for something else.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public THandleLedgerInfo(int ALedgerNumber)
+        public TLedgerInfo(int ALedgerNumber)
         {
             ledgerNumber = ALedgerNumber;
             LoadInfoLine();
@@ -1470,6 +1470,65 @@ namespace Ict.Petra.Server.MFinance.GL
             return collection;
         }
     }
+    
+    /// <summary>
+    /// Handling of the standard data base transactions
+    /// </summary>
+    public class TTransactionFunctions
+    {
+    	TDBTransaction transaction;
+    	bool blnTransactionDefined;
+    	
+    	/// <summary>
+    	/// A Constructor
+    	/// </summary>
+    	/// <param name="AMasterTransaction">The value my be null which means: Create an onw 
+    	/// Transaction</param>
+    	public TTransactionFunctions(TDBTransaction AMasterTransaction)
+    	{
+    		if (AMasterTransaction == null)
+    		{
+    			blnTransactionDefined = false;
+    			transaction = DBAccess.GDBAccessObj.BeginTransaction();
+    		} else 
+    		{
+    			blnTransactionDefined = true;
+    			transaction = AMasterTransaction;
+    		}    		
+    	}
+    	
+    	/// <summary>
+    	/// The result is a valid transaction 
+    	/// </summary>
+    	public TDBTransaction TransactionValue
+    	{
+    		get 
+    		{
+    			return transaction;
+    		}
+    	}
+    	
+    	/// <summary>
+    	/// Runs a very specific "Commit"  <br />
+    	/// a) if an internaly created transaction is used, a commit will be done  <br />
+    	/// b) otherwise the commint will be done in the very last end ...
+    	/// </summary>
+    	public void CommitOrRollback()
+    	{
+        	if (!blnTransactionDefined) 
+        	{
+        		try 
+        		{
+        			DBAccess.GDBAccessObj.CommitTransaction();
+        		} catch (Exception exception)
+        		{
+        			DBAccess.GDBAccessObj.RollbackTransaction();
+        			throw exception;
+        		}
+        	}
+    	}
+    	
+    }
 
     /// <summary>
     /// Base on the idea to reduce the number of database request to it's minimum, this object reads
@@ -1500,7 +1559,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// base currency.</param>
         public TCurrencyInfo(string ACurrencyCode)
         {
-            LoadDatabase();
+            LoadDatabase(null);
+            baseCurrencyRow = SetRowToCode(ACurrencyCode);
+        }
+
+        public TCurrencyInfo(string ACurrencyCode, TDBTransaction AMasterTransaction)
+        {
+            LoadDatabase(null);
             baseCurrencyRow = SetRowToCode(ACurrencyCode);
         }
 
@@ -1512,18 +1577,19 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AForeignCurrencyCode">foreign Currency Code</param>
         public TCurrencyInfo(string ABaseCurrencyCode, string AForeignCurrencyCode)
         {
-            LoadDatabase();
+            LoadDatabase(null);
             baseCurrencyRow = SetRowToCode(ABaseCurrencyCode);
             foreignCurrencyRow = SetRowToCode(AForeignCurrencyCode);
         }
 
-        private void LoadDatabase()
+        private void LoadDatabase(TDBTransaction AMasterTransaction)
         {
             intBaseCurrencyDigits = DIGIT_INIT_VALUE;
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            currencyTable = ACurrencyAccess.LoadAll(transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            TTransactionFunctions masterTransaction = new TTransactionFunctions(AMasterTransaction);
+        	currencyTable = ACurrencyAccess.LoadAll(masterTransaction.TransactionValue);
+        	masterTransaction.CommitOrRollback();
 
             if (currencyTable.Rows.Count == 0)
             {
@@ -1725,7 +1791,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class THandleBudgetInfo
     {
-        THandleLedgerInfo tHandleLedgerInfo;
+        TLedgerInfo tHandleLedgerInfo;
         ABudgetTable aBudgetTable;
         ABudgetRow aBudgetRow;
 
@@ -1735,10 +1801,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// The constructor internally reads in all a_budget-Table entries which belong to the
         /// ledger
         /// </summary>
-        /// <param name="ATHandleLedgerInfo">For LedgerNumber only</param>
-        public THandleBudgetInfo(THandleLedgerInfo ATHandleLedgerInfo)
+        /// <param name="ATLedgerInfo">For LedgerNumber only</param>
+        public THandleBudgetInfo(TLedgerInfo ATLedgerInfo)
         {
-            tHandleLedgerInfo = ATHandleLedgerInfo;
+            tHandleLedgerInfo = ATLedgerInfo;
 
             try
             {
@@ -1880,5 +1946,5 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, ATransaction, ParametersArray);
         }
-    }
+    }    
 }

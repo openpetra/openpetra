@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TVerificationResultCollection verificationResults;
         GetSuspenseAccountInfo getSuspenseAccountInfo = null;
-        THandleLedgerInfo ledgerInfo;
+        TLedgerInfo ledgerInfo;
 
         // Set this value true means: Continue the checks and report but never
         // calculate ...
@@ -112,7 +112,7 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
             try
             {
-                ledgerInfo = new THandleLedgerInfo(ALedgerNum);
+                ledgerInfo = new TLedgerInfo(ALedgerNum);
                 RunFirstChecks();
                 AVRCollection = verificationResults;
                 return blnCriticalErrors;
@@ -137,7 +137,7 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
             try
             {
-                ledgerInfo = new THandleLedgerInfo(ALedgerNum);
+                ledgerInfo = new TLedgerInfo(ALedgerNum);
                 RunFirstChecks();
                 AVRCollection = verificationResults;
 

@@ -65,14 +65,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Test of the THandleLedgerInfo Routine...
+        /// Test of the TLedgerInfo Routine...
         /// </summary>
         [Test]
-        public void Test_02_THandleLedgerInfo()
+        public void Test_02_TLedgerInfo()
         {
-            Assert.AreEqual("EUR", new THandleLedgerInfo(LedgerNumber).BaseCurrency,
+            Assert.AreEqual("EUR", new TLedgerInfo(LedgerNumber).BaseCurrency,
                 String.Format("Base Currency of {0} shall be EUR", LedgerNumber));
-            Assert.AreEqual("5003", new THandleLedgerInfo(LedgerNumber).RevaluationAccount,
+            Assert.AreEqual("5003", new TLedgerInfo(LedgerNumber).RevaluationAccount,
                 String.Format("Revaluation Account of {0} shall be 5003", LedgerNumber));
         }
 
@@ -126,7 +126,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_05_TCurrencyInfo()
         {
-            Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
+        	Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
             try
             {
                 decimal d = new TCurrencyInfo("JPN").digits;
@@ -217,7 +217,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_07_ProcessStatus()
         {
-            THandleLedgerInfo ledgerInfo = new THandleLedgerInfo(LedgerNumber);
+            TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
 
             ledgerInfo.TYearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
             Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, ledgerInfo.TYearEndProcessStatus,
@@ -235,7 +235,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_08_TGetAccountHierarchyDetailInfo()
         {
             TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(
-                new THandleLedgerInfo(LedgerNumber));
+                new TLedgerInfo(LedgerNumber));
 
             Assert.IsTrue(gahdi.HasNoChilds("6800"), "Base Account without childs");
             Assert.IsFalse(gahdi.HasNoChilds("6800S"), "Root Account");
@@ -252,7 +252,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_09_TAccountPropertyHandler()
         {
-            THandleLedgerInfo tHandleLedgerInfo = new THandleLedgerInfo(LedgerNumber);
+            TLedgerInfo tHandleLedgerInfo = new TLedgerInfo(LedgerNumber);
             THandleAccountInfo tHandleAccountInfo = new THandleAccountInfo(tHandleLedgerInfo);
 
             tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);

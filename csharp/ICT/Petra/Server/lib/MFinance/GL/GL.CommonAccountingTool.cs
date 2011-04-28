@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private ABatchRow aBatchRow;
         private AJournalRow journal;
 
-        private THandleLedgerInfo THandleLedgerInfo;
+        private TLedgerInfo TLedgerInfo;
         private TCurrencyInfo getBaseCurrencyInfo;
         private TCurrencyInfo getForeignCurrencyInfo = null;
         bool blnJournalIsInForeign;
@@ -106,7 +106,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private bool blnReadyForTransaction;
 
-        private ATransactionRow standardTransaction = null;
         private ATransactionRow lastTransaction = null;
 
         // The use of the default value requires an additional database request. So this is done in the
@@ -123,26 +122,26 @@ namespace Ict.Petra.Server.MFinance.GL
         public TCommonAccountingTool(int ALedgerNumber,
             string ABatchDescription)
         {
-            THandleLedgerInfo = new THandleLedgerInfo(ALedgerNumber);
+            TLedgerInfo = new TLedgerInfo(ALedgerNumber);
             TCommonAccountingTool_(ABatchDescription);
         }
 
         /// <summary>
-        /// Internaly a THandleLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
+        /// Internaly a TLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
         /// database requests and use this constructor ...
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public TCommonAccountingTool(THandleLedgerInfo ALedgerInfo, string ABatchDescription)
+        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription)
         {
-            THandleLedgerInfo = ALedgerInfo;
+            TLedgerInfo = ALedgerInfo;
             TCommonAccountingTool_(ABatchDescription);
         }
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            aBatchTable = TGLPosting.CreateABatch(THandleLedgerInfo.LedgerNumber);
-            getBaseCurrencyInfo = new TCurrencyInfo(THandleLedgerInfo.BaseCurrency);
+            aBatchTable = TGLPosting.CreateABatch(TLedgerInfo.LedgerNumber);
+            getBaseCurrencyInfo = new TCurrencyInfo(TLedgerInfo.BaseCurrency);
             aBatchRow = aBatchTable.ABatch[0];
             aBatchRow.BatchDescription = ABatchDescription;
             aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
@@ -183,7 +182,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
+            //getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
             AddAJournal(AExchangeRateToBase);
         }
 
@@ -262,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (blnInitBatchDate)
             {
                 TGetAccountingPeriodInfo getAccountingPeriodInfo =
-                    new TGetAccountingPeriodInfo(THandleLedgerInfo.LedgerNumber, THandleLedgerInfo.CurrentPeriod);
+                    new TGetAccountingPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
                 aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
@@ -279,7 +278,7 @@ namespace Ict.Petra.Server.MFinance.GL
             journal.BatchNumber = aBatchRow.BatchNumber;
             journal.JournalNumber = intJournalCount;
             journal.DateEffective = aBatchRow.DateEffective;
-            journal.JournalPeriod = THandleLedgerInfo.CurrentPeriod;
+            journal.JournalPeriod = TLedgerInfo.CurrentPeriod;
 
             if (blnJournalIsInForeign)
             {
@@ -367,7 +366,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (ATransActionIsInForeign)
                 {
                     THandleAccountInfo accountCheck =
-                        new THandleAccountInfo(THandleLedgerInfo, AAccount);
+                        new THandleAccountInfo(TLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {
@@ -380,7 +379,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 string strMessage = Catalog.GetString("The ledger is defined in {0}, the account {1} is defined in " +
                                     "{2} and you want to account something in {3}?");
                                 strMessage = String.Format(strMessage,
-                                    THandleLedgerInfo.BaseCurrency,
+                                    TLedgerInfo.BaseCurrency,
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
@@ -431,28 +430,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             lastTransaction = transaction;
-        }
-
-        public void StandardTransactionSelect()
-        {
-            standardTransaction = lastTransaction;
-        }
-
-        public void StandardTransactionReset()
-        {
-            standardTransaction = null;
-        }
-
-        public bool StandardTransactionIsValid
-        {
-            get
-            {
-                return standardTransaction != null;
-            }
-        }
-
-        public void StandardTransactionAddAccountingPart(bool ADebitCreditFlag, decimal AAmount)
-        {
         }
 
         /// <summary>

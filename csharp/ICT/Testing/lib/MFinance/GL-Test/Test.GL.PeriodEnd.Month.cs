@@ -61,8 +61,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_01_ProvisionalYearEndFlag()
         {
-            new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = true;
-            Assert.True(new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
+            new TLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = true;
+            Assert.True(new TLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
                 "Cannot start test because ProvisionalYearEndFlag cannot be changed");
 
             TVerificationResultCollection verificationResult;
@@ -84,7 +84,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(blnStatusArrived, "Correc status message has been shown");
             Assert.IsTrue(blnHaseErrors, "This is not a Critital Message");
 
-            new THandleLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = false;
+            new TLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag = false;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
-            THandleLedgerInfo ledgerInfo = new THandleLedgerInfo(intLedgerNumber);
+            TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
 
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
@@ -219,8 +219,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_SwitchToNextMonth()
         {
             ResetDatabase();
-            THandleLedgerInfo ledgerInfo1;
-            THandleLedgerInfo ledgerInfo2;
+            TLedgerInfo ledgerInfo1;
+            TLedgerInfo ledgerInfo2;
             int counter = 0;
 
             do
@@ -232,13 +232,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new TLedgerInitFlagHandler(intLedgerNumber,
                     TLedgerInitFlagEnum.Revaluation).Flag = true;
 
-                ledgerInfo1 = new THandleLedgerInfo(intLedgerNumber);
+                ledgerInfo1 = new TLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
                 bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                     intLedgerNumber, out verificationResult);
 
-                ledgerInfo2 = new THandleLedgerInfo(intLedgerNumber);
+                ledgerInfo2 = new TLedgerInfo(intLedgerNumber);
 
                 if (!ledgerInfo2.ProvisionalYearEndFlag)
                 {

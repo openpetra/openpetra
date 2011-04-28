@@ -13471,6 +13471,13 @@
                 notnull="yes"
                 initial="0">
     </tablefield>
+    <tablefield name="a_batch_year_i"
+                type="integer"
+                descr="The number of the accounting year"
+                format="&gt;9"
+                label="Batch Period Year Number"
+                initial="0">
+    </tablefield>
     <tablefield name="a_date_effective_d"
                 type="date"
                 descr="Date the  batch comes into effect"
@@ -13514,11 +13521,6 @@
                 thisFields="a_ledger_number_i"
                 otherTable="a_ledger"
                 otherFields="a_ledger_number_i"/>
-    <foreignkey name="a_batch_fk2"
-                descr=""
-                thisFields="a_ledger_number_i, a_batch_period_i"
-                otherTable="a_accounting_period"
-                otherFields="a_ledger_number_i, a_accounting_period_number_i"/>
     <!-- Explicit Indexes on table a_batch  -->
   </table>
   <table name="a_journal"
@@ -13676,11 +13678,6 @@
                 thisFields="a_ledger_number_i, a_batch_number_i"
                 otherTable="a_batch"
                 otherFields="a_ledger_number_i, a_batch_number_i"/>
-    <foreignkey name="a_journal_fk2"
-                descr=""
-                thisFields="a_ledger_number_i, a_journal_period_i"
-                otherTable="a_accounting_period"
-                otherFields="a_ledger_number_i, a_accounting_period_number_i"/>
     <foreignkey name="a_journal_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_sub_system_code_c, a_transaction_type_code_c"
