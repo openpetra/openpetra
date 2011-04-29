@@ -126,7 +126,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_05_TCurrencyInfo()
         {
-        	Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
+            Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
             try
             {
                 decimal d = new TCurrencyInfo("JPN").digits;

@@ -200,13 +200,13 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
-    public class THandleGlmInfo
+    public class TGlmInfo
     {
         DataTable glmTable;
         DataRow glmRow;
         int iPtr;
 
-        public THandleGlmInfo(int ALedgerNumber, int AYear, string AAccountCode)
+        public TGlmInfo(int ALedgerNumber, int AYear, string AAccountCode)
         {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[3];
@@ -335,8 +335,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private bool SetCostCenterRow_(string ACostCenterCode)
         {
-            System.Diagnostics.Debug.WriteLine("CCTR" + costCentreTable.Rows.Count);
-
             if (costCentreTable.Rows.Count > 0)
             {
                 for (int i = 0; i < costCentreTable.Rows.Count; ++i)
@@ -345,7 +343,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (costCentreRow.CostCentreCode.Equals(ACostCenterCode))
                     {
-                        System.Diagnostics.Debug.WriteLine("found");
                         return true;
                     }
                 }
@@ -1470,64 +1467,65 @@ namespace Ict.Petra.Server.MFinance.GL
             return collection;
         }
     }
-    
+
     /// <summary>
     /// Handling of the standard data base transactions
     /// </summary>
     public class TTransactionFunctions
     {
-    	TDBTransaction transaction;
-    	bool blnTransactionDefined;
-    	
-    	/// <summary>
-    	/// A Constructor
-    	/// </summary>
-    	/// <param name="AMasterTransaction">The value my be null which means: Create an onw 
-    	/// Transaction</param>
-    	public TTransactionFunctions(TDBTransaction AMasterTransaction)
-    	{
-    		if (AMasterTransaction == null)
-    		{
-    			blnTransactionDefined = false;
-    			transaction = DBAccess.GDBAccessObj.BeginTransaction();
-    		} else 
-    		{
-    			blnTransactionDefined = true;
-    			transaction = AMasterTransaction;
-    		}    		
-    	}
-    	
-    	/// <summary>
-    	/// The result is a valid transaction 
-    	/// </summary>
-    	public TDBTransaction TransactionValue
-    	{
-    		get 
-    		{
-    			return transaction;
-    		}
-    	}
-    	
-    	/// <summary>
-    	/// Runs a very specific "Commit"  <br />
-    	/// a) if an internaly created transaction is used, a commit will be done  <br />
-    	/// b) otherwise the commint will be done in the very last end ...
-    	/// </summary>
-    	public void CommitOrRollback()
-    	{
-        	if (!blnTransactionDefined) 
-        	{
-        		try 
-        		{
-        			DBAccess.GDBAccessObj.CommitTransaction();
-        		} catch (Exception exception)
-        		{
-        			DBAccess.GDBAccessObj.RollbackTransaction();
-        			throw exception;
-        		}
-        	}
-    	}
-    	
+        TDBTransaction transaction;
+        bool blnTransactionDefined;
+
+        /// <summary>
+        /// A Constructor
+        /// </summary>
+        /// <param name="AMasterTransaction">The value my be null which means: Create an onw
+        /// Transaction</param>
+        public TTransactionFunctions(TDBTransaction AMasterTransaction)
+        {
+            if (AMasterTransaction == null)
+            {
+                blnTransactionDefined = false;
+                transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            }
+            else
+            {
+                blnTransactionDefined = true;
+                transaction = AMasterTransaction;
+            }
+        }
+
+        /// <summary>
+        /// The result is a valid transaction
+        /// </summary>
+        public TDBTransaction TransactionValue
+        {
+            get
+            {
+                return transaction;
+            }
+        }
+
+        /// <summary>
+        /// Runs a very specific "Commit"  <br />
+        /// a) if an internaly created transaction is used, a commit will be done  <br />
+        /// b) otherwise the commint will be done in the very last end ...
+        /// </summary>
+        public void CommitOrRollback()
+        {
+            if (!blnTransactionDefined)
+            {
+                try
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                catch (Exception exception)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw exception;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -1588,8 +1586,8 @@ namespace Ict.Petra.Server.MFinance.GL
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
             TTransactionFunctions masterTransaction = new TTransactionFunctions(AMasterTransaction);
-        	currencyTable = ACurrencyAccess.LoadAll(masterTransaction.TransactionValue);
-        	masterTransaction.CommitOrRollback();
+            currencyTable = ACurrencyAccess.LoadAll(masterTransaction.TransactionValue);
+            masterTransaction.CommitOrRollback();
 
             if (currencyTable.Rows.Count == 0)
             {
@@ -1946,5 +1944,5 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, ATransaction, ParametersArray);
         }
-    }    
+    }
 }

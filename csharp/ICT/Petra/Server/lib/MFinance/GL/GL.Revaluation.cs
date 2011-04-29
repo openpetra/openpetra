@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 try
                 {
-                	int intNoOfForeignDigts = new TCurrencyInfo(strBaseCurrencyType).digits;
+                    int intNoOfForeignDigts = new TCurrencyInfo(strBaseCurrencyType).digits;
                     decDelta = AccountDelta(generalLedgerMasterRow.YtdActualBase,
                         generalLedgerMasterRow.YtdActualForeign,
                         decArrExchangeRate[intPtrToForeignData],

@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-        	return CreateABatch(ALedgerNumber);
+            return CreateABatch(ALedgerNumber);
         }
 
         /// <summary>

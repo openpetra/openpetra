@@ -39,23 +39,22 @@ namespace Ict.Petra.Server.MFinance.Session
     public class TFinanceSessionObject : TSessionObject
     {
         TLedgerInfo ledgerInfo;
-        
+
         public TFinanceSessionObject(int ALedgerNumber)
         {
-        	ledgerInfo =new TLedgerInfo(ALedgerNumber, MasterTransaction);
+            ledgerInfo = new TLedgerInfo(ALedgerNumber, MasterTransaction);
         }
-        
+
         /// <summary>
         /// Access to the base info of the selected ledger
         /// </summary>
         public TLedgerInfo LedgerInfo
         {
-        	get 
-        	{
-        		return ledgerInfo;
-        	}
+            get
+            {
+                return ledgerInfo;
+            }
         }
-        
     }
 
     /// <summary>
@@ -82,13 +81,12 @@ namespace Ict.Petra.Server.MFinance.Session
             masterTransaction = ATransaction;
             LoadInfoLine();
         }
-        
+
         private void LoadInfoLine()
         {
             ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, masterTransaction);
             row = (ALedgerRow)ledger[0];
         }
-
 
         /// <summary>
         /// Property to read the value of the Revaluation account
@@ -231,6 +229,4 @@ namespace Ict.Petra.Server.MFinance.Session
             }
         }
     }
-
-
 }

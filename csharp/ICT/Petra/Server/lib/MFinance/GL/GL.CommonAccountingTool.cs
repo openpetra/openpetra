@@ -462,18 +462,18 @@ namespace Ict.Petra.Server.MFinance.GL
                 // The checksum of the "last journal" is used to update the checksum of the batch.
                 aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
             }
-            
+
             TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
-            	aBatchTable, out AVerifications);
+                aBatchTable, out AVerifications);
 
             if (submissionResult != TSubmitChangesResult.scrOK)
             {
-            	throw new ApplicationException("Batch could not be saved!");
+                throw new ApplicationException("Batch could not be saved!");
             }
-            
+
             TGLPosting.PostGLBatch(
-            	aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);
-            
+                aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);
+
             int returnValue = aBatchRow.BatchNumber;
             // Make shure that this object cannot be used for another posting ...
             aBatchTable = null;

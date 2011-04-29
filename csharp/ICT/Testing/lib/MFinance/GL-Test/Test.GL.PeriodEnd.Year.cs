@@ -162,7 +162,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
             bool blnHaseErrors;
-            
+
 //            blnHaseErrors= TPeriodIntervallConnector.TPeriodYearEndInfo(
 //                intLedgerNumber, out verificationResult);
 //
@@ -202,6 +202,29 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
             Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
+        }
+
+        /// <summary>
+        /// Test of TAccountPeriodToNewYear
+        /// </summary>
+        [Test]
+        public void Test_TAccountPeriodToNewYear()
+        {
+            ResetDatabase();
+            TGetAccountingPeriodInfo accountingPeriodInfo1 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
+            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+            TGetAccountingPeriodInfo accountingPeriodInfo2 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
+
+            Assert.AreEqual(accountingPeriodInfo1.PeriodEndDate.AddYears(1),
+                accountingPeriodInfo2.PeriodEndDate, "Dates shall be equal");
+
+            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+            TGetAccountingPeriodInfo accountingPeriodInfo3 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
+            Assert.AreEqual(new DateTime(2012, 2, 29), accountingPeriodInfo3.PeriodEndDate, "February ...");
+
+            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+            TGetAccountingPeriodInfo accountingPeriodInfo4 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
+            Assert.AreEqual(new DateTime(2013, 2, 28), accountingPeriodInfo4.PeriodEndDate, "February ...");
         }
 
         [TestFixtureSetUp]
