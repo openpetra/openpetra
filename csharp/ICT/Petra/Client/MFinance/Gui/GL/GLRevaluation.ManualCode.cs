@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private string strRevaluationCurrencies;
 
-        TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
+        //TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
 
         LinkClickDelete linkClickDelete = new LinkClickDelete();

@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Description of GL_Revaluation.
     /// </summary>
-    public class TRevaluationWebConnector
+    public partial class TRevaluationWebConnector
     {
         /// <summary>
         /// Main Revalutate Routine!
@@ -161,11 +161,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
             }
-            catch (InternalException ex)
+            catch (TerminateException terminate)
             {
-                AddVerificationResultMessage("LedgerInfo invalid",
-                    ex.Message, "REVAL.02",
-                    TResultSeverity.Resv_Critical);
+                verificationCollection = terminate.ResultCollection();
             }
             return resultSeverity == TResultSeverity.Resv_Critical;
         }
@@ -179,8 +177,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (accountTable.Rows.Count == 0)
             {
-                throw new InternalException("001", Catalog.GetString(
-                        "No Entries in GeneralLedgerMasterTable"));
+                TerminateException terminate = new TerminateException(
+                    Catalog.GetString(Catalog.GetString(
+                            "No Entries in GeneralLedgerMasterTable")));
+                terminate.Context = "Common Accountig";
+                terminate.ErrorCode = "001";
+                throw terminate;
             }
 
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
@@ -281,15 +283,9 @@ namespace Ict.Petra.Server.MFinance.GL
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
                 }
-                catch (InternalException internalException)
+                catch (TerminateException terminate)
                 {
-                    string strMessage = "{0}:[{1}:{2}] {3}";
-                    strMessage = String.Format(strMessage, internalException.ErrorCode,
-                        ARelevantAccount,
-                        generalLedgerMasterRow.CostCentreCode,
-                        internalException.Message);
-                    verificationCollection.Add(new TVerificationResult(
-                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                    verificationCollection = terminate.ResultCollection();
                 }
                 catch (DivideByZeroException)
                 {
@@ -352,7 +348,7 @@ namespace Ict.Petra.Server.MFinance.GL
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
             batch.DateEffective = new
-                                  GetAccountingPeriodInfo(intLedgerNum).GetDatePeriodEnd(intAccountingPeriod);
+                                  GetAccountingPeriodInfo(intLedgerNum).GetPeriodEndDate(intAccountingPeriod);
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             journal = GLDataset.AJournal.NewRowTyped();
@@ -441,278 +437,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             return AAmountInBaseCurency -
                    Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits);
-        }
-    }
-
-    /// <summary>
-    /// Gets the specific date informations of an accounting intervall.
-    /// </summary>
-    public class GetAccountingPeriodInfo
-    {
-        private AAccountingPeriodTable periodTable = null;
-
-        /// <summary>
-        /// Constructor needs a valid ledger number.
-        /// </summary>
-        /// <param name="ALedgerNumber">Ledger number</param>
-        public GetAccountingPeriodInfo(int ALedgerNumber)
-        {
-            periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, null);
-        }
-
-        /// <summary>
-        /// Selects to correct AAccountingPeriodRow or - in case of an error -
-        /// it sets to null
-        /// </summary>
-        /// <param name="APeriodNum">Number of the requested period</param>
-        /// <returns></returns>
-        private AAccountingPeriodRow GetRowOfPeriod(int APeriodNum)
-        {
-            if (periodTable != null)
-            {
-                if (periodTable.Rows.Count != 0)
-                {
-                    for (int i = 0; i < periodTable.Rows.Count; ++i)
-                    {
-                        AAccountingPeriodRow periodRow =
-                            (AAccountingPeriodRow)periodTable[i];
-
-                        if (periodRow.AccountingPeriodNumber == APeriodNum)
-                        {
-                            return periodRow;
-                        }
-                    }
-
-                    return null;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Reads the effective date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetEffectiveDateOfPeriod(int APeriodNum)
-        {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
-            {
-                return periodRow.EffectiveDate;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        /// <summary>
-        /// Reads the end date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetDatePeriodEnd(int APeriodNum)
-        {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
-            {
-                return periodRow.PeriodEndDate;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        /// <summary>
-        /// Reads the start date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetDatePeriodStart(int APeriodNum)
-        {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
-            {
-                return periodRow.PeriodStartDate;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
-        }
-    }
-
-    /// <summary>
-    /// This exception shall handle the internal errors of type critcal.
-    /// </summary>
-    public class InternalException : SystemException
-    {
-        string strErrorCode;
-        public InternalException(string errorCode, string message)
-            : base(message)
-        {
-            strErrorCode = errorCode;
-        }
-
-        public string ErrorCode
-        {
-            get
-            {
-                return strErrorCode;
-            }
-        }
-    }
-
-    /// <summary>
-    /// This routine reads the line of a_ledger defined by the ledger number
-    /// </summary>
-    public class GetLedgerInfo
-    {
-        int ledgerNumber;
-        private ALedgerTable ledger = null;
-
-        public GetLedgerInfo(int ALedgerNumber)
-        {
-            ledgerNumber = ALedgerNumber;
-            ledger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
-        }
-
-        public string RevaluationAccount
-        {
-            get
-            {
-                ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.ForexGainsLossesAccount;
-            }
-        }
-
-        public string BaseCurrency
-        {
-            get
-            {
-                ALedgerRow row = (ALedgerRow)ledger[0];
-                return row.BaseCurrency;
-            }
-        }
-    }
-    /// <summary>
-    /// Get currency info is intended to be used to get some some specific infos
-    /// using the old petra data base entries. GetCurrencyInfon is designed to get
-    /// a rough set of information which shall be used for foreign currency
-    /// calculations and presentations. In normal cases open petra uses the
-    /// user defined localisation ie the presentation and rounding rules.
-    /// But if you have to work with JPY (Japanese Yen) you have to know that
-    /// you have to round to 0 digits even if your user settings have selected the
-    /// USD and two digits rounding.
-    ///
-    /// The routine works error regressive that means that invalid data (currency codes)
-    /// and damaged format strings will result in 2 digit rounding as a default.
-    /// </summary>
-    public class GetCurrencyInfo
-    {
-        private ACurrencyTable currencyTable = null;
-        private ACurrencyRow currencyRow = null;
-
-        /// <summary>
-        /// Constructor which automatically loads one CurrencyTable Entry defined
-        /// by the parameter.
-        /// </summary>
-        /// <param name="ACurrencyCode">Three digit description to define the
-        /// currency.</param>
-        public GetCurrencyInfo(string ACurrencyCode)
-        {
-            currencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrencyCode, null);
-
-            if (currencyTable.Rows.Count == 1)
-            {
-                currencyRow = (ACurrencyRow)currencyTable[0];
-            }
-            else
-            {
-                throw new InternalException("GetCurrencyInfo.01",
-                    Catalog.GetString(String.Format(
-                            "There exists no account for the Currency code {0}",
-                            ACurrencyCode)));
-            }
-        }
-
-        /// <summary>
-        /// Calculates the number of digits by reading the row.DisplayFormat
-        /// Entry of the currency table and convert the old petra string to an
-        /// integer response.
-        /// </summary>
-        public int digits
-        {
-            get
-            {
-                return new FormatConverter(currencyRow.DisplayFormat).digits;
-            }
-        }
-    }
-
-    /// <summary>
-    /// This class is a local Format converter <br />
-    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9.99").digits.ToString());<br />
-    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9.9").digits.ToString());<br />
-    ///  Console.WriteLine(new FormatConverter("->>>,>>>,>>>,>>9").digits.ToString());<br />
-    /// The result is 2,1 and 0 digits ..
-    /// </summary>
-    public class FormatConverter
-    {
-        string sRegex;
-        Regex reg;
-        MatchCollection matchCollection;
-        int intDigits;
-        public FormatConverter(string strFormat)
-        {
-            sRegex = ">9.(9)+|>9$";
-            reg = new Regex(sRegex);
-            matchCollection = reg.Matches(strFormat);
-
-            if (matchCollection.Count != 1)
-            {
-                throw new InternalException("GetCurrencyInfo.02",
-                    String.Format("The regular expression {0} does not fit for a match in {1}",
-                        sRegex, strFormat));
-            }
-
-            intDigits = (matchCollection[0].Value).Length - 3;
-
-            if (intDigits == -1)
-            {
-                intDigits = 0;
-            }
-
-            if (intDigits < -1)
-            {
-                intDigits = 2;
-            }
-        }
-
-        /// <summary>
-        /// Property to report the number of digits
-        /// </summary>
-        public int digits
-        {
-            get
-            {
-                return intDigits;
-            }
         }
     }
 }

@@ -14,6 +14,10 @@
         <do>
           <loadfile file="${yamlfile}" property="yamlfilecontent"/>
           <if test="${not string::contains(yamlfilecontent, 'FormType: abstract') }" >
+            <delete file="${path::change-extension(yamlfile, '-generated.cs')}" />
+            <delete file="${path::change-extension(yamlfile, '-generated.Designer.cs')}" />
+            <delete file="${path::change-extension(yamlfile, '-generated.resx')}" />
+            <!-- to avoid problems with older versions that did not have the -generated postfix yet -->          
             <delete file="${path::change-extension(yamlfile, '.cs')}" />
             <delete file="${path::change-extension(yamlfile, '.Designer.cs')}" />
 <!--            <delete file="${path::change-extension(yamlfile, '.resx')}" /> -->
@@ -32,5 +36,7 @@
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+<property name="DebugStartArguments" value="-C:${ClientConfigFile}" overwrite="true"/>
 
 </project>
