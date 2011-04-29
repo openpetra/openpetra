@@ -815,18 +815,25 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-        	string[] parts = AStr.Split(new string[] {ASeparator},StringSplitOptions.None);
-        	if (parts.Length <= 1) { // Handle string without seperator
-        		return (AStr.Length > 1 ? char.ToUpper(AStr[0]).ToString() + AStr.Substring(1) : AStr);
-        	}
-        	int start = (AIgnorePrefix ? 1 : 0); // ignore the first part
-        	int last = (AIgnorePostfix ? 1 : 0); // ignore the last part
-        	for (int idx = start; idx < parts.Length - last; ++idx) {
-        		if ( parts[idx].Length > 0) {
-        			parts[idx]= char.ToUpper(parts[idx][0]).ToString() + parts[idx].Substring(1);
-        		}
-        	}
-        	return string.Join("", parts, start, parts.Length - start - last);
+            string[] parts = AStr.Split(new string[] { ASeparator }, StringSplitOptions.None);
+
+            if (parts.Length <= 1)       // Handle string without seperator
+            {
+                return AStr.Length > 1 ? char.ToUpper(AStr[0]).ToString() + AStr.Substring(1) : AStr;
+            }
+
+            int start = (AIgnorePrefix ? 1 : 0);     // ignore the first part
+            int last = (AIgnorePostfix ? 1 : 0);     // ignore the last part
+
+            for (int idx = start; idx < parts.Length - last; ++idx)
+            {
+                if (parts[idx].Length > 0)
+                {
+                    parts[idx] = char.ToUpper(parts[idx][0]).ToString() + parts[idx].Substring(1);
+                }
+            }
+
+            return string.Join("", parts, start, parts.Length - start - last);
         }
 
         /// <summary>

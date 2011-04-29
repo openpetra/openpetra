@@ -36,24 +36,24 @@ using Ict.Common.Controls;
 namespace Ict.Common.Controls
 {
     #region public data types
-    
+
     //this pragma warning disables XML comment warnings
-    #pragma warning disable 1591
-	public enum TCollapseDirection
-	{
-		cdVertical,
-		cdHorizontal
-	}
+#pragma warning disable 1591
+    public enum TCollapseDirection
+    {
+        cdVertical,
+        cdHorizontal
+    }
 
     public enum THostedControlKind
     {
         hckUserControl,
-        hckTaskList
+            hckTaskList
     }
-    #pragma warning restore 1591
+#pragma warning restore 1591
 
     #endregion
-    
+
     /// <summary>
     /// UserControl which acts as a 'Collapsible Panel'.
     /// </summary>
@@ -72,30 +72,30 @@ namespace Ict.Common.Controls
 
         /// <summary>Hard-coded value of the expanded width</summary>
         private const Int16 EXPANDEDWIDTH = 300;
-        
+
         /// <summary>Keeps track of the collapsed/expanded state</summary>
         private bool FIsCollapsed = false;
 
-        #pragma warning disable 0169
+#pragma warning disable 0169
         /// <summary>Caches the translated text for several ToolTips</summary>
         private string FToolTipText;
-        #pragma warning restore 0169
+#pragma warning restore 0169
 
         /// <summary></summary>
         private string FTitleText;
-        
+
         /// <summary> collapse direction </summary>
         private TCollapseDirection FCollapseDirection;
 
         /// <summary>default direction</summary>
         private const TCollapseDirection DEFAULT_DIRECTION = TCollapseDirection.cdVertical;
-        
+
         /// <summary>default Title</summary>
         private const string DEFAULT_TITLE = "## Developer needs to change this ##";
-        
+
         /// <summary></summary>
         private THostedControlKind FHostedControlKind;
-        
+
         /// <summary></summary>
         private string FUserControlNamespace;
 
@@ -104,16 +104,16 @@ namespace Ict.Common.Controls
 
         /// <summary></summary>
         private UserControl FUserControl = null;
-        
+
         /// <summary></summary>
         private XmlNode FTaskListNode;
-        
+
         /// <summary></summary>
         private TTaskList FTaskListInstance = null;
-        
+
         /// <summary></summary>
         private TVisualStylesEnum FVisualStyleEnum;
-        
+
         #endregion
 
         #region Events
@@ -181,7 +181,7 @@ namespace Ict.Common.Controls
                 FCollapseDirection = value;
             }
         }
-        
+
         /// <summary>
         /// this gets/sets what kind of stuff is inside.
         /// </summary>
@@ -196,7 +196,7 @@ namespace Ict.Common.Controls
                 FHostedControlKind = value;
             }
         }
-        
+
         /// <summary></summary>
         public string UserControlNamespace
         {
@@ -210,7 +210,7 @@ namespace Ict.Common.Controls
                 FUserControlNamespace = value;
             }
         }
-        
+
         /// <summary></summary>
         public string UserControlClass
         {
@@ -233,7 +233,7 @@ namespace Ict.Common.Controls
                 return FUserControl;
             }
         }
-        
+
         /// <summary></summary>
         public XmlNode TaskListNode
         {
@@ -246,7 +246,7 @@ namespace Ict.Common.Controls
                 FTaskListNode = value;
             }
         }
-        
+
         /// <summary></summary>
         public TTaskList TaskListInstance
         {
@@ -259,7 +259,7 @@ namespace Ict.Common.Controls
                 FTaskListInstance = value;
             }
         }
-        
+
         /// <summary>
         /// This is not yet implemented.
         /// </summary>
@@ -312,12 +312,6 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            //FToolTipText = Catalog.GetString("Click here to expand / collapse the {0} panel");
-            this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
-            #endregion
 
             Collapse();
             FHostedControlKind = AHCK;
@@ -329,7 +323,7 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>
@@ -340,8 +334,8 @@ namespace Ict.Common.Controls
             FIsCollapsed = true;
 
             btnToggle.ImageIndex = 1;
-            
-            if(FCollapseDirection == TCollapseDirection.cdVertical)
+
+            if (FCollapseDirection == TCollapseDirection.cdVertical)
             {
                 TitleShow();
                 this.Height = COLLAPSEDHEIGHT;
@@ -362,7 +356,7 @@ namespace Ict.Common.Controls
             btnToggle.ImageIndex = 0;
             TitleShow();
 
-            if(FCollapseDirection == TCollapseDirection.cdVertical)
+            if (FCollapseDirection == TCollapseDirection.cdVertical)
             {
                 this.Height = EXPANDEDHEIGHT;
             }
@@ -371,22 +365,24 @@ namespace Ict.Common.Controls
                 this.Width = EXPANDEDWIDTH;
             }
 
-            switch (FHostedControlKind) {
+            switch (FHostedControlKind)
+            {
                 case THostedControlKind.hckUserControl:
                     InstantiateUserControl();
                     break;
+
                 case THostedControlKind.hckTaskList:
                     InstantiateTaskList();
                     break;
             }
         }
-        
+
         /// <summary>
         /// Toggles between expanding and collapsing.
         /// </summary>
         public void Toggle()
         {
-            if(IsCollapsed)
+            if (IsCollapsed)
             {
                 Expand();
             }
@@ -395,7 +391,7 @@ namespace Ict.Common.Controls
                 Collapse();
             }
         }
-        
+
         /// <summary>
         /// Allow the outside to force the usercontrol to initialize.
         /// </summary>
@@ -423,7 +419,7 @@ namespace Ict.Common.Controls
         {
             this.lblDetailHeading.Text = this.Text;
         }
-        
+
         /// <summary>
         /// Raises the 'Collapsed' Event if something subscribed to it.
         /// </summary>
@@ -450,26 +446,26 @@ namespace Ict.Common.Controls
         {
             FCollapseDirection = ADirection;
         }
-        
+
         /// <summary>
         /// Allow the outside to force the usercontrol to initialize. See RealiseUserControlNow.
         /// </summary>
         private UserControl RealiseUserControl()
         {
-
             Assembly asm = Assembly.LoadFrom(FUserControlNamespace + ".dll");
+
             System.Type classType = asm.GetType(FUserControlNamespace + "." + FUserControlClass);
-            
+
             if (classType == null)
             {
                 MessageBox.Show("TPnlCollapsible.RealiseUserControl: Cannot find class " + FUserControlNamespace + "." + FUserControlClass);
             }
-          
-            FUserControl = (UserControl) Activator.CreateInstance(classType);
-            
+
+            FUserControl = (UserControl)Activator.CreateInstance(classType);
+
             pnlContent.Controls.Add(FUserControl);
             FUserControl.Dock = DockStyle.Fill;
-            
+
             return FUserControl;
         }
 
@@ -483,11 +479,12 @@ namespace Ict.Common.Controls
         private void InstantiateTaskList()
         {
             //needs to set correct visual style.
-            if(FTaskListNode == null)
+            if (FTaskListNode == null)
             {
                 throw new ENoTaskListNodeSpecifiedException();
             }
-            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode,FVisualStyleEnum);
+
+            FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode, FVisualStyleEnum);
             this.pnlContent.Controls.Add(FTaskListInstance);
             //FTaskListInstance.Anchor = (System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -495,43 +492,46 @@ namespace Ict.Common.Controls
 
         private TVisualStylesEnum ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
         {
-            if(FCollapseDirection != TCollapseDirection.cdHorizontal
-               && (AVisualStyle == TVisualStylesEnum.vsHorizontalCollapse
-                   || AVisualStyle == TVisualStylesEnum.vsShepherd ))
+            if ((FCollapseDirection != TCollapseDirection.cdHorizontal)
+                && ((AVisualStyle == TVisualStylesEnum.vsHorizontalCollapse)
+                    || (AVisualStyle == TVisualStylesEnum.vsShepherd)))
             {
                 throw new EVisualStyleAndDirectionMismatchException();
             }
-            else if(FCollapseDirection != TCollapseDirection.cdVertical
-                    && (AVisualStyle.Equals(TVisualStylesEnum.vsAccordionPanel)
-                        || AVisualStyle.Equals(TVisualStylesEnum.vsDashboard)
-                        || AVisualStyle.Equals(TVisualStylesEnum.vsTaskPanel) ))
+            else if ((FCollapseDirection != TCollapseDirection.cdVertical)
+                     && (AVisualStyle.Equals(TVisualStylesEnum.vsAccordionPanel)
+                         || AVisualStyle.Equals(TVisualStylesEnum.vsDashboard)
+                         || AVisualStyle.Equals(TVisualStylesEnum.vsTaskPanel)))
             {
-                throw new EVisualStyleAndDirectionMismatchException();                
+                throw new EVisualStyleAndDirectionMismatchException();
             }
-            
+
             FVisualStyleEnum = AVisualStyle;
-            if(this.TaskListInstance != null)
+
+            if (this.TaskListInstance != null)
             {
-                switch(AVisualStyle)
+                switch (AVisualStyle)
                 {
                     case TVisualStylesEnum.vsHorizontalCollapse:
                     case TVisualStylesEnum.vsAccordionPanel:
                         this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsAccordionPanel);
                         break;
+
                     case TVisualStylesEnum.vsTaskPanel:
                     case TVisualStylesEnum.vsDashboard:
                         this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsTaskPanel);
                         break;
+
                     case TVisualStylesEnum.vsShepherd:
                         this.TaskListInstance.VisualStyle = new TVisualStyles(TVisualStylesEnum.vsShepherd);
                         break;
                 }
             }
-            
+
             //TODO: actually change the collapsible panel's visual properties.
             return AVisualStyle;
         }
-                    
+
         #endregion
 
         #region Event Handlers
@@ -601,7 +601,7 @@ namespace Ict.Common.Controls
 
         #endregion
     }
-    
+
     /// <summary>
     /// This Exception is thrown whenever the hosted content is a TaskList, but
     /// a non-TaskList function is used. Or when the hosted content is a custom
@@ -609,7 +609,6 @@ namespace Ict.Common.Controls
     /// </summary>
     public class EIncompatibleHostedControlKindException : ApplicationException
     {
-        
     }
 
     /// <summary>
@@ -617,11 +616,9 @@ namespace Ict.Common.Controls
     /// </summary>
     public class ENoTaskListNodeSpecifiedException : ApplicationException
     {
-        
     }
-    
+
     public class EVisualStyleAndDirectionMismatchException : ApplicationException
     {
-        
     }
 }

@@ -43,7 +43,7 @@ namespace Ict.Common
     {
         /// The string list of all the command line options.
         private StringCollection FList = new StringCollection();
-        private Dictionary<string,string> _options = new Dictionary<string,string>();
+        private Dictionary <string, string>_options = new Dictionary <string, string>();
 
         /// <summary>
         /// </summary>
@@ -65,9 +65,9 @@ namespace Ict.Common
         /// <returns>void</returns>
         public TCmdOpts()
         {
-        	string[] list = Environment.GetCommandLineArgs();
+            string[] list = Environment.GetCommandLineArgs();
 
-        	foreach (string s in list)
+            foreach (string s in list)
             {
                 if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":"))
                 {
@@ -84,15 +84,21 @@ namespace Ict.Common
                     FList.Add(s.Trim());
                 }
             }
-            foreach (string entry in FList) {
-            	string[] res = entry.Split(new Char [] {'-'}, 2);
-            	if (1 < res.Length) {
-            		string[] opt = res[1].Split(new Char [] {':'}, 2);
-            		if (1 < opt.Length && ! _options.ContainsKey(opt[0])) {
-            		  // Add option to dictionary for fast lockup
-            		  _options.Add(opt[0], opt[1]);
-            		}
-            	}
+
+            foreach (string entry in FList)
+            {
+                string[] res = entry.Split(new Char[] { '-' }, 2);
+
+                if (1 < res.Length)
+                {
+                    string[] opt = res[1].Split(new Char[] { ':' }, 2);
+
+                    if ((1 < opt.Length) && !_options.ContainsKey(opt[0]))
+                    {
+                        // Add option to dictionary for fast lockup
+                        _options.Add(opt[0], opt[1]);
+                    }
+                }
             }
         }
 
@@ -105,9 +111,10 @@ namespace Ict.Common
         /// </returns>
         public string GetOptValue(string AOpt)
         {
-        	if (_options.ContainsKey(AOpt)) {
-        		return _options[AOpt];
-        	}
+            if (_options.ContainsKey(AOpt))
+            {
+                return _options[AOpt];
+            }
 
             throw new Exception("missing option " + AOpt);
         }
@@ -122,7 +129,7 @@ namespace Ict.Common
         /// </returns>
         public Boolean IsFlagSet(string flag)
         {
-           return _options.ContainsKey(flag);
+            return _options.ContainsKey(flag);
         }
     }
 }

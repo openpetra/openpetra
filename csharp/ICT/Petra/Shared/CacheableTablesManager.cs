@@ -985,12 +985,12 @@ namespace Ict.Petra.Shared
         /// </exception>
         public void MarkAllCachedTableNeedsRefreshing()
         {
-        	foreach (DataTable CachedTable in UDataCacheDataSet.Tables)
-        	{
-        		MarkCachedTableNeedsRefreshing(CachedTable.TableName);
+            foreach (DataTable CachedTable in UDataCacheDataSet.Tables)
+            {
+                MarkCachedTableNeedsRefreshing(CachedTable.TableName);
             }
         }
-        
+
         #endregion
 
         #region Private Methods
