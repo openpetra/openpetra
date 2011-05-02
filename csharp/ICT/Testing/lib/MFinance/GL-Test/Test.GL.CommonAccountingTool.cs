@@ -122,14 +122,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new THandleAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new THandleCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
@@ -179,14 +179,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new THandleAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new THandleCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
                 LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
                     "test-sql\\gl-test-costcentre-data.sql");

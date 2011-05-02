@@ -365,8 +365,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (ATransActionIsInForeign)
                 {
-                    THandleAccountInfo accountCheck =
-                        new THandleAccountInfo(TLedgerInfo, AAccount);
+                    TAccountInfo accountCheck =
+                        new TAccountInfo(TLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {

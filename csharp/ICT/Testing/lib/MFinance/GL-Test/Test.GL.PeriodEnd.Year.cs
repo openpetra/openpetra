@@ -205,26 +205,65 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
+        /// Test of SwitchToNextYear
+        /// </summary>
+        [Test]
+        public void Test_01_CheckLedger()
+        {
+            int intYear = 0;
+
+            ResetDatabase();
+            TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+
+//            CheckLedger checkLedger = new CheckLedger(new TLedgerInfo(intLedgerNumber));
+//            checkLedger.VerificationResultCollection = verificationResult;
+//            checkLedger.IsInInfoMode = false;
+//            checkLedger.RunEndOfPeriodOperation();
+//            intYear = checkLedger.Year;
+
+            System.Diagnostics.Debug.WriteLine(intYear.ToString());
+        }
+
+        /// <summary>
         /// Test of TAccountPeriodToNewYear
         /// </summary>
         [Test]
         public void Test_TAccountPeriodToNewYear()
         {
             ResetDatabase();
+
+            TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+
+
             TGetAccountingPeriodInfo accountingPeriodInfo1 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
-            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-            TGetAccountingPeriodInfo accountingPeriodInfo2 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
 
-            Assert.AreEqual(accountingPeriodInfo1.PeriodEndDate.AddYears(1),
-                accountingPeriodInfo2.PeriodEndDate, "Dates shall be equal");
 
-            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-            TGetAccountingPeriodInfo accountingPeriodInfo3 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
-            Assert.AreEqual(new DateTime(2012, 2, 29), accountingPeriodInfo3.PeriodEndDate, "February ...");
+            TAccountPeriodToNewYear accountPeriodToNewYear =
+                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+            accountPeriodToNewYear.VerificationResultCollection = verificationResult;
+            accountPeriodToNewYear.IsInInfoMode = false;
 
-            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-            TGetAccountingPeriodInfo accountingPeriodInfo4 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
-            Assert.AreEqual(new DateTime(2013, 2, 28), accountingPeriodInfo4.PeriodEndDate, "February ...");
+            Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
+            accountPeriodToNewYear.RunEndOfPeriodOperation();
+
+            TAccountPeriodToNewYear accountPeriodToNewYear2 =
+                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+            accountPeriodToNewYear2.IsInInfoMode = false;
+            Assert.AreEqual(0, accountPeriodToNewYear2.JobSize, "...");
+
+//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+//            TGetAccountingPeriodInfo accountingPeriodInfo2 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
+//
+//            Assert.AreEqual(accountingPeriodInfo1.PeriodEndDate.AddYears(1),
+//                accountingPeriodInfo2.PeriodEndDate, "Dates shall be equal");
+//
+//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+//            TGetAccountingPeriodInfo accountingPeriodInfo3 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
+//            Assert.AreEqual(new DateTime(2012, 2, 29), accountingPeriodInfo3.PeriodEndDate, "February ...");
+//
+//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
+//            TGetAccountingPeriodInfo accountingPeriodInfo4 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
+//            Assert.AreEqual(new DateTime(2013, 2, 28), accountingPeriodInfo4.PeriodEndDate, "February ...");
         }
 
         [TestFixtureSetUp]

@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// </param>
         /// <param name="debitCreditIndicator"></param>
         /// <returns></returns>
-        private bool THandleAccountInfo(TDataBase databaseConnection,
+        private bool TAccountInfo(TDataBase databaseConnection,
             System.Int32 pv_ledger_number_i,
             String pv_account_code_c,
             out String accountType,
@@ -564,7 +564,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     NextNegativeSequence = NextNegativeSequence - 1;
                 }
 
-                if (THandleAccountInfo(databaseConnection, pv_ledger_number_i, pv_account_code_c, out accountType, out postingAccount,
+                if (TAccountInfo(databaseConnection, pv_ledger_number_i, pv_account_code_c, out accountType, out postingAccount,
                         out debitCreditIndicator))
                 {
                     TGlmSequence glmSequenceElement = new TGlmSequence(pv_ledger_number_i,

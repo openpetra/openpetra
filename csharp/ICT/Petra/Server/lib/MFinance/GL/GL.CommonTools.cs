@@ -37,18 +37,18 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
-    public class THandleGlmpInfo
+    public class TGlmpInfo
     {
         AGeneralLedgerMasterPeriodTable aGLMp;
         AGeneralLedgerMasterPeriodRow aGLMpRow;
 
-        public THandleGlmpInfo()
+        public TGlmpInfo()
         {
             LoadAll();
             aGLMpRow = null;
         }
 
-        public THandleGlmpInfo(int ASequence, int APeriod)
+        public TGlmpInfo(int ASequence, int APeriod)
         {
             LoadAll();
             SetToRow(ASequence, APeriod);
@@ -289,7 +289,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Object to handle the cost center table ...
     /// </summary>
-    public class THandleCostCenterInfo
+    public class TCostCenterInfo
     {
         ACostCentreTable costCentreTable;
         ACostCentreRow costCentreRow;
@@ -300,9 +300,9 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACostCenterCode"></param>
-        public THandleCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
+        public TCostCenterInfo(int ALedgerNumber, string ACostCenterCode)
         {
-            THandleCostCenterInfo_(ALedgerNumber);
+            TCostCenterInfo_(ALedgerNumber);
             blnCostCenterValid = SetCostCenterRow_(ACostCenterCode);
         }
 
@@ -310,13 +310,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// This constructor only loads a cc list. The row remains invalid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public THandleCostCenterInfo(int ALedgerNumber)
+        public TCostCenterInfo(int ALedgerNumber)
         {
-            THandleCostCenterInfo_(ALedgerNumber);
+            TCostCenterInfo_(ALedgerNumber);
             blnCostCenterValid = false;
         }
 
-        private void THandleCostCenterInfo_(int ALedgerNumber)
+        private void TCostCenterInfo_(int ALedgerNumber)
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -629,12 +629,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
     /// <summary>
-    /// THandleAccountInfo uses a TLedgerInfo a primilary references the LedgerNumber.
+    /// TAccountInfo uses a TLedgerInfo a primilary references the LedgerNumber.
     /// All Accounts are load in both contructors. You can define an inital account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
     /// </summary>
-    public class THandleAccountInfo
+    public class TAccountInfo
     {
         AAccountTable accountTable;
         AAccountRow accountRow = null;
@@ -648,7 +648,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Ledger Info to select the ledger ...
         /// </summary>
         /// <param name="ALedgerInfo"></param>
-        public THandleAccountInfo(TLedgerInfo ALedgerInfo)
+        public TAccountInfo(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -659,7 +659,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerInfo"></param>
         /// <param name="AAccountCode"></param>
-        public THandleAccountInfo(TLedgerInfo ALedgerInfo, string AAccountCode)
+        public TAccountInfo(TLedgerInfo ALedgerInfo, string AAccountCode)
         {
             ledgerInfo = ALedgerInfo;
             LoadData();
@@ -1262,7 +1262,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         LedgerLock,
 
-        DatabaseAllocation
+        DatabaseAllocation,
+
+        /// <summary>
+        /// Used for the period end year as a marker for the year ...
+        /// </summary>
+        ActualYear
     }
 
     /// <summary>
@@ -1276,6 +1281,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private TVerificationResultCollection VerificationResult = null;
         private int intLedgerNumber;
         private string strFlagName;
+        private string strFlagNameHelp;
 
         /// <summary>
         /// This Constructor only takes and stores the initial parameters. No
@@ -1296,6 +1302,13 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 strFlagName = AFlagEnum.ToString();
             }
+
+            strFlagNameHelp = strFlagName;
+        }
+
+        public void AddMarker(string AMarker)
+        {
+            strFlagName = strFlagNameHelp + ":" + AMarker;
         }
 
         /// <summary>

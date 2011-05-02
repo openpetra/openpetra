@@ -253,7 +253,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_09_TAccountPropertyHandler()
         {
             TLedgerInfo tHandleLedgerInfo = new TLedgerInfo(LedgerNumber);
-            THandleAccountInfo tHandleAccountInfo = new THandleAccountInfo(tHandleLedgerInfo);
+            TAccountInfo tHandleAccountInfo = new TAccountInfo(tHandleLedgerInfo);
 
             tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
             Assert.IsTrue(tHandleAccountInfo.IsValid, "ICH_ACCT shall exist");

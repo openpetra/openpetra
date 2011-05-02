@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             aSuspenseAccountRow.SuspenseAccountCode,
                             ledgerInfo.CurrentFinancialYear);
 
-                        THandleGlmpInfo get_GLMp_Info = new THandleGlmpInfo(get_GLM_Info.Sequence,
+                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(get_GLM_Info.Sequence,
                             ledgerInfo.CurrentPeriod);
                         decAccountTotalSum += get_GLMp_Info.ActualBase;
 
