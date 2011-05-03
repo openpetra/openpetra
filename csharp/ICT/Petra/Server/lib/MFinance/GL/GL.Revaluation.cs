@@ -347,8 +347,11 @@ namespace Ict.Petra.Server.MFinance.GL
             GLDataset = TTransactionWebConnector.CreateABatch(intLedgerNum);
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
-            batch.DateEffective = new
-                                  TGetAccountingPeriodInfo(intLedgerNum).GetPeriodEndDate(intAccountingPeriod);
+            
+            TGetAccountingPeriodInfo accountingPeriodInfo = new TGetAccountingPeriodInfo(intLedgerNum);
+            accountingPeriodInfo.AccountingPeriodNumber = intAccountingPeriod;
+            batch.DateEffective = accountingPeriodInfo.PeriodEndDate;
+
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             journal = GLDataset.AJournal.NewRowTyped();

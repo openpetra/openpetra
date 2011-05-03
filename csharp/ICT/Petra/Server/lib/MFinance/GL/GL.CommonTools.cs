@@ -34,7 +34,6 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
-
 namespace Ict.Petra.Server.MFinance.GL
 {
     public class TGlmpInfo
@@ -843,7 +842,16 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TGetAccountingPeriodInfo
     {
+    	private int intLedgerNumber = 0; 
         private AAccountingPeriodTable periodTable = null;
+        private AAccountingPeriodRow periodRow = null;
+        
+		
+        protected void LoadTableData(int ALedgerNumber)
+        {
+        	intLedgerNumber = ALedgerNumber;
+        	LoadData();
+        }
 
         /// <summary>
         /// Constructor needs a valid ledger number.
@@ -851,12 +859,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">Ledger number</param>
         public TGetAccountingPeriodInfo(int ALedgerNumber)
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            periodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+        	intLedgerNumber = ALedgerNumber;
+        	LoadData();
         }
-
+        
         /// <summary>
         /// Constructor to adress a record by its primary key
         /// </summary>
@@ -865,101 +871,75 @@ namespace Ict.Petra.Server.MFinance.GL
 
         public TGetAccountingPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
         {
+        	intLedgerNumber = ALedgerNumber;
+        	LoadData();
+        	AccountingPeriodNumber = ACurrentPeriod;
+        }
+
+        private void LoadData()
+        {
+        	
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            periodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ACurrentPeriod, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            try
+            {
+                periodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw exception;
+            }
         }
-
-        /// <summary>
-        /// Selects to correct AAccountingPeriodRow or - in case of an error -
-        /// it sets to null
-        /// </summary>
-        /// <param name="APeriodNum">Number of the requested period</param>
-        /// <returns></returns>
-        private AAccountingPeriodRow GetRowOfPeriod(int APeriodNum)
+        
+        public int AccountingPeriodNumber
         {
-            if (periodTable != null)
-            {
-                if (periodTable.Rows.Count != 0)
-                {
-                    for (int i = 0; i < periodTable.Rows.Count; ++i)
-                    {
-                        AAccountingPeriodRow periodRow =
-                            (AAccountingPeriodRow)periodTable[i];
-
-                        if (periodRow.AccountingPeriodNumber == APeriodNum)
-                        {
-                            return periodRow;
-                        }
-                    }
-
-                    return null;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
+        	set
+        	{
+        		periodRow = null;
+        		AAccountingPeriodRow periodRowH;
+        		for (int i=0; i <  periodTable.Rows.Count; ++i)
+        		{
+        			periodRowH = periodTable[i];
+        			if (periodRowH.AccountingPeriodNumber == value)
+        			{
+        				periodRow = periodRowH;
+        			}
+        		}
+        	}
         }
 
-        /// <summary>
-        /// Reads the value of the first and hopefully only row.
-        /// </summary>
         public DateTime PeriodEndDate
         {
             get
             {
-                AAccountingPeriodRow periodRow = (AAccountingPeriodRow)periodTable[0];
                 return periodRow.PeriodEndDate;
             }
         }
 
 
-        /// <summary>
-        /// Reads the end date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetPeriodEndDate(int APeriodNum)
+        public DateTime PeriodStartDate
         {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
-            {
-                return periodRow.PeriodEndDate;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
-        }
-
-        /// <summary>
-        /// Reads the start date of the period
-        /// </summary>
-        /// <param name="APeriodNum">The number of the period. DateTime.MinValue is an
-        /// error value.</param>
-        /// <returns></returns>
-        public DateTime GetPeriodStartDate(int APeriodNum)
-        {
-            AAccountingPeriodRow periodRow = GetRowOfPeriod(APeriodNum);
-
-            if (periodRow != null)
+            get
             {
                 return periodRow.PeriodStartDate;
             }
-            else
+        }
+
+
+        public DateTime EffectiveDate
+        {
+            get
             {
-                return DateTime.MinValue;
+                return periodRow.EffectiveDate;
             }
         }
 
+
+        /// <summary>
+        /// Returns the number of accounting periods in the table
+        /// </summary>
         public int Rows
         {
             get
@@ -1112,11 +1092,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.YearEndFlag;
             }
         }
-        public int TYearEndProcessStatus
+        public int YearEndProcessStatus
         {
             get
             {
-                return row.TYearEndProcessStatus;
+                return row.YearEndProcessStatus;
             }
             set
             {

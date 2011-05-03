@@ -290,7 +290,13 @@ public class {#TABLENAME}Access : TTypedDataAccess
         DeleteUsingTemplate({#TABLENAME}Table.TableId, ASearchCriteria, ATransaction);
     }
     
-    /// auto generated
+    /// <summary>
+    /// The changes are written to the database ...
+    /// </summary>
+    /// <param name="ATable"></param>
+    /// <param name="ATransaction"></param>
+    /// <param name="AVerificationResult"></param>
+    /// <returns>True = Data are written to the data base successfully.</returns>
     public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
     {
         return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});

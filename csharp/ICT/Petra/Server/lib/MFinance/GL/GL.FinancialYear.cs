@@ -177,7 +177,11 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <returns></returns>
         public static bool ClosePeriod(Int32 ALedgerNumber, Int32 AYearNumber, Int32 APeriodNumber)
         {
-            // TODO: ClosePeriod
+        	TCarryForward carryForward = new TCarryForward(new TLedgerInfo(ALedgerNumber));
+        	if (carryForward.GetPeriodType == TCarryForwardENum.Month)
+        	{
+        		carryForward.SetNextPeriod();
+        	}
             return false;
         }
 
@@ -189,7 +193,11 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <returns></returns>
         public static bool CloseYear(Int32 ALedgerNumber, Int32 AYearNumber)
         {
-            // TODO: CloseYear
+        	TCarryForward carryForward = new TCarryForward(new TLedgerInfo(ALedgerNumber));
+        	if (carryForward.GetPeriodType == TCarryForwardENum.Year)
+        	{
+        		carryForward.SetNextPeriod();
+        	}
             return false;
         }
     }

@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Modul for the year end calculations ...
     /// </summary>
-    public class TYearEnd : AbstractPerdiodEndOperations
+    public class TYearEnd : TPerdiodEndOperations
     {
         TLedgerInfo ledgerInfo;
 
@@ -110,6 +110,7 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
 
             TCarryForward carryForward = new TCarryForward(ledgerInfo);
+            int intYear = carryForward.Year;
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
@@ -121,9 +122,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
             }
-
-            TGetAccountingYear accountingYear = new TGetAccountingYear(ledgerInfo);
-            int intYear = accountingYear.Year;
 
             RunPeriodEndSequence(new TReallocation(ledgerInfo),
                 Catalog.GetString("Reallocation of all income and expense accounts"));
@@ -144,49 +142,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AVRCollection = verificationResults;
             return blnCriticalErrors;
-        }
-    }
-
-    public class TGetAccountingYear
-    {
-        TLedgerInfo ledgerInfo;
-        int intActualYear;
-
-        TLedgerInitFlagHandler ledgerFlag;
-
-        public TGetAccountingYear(TLedgerInfo ALedgerInfo)
-        {
-            ledgerInfo = ALedgerInfo;
-        }
-
-        public int Year
-        {
-            get
-            {
-                ledgerFlag =
-                    new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber, TLedgerInitFlagEnum.ActualYear);
-                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-                int intYear = accountPeriod.ActualYear;
-                ledgerFlag.AddMarker((intYear - 1).ToString());
-
-                if (ledgerFlag.Flag)
-                {
-                    intActualYear = intYear - 1;
-                }
-                else
-                {
-                    intActualYear = intYear;
-                    ledgerFlag.AddMarker(intYear.ToString());
-                    ledgerFlag.Flag = true;
-                }
-
-                return intActualYear;
-            }
-        }
-
-        public void RemoveMarker()
-        {
-            ledgerFlag.Flag = false;
         }
     }
 
@@ -301,15 +256,22 @@ namespace Ict.Petra.Server.MFinance.GL
                 CaculateAccountList();
             }
 
-            tCommonAccountingTool =
-                new TCommonAccountingTool(ledgerInfo,
-                    Catalog.GetString("Financial year end processing"));
+            if (DoExecuteableCode)
+            {
+                tCommonAccountingTool =
+                    new TCommonAccountingTool(ledgerInfo,
+                        Catalog.GetString("Financial year end processing"));
+            }
+
             glmpInfo = new TGlmpInfo();
 
-            tCommonAccountingTool.AddBaseCurrencyJournal();
-            tCommonAccountingTool.JournalDescription =
-                Catalog.GetString("Period end revaluations");
-            tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
+            if (DoExecuteableCode)
+            {
+                tCommonAccountingTool.AddBaseCurrencyJournal();
+                tCommonAccountingTool.JournalDescription =
+                    Catalog.GetString("Period end revaluations");
+                tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
+            }
 
             // tCommonAccountingTool.DateEffective =""; Default is "End of actual period ..."
             // Loop with all account codes
@@ -354,7 +316,10 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
 
-                tCommonAccountingTool.CloseSaveAndPost();
+                if (DoExecuteableCode)
+                {
+                    tCommonAccountingTool.CloseSaveAndPost();
+                }
             }
         }
 
@@ -407,15 +372,21 @@ namespace Ict.Petra.Server.MFinance.GL
             string strNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
             string strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
 
-            tCommonAccountingTool.AddBaseCurrencyTransaction(
-                AAccountCode, ACostCentreCode, strBuildNarrative,
-                strYearEnd, !blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
-
+            if (DoExecuteableCode)
+            {
+                tCommonAccountingTool.AddBaseCurrencyTransaction(
+                    AAccountCode, ACostCentreCode, strBuildNarrative,
+                    strYearEnd, !blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
+            }
 
             strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
-            tCommonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountTo, strCostCentreTo, strBuildNarrative,
-                strYearEnd, blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
+
+            if (DoExecuteableCode)
+            {
+                tCommonAccountingTool.AddBaseCurrencyTransaction(
+                    strAccountTo, strCostCentreTo, strBuildNarrative,
+                    strYearEnd, blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
+            }
         }
 
         private string GetStandardCostCentre()

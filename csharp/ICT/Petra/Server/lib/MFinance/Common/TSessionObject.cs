@@ -182,11 +182,11 @@ namespace Ict.Petra.Server.MFinance.Session
                 return row.YearEndFlag;
             }
         }
-        public int TYearEndProcessStatus
+        public int YearEndProcessStatus
         {
             get
             {
-                return row.TYearEndProcessStatus;
+                return row.YearEndProcessStatus;
             }
             set
             {

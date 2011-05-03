@@ -166,7 +166,8 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 RunAndAccountAdminFees();
-                CarryForward();
+                TCarryForward tcf = new TCarryForward(ledgerInfo);
+                tcf.SetNextPeriod();
                 return false;
             }
             catch (TerminateException terminate)
@@ -332,60 +333,6 @@ namespace Ict.Petra.Server.MFinance.GL
             // TODO: Admin Fees and
             // TODO: ICH stewardship ...
             // TCommonAccountingTool cat = new TCommonAccountingTool(ledgerInfo, "Batch Description");
-        }
-
-        void CarryForward()
-        {
-            if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
-            {
-                SetProvisionalYearEndFlag(true);
-            }
-            else
-            {
-                SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
-            }
-
-            new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                TLedgerInitFlagEnum.Revaluation).Flag = false;
-        }
-
-        void SetProvisionalYearEndFlag(bool AFlagValue)
-        {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Bit);
-            ParametersArray[0].Value = !AFlagValue;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Bit);
-            ParametersArray[1].Value = AFlagValue;
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ledgerInfo.LedgerNumber;
-
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-            strSQL += "SET " + ALedgerTable.GetYearEndFlagDBName() + " = ? ";
-            strSQL += ", " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
-            strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(
-                strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
-        }
-
-        void SetNewFwdPeriodValue(int ANewPeriodNum)
-        {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ANewPeriodNum;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ledgerInfo.LedgerNumber;
-
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-            strSQL += "SET " + ALedgerTable.GetCurrentPeriodDBName() + " = ? ";
-            strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(
-                strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
 

@@ -33,9 +33,9 @@ namespace Ict.Petra.Server.MFinance.GL
     /// If a proceure is defined which shall be assined inside a specific perodic process you have to use this
     /// class the handle the operation itself and the AbstractPerdiodEndOperation class to handle the internal
     /// parts of the operation. <br />
-    /// For example the class TMonthEnd and TYearEnd inherits AbstractPerdiodEndOperations.<br />
+    /// For example the class TMonthEnd and TYearEnd inherits TPerdiodEndOperations.<br />
     /// </summary>
-    public class AbstractPerdiodEndOperations
+    public class TPerdiodEndOperations
     {
         /// <summary>
         /// If the user invokes a specific year end command, he automatically starts a server request
@@ -63,13 +63,15 @@ namespace Ict.Petra.Server.MFinance.GL
         /// This is for all info only routines that means JobSize has no definition
         /// </summary>
         /// <param name="Apeo"></param>
-        protected void RunPeriodEndSequenceCheck(AbstractPerdiodEndOperation Apeo)
+        protected void RunPeriodEndCheck(AbstractPerdiodEndOperation Apeo)
         {
-            if (!blnCriticalErrors)
+            Apeo.IsInInfoMode = blnIsInInfoMode;
+            Apeo.VerificationResultCollection = verificationResults;
+            Apeo.RunEndOfPeriodOperation();
+
+            if (Apeo.HasCriticalErrors)
             {
-                Apeo.IsInInfoMode = blnIsInInfoMode;
-                Apeo.VerificationResultCollection = verificationResults;
-                Apeo.RunEndOfPeriodOperation();
+                blnCriticalErrors = true;
             }
         }
 
@@ -82,43 +84,45 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             Apeo.IsInInfoMode = blnIsInInfoMode;
             Apeo.VerificationResultCollection = verificationResults;
-
-            if (!blnCriticalErrors)
+            
+            if (Apeo.JobSize == 0)
             {
-                if (Apeo.JobSize == 0)
+                // Non Critical Problem but the user shall be informed ...
+                String strTitle = Catalog.GetString("Peridic end routine hint");
+                String strMessage = Catalog.GetString("There is nothing to do for the module: [{0}]");
+                strMessage = String.Format(strMessage, AOperationName);
+                TVerificationResult tvt =
+                    new TVerificationResult(strTitle, strMessage, "",
+                        TYearEndErrorStatus.PEYM_06.ToString(),
+                        TResultSeverity.Resv_Noncritical);
+                verificationResults.Add(tvt);
+            }
+            else
+            {
+                Apeo.RunEndOfPeriodOperation();
+                AbstractPerdiodEndOperation newApeo = Apeo.GetActualizedClone();
+                newApeo.IsInInfoMode = true;
+                newApeo.VerificationResultCollection = verificationResults;
+
+                if (newApeo.JobSize != 0)
                 {
-                    // Non Critical Problem but the user shall be informed ...
-                    String strTitle = Catalog.GetString("Peridic end routine hint");
-                    String strMessage = Catalog.GetString("There is nothing to do for the module: [{0}]");
-                    strMessage = String.Format(strMessage, AOperationName);
+                    // Critical Problem beause now there shall nothing to do anymore ...
+                    String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
+                    strTitle = String.Format(strTitle, AOperationName);
+                    String strMessage = Catalog.GetString(
+                        "The operation has heft {0} elements which are not transformed!");
+                    strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
                     TVerificationResult tvt =
                         new TVerificationResult(strTitle, strMessage, "",
                             TYearEndErrorStatus.PEYM_06.ToString(),
-                            TResultSeverity.Resv_Noncritical);
+                            TResultSeverity.Resv_Critical);
                     verificationResults.Add(tvt);
+                    blnCriticalErrors = true;
                 }
-                else
-                {
-                    Apeo.RunEndOfPeriodOperation();
-                    AbstractPerdiodEndOperation newApeo = Apeo.GetActualizedClone();
-                    newApeo.IsInInfoMode = true;
-                    newApeo.VerificationResultCollection = verificationResults;
 
-                    if (newApeo.JobSize != 0)
-                    {
-                        // Critical Problem beause now there shall nothing to do anymore ...
-                        String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
-                        strTitle = String.Format(strTitle, AOperationName);
-                        String strMessage = Catalog.GetString(
-                            "The operation has heft {0} elements which are not transformed!");
-                        strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
-                        TVerificationResult tvt =
-                            new TVerificationResult(strTitle, strMessage, "",
-                                TYearEndErrorStatus.PEYM_06.ToString(),
-                                TResultSeverity.Resv_Critical);
-                        verificationResults.Add(tvt);
-                        blnCriticalErrors = true;
-                    }
+                if (newApeo.HasCriticalErrors)
+                {
+                    blnCriticalErrors = true;
                 }
             }
 
@@ -143,12 +147,12 @@ namespace Ict.Petra.Server.MFinance.GL
         protected TVerificationResultCollection verificationResults = null;
 
         /// <summary>
-        /// See AbstractPerdiodEndOperations
+        /// See TPerdiodEndOperations
         /// </summary>
         protected bool blnIsInInfoMode = true;
 
         /// <summary>
-        /// See AbstractPerdiodEndOperations
+        /// See TPerdiodEndOperations
         /// </summary>
         protected bool blnCriticalErrors = false;
 
@@ -167,11 +171,28 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public abstract void RunEndOfPeriodOperation();
 
+        /// <summary>
+        /// Method to create a duplicate based on the actualized database value(s)
+        /// </summary>
+        /// <returns></returns>
         public abstract AbstractPerdiodEndOperation GetActualizedClone();
+        
+
+        /// <summary>
+        /// Summarizes the values of blnCriticalErrors and blnIsInInfoMode to the decision if an
+        /// executable code shall be done or not.
+        /// </summary>
+        public bool DoExecuteableCode
+        {
+            get
+            {
+                return !(blnCriticalErrors | blnIsInInfoMode);
+            }
+        }
 
         /// <summary>
         /// Set-Property to set the common value of the VerificationResultCollection
-        ///  (Set by AbstractPerdiodEndOperations.RunYearEndSequence)
+        ///  (Set by TPerdiodEndOperations.RunYearEndSequence)
         /// </summary>
         public TVerificationResultCollection VerificationResultCollection
         {
@@ -182,7 +203,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Property to set the correct info-mode (Set by AbstractPerdiodEndOperations.RunYearEndSequence)
+        /// Property to set the correct info-mode (Set by TPerdiodEndOperations.RunYearEndSequence)
         /// </summary>
         public bool IsInInfoMode
         {
@@ -194,7 +215,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         /// <summary>
         /// Property to read if the process could be done without critical errors.
-        ///  (Used by AbstractPerdiodEndOperations.RunYearEndSequence)
+        ///  (Used by TPerdiodEndOperations.RunYearEndSequence)
         /// </summary>
         public bool HasCriticalErrors
         {
@@ -205,41 +226,74 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    /// <summary>
+    /// ENum-List of the accounting stati of a ledger 
+    /// </summary>
     public enum TCarryForwardENum
     {
         Month,
         Year
     }
 
+    /// <summary>
+    /// Zentral object which shall switch from one acounting intervall to the next 
+    /// </summary>
     public class TCarryForward
     {
         TLedgerInfo ledgerInfo;
-
+        
+        /// <summary>
+        /// The routine requires a TLedgerInfo object ...
+        /// </summary>
+        /// <param name="ALedgerInfo"></param>
         public TCarryForward(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
         }
 
+        /// <summary>
+        /// Sets the ledger to the next accounting period ...
+        /// </summary>
         public void SetNextPeriod()
         {
             if (ledgerInfo.ProvisionalYearEndFlag)
             {
+            	// Set to the first month of the "next year". 
                 SetProvisionalYearEndFlag(false);
                 SetNewFwdPeriodValue(1);
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
+            	// Set the YearEndFlag to "Switch between the months ... 
                 SetProvisionalYearEndFlag(true);
+                SetYearMark(0,true);
             }
             else
             {
+            	// Conventional Month->Month Switch ...
                 SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
+                SetYearMark(-1,false);
             }
 
             new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;
         }
+        
+        private void SetYearMark(int AYearOffset, bool AValue)
+        {
+        	TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+        	
+            int intYear = accountPeriod.ActualYear;
+            TLedgerInitFlagHandler ledgerInitFlagHandler =
+            	new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+                	                           TLedgerInitFlagEnum.ActualYear);
+            ledgerInitFlagHandler.AddMarker((intYear + AYearOffset).ToString());
+            ledgerInitFlagHandler.Flag = AValue;
+        }
 
+        /// <summary>
+        /// Gets the type of the actual accouting period (see TCarryForwardENum).
+        /// </summary>
         public TCarryForwardENum GetPeriodType
         {
             get
@@ -253,6 +307,36 @@ namespace Ict.Petra.Server.MFinance.GL
                     return TCarryForwardENum.Month;
                 }
             }
+        }
+        
+        /// <summary>
+        /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can 
+        /// get the value of the actual accounting year from the table a_accounting_period
+        /// of the open petra database. But this values are changed in the year end routine and in order 
+        /// to make shure to get allways the same value, the year is stored in a_ledger_init_flag from the 
+        /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period. 
+        /// </summary>
+        public int Year
+        {
+        	get
+        	{
+        		TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+        		int intYear = accountPeriod.ActualYear;
+        		TLedgerInitFlagHandler ledgerInitFlagHandler =
+        			new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+        			                           TLedgerInitFlagEnum.ActualYear);
+        		ledgerInitFlagHandler.AddMarker((intYear).ToString());
+        		if (ledgerInitFlagHandler.Flag)
+        		{
+        			return intYear;
+        		}
+        		ledgerInitFlagHandler.AddMarker((intYear-1).ToString());
+        		if (ledgerInitFlagHandler.Flag)
+        		{
+        			return intYear-1;
+        		}
+        		throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
+        	}
         }
 
         void SetProvisionalYearEndFlag(bool AFlagValue)
@@ -294,4 +378,5 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
+
 }
