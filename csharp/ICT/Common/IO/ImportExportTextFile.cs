@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,6 +55,28 @@ namespace Ict.Common.IO
 
         private String FCurrentLine;
         private Int32 FCurrentLineCounter;
+
+        /// <summary>
+        /// read the current line counter
+        /// </summary>
+        public Int32 CurrentLineCounter
+        {
+            get
+            {
+                return FCurrentLineCounter;
+            }
+        }
+
+        /// <summary>
+        /// read the current line
+        /// </summary>
+        public string CurrentLine
+        {
+            get
+            {
+                return FCurrentLine;
+            }
+        }
 
         /// <summary>
         /// initialise the stringbuilder for writing a new file

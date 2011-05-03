@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Text;
 using System.Data;
 using Ict.Common.IO;
+using Ict.Common;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -60,15 +61,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerRow.ChildIndicator = ReadBoolean();
             PartnerRow.ReceiptEachGift = ReadBoolean();
             PartnerRow.ReceiptLetterFrequency = ReadString();
-            PartnerRow.NoSolicitations = ReadBoolean();
-            PartnerRow.AnonymousDonor = ReadBoolean();
+
+            // it seems, these values are not part of the ext files that I have seen
+            //PartnerRow.NoSolicitations = ReadBoolean();
+            //PartnerRow.AnonymousDonor = ReadBoolean();
 
             if (PartnerRow.AcquisitionCode.Length == 0)
             {
                 PartnerRow.AcquisitionCode = MPartnerConstants.ACQUISITIONCODE_APPLICANT;
             }
-
-            PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
             return PartnerRow;
         }
@@ -105,9 +106,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 FamilyRow.MaritalStatus = ReadString();
-
-                // TODO it seems the NULL value for field key confuses the next values,
-                // so date cannot be parsed, because some fields have been jumped?
 
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
                 FamilyRow.MaritalStatusComment = ReadString();
@@ -974,17 +972,26 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             Int64 SiteKey = ReadInt64();
             Int32 SubVersion = ReadInt32();
 
-            while (CheckForKeyword("PARTNER"))
+            try
             {
-                PPartnerRow PartnerRow = ImportPartner();
+                while (CheckForKeyword("PARTNER"))
+                {
+                    PPartnerRow PartnerRow = ImportPartner();
 
-                FPartnerKey = PartnerRow.PartnerKey;
+                    FPartnerKey = PartnerRow.PartnerKey;
 
-                ImportPartnerClassSpecific(PartnerRow.PartnerClass);
+                    ImportPartnerClassSpecific(PartnerRow.PartnerClass);
 
-                ImportLocation();
+                    ImportLocation();
 
-                ImportOptionalDetails(PartnerRow);
+                    ImportOptionalDetails(PartnerRow);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message + " in line " + CurrentLineCounter.ToString());
+                TLogging.Log(CurrentLine);
+                throw;
             }
 
             return FMainDS;
