@@ -220,7 +220,19 @@ public {#COLUMNDOTNETTYPE} {#COLUMNNAME}
     }
     set
     {
-        if ((this.IsNull(this.myTable.Column{#COLUMNNAME}) 
+{#IFDEF TESTFORNULL}
+        if ({#TESTFORNULL})
+        {
+            if (!this.IsNull(this.myTable.Column{#COLUMNNAME}))
+            {
+                Set{#COLUMNNAME}Null();
+            }
+        }
+        else if ((this.IsNull(this.myTable.Column{#COLUMNNAME})
+{#ENDIF TESTFORNULL}
+{#IFNDEF TESTFORNULL}
+        if ((this.IsNull(this.myTable.Column{#COLUMNNAME})
+{#ENDIFN TESTFORNULL}
                     || ((({#COLUMNDOTNETTYPE})(this[this.myTable.Column{#COLUMNNAME}])) != value)))
         {
             this[this.myTable.Column{#COLUMNNAME}] = value;
